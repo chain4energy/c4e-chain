@@ -1,4 +1,5 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
+import Chain4EnergyC4EChainChain4EnergyC4EchainCfevesting from './chain4energy/c4e-chain/chain4energy.c4echain.cfevesting';
 import CosmosCosmosSdkCosmosAuthzV1Beta1 from './cosmos/cosmos-sdk/cosmos.authz.v1beta1';
 import CosmosCosmosSdkCosmosBankV1Beta1 from './cosmos/cosmos-sdk/cosmos.bank.v1beta1';
 import CosmosCosmosSdkCosmosCrisisV1Beta1 from './cosmos/cosmos-sdk/cosmos.crisis.v1beta1';
@@ -11,6 +12,7 @@ import CosmosCosmosSdkCosmosStakingV1Beta1 from './cosmos/cosmos-sdk/cosmos.stak
 import CosmosCosmosSdkCosmosVestingV1Beta1 from './cosmos/cosmos-sdk/cosmos.vesting.v1beta1';
 import CosmosIbcGoIbcApplicationsTransferV1 from './cosmos/ibc-go/ibc.applications.transfer.v1';
 export default {
+    Chain4EnergyC4EChainChain4EnergyC4EchainCfevesting: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfevesting, 'chain4energy.c4echain.cfevesting'),
     CosmosCosmosSdkCosmosAuthzV1Beta1: load(CosmosCosmosSdkCosmosAuthzV1Beta1, 'cosmos.authz.v1beta1'),
     CosmosCosmosSdkCosmosBankV1Beta1: load(CosmosCosmosSdkCosmosBankV1Beta1, 'cosmos.bank.v1beta1'),
     CosmosCosmosSdkCosmosCrisisV1Beta1: load(CosmosCosmosSdkCosmosCrisisV1Beta1, 'cosmos.crisis.v1beta1'),

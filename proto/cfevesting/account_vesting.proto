@@ -1,0 +1,33 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfevesting;
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
+
+message AccountVestingsList {
+  
+  repeated AccountVestings vestings = 1; 
+
+}
+
+message AccountVestings {
+  
+  string address = 1;
+  string delegable_address = 2;
+  repeated Vesting vestings = 3; 
+  // uint64 delegated = 12;
+}
+
+message Vesting {
+
+  string vesting_type = 1;
+  int64 vesting_start_block = 2;
+  int64 lock_end_block = 3;
+  int64 vesting_end_block = 4;
+  uint64 vested = 5;
+  uint64 claimable = 6;
+  int64 last_freeing_block = 7;
+  int64 free_coins_block_period = 8;
+  uint64 free_coins_per_period = 9;
+  bool delegation_allowed = 10;
+  uint64 withdrawn = 11;
+}
