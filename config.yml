@@ -1,11 +1,13 @@
 accounts:
   - name: alice
-    coins: ["20000token", "200000000stake"]
+    coins: ["120000000000uc4e"]
+    mnemonic: "cabin gun luggage green fever either engage nest arrow sure record physical palace dutch clap vocal north snack birth exhibit either ancient sniff settle"
   - name: bob
-    coins: ["10000token", "100000000stake"]
+    coins: ["4000000000uc4e"]
+    mnemonic: "genuine author egg good melt obey omit antique flight fade midnight funny security budget inquiry animal unfold film soft midnight company rack kitchen monitor"
 validator:
   name: alice
-  staked: "100000000stake"
+  staked: "100000000uc4e"
 client:
   openapi:
     path: "docs/static/openapi.yml"
@@ -13,4 +15,63 @@ client:
     path: "vue/src/store"
 faucet:
   name: bob
-  coins: ["5token", "100000stake"]
+  coins: ["100000uc4e"]
+init:
+  home: "./.data"
+  config:
+    log_level: "debug"
+    log_format: "plain"
+genesis:
+  app_state:
+    bank:
+      denom_metadata:
+        - description: "Chain4Energy Token"
+          denom_units:
+            - denom: "uc4e"
+              exponent: 0
+              aliases:
+                - microc4e
+            - denom: "c4e"
+              exponent: 6
+          base: "uc4e"
+          display: "c4e"
+          name: "Chain4Energy Coin"
+          symbol: "C4E"
+    staking:
+      params:
+        bond_denom: "uc4e"
+    cfevesting:
+      params:
+        denom: "uc4e"
+      vesting_types:
+        vesting_types:
+          - name: "Short vesting with lockup"
+            lockup_period: 10
+            vesting_period: 100
+            token_releasing_period: 5
+            delegations_allowed: false
+          - name: "Mid vesting with lockup"
+            lockup_period: 1500
+            vesting_period: 90000
+            token_releasing_period: 50
+            delegations_allowed: false
+          - name: "Long vesting with lockup"
+            lockup_period: 60000
+            vesting_period: 1000000
+            token_releasing_period: 100
+            delegations_allowed: false
+          - name: "Mid vesting delegable"
+            lockup_period: 0
+            vesting_period: 120000
+            token_releasing_period: 50
+            delegations_allowed: true
+          - name: "Long vesting delegable"
+            lockup_period: 0
+            vesting_period: 1000000
+            token_releasing_period: 100
+            delegations_allowed: true
+    # genutil:
+    #   gen_txs:
+    #     messages:
+    #       value:
+    #         denom: "c4e",
