@@ -105,3 +105,8 @@ func NewPubKeyFromHex(pk string) (res cryptotypes.PubKey) {
 func AddMaccPerms(moduleAccountName string, perms []string) {
 	maccPerms[moduleAccountName] = perms
 }
+
+func (app *App) GetApp() *App {
+	return app
+
+}
