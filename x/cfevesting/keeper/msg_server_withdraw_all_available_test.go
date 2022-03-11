@@ -17,7 +17,7 @@ import (
 	"github.com/chain4energy/c4e-chain/app"
 	// "github.com/cosmos/cosmos-sdk/x/auth"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
+	// mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	// abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -30,15 +30,17 @@ func TestWithdrawAllAvailableOnVestingStart(t *testing.T) {
 	const vt1 = "test1"
 	const initBlock = 1000
 	const vested = 1000000
+	addHelperModuleAccountPerms()
+
 	accountVestings, vesting1 := createAccountVestings(addr, vt1, vested, 0)
 
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
-	denom := addCoinsToModule(vested, mint, ctx, bank)
+	denom := addCoinsToModule(vested, helperModuleAccount, ctx, bank)
 
 	k := app.CfevestingKeeper
 
@@ -72,15 +74,17 @@ func TestWithdrawAllAvailableManyVestingsOnVestingStart(t *testing.T) {
 	const vt3 = "test3"
 	const initBlock = 1000
 	const vested = 1000000
+	addHelperModuleAccountPerms()
+
 	accountVestings, vesting1, vesting2, vesting3 := createAccountVestingsMany(addr, vt1, vt2, vt3, vested, 0)
 
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
-	denom := addCoinsToModule(3*vested, mint, ctx, bank)
+	denom := addCoinsToModule(3*vested, helperModuleAccount, ctx, bank)
 
 	k := app.CfevestingKeeper
 
@@ -117,15 +121,17 @@ func TestWithdrawAllAvailableSomeToWithdraw(t *testing.T) {
 	const vt1 = "test1"
 	const initBlock = 10100
 	const vested = 1000000
+	addHelperModuleAccountPerms()
+
 	accountVestings, vesting1 := createAccountVestings(addr, vt1, vested, 0)
 
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
-	denom := addCoinsToModule(vested, mint, ctx, bank)
+	denom := addCoinsToModule(vested, helperModuleAccount, ctx, bank)
 
 	k := app.CfevestingKeeper
 
@@ -159,15 +165,17 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdraw(t *testing.T) {
 	const vt3 = "test3"
 	const initBlock = 10100
 	const vested = 1000000
+	addHelperModuleAccountPerms()
+
 	accountVestings, vesting1, vesting2, vesting3 := createAccountVestingsMany(addr, vt1, vt2, vt3, vested, 0)
 
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
-	denom := addCoinsToModule(3*vested, mint, ctx, bank)
+	denom := addCoinsToModule(3*vested, helperModuleAccount, ctx, bank)
 
 	k := app.CfevestingKeeper
 
@@ -208,15 +216,17 @@ func TestWithdrawAllAvailableSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	const initBlock = 10100
 	const vested = 1000000
 	const withdrawn = 300
+	addHelperModuleAccountPerms()
+
 	accountVestings, vesting1 := createAccountVestings(addr, vt1, vested, withdrawn)
 
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
-	denom := addCoinsToModule(vested, mint, ctx, bank)
+	denom := addCoinsToModule(vested, helperModuleAccount, ctx, bank)
 
 	k := app.CfevestingKeeper
 
@@ -251,15 +261,17 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAndSomeWithdrawn(t *testing
 	const initBlock = 10100
 	const vested = 1000000
 	const withdrawn = 300
+	addHelperModuleAccountPerms()
+
 	accountVestings, vesting1, vesting2, vesting3 := createAccountVestingsMany(addr, vt1, vt2, vt3, vested, withdrawn)
 
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
-	denom := addCoinsToModule(3*vested, mint, ctx, bank)
+	denom := addCoinsToModule(3*vested, helperModuleAccount, ctx, bank)
 
 	k := app.CfevestingKeeper
 
@@ -300,14 +312,15 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	const initBlock = 1000
 
 	const vested = 1000000
+	addHelperModuleAccountPerms()
 
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
-	denom := addCoinsToAccount(vested, mint, ctx, bank, accAddr)
+	denom := addCoinsToAccount(vested, helperModuleAccount, ctx, bank, accAddr)
 
 	k := app.CfevestingKeeper
 
@@ -374,15 +387,16 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegable(t *testing.T) 
 	vesting1.DelegationAllowed = true
 	vesting2.DelegationAllowed = true
 	vesting3.DelegationAllowed = true
+	addHelperModuleAccountPerms()
 
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	// denom := addCoinsToModule(3*vested, mint, ctx, bank)
-	denom := addCoinsToAccount(3*vested, mint, ctx, bank, delegableAccAddr)
+	denom := addCoinsToAccount(3*vested, helperModuleAccount, ctx, bank, delegableAccAddr)
 
 	k := app.CfevestingKeeper
 
@@ -427,6 +441,8 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllSomeDelegable(t *testing
 	const vt3 = "test3"
 	const initBlock = 10100
 	const vested = 1000000
+	addHelperModuleAccountPerms()
+
 	accountVestings, vesting1, vesting2, vesting3 := createAccountVestingsMany(addr, vt1, vt2, vt3, vested, 0)
 	accountVestings.DelegableAddress = delagableAddr
 
@@ -435,11 +451,11 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllSomeDelegable(t *testing
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
-	denom := addCoinsToModule(2*vested, mint, ctx, bank)
-	denom = addCoinsToAccount(vested, mint, ctx, bank, delegableAccAddr)
+	denom := addCoinsToModule(2*vested, helperModuleAccount, ctx, bank)
+	denom = addCoinsToAccount(vested, helperModuleAccount, ctx, bank, delegableAccAddr)
 
 	k := app.CfevestingKeeper
 
@@ -519,6 +535,6 @@ func createAccountVestingsMany(addr string, vt1 string, vt2 string, vt3 string, 
 	return accountVestings, &vesting1, &vesting2, &vesting3
 }
 
-func addCoinsToModule(vested uint64, mint mintkeeper.Keeper, ctx sdk.Context, bank bankkeeper.Keeper) string {
-	return addCoinsToModuleByName(vested, types.ModuleName, mint, ctx, bank)
+func addCoinsToModule(vested uint64, mintTo string, ctx sdk.Context, bank bankkeeper.Keeper) string {
+	return addCoinsToModuleByName(vested, types.ModuleName, mintTo, ctx, bank)
 }

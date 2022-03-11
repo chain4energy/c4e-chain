@@ -11,7 +11,7 @@ import (
 	// "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	// minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/chain4energy/c4e-chain/app"
@@ -46,6 +46,7 @@ func vestDelegation(t *testing.T, delegationAllowed bool) {
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
 	vestingTypes.VestingTypes = vestingTypesArray
 
+	addHelperModuleAccountPerms()
 	// k, ctx := keepertest.CfevestingKeeperWithBlockHeight(t, initBlock)
 
 	app := app.Setup(false)
@@ -54,14 +55,16 @@ func vestDelegation(t *testing.T, delegationAllowed bool) {
 	ctx := app.BaseApp.NewContext(false, header)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	denom := "uc4e"
-	mintedCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(accInitBalance))
-	mintedCoins := sdk.NewCoins(mintedCoin)
-	mint.MintCoins(ctx, mintedCoins)
-	bank.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, accAddr, mintedCoins)
+	// mintedCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(accInitBalance))
+	// mintedCoins := sdk.NewCoins(mintedCoin)
+	// mint.MintCoins(ctx, mintedCoins)
+	// bank.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, accAddr, mintedCoins)
+
+	addCoinsToAccount(accInitBalance, helperModuleAccount, ctx, bank, accAddr)
 
 	k := app.CfevestingKeeper
 

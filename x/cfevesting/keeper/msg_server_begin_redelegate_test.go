@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	// "github.com/chain4energy/c4e-chain/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 
 	testapp "github.com/chain4energy/c4e-chain/app"
@@ -21,12 +22,15 @@ import (
 	// abci "github.com/tendermint/tendermint/abci/types"
 )
 
+
+
 func TestRedelegate(t *testing.T) {
 	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
 	const delagableAddr = "cosmos1dfugyfm087qa3jrdglkeaew0wkn59jk8mgw6x6"
 	const validatorAddr = "cosmosvaloper14k4pzckkre6uxxyd2lnhnpp8sngys9m6hl6ml7"
 	const validatorAddr2 = "cosmosvaloper1qaa9zej9a0ge3ugpx3pxyx602lxh3ztqgfnp42"
 
+	addHelperModuleAccountPerms()
 	accAddr, _ := sdk.AccAddressFromBech32(addr)
 	delegableAccAddr, _ := sdk.AccAddressFromBech32(delagableAddr)
 	valAddr, err := sdk.ValAddressFromBech32(validatorAddr)
@@ -51,7 +55,7 @@ func TestRedelegate(t *testing.T) {
 	PKs := testapp.CreateTestPubKeys(2)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	// auth := app.AccountKeeper
 	staking := app.StakingKeeper
 	dist := app.DistrKeeper
@@ -61,8 +65,8 @@ func TestRedelegate(t *testing.T) {
 	stakeParams.BondDenom = "uc4e"
 	staking.SetParams(ctx, stakeParams)
 	// adding coins to validotor
-	addCoinsToAccount(vested, mint, ctx, bank, valAddr.Bytes())
-	addCoinsToAccount(vested, mint, ctx, bank, valAddr2.Bytes())
+	addCoinsToAccount(vested, helperModuleAccount, ctx, bank, valAddr.Bytes())
+	addCoinsToAccount(vested, helperModuleAccount, ctx, bank, valAddr2.Bytes())
 
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 	delCoin := sdk.NewCoin(stakeParams.BondDenom, sdk.NewIntFromUint64(vested/2))
@@ -70,9 +74,9 @@ func TestRedelegate(t *testing.T) {
 	createValidator(t, ctx, staking, valAddr2, PKs[1], delCoin, commission)
 
 	// adds coind to delegable account - means that coins in vesting for accAddr
-	denom := addCoinsToAccount(vested, mint, ctx, bank, delegableAccAddr)
+	denom := addCoinsToAccount(vested, helperModuleAccount, ctx, bank, delegableAccAddr)
 	// adds some coins to distibutor account - to allow test to process
-	addCoinsToModuleByName(100000000, distrtypes.ModuleName, mint, ctx, bank)
+	addCoinsToModuleByName(100000000, distrtypes.ModuleName, helperModuleAccount, ctx, bank)
 
 	if len(staking.GetAllValidators(ctx)) == 0 {
 		require.Fail(t, "no validators")

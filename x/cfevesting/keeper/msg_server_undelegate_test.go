@@ -25,7 +25,7 @@ func TestUndelegate(t *testing.T) {
 	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
 	const delagableAddr = "cosmos1dfugyfm087qa3jrdglkeaew0wkn59jk8mgw6x6"
 	const validatorAddr = "cosmosvaloper14k4pzckkre6uxxyd2lnhnpp8sngys9m6hl6ml7"
-
+	addHelperModuleAccountPerms()
 	accAddr, _ := sdk.AccAddressFromBech32(addr)
 	delegableAccAddr, _ := sdk.AccAddressFromBech32(delagableAddr)
 	valAddr, err := sdk.ValAddressFromBech32(validatorAddr)
@@ -44,7 +44,7 @@ func TestUndelegate(t *testing.T) {
 	PKs := testapp.CreateTestPubKeys(1)
 
 	bank := app.BankKeeper
-	mint := app.MintKeeper
+	// mint := app.MintKeeper
 	// auth := app.AccountKeeper
 	staking := app.StakingKeeper
 	dist := app.DistrKeeper
@@ -54,16 +54,16 @@ func TestUndelegate(t *testing.T) {
 	stakeParams.BondDenom = "uc4e"
 	staking.SetParams(ctx, stakeParams)
 	// adding coins to validotor
-	addCoinsToAccount(vested, mint, ctx, bank, valAddr.Bytes())
+	addCoinsToAccount(vested, helperModuleAccount, ctx, bank, valAddr.Bytes())
 
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 	delCoin := sdk.NewCoin(stakeParams.BondDenom, sdk.NewIntFromUint64(vested/2))
 	createValidator(t, ctx, staking, valAddr, PKs[0], delCoin, commission)
 
 	// adds coind to delegable account - means that coins in vesting for accAddr
-	denom := addCoinsToAccount(vested, mint, ctx, bank, delegableAccAddr)
+	denom := addCoinsToAccount(vested, helperModuleAccount, ctx, bank, delegableAccAddr)
 	// adds some coins to distibutor account - to allow test to process
-	addCoinsToModuleByName(100000000, distrtypes.ModuleName, mint, ctx, bank)
+	addCoinsToModuleByName(100000000, distrtypes.ModuleName, helperModuleAccount, ctx, bank)
 
 	if len(staking.GetAllValidators(ctx)) == 0 {
 		require.Fail(t, "no validators")

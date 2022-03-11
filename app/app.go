@@ -660,3 +660,8 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 func (app *App) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
+
+func (app *App) GetApp() *App {
+	return app
+
+}

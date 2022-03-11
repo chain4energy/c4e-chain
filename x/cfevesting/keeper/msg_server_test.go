@@ -11,25 +11,34 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	// mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
+	// minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/chain4energy/c4e-chain/app"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
 
 	"github.com/stretchr/testify/require"
 )
+const helperModuleAccount = "heleprTestAcc"
+
+func addHelperModuleAccountPerms() {
+	perms := []string{authtypes.Minter}
+	app.AddMaccPerms(helperModuleAccount, perms)
+}
 
 func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
 	k, ctx := keepertest.CfevestingKeeper(t)
 	return keeper.NewMsgServerImpl(*k), sdk.WrapSDKContext(ctx)
 }
 
-func addCoinsToAccount(vested uint64, mint mintkeeper.Keeper, ctx sdk.Context, bank bankkeeper.Keeper, toAddr sdk.AccAddress) string {
+func addCoinsToAccount(vested uint64, mintTo string, ctx sdk.Context, bank bankkeeper.Keeper, toAddr sdk.AccAddress) string {
 	denom := "uc4e"
 	mintedCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested))
 	mintedCoins := sdk.NewCoins(mintedCoin)
-	mint.MintCoins(ctx, mintedCoins)
-	bank.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, toAddr, mintedCoins)
+	bank.MintCoins(ctx, mintTo, mintedCoins)
+	bank.SendCoinsFromModuleToAccount(ctx, mintTo, toAddr, mintedCoins)
 	return denom
 }
 
@@ -42,12 +51,12 @@ func createAccountVestings(addr string, vt1 string, vested uint64, withdrawn uin
 	return accountVestings, &vesting1
 }
 
-func addCoinsToModuleByName(vested uint64, modulaName string, mint mintkeeper.Keeper, ctx sdk.Context, bank bankkeeper.Keeper) string {
+func addCoinsToModuleByName(vested uint64, modulaName string, mintTo string, ctx sdk.Context, bank bankkeeper.Keeper) string {
 	denom := "uc4e"
 	mintedCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested))
 	mintedCoins := sdk.NewCoins(mintedCoin)
-	mint.MintCoins(ctx, mintedCoins)
-	bank.SendCoinsFromModuleToModule(ctx, minttypes.ModuleName, modulaName, mintedCoins)
+	bank.MintCoins(ctx, mintTo, mintedCoins)
+	bank.SendCoinsFromModuleToModule(ctx, mintTo, modulaName, mintedCoins)
 	return denom
 }
 
