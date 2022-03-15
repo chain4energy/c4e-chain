@@ -16,8 +16,6 @@ func (k msgServer) WithdrawDelegatorReward(goCtx context.Context, msg *types.Msg
 	keeper := k.Keeper
 	keeper.Logger(ctx).Info("WithdrawDelegatorReward: " + msg.DelegatorAddress)
 
-	// stakingKeeper := keeper.staking
-
 	accVestings, found := keeper.GetAccountVestings(ctx, msg.DelegatorAddress)
 	if !found {
 		return nil, fmt.Errorf("No vestings for account: %q", msg.DelegatorAddress)
@@ -26,16 +24,6 @@ func (k msgServer) WithdrawDelegatorReward(goCtx context.Context, msg *types.Msg
 		return nil, fmt.Errorf("No delegable vestings for account: %q", msg.DelegatorAddress)
 	}
 
-	// delegableAddress, err := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// accountAddress, err := sdk.AccAddressFromBech32(msg.DelegatorAddress)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	withdrawMsg := distrtypes.MsgWithdrawDelegatorReward{DelegatorAddress: accVestings.DelegableAddress,
 		ValidatorAddress: msg.ValidatorAddress}
 	_, err := k.distrMsgServer.WithdrawDelegatorReward(goCtx, &withdrawMsg)
@@ -43,8 +31,31 @@ func (k msgServer) WithdrawDelegatorReward(goCtx context.Context, msg *types.Msg
 		return nil, err
 	}
 
-	// TODO: Handling the message
-	_ = ctx
+	// TODO check if this should be in telemetry if vesting module
+	// defer func() {
+	// 	for _, a := range amount {
+	// 		if a.Amount.IsInt64() {
+	// 			telemetry.SetGaugeWithLabels(
+	// 				[]string{"tx", "msg", "withdraw_reward"},
+	// 				float32(a.Amount.Int64()),
+	// 				[]metrics.Label{telemetry.NewLabel("denom", a.Denom)},
+	// 			)
+	// 		}
+	// 	}
+	// }()
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeWithdrawRewards,
+			sdk.NewAttribute(types.AttributeKeyDelegator, msg.DelegatorAddress),
+			sdk.NewAttribute(types.AttributeKeyDelegableAddress, accVestings.DelegableAddress),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.DelegatorAddress),
+		),
+	})
 
 	return &types.MsgWithdrawDelegatorRewardResponse{}, nil
 }

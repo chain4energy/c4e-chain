@@ -7,6 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // get the vesting types
@@ -105,21 +107,21 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount uint64, vestingType st
 	return nil
 }
 
-func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) error {
+func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sdk.Coin, returnedError error) {
 	k.Logger(ctx).Debug("WithdrawAllAvailable: " + addr)
 
 	accAddress, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
-		return err
+		return withdrawn, err
 	}
 
 	accVestings, vestingsFound := k.GetAccountVestings(ctx, addr)
 	if !vestingsFound {
-		return nil
+		return withdrawn, status.Error(codes.NotFound, "No vestings")
 	}
 
 	if len(accVestings.Vestings) == 0 {
-		return nil
+		return withdrawn, status.Error(codes.NotFound, "No vestings")
 	}
 
 	height := ctx.BlockHeight()
@@ -143,7 +145,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) error {
 		coinsToSend := sdk.NewCoins(coinToSend)
 		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accAddress, coinsToSend)
 		if err != nil {
-			return err
+			return withdrawn, err
 		}
 	}
 	if toWithdrawDelegable.GT(sdk.ZeroInt()) {
@@ -151,12 +153,15 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) error {
 		coinsToSend := sdk.NewCoins(coinToSend)
 		delegatableAddress, err := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
 		if err != nil {
-			return err
+			return withdrawn, err
 		}
-		return k.bank.SendCoins(ctx, delegatableAddress, accAddress, coinsToSend)
-
+		err = k.bank.SendCoins(ctx, delegatableAddress, accAddress, coinsToSend)
+		if err != nil {
+			return withdrawn, err
+		}
 	}
-	return nil
+	
+	return sdk.NewCoin(denom, toWithdraw.Add(toWithdrawDelegable)), nil
 }
 
 func CalculateWithdrawable(height int64, vesting types.Vesting) sdk.Int {

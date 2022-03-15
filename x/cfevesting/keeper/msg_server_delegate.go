@@ -7,7 +7,8 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	// sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/telemetry"
+	metrics "github.com/armon/go-metrics"
 )
 
 func (k msgServer) Delegate(goCtx context.Context, msg *types.MsgDelegate) (*types.MsgDelegateResponse, error) {
@@ -33,9 +34,6 @@ func (k msgServer) Delegate(goCtx context.Context, msg *types.MsgDelegate) (*typ
 		return nil, err
 	}
 
-	// TODO !!!! getting all reward coins, not only bond denom
-	// balanceBefore := k.bank.GetBalance(ctx, delegableAddress, keeper.staking.BondDenom(ctx))
-
 	delagateMsg := stakingtypes.MsgDelegate{DelegatorAddress: accVestings.DelegableAddress,
 		ValidatorAddress: msg.ValidatorAddress, Amount: msg.Amount}
 	_, err = k.stakingMsgServer.Delegate(goCtx, &delagateMsg)
@@ -43,47 +41,36 @@ func (k msgServer) Delegate(goCtx context.Context, msg *types.MsgDelegate) (*typ
 		return nil, err
 	}
 
-	// balanceAfter := k.bank.GetBalance(ctx, delegableAddress, keeper.staking.BondDenom(ctx))
-	// balanceAfter = balanceAfter.Add(msg.Amount)
-	// coinToSend := balanceAfter.Sub(balanceBefore)
-
-	// accVestings.Delegated += msg.Amount.Amount.Uint64()
-	// keeper.SetAccountVestings(ctx, accVestings)
-
-	// k.bank.SendCoins(ctx, delegableAddress, accountAddress, sdk.NewCoins(coinToSend))
-
 	if k.distribution.GetDelegatorWithdrawAddr(ctx, delegableAddress).Equals(delegableAddress) {
 		k.distribution.SetDelegatorWithdrawAddr(ctx, delegableAddress, accountAddress)
 	}
-	// valAddr, valErr := sdk.ValAddressFromBech32(msg.ValidatorAddress)
-	// if valErr != nil {
-	// 	return nil, valErr
-	// }
 
-	// validator, found := stakingKeeper.GetValidator(ctx, valAddr)
-	// if !found {
-	// 	return nil, stakingtypes.ErrNoValidatorFound
-	// }
+	if msg.Amount.Amount.IsInt64() {
+		defer func() {
+			telemetry.IncrCounter(1, types.ModuleName, "vesting-delegate")
+			telemetry.SetGaugeWithLabels(
+				[]string{"tx", "msg", types.ModuleName, msg.Type()},
+				float32(msg.Amount.Amount.Int64()),
+				[]metrics.Label{telemetry.NewLabel("denom", msg.Amount.Denom)},
+			)
+		}()
+	}
 
-	// delegatorAddress, err := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// bondDenom := stakingKeeper.BondDenom(ctx)
-	// if msg.Amount.Denom != bondDenom {
-	// 	return nil, sdkerrors.Wrapf(
-	// 		sdkerrors.ErrInvalidRequest, "invalid coin denomination: got %s, expected %s", msg.Amount.Denom, bondDenom,
-	// 	)
-	// }
-
-	// // NOTE: source funds are always unbonded
-	// newShares, err := stakingKeeper.Delegate(ctx, delegatorAddress, msg.Amount.Amount, stakingtypes.Unbonded, validator, true)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// // TODO: Handling the message
-	// _ = newShares
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeDelegate,
+			sdk.NewAttribute(types.AttributeKeyValidator, msg.ValidatorAddress),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyDelegator, msg.DelegatorAddress),
+			sdk.NewAttribute(types.AttributeKeyDelegableAddress, accVestings.DelegableAddress),
+			// sdk.NewAttribute(types.AttributeKeyNewShares, newShares.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.DelegatorAddress),
+		),
+	})
 
 	return &types.MsgDelegateResponse{}, nil
 }
