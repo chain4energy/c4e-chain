@@ -67,15 +67,27 @@ func TestGenesisWholeApp(t *testing.T) {
 }
 
 func TestGenesisVestingTypes(t *testing.T) {
+	vestingType1 := types.VestingType{
+		Name:                 "test1",
+		LockupPeriod:         2324,
+		VestingPeriod:        42423,
+		TokenReleasingPeriod: 4243,
+		DelegationsAllowed:   true,
+	}
+	vestingType2 := types.VestingType{
+		Name:                 "test2",
+		LockupPeriod:         1111,
+		VestingPeriod:        112233,
+		TokenReleasingPeriod: 445566,
+		DelegationsAllowed:   false,
+	}
 
-	vestingType1 := types.VestingType{"test1", 2324, 42423, 4243, true}
-	vestingType2 := types.VestingType{"test2", 1111, 112233, 445566, false}
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
 	genesisState := types.GenesisState{
 		Params: types.NewParams("test_denom"),
 
 		// this line is used by starport scaffolding # genesis/test/state
-		VestingTypes: types.VestingTypes{vestingTypesArray},
+		VestingTypes: types.VestingTypes{VestingTypes: vestingTypesArray},
 	}
 
 	app := app.Setup(false)
@@ -100,30 +112,30 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 	accountVestings1 := types.AccountVestings{}
 	accountVestings1.Address = "someAddr1"
 	vesting11 := types.Vesting{
-		VestingType: "test1",
-		VestingStartBlock: 2324,
-		LockEndBlock: 42423,
-		VestingEndBlock: 4243,
-		Vested: 14243,
-		Claimable: 24243,
-		LastFreeingBlock: 34243,
+		VestingType:          "test1",
+		VestingStartBlock:    2324,
+		LockEndBlock:         42423,
+		VestingEndBlock:      4243,
+		Vested:               14243,
+		Claimable:            24243,
+		LastFreeingBlock:     34243,
 		FreeCoinsBlockPeriod: 44243,
-		FreeCoinsPerPeriod: 54243,
-		DelegationAllowed: true,
-		Withdrawn: 0,
+		FreeCoinsPerPeriod:   54243,
+		DelegationAllowed:    true,
+		Withdrawn:            0,
 	}
 	vesting12 := types.Vesting{
-		VestingType: "test2",
-		VestingStartBlock: 92324,
-		LockEndBlock: 942423,
-		VestingEndBlock: 94243,
-		Vested: 914243,
-		Claimable: 924243,
-		LastFreeingBlock: 934243,
+		VestingType:          "test2",
+		VestingStartBlock:    92324,
+		LockEndBlock:         942423,
+		VestingEndBlock:      94243,
+		Vested:               914243,
+		Claimable:            924243,
+		LastFreeingBlock:     934243,
 		FreeCoinsBlockPeriod: 944243,
-		FreeCoinsPerPeriod: 954243,
-		DelegationAllowed: false,
-		Withdrawn: 0,
+		FreeCoinsPerPeriod:   954243,
+		DelegationAllowed:    false,
+		Withdrawn:            0,
 	}
 
 	vestingsArray1 := []*types.Vesting{&vesting11, &vesting12}
@@ -132,30 +144,30 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 	accountVestings2 := types.AccountVestings{}
 	accountVestings2.Address = "someAddr2"
 	vesting21 := types.Vesting{
-		VestingType: "test3",
-		VestingStartBlock: 2324,
-		LockEndBlock: 42423,
-		VestingEndBlock: 4243,
-		Vested: 14243,
-		Claimable: 24243,
-		LastFreeingBlock: 34243,
+		VestingType:          "test3",
+		VestingStartBlock:    2324,
+		LockEndBlock:         42423,
+		VestingEndBlock:      4243,
+		Vested:               14243,
+		Claimable:            24243,
+		LastFreeingBlock:     34243,
 		FreeCoinsBlockPeriod: 44243,
-		FreeCoinsPerPeriod: 54243,
-		DelegationAllowed: true,
-		Withdrawn: 0,
+		FreeCoinsPerPeriod:   54243,
+		DelegationAllowed:    true,
+		Withdrawn:            0,
 	}
 	vesting22 := types.Vesting{
-		VestingType: "test4",
-		VestingStartBlock: 92324,
-		LockEndBlock: 942423,
-		VestingEndBlock: 94243,
-		Vested: 914243,
-		Claimable: 924243,
-		LastFreeingBlock: 934243,
+		VestingType:          "test4",
+		VestingStartBlock:    92324,
+		LockEndBlock:         942423,
+		VestingEndBlock:      94243,
+		Vested:               914243,
+		Claimable:            924243,
+		LastFreeingBlock:     934243,
 		FreeCoinsBlockPeriod: 944243,
-		FreeCoinsPerPeriod: 954243,
-		DelegationAllowed: false,
-		Withdrawn: 0,
+		FreeCoinsPerPeriod:   954243,
+		DelegationAllowed:    false,
+		Withdrawn:            0,
 	}
 
 	vestingsArray2 := []*types.Vesting{&vesting21, &vesting22}
