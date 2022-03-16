@@ -106,16 +106,16 @@ func TestDelegate(t *testing.T) {
 	require.EqualValues(t, 1, len(resp.Rewards))
 	require.EqualValues(t, sdk.NewDecFromInt(sdk.NewIntFromUint64(validatorRewards/2)), resp.Rewards[0].Amount)
 
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, 0)
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
+	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.ZeroInt())
+	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
 
 	coin = sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
 	msg = types.MsgDelegate{DelegatorAddress: addr, ValidatorAddress: validatorAddr, Amount: coin}
 	_, error = msgServer.Delegate(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, validatorRewards/2)
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, 0)
+	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.NewIntFromUint64(validatorRewards/2))
+	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.ZeroInt())
 
 	// accVestingGet, _ = k.GetAccountVestings(ctx, addr)
 	// require.EqualValues(t, vested, accVestingGet.Delegated)

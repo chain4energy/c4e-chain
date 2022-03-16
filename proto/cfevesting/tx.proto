@@ -12,7 +12,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc Vest(MsgVest) returns (MsgVestResponse);
+  rpc Vest(MsgVest) returns (MsgVestResponse);
   rpc WithdrawAllAvailable(MsgWithdrawAllAvailable) returns (MsgWithdrawAllAvailableResponse);
   rpc Delegate(MsgDelegate) returns (MsgDelegateResponse);
   rpc Undelegate(MsgUndelegate) returns (MsgUndelegateResponse);
@@ -23,7 +23,8 @@ service Msg {
 
 message MsgVest {
   string creator = 1;
-  uint64 amount = 2;
+  // uint64 amount = 2;
+  string amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string vestingType = 3;
 }
 

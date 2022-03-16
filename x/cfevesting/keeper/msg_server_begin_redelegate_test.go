@@ -73,14 +73,14 @@ func TestRedelegate(t *testing.T) {
 	k.SetAccountVestings(ctx, accountVestings)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested)
+	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested))
 
 	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
 
 	msg := types.MsgDelegate{DelegatorAddress: addr, ValidatorAddress: validatorAddr, Amount: coin}
 	_, err = msgServer.Delegate(msgServerCtx, &msg)
 	require.EqualValues(t, nil, err)
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
+	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
 
 
 	delegations := staking.GetAllDelegatorDelegations(ctx, delegableAccAddr)
@@ -99,8 +99,8 @@ func TestRedelegate(t *testing.T) {
 	dist.AllocateTokensToValidator(ctx, val, sdk.NewDecCoins(valCons))
 	msgServerCtx = sdk.WrapSDKContext(ctx)
 
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, 0)
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
+	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.ZeroInt())
+	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
 
 	coin = sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
 	msgRe := types.MsgBeginRedelegate{
@@ -114,9 +114,9 @@ func TestRedelegate(t *testing.T) {
 
 	stakingmodule.EndBlocker(ctx, app.StakingKeeper)
 	ctx = ctx.WithBlockHeight(initBlock + 1)
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, validatorRewards/2)
+	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.NewIntFromUint64(validatorRewards/2))
 
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
+	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
 
 	delegations = staking.GetAllDelegatorDelegations(ctx, delegableAccAddr)
 	require.EqualValues(t, 1, len(delegations))

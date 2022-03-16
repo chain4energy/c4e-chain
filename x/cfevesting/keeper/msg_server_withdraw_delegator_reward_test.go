@@ -85,15 +85,15 @@ func TestWithdrawReward(t *testing.T) {
 	dist.AllocateTokensToValidator(ctx, val, sdk.NewDecCoins(valCons))
 	msgServerCtx = sdk.WrapSDKContext(ctx)
 
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, 0)
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
+	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.ZeroInt())
+	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
 
 	coin = sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
 	msgUn := types.MsgWithdrawDelegatorReward{DelegatorAddress: addr, ValidatorAddress: validatorAddr}
 	_, error = msgServer.WithdrawDelegatorReward(msgServerCtx, &msgUn)
 	require.EqualValues(t, nil, error)
 
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, validatorRewards/2)
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
+	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.NewIntFromUint64(validatorRewards/2))
+	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
 
 }

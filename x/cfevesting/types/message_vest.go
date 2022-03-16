@@ -9,7 +9,7 @@ const TypeMsgVest = "vest"
 
 var _ sdk.Msg = &MsgVest{}
 
-func NewMsgVest(creator string, amount uint64, vestingType string) *MsgVest {
+func NewMsgVest(creator string, amount sdk.Int, vestingType string) *MsgVest {
 	return &MsgVest{
 		Creator:     creator,
 		Amount:      amount,

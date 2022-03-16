@@ -12,8 +12,8 @@ import (
 )
 
 // get the vesting types
-func (k Keeper) Vest(ctx sdk.Context, addr string, amount uint64, vestingType string) error {
-	k.Logger(ctx).Debug("Vest: addr: " + addr + "amount: " + strconv.FormatUint(amount, 10) + "vestingType: " + vestingType)
+func (k Keeper) Vest(ctx sdk.Context, addr string, amount sdk.Int, vestingType string) error {
+	k.Logger(ctx).Debug("Vest: addr: " + addr + "amount: " + amount.String() + "vestingType: " + vestingType)
 	vt, err := k.GetVestingType(ctx, vestingType)
 	k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
 
@@ -22,7 +22,7 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount uint64, vestingType st
 
 		return sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
 	}
-	if amount == 0 {
+	if amount.Equal(sdk.ZeroInt()) {
 		return nil
 	}
 
@@ -39,9 +39,11 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount uint64, vestingType st
 	balance := k.bank.GetBalance(ctx, accAddress, denom)
 	k.Logger(ctx).Debug("balance: " + balance.Amount.String())
 
-	if balance.Amount.LT(sdk.NewIntFromUint64(amount)) {
-		k.Logger(ctx).Error("Error: " + "Balance ["+balance.Amount.String()+balance.Denom+"]lesser than requested amount: "+strconv.FormatUint(amount, 10)+denom)
-		return sdkerrors.Wrap(sdkerrors.ErrInsufficientFunds, "Balance ["+balance.Amount.String()+balance.Denom+"]lesser than requested amount: "+strconv.FormatUint(amount, 10)+denom)
+	if balance.Amount.LT(amount) {
+		k.Logger(ctx).Error("Error: " + "Balance [" + balance.Amount.String() +
+			balance.Denom + "]lesser than requested amount: " + amount.String() + denom)
+		return sdkerrors.Wrap(sdkerrors.ErrInsufficientFunds, "Balance ["+balance.Amount.String()+
+			balance.Denom+"]lesser than requested amount: "+amount.String()+denom)
 	}
 
 	// return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Balance: " + balance.Amount.String())
@@ -76,21 +78,21 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount uint64, vestingType st
 	// numOfPeriods := vt.VestingPeriod / vt.TokenReleasingPeriod
 	// amountPerPeriod := amount / uint64(numOfPeriods)
 	vesting := types.Vesting{VestingType: vestingType,
-		Id: id,
-		VestingStartBlock:    ctx.BlockHeight(),
-		LockEndBlock:         vt.LockupPeriod + ctx.BlockHeight(),
-		VestingEndBlock:      vt.LockupPeriod + vt.VestingPeriod + ctx.BlockHeight(),
-		Vested:               amount,
+		Id:                id,
+		VestingStartBlock: ctx.BlockHeight(),
+		LockEndBlock:      vt.LockupPeriod + ctx.BlockHeight(),
+		VestingEndBlock:   vt.LockupPeriod + vt.VestingPeriod + ctx.BlockHeight(),
+		Vested:            amount,
 		// Claimable:            0,
 		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: vt.TokenReleasingPeriod,
 		// FreeCoinsPerPeriod:   amountPerPeriod,
-		DelegationAllowed:    vt.DelegationsAllowed,
-		Withdrawn:            0}
+		DelegationAllowed: vt.DelegationsAllowed,
+		Withdrawn:         sdk.ZeroInt()}
 	accVestings.Vestings = append(accVestings.Vestings, &vesting)
 	k.SetAccountVestings(ctx, accVestings)
 
-	coinToSend := sdk.NewCoin(denom, sdk.NewIntFromUint64(amount))
+	coinToSend := sdk.NewCoin(denom, amount)
 	coinsToSend := sdk.NewCoins(coinToSend)
 
 	if vt.DelegationsAllowed {
@@ -132,7 +134,8 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 	toWithdrawDelegable := sdk.ZeroInt()
 	for _, vesting := range accVestings.Vestings {
 		withdrawable := CalculateWithdrawable(height, *vesting)
-		vesting.Withdrawn += withdrawable.Uint64()
+		vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
+
 		if vesting.DelegationAllowed {
 			toWithdrawDelegable = toWithdrawDelegable.Add(withdrawable)
 		} else {
@@ -163,7 +166,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 			return withdrawn, err
 		}
 	}
-	
+
 	return sdk.NewCoin(denom, toWithdraw.Add(toWithdrawDelegable)), nil
 }
 
@@ -172,7 +175,7 @@ func CalculateWithdrawable(height int64, vesting types.Vesting) sdk.Int {
 		return sdk.ZeroInt()
 	}
 	if height >= vesting.VestingEndBlock {
-		return sdk.NewIntFromUint64(vesting.Vested)
+		return vesting.Vested
 	}
 
 	allVestingBlocks := vesting.VestingEndBlock - vesting.LockEndBlock
@@ -188,10 +191,10 @@ func CalculateWithdrawable(height int64, vesting types.Vesting) sdk.Int {
 		numOfPeriods++
 	}
 
-	vested := sdk.NewIntFromUint64(vesting.Vested)
+	vested := vesting.Vested
 
 	withdrawableFromStart := vested.MulRaw(numOfPeriodsFromStart).QuoRaw(numOfPeriods)
-	return withdrawableFromStart.Sub(sdk.NewIntFromUint64(vesting.Withdrawn))
+	return withdrawableFromStart.Sub(vesting.Withdrawn)
 
 }
 

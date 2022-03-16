@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"strconv"
 
 	metrics "github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -20,22 +19,22 @@ func (k msgServer) Vest(goCtx context.Context, msg *types.MsgVest) (*types.MsgVe
 	}
 
 	denom := keeper.Denom(ctx)
-	// if msg.Amount.Amount.IsInt64() {
-	defer func() {
-		telemetry.IncrCounter(1, types.ModuleName, "vest")
-		telemetry.SetGaugeWithLabels(
-			[]string{"tx", "msg", types.ModuleName, msg.Type()},
-			float32(msg.Amount),
-			[]metrics.Label{telemetry.NewLabel("denom", denom)},
-		)
-	}()
-	// }
+	if msg.Amount.IsInt64() {
+		defer func() {
+			telemetry.IncrCounter(1, types.ModuleName, "vest")
+			telemetry.SetGaugeWithLabels(
+				[]string{"tx", "msg", types.ModuleName, msg.Type()},
+				float32(msg.Amount.Int64()),
+				[]metrics.Label{telemetry.NewLabel("denom", denom)},
+			)
+		}()
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeVest,
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, strconv.FormatUint(msg.Amount, 10) + denom),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()+denom),
 			sdk.NewAttribute(types.AttributeKeyVestingType, msg.VestingType),
 		),
 		sdk.NewEvent(

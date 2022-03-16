@@ -69,7 +69,7 @@ func vestDelegation(t *testing.T, delegationAllowed bool) {
 	k.SetVestingTypes(ctx, vestingTypes)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgVest{Creator: addr, Amount: vested, VestingType: "test1"}
+	msg := types.MsgVest{Creator: addr, Amount: sdk.NewInt(vested), VestingType: "test1"}
 	_, error := msgServer.Vest(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -97,7 +97,7 @@ func vestDelegation(t *testing.T, delegationAllowed bool) {
 
 	require.EqualValues(t, initBlock+vestingType1.LockupPeriod+vestingType1.VestingPeriod, vesting.VestingEndBlock)
 
-	require.EqualValues(t, vested, vesting.Vested)
+	require.EqualValues(t, sdk.NewInt(vested), vesting.Vested)
 	// require.EqualValues(t, 0, vesting.Claimable)
 	// require.EqualValues(t, 0, vesting.LastFreeingBlock)
 	require.EqualValues(t, vestingType1.TokenReleasingPeriod, vesting.FreeCoinsBlockPeriod)
@@ -185,7 +185,7 @@ func TestVestingId(t *testing.T) {
 	k.SetVestingTypes(ctx, vestingTypes)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgVest{Creator: addr, Amount: vested, VestingType: "test1"}
+	msg := types.MsgVest{Creator: addr, Amount: sdk.NewInt(vested), VestingType: "test1"}
 	_, error := msgServer.Vest(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 

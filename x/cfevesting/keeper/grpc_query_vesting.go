@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,9 +22,9 @@ func (k Keeper) Vesting(goCtx context.Context, req *types.QueryVestingRequest) (
 
 	result := types.QueryVestingResponse{}
 	for _, vesting := range vestings.Vestings {
-		coin := sdk.Coin{Denom: k.GetParams(ctx).Denom, Amount: sdk.NewIntFromUint64(vesting.Vested)}
+		coin := sdk.Coin{Denom: k.GetParams(ctx).Denom, Amount: vesting.Vested}
 		withdrawable := CalculateWithdrawable(ctx.BlockHeight(), *vesting)
-		current := vesting.Vested - vesting.Withdrawn
+		current := vesting.Vested.Sub(vesting.Withdrawn)
 		vestingInfo := types.VestingInfo{
 			Id:                  vesting.Id,
 			VestingType:         vesting.VestingType,
@@ -35,7 +34,7 @@ func (k Keeper) Vesting(goCtx context.Context, req *types.QueryVestingRequest) (
 			Withdrawable:        withdrawable.String(),
 			DelegationAllowed:   vesting.DelegationAllowed,
 			Vested:              &coin,
-			CurrentVestedAmount: strconv.FormatUint(current, 10)}
+			CurrentVestedAmount: current.String()}
 		result.Vestings = append(result.Vestings, &vestingInfo)
 
 	}

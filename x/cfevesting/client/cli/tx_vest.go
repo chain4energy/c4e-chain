@@ -8,6 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var _ = strconv.Itoa(0)
@@ -25,9 +27,9 @@ func CmdVest() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			amountInt, err := strconv.ParseUint(argAmount, 10, 64)
-			if err != nil {
-				return err
+			amountInt, ok := sdk.NewIntFromString(argAmount)
+			if !ok {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "amount must be a positive integer")
 			}
 			msg := types.NewMsgVest(
 				clientCtx.GetFromAddress().String(),

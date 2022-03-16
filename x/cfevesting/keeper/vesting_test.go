@@ -12,18 +12,18 @@ import (
 
 func TestCalculateWithdrawable(t *testing.T) {
 	vesting := types.Vesting{
-		Id: 1,
+		Id:                1,
 		VestingType:       "test",
 		VestingStartBlock: 1000,
 		LockEndBlock:      10000,
 		VestingEndBlock:   110000,
-		Vested:            1000000,
+		Vested:            sdk.NewInt(1000000),
 		// Claimable:            0,
 		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod:   0,
 		DelegationAllowed: true,
-		Withdrawn:         0,
+		Withdrawn:         sdk.ZeroInt(),
 	}
 
 	withdrawable := keeper.CalculateWithdrawable(100, vesting)
@@ -59,7 +59,7 @@ func TestCalculateWithdrawable(t *testing.T) {
 	require.EqualValues(t, sdk.NewInt(1000000), withdrawable)
 
 	vesting.VestingEndBlock = 110000
-	vesting.Vested = 1000
+	vesting.Vested = sdk.NewInt(1000)
 
 	withdrawable = keeper.CalculateWithdrawable(10010, vesting)
 	require.EqualValues(t, sdk.ZeroInt(), withdrawable)
@@ -70,8 +70,8 @@ func TestCalculateWithdrawable(t *testing.T) {
 	withdrawable = keeper.CalculateWithdrawable(10100, vesting)
 	require.EqualValues(t, sdk.NewInt(1), withdrawable)
 
-	vesting.Vested = 1000000
-	vesting.Withdrawn = 500
+	vesting.Vested = sdk.NewInt(1000000)
+	vesting.Withdrawn = sdk.NewInt(500)
 	withdrawable = keeper.CalculateWithdrawable(10100, vesting)
 	require.EqualValues(t, sdk.NewInt(500), withdrawable)
 

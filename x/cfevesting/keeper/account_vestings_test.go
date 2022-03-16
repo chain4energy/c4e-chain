@@ -7,6 +7,7 @@ import (
 
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,13 +21,13 @@ func TestGetAccountVestings(t *testing.T) {
 		VestingStartBlock: 2324,
 		LockEndBlock:      42423,
 		VestingEndBlock:   4243,
-		Vested:            14243,
+		Vested:            sdk.NewInt(14243),
 		// Claimable:            24243,
 		// LastFreeingBlock:     34243,
 		FreeCoinsBlockPeriod: 44243,
 		// FreeCoinsPerPeriod:   54243,
 		DelegationAllowed: true,
-		Withdrawn:         0,
+		Withdrawn:         sdk.ZeroInt(),
 	}
 	vesting2 := types.Vesting{
 		Id:                2,
@@ -34,13 +35,13 @@ func TestGetAccountVestings(t *testing.T) {
 		VestingStartBlock: 92324,
 		LockEndBlock:      942423,
 		VestingEndBlock:   94243,
-		Vested:            914243,
+		Vested:            sdk.NewInt(914243),
 		// Claimable:            924243,
 		// LastFreeingBlock:     934243,
 		FreeCoinsBlockPeriod: 944243,
 		// FreeCoinsPerPeriod:   954243,
 		DelegationAllowed: false,
-		Withdrawn:         0,
+		Withdrawn:         sdk.ZeroInt(),
 	}
 	vestingsArray := []*types.Vesting{&vesting1, &vesting2}
 	accountVestings.Vestings = vestingsArray
@@ -74,13 +75,13 @@ func TestGetAccountVestings(t *testing.T) {
 		VestingStartBlock: 2324,
 		LockEndBlock:      42423,
 		VestingEndBlock:   4243,
-		Vested:            14243,
+		Vested:            sdk.NewInt(14243),
 		// Claimable:            24243,
 		// LastFreeingBlock:     34243,
 		FreeCoinsBlockPeriod: 44243,
 		// FreeCoinsPerPeriod:   54243,
 		DelegationAllowed: true,
-		Withdrawn:         0,
+		Withdrawn:         sdk.ZeroInt(),
 	}
 	vesting22 := types.Vesting{
 		Id:                2,
@@ -88,13 +89,13 @@ func TestGetAccountVestings(t *testing.T) {
 		VestingStartBlock: 92324,
 		LockEndBlock:      942423,
 		VestingEndBlock:   94243,
-		Vested:            914243,
+		Vested:            sdk.NewInt(914243),
 		// Claimable:            924243,
 		// LastFreeingBlock:     934243,
 		FreeCoinsBlockPeriod: 944243,
 		// FreeCoinsPerPeriod:   954243,
 		DelegationAllowed: false,
-		Withdrawn:         0,
+		Withdrawn:         sdk.ZeroInt(),
 	}
 
 	// vesting21 := types.Vesting{"test3", 2324, 42423, 4243, 14243, 24243, 34243, 44243, 54243, true, 0}
