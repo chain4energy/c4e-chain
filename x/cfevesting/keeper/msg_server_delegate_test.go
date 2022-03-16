@@ -75,7 +75,7 @@ func TestDelegate(t *testing.T) {
 
 	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
 
-	msg := types.MsgDelegate{addr, validatorAddr, coin}
+	msg := types.MsgDelegate{DelegatorAddress: addr, ValidatorAddress: validatorAddr, Amount: coin}
 	_, error := msgServer.Delegate(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 	// accVestingGet, _ := k.GetAccountVestings(ctx, addr)
@@ -88,8 +88,8 @@ func TestDelegate(t *testing.T) {
 
 	require.EqualValues(t, sdk.NewDec(vested/2), delegation.Shares)
 
-	query := distrtypes.QueryDelegationRewardsRequest{delagableAddr, validatorAddr}
-	resp, err := dist.DelegationRewards(msgServerCtx, &query)
+	query := distrtypes.QueryDelegationRewardsRequest{DelegatorAddress: delagableAddr, ValidatorAddress: validatorAddr}
+	resp, _ := dist.DelegationRewards(msgServerCtx, &query)
 	require.EqualValues(t, 0, len(resp.Rewards))
 	validatorRewards := uint64(10000)
 	valCons := sdk.NewDecCoin(denom, sdk.NewIntFromUint64(validatorRewards))
@@ -101,8 +101,8 @@ func TestDelegate(t *testing.T) {
 	dist.AllocateTokensToValidator(ctx, val, sdk.NewDecCoins(valCons))
 	msgServerCtx = sdk.WrapSDKContext(ctx)
 
-	query = distrtypes.QueryDelegationRewardsRequest{delagableAddr, validatorAddr}
-	resp, err = dist.DelegationRewards(msgServerCtx, &query)
+	query = distrtypes.QueryDelegationRewardsRequest{DelegatorAddress: delagableAddr, ValidatorAddress: validatorAddr}
+	resp, _ = dist.DelegationRewards(msgServerCtx, &query)
 	require.EqualValues(t, 1, len(resp.Rewards))
 	require.EqualValues(t, sdk.NewDecFromInt(sdk.NewIntFromUint64(validatorRewards/2)), resp.Rewards[0].Amount)
 
@@ -110,7 +110,7 @@ func TestDelegate(t *testing.T) {
 	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
 
 	coin = sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
-	msg = types.MsgDelegate{addr, validatorAddr, coin}
+	msg = types.MsgDelegate{DelegatorAddress: addr, ValidatorAddress: validatorAddr, Amount: coin}
 	_, error = msgServer.Delegate(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 

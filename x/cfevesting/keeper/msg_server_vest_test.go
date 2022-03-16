@@ -1,21 +1,15 @@
 package keeper_test
 
 import (
-	// "context"
-	// "fmt"
 	"testing"
 
-	// keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 
-	// "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	// minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/chain4energy/c4e-chain/app"
-	// "github.com/cosmos/cosmos-sdk/x/auth"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
@@ -28,7 +22,6 @@ func TestVestDelegationAllowed(t *testing.T) {
 }
 
 func vestDelegation(t *testing.T, delegationAllowed bool) {
-	// sdk.GetConfig().SetBech32PrefixForAccount("c4e", "c4e")
 	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
 	const delagableAddr = "cosmos1dfugyfm087qa3jrdglkeaew0wkn59jk8mgw6x6"
 
@@ -40,14 +33,25 @@ func vestDelegation(t *testing.T, delegationAllowed bool) {
 	const vested = 1000
 	const accInitBalance = 10000
 	vestingTypes := types.VestingTypes{}
-	vestingType1 := types.VestingType{vt1, 1000, 5000, 10, delegationAllowed}
-	vestingType2 := types.VestingType{"test2", 1111, 112233, 445566, false}
+	vestingType1 := types.VestingType{
+		Name: vt1,
+		LockupPeriod: 1000,
+		VestingPeriod: 5000,
+		TokenReleasingPeriod: 10,
+		DelegationsAllowed: delegationAllowed,
+	}
+	vestingType2 := types.VestingType{
+		Name: "test2",
+		LockupPeriod: 1111,
+		VestingPeriod: 112233,
+		TokenReleasingPeriod: 445566,
+		DelegationsAllowed: false,
+	}
 
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
 	vestingTypes.VestingTypes = vestingTypesArray
 
 	addHelperModuleAccountPerms()
-	// k, ctx := keepertest.CfevestingKeeperWithBlockHeight(t, initBlock)
 
 	app := app.Setup(false)
 	header := tmproto.Header{}
@@ -55,15 +59,9 @@ func vestDelegation(t *testing.T, delegationAllowed bool) {
 	ctx := app.BaseApp.NewContext(false, header)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	denom := "uc4e"
-	// mintedCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(accInitBalance))
-	// mintedCoins := sdk.NewCoins(mintedCoin)
-	// mint.MintCoins(ctx, mintedCoins)
-	// bank.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, accAddr, mintedCoins)
-
 	addCoinsToAccount(accInitBalance, helperModuleAccount, ctx, bank, accAddr)
 
 	k := app.CfevestingKeeper
@@ -71,7 +69,7 @@ func vestDelegation(t *testing.T, delegationAllowed bool) {
 	k.SetVestingTypes(ctx, vestingTypes)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgVest{addr, vested, "test1"}
+	msg := types.MsgVest{Creator: addr, Amount: vested, VestingType: "test1"}
 	_, error := msgServer.Vest(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 

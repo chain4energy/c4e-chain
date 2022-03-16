@@ -8,7 +8,6 @@ import (
 
 // get the vesting types
 func (k Keeper) GetAccountVestings(ctx sdk.Context, accountAddress string) (accountVestings types.AccountVestings, found bool) {
-	// store := ctx.KVStore(k.storeKey)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingsKeyPrefix)
 
 	b := store.Get([]byte(accountAddress))
@@ -23,7 +22,6 @@ func (k Keeper) GetAccountVestings(ctx sdk.Context, accountAddress string) (acco
 
 // set the vesting types
 func (k Keeper) SetAccountVestings(ctx sdk.Context, accountVestings types.AccountVestings) {
-	// store := ctx.KVStore(k.storeKey)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingsKeyPrefix)
 	av := k.cdc.MustMarshal(&accountVestings)
 	store.Set([]byte(accountVestings.Address), av)
@@ -31,7 +29,6 @@ func (k Keeper) SetAccountVestings(ctx sdk.Context, accountVestings types.Accoun
 
 // get the vesting types
 func (k Keeper) DeleteAccountVestings(ctx sdk.Context, accountAddress string) (accountVestings types.AccountVestings) {
-	// store := ctx.KVStore(k.storeKey)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingsKeyPrefix)
 	key := []byte(accountAddress)
 	b := store.Get(key)
@@ -60,18 +57,3 @@ func (k Keeper) GetAllAccountVestings(ctx sdk.Context) (list []types.AccountVest
 	return
 }
 
-// func accountVestingsStoreKey(accountAddress string) []byte {
-// 	return combineKeys(types.AccountVestingsKeyPrefix, []byte(accountAddress))
-// }
-
-// // combineKeys combine bytes array into a single bytes
-// func combineKeys(keys ...[]byte) []byte {
-// 	combined := []byte{}
-// 	for i, key := range keys {
-// 		combined = append(combined, key...)
-// 		if i < len(keys)-1 { // not last item
-// 			combined = append(combined, types.KeyIndexSeparator...)
-// 		}
-// 	}
-// 	return combined
-// }

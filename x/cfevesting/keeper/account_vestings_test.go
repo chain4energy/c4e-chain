@@ -14,9 +14,32 @@ func TestGetAccountVestings(t *testing.T) {
 	k, ctx := testkeeper.CfevestingKeeper(t)
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = "someAddr1"
-	vesting1 := types.Vesting{"test1", 2324, 42423, 4243, 14243, 24243, 34243, 44243, 54243, true, 0}
-	vesting2 := types.Vesting{"test2", 92324, 942423, 94243, 914243, 924243, 934243, 944243, 954243, false, 0}
-
+	vesting1 := types.Vesting{
+		VestingType:          "test1",
+		VestingStartBlock:    2324,
+		LockEndBlock:         42423,
+		VestingEndBlock:      4243,
+		Vested:               14243,
+		Claimable:            24243,
+		LastFreeingBlock:     34243,
+		FreeCoinsBlockPeriod: 44243,
+		FreeCoinsPerPeriod:   54243,
+		DelegationAllowed:    true,
+		Withdrawn:            0,
+	}
+	vesting2 := types.Vesting{
+		VestingType:          "test2",
+		VestingStartBlock:    92324,
+		LockEndBlock:         942423,
+		VestingEndBlock:      94243,
+		Vested:               914243,
+		Claimable:            924243,
+		LastFreeingBlock:     934243,
+		FreeCoinsBlockPeriod: 944243,
+		FreeCoinsPerPeriod:   954243,
+		DelegationAllowed:    false,
+		Withdrawn:            0,
+	}
 	vestingsArray := []*types.Vesting{&vesting1, &vesting2}
 	accountVestings.Vestings = vestingsArray
 
@@ -42,8 +65,36 @@ func TestGetAccountVestings(t *testing.T) {
 
 	accountVestings2 := types.AccountVestings{}
 	accountVestings2.Address = "someAddr2"
-	vesting21 := types.Vesting{"test3", 2324, 42423, 4243, 14243, 24243, 34243, 44243, 54243, true, 0}
-	vesting22 := types.Vesting{"test4", 92324, 942423, 94243, 914243, 924243, 934243, 944243, 954243, false, 0}
+
+	vesting21 := types.Vesting{
+		VestingType:          "test3",
+		VestingStartBlock:    2324,
+		LockEndBlock:         42423,
+		VestingEndBlock:      4243,
+		Vested:               14243,
+		Claimable:            24243,
+		LastFreeingBlock:     34243,
+		FreeCoinsBlockPeriod: 44243,
+		FreeCoinsPerPeriod:   54243,
+		DelegationAllowed:    true,
+		Withdrawn:            0,
+	}
+	vesting22 := types.Vesting{
+		VestingType:          "test4",
+		VestingStartBlock:    92324,
+		LockEndBlock:         942423,
+		VestingEndBlock:      94243,
+		Vested:               914243,
+		Claimable:            924243,
+		LastFreeingBlock:     934243,
+		FreeCoinsBlockPeriod: 944243,
+		FreeCoinsPerPeriod:   954243,
+		DelegationAllowed:    false,
+		Withdrawn:            0,
+	}
+
+	// vesting21 := types.Vesting{"test3", 2324, 42423, 4243, 14243, 24243, 34243, 44243, 54243, true, 0}
+	// vesting22 := types.Vesting{"test4", 92324, 942423, 94243, 914243, 924243, 934243, 944243, 954243, false, 0}
 	vestingsArray2 := []*types.Vesting{&vesting21, &vesting22}
 	accountVestings2.Vestings = vestingsArray2
 
@@ -57,11 +108,9 @@ func TestGetAccountVestings(t *testing.T) {
 	allVestings := k.GetAllAccountVestings(ctx)
 	require.EqualValues(t, 2, len(allVestings))
 
-	fmt.Println("afsdfds: ")
-
 	found := false
 	for i, accVestExp := range allVestings {
-		fmt.Println("sdasa: " + strconv.Itoa(i) + " - " + accVestExp.Address)
+		fmt.Println("accVestExp: " + strconv.Itoa(i) + " - " + accVestExp.Address)
 		if accountVestings.Address == accVestExp.Address {
 			require.EqualValues(t, accountVestings, accVestExp)
 			found = true
@@ -71,7 +120,7 @@ func TestGetAccountVestings(t *testing.T) {
 
 	found = false
 	for i, accVestExp := range allVestings {
-		fmt.Println("sdasa: " + strconv.Itoa(i) + " - " + accVestExp.Address)
+		fmt.Println("accVestExp: " + strconv.Itoa(i) + " - " + accVestExp.Address)
 		if accountVestings2.Address == accVestExp.Address {
 			require.EqualValues(t, accountVestings2, accVestExp)
 			found = true

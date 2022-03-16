@@ -15,15 +15,27 @@ func TestVestingTypesQueryEmpty(t *testing.T) {
 
 	response, err := keeper.VestingType(wctx, &types.QueryVestingTypeRequest{})
 	require.NoError(t, err)
-	require.Equal(t, &types.QueryVestingTypeResponse{types.VestingTypes{}}, response)
+	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: types.VestingTypes{}}, response)
 }
 
 func TestVestingTypesQueryNotEmpty(t *testing.T) {
 	keeper, ctx := testkeeper.CfevestingKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	vestingTypes := types.VestingTypes{}
-	vestingType1 := types.VestingType{"test1", 2324, 42423, 4243, true}
-	vestingType2 := types.VestingType{"test2", 1111, 112233, 445566, false}
+	vestingType1 := types.VestingType{
+		Name:                 "test1",
+		LockupPeriod:         2324,
+		VestingPeriod:        42423,
+		TokenReleasingPeriod: 4243,
+		DelegationsAllowed:   true,
+	}
+	vestingType2 := types.VestingType{
+		Name:                 "test2",
+		LockupPeriod:         1111,
+		VestingPeriod:        112233,
+		TokenReleasingPeriod: 445566,
+		DelegationsAllowed:   false,
+	}
 
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
 	vestingTypes.VestingTypes = vestingTypesArray
@@ -31,6 +43,6 @@ func TestVestingTypesQueryNotEmpty(t *testing.T) {
 	keeper.SetVestingTypes(ctx, vestingTypes)
 	response, err := keeper.VestingType(wctx, &types.QueryVestingTypeRequest{})
 	require.NoError(t, err)
-	require.Equal(t, &types.QueryVestingTypeResponse{vestingTypes}, response)
+	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: vestingTypes}, response)
 
 }

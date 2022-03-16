@@ -78,8 +78,6 @@ func TestGenesisVestingTypes(t *testing.T) {
 		VestingTypes: types.VestingTypes{vestingTypesArray},
 	}
 
-	// k, ctx := keepertest.CfevestingKeeper(t)
-
 	app := app.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
@@ -101,15 +99,65 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 
 	accountVestings1 := types.AccountVestings{}
 	accountVestings1.Address = "someAddr1"
-	vesting11 := types.Vesting{"test1", 2324, 42423, 4243, 14243, 24243, 34243, 44243, 54243, true, 0}
-	vesting12 := types.Vesting{"test2", 92324, 942423, 94243, 914243, 924243, 934243, 944243, 954243, false, 0}
+	vesting11 := types.Vesting{
+		VestingType: "test1",
+		VestingStartBlock: 2324,
+		LockEndBlock: 42423,
+		VestingEndBlock: 4243,
+		Vested: 14243,
+		Claimable: 24243,
+		LastFreeingBlock: 34243,
+		FreeCoinsBlockPeriod: 44243,
+		FreeCoinsPerPeriod: 54243,
+		DelegationAllowed: true,
+		Withdrawn: 0,
+	}
+	vesting12 := types.Vesting{
+		VestingType: "test2",
+		VestingStartBlock: 92324,
+		LockEndBlock: 942423,
+		VestingEndBlock: 94243,
+		Vested: 914243,
+		Claimable: 924243,
+		LastFreeingBlock: 934243,
+		FreeCoinsBlockPeriod: 944243,
+		FreeCoinsPerPeriod: 954243,
+		DelegationAllowed: false,
+		Withdrawn: 0,
+	}
+
 	vestingsArray1 := []*types.Vesting{&vesting11, &vesting12}
 	accountVestings1.Vestings = vestingsArray1
 
 	accountVestings2 := types.AccountVestings{}
 	accountVestings2.Address = "someAddr2"
-	vesting21 := types.Vesting{"test3", 2324, 42423, 4243, 14243, 24243, 34243, 44243, 54243, true, 0}
-	vesting22 := types.Vesting{"test4", 92324, 942423, 94243, 914243, 924243, 934243, 944243, 954243, false, 0}
+	vesting21 := types.Vesting{
+		VestingType: "test3",
+		VestingStartBlock: 2324,
+		LockEndBlock: 42423,
+		VestingEndBlock: 4243,
+		Vested: 14243,
+		Claimable: 24243,
+		LastFreeingBlock: 34243,
+		FreeCoinsBlockPeriod: 44243,
+		FreeCoinsPerPeriod: 54243,
+		DelegationAllowed: true,
+		Withdrawn: 0,
+	}
+	vesting22 := types.Vesting{
+		VestingType: "test4",
+		VestingStartBlock: 92324,
+		LockEndBlock: 942423,
+		VestingEndBlock: 94243,
+		Vested: 914243,
+		Claimable: 924243,
+		LastFreeingBlock: 934243,
+		FreeCoinsBlockPeriod: 944243,
+		FreeCoinsPerPeriod: 954243,
+		DelegationAllowed: false,
+		Withdrawn: 0,
+	}
+
 	vestingsArray2 := []*types.Vesting{&vesting21, &vesting22}
 	accountVestings2.Vestings = vestingsArray2
 
@@ -121,8 +169,6 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 		VestingTypes:        types.VestingTypes{},
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
-
-	// k, ctx := keepertest.CfevestingKeeper(t)
 
 	app := app.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})

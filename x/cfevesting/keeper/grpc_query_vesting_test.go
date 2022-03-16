@@ -16,14 +16,26 @@ func TestVesting(t *testing.T) {
 
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
-	vesting := types.Vesting{"test", 1000, 10000, 110000, 1000000, 0, 0, 10, 0, true, 0}
+	vesting := types.Vesting{
+		VestingType: "test",
+		VestingStartBlock: 1000,
+		LockEndBlock: 10000,
+		VestingEndBlock: 110000,
+		Vested: 1000000,
+		Claimable: 0,
+		LastFreeingBlock: 0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod: 0,
+		DelegationAllowed: true,
+		Withdrawn: 0,
+	}
 
 	vestingsArray := []*types.Vesting{&vesting}
 	accountVestings.Vestings = vestingsArray
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{addr})
+	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 	require.EqualValues(t, 1, len(response.Vestings))
 	require.EqualValues(t, "test", response.Vestings[0].VestingType)
@@ -48,7 +60,19 @@ func TestVestingWithDelegableAddress(t *testing.T) {
 
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
-	vesting := types.Vesting{"test", 1000, 10000, 110000, 1000000, 0, 0, 10, 0, true, 0}
+	vesting := types.Vesting{
+		VestingType: "test",
+		VestingStartBlock: 1000,
+		LockEndBlock: 10000,
+		VestingEndBlock: 110000,
+		Vested: 1000000,
+		Claimable: 0,
+		LastFreeingBlock: 0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod: 0,
+		DelegationAllowed: true,
+		Withdrawn: 0,
+	}
 
 	vestingsArray := []*types.Vesting{&vesting}
 	accountVestings.Vestings = vestingsArray
@@ -56,7 +80,7 @@ func TestVestingWithDelegableAddress(t *testing.T) {
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{addr})
+	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 	require.EqualValues(t, 1, len(response.Vestings))
 	require.EqualValues(t, "test", response.Vestings[0].VestingType)
@@ -81,14 +105,26 @@ func TestVestingSomeToWithdraw(t *testing.T) {
 
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
-	vesting := types.Vesting{"test", 1000, 10000, 110000, 1000000, 0, 0, 10, 0, true, 0}
+	vesting := types.Vesting{
+		VestingType: "test",
+		VestingStartBlock: 1000,
+		LockEndBlock: 10000,
+		VestingEndBlock: 110000,
+		Vested: 1000000,
+		Claimable: 0,
+		LastFreeingBlock: 0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod: 0,
+		DelegationAllowed: true,
+		Withdrawn: 0,
+	}
 
 	vestingsArray := []*types.Vesting{&vesting}
 	accountVestings.Vestings = vestingsArray
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{addr})
+	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 	require.EqualValues(t, 1, len(response.Vestings))
 	require.EqualValues(t, "test", response.Vestings[0].VestingType)
@@ -113,14 +149,26 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
-	vesting := types.Vesting{"test", 1000, 10000, 110000, 1000000, 0, 0, 10, 0, true, 500}
+	vesting := types.Vesting{
+		VestingType: "test",
+		VestingStartBlock: 1000,
+		LockEndBlock: 10000,
+		VestingEndBlock: 110000,
+		Vested: 1000000,
+		Claimable: 0,
+		LastFreeingBlock: 0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod: 0,
+		DelegationAllowed: true,
+		Withdrawn: 500,
+	}
 
 	vestingsArray := []*types.Vesting{&vesting}
 	accountVestings.Vestings = vestingsArray
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{addr})
+	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 	require.EqualValues(t, 1, len(response.Vestings))
 	require.EqualValues(t, "test", response.Vestings[0].VestingType)
@@ -144,16 +192,52 @@ func TestVestingManyVestings(t *testing.T) {
 
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
-	vesting1 := types.Vesting{"test1", 1000, 10000, 110000, 1000000, 0, 0, 10, 0, true, 0}
-	vesting2 := types.Vesting{"test2", 1000, 10000, 110000, 10000000, 0, 0, 10, 0, true, 0}
-	vesting3 := types.Vesting{"test3", 1000, 10000, 110000, 100000000, 0, 0, 10, 0, true, 0}
+	vesting1 := types.Vesting{
+		VestingType: "test1",
+		VestingStartBlock: 1000,
+		LockEndBlock: 10000,
+		VestingEndBlock: 110000,
+		Vested: 1000000,
+		Claimable: 0,
+		LastFreeingBlock: 0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod: 0,
+		DelegationAllowed: true,
+		Withdrawn: 0,
+	}
+	vesting2 := types.Vesting{
+		VestingType: "test2",
+		VestingStartBlock: 1000,
+		LockEndBlock: 10000,
+		VestingEndBlock: 110000,
+		Vested: 10000000,
+		Claimable: 0,
+		LastFreeingBlock: 0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod: 0,
+		DelegationAllowed: true,
+		Withdrawn: 0,
+	}
+	vesting3 := types.Vesting{
+		VestingType: "test3",
+		VestingStartBlock: 1000,
+		LockEndBlock: 10000,
+		VestingEndBlock: 110000,
+		Vested: 100000000,
+		Claimable: 0,
+		LastFreeingBlock: 0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod: 0,
+		DelegationAllowed: true,
+		Withdrawn: 0,
+	}
 
 	vestingsArray := []*types.Vesting{&vesting1, &vesting2, &vesting3}
 	accountVestings.Vestings = vestingsArray
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{addr})
+	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 	require.EqualValues(t, 3, len(response.Vestings))
 

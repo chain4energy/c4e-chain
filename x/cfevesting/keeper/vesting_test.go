@@ -1,8 +1,9 @@
 package keeper_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -10,7 +11,19 @@ import (
 )
 
 func TestCalculateWithdrawable(t *testing.T) {
-	vesting := types.Vesting{"test", 1000, 10000, 110000, 1000000, 0, 0, 10, 0, true, 0}
+	vesting := types.Vesting{
+		VestingType:          "test",
+		VestingStartBlock:    1000,
+		LockEndBlock:         10000,
+		VestingEndBlock:      110000,
+		Vested:               1000000,
+		Claimable:            0,
+		LastFreeingBlock:     0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod:   0,
+		DelegationAllowed:    true,
+		Withdrawn:            0,
+	}
 
 	withdrawable := keeper.CalculateWithdrawable(100, vesting)
 	require.EqualValues(t, sdk.ZeroInt(), withdrawable)

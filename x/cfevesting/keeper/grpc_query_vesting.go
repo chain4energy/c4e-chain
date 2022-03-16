@@ -23,11 +23,18 @@ func (k Keeper) Vesting(goCtx context.Context, req *types.QueryVestingRequest) (
 
 	result := types.QueryVestingResponse{}
 	for _, vesting := range vestings.Vestings {
-		coin := sdk.Coin{k.GetParams(ctx).Denom, sdk.NewIntFromUint64(vesting.Vested)}
+		coin := sdk.Coin{Denom: k.GetParams(ctx).Denom, Amount: sdk.NewIntFromUint64(vesting.Vested)}
 		withdrawable := CalculateWithdrawable(ctx.BlockHeight(), *vesting)
 		current := vesting.Vested - vesting.Withdrawn
-		vestingInfo := types.VestingInfo{vesting.VestingType, vesting.VestingStartBlock, vesting.LockEndBlock,
-			vesting.VestingEndBlock, withdrawable.String(), vesting.DelegationAllowed, &coin, strconv.FormatUint(current, 10)}
+		vestingInfo := types.VestingInfo{
+			VestingType: vesting.VestingType,
+			VestingStartHeight: vesting.VestingStartBlock,
+			LockEndHeight: vesting.LockEndBlock,
+			VestingEndHeight: vesting.VestingEndBlock,
+			Withdrawable: withdrawable.String(),
+			DelegationAllowed: vesting.DelegationAllowed,
+			Vested: &coin,
+			CurrentVestedAmount: strconv.FormatUint(current, 10)}
 		result.Vestings = append(result.Vestings, &vestingInfo)
 		
 	}

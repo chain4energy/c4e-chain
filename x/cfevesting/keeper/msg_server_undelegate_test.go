@@ -12,13 +12,6 @@ import (
 	stakingmodule "github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-	// distrmodule "github.com/cosmos/cosmos-sdk/x/distribution"
-	// "github.com/cosmos/cosmos-sdk/x/auth"
-	// authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	// bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	// mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
-	// tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	// abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func TestUndelegate(t *testing.T) {
@@ -44,8 +37,6 @@ func TestUndelegate(t *testing.T) {
 	PKs := testapp.CreateTestPubKeys(1)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
-	// auth := app.AccountKeeper
 	staking := app.StakingKeeper
 	dist := app.DistrKeeper
 	k := app.CfevestingKeeper
@@ -74,11 +65,9 @@ func TestUndelegate(t *testing.T) {
 
 	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
 
-	msg := types.MsgDelegate{addr, validatorAddr, coin}
+	msg := types.MsgDelegate{DelegatorAddress: addr, ValidatorAddress: validatorAddr, Amount: coin}
 	_, error := msgServer.Delegate(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
-	// accVestingGet, _ := k.GetAccountVestings(ctx, addr)
-	// require.EqualValues(t, vested/2, accVestingGet.Delegated)
 
 	delegations := staking.GetAllDelegatorDelegations(ctx, delegableAccAddr)
 	require.EqualValues(t, 1, len(delegations))
@@ -99,14 +88,11 @@ func TestUndelegate(t *testing.T) {
 	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
 
 	coin = sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
-	msgUn := types.MsgUndelegate{addr, validatorAddr, coin}
+	msgUn := types.MsgUndelegate{DelegatorAddress: addr, ValidatorAddress: validatorAddr, Amount: coin}
 	_, error = msgServer.Undelegate(msgServerCtx, &msgUn)
 	require.EqualValues(t, nil, error)
 
 	verifyAccountBalance(t, bank, ctx, accAddr, denom, validatorRewards/2)
 	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
-
-	// accVestingGet, _ = k.GetAccountVestings(ctx, addr)
-	// require.EqualValues(t, vested, accVestingGet.Delegated)
 
 }

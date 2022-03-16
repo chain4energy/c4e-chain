@@ -1,25 +1,17 @@
 package keeper_test
 
 import (
-	// "context"
-	// "fmt"
 	"testing"
 
-	// keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 
-	// "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	// minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/chain4energy/c4e-chain/app"
-	// "github.com/cosmos/cosmos-sdk/x/auth"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	// mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	// abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func TestWithdrawAllAvailableOnVestingStart(t *testing.T) {
@@ -37,7 +29,6 @@ func TestWithdrawAllAvailableOnVestingStart(t *testing.T) {
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	denom := addCoinsToModule(vested, helperModuleAccount, ctx, bank)
@@ -47,7 +38,7 @@ func TestWithdrawAllAvailableOnVestingStart(t *testing.T) {
 	k.SetAccountVestings(ctx, accountVestings)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgWithdrawAllAvailable{addr}
+	msg := types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -58,7 +49,6 @@ func TestWithdrawAllAvailableOnVestingStart(t *testing.T) {
 	verifyVesting(t, *vesting1, *vesting)
 
 	verifyAccountBalance(t, bank, ctx, accAddr, denom, 0)
-	// require.EqualValues(t, sdk.NewIntFromUint64(accInitBalance-vested), balance.Amount)
 
 	verifyModuleAccount(auth, ctx, bank, denom, t, vested)
 
@@ -81,7 +71,6 @@ func TestWithdrawAllAvailableManyVestingsOnVestingStart(t *testing.T) {
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	denom := addCoinsToModule(3*vested, helperModuleAccount, ctx, bank)
@@ -91,7 +80,7 @@ func TestWithdrawAllAvailableManyVestingsOnVestingStart(t *testing.T) {
 	k.SetAccountVestings(ctx, accountVestings)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgWithdrawAllAvailable{addr}
+	msg := types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -128,7 +117,6 @@ func TestWithdrawAllAvailableSomeToWithdraw(t *testing.T) {
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	denom := addCoinsToModule(vested, helperModuleAccount, ctx, bank)
@@ -138,7 +126,7 @@ func TestWithdrawAllAvailableSomeToWithdraw(t *testing.T) {
 	k.SetAccountVestings(ctx, accountVestings)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgWithdrawAllAvailable{addr}
+	msg := types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -172,7 +160,6 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdraw(t *testing.T) {
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	denom := addCoinsToModule(3*vested, helperModuleAccount, ctx, bank)
@@ -182,7 +169,7 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdraw(t *testing.T) {
 	k.SetAccountVestings(ctx, accountVestings)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgWithdrawAllAvailable{addr}
+	msg := types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -223,7 +210,6 @@ func TestWithdrawAllAvailableSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	denom := addCoinsToModule(vested, helperModuleAccount, ctx, bank)
@@ -233,7 +219,7 @@ func TestWithdrawAllAvailableSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	k.SetAccountVestings(ctx, accountVestings)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgWithdrawAllAvailable{addr}
+	msg := types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -268,7 +254,6 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAndSomeWithdrawn(t *testing
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	denom := addCoinsToModule(3*vested, helperModuleAccount, ctx, bank)
@@ -278,7 +263,7 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAndSomeWithdrawn(t *testing
 	k.SetAccountVestings(ctx, accountVestings)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgWithdrawAllAvailable{addr}
+	msg := types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -317,7 +302,6 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	app, ctx := setupApp(initBlock)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
 	denom := addCoinsToAccount(vested, helperModuleAccount, ctx, bank, accAddr)
@@ -325,18 +309,24 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	k := app.CfevestingKeeper
 
 	vestingTypes := types.VestingTypes{}
-	vestingType1 := types.VestingType{vt1, 9000, 100000, 10, false}
+	vestingType1 := types.VestingType{
+		Name:                 vt1,
+		LockupPeriod:         9000,
+		VestingPeriod:        100000,
+		TokenReleasingPeriod: 10,
+		DelegationsAllowed:   false,
+	}
 	vestingTypesArray := []*types.VestingType{&vestingType1}
 	vestingTypes.VestingTypes = vestingTypesArray
 	k.SetVestingTypes(ctx, vestingTypes)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgVest{addr, vested, vt1}
+	msg := types.MsgVest{Creator: addr, Amount: vested, VestingType: vt1}
 	_, error := msgServer.Vest(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
-	msgWithdraw := types.MsgWithdrawAllAvailable{addr}
+	msgWithdraw := types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error = msgServer.WithdrawAllAvailable(msgServerCtx, &msgWithdraw)
 	require.EqualValues(t, nil, error)
 
@@ -344,7 +334,19 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 
 	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
 	vesting := accVestings[0].Vestings[0]
-	vesting1 := types.Vesting{vt1, 1000, 10000, 110000, vested, 0, 0, 10, 100, false, 0}
+	vesting1 := types.Vesting{
+		VestingType:          vt1,
+		VestingStartBlock:    1000,
+		LockEndBlock:         10000,
+		VestingEndBlock:      110000,
+		Vested:               vested,
+		Claimable:            0,
+		LastFreeingBlock:     0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod:   100,
+		DelegationAllowed:    false,
+		Withdrawn:            0,
+	}
 	verifyVesting(t, vesting1, *vesting)
 
 	verifyAccountBalance(t, bank, ctx, accAddr, denom, 0)
@@ -354,7 +356,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	ctx = ctx.WithBlockHeight(int64(10100))
 	msgServerCtx = sdk.WrapSDKContext(ctx)
 
-	msgWithdraw = types.MsgWithdrawAllAvailable{addr}
+	msgWithdraw = types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error = msgServer.WithdrawAllAvailable(msgServerCtx, &msgWithdraw)
 	require.EqualValues(t, nil, error)
 
@@ -362,7 +364,19 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 
 	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
 	vesting = accVestings[0].Vestings[0]
-	vesting1 = types.Vesting{vt1, 1000, 10000, 110000, vested, 0, 0, 10, 100, false, 1000}
+	vesting1 = types.Vesting{
+		VestingType:          vt1,
+		VestingStartBlock:    1000,
+		LockEndBlock:         10000,
+		VestingEndBlock:      110000,
+		Vested:               vested,
+		Claimable:            0,
+		LastFreeingBlock:     0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod:   100,
+		DelegationAllowed:    false,
+		Withdrawn:            1000,
+	}
 	verifyVesting(t, vesting1, *vesting)
 
 	verifyAccountBalance(t, bank, ctx, accAddr, denom, 1000)
@@ -403,7 +417,7 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegable(t *testing.T) 
 	k.SetAccountVestings(ctx, accountVestings)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgWithdrawAllAvailable{addr}
+	msg := types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -454,15 +468,15 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllSomeDelegable(t *testing
 	// mint := app.MintKeeper
 	auth := app.AccountKeeper
 
-	denom := addCoinsToModule(2*vested, helperModuleAccount, ctx, bank)
-	denom = addCoinsToAccount(vested, helperModuleAccount, ctx, bank, delegableAccAddr)
+	addCoinsToModule(2*vested, helperModuleAccount, ctx, bank)
+	denom := addCoinsToAccount(vested, helperModuleAccount, ctx, bank, delegableAccAddr)
 
 	k := app.CfevestingKeeper
 
 	k.SetAccountVestings(ctx, accountVestings)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgWithdrawAllAvailable{addr}
+	msg := types.MsgWithdrawAllAvailable{Creator: addr}
 	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -526,9 +540,45 @@ func setupApp(initBlock int64) (*app.App, sdk.Context) {
 func createAccountVestingsMany(addr string, vt1 string, vt2 string, vt3 string, vested uint64, withdrawn uint64) (types.AccountVestings, *types.Vesting, *types.Vesting, *types.Vesting) {
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
-	vesting1 := types.Vesting{vt1, 1000, 10000, 110000, vested, 0, 0, 10, 0, false, withdrawn}
-	vesting2 := types.Vesting{vt2, 1000, 10000, 110000, vested, 0, 0, 10, 0, false, withdrawn}
-	vesting3 := types.Vesting{vt3, 1000, 10000, 110000, vested, 0, 0, 10, 0, false, withdrawn}
+	vesting1 := types.Vesting{
+		VestingType:          vt1,
+		VestingStartBlock:    1000,
+		LockEndBlock:         10000,
+		VestingEndBlock:      110000,
+		Vested:               vested,
+		Claimable:            0,
+		LastFreeingBlock:     0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod:   100,
+		DelegationAllowed:    false,
+		Withdrawn:            withdrawn,
+	}
+	vesting2 := types.Vesting{
+		VestingType:          vt1,
+		VestingStartBlock:    1000,
+		LockEndBlock:         10000,
+		VestingEndBlock:      110000,
+		Vested:               vested,
+		Claimable:            0,
+		LastFreeingBlock:     0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod:   100,
+		DelegationAllowed:    false,
+		Withdrawn:            withdrawn,
+	}
+	vesting3 := types.Vesting{
+		VestingType:          vt1,
+		VestingStartBlock:    1000,
+		LockEndBlock:         10000,
+		VestingEndBlock:      110000,
+		Vested:               vested,
+		Claimable:            0,
+		LastFreeingBlock:     0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod:   100,
+		DelegationAllowed:    false,
+		Withdrawn:            withdrawn,
+	}
 
 	vestingsArray := []*types.Vesting{&vesting1, &vesting2, &vesting3}
 	accountVestings.Vestings = vestingsArray

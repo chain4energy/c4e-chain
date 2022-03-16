@@ -18,10 +18,10 @@ func (k msgServer) Undelegate(goCtx context.Context, msg *types.MsgUndelegate) (
 
 	accVestings, found := keeper.GetAccountVestings(ctx, msg.DelegatorAddress)
 	if !found {
-		return nil, fmt.Errorf("No vestings for account: %q", msg.DelegatorAddress)
+		return nil, fmt.Errorf("no vestings for account: %q", msg.DelegatorAddress)
 	}
 	if len(accVestings.DelegableAddress) == 0 {
-		return nil, fmt.Errorf("No delegable vestings for account: %q", msg.DelegatorAddress)
+		return nil, fmt.Errorf("no delegable vestings for account: %q", msg.DelegatorAddress)
 	}
 
 	delagateMsg := stakingtypes.MsgUndelegate{DelegatorAddress: accVestings.DelegableAddress,

@@ -1,23 +1,20 @@
 package keeper_test
 
 import (
-	"context"
+	// "context"
 	"testing"
 
-	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+	// keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
+	// "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	// mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
-	// minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/chain4energy/c4e-chain/app"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 
 	"github.com/stretchr/testify/require"
 )
@@ -28,10 +25,11 @@ func addHelperModuleAccountPerms() {
 	app.AddMaccPerms(helperModuleAccount, perms)
 }
 
-func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
-	k, ctx := keepertest.CfevestingKeeper(t)
-	return keeper.NewMsgServerImpl(*k), sdk.WrapSDKContext(ctx)
-}
+// TODO remove 
+// func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
+// 	k, ctx := keepertest.CfevestingKeeper(t)
+// 	return keeper.NewMsgServerImpl(*k), sdk.WrapSDKContext(ctx)
+// }
 
 func addCoinsToAccount(vested uint64, mintTo string, ctx sdk.Context, bank bankkeeper.Keeper, toAddr sdk.AccAddress) string {
 	denom := "uc4e"
@@ -45,7 +43,19 @@ func addCoinsToAccount(vested uint64, mintTo string, ctx sdk.Context, bank bankk
 func createAccountVestings(addr string, vt1 string, vested uint64, withdrawn uint64) (types.AccountVestings, *types.Vesting) {
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
-	vesting1 := types.Vesting{vt1, 1000, 10000, 110000, vested, 0, 0, 10, 0, false, withdrawn}
+	vesting1 := types.Vesting{
+		VestingType: vt1,
+		VestingStartBlock: 1000,
+		LockEndBlock: 10000,
+		VestingEndBlock: 110000,
+		Vested: vested,
+		Claimable: 0,
+		LastFreeingBlock: 0,
+		FreeCoinsBlockPeriod: 10,
+		FreeCoinsPerPeriod: 0,
+		DelegationAllowed: false,
+		Withdrawn: withdrawn,
+	}
 	vestingsArray := []*types.Vesting{&vesting1}
 	accountVestings.Vestings = vestingsArray
 	return accountVestings, &vesting1

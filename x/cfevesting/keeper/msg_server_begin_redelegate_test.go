@@ -3,7 +3,6 @@ package keeper_test
 import (
 	"testing"
 
-	// "github.com/chain4energy/c4e-chain/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 
 	testapp "github.com/chain4energy/c4e-chain/app"
@@ -13,16 +12,7 @@ import (
 	stakingmodule "github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-	// distrmodule "github.com/cosmos/cosmos-sdk/x/distribution"
-	// "github.com/cosmos/cosmos-sdk/x/auth"
-	// authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	// bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	// mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
-	// tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	// abci "github.com/tendermint/tendermint/abci/types"
 )
-
-
 
 func TestRedelegate(t *testing.T) {
 	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
@@ -55,8 +45,6 @@ func TestRedelegate(t *testing.T) {
 	PKs := testapp.CreateTestPubKeys(2)
 
 	bank := app.BankKeeper
-	// mint := app.MintKeeper
-	// auth := app.AccountKeeper
 	staking := app.StakingKeeper
 	dist := app.DistrKeeper
 	k := app.CfevestingKeeper
@@ -89,13 +77,11 @@ func TestRedelegate(t *testing.T) {
 
 	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
 
-	msg := types.MsgDelegate{addr, validatorAddr, coin}
+	msg := types.MsgDelegate{DelegatorAddress: addr, ValidatorAddress: validatorAddr, Amount: coin}
 	_, err = msgServer.Delegate(msgServerCtx, &msg)
 	require.EqualValues(t, nil, err)
 	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
 
-	// accVestingGet, _ := k.GetAccountVestings(ctx, addr)
-	// require.EqualValues(t, vested/2, accVestingGet.Delegated)
 
 	delegations := staking.GetAllDelegatorDelegations(ctx, delegableAccAddr)
 	require.EqualValues(t, 1, len(delegations))
@@ -117,13 +103,17 @@ func TestRedelegate(t *testing.T) {
 	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
 
 	coin = sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
-	msgRe := types.MsgBeginRedelegate{addr, validatorAddr, validatorAddr2, coin}
+	msgRe := types.MsgBeginRedelegate{
+		DelegatorAddress:    addr,
+		ValidatorSrcAddress: validatorAddr,
+		ValidatorDstAddress: validatorAddr2,
+		Amount:              coin,
+	}
 	_, err = msgServer.BeginRedelegate(msgServerCtx, &msgRe)
 	require.EqualValues(t, nil, err)
 
 	stakingmodule.EndBlocker(ctx, app.StakingKeeper)
 	ctx = ctx.WithBlockHeight(initBlock + 1)
-	msgServerCtx = sdk.WrapSDKContext(ctx)
 	verifyAccountBalance(t, bank, ctx, accAddr, denom, validatorRewards/2)
 
 	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, vested/2)
@@ -134,7 +124,5 @@ func TestRedelegate(t *testing.T) {
 	require.EqualValues(t, sdk.NewDec(vested/2), delegation.Shares)
 	require.EqualValues(t, validatorAddr2, delegation.ValidatorAddress)
 
-	// accVestingGet, _ = k.GetAccountVestings(ctx, addr)
-	// require.EqualValues(t, vested, accVestingGet.Delegated)
 
 }

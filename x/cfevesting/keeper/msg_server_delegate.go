@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	metrics "github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/cosmos/cosmos-sdk/telemetry"
-	metrics "github.com/armon/go-metrics"
 )
 
 func (k msgServer) Delegate(goCtx context.Context, msg *types.MsgDelegate) (*types.MsgDelegateResponse, error) {
@@ -18,10 +18,10 @@ func (k msgServer) Delegate(goCtx context.Context, msg *types.MsgDelegate) (*typ
 
 	accVestings, found := keeper.GetAccountVestings(ctx, msg.DelegatorAddress)
 	if !found {
-		return nil, fmt.Errorf("No vestings for account: %q", msg.DelegatorAddress)
+		return nil, fmt.Errorf("no vestings for account: %q", msg.DelegatorAddress)
 	}
 	if len(accVestings.DelegableAddress) == 0 {
-		return nil, fmt.Errorf("No delegable vestings for account: %q", msg.DelegatorAddress)
+		return nil, fmt.Errorf("no delegable vestings for account: %q", msg.DelegatorAddress)
 	}
 
 	delegableAddress, err := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
