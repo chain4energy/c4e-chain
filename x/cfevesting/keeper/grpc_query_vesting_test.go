@@ -17,17 +17,18 @@ func TestVesting(t *testing.T) {
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
 	vesting := types.Vesting{
-		VestingType: "test",
+		Id:                1,
+		VestingType:       "test",
 		VestingStartBlock: 1000,
-		LockEndBlock: 10000,
-		VestingEndBlock: 110000,
-		Vested: 1000000,
-		Claimable: 0,
-		LastFreeingBlock: 0,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            1000000,
+		// Claimable: 0,
+		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod: 0,
+		// FreeCoinsPerPeriod: 0,
 		DelegationAllowed: true,
-		Withdrawn: 0,
+		Withdrawn:         0,
 	}
 
 	vestingsArray := []*types.Vesting{&vesting}
@@ -61,17 +62,18 @@ func TestVestingWithDelegableAddress(t *testing.T) {
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
 	vesting := types.Vesting{
-		VestingType: "test",
+		Id:                1,
+		VestingType:       "test",
 		VestingStartBlock: 1000,
-		LockEndBlock: 10000,
-		VestingEndBlock: 110000,
-		Vested: 1000000,
-		Claimable: 0,
-		LastFreeingBlock: 0,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            1000000,
+		// Claimable: 0,
+		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod: 0,
+		// FreeCoinsPerPeriod: 0,
 		DelegationAllowed: true,
-		Withdrawn: 0,
+		Withdrawn:         0,
 	}
 
 	vestingsArray := []*types.Vesting{&vesting}
@@ -106,17 +108,18 @@ func TestVestingSomeToWithdraw(t *testing.T) {
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
 	vesting := types.Vesting{
-		VestingType: "test",
+		Id:                1,
+		VestingType:       "test",
 		VestingStartBlock: 1000,
-		LockEndBlock: 10000,
-		VestingEndBlock: 110000,
-		Vested: 1000000,
-		Claimable: 0,
-		LastFreeingBlock: 0,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            1000000,
+		// Claimable: 0,
+		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod: 0,
+		// FreeCoinsPerPeriod: 0,
 		DelegationAllowed: true,
-		Withdrawn: 0,
+		Withdrawn:         0,
 	}
 
 	vestingsArray := []*types.Vesting{&vesting}
@@ -150,17 +153,18 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
 	vesting := types.Vesting{
-		VestingType: "test",
+		Id:                1,
+		VestingType:       "test",
 		VestingStartBlock: 1000,
-		LockEndBlock: 10000,
-		VestingEndBlock: 110000,
-		Vested: 1000000,
-		Claimable: 0,
-		LastFreeingBlock: 0,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            1000000,
+		// Claimable: 0,
+		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod: 0,
+		// FreeCoinsPerPeriod: 0,
 		DelegationAllowed: true,
-		Withdrawn: 500,
+		Withdrawn:         500,
 	}
 
 	vestingsArray := []*types.Vesting{&vesting}
@@ -193,43 +197,46 @@ func TestVestingManyVestings(t *testing.T) {
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
 	vesting1 := types.Vesting{
-		VestingType: "test1",
+		Id:                1,
+		VestingType:       "test1",
 		VestingStartBlock: 1000,
-		LockEndBlock: 10000,
-		VestingEndBlock: 110000,
-		Vested: 1000000,
-		Claimable: 0,
-		LastFreeingBlock: 0,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            1000000,
+		// Claimable: 0,
+		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod: 0,
+		// FreeCoinsPerPeriod: 0,
 		DelegationAllowed: true,
-		Withdrawn: 0,
+		Withdrawn:         0,
 	}
 	vesting2 := types.Vesting{
-		VestingType: "test2",
+		Id:                2,
+		VestingType:       "test2",
 		VestingStartBlock: 1000,
-		LockEndBlock: 10000,
-		VestingEndBlock: 110000,
-		Vested: 10000000,
-		Claimable: 0,
-		LastFreeingBlock: 0,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            10000000,
+		// Claimable: 0,
+		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod: 0,
+		// FreeCoinsPerPeriod: 0,
 		DelegationAllowed: true,
-		Withdrawn: 0,
+		Withdrawn:         0,
 	}
 	vesting3 := types.Vesting{
-		VestingType: "test3",
+		Id:                3,
+		VestingType:       "test3",
 		VestingStartBlock: 1000,
-		LockEndBlock: 10000,
-		VestingEndBlock: 110000,
-		Vested: 100000000,
-		Claimable: 0,
-		LastFreeingBlock: 0,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            100000000,
+		// Claimable: 0,
+		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod: 0,
+		// FreeCoinsPerPeriod: 0,
 		DelegationAllowed: true,
-		Withdrawn: 0,
+		Withdrawn:         0,
 	}
 
 	vestingsArray := []*types.Vesting{&vesting1, &vesting2, &vesting3}
@@ -245,12 +252,18 @@ func TestVestingManyVestings(t *testing.T) {
 	for _, vestingInfo := range response.Vestings {
 		if vestingInfo.VestingType == "test1" {
 			require.EqualValues(t, sdk.NewInt(1000000), vestingInfo.Vested.Amount)
+			require.EqualValues(t, 1, vestingInfo.Id)
+
 			i++
 		} else if vestingInfo.VestingType == "test2" {
 			require.EqualValues(t, sdk.NewInt(10000000), vestingInfo.Vested.Amount)
+			require.EqualValues(t, 2, vestingInfo.Id)
+
 			i++
 		} else if vestingInfo.VestingType == "test3" {
 			require.EqualValues(t, sdk.NewInt(100000000), vestingInfo.Vested.Amount)
+			require.EqualValues(t, 3, vestingInfo.Id)
+
 			i++
 		}
 	}

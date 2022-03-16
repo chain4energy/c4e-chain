@@ -335,17 +335,18 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
 	vesting := accVestings[0].Vestings[0]
 	vesting1 := types.Vesting{
-		VestingType:          vt1,
-		VestingStartBlock:    1000,
-		LockEndBlock:         10000,
-		VestingEndBlock:      110000,
-		Vested:               vested,
-		Claimable:            0,
-		LastFreeingBlock:     0,
+		Id:                1,
+		VestingType:       vt1,
+		VestingStartBlock: 1000,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            vested,
+		// Claimable:            0,
+		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod:   100,
-		DelegationAllowed:    false,
-		Withdrawn:            0,
+		// FreeCoinsPerPeriod:   100,
+		DelegationAllowed: false,
+		Withdrawn:         0,
 	}
 	verifyVesting(t, vesting1, *vesting)
 
@@ -365,17 +366,18 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
 	vesting = accVestings[0].Vestings[0]
 	vesting1 = types.Vesting{
-		VestingType:          vt1,
-		VestingStartBlock:    1000,
-		LockEndBlock:         10000,
-		VestingEndBlock:      110000,
-		Vested:               vested,
-		Claimable:            0,
-		LastFreeingBlock:     0,
+		Id:                1,
+		VestingType:       vt1,
+		VestingStartBlock: 1000,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            vested,
+		// Claimable:            0,
+		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod:   100,
-		DelegationAllowed:    false,
-		Withdrawn:            1000,
+		// FreeCoinsPerPeriod:   100,
+		DelegationAllowed: false,
+		Withdrawn:         1000,
 	}
 	verifyVesting(t, vesting1, *vesting)
 
@@ -514,6 +516,7 @@ func verifyAcountVestings(k keeper.Keeper, ctx sdk.Context, addr string, t *test
 
 func verifyVesting(t *testing.T, vestingExpected types.Vesting, vestingActual types.Vesting) {
 	require.EqualValues(t, vestingExpected, vestingActual)
+	require.EqualValues(t, vestingExpected.Id, vestingActual.Id)
 
 	require.EqualValues(t, vestingExpected.VestingType, vestingActual.VestingType)
 	require.EqualValues(t, vestingExpected.VestingStartBlock, vestingActual.VestingStartBlock)
@@ -522,10 +525,10 @@ func verifyVesting(t *testing.T, vestingExpected types.Vesting, vestingActual ty
 	require.EqualValues(t, vestingExpected.VestingEndBlock, vestingActual.VestingEndBlock)
 
 	require.EqualValues(t, vestingExpected.Vested, vestingActual.Vested)
-	require.EqualValues(t, vestingExpected.Claimable, vestingActual.Claimable)
-	require.EqualValues(t, vestingExpected.LastFreeingBlock, vestingActual.LastFreeingBlock)
+	// require.EqualValues(t, vestingExpected.Claimable, vestingActual.Claimable)
+	// require.EqualValues(t, vestingExpected.LastFreeingBlock, vestingActual.LastFreeingBlock)
 	require.EqualValues(t, vestingExpected.FreeCoinsBlockPeriod, vestingActual.FreeCoinsBlockPeriod)
-	require.EqualValues(t, vestingExpected.FreeCoinsPerPeriod, vestingActual.FreeCoinsPerPeriod)
+	// require.EqualValues(t, vestingExpected.FreeCoinsPerPeriod, vestingActual.FreeCoinsPerPeriod)
 	require.EqualValues(t, vestingExpected.DelegationAllowed, vestingActual.DelegationAllowed)
 }
 
@@ -541,43 +544,46 @@ func createAccountVestingsMany(addr string, vt1 string, vt2 string, vt3 string, 
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
 	vesting1 := types.Vesting{
-		VestingType:          vt1,
-		VestingStartBlock:    1000,
-		LockEndBlock:         10000,
-		VestingEndBlock:      110000,
-		Vested:               vested,
-		Claimable:            0,
-		LastFreeingBlock:     0,
+		Id:                1,
+		VestingType:       vt1,
+		VestingStartBlock: 1000,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            vested,
+		// Claimable:            0,
+		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod:   100,
-		DelegationAllowed:    false,
-		Withdrawn:            withdrawn,
+		// FreeCoinsPerPeriod:   100,
+		DelegationAllowed: false,
+		Withdrawn:         withdrawn,
 	}
 	vesting2 := types.Vesting{
-		VestingType:          vt1,
-		VestingStartBlock:    1000,
-		LockEndBlock:         10000,
-		VestingEndBlock:      110000,
-		Vested:               vested,
-		Claimable:            0,
-		LastFreeingBlock:     0,
+		Id:                2,
+		VestingType:       vt1,
+		VestingStartBlock: 1000,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            vested,
+		// Claimable:            0,
+		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod:   100,
-		DelegationAllowed:    false,
-		Withdrawn:            withdrawn,
+		// FreeCoinsPerPeriod:   100,
+		DelegationAllowed: false,
+		Withdrawn:         withdrawn,
 	}
 	vesting3 := types.Vesting{
-		VestingType:          vt1,
-		VestingStartBlock:    1000,
-		LockEndBlock:         10000,
-		VestingEndBlock:      110000,
-		Vested:               vested,
-		Claimable:            0,
-		LastFreeingBlock:     0,
+		Id:                3,
+		VestingType:       vt1,
+		VestingStartBlock: 1000,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            vested,
+		// Claimable:            0,
+		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod:   100,
-		DelegationAllowed:    false,
-		Withdrawn:            withdrawn,
+		// FreeCoinsPerPeriod:   100,
+		DelegationAllowed: false,
+		Withdrawn:         withdrawn,
 	}
 
 	vestingsArray := []*types.Vesting{&vesting1, &vesting2, &vesting3}

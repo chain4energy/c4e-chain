@@ -58,14 +58,15 @@ message QueryVestingResponse {
 }
 
 message VestingInfo {
-  string vesting_type = 1;
-  int64 vesting_start_height = 2;
-  int64 lock_end_height = 3;
-  int64 vesting_end_height = 4;
-  string withdrawable = 5;
-  bool delegation_allowed = 6;
-  cosmos.base.v1beta1.Coin vested = 7;
-  string current_vested_amount = 8;
+  int32 id = 1;
+  string vesting_type = 2;
+  int64 vesting_start_height = 3;
+  int64 lock_end_height = 4;
+  int64 vesting_end_height = 5;
+  string withdrawable = 6;
+  bool delegation_allowed = 7;
+  cosmos.base.v1beta1.Coin vested = 8;
+  string current_vested_amount = 9;
 
 }
 

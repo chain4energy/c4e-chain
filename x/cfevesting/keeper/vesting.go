@@ -48,7 +48,7 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount uint64, vestingType st
 
 	accVestings, vestingsFound := k.GetAccountVestings(ctx, addr)
 	k.Logger(ctx).Debug("vestingsFound: " + strconv.FormatBool(vestingsFound))
-
+	var id int32
 	var delegatableAddress sdk.AccAddress
 	if !vestingsFound {
 		accVestings = types.AccountVestings{}
@@ -61,6 +61,7 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount uint64, vestingType st
 
 			accVestings.DelegableAddress = delegatableAddress.String()
 		}
+		id = 1
 	} else {
 		if vt.DelegationsAllowed {
 			delegatableAddress, err = sdk.AccAddressFromBech32(accVestings.DelegableAddress)
@@ -70,18 +71,20 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount uint64, vestingType st
 				return err
 			}
 		}
+		id = int32(len(accVestings.Vestings)) + 1
 	}
-	numOfPeriods := vt.VestingPeriod / vt.TokenReleasingPeriod
-	amountPerPeriod := amount / uint64(numOfPeriods)
+	// numOfPeriods := vt.VestingPeriod / vt.TokenReleasingPeriod
+	// amountPerPeriod := amount / uint64(numOfPeriods)
 	vesting := types.Vesting{VestingType: vestingType,
+		Id: id,
 		VestingStartBlock:    ctx.BlockHeight(),
 		LockEndBlock:         vt.LockupPeriod + ctx.BlockHeight(),
 		VestingEndBlock:      vt.LockupPeriod + vt.VestingPeriod + ctx.BlockHeight(),
 		Vested:               amount,
-		Claimable:            0,
-		LastFreeingBlock:     0,
+		// Claimable:            0,
+		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: vt.TokenReleasingPeriod,
-		FreeCoinsPerPeriod:   amountPerPeriod,
+		// FreeCoinsPerPeriod:   amountPerPeriod,
 		DelegationAllowed:    vt.DelegationsAllowed,
 		Withdrawn:            0}
 	accVestings.Vestings = append(accVestings.Vestings, &vesting)

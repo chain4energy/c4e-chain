@@ -44,15 +44,16 @@ func createAccountVestings(addr string, vt1 string, vested uint64, withdrawn uin
 	accountVestings := types.AccountVestings{}
 	accountVestings.Address = addr
 	vesting1 := types.Vesting{
+		Id: 1,
 		VestingType: vt1,
 		VestingStartBlock: 1000,
 		LockEndBlock: 10000,
 		VestingEndBlock: 110000,
 		Vested: vested,
-		Claimable: 0,
-		LastFreeingBlock: 0,
+		// Claimable: 0,
+		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod: 0,
+		// FreeCoinsPerPeriod: 0,
 		DelegationAllowed: false,
 		Withdrawn: withdrawn,
 	}

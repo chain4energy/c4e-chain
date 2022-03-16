@@ -12,17 +12,18 @@ import (
 
 func TestCalculateWithdrawable(t *testing.T) {
 	vesting := types.Vesting{
-		VestingType:          "test",
-		VestingStartBlock:    1000,
-		LockEndBlock:         10000,
-		VestingEndBlock:      110000,
-		Vested:               1000000,
-		Claimable:            0,
-		LastFreeingBlock:     0,
+		Id: 1,
+		VestingType:       "test",
+		VestingStartBlock: 1000,
+		LockEndBlock:      10000,
+		VestingEndBlock:   110000,
+		Vested:            1000000,
+		// Claimable:            0,
+		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
-		FreeCoinsPerPeriod:   0,
-		DelegationAllowed:    true,
-		Withdrawn:            0,
+		// FreeCoinsPerPeriod:   0,
+		DelegationAllowed: true,
+		Withdrawn:         0,
 	}
 
 	withdrawable := keeper.CalculateWithdrawable(100, vesting)
