@@ -40,8 +40,8 @@ message MsgWithdrawAllAvailableResponse {
 }
 
 message MsgDelegate {
-  string delegatorAddress = 1;
-  string validatorAddress = 2;
+  string delegator_address = 1;
+  string validator_address = 2;
   cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
 }
 
@@ -49,8 +49,8 @@ message MsgDelegateResponse {
 }
 
 message MsgUndelegate {
-  string delegatorAddress = 1;
-  string validatorAddress = 2;
+  string delegator_address = 1;
+  string validator_address = 2;
   cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
 }
 
@@ -59,9 +59,9 @@ message MsgUndelegateResponse {
 }
 
 message MsgBeginRedelegate {
-  string delegatorAddress = 1;
-  string validatorSrcAddress = 2;
-  string validatorDstAddress = 3;
+  string delegator_address = 1;
+  string validator_src_address = 2;
+  string validator_dst_address = 3;
   cosmos.base.v1beta1.Coin amount = 4 [(gogoproto.nullable) = false];
 }
 
@@ -70,8 +70,8 @@ message MsgBeginRedelegateResponse {
 }
 
 message MsgWithdrawDelegatorReward {
-  string delegatorAddress = 1;
-  string validatorAddress = 2;
+  string delegator_address = 1;
+  string validator_address = 2;
 }
 
 message MsgWithdrawDelegatorRewardResponse {
