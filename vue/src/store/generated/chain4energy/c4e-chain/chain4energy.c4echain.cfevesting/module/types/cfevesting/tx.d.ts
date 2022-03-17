@@ -3,7 +3,8 @@ import { Coin } from "../cosmos/base/v1beta1/coin";
 export declare const protobufPackage = "chain4energy.c4echain.cfevesting";
 export interface MsgVest {
     creator: string;
-    amount: number;
+    /** uint64 amount = 2; */
+    amount: string;
     vestingType: string;
 }
 export interface MsgVestResponse {
@@ -42,6 +43,15 @@ export interface MsgWithdrawDelegatorReward {
     validatorAddress: string;
 }
 export interface MsgWithdrawDelegatorRewardResponse {
+}
+export interface MsgSendVesting {
+    fromAddress: string;
+    toAddress: string;
+    vestingId: string;
+    amount: string;
+    restartVesting: string;
+}
+export interface MsgSendVestingResponse {
 }
 export declare const MsgVest: {
     encode(message: MsgVest, writer?: Writer): Writer;
@@ -127,6 +137,20 @@ export declare const MsgWithdrawDelegatorRewardResponse: {
     toJSON(_: MsgWithdrawDelegatorRewardResponse): unknown;
     fromPartial(_: DeepPartial<MsgWithdrawDelegatorRewardResponse>): MsgWithdrawDelegatorRewardResponse;
 };
+export declare const MsgSendVesting: {
+    encode(message: MsgSendVesting, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgSendVesting;
+    fromJSON(object: any): MsgSendVesting;
+    toJSON(message: MsgSendVesting): unknown;
+    fromPartial(object: DeepPartial<MsgSendVesting>): MsgSendVesting;
+};
+export declare const MsgSendVestingResponse: {
+    encode(_: MsgSendVestingResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgSendVestingResponse;
+    fromJSON(_: any): MsgSendVestingResponse;
+    toJSON(_: MsgSendVestingResponse): unknown;
+    fromPartial(_: DeepPartial<MsgSendVestingResponse>): MsgSendVestingResponse;
+};
 /** Msg defines the Msg service. */
 export interface Msg {
     Vest(request: MsgVest): Promise<MsgVestResponse>;
@@ -134,8 +158,9 @@ export interface Msg {
     Delegate(request: MsgDelegate): Promise<MsgDelegateResponse>;
     Undelegate(request: MsgUndelegate): Promise<MsgUndelegateResponse>;
     BeginRedelegate(request: MsgBeginRedelegate): Promise<MsgBeginRedelegateResponse>;
-    /** this line is used by starport scaffolding # proto/tx/rpc */
     WithdrawDelegatorReward(request: MsgWithdrawDelegatorReward): Promise<MsgWithdrawDelegatorRewardResponse>;
+    /** this line is used by starport scaffolding # proto/tx/rpc */
+    SendVesting(request: MsgSendVesting): Promise<MsgSendVestingResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
@@ -146,6 +171,7 @@ export declare class MsgClientImpl implements Msg {
     Undelegate(request: MsgUndelegate): Promise<MsgUndelegateResponse>;
     BeginRedelegate(request: MsgBeginRedelegate): Promise<MsgBeginRedelegateResponse>;
     WithdrawDelegatorReward(request: MsgWithdrawDelegatorReward): Promise<MsgWithdrawDelegatorRewardResponse>;
+    SendVesting(request: MsgSendVesting): Promise<MsgSendVestingResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

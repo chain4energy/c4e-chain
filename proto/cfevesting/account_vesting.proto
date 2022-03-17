@@ -16,7 +16,6 @@ message AccountVestings {
   string address = 1;
   string delegable_address = 2;
   repeated Vesting vestings = 3; 
-  // uint64 delegated = 12;
 }
 
 message Vesting {
@@ -27,10 +26,12 @@ message Vesting {
   int64 lock_end_block = 4;
   int64 vesting_end_block = 5;
   string vested = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  // uint64 claimable = 6;
-  // int64 last_freeing_block = 7;
   int64 free_coins_block_period = 7;
-  // uint64 free_coins_per_period = 9;
   bool delegation_allowed = 8;
   string withdrawn = 9 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string sent = 10 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  int64 last_modification_block = 11;
+  string last_modification_vested = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string last_modification_withdrawn = 13 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+
 }

@@ -24,6 +24,7 @@ export interface QueryVestingResponse {
     vestings: VestingInfo[];
 }
 export interface VestingInfo {
+    id: number;
     vestingType: string;
     vestingStartHeight: number;
     lockEndHeight: number;

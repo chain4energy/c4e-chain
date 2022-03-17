@@ -11,7 +11,7 @@ var _ sdk.Msg = &MsgWithdrawDelegatorReward{}
 
 func NewMsgWithdrawDelegatorReward(delegatorAddress string, validatorAddress string) *MsgWithdrawDelegatorReward {
 	return &MsgWithdrawDelegatorReward{
-		DelegatorAddress:          delegatorAddress,
+		DelegatorAddress: delegatorAddress,
 		ValidatorAddress: validatorAddress,
 	}
 }

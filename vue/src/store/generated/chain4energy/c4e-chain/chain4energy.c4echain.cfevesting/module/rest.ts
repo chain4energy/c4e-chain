@@ -16,6 +16,8 @@ export interface CfevestingMsgBeginRedelegateResponse {
 
 export type CfevestingMsgDelegateResponse = object;
 
+export type CfevestingMsgSendVestingResponse = object;
+
 export interface CfevestingMsgUndelegateResponse {
   /** @format date-time */
   completionTime?: string;
@@ -52,6 +54,8 @@ export interface CfevestingQueryVestingTypeResponse {
 }
 
 export interface CfevestingVestingInfo {
+  /** @format int32 */
+  id?: number;
   vestingType?: string;
 
   /** @format int64 */

@@ -56,4 +56,3 @@ func (k Keeper) GetAllAccountVestings(ctx sdk.Context) (list []types.AccountVest
 
 	return
 }
-

@@ -27,8 +27,12 @@ func TestVesting(t *testing.T) {
 		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed: true,
-		Withdrawn:         sdk.ZeroInt(),
+		DelegationAllowed:         true,
+		Withdrawn:                 sdk.ZeroInt(),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewInt(1000000),
+		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	vestingsArray := []*types.Vesting{&vesting}
@@ -72,8 +76,12 @@ func TestVestingWithDelegableAddress(t *testing.T) {
 		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed: true,
-		Withdrawn:         sdk.ZeroInt(),
+		DelegationAllowed:         true,
+		Withdrawn:                 sdk.ZeroInt(),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewInt(1000000),
+		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	vestingsArray := []*types.Vesting{&vesting}
@@ -118,8 +126,12 @@ func TestVestingSomeToWithdraw(t *testing.T) {
 		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed: true,
-		Withdrawn:         sdk.ZeroInt(),
+		DelegationAllowed:         true,
+		Withdrawn:                 sdk.ZeroInt(),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewInt(1000000),
+		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	vestingsArray := []*types.Vesting{&vesting}
@@ -163,8 +175,12 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed: true,
-		Withdrawn:         sdk.NewInt(500),
+		DelegationAllowed:         true,
+		Withdrawn:                 sdk.NewInt(500),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewInt(1000000),
+		LastModificationWithdrawn: sdk.NewInt(500),
 	}
 
 	vestingsArray := []*types.Vesting{&vesting}
@@ -207,8 +223,12 @@ func TestVestingManyVestings(t *testing.T) {
 		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed: true,
-		Withdrawn:         sdk.ZeroInt(),
+		DelegationAllowed:         true,
+		Withdrawn:                 sdk.ZeroInt(),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewInt(1000000),
+		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 	vesting2 := types.Vesting{
 		Id:                2,
@@ -221,8 +241,12 @@ func TestVestingManyVestings(t *testing.T) {
 		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed: true,
-		Withdrawn:         sdk.ZeroInt(),
+		DelegationAllowed:         true,
+		Withdrawn:                 sdk.ZeroInt(),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewInt(10000000),
+		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 	vesting3 := types.Vesting{
 		Id:                3,
@@ -235,8 +259,12 @@ func TestVestingManyVestings(t *testing.T) {
 		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed: true,
-		Withdrawn:         sdk.ZeroInt(),
+		DelegationAllowed:         true,
+		Withdrawn:                 sdk.ZeroInt(),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewInt(100000000),
+		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	vestingsArray := []*types.Vesting{&vesting1, &vesting2, &vesting3}

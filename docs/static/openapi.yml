@@ -60,6 +60,9 @@ paths:
                 items:
                   type: object
                   properties:
+                    id:
+                      type: integer
+                      format: int32
                     vestingType:
                       type: string
                     vestingStartHeight:
@@ -12747,6 +12750,8 @@ definitions:
         format: date-time
   chain4energy.c4echain.cfevesting.MsgDelegateResponse:
     type: object
+  chain4energy.c4echain.cfevesting.MsgSendVestingResponse:
+    type: object
   chain4energy.c4echain.cfevesting.MsgUndelegateResponse:
     type: object
     properties:
@@ -12785,6 +12790,9 @@ definitions:
         items:
           type: object
           properties:
+            id:
+              type: integer
+              format: int32
             vestingType:
               type: string
             vestingStartHeight:
@@ -12844,6 +12852,9 @@ definitions:
   chain4energy.c4echain.cfevesting.VestingInfo:
     type: object
     properties:
+      id:
+        type: integer
+        format: int32
       vestingType:
         type: string
       vestingStartHeight:

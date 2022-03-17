@@ -158,52 +158,44 @@ export const AccountVestings = {
     },
 };
 const baseVesting = {
+    id: 0,
     vestingType: "",
     vestingStartBlock: 0,
     lockEndBlock: 0,
     vestingEndBlock: 0,
-    vested: 0,
-    claimable: 0,
-    lastFreeingBlock: 0,
+    vested: "",
     freeCoinsBlockPeriod: 0,
-    freeCoinsPerPeriod: 0,
     delegationAllowed: false,
-    withdrawn: 0,
+    withdrawn: "",
 };
 export const Vesting = {
     encode(message, writer = Writer.create()) {
+        if (message.id !== 0) {
+            writer.uint32(8).int32(message.id);
+        }
         if (message.vestingType !== "") {
-            writer.uint32(10).string(message.vestingType);
+            writer.uint32(18).string(message.vestingType);
         }
         if (message.vestingStartBlock !== 0) {
-            writer.uint32(16).int64(message.vestingStartBlock);
+            writer.uint32(24).int64(message.vestingStartBlock);
         }
         if (message.lockEndBlock !== 0) {
-            writer.uint32(24).int64(message.lockEndBlock);
+            writer.uint32(32).int64(message.lockEndBlock);
         }
         if (message.vestingEndBlock !== 0) {
-            writer.uint32(32).int64(message.vestingEndBlock);
+            writer.uint32(40).int64(message.vestingEndBlock);
         }
-        if (message.vested !== 0) {
-            writer.uint32(40).uint64(message.vested);
-        }
-        if (message.claimable !== 0) {
-            writer.uint32(48).uint64(message.claimable);
-        }
-        if (message.lastFreeingBlock !== 0) {
-            writer.uint32(56).int64(message.lastFreeingBlock);
+        if (message.vested !== "") {
+            writer.uint32(50).string(message.vested);
         }
         if (message.freeCoinsBlockPeriod !== 0) {
-            writer.uint32(64).int64(message.freeCoinsBlockPeriod);
-        }
-        if (message.freeCoinsPerPeriod !== 0) {
-            writer.uint32(72).uint64(message.freeCoinsPerPeriod);
+            writer.uint32(56).int64(message.freeCoinsBlockPeriod);
         }
         if (message.delegationAllowed === true) {
-            writer.uint32(80).bool(message.delegationAllowed);
+            writer.uint32(64).bool(message.delegationAllowed);
         }
-        if (message.withdrawn !== 0) {
-            writer.uint32(88).uint64(message.withdrawn);
+        if (message.withdrawn !== "") {
+            writer.uint32(74).string(message.withdrawn);
         }
         return writer;
     },
@@ -215,37 +207,31 @@ export const Vesting = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.vestingType = reader.string();
+                    message.id = reader.int32();
                     break;
                 case 2:
-                    message.vestingStartBlock = longToNumber(reader.int64());
+                    message.vestingType = reader.string();
                     break;
                 case 3:
-                    message.lockEndBlock = longToNumber(reader.int64());
+                    message.vestingStartBlock = longToNumber(reader.int64());
                     break;
                 case 4:
-                    message.vestingEndBlock = longToNumber(reader.int64());
+                    message.lockEndBlock = longToNumber(reader.int64());
                     break;
                 case 5:
-                    message.vested = longToNumber(reader.uint64());
+                    message.vestingEndBlock = longToNumber(reader.int64());
                     break;
                 case 6:
-                    message.claimable = longToNumber(reader.uint64());
+                    message.vested = reader.string();
                     break;
                 case 7:
-                    message.lastFreeingBlock = longToNumber(reader.int64());
-                    break;
-                case 8:
                     message.freeCoinsBlockPeriod = longToNumber(reader.int64());
                     break;
-                case 9:
-                    message.freeCoinsPerPeriod = longToNumber(reader.uint64());
-                    break;
-                case 10:
+                case 8:
                     message.delegationAllowed = reader.bool();
                     break;
-                case 11:
-                    message.withdrawn = longToNumber(reader.uint64());
+                case 9:
+                    message.withdrawn = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -256,6 +242,12 @@ export const Vesting = {
     },
     fromJSON(object) {
         const message = { ...baseVesting };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = Number(object.id);
+        }
+        else {
+            message.id = 0;
+        }
         if (object.vestingType !== undefined && object.vestingType !== null) {
             message.vestingType = String(object.vestingType);
         }
@@ -283,23 +275,10 @@ export const Vesting = {
             message.vestingEndBlock = 0;
         }
         if (object.vested !== undefined && object.vested !== null) {
-            message.vested = Number(object.vested);
+            message.vested = String(object.vested);
         }
         else {
-            message.vested = 0;
-        }
-        if (object.claimable !== undefined && object.claimable !== null) {
-            message.claimable = Number(object.claimable);
-        }
-        else {
-            message.claimable = 0;
-        }
-        if (object.lastFreeingBlock !== undefined &&
-            object.lastFreeingBlock !== null) {
-            message.lastFreeingBlock = Number(object.lastFreeingBlock);
-        }
-        else {
-            message.lastFreeingBlock = 0;
+            message.vested = "";
         }
         if (object.freeCoinsBlockPeriod !== undefined &&
             object.freeCoinsBlockPeriod !== null) {
@@ -307,13 +286,6 @@ export const Vesting = {
         }
         else {
             message.freeCoinsBlockPeriod = 0;
-        }
-        if (object.freeCoinsPerPeriod !== undefined &&
-            object.freeCoinsPerPeriod !== null) {
-            message.freeCoinsPerPeriod = Number(object.freeCoinsPerPeriod);
-        }
-        else {
-            message.freeCoinsPerPeriod = 0;
         }
         if (object.delegationAllowed !== undefined &&
             object.delegationAllowed !== null) {
@@ -323,15 +295,16 @@ export const Vesting = {
             message.delegationAllowed = false;
         }
         if (object.withdrawn !== undefined && object.withdrawn !== null) {
-            message.withdrawn = Number(object.withdrawn);
+            message.withdrawn = String(object.withdrawn);
         }
         else {
-            message.withdrawn = 0;
+            message.withdrawn = "";
         }
         return message;
     },
     toJSON(message) {
         const obj = {};
+        message.id !== undefined && (obj.id = message.id);
         message.vestingType !== undefined &&
             (obj.vestingType = message.vestingType);
         message.vestingStartBlock !== undefined &&
@@ -341,13 +314,8 @@ export const Vesting = {
         message.vestingEndBlock !== undefined &&
             (obj.vestingEndBlock = message.vestingEndBlock);
         message.vested !== undefined && (obj.vested = message.vested);
-        message.claimable !== undefined && (obj.claimable = message.claimable);
-        message.lastFreeingBlock !== undefined &&
-            (obj.lastFreeingBlock = message.lastFreeingBlock);
         message.freeCoinsBlockPeriod !== undefined &&
             (obj.freeCoinsBlockPeriod = message.freeCoinsBlockPeriod);
-        message.freeCoinsPerPeriod !== undefined &&
-            (obj.freeCoinsPerPeriod = message.freeCoinsPerPeriod);
         message.delegationAllowed !== undefined &&
             (obj.delegationAllowed = message.delegationAllowed);
         message.withdrawn !== undefined && (obj.withdrawn = message.withdrawn);
@@ -355,6 +323,12 @@ export const Vesting = {
     },
     fromPartial(object) {
         const message = { ...baseVesting };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = object.id;
+        }
+        else {
+            message.id = 0;
+        }
         if (object.vestingType !== undefined && object.vestingType !== null) {
             message.vestingType = object.vestingType;
         }
@@ -385,20 +359,7 @@ export const Vesting = {
             message.vested = object.vested;
         }
         else {
-            message.vested = 0;
-        }
-        if (object.claimable !== undefined && object.claimable !== null) {
-            message.claimable = object.claimable;
-        }
-        else {
-            message.claimable = 0;
-        }
-        if (object.lastFreeingBlock !== undefined &&
-            object.lastFreeingBlock !== null) {
-            message.lastFreeingBlock = object.lastFreeingBlock;
-        }
-        else {
-            message.lastFreeingBlock = 0;
+            message.vested = "";
         }
         if (object.freeCoinsBlockPeriod !== undefined &&
             object.freeCoinsBlockPeriod !== null) {
@@ -406,13 +367,6 @@ export const Vesting = {
         }
         else {
             message.freeCoinsBlockPeriod = 0;
-        }
-        if (object.freeCoinsPerPeriod !== undefined &&
-            object.freeCoinsPerPeriod !== null) {
-            message.freeCoinsPerPeriod = object.freeCoinsPerPeriod;
-        }
-        else {
-            message.freeCoinsPerPeriod = 0;
         }
         if (object.delegationAllowed !== undefined &&
             object.delegationAllowed !== null) {
@@ -425,7 +379,7 @@ export const Vesting = {
             message.withdrawn = object.withdrawn;
         }
         else {
-            message.withdrawn = 0;
+            message.withdrawn = "";
         }
         return message;
     },

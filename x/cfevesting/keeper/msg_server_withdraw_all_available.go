@@ -3,10 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/telemetry"
 	metrics "github.com/armon/go-metrics"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/cosmos/cosmos-sdk/telemetry"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) WithdrawAllAvailable(goCtx context.Context, msg *types.MsgWithdrawAllAvailable) (*types.MsgWithdrawAllAvailableResponse, error) {
@@ -40,6 +40,6 @@ func (k msgServer) WithdrawAllAvailable(goCtx context.Context, msg *types.MsgWit
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
 		),
 	})
-	
+
 	return &types.MsgWithdrawAllAvailableResponse{}, nil
 }

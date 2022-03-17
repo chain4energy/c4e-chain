@@ -22,8 +22,12 @@ func TestCalculateWithdrawable(t *testing.T) {
 		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod:   0,
-		DelegationAllowed: true,
-		Withdrawn:         sdk.ZeroInt(),
+		DelegationAllowed:         true,
+		Withdrawn:                 sdk.ZeroInt(),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewInt(1000000),
+		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	withdrawable := keeper.CalculateWithdrawable(100, vesting)
@@ -59,7 +63,7 @@ func TestCalculateWithdrawable(t *testing.T) {
 	require.EqualValues(t, sdk.NewInt(1000000), withdrawable)
 
 	vesting.VestingEndBlock = 110000
-	vesting.Vested = sdk.NewInt(1000)
+	vesting.LastModificationVested = sdk.NewInt(1000)
 
 	withdrawable = keeper.CalculateWithdrawable(10010, vesting)
 	require.EqualValues(t, sdk.ZeroInt(), withdrawable)
@@ -70,9 +74,11 @@ func TestCalculateWithdrawable(t *testing.T) {
 	withdrawable = keeper.CalculateWithdrawable(10100, vesting)
 	require.EqualValues(t, sdk.NewInt(1), withdrawable)
 
-	vesting.Vested = sdk.NewInt(1000000)
-	vesting.Withdrawn = sdk.NewInt(500)
+	vesting.LastModificationVested = sdk.NewInt(1000000)
+	vesting.LastModificationWithdrawn = sdk.NewInt(500)
 	withdrawable = keeper.CalculateWithdrawable(10100, vesting)
 	require.EqualValues(t, sdk.NewInt(500), withdrawable)
 
+	withdrawable = keeper.CalculateWithdrawable(110000, vesting)
+	require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn), withdrawable)
 }

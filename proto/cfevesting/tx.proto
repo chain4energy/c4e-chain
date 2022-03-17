@@ -18,6 +18,7 @@ service Msg {
   rpc Undelegate(MsgUndelegate) returns (MsgUndelegateResponse);
   rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
   rpc WithdrawDelegatorReward(MsgWithdrawDelegatorReward) returns (MsgWithdrawDelegatorRewardResponse);
+  rpc SendVesting(MsgSendVesting) returns (MsgSendVestingResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -74,6 +75,17 @@ message MsgWithdrawDelegatorReward {
 }
 
 message MsgWithdrawDelegatorRewardResponse {
+}
+
+message MsgSendVesting {
+  string from_address = 1;
+  string to_address = 2;
+  int32 vesting_id = 3;
+  string amount = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  bool restart_vesting = 5;
+}
+
+message MsgSendVestingResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

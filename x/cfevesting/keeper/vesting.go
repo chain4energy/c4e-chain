@@ -11,61 +11,98 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// get the vesting types
+// vest
+
 func (k Keeper) Vest(ctx sdk.Context, addr string, amount sdk.Int, vestingType string) error {
 	k.Logger(ctx).Debug("Vest: addr: " + addr + "amount: " + amount.String() + "vestingType: " + vestingType)
 	vt, err := k.GetVestingType(ctx, vestingType)
-	k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
-
 	if err != nil {
 		k.Logger(ctx).Error("Error: " + err.Error())
 
 		return sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
 	}
+	k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
+
+	return k.addVesting(ctx, false, addr, addr, amount, vestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
+		vt.LockupPeriod+ctx.BlockHeight(), vt.LockupPeriod+vt.VestingPeriod+ctx.BlockHeight(),
+		vt.TokenReleasingPeriod)
+}
+
+func (k Keeper) addVesting(
+	ctx sdk.Context,
+	isModuleInternalOperation bool,
+	vestingAddr string,
+	coinSrcAddr string,
+	amount sdk.Int,
+	vestingType string,
+	delegationAllowed bool,
+	vestingStartHeight int64,
+	lockEndHeight int64,
+	vestingEndHeight int64,
+	FreeCoinsBlockPeriod int64) error {
+	// k.Logger(ctx).Debug("Vest: vestingAddr: " + vestingAddr + "amount: " + amount.String() + "vestingType: " + vestingType)
+	// vt, err := k.GetVestingType(ctx, vestingType)
+
+	// if err != nil {
+	// 	k.Logger(ctx).Error("Error: " + err.Error())
+
+	// 	return sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
+	// }
+	// k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
+
 	if amount.Equal(sdk.ZeroInt()) {
 		return nil
 	}
 
-	accAddress, err := sdk.AccAddressFromBech32(addr)
+	vestingAccAddress, err := sdk.AccAddressFromBech32(vestingAddr)
 	if err != nil {
 		k.Logger(ctx).Error("Error: " + err.Error())
 		return err
 	}
-	k.Logger(ctx).Debug("accAddress: " + accAddress.String())
 
 	denom := k.GetParams(ctx).Denom
 	k.Logger(ctx).Debug("denom: " + denom)
 
-	balance := k.bank.GetBalance(ctx, accAddress, denom)
-	k.Logger(ctx).Debug("balance: " + balance.Amount.String())
+	var srcAccAddress sdk.AccAddress
+	if !isModuleInternalOperation || delegationAllowed {
+		srcAccAddress, err = sdk.AccAddressFromBech32(coinSrcAddr)
+		if err != nil {
+			k.Logger(ctx).Error("Error: " + err.Error())
+			return err
+		}
+		k.Logger(ctx).Debug("vestingAccAddress: " + vestingAccAddress.String())
 
-	if balance.Amount.LT(amount) {
-		k.Logger(ctx).Error("Error: " + "Balance [" + balance.Amount.String() +
-			balance.Denom + "]lesser than requested amount: " + amount.String() + denom)
-		return sdkerrors.Wrap(sdkerrors.ErrInsufficientFunds, "Balance ["+balance.Amount.String()+
-			balance.Denom+"]lesser than requested amount: "+amount.String()+denom)
+		balance := k.bank.GetBalance(ctx, srcAccAddress, denom)
+		k.Logger(ctx).Debug("balance: " + balance.Amount.String())
+
+		if balance.Amount.LT(amount) {
+			k.Logger(ctx).Error("Error: " + "Balance [" + balance.Amount.String() +
+				balance.Denom + "]lesser than requested amount: " + amount.String() + denom)
+			return sdkerrors.Wrap(sdkerrors.ErrInsufficientFunds, "Balance ["+balance.Amount.String()+
+				balance.Denom+"]lesser than requested amount: "+amount.String()+denom)
+		}
 	}
 
 	// return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Balance: " + balance.Amount.String())
 
-	accVestings, vestingsFound := k.GetAccountVestings(ctx, addr)
+	accVestings, vestingsFound := k.GetAccountVestings(ctx, vestingAddr)
 	k.Logger(ctx).Debug("vestingsFound: " + strconv.FormatBool(vestingsFound))
 	var id int32
 	var delegatableAddress sdk.AccAddress
 	if !vestingsFound {
 		accVestings = types.AccountVestings{}
-		accVestings.Address = addr
+		accVestings.Address = vestingAddr
 		k.Logger(ctx).Debug("accVestings.Address: " + accVestings.Address)
 
-		if vt.DelegationsAllowed {
-			delegatableAddress = k.CreateModuleAccountForDelegatableVesting(ctx, addr).GetAddress()
+		if delegationAllowed {
+			delegatableAddress = k.CreateModuleAccountForDelegatableVesting(ctx, vestingAddr).GetAddress()
 			k.Logger(ctx).Debug("delegatableAddress: " + delegatableAddress.String())
 
 			accVestings.DelegableAddress = delegatableAddress.String()
 		}
 		id = 1
 	} else {
-		if vt.DelegationsAllowed {
+		if delegationAllowed {
 			delegatableAddress, err = sdk.AccAddressFromBech32(accVestings.DelegableAddress)
 			k.Logger(ctx).Debug("delegatableAddress: " + delegatableAddress.String())
 			if err != nil {
@@ -77,30 +114,36 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount sdk.Int, vestingType s
 	}
 	// numOfPeriods := vt.VestingPeriod / vt.TokenReleasingPeriod
 	// amountPerPeriod := amount / uint64(numOfPeriods)
-	vesting := types.Vesting{VestingType: vestingType,
+	vesting := types.Vesting{
 		Id:                id,
-		VestingStartBlock: ctx.BlockHeight(),
-		LockEndBlock:      vt.LockupPeriod + ctx.BlockHeight(),
-		VestingEndBlock:   vt.LockupPeriod + vt.VestingPeriod + ctx.BlockHeight(),
+		VestingType:       vestingType,
+		VestingStartBlock: vestingStartHeight,
+		LockEndBlock:      lockEndHeight,
+		VestingEndBlock:   vestingEndHeight,
 		Vested:            amount,
 		// Claimable:            0,
 		// LastFreeingBlock:     0,
-		FreeCoinsBlockPeriod: vt.TokenReleasingPeriod,
+		FreeCoinsBlockPeriod: FreeCoinsBlockPeriod,
 		// FreeCoinsPerPeriod:   amountPerPeriod,
-		DelegationAllowed: vt.DelegationsAllowed,
-		Withdrawn:         sdk.ZeroInt()}
+		DelegationAllowed:         delegationAllowed,
+		Withdrawn:                 sdk.ZeroInt(),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     vestingStartHeight,
+		LastModificationVested:    amount,
+		LastModificationWithdrawn: sdk.ZeroInt(),
+	}
 	accVestings.Vestings = append(accVestings.Vestings, &vesting)
 	k.SetAccountVestings(ctx, accVestings)
 
 	coinToSend := sdk.NewCoin(denom, amount)
 	coinsToSend := sdk.NewCoins(coinToSend)
 
-	if vt.DelegationsAllowed {
-		err = k.bank.SendCoins(ctx, accAddress, delegatableAddress, coinsToSend)
+	if delegationAllowed {
+		err = k.bank.SendCoins(ctx, srcAccAddress, delegatableAddress, coinsToSend)
 		k.Logger(ctx).Info("after SendCoins: " + coinToSend.Amount.String())
 
-	} else {
-		err = k.bank.SendCoinsFromAccountToModule(ctx, accAddress, types.ModuleName, coinsToSend)
+	} else if !isModuleInternalOperation {
+		err = k.bank.SendCoinsFromAccountToModule(ctx, srcAccAddress, types.ModuleName, coinsToSend)
 		k.Logger(ctx).Info("after SendCoinsFromAccountToModule: " + coinToSend.Amount.String())
 
 	}
@@ -108,8 +151,71 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount sdk.Int, vestingType s
 		k.Logger(ctx).Error("Error: " + err.Error())
 		return err
 	}
-	k.Logger(ctx).Info("Vest exit: " + addr)
+	k.Logger(ctx).Info("Vest exit: " + vestingAddr)
 	return nil
+}
+
+func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, vestingId int32, amount sdk.Int, restartVesting bool) error {
+	_, err := k.WithdrawAllAvailable(ctx, fromAddr)
+	if err != nil {
+		return err
+	}
+
+	accVestings, vestingsFound := k.GetAccountVestings(ctx, fromAddr)
+	if !vestingsFound || len(accVestings.Vestings) == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrNotFound, "no vestings found")
+	}
+	var vesting *types.Vesting = nil
+	for _, vest := range accVestings.Vestings {
+		if vest.Id == vestingId {
+			vesting = vest
+		}
+	}
+	if vesting == nil {
+		return sdkerrors.Wrap(sdkerrors.ErrNotFound, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" not found")
+	}
+	available := vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
+	if available.LT(amount) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+			"vesting available: %s is smaller than %s", available, amount)
+	}
+	if vesting.DelegationAllowed {
+		if len(accVestings.DelegableAddress) == 0 {
+			return sdkerrors.Wrap(sdkerrors.ErrLogic, "delegable vesting has no delegable address")
+		}
+		denom := k.GetParams(ctx).Denom
+		from := sdk.AccAddress(accVestings.DelegableAddress)
+		lockedCoins := k.bank.LockedCoins(ctx, from)
+		balance := k.bank.GetBalance(ctx, from, denom)
+		locked := sdk.NewCoin(denom, lockedCoins.AmountOf(denom))
+		spendable := balance.Sub(locked)
+		if spendable.SubAmount(amount).IsNegative() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+				"vesting available: %s is smaller than %s - probably delageted to validator", spendable.Amount, amount)
+		}
+	}
+	vesting.Sent = amount
+	vesting.LastModificationBlock = ctx.BlockHeight()
+	vesting.LastModificationVested = available.Sub(amount)
+	vesting.LastModificationWithdrawn = sdk.ZeroInt()
+
+	k.SetAccountVestings(ctx, accVestings)
+	if restartVesting {
+		vt, err := k.GetVestingType(ctx, vesting.VestingType)
+		if err != nil {
+			k.Logger(ctx).Error("Error: " + err.Error())
+
+			return sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
+		}
+		k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
+		return k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
+			vt.LockupPeriod+ctx.BlockHeight(), vt.LockupPeriod+vt.VestingPeriod+ctx.BlockHeight(),
+			vt.TokenReleasingPeriod)
+	} else {
+		return k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockHeight(),
+			vesting.LockEndBlock, vesting.VestingEndBlock,
+			vesting.FreeCoinsBlockPeriod)
+	}
 }
 
 func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sdk.Coin, returnedError error) {
@@ -135,7 +241,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 	for _, vesting := range accVestings.Vestings {
 		withdrawable := CalculateWithdrawable(height, *vesting)
 		vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
-
+		vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(withdrawable)
 		if vesting.DelegationAllowed {
 			toWithdrawDelegable = toWithdrawDelegable.Add(withdrawable)
 		} else {
@@ -175,11 +281,21 @@ func CalculateWithdrawable(height int64, vesting types.Vesting) sdk.Int {
 		return sdk.ZeroInt()
 	}
 	if height >= vesting.VestingEndBlock {
-		return vesting.Vested
+		return vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
 	}
 
-	allVestingBlocks := vesting.VestingEndBlock - vesting.LockEndBlock
-	blocksFromStart := height - vesting.LockEndBlock
+	var lockEndHeight int64
+	if vesting.VestingStartBlock > vesting.LockEndBlock {
+		lockEndHeight = vesting.VestingStartBlock
+	} else {
+		lockEndHeight = vesting.LockEndBlock
+	}
+
+	if vesting.LastModificationBlock > lockEndHeight {
+		lockEndHeight = vesting.LastModificationBlock
+	}
+	allVestingBlocks := vesting.VestingEndBlock - lockEndHeight
+	blocksFromStart := height - lockEndHeight
 	numOfPeriodsFromStart := blocksFromStart / vesting.FreeCoinsBlockPeriod
 	numOfPeriods := allVestingBlocks / vesting.FreeCoinsBlockPeriod
 	rest := allVestingBlocks - numOfPeriods*vesting.FreeCoinsBlockPeriod
@@ -191,10 +307,10 @@ func CalculateWithdrawable(height int64, vesting types.Vesting) sdk.Int {
 		numOfPeriods++
 	}
 
-	vested := vesting.Vested
+	vested := vesting.LastModificationVested
 
 	withdrawableFromStart := vested.MulRaw(numOfPeriodsFromStart).QuoRaw(numOfPeriods)
-	return withdrawableFromStart.Sub(vesting.Withdrawn)
+	return withdrawableFromStart.Sub(vesting.LastModificationWithdrawn)
 
 }
 

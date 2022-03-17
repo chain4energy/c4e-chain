@@ -24,6 +24,7 @@ type BankKeeper interface {
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	LockedCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 }
 
 // StakingKeeper defines the expected interface needed for staking functionality.

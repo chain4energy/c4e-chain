@@ -135,6 +135,7 @@ func TestWithdrawAllAvailableSomeToWithdraw(t *testing.T) {
 	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
 	vesting := accVestings[0].Vestings[0]
 	vesting1.Withdrawn = sdk.NewInt(1000)
+	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
 	verifyVesting(t, *vesting1, *vesting)
 
 	verifyAccountBalance(t, bank, ctx, accAddr, denom, vesting1.Withdrawn)
@@ -179,6 +180,10 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdraw(t *testing.T) {
 	vesting1.Withdrawn = sdk.NewInt(1000)
 	vesting2.Withdrawn = sdk.NewInt(1000)
 	vesting3.Withdrawn = sdk.NewInt(1000)
+
+	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
+	vesting2.LastModificationWithdrawn = sdk.NewInt(1000)
+	vesting3.LastModificationWithdrawn = sdk.NewInt(1000)
 	vesting := accVestings[0].Vestings[0]
 	verifyVesting(t, *vesting1, *vesting)
 
@@ -228,6 +233,7 @@ func TestWithdrawAllAvailableSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
 	vesting := accVestings[0].Vestings[0]
 	vesting1.Withdrawn = sdk.NewInt(1000)
+	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
 	verifyVesting(t, *vesting1, *vesting)
 
 	verifyAccountBalance(t, bank, ctx, accAddr, denom, vesting1.Withdrawn.SubRaw(withdrawn))
@@ -274,6 +280,10 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAndSomeWithdrawn(t *testing
 	vesting1.Withdrawn = sdk.NewInt(1000)
 	vesting2.Withdrawn = sdk.NewInt(1000)
 	vesting3.Withdrawn = sdk.NewInt(1000)
+
+	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
+	vesting2.LastModificationWithdrawn = sdk.NewInt(1000)
+	vesting3.LastModificationWithdrawn = sdk.NewInt(1000)
 	verifyVesting(t, *vesting1, *vesting)
 
 	vesting = accVestings[0].Vestings[1]
@@ -345,8 +355,12 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed: false,
-		Withdrawn:         sdk.ZeroInt(),
+		DelegationAllowed:         false,
+		Withdrawn:                 sdk.ZeroInt(),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewIntFromUint64(vested),
+		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 	verifyVesting(t, vesting1, *vesting)
 
@@ -376,8 +390,12 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed: false,
-		Withdrawn:         sdk.NewInt(1000),
+		DelegationAllowed:         false,
+		Withdrawn:                 sdk.NewInt(1000),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewIntFromUint64(vested),
+		LastModificationWithdrawn: sdk.NewInt(1000),
 	}
 	verifyVesting(t, vesting1, *vesting)
 
@@ -429,6 +447,10 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegable(t *testing.T) 
 	vesting1.Withdrawn = sdk.NewInt(1000)
 	vesting2.Withdrawn = sdk.NewInt(1000)
 	vesting3.Withdrawn = sdk.NewInt(1000)
+
+	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
+	vesting2.LastModificationWithdrawn = sdk.NewInt(1000)
+	vesting3.LastModificationWithdrawn = sdk.NewInt(1000)
 	vesting := accVestings[0].Vestings[0]
 	verifyVesting(t, *vesting1, *vesting)
 
@@ -439,7 +461,7 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegable(t *testing.T) 
 	verifyVesting(t, *vesting3, *vesting)
 
 	verifyAccountBalance(t, bank, ctx, accAddr, denom, vesting1.Withdrawn.MulRaw(3))
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom,sdk.NewInt(3*vested).Sub(vesting1.Withdrawn.MulRaw(3)))
+	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(3*vested).Sub(vesting1.Withdrawn.MulRaw(3)))
 
 	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.ZeroInt())
 
@@ -488,6 +510,11 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllSomeDelegable(t *testing
 	vesting1.Withdrawn = sdk.NewInt(1000)
 	vesting2.Withdrawn = sdk.NewInt(1000)
 	vesting3.Withdrawn = sdk.NewInt(1000)
+
+	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
+	vesting2.LastModificationWithdrawn = sdk.NewInt(1000)
+	vesting3.LastModificationWithdrawn = sdk.NewInt(1000)
+
 	vesting := accVestings[0].Vestings[0]
 	verifyVesting(t, *vesting1, *vesting)
 
@@ -554,8 +581,12 @@ func createAccountVestingsMany(addr string, vt1 string, vt2 string, vt3 string, 
 		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed: false,
-		Withdrawn:         sdk.NewIntFromUint64(withdrawn),
+		DelegationAllowed:         false,
+		Withdrawn:                 sdk.NewIntFromUint64(withdrawn),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewIntFromUint64(vested),
+		LastModificationWithdrawn: sdk.NewIntFromUint64(withdrawn),
 	}
 	vesting2 := types.Vesting{
 		Id:                2,
@@ -568,8 +599,12 @@ func createAccountVestingsMany(addr string, vt1 string, vt2 string, vt3 string, 
 		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed: false,
-		Withdrawn:         sdk.NewIntFromUint64(withdrawn),
+		DelegationAllowed:         false,
+		Withdrawn:                 sdk.NewIntFromUint64(withdrawn),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewIntFromUint64(vested),
+		LastModificationWithdrawn: sdk.NewIntFromUint64(withdrawn),
 	}
 	vesting3 := types.Vesting{
 		Id:                3,
@@ -582,8 +617,12 @@ func createAccountVestingsMany(addr string, vt1 string, vt2 string, vt3 string, 
 		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed: false,
-		Withdrawn:         sdk.NewIntFromUint64(withdrawn),
+		DelegationAllowed:         false,
+		Withdrawn:                 sdk.NewIntFromUint64(withdrawn),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewIntFromUint64(vested),
+		LastModificationWithdrawn: sdk.NewIntFromUint64(withdrawn),
 	}
 
 	vestingsArray := []*types.Vesting{&vesting1, &vesting2, &vesting3}

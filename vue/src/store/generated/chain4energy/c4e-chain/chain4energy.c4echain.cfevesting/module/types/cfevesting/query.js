@@ -318,6 +318,7 @@ export const QueryVestingResponse = {
     },
 };
 const baseVestingInfo = {
+    id: 0,
     vestingType: "",
     vestingStartHeight: 0,
     lockEndHeight: 0,
@@ -328,29 +329,32 @@ const baseVestingInfo = {
 };
 export const VestingInfo = {
     encode(message, writer = Writer.create()) {
+        if (message.id !== 0) {
+            writer.uint32(8).int32(message.id);
+        }
         if (message.vestingType !== "") {
-            writer.uint32(10).string(message.vestingType);
+            writer.uint32(18).string(message.vestingType);
         }
         if (message.vestingStartHeight !== 0) {
-            writer.uint32(16).int64(message.vestingStartHeight);
+            writer.uint32(24).int64(message.vestingStartHeight);
         }
         if (message.lockEndHeight !== 0) {
-            writer.uint32(24).int64(message.lockEndHeight);
+            writer.uint32(32).int64(message.lockEndHeight);
         }
         if (message.vestingEndHeight !== 0) {
-            writer.uint32(32).int64(message.vestingEndHeight);
+            writer.uint32(40).int64(message.vestingEndHeight);
         }
         if (message.withdrawable !== "") {
-            writer.uint32(42).string(message.withdrawable);
+            writer.uint32(50).string(message.withdrawable);
         }
         if (message.delegationAllowed === true) {
-            writer.uint32(48).bool(message.delegationAllowed);
+            writer.uint32(56).bool(message.delegationAllowed);
         }
         if (message.vested !== undefined) {
-            Coin.encode(message.vested, writer.uint32(58).fork()).ldelim();
+            Coin.encode(message.vested, writer.uint32(66).fork()).ldelim();
         }
         if (message.currentVestedAmount !== "") {
-            writer.uint32(66).string(message.currentVestedAmount);
+            writer.uint32(74).string(message.currentVestedAmount);
         }
         return writer;
     },
@@ -362,27 +366,30 @@ export const VestingInfo = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.vestingType = reader.string();
+                    message.id = reader.int32();
                     break;
                 case 2:
-                    message.vestingStartHeight = longToNumber(reader.int64());
+                    message.vestingType = reader.string();
                     break;
                 case 3:
-                    message.lockEndHeight = longToNumber(reader.int64());
+                    message.vestingStartHeight = longToNumber(reader.int64());
                     break;
                 case 4:
-                    message.vestingEndHeight = longToNumber(reader.int64());
+                    message.lockEndHeight = longToNumber(reader.int64());
                     break;
                 case 5:
-                    message.withdrawable = reader.string();
+                    message.vestingEndHeight = longToNumber(reader.int64());
                     break;
                 case 6:
-                    message.delegationAllowed = reader.bool();
+                    message.withdrawable = reader.string();
                     break;
                 case 7:
-                    message.vested = Coin.decode(reader, reader.uint32());
+                    message.delegationAllowed = reader.bool();
                     break;
                 case 8:
+                    message.vested = Coin.decode(reader, reader.uint32());
+                    break;
+                case 9:
                     message.currentVestedAmount = reader.string();
                     break;
                 default:
@@ -394,6 +401,12 @@ export const VestingInfo = {
     },
     fromJSON(object) {
         const message = { ...baseVestingInfo };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = Number(object.id);
+        }
+        else {
+            message.id = 0;
+        }
         if (object.vestingType !== undefined && object.vestingType !== null) {
             message.vestingType = String(object.vestingType);
         }
@@ -450,6 +463,7 @@ export const VestingInfo = {
     },
     toJSON(message) {
         const obj = {};
+        message.id !== undefined && (obj.id = message.id);
         message.vestingType !== undefined &&
             (obj.vestingType = message.vestingType);
         message.vestingStartHeight !== undefined &&
@@ -470,6 +484,12 @@ export const VestingInfo = {
     },
     fromPartial(object) {
         const message = { ...baseVestingInfo };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = object.id;
+        }
+        else {
+            message.id = 0;
+        }
         if (object.vestingType !== undefined && object.vestingType !== null) {
             message.vestingType = object.vestingType;
         }

@@ -69,7 +69,7 @@ func vestDelegation(t *testing.T, delegationAllowed bool) {
 	k.SetVestingTypes(ctx, vestingTypes)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgVest{Creator: addr, Amount: sdk.NewInt(vested), VestingType: "test1"}
+	msg := types.MsgVest{Creator: addr, Amount: sdk.NewInt(vested), VestingType: vt1}
 	_, error := msgServer.Vest(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 

@@ -3,6 +3,7 @@ export interface CfevestingMsgBeginRedelegateResponse {
     completionTime?: string;
 }
 export declare type CfevestingMsgDelegateResponse = object;
+export declare type CfevestingMsgSendVestingResponse = object;
 export interface CfevestingMsgUndelegateResponse {
     /** @format date-time */
     completionTime?: string;
@@ -31,6 +32,8 @@ export interface CfevestingQueryVestingTypeResponse {
     vestingTypes?: CfevestingVestingTypes;
 }
 export interface CfevestingVestingInfo {
+    /** @format int32 */
+    id?: number;
     vestingType?: string;
     /** @format int64 */
     vestingStartHeight?: string;

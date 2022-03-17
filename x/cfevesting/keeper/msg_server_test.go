@@ -55,8 +55,12 @@ func createAccountVestings(addr string, vt1 string, vested uint64, withdrawn uin
 		// LastFreeingBlock: 0,
 		FreeCoinsBlockPeriod: 10,
 		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed: false,
-		Withdrawn:         sdk.NewIntFromUint64(withdrawn),
+		DelegationAllowed:         false,
+		Withdrawn:                 sdk.NewIntFromUint64(withdrawn),
+		Sent:                      sdk.ZeroInt(),
+		LastModificationBlock:     1000,
+		LastModificationVested:    sdk.NewIntFromUint64(vested),
+		LastModificationWithdrawn: sdk.NewIntFromUint64(withdrawn),
 	}
 	vestingsArray := []*types.Vesting{&vesting1}
 	accountVestings.Vestings = vestingsArray

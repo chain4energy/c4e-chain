@@ -82,7 +82,6 @@ func TestRedelegate(t *testing.T) {
 	require.EqualValues(t, nil, err)
 	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
 
-
 	delegations := staking.GetAllDelegatorDelegations(ctx, delegableAccAddr)
 	require.EqualValues(t, 1, len(delegations))
 	delegation := delegations[0]
@@ -123,6 +122,5 @@ func TestRedelegate(t *testing.T) {
 	delegation = delegations[0]
 	require.EqualValues(t, sdk.NewDec(vested/2), delegation.Shares)
 	require.EqualValues(t, validatorAddr2, delegation.ValidatorAddress)
-
 
 }

@@ -1,14 +1,14 @@
 /* eslint-disable */
-import { Reader, util, configure, Writer } from "protobufjs/minimal";
+import { Reader, Writer } from "protobufjs/minimal";
 import { Timestamp } from "../google/protobuf/timestamp";
-import * as Long from "long";
 import { Coin } from "../cosmos/base/v1beta1/coin";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
 export interface MsgVest {
   creator: string;
-  amount: number;
+  /** uint64 amount = 2; */
+  amount: string;
   vestingType: string;
 }
 
@@ -56,15 +56,25 @@ export interface MsgWithdrawDelegatorReward {
 
 export interface MsgWithdrawDelegatorRewardResponse {}
 
-const baseMsgVest: object = { creator: "", amount: 0, vestingType: "" };
+export interface MsgSendVesting {
+  fromAddress: string;
+  toAddress: string;
+  vestingId: string;
+  amount: string;
+  restartVesting: string;
+}
+
+export interface MsgSendVestingResponse {}
+
+const baseMsgVest: object = { creator: "", amount: "", vestingType: "" };
 
 export const MsgVest = {
   encode(message: MsgVest, writer: Writer = Writer.create()): Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
-    if (message.amount !== 0) {
-      writer.uint32(16).uint64(message.amount);
+    if (message.amount !== "") {
+      writer.uint32(18).string(message.amount);
     }
     if (message.vestingType !== "") {
       writer.uint32(26).string(message.vestingType);
@@ -83,7 +93,7 @@ export const MsgVest = {
           message.creator = reader.string();
           break;
         case 2:
-          message.amount = longToNumber(reader.uint64() as Long);
+          message.amount = reader.string();
           break;
         case 3:
           message.vestingType = reader.string();
@@ -104,9 +114,9 @@ export const MsgVest = {
       message.creator = "";
     }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Number(object.amount);
+      message.amount = String(object.amount);
     } else {
-      message.amount = 0;
+      message.amount = "";
     }
     if (object.vestingType !== undefined && object.vestingType !== null) {
       message.vestingType = String(object.vestingType);
@@ -135,7 +145,7 @@ export const MsgVest = {
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = object.amount;
     } else {
-      message.amount = 0;
+      message.amount = "";
     }
     if (object.vestingType !== undefined && object.vestingType !== null) {
       message.vestingType = object.vestingType;
@@ -988,6 +998,175 @@ export const MsgWithdrawDelegatorRewardResponse = {
   },
 };
 
+const baseMsgSendVesting: object = {
+  fromAddress: "",
+  toAddress: "",
+  vestingId: "",
+  amount: "",
+  restartVesting: "",
+};
+
+export const MsgSendVesting = {
+  encode(message: MsgSendVesting, writer: Writer = Writer.create()): Writer {
+    if (message.fromAddress !== "") {
+      writer.uint32(10).string(message.fromAddress);
+    }
+    if (message.toAddress !== "") {
+      writer.uint32(18).string(message.toAddress);
+    }
+    if (message.vestingId !== "") {
+      writer.uint32(26).string(message.vestingId);
+    }
+    if (message.amount !== "") {
+      writer.uint32(34).string(message.amount);
+    }
+    if (message.restartVesting !== "") {
+      writer.uint32(42).string(message.restartVesting);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgSendVesting {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgSendVesting } as MsgSendVesting;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.fromAddress = reader.string();
+          break;
+        case 2:
+          message.toAddress = reader.string();
+          break;
+        case 3:
+          message.vestingId = reader.string();
+          break;
+        case 4:
+          message.amount = reader.string();
+          break;
+        case 5:
+          message.restartVesting = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgSendVesting {
+    const message = { ...baseMsgSendVesting } as MsgSendVesting;
+    if (object.fromAddress !== undefined && object.fromAddress !== null) {
+      message.fromAddress = String(object.fromAddress);
+    } else {
+      message.fromAddress = "";
+    }
+    if (object.toAddress !== undefined && object.toAddress !== null) {
+      message.toAddress = String(object.toAddress);
+    } else {
+      message.toAddress = "";
+    }
+    if (object.vestingId !== undefined && object.vestingId !== null) {
+      message.vestingId = String(object.vestingId);
+    } else {
+      message.vestingId = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = String(object.amount);
+    } else {
+      message.amount = "";
+    }
+    if (object.restartVesting !== undefined && object.restartVesting !== null) {
+      message.restartVesting = String(object.restartVesting);
+    } else {
+      message.restartVesting = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgSendVesting): unknown {
+    const obj: any = {};
+    message.fromAddress !== undefined &&
+      (obj.fromAddress = message.fromAddress);
+    message.toAddress !== undefined && (obj.toAddress = message.toAddress);
+    message.vestingId !== undefined && (obj.vestingId = message.vestingId);
+    message.amount !== undefined && (obj.amount = message.amount);
+    message.restartVesting !== undefined &&
+      (obj.restartVesting = message.restartVesting);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgSendVesting>): MsgSendVesting {
+    const message = { ...baseMsgSendVesting } as MsgSendVesting;
+    if (object.fromAddress !== undefined && object.fromAddress !== null) {
+      message.fromAddress = object.fromAddress;
+    } else {
+      message.fromAddress = "";
+    }
+    if (object.toAddress !== undefined && object.toAddress !== null) {
+      message.toAddress = object.toAddress;
+    } else {
+      message.toAddress = "";
+    }
+    if (object.vestingId !== undefined && object.vestingId !== null) {
+      message.vestingId = object.vestingId;
+    } else {
+      message.vestingId = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    } else {
+      message.amount = "";
+    }
+    if (object.restartVesting !== undefined && object.restartVesting !== null) {
+      message.restartVesting = object.restartVesting;
+    } else {
+      message.restartVesting = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgSendVestingResponse: object = {};
+
+export const MsgSendVestingResponse = {
+  encode(_: MsgSendVestingResponse, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgSendVestingResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgSendVestingResponse } as MsgSendVestingResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgSendVestingResponse {
+    const message = { ...baseMsgSendVestingResponse } as MsgSendVestingResponse;
+    return message;
+  },
+
+  toJSON(_: MsgSendVestingResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<MsgSendVestingResponse>): MsgSendVestingResponse {
+    const message = { ...baseMsgSendVestingResponse } as MsgSendVestingResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Vest(request: MsgVest): Promise<MsgVestResponse>;
@@ -999,10 +1178,11 @@ export interface Msg {
   BeginRedelegate(
     request: MsgBeginRedelegate
   ): Promise<MsgBeginRedelegateResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   WithdrawDelegatorReward(
     request: MsgWithdrawDelegatorReward
   ): Promise<MsgWithdrawDelegatorRewardResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  SendVesting(request: MsgSendVesting): Promise<MsgSendVestingResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1083,6 +1263,18 @@ export class MsgClientImpl implements Msg {
       MsgWithdrawDelegatorRewardResponse.decode(new Reader(data))
     );
   }
+
+  SendVesting(request: MsgSendVesting): Promise<MsgSendVestingResponse> {
+    const data = MsgSendVesting.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfevesting.Msg",
+      "SendVesting",
+      data
+    );
+    return promise.then((data) =>
+      MsgSendVestingResponse.decode(new Reader(data))
+    );
+  }
 }
 
 interface Rpc {
@@ -1092,16 +1284,6 @@ interface Rpc {
     data: Uint8Array
   ): Promise<Uint8Array>;
 }
-
-declare var self: any | undefined;
-declare var window: any | undefined;
-var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
-  throw "Unable to locate global object";
-})();
 
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
@@ -1134,16 +1316,4 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
-}
-
-function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  return long.toNumber();
-}
-
-if (util.Long !== Long) {
-  util.Long = Long as any;
-  configure();
 }

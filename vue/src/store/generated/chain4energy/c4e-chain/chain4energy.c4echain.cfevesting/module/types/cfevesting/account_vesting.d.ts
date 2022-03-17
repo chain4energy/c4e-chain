@@ -10,17 +10,20 @@ export interface AccountVestings {
     vestings: Vesting[];
 }
 export interface Vesting {
+    id: number;
     vestingType: string;
     vestingStartBlock: number;
     lockEndBlock: number;
     vestingEndBlock: number;
-    vested: number;
-    claimable: number;
-    lastFreeingBlock: number;
+    vested: string;
+    /**
+     * uint64 claimable = 6;
+     * int64 last_freeing_block = 7;
+     */
     freeCoinsBlockPeriod: number;
-    freeCoinsPerPeriod: number;
+    /** uint64 free_coins_per_period = 9; */
     delegationAllowed: boolean;
-    withdrawn: number;
+    withdrawn: string;
 }
 export declare const AccountVestingsList: {
     encode(message: AccountVestingsList, writer?: Writer): Writer;
