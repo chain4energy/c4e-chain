@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"math"
 	"strconv"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -155,15 +156,15 @@ func (k Keeper) addVesting(
 	return nil
 }
 
-func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, vestingId int32, amount sdk.Int, restartVesting bool) error {
-	_, err := k.WithdrawAllAvailable(ctx, fromAddr)
+func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, vestingId int32, amount sdk.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
+	w, err := k.WithdrawAllAvailable(ctx, fromAddr)
 	if err != nil {
-		return err
+		return withdrawn, err
 	}
 
 	accVestings, vestingsFound := k.GetAccountVestings(ctx, fromAddr)
 	if !vestingsFound || len(accVestings.Vestings) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrNotFound, "no vestings found")
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "no vestings found")
 	}
 	var vesting *types.Vesting = nil
 	for _, vest := range accVestings.Vestings {
@@ -172,16 +173,16 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 		}
 	}
 	if vesting == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrNotFound, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" not found")
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" not found")
 	}
 	available := vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
 	if available.LT(amount) {
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"vesting available: %s is smaller than %s", available, amount)
 	}
 	if vesting.DelegationAllowed {
 		if len(accVestings.DelegableAddress) == 0 {
-			return sdkerrors.Wrap(sdkerrors.ErrLogic, "delegable vesting has no delegable address")
+			return withdrawn, sdkerrors.Wrap(sdkerrors.ErrLogic, "delegable vesting has no delegable address")
 		}
 		denom := k.GetParams(ctx).Denom
 		from := sdk.AccAddress(accVestings.DelegableAddress)
@@ -190,7 +191,7 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 		locked := sdk.NewCoin(denom, lockedCoins.AmountOf(denom))
 		spendable := balance.Sub(locked)
 		if spendable.SubAmount(amount).IsNegative() {
-			return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+			return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 				"vesting available: %s is smaller than %s - probably delageted to validator", spendable.Amount, amount)
 		}
 	}
@@ -205,14 +206,14 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 		if err != nil {
 			k.Logger(ctx).Error("Error: " + err.Error())
 
-			return sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
+			return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
 		}
 		k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
-		return k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
+		return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
 			vt.LockupPeriod+ctx.BlockHeight(), vt.LockupPeriod+vt.VestingPeriod+ctx.BlockHeight(),
 			vt.TokenReleasingPeriod)
 	} else {
-		return k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockHeight(),
+		return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockHeight(),
 			vesting.LockEndBlock, vesting.VestingEndBlock,
 			vesting.FreeCoinsBlockPeriod)
 	}
@@ -277,6 +278,9 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 }
 
 func CalculateWithdrawable(height int64, vesting types.Vesting) sdk.Int {
+	if height <= vesting.VestingStartBlock {
+		return sdk.ZeroInt()
+	}
 	if height <= vesting.LockEndBlock {
 		return sdk.ZeroInt()
 	}
@@ -297,15 +301,7 @@ func CalculateWithdrawable(height int64, vesting types.Vesting) sdk.Int {
 	allVestingBlocks := vesting.VestingEndBlock - lockEndHeight
 	blocksFromStart := height - lockEndHeight
 	numOfPeriodsFromStart := blocksFromStart / vesting.FreeCoinsBlockPeriod
-	numOfPeriods := allVestingBlocks / vesting.FreeCoinsBlockPeriod
-	rest := allVestingBlocks - numOfPeriods*vesting.FreeCoinsBlockPeriod
-
-	if blocksFromStart == 0 {
-		return sdk.ZeroInt()
-	}
-	if rest > 0 {
-		numOfPeriods++
-	}
+	numOfPeriods := int64(math.Ceil(float64(allVestingBlocks) / float64(vesting.FreeCoinsBlockPeriod)))
 
 	vested := vesting.LastModificationVested
 
