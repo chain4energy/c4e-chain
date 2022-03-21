@@ -140,6 +140,7 @@ func (k Keeper) addVesting(
 	coinsToSend := sdk.NewCoins(coinToSend)
 
 	if delegationAllowed {
+
 		err = k.bank.SendCoins(ctx, srcAccAddress, delegatableAddress, coinsToSend)
 		k.Logger(ctx).Info("after SendCoins: " + coinToSend.Amount.String())
 
@@ -185,14 +186,17 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 			return withdrawn, sdkerrors.Wrap(sdkerrors.ErrLogic, "delegable vesting has no delegable address")
 		}
 		denom := k.GetParams(ctx).Denom
-		from := sdk.AccAddress(accVestings.DelegableAddress)
-		lockedCoins := k.bank.LockedCoins(ctx, from)
+		from, err := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
+		if err != nil {
+			return withdrawn, err
+		}
 		balance := k.bank.GetBalance(ctx, from, denom)
+		lockedCoins := k.bank.LockedCoins(ctx, from)
 		locked := sdk.NewCoin(denom, lockedCoins.AmountOf(denom))
 		spendable := balance.Sub(locked)
-		if spendable.SubAmount(amount).IsNegative() {
+		if spendable.Amount.LT(amount) {
 			return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
-				"vesting available: %s is smaller than %s - probably delageted to validator", spendable.Amount, amount)
+				"vesting available: %s is smaller than %s - probably delageted to validator.", spendable.Amount, amount)
 		}
 	}
 	vesting.Sent = amount
