@@ -82,6 +82,77 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 }
 
+func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
+	height := int64(10100)
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
+	wctx := sdk.WrapSDKContext(ctx)
+	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
+
+	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
+	accountVestings.Address = addr
+	accountVestings.Vestings[0].VestingStartBlock = accountVestings.Vestings[0].LockEndBlock
+	accountVestings.Vestings[0].LastModificationBlock = accountVestings.Vestings[0].LockEndBlock
+
+	accountVestings.Vestings[0].LockEndBlock -= 100
+
+	keeper.SetAccountVestings(ctx, accountVestings)
+
+	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	require.NoError(t, err)
+
+	verifyVestingResponse(t, response, accountVestings, height)
+
+}
+
+func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
+	height := int64(10100)
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
+	wctx := sdk.WrapSDKContext(ctx)
+	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
+
+	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
+	accountVestings.Address = addr
+
+	accountVestings.Vestings[0].LastModificationBlock = accountVestings.Vestings[0].LockEndBlock
+	accountVestings.Vestings[0].Sent = sdk.NewInt(100000)
+	accountVestings.Vestings[0].LastModificationVested = accountVestings.Vestings[0].LastModificationVested.Sub(sdk.NewInt(100000))
+
+	accountVestings.Vestings[0].LockEndBlock -= 100
+
+	keeper.SetAccountVestings(ctx, accountVestings)
+
+	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	require.NoError(t, err)
+
+	verifyVestingResponse(t, response, accountVestings, height)
+
+}
+
+func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
+	height := int64(10100)
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
+	wctx := sdk.WrapSDKContext(ctx)
+	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
+
+	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
+	accountVestings.Address = addr
+
+	accountVestings.Vestings[0].LastModificationBlock = accountVestings.Vestings[0].LockEndBlock
+	accountVestings.Vestings[0].Sent = sdk.NewInt(100000)
+	accountVestings.Vestings[0].LastModificationVested = accountVestings.Vestings[0].LastModificationVested.Sub(sdk.NewInt(100000))
+	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(400)
+
+	accountVestings.Vestings[0].LockEndBlock -= 100
+
+	keeper.SetAccountVestings(ctx, accountVestings)
+
+	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	require.NoError(t, err)
+
+	verifyVestingResponse(t, response, accountVestings, height)
+
+}
+
 func TestVestingManyVestings(t *testing.T) {
 	height := int64(0)
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
@@ -117,6 +188,8 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingResponse, a
 				require.EqualValues(t, vesting.Vested, response.Vestings[0].Vested.Amount)
 				require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn).String(), response.Vestings[0].CurrentVestedAmount)
 				require.EqualValues(t, true, response.Vestings[0].DelegationAllowed)
+				require.EqualValues(t, vesting.Sent.String(), response.Vestings[0].SentAmount)
+
 				found = true
 			}
 		}

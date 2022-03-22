@@ -67,6 +67,7 @@ message VestingInfo {
   bool delegation_allowed = 7;
   cosmos.base.v1beta1.Coin vested = 8;
   string current_vested_amount = 9;
+  string sent_amount = 10;
 
 }
 
