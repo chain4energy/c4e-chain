@@ -5,11 +5,10 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"math"
-
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
 )
 
 func TestCalculateWithdrawable(t *testing.T) {
@@ -55,11 +54,11 @@ func TestCalculateWithdrawable(t *testing.T) {
 
 	// current block one unlocking period more than lock end - witdrawable = vested/number of unlocking periods (1000000/((110000-10000)/10) = 100)
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+unlockingPeriod, amount), withdrawable)
 
 	// current block 10 unlocking periods more than lock end - witdrawable =  10*vested/number of unlocking periods 10*(1000000/((110000-10000)/10) = 1000)
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
 	withdrawable = keeper.CalculateWithdrawable(endHeight, vesting)
@@ -67,7 +66,7 @@ func TestCalculateWithdrawable(t *testing.T) {
 
 	// current block equal to one block before vesting end - witdrawable all except one unlocking period = 9999*(1000000/((110000-10000)/10) = 999900)
 	withdrawable = keeper.CalculateWithdrawable(endHeight-1, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
 
 	// setting VestingEndBlock to whole vesting periof not be divisible by unlocking period
 	vesting.VestingEndBlock = endHeight - 1
@@ -75,7 +74,7 @@ func TestCalculateWithdrawable(t *testing.T) {
 	// current block 10 unlocking periods more than lock end - witdrawable =  10*vested/number of unlocking periods 10*(1000000/(round-up[(109999-10000)/10]) = 1000)
 	// where number of unlocking periods: (109999-10000)/10 = 9999.9 and round-up[(109999-10000)/10] = 10000
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
 	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEndBlock, vesting)
@@ -98,7 +97,7 @@ func TestCalculateWithdrawable(t *testing.T) {
 	// current block 10 unlocking period more than lock end -
 	// witdrawable = vested/number of unlocking periods 10*(1000/((110000-10000)/10) = 1)
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, vesting.LastModificationVested), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, vesting.LastModificationVested), withdrawable)
 
 	vesting.LastModificationVested = amount
 	// setting some coins withdrawn
@@ -106,7 +105,7 @@ func TestCalculateWithdrawable(t *testing.T) {
 
 	// current block 10 unlocking periods more than lock end - witdrawable =  10*vested/number of unlocking periods 10*(1000000/((110000-10000)/10) - 500 = 500)
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, vesting.LastModificationVested).Sub(withdrawn), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, vesting.LastModificationVested).Sub(withdrawn), withdrawable)
 
 	// current block equal to vesting end - witdrawable all available = 1000000 - 500
 	withdrawable = keeper.CalculateWithdrawable(endHeight, vesting)
@@ -159,11 +158,11 @@ func TestCalculateWithdrawableAfterSendReceivingSide(t *testing.T) {
 
 	// current block one unlocking period more than vesting start - witdrawable = vested/number of unlocking periods (1000000/((110000-10000)/10) = 100)
 	withdrawable = keeper.CalculateWithdrawable(startHeight+unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+unlockingPeriod, amount), withdrawable)
 
 	// current block 10 unlocking periods more than vesting start - witdrawable =  10*vested/number of unlocking periods 10*(1000000/((110000-10000)/10) = 1000)
 	withdrawable = keeper.CalculateWithdrawable(startHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
 	withdrawable = keeper.CalculateWithdrawable(endHeight, vesting)
@@ -171,7 +170,7 @@ func TestCalculateWithdrawableAfterSendReceivingSide(t *testing.T) {
 
 	// current block equal to one block before vesting end - witdrawable all except one unlocking period = 9999*(1000000/((110000-10000)/10) = 999900)
 	withdrawable = keeper.CalculateWithdrawable(endHeight-1, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
 
 	// setting VestingEndBlock to whole vesting periof not be divisible by unlocking period
 	vesting.VestingEndBlock = endHeight - 1
@@ -179,7 +178,7 @@ func TestCalculateWithdrawableAfterSendReceivingSide(t *testing.T) {
 	// current block 10 unlocking periods more than vesting start - witdrawable =  10*vested/number of unlocking periods 10*(1000000/(round-up[(109999-10000)/10]) = 1000)
 	// where number of unlocking periods: (109999-10000)/10 = 9999.9 and round-up[(109999-10000)/10] = 10000
 	withdrawable = keeper.CalculateWithdrawable(startHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
 	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEndBlock, vesting)
@@ -202,7 +201,7 @@ func TestCalculateWithdrawableAfterSendReceivingSide(t *testing.T) {
 	// current block 10 unlocking period more than vesting start -
 	// witdrawable = vested/number of unlocking periods 10*(1000/((110000-10000)/10) = 1)
 	withdrawable = keeper.CalculateWithdrawable(startHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, vesting.LastModificationVested), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, vesting.LastModificationVested), withdrawable)
 
 	vesting.LastModificationVested = amount
 	// setting some coins withdrawn
@@ -210,7 +209,7 @@ func TestCalculateWithdrawableAfterSendReceivingSide(t *testing.T) {
 
 	// current block 10 unlocking periods more than vesting start - witdrawable =  10*vested/number of unlocking periods 10*(1000000/((110000-10000)/10) - 500 = 500)
 	withdrawable = keeper.CalculateWithdrawable(startHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, vesting.LastModificationVested).Sub(withdrawn), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, vesting.LastModificationVested).Sub(withdrawn), withdrawable)
 
 	// current block equal to vesting end - witdrawable all available = 1000000 - 500
 	withdrawable = keeper.CalculateWithdrawable(endHeight, vesting)
@@ -260,11 +259,11 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 
 	// current block one unlocking period more than lock end - witdrawable = vested/number of unlocking periods (1000000/((110000-10000)/10) = 100)
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+unlockingPeriod, amount), withdrawable)
 
 	// current block 10 unlocking periods more than lock end - witdrawable =  10*vested/number of unlocking periods 10*(1000000/((110000-10000)/10) = 1000)
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
 	withdrawable = keeper.CalculateWithdrawable(endHeight, vesting)
@@ -272,7 +271,7 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 
 	// current block equal to one block before vesting end - witdrawable all except one unlocking period = 9999*(1000000/((110000-10000)/10) = 999900)
 	withdrawable = keeper.CalculateWithdrawable(endHeight-1, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
 
 	// setting VestingEndBlock to whole vesting periof not be divisible by unlocking period
 	vesting.VestingEndBlock = endHeight - 1
@@ -280,7 +279,7 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	// current block 10 unlocking periods more than lock end - witdrawable =  10*vested/number of unlocking periods 10*(1000000/(round-up[(109999-10000)/10]) = 1000)
 	// where number of unlocking periods: (109999-10000)/10 = 9999.9 and round-up[(109999-10000)/10] = 10000
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
 	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEndBlock, vesting)
@@ -303,7 +302,7 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	// current block 10 unlocking period more than lock end -
 	// witdrawable = vested/number of unlocking periods 10*(1000/((110000-10000)/10) = 1)
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, vesting.LastModificationVested), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, vesting.LastModificationVested), withdrawable)
 
 	vesting.LastModificationVested = amount
 	// setting some coins withdrawn
@@ -311,7 +310,7 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 
 	// current block 10 unlocking periods more than lock end - witdrawable =  10*vested/number of unlocking periods 10*(1000000/((110000-10000)/10) - 500 = 500)
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, vesting.LastModificationVested).Sub(withdrawn), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, vesting.LastModificationVested).Sub(withdrawn), withdrawable)
 
 	// current block equal to vesting end - witdrawable all available = 1000000 - 500
 	withdrawable = keeper.CalculateWithdrawable(endHeight, vesting)
@@ -361,11 +360,11 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 
 	// current block one unlocking period more than last modification height - witdrawable = vested/number of unlocking periods (1000000/((110000-10000)/10) = 100)
 	withdrawable = keeper.CalculateWithdrawable(startHeight+unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+unlockingPeriod, amount), withdrawable)
 
 	// current block 10 unlocking periods more than last modification height - witdrawable =  10*vested/number of unlocking periods 10*(1000000/((110000-10000)/10) = 1000)
 	withdrawable = keeper.CalculateWithdrawable(startHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
 	withdrawable = keeper.CalculateWithdrawable(endHeight, vesting)
@@ -373,7 +372,7 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 
 	// current block equal to one block before vesting end - witdrawable all except one unlocking period = 9999*(1000000/((110000-10000)/10) = 999900)
 	withdrawable = keeper.CalculateWithdrawable(endHeight-1, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
 
 	// setting VestingEndBlock to whole vesting periof not be divisible by unlocking period
 	vesting.VestingEndBlock = endHeight - 1
@@ -381,7 +380,7 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	// current block 10 unlocking periods more than last modification height- witdrawable =  10*vested/number of unlocking periods 10*(1000000/(round-up[(109999-10000)/10]) = 1000)
 	// where number of unlocking periods: (109999-10000)/10 = 9999.9 and round-up[(109999-10000)/10] = 10000
 	withdrawable = keeper.CalculateWithdrawable(startHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
 	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEndBlock, vesting)
@@ -404,7 +403,7 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	// current block 10 unlocking period more than last modification height -
 	// witdrawable = vested/number of unlocking periods 10*(1000/((110000-10000)/10) = 1)
 	withdrawable = keeper.CalculateWithdrawable(startHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, vesting.LastModificationVested), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, vesting.LastModificationVested), withdrawable)
 
 	vesting.LastModificationVested = amount
 	// setting some coins withdrawn
@@ -412,22 +411,22 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 
 	// current block 10 unlocking periods more than last modification height - witdrawable =  10*vested/number of unlocking periods 10*(1000000/((110000-10000)/10) - 500 = 500)
 	withdrawable = keeper.CalculateWithdrawable(startHeight+10*unlockingPeriod, vesting)
-	require.EqualValues(t, getExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, vesting.LastModificationVested).Sub(withdrawn), withdrawable)
+	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, vesting.LastModificationVested).Sub(withdrawn), withdrawable)
 
 	// current block equal to vesting end - witdrawable all available = 1000000 - 500
 	withdrawable = keeper.CalculateWithdrawable(endHeight, vesting)
 	require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn), withdrawable)
 }
 
-func getExpectedWithdrawable(unlockingStartHeight int64, vestingEndHeight int64, heightPeriod int64, currentHeight int64, amount sdk.Int) sdk.Int {
-	numOfAllPeriodsF := float64(vestingEndHeight-unlockingStartHeight) / float64(heightPeriod)
-	numOfAllPeriods := int64(math.Ceil(numOfAllPeriodsF))
+// func getExpectedWithdrawable(unlockingStartHeight int64, vestingEndHeight int64, heightPeriod int64, currentHeight int64, amount sdk.Int) sdk.Int {
+// 	numOfAllPeriodsF := float64(vestingEndHeight-unlockingStartHeight) / float64(heightPeriod)
+// 	numOfAllPeriods := int64(math.Ceil(numOfAllPeriodsF))
 
-	numOfPeriodsF := float64(currentHeight-unlockingStartHeight) / float64(heightPeriod)
-	numOfPeriods := int64(math.Floor(numOfPeriodsF))
+// 	numOfPeriodsF := float64(currentHeight-unlockingStartHeight) / float64(heightPeriod)
+// 	numOfPeriods := int64(math.Floor(numOfPeriodsF))
 
-	amountDec := sdk.NewDecFromInt(amount)
+// 	amountDec := sdk.NewDecFromInt(amount)
 
-	resultDec := amountDec.MulInt64(numOfPeriods).QuoInt64(numOfAllPeriods)
-	return resultDec.TruncateInt()
-}
+// 	resultDec := amountDec.MulInt64(numOfPeriods).QuoInt64(numOfAllPeriods)
+// 	return resultDec.TruncateInt()
+// }

@@ -1,300 +1,125 @@
 package keeper_test
 
 import (
+	"strconv"
 	"testing"
 
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestVesting(t *testing.T) {
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, 0)
+	height := int64(0)
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
 	wctx := sdk.WrapSDKContext(ctx)
 	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
 
-	accountVestings := types.AccountVestings{}
+	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	vesting := types.Vesting{
-		Id:                1,
-		VestingType:       "test",
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewInt(1000000),
-		// Claimable: 0,
-		// LastFreeingBlock: 0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed:         true,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewInt(1000000),
-		LastModificationWithdrawn: sdk.ZeroInt(),
-	}
-
-	vestingsArray := []*types.Vesting{&vesting}
-	accountVestings.Vestings = vestingsArray
+	accountVestings.DelegableAddress = ""
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
-	require.EqualValues(t, 1, len(response.Vestings))
-	require.EqualValues(t, "test", response.Vestings[0].VestingType)
-	require.EqualValues(t, 1000, response.Vestings[0].VestingStartHeight)
-	require.EqualValues(t, 1000, response.Vestings[0].VestingStartHeight)
-	require.EqualValues(t, 10000, response.Vestings[0].LockEndHeight)
-	require.EqualValues(t, 110000, response.Vestings[0].VestingEndHeight)
-	require.EqualValues(t, "0", response.Vestings[0].Withdrawable)
-	require.EqualValues(t, "uc4e", response.Vestings[0].Vested.Denom)
-	require.EqualValues(t, sdk.NewInt(1000000), response.Vestings[0].Vested.Amount)
-
-	require.EqualValues(t, "1000000", response.Vestings[0].CurrentVestedAmount)
-	require.EqualValues(t, true, response.Vestings[0].DelegationAllowed)
-	require.EqualValues(t, "", response.DelegableAddress)
-
+	verifyVestingResponse(t, response, accountVestings, height)
 }
 
 func TestVestingWithDelegableAddress(t *testing.T) {
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, 0)
+	height := int64(0)
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
 	wctx := sdk.WrapSDKContext(ctx)
 	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
 
-	accountVestings := types.AccountVestings{}
+	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	vesting := types.Vesting{
-		Id:                1,
-		VestingType:       "test",
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewInt(1000000),
-		// Claimable: 0,
-		// LastFreeingBlock: 0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed:         true,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewInt(1000000),
-		LastModificationWithdrawn: sdk.ZeroInt(),
-	}
-
-	vestingsArray := []*types.Vesting{&vesting}
-	accountVestings.Vestings = vestingsArray
-	accountVestings.DelegableAddress = "del addr"
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
-	require.EqualValues(t, 1, len(response.Vestings))
-	require.EqualValues(t, "test", response.Vestings[0].VestingType)
-	require.EqualValues(t, 1000, response.Vestings[0].VestingStartHeight)
-	require.EqualValues(t, 1000, response.Vestings[0].VestingStartHeight)
-	require.EqualValues(t, 10000, response.Vestings[0].LockEndHeight)
-	require.EqualValues(t, 110000, response.Vestings[0].VestingEndHeight)
-	require.EqualValues(t, "0", response.Vestings[0].Withdrawable)
-	require.EqualValues(t, "uc4e", response.Vestings[0].Vested.Denom)
-	require.EqualValues(t, sdk.NewInt(1000000), response.Vestings[0].Vested.Amount)
-
-	require.EqualValues(t, "1000000", response.Vestings[0].CurrentVestedAmount)
-	require.EqualValues(t, true, response.Vestings[0].DelegationAllowed)
-	require.EqualValues(t, accountVestings.DelegableAddress, response.DelegableAddress)
+	verifyVestingResponse(t, response, accountVestings, height)
 
 }
 
 func TestVestingSomeToWithdraw(t *testing.T) {
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, 10100)
+	height := int64(10100)
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
 	wctx := sdk.WrapSDKContext(ctx)
 	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
 
-	accountVestings := types.AccountVestings{}
+	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	vesting := types.Vesting{
-		Id:                1,
-		VestingType:       "test",
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewInt(1000000),
-		// Claimable: 0,
-		// LastFreeingBlock: 0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed:         true,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewInt(1000000),
-		LastModificationWithdrawn: sdk.ZeroInt(),
-	}
-
-	vestingsArray := []*types.Vesting{&vesting}
-	accountVestings.Vestings = vestingsArray
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
-	require.EqualValues(t, 1, len(response.Vestings))
-	require.EqualValues(t, "test", response.Vestings[0].VestingType)
 
-	require.EqualValues(t, 1000, response.Vestings[0].VestingStartHeight)
-	require.EqualValues(t, 1000, response.Vestings[0].VestingStartHeight)
-	require.EqualValues(t, 10000, response.Vestings[0].LockEndHeight)
-	require.EqualValues(t, 110000, response.Vestings[0].VestingEndHeight)
-	require.EqualValues(t, "1000", response.Vestings[0].Withdrawable)
-	require.EqualValues(t, "uc4e", response.Vestings[0].Vested.Denom)
-	require.EqualValues(t, sdk.NewInt(1000000), response.Vestings[0].Vested.Amount)
-
-	require.EqualValues(t, "1000000", response.Vestings[0].CurrentVestedAmount)
-	require.EqualValues(t, true, response.Vestings[0].DelegationAllowed)
+	verifyVestingResponse(t, response, accountVestings, height)
 
 }
 
 func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, 10100)
+	height := int64(10100)
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
 	wctx := sdk.WrapSDKContext(ctx)
 	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
 
-	accountVestings := types.AccountVestings{}
+	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	vesting := types.Vesting{
-		Id:                1,
-		VestingType:       "test",
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewInt(1000000),
-		// Claimable: 0,
-		// LastFreeingBlock: 0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed:         true,
-		Withdrawn:                 sdk.NewInt(500),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewInt(1000000),
-		LastModificationWithdrawn: sdk.NewInt(500),
-	}
-
-	vestingsArray := []*types.Vesting{&vesting}
-	accountVestings.Vestings = vestingsArray
+	accountVestings.Vestings[0].Withdrawn = sdk.NewInt(500)
+	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(500)
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
-	require.EqualValues(t, 1, len(response.Vestings))
-	require.EqualValues(t, "test", response.Vestings[0].VestingType)
-	require.EqualValues(t, 1000, response.Vestings[0].VestingStartHeight)
-	require.EqualValues(t, 1000, response.Vestings[0].VestingStartHeight)
-	require.EqualValues(t, 10000, response.Vestings[0].LockEndHeight)
-	require.EqualValues(t, 110000, response.Vestings[0].VestingEndHeight)
-	require.EqualValues(t, "500", response.Vestings[0].Withdrawable)
-	require.EqualValues(t, "uc4e", response.Vestings[0].Vested.Denom)
-	require.EqualValues(t, sdk.NewInt(1000000), response.Vestings[0].Vested.Amount)
-
-	require.EqualValues(t, "999500", response.Vestings[0].CurrentVestedAmount)
-	require.EqualValues(t, true, response.Vestings[0].DelegationAllowed)
+	verifyVestingResponse(t, response, accountVestings, height)
 
 }
 
 func TestVestingManyVestings(t *testing.T) {
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, 0)
+	height := int64(0)
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
 	wctx := sdk.WrapSDKContext(ctx)
 	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
 
-	accountVestings := types.AccountVestings{}
+	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(3, 1, 1)
 	accountVestings.Address = addr
-	vesting1 := types.Vesting{
-		Id:                1,
-		VestingType:       "test1",
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewInt(1000000),
-		// Claimable: 0,
-		// LastFreeingBlock: 0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed:         true,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewInt(1000000),
-		LastModificationWithdrawn: sdk.ZeroInt(),
-	}
-	vesting2 := types.Vesting{
-		Id:                2,
-		VestingType:       "test2",
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewInt(10000000),
-		// Claimable: 0,
-		// LastFreeingBlock: 0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed:         true,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewInt(10000000),
-		LastModificationWithdrawn: sdk.ZeroInt(),
-	}
-	vesting3 := types.Vesting{
-		Id:                3,
-		VestingType:       "test3",
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewInt(100000000),
-		// Claimable: 0,
-		// LastFreeingBlock: 0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed:         true,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewInt(100000000),
-		LastModificationWithdrawn: sdk.ZeroInt(),
-	}
-
-	vestingsArray := []*types.Vesting{&vesting1, &vesting2, &vesting3}
-	accountVestings.Vestings = vestingsArray
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
-	require.EqualValues(t, 3, len(response.Vestings))
 
-	i := 0
-	for _, vestingInfo := range response.Vestings {
-		if vestingInfo.VestingType == "test1" {
-			require.EqualValues(t, sdk.NewInt(1000000), vestingInfo.Vested.Amount)
-			require.EqualValues(t, 1, vestingInfo.Id)
+	verifyVestingResponse(t, response, accountVestings, height)
 
-			i++
-		} else if vestingInfo.VestingType == "test2" {
-			require.EqualValues(t, sdk.NewInt(10000000), vestingInfo.Vested.Amount)
-			require.EqualValues(t, 2, vestingInfo.Id)
+}
 
-			i++
-		} else if vestingInfo.VestingType == "test3" {
-			require.EqualValues(t, sdk.NewInt(100000000), vestingInfo.Vested.Amount)
-			require.EqualValues(t, 3, vestingInfo.Id)
+func verifyVestingResponse(t *testing.T, response *types.QueryVestingResponse, accVestings types.AccountVestings, currentHeight int64) {
+	require.EqualValues(t, len(accVestings.Vestings), len(response.Vestings))
+	require.EqualValues(t, accVestings.DelegableAddress, response.DelegableAddress)
 
-			i++
+	for _, vesting := range accVestings.Vestings {
+		found := false
+		for _, vestingInfo := range response.Vestings {
+			if vesting.Id == vestingInfo.Id {
+				require.EqualValues(t, vesting.VestingType, vestingInfo.VestingType)
+				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, currentHeight).String(), response.Vestings[0].Withdrawable)
+				require.EqualValues(t, vesting.VestingStartBlock, vestingInfo.VestingStartHeight)
+				require.EqualValues(t, vesting.LockEndBlock, vestingInfo.LockEndHeight)
+				require.EqualValues(t, vesting.VestingEndBlock, vestingInfo.VestingEndHeight)
+				require.EqualValues(t, "uc4e", response.Vestings[0].Vested.Denom)
+				require.EqualValues(t, vesting.Vested, response.Vestings[0].Vested.Amount)
+				require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn).String(), response.Vestings[0].CurrentVestedAmount)
+				require.EqualValues(t, true, response.Vestings[0].DelegationAllowed)
+				found = true
+			}
 		}
+		require.True(t, found, "not found vesting nfo with Id: "+strconv.FormatInt(int64(vesting.Id), 10))
 	}
-	require.EqualValues(t, 3, i)
-
 }
