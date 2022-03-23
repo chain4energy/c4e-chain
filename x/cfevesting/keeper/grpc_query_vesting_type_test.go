@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -22,22 +23,7 @@ func TestVestingTypesQueryNotEmpty(t *testing.T) {
 	keeper, ctx := testkeeper.CfevestingKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	vestingTypes := types.VestingTypes{}
-	vestingType1 := types.VestingType{
-		Name:                 "test1",
-		LockupPeriod:         2324,
-		VestingPeriod:        42423,
-		TokenReleasingPeriod: 4243,
-		DelegationsAllowed:   true,
-	}
-	vestingType2 := types.VestingType{
-		Name:                 "test2",
-		LockupPeriod:         1111,
-		VestingPeriod:        112233,
-		TokenReleasingPeriod: 445566,
-		DelegationsAllowed:   false,
-	}
-
-	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
+	vestingTypesArray := testutils.GenerateVestingTypes(10, 1)
 	vestingTypes.VestingTypes = vestingTypesArray
 
 	keeper.SetVestingTypes(ctx, vestingTypes)

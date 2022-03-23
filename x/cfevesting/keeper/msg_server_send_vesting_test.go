@@ -13,6 +13,8 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	testapp "github.com/chain4energy/c4e-chain/app"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
+
 )
 
 func TestSendVestingDelegationNotAllowedNoVestingRestart(t *testing.T) {
@@ -158,19 +160,19 @@ func sendVestingDelegation(t *testing.T, delegationAllowed bool, restartVesting 
 
 
 	if testType == delegatedEnoughToSend || testType == delegatedNotEnoughToSend {
-		PKs := testapp.CreateTestPubKeys(1)
+		PKs := testutils.CreateTestPubKeys(1)
 		stakeParams := staking.GetParams(ctx)
 		stakeParams.BondDenom = "uc4e"
 		staking.SetParams(ctx, stakeParams)
 		// adding coins to validotor
-		addCoinsToAccount(vested, helperModuleAccount, ctx, bank, valAddr.Bytes())
+		addCoinsToAccount(vested, ctx, app, valAddr.Bytes())
 
 		commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 		delCoin := sdk.NewCoin(stakeParams.BondDenom, sdk.NewIntFromUint64(vested/2))
 		createValidator(t, ctx, staking, valAddr, PKs[0], delCoin, commission)
 	}
 
-	addCoinsToAccount(accInitBalance, helperModuleAccount, ctx, bank, accAddr)
+	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	k := app.CfevestingKeeper
 

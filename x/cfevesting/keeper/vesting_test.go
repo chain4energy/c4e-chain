@@ -418,15 +418,3 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn), withdrawable)
 }
 
-// func getExpectedWithdrawable(unlockingStartHeight int64, vestingEndHeight int64, heightPeriod int64, currentHeight int64, amount sdk.Int) sdk.Int {
-// 	numOfAllPeriodsF := float64(vestingEndHeight-unlockingStartHeight) / float64(heightPeriod)
-// 	numOfAllPeriods := int64(math.Ceil(numOfAllPeriodsF))
-
-// 	numOfPeriodsF := float64(currentHeight-unlockingStartHeight) / float64(heightPeriod)
-// 	numOfPeriods := int64(math.Floor(numOfPeriodsF))
-
-// 	amountDec := sdk.NewDecFromInt(amount)
-
-// 	resultDec := amountDec.MulInt64(numOfPeriods).QuoInt64(numOfAllPeriods)
-// 	return resultDec.TruncateInt()
-// }

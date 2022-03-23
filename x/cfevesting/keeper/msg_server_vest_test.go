@@ -62,7 +62,7 @@ func vestDelegation(t *testing.T, delegationAllowed bool) {
 	auth := app.AccountKeeper
 
 	denom := "uc4e"
-	addCoinsToAccount(accInitBalance, helperModuleAccount, ctx, bank, accAddr)
+	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	k := app.CfevestingKeeper
 
@@ -176,9 +176,7 @@ func TestVestingId(t *testing.T) {
 	header.Height = initBlock
 	ctx := app.BaseApp.NewContext(false, header)
 
-	bank := app.BankKeeper
-
-	addCoinsToAccount(accInitBalance, helperModuleAccount, ctx, bank, accAddr)
+	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	k := app.CfevestingKeeper
 

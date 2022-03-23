@@ -1,11 +1,8 @@
 package keeper_test
 
 import (
-	// "context"
 	"testing"
-
-	// keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
-	// "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
 	"github.com/chain4energy/c4e-chain/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -19,7 +16,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const helperModuleAccount = "heleprTestAcc"
+const helperModuleAccount = "helperTestAcc"
+const denom = "uc4e"
 
 func addHelperModuleAccountPerms() {
 	perms := []string{authtypes.Minter}
@@ -32,52 +30,37 @@ func addHelperModuleAccountPerms() {
 // 	return keeper.NewMsgServerImpl(*k), sdk.WrapSDKContext(ctx)
 // }
 
-func addCoinsToAccount(vested uint64, mintTo string, ctx sdk.Context, bank bankkeeper.Keeper, toAddr sdk.AccAddress) string {
+func addCoinsToAccount(vested uint64, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
 	denom := "uc4e"
 	mintedCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested))
 	mintedCoins := sdk.NewCoins(mintedCoin)
-	bank.MintCoins(ctx, mintTo, mintedCoins)
-	bank.SendCoinsFromModuleToAccount(ctx, mintTo, toAddr, mintedCoins)
+	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
+	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, mintedCoins)
 	return denom
 }
 
-func createAccountVestings(addr string, vt1 string, vested uint64, withdrawn uint64) (types.AccountVestings, *types.Vesting) {
-	accountVestings := types.AccountVestings{}
+func createAccountVestings(addr string, vested uint64, withdrawn uint64) (types.AccountVestings, *types.Vesting) {
+	accountVestings :=testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	vesting1 := types.Vesting{
-		Id:                1,
-		VestingType:       vt1,
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewIntFromUint64(vested),
-		// Claimable: 0,
-		// LastFreeingBlock: 0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod: 0,
-		DelegationAllowed:         false,
-		Withdrawn:                 sdk.NewIntFromUint64(withdrawn),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewIntFromUint64(vested),
-		LastModificationWithdrawn: sdk.NewIntFromUint64(withdrawn),
-	}
-	vestingsArray := []*types.Vesting{&vesting1}
-	accountVestings.Vestings = vestingsArray
-	return accountVestings, &vesting1
+	accountVestings.Vestings[0].Vested = sdk.NewIntFromUint64(vested)
+	accountVestings.Vestings[0].DelegationAllowed = false
+	accountVestings.Vestings[0].Withdrawn = sdk.NewIntFromUint64(withdrawn)
+	accountVestings.Vestings[0].LastModificationVested = sdk.NewIntFromUint64(vested)
+	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewIntFromUint64(withdrawn)
+	return accountVestings, accountVestings.Vestings[0]
 }
 
-func addCoinsToModuleByName(vested uint64, modulaName string, mintTo string, ctx sdk.Context, bank bankkeeper.Keeper) string {
+func addCoinsToModuleByName(vested uint64, modulaName string, ctx sdk.Context, app *app.App) string {
 	denom := "uc4e"
 	mintedCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested))
 	mintedCoins := sdk.NewCoins(mintedCoin)
-	bank.MintCoins(ctx, mintTo, mintedCoins)
-	bank.SendCoinsFromModuleToModule(ctx, mintTo, modulaName, mintedCoins)
+	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
+	app.BankKeeper.SendCoinsFromModuleToModule(ctx, helperModuleAccount, modulaName, mintedCoins)
 	return denom
 }
 
-func verifyAccountBalance(t *testing.T, bank bankkeeper.Keeper, ctx sdk.Context, accAddr sdk.AccAddress, denom string, expectedAmount sdk.Int) {
-	balance := bank.GetBalance(ctx, accAddr, denom)
+func verifyAccountBalance(t *testing.T, app *app.App, ctx sdk.Context, accAddr sdk.AccAddress, expectedAmount sdk.Int) {
+	balance := app.BankKeeper.GetBalance(ctx, accAddr, denom)
 	require.EqualValues(t, expectedAmount, balance.Amount)
 }
 

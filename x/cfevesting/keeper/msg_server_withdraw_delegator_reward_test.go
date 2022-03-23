@@ -5,13 +5,14 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 
-	testapp "github.com/chain4energy/c4e-chain/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingmodule "github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
+
 )
 
 func TestWithdrawReward(t *testing.T) {
@@ -26,18 +27,16 @@ func TestWithdrawReward(t *testing.T) {
 	if err != nil {
 		require.Fail(t, err.Error())
 	}
-	const vt1 = "test1"
 	const initBlock = 0
 	const vested = 1000000
-	accountVestings, vesting1 := createAccountVestings(addr, vt1, vested, 0)
+	accountVestings, vesting1 := createAccountVestings(addr, vested, 0)
 	accountVestings.DelegableAddress = delagableAddr
 	vesting1.DelegationAllowed = true
 
 	app, ctx := setupApp(initBlock)
 
-	PKs := testapp.CreateTestPubKeys(1)
+	PKs := testutils.CreateTestPubKeys(1)
 
-	bank := app.BankKeeper
 	staking := app.StakingKeeper
 	dist := app.DistrKeeper
 	k := app.CfevestingKeeper
@@ -46,16 +45,16 @@ func TestWithdrawReward(t *testing.T) {
 	stakeParams.BondDenom = "uc4e"
 	staking.SetParams(ctx, stakeParams)
 	// adding coins to validotor
-	addCoinsToAccount(vested, helperModuleAccount, ctx, bank, valAddr.Bytes())
+	addCoinsToAccount(vested, ctx, app, valAddr.Bytes())
 
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 	delCoin := sdk.NewCoin(stakeParams.BondDenom, sdk.NewIntFromUint64(vested/2))
 	createValidator(t, ctx, staking, valAddr, PKs[0], delCoin, commission)
 
 	// adds coind to delegable account - means that coins in vesting for accAddr
-	denom := addCoinsToAccount(vested, helperModuleAccount, ctx, bank, delegableAccAddr)
+	denom := addCoinsToAccount(vested, ctx, app, delegableAccAddr)
 	// adds some coins to distibutor account - to allow test to process
-	addCoinsToModuleByName(100000000, distrtypes.ModuleName, helperModuleAccount, ctx, bank)
+	addCoinsToModuleByName(100000000, distrtypes.ModuleName, ctx, app)
 
 	if len(staking.GetAllValidators(ctx)) == 0 {
 		require.Fail(t, "no validators")
@@ -85,15 +84,15 @@ func TestWithdrawReward(t *testing.T) {
 	dist.AllocateTokensToValidator(ctx, val, sdk.NewDecCoins(valCons))
 	msgServerCtx = sdk.WrapSDKContext(ctx)
 
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.ZeroInt())
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
+	verifyAccountBalance(t, app, ctx, accAddr, sdk.ZeroInt())
+	verifyAccountBalance(t, app, ctx, delegableAccAddr, sdk.NewInt(vested/2))
 
 	coin = sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
 	msgUn := types.MsgWithdrawDelegatorReward{DelegatorAddress: addr, ValidatorAddress: validatorAddr}
 	_, error = msgServer.WithdrawDelegatorReward(msgServerCtx, &msgUn)
 	require.EqualValues(t, nil, error)
 
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.NewIntFromUint64(validatorRewards/2))
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
+	verifyAccountBalance(t, app, ctx, accAddr, sdk.NewIntFromUint64(validatorRewards/2))
+	verifyAccountBalance(t, app, ctx, delegableAccAddr, sdk.NewInt(vested/2))
 
 }

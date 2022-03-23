@@ -5,7 +5,6 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 
-	testapp "github.com/chain4energy/c4e-chain/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -13,13 +12,8 @@ import (
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-	// distrmodule "github.com/cosmos/cosmos-sdk/x/distribution"
-	// "github.com/cosmos/cosmos-sdk/x/auth"
-	// authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	// bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	// mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
-	// tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	// abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
+
 )
 
 func TestDelegate(t *testing.T) {
@@ -33,20 +27,16 @@ func TestDelegate(t *testing.T) {
 	if err != nil {
 		require.Fail(t, err.Error())
 	}
-	const vt1 = "test1"
 	const initBlock = 0
 	const vested = 1000000
-	accountVestings, vesting1 := createAccountVestings(addr, vt1, vested, 0)
+	accountVestings, vesting1 := createAccountVestings(addr, vested, 0)
 	accountVestings.DelegableAddress = delagableAddr
 	vesting1.DelegationAllowed = true
 
 	app, ctx := setupApp(initBlock)
 
-	PKs := testapp.CreateTestPubKeys(1)
+	PKs := testutils.CreateTestPubKeys(1)
 
-	bank := app.BankKeeper
-	// mint := app.MintKeeper
-	// auth := app.AccountKeeper
 	staking := app.StakingKeeper
 	dist := app.DistrKeeper
 	k := app.CfevestingKeeper
@@ -55,16 +45,16 @@ func TestDelegate(t *testing.T) {
 	stakeParams.BondDenom = "uc4e"
 	staking.SetParams(ctx, stakeParams)
 	// adding coins to validotor
-	addCoinsToAccount(vested, helperModuleAccount, ctx, bank, valAddr.Bytes())
+	addCoinsToAccount(vested, ctx, app, valAddr.Bytes())
 
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 	delCoin := sdk.NewCoin(stakeParams.BondDenom, sdk.NewIntFromUint64(vested/2))
 	createValidator(t, ctx, staking, valAddr, PKs[0], delCoin, commission)
 
 	// adds coind to delegable account - means that coins in vesting for accAddr
-	denom := addCoinsToAccount(vested, helperModuleAccount, ctx, bank, delegableAccAddr)
+	denom := addCoinsToAccount(vested, ctx, app, delegableAccAddr)
 	// adds some coins to distibutor account - to allow test to process
-	addCoinsToModuleByName(100000000, distrtypes.ModuleName, helperModuleAccount, ctx, bank)
+	addCoinsToModuleByName(100000000, distrtypes.ModuleName, ctx, app)
 
 	if len(staking.GetAllValidators(ctx)) == 0 {
 		require.Fail(t, "no validators")
@@ -106,16 +96,16 @@ func TestDelegate(t *testing.T) {
 	require.EqualValues(t, 1, len(resp.Rewards))
 	require.EqualValues(t, sdk.NewDecFromInt(sdk.NewIntFromUint64(validatorRewards/2)), resp.Rewards[0].Amount)
 
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.ZeroInt())
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.NewInt(vested/2))
+	verifyAccountBalance(t, app, ctx, accAddr, sdk.ZeroInt())
+	verifyAccountBalance(t, app, ctx, delegableAccAddr, sdk.NewInt(vested/2))
 
 	coin = sdk.NewCoin(denom, sdk.NewIntFromUint64(vested/2))
 	msg = types.MsgDelegate{DelegatorAddress: addr, ValidatorAddress: validatorAddr, Amount: coin}
 	_, error = msgServer.Delegate(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
-	verifyAccountBalance(t, bank, ctx, accAddr, denom, sdk.NewIntFromUint64(validatorRewards/2))
-	verifyAccountBalance(t, bank, ctx, delegableAccAddr, denom, sdk.ZeroInt())
+	verifyAccountBalance(t, app, ctx, accAddr, sdk.NewIntFromUint64(validatorRewards/2))
+	verifyAccountBalance(t, app, ctx, delegableAccAddr, sdk.ZeroInt())
 
 	// accVestingGet, _ = k.GetAccountVestings(ctx, addr)
 	// require.EqualValues(t, vested, accVestingGet.Delegated)
