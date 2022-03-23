@@ -9,181 +9,74 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/chain4energy/c4e-chain/app"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+
 )
 
 func TestVestDelegationNotAllowed(t *testing.T) {
-	vestDelegation(t, false)
+	vest(t, false)
 }
 
 func TestVestDelegationAllowed(t *testing.T) {
-	vestDelegation(t, true)
+	vest(t, true)
 }
 
-func vestDelegation(t *testing.T, delegationAllowed bool) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-	const delagableAddr = "cosmos1dfugyfm087qa3jrdglkeaew0wkn59jk8mgw6x6"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-	delegableAccAddr, _ := sdk.AccAddressFromBech32(delagableAddr)
-
-	const vt1 = "test1"
-	const initBlock = 1000
-	const vested = 1000
-	const accInitBalance = 10000
-	vestingTypes := types.VestingTypes{}
-	vestingType1 := types.VestingType{
-		Name:                 vt1,
-		LockupPeriod:         1000,
-		VestingPeriod:        5000,
-		TokenReleasingPeriod: 10,
-		DelegationsAllowed:   delegationAllowed,
-	}
-	vestingType2 := types.VestingType{
-		Name:                 "test2",
-		LockupPeriod:         1111,
-		VestingPeriod:        112233,
-		TokenReleasingPeriod: 445566,
-		DelegationsAllowed:   false,
-	}
-
-	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
-	vestingTypes.VestingTypes = vestingTypesArray
-
+func vest(t *testing.T, delegationAllowed bool) {
 	addHelperModuleAccountPerms()
+	const vested = 1000
+	app, ctx := setupApp(1000)
 
-	app := app.Setup(false)
-	header := tmproto.Header{}
-	header.Height = initBlock
-	ctx := app.BaseApp.NewContext(false, header)
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
-	bank := app.BankKeeper
-	auth := app.AccountKeeper
+	accAddr := acountsAddresses[0]
 
-	denom := "uc4e"
+	const accInitBalance = 10000
 	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
-	k := app.CfevestingKeeper
-
-	k.SetVestingTypes(ctx, vestingTypes)
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-
-	msg := types.MsgVest{Creator: addr, Amount: sdk.NewInt(vested), VestingType: vt1}
-	_, error := msgServer.Vest(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	_, accFound := k.GetAccountVestings(ctx, addr)
-	require.EqualValues(t, true, accFound)
-
-	var expectedDelegableAcc string
+	vestingTypes := setupVestingTypes(ctx, app, 2, 1, delegationAllowed, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	
 	if delegationAllowed {
-		expectedDelegableAcc = delagableAddr
+		makeVesting(t, ctx, app, accAddr, false, true, false, true, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, vested, 0)
 	} else {
-		expectedDelegableAcc = ""
-	}
-	require.EqualValues(t, 1, len(accVestings))
-	require.EqualValues(t, 1, len(accVestings[0].Vestings))
-	require.EqualValues(t, expectedDelegableAcc, accVestings[0].DelegableAddress)
-
-	require.EqualValues(t, addr, accVestings[0].Address)
-	vesting := accVestings[0].Vestings[0]
-	require.EqualValues(t, 1, vesting.Id)
-	require.EqualValues(t, vt1, vesting.VestingType)
-	require.EqualValues(t, initBlock, vesting.VestingStartBlock)
-	require.EqualValues(t, initBlock+vestingType1.LockupPeriod, vesting.LockEndBlock)
-
-	require.EqualValues(t, initBlock+vestingType1.LockupPeriod+vestingType1.VestingPeriod, vesting.VestingEndBlock)
-
-	require.EqualValues(t, sdk.NewInt(vested), vesting.Vested)
-	// require.EqualValues(t, 0, vesting.Claimable)
-	// require.EqualValues(t, 0, vesting.LastFreeingBlock)
-	require.EqualValues(t, vestingType1.TokenReleasingPeriod, vesting.FreeCoinsBlockPeriod)
-	// require.EqualValues(t, 2, vesting.FreeCoinsPerPeriod)
-	require.EqualValues(t, delegationAllowed, vesting.DelegationAllowed)
-
-	balance := bank.GetBalance(ctx, accAddr, denom)
-	require.EqualValues(t, sdk.NewIntFromUint64(accInitBalance-vested), balance.Amount)
-	moduleAccAddr := auth.GetModuleAccount(ctx, types.ModuleName).GetAddress()
-	moduleBalance := bank.GetBalance(ctx, moduleAccAddr, denom)
-	if delegationAllowed {
-		require.EqualValues(t, sdk.ZeroInt(), moduleBalance.Amount)
-		delegableBalance := bank.GetBalance(ctx, delegableAccAddr, denom)
-		require.EqualValues(t, sdk.NewIntFromUint64(vested), delegableBalance.Amount)
-	} else {
-		require.EqualValues(t, sdk.NewIntFromUint64(vested), moduleBalance.Amount)
+		makeVesting(t, ctx, app, accAddr, false, true, false, false, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, 0, vested)
 	}
 
-	_, error = msgServer.Vest(msgServerCtx, &msg)
+	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType}, []int64{vested})
 
-	require.EqualValues(t, nil, error)
-
-	accVestings = k.GetAllAccountVestings(ctx)
-
-	_, accFound = k.GetAccountVestings(ctx, addr)
-	require.EqualValues(t, true, accFound)
-
-	require.EqualValues(t, 1, len(accVestings))
-	require.EqualValues(t, 2, len(accVestings[0].Vestings))
-
-	balance = bank.GetBalance(ctx, accAddr, denom)
-	require.EqualValues(t, sdk.NewIntFromUint64(accInitBalance-vested-vested), balance.Amount)
-
-	moduleBalance = bank.GetBalance(ctx, moduleAccAddr, denom)
 	if delegationAllowed {
-		require.EqualValues(t, sdk.ZeroInt(), moduleBalance.Amount)
-		delegableBalance := bank.GetBalance(ctx, delegableAccAddr, denom)
-		require.EqualValues(t, sdk.NewIntFromUint64(vested+vested), delegableBalance.Amount)
+		makeVesting(t, ctx, app, accAddr, true, true, true, true, *usedVestingType, vested, accInitBalance-vested, vested, 0, accInitBalance-2*vested, 2*vested, 0)
 	} else {
-		require.EqualValues(t, sdk.NewIntFromUint64(vested+vested), moduleBalance.Amount)
+		makeVesting(t, ctx, app, accAddr, true, true, false, false, *usedVestingType, vested, accInitBalance-vested, 0, vested, accInitBalance-2*vested, 0, 2*vested)
 	}
+
+	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType, *usedVestingType}, []int64{vested, vested})
+
 }
 
 func TestVestingId(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-
-	const vt1 = "test1"
-	const initBlock = 1000
+	addHelperModuleAccountPerms()
 	const vested = 1000
 	const accInitBalance = 10000
-	vestingTypes := types.VestingTypes{}
-	vestingType1 := types.VestingType{
-		Name:                 vt1,
-		LockupPeriod:         1000,
-		VestingPeriod:        5000,
-		TokenReleasingPeriod: 10,
-		DelegationsAllowed:   true,
-	}
-	vestingType2 := types.VestingType{
-		Name:                 "test2",
-		LockupPeriod:         1111,
-		VestingPeriod:        112233,
-		TokenReleasingPeriod: 445566,
-		DelegationsAllowed:   false,
-	}
+	app, ctx := setupApp(1000)
 
-	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
-	vestingTypes.VestingTypes = vestingTypesArray
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
-	addHelperModuleAccountPerms()
-
-	app := app.Setup(false)
-	header := tmproto.Header{}
-	header.Height = initBlock
-	ctx := app.BaseApp.NewContext(false, header)
+	accAddr := acountsAddresses[0]
 
 	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+
+	vestingTypes := setupVestingTypes(ctx, app, 2, 1, true, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+
+	addr := accAddr.String()
 
 	k := app.CfevestingKeeper
 
 	k.SetVestingTypes(ctx, vestingTypes)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgVest{Creator: addr, Amount: sdk.NewInt(vested), VestingType: "test1"}
+	msg := types.MsgVest{Creator: addr, Amount: sdk.NewInt(vested), VestingType: usedVestingType.Name}
 	_, error := msgServer.Vest(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
