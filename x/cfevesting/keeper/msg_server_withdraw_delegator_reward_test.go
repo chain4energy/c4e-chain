@@ -11,7 +11,7 @@ import (
 	stakingmodule "github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 
 )
 
@@ -35,7 +35,7 @@ func TestWithdrawReward(t *testing.T) {
 
 	app, ctx := setupApp(initBlock)
 
-	PKs := testutils.CreateTestPubKeys(1)
+	PKs := commontestutils.CreateTestPubKeys(1)
 
 	staking := app.StakingKeeper
 	dist := app.DistrKeeper

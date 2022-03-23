@@ -13,7 +13,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	testapp "github.com/chain4energy/c4e-chain/app"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 
 )
 
@@ -160,7 +160,7 @@ func sendVestingDelegation(t *testing.T, delegationAllowed bool, restartVesting 
 
 
 	if testType == delegatedEnoughToSend || testType == delegatedNotEnoughToSend {
-		PKs := testutils.CreateTestPubKeys(1)
+		PKs := commontestutils.CreateTestPubKeys(1)
 		stakeParams := staking.GetParams(ctx)
 		stakeParams.BondDenom = "uc4e"
 		staking.SetParams(ctx, stakeParams)

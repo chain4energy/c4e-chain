@@ -1,7 +1,6 @@
 package cfevesting_test
 
 import (
-
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/nullify"
@@ -10,10 +9,10 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/chain4energy/c4e-chain/app"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
-
 )
+
 func TestGenesisWholeApp(t *testing.T) {
 
 	genesisState := types.GenesisState{
@@ -40,7 +39,7 @@ func TestGenesisWholeApp(t *testing.T) {
 func TestGenesisVestingTypes(t *testing.T) {
 	vestingTypesArray := testutils.GenerateVestingTypes(10, 1)
 	genesisState := types.GenesisState{
-		Params: types.NewParams("test_denom"),
+		Params:       types.NewParams("test_denom"),
 		VestingTypes: types.VestingTypes{VestingTypes: vestingTypesArray},
 	}
 

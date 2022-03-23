@@ -1,4 +1,4 @@
-package testutils
+package common
 
 import (
 	"bytes"

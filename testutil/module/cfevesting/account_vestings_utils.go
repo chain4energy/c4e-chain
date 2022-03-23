@@ -1,4 +1,4 @@
-package testutils
+package cfevesting
 
 import (
 	"math"

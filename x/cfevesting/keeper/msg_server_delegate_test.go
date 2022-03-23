@@ -7,7 +7,7 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingmodule "github.com/cosmos/cosmos-sdk/x/staking"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 )
 
 func TestDelegate(t *testing.T) {
@@ -16,7 +16,7 @@ func TestDelegate(t *testing.T) {
 	app, ctx := setupApp(0)
 	setupStakingBondDenom(ctx, app)
 
-	acountsAddresses, validatorsAddresses := testutils.CreateAccounts(2, 1)
+	acountsAddresses, validatorsAddresses := commontestutils.CreateAccounts(2, 1)
 
 	setupValidators(t, ctx, app, validatorsAddresses, vested/2)
 

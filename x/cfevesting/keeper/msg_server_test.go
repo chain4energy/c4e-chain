@@ -2,7 +2,9 @@ package keeper_test
 
 import (
 	"github.com/chain4energy/c4e-chain/app"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/internal/testutils"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -104,7 +106,7 @@ func redelegate(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sd
 }
 
 func setupValidators(t *testing.T, ctx sdk.Context, app *app.App, validators []sdk.ValAddress, delegatePerValidator uint64) {
-	PKs := testutils.CreateTestPubKeys(len(validators))
+	PKs := commontestutils.CreateTestPubKeys(len(validators))
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 	delCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(delegatePerValidator))
 	for i, valAddr := range validators {
