@@ -67,11 +67,16 @@ func (m *VestingTypes) GetVestingTypes() []*VestingType {
 }
 
 type VestingType struct {
-	Name                 string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	LockupPeriod         int64  `protobuf:"varint,2,opt,name=lockup_period,json=lockupPeriod,proto3" json:"lockup_period,omitempty"`
-	VestingPeriod        int64  `protobuf:"varint,3,opt,name=vesting_period,json=vestingPeriod,proto3" json:"vesting_period,omitempty"`
-	TokenReleasingPeriod int64  `protobuf:"varint,4,opt,name=token_releasing_period,json=tokenReleasingPeriod,proto3" json:"token_releasing_period,omitempty"`
-	DelegationsAllowed   bool   `protobuf:"varint,5,opt,name=delegations_allowed,json=delegationsAllowed,proto3" json:"delegations_allowed,omitempty"`
+	// vesting type name
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// period of locked coins (minutes) from vesting start
+	LockupPeriod int64 `protobuf:"varint,2,opt,name=lockup_period,json=lockupPeriod,proto3" json:"lockup_period,omitempty"`
+	// period of veesting coins (minutes) from lockup period end
+	VestingPeriod int64 `protobuf:"varint,3,opt,name=vesting_period,json=vestingPeriod,proto3" json:"vesting_period,omitempty"`
+	// vested coin periodical releasing (minutes)
+	TokenReleasingPeriod int64 `protobuf:"varint,4,opt,name=token_releasing_period,json=tokenReleasingPeriod,proto3" json:"token_releasing_period,omitempty"`
+	// defines if vesting type allows delegation
+	DelegationsAllowed bool `protobuf:"varint,5,opt,name=delegations_allowed,json=delegationsAllowed,proto3" json:"delegations_allowed,omitempty"`
 }
 
 func (m *VestingType) Reset()         { *m = VestingType{} }

@@ -23,15 +23,15 @@ func TestCalculateWithdrawable(t *testing.T) {
 	vesting := types.Vesting{
 		Id:                        1,
 		VestingType:               "test",
-		VestingStartBlock:         startHeight,
-		LockEndBlock:              lockEndHeight,
-		VestingEndBlock:           endHeight,
+		VestingStart:         startHeight,
+		LockEnd:              lockEndHeight,
+		VestingEnd:           endHeight,
 		Vested:                    amount,
-		FreeCoinsBlockPeriod:      unlockingPeriod,
+		ReleasePeriod:      unlockingPeriod,
 		DelegationAllowed:         true,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     startHeight,
+		LastModification:     startHeight,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -69,7 +69,7 @@ func TestCalculateWithdrawable(t *testing.T) {
 	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
 
 	// setting VestingEndBlock to whole vesting periof not be divisible by unlocking period
-	vesting.VestingEndBlock = endHeight - 1
+	vesting.VestingEnd = endHeight - 1
 
 	// current block 10 unlocking periods more than lock end - witdrawable =  10*vested/number of unlocking periods 10*(1000000/(round-up[(109999-10000)/10]) = 1000)
 	// where number of unlocking periods: (109999-10000)/10 = 9999.9 and round-up[(109999-10000)/10] = 10000
@@ -77,10 +77,10 @@ func TestCalculateWithdrawable(t *testing.T) {
 	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
-	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEndBlock, vesting)
+	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEnd, vesting)
 	require.EqualValues(t, amount, withdrawable)
 
-	vesting.VestingEndBlock = endHeight
+	vesting.VestingEnd = endHeight
 	// setting LastModificationVested to prove that LastModificationVested is used in calculations (Vested field is just historical info)
 	// and value set to number not divisible by number of periods - some more periods must pass to get some withdrawable amount
 	vesting.LastModificationVested = notDivisibleAmount
@@ -127,15 +127,15 @@ func TestCalculateWithdrawableAfterSendReceivingSide(t *testing.T) {
 	vesting := types.Vesting{
 		Id:                        1,
 		VestingType:               "test",
-		VestingStartBlock:         startHeight,
-		LockEndBlock:              lockEndHeight,
-		VestingEndBlock:           endHeight,
+		VestingStart:         startHeight,
+		LockEnd:              lockEndHeight,
+		VestingEnd:           endHeight,
 		Vested:                    amount,
-		FreeCoinsBlockPeriod:      unlockingPeriod,
+		ReleasePeriod:      unlockingPeriod,
 		DelegationAllowed:         true,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     startHeight,
+		LastModification:     startHeight,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -173,7 +173,7 @@ func TestCalculateWithdrawableAfterSendReceivingSide(t *testing.T) {
 	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
 
 	// setting VestingEndBlock to whole vesting periof not be divisible by unlocking period
-	vesting.VestingEndBlock = endHeight - 1
+	vesting.VestingEnd = endHeight - 1
 
 	// current block 10 unlocking periods more than vesting start - witdrawable =  10*vested/number of unlocking periods 10*(1000000/(round-up[(109999-10000)/10]) = 1000)
 	// where number of unlocking periods: (109999-10000)/10 = 9999.9 and round-up[(109999-10000)/10] = 10000
@@ -181,10 +181,10 @@ func TestCalculateWithdrawableAfterSendReceivingSide(t *testing.T) {
 	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
-	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEndBlock, vesting)
+	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEnd, vesting)
 	require.EqualValues(t, amount, withdrawable)
 
-	vesting.VestingEndBlock = endHeight
+	vesting.VestingEnd = endHeight
 	// setting LastModificationVested to prove that LastModificationVested is used in calculations (Vested field is just historical info)
 	// and value set to number not divisible by number of periods - some more periods must pass to get some withdrawable amount
 	vesting.LastModificationVested = notDivisibleAmount
@@ -228,15 +228,15 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	vesting := types.Vesting{
 		Id:                        1,
 		VestingType:               "test",
-		VestingStartBlock:         startHeight - 300,
-		LockEndBlock:              lockEndHeight,
-		VestingEndBlock:           endHeight,
+		VestingStart:         startHeight - 300,
+		LockEnd:              lockEndHeight,
+		VestingEnd:           endHeight,
 		Vested:                    amount.AddRaw(50000),
-		FreeCoinsBlockPeriod:      unlockingPeriod,
+		ReleasePeriod:      unlockingPeriod,
 		DelegationAllowed:         true,
 		Withdrawn:                 sdk.NewInt(500000),
 		Sent:                      sdk.NewInt(50000),
-		LastModificationBlock:     startHeight,
+		LastModification:     startHeight,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -274,7 +274,7 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
 
 	// setting VestingEndBlock to whole vesting periof not be divisible by unlocking period
-	vesting.VestingEndBlock = endHeight - 1
+	vesting.VestingEnd = endHeight - 1
 
 	// current block 10 unlocking periods more than lock end - witdrawable =  10*vested/number of unlocking periods 10*(1000000/(round-up[(109999-10000)/10]) = 1000)
 	// where number of unlocking periods: (109999-10000)/10 = 9999.9 and round-up[(109999-10000)/10] = 10000
@@ -282,10 +282,10 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, lockEndHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
-	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEndBlock, vesting)
+	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEnd, vesting)
 	require.EqualValues(t, amount, withdrawable)
 
-	vesting.VestingEndBlock = endHeight
+	vesting.VestingEnd = endHeight
 	// setting LastModificationVested to prove that LastModificationVested is used in calculations (Vested field is just historical info)
 	// and value set to number not divisible by number of periods - some more periods must pass to get some withdrawable amount
 	vesting.LastModificationVested = notDivisibleAmount
@@ -329,15 +329,15 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	vesting := types.Vesting{
 		Id:                        1,
 		VestingType:               "test",
-		VestingStartBlock:         lockEndHeight - 300,
-		LockEndBlock:              lockEndHeight,
-		VestingEndBlock:           endHeight,
+		VestingStart:         lockEndHeight - 300,
+		LockEnd:              lockEndHeight,
+		VestingEnd:           endHeight,
 		Vested:                    amount.AddRaw(50000),
-		FreeCoinsBlockPeriod:      unlockingPeriod,
+		ReleasePeriod:      unlockingPeriod,
 		DelegationAllowed:         true,
 		Withdrawn:                 sdk.NewInt(500000),
 		Sent:                      sdk.NewInt(50000),
-		LastModificationBlock:     startHeight,
+		LastModification:     startHeight,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -375,7 +375,7 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	require.EqualValues(t, testutils.GetExpectedWithdrawable(lockEndHeight, endHeight, unlockingPeriod, endHeight-1, amount), withdrawable)
 
 	// setting VestingEndBlock to whole vesting periof not be divisible by unlocking period
-	vesting.VestingEndBlock = endHeight - 1
+	vesting.VestingEnd = endHeight - 1
 
 	// current block 10 unlocking periods more than last modification height- witdrawable =  10*vested/number of unlocking periods 10*(1000000/(round-up[(109999-10000)/10]) = 1000)
 	// where number of unlocking periods: (109999-10000)/10 = 9999.9 and round-up[(109999-10000)/10] = 10000
@@ -383,10 +383,10 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	require.EqualValues(t, testutils.GetExpectedWithdrawable(startHeight, endHeight, unlockingPeriod, startHeight+10*unlockingPeriod, amount), withdrawable)
 
 	// current block equal to vesting end - witdrawable all = 1000000
-	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEndBlock, vesting)
+	withdrawable = keeper.CalculateWithdrawable(vesting.VestingEnd, vesting)
 	require.EqualValues(t, amount, withdrawable)
 
-	vesting.VestingEndBlock = endHeight
+	vesting.VestingEnd = endHeight
 	// setting LastModificationVested to prove that LastModificationVested is used in calculations (Vested field is just historical info)
 	// and value set to number not divisible by number of periods - some more periods must pass to get some withdrawable amount
 	vesting.LastModificationVested = notDivisibleAmount

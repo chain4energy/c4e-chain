@@ -60,9 +60,9 @@ message QueryVestingResponse {
 message VestingInfo {
   int32 id = 1;
   string vesting_type = 2;
-  int64 vesting_start_height = 3;
-  int64 lock_end_height = 4;
-  int64 vesting_end_height = 5;
+  int64 vesting_start = 3;
+  int64 lock_end = 4;
+  int64 vesting_end = 5;
   string withdrawable = 6;
   bool delegation_allowed = 7;
   cosmos.base.v1beta1.Coin vested = 8;

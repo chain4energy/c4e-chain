@@ -60,15 +60,15 @@ func generateRandomVesting(accuntId int, vestingId int) types.Vesting {
 	return types.Vesting{
 		Id:                        int32(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(accuntId),
-		VestingStartBlock:         int64(rgen.Intn(100000)),
-		LockEndBlock:              int64(rgen.Intn(100000)),
-		VestingEndBlock:           int64(rgen.Intn(100000)),
+		VestingStart:         int64(rgen.Intn(100000)),
+		LockEnd:              int64(rgen.Intn(100000)),
+		VestingEnd:           int64(rgen.Intn(100000)),
 		Vested:                    sdk.NewInt(int64(rgen.Intn(10000000))),
-		FreeCoinsBlockPeriod:      int64(rgen.Intn(1000)),
+		ReleasePeriod:      int64(rgen.Intn(1000)),
 		DelegationAllowed:         rgen.Intn(2) == 1,
 		Withdrawn:                 sdk.NewInt(int64(rgen.Intn(10000000))),
 		Sent:                      sdk.NewInt(int64(rgen.Intn(10000000))),
-		LastModificationBlock:     int64(rgen.Intn(100000)),
+		LastModification:     int64(rgen.Intn(100000)),
 		LastModificationVested:    sdk.NewInt(int64(rgen.Intn(10000000))),
 		LastModificationWithdrawn: sdk.NewInt(int64(rgen.Intn(10000000))),
 	}
@@ -78,15 +78,15 @@ func generate10BasedVesting(accuntId int, vestingId int) types.Vesting {
 	return types.Vesting{
 		Id:                        int32(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(accuntId),
-		VestingStartBlock:         1000,
-		LockEndBlock:              10000,
-		VestingEndBlock:           110000,
+		VestingStart:         1000,
+		LockEnd:              10000,
+		VestingEnd:           110000,
 		Vested:                    sdk.NewInt(1000000),
-		FreeCoinsBlockPeriod:      10,
+		ReleasePeriod:      10,
 		DelegationAllowed:         true,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
+		LastModification:     1000,
 		LastModificationVested:    sdk.NewInt(1000000),
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -115,14 +115,14 @@ func ToAccountVestingsPointersArray(src []types.AccountVestings) []*types.Accoun
 }
 
 func GetExpectedWithdrawableForVesting(vesting types.Vesting, currentHeight int64) sdk.Int {
-	unlockingStartHeight := vesting.LockEndBlock
-	if vesting.VestingStartBlock > unlockingStartHeight {
-		unlockingStartHeight = vesting.VestingStartBlock
+	unlockingStartHeight := vesting.LockEnd
+	if vesting.VestingStart > unlockingStartHeight {
+		unlockingStartHeight = vesting.VestingStart
 	}
-	if vesting.LastModificationBlock > unlockingStartHeight {
-		unlockingStartHeight = vesting.LastModificationBlock
+	if vesting.LastModification > unlockingStartHeight {
+		unlockingStartHeight = vesting.LastModification
 	}
-	expected := GetExpectedWithdrawable(unlockingStartHeight, vesting.VestingEndBlock, vesting.FreeCoinsBlockPeriod, currentHeight, vesting.LastModificationVested)
+	expected := GetExpectedWithdrawable(unlockingStartHeight, vesting.VestingEnd, vesting.ReleasePeriod, currentHeight, vesting.LastModificationVested)
 	return expected.Sub(vesting.LastModificationWithdrawn)
 }
 

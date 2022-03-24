@@ -97,10 +97,10 @@ func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	accountVestings.Vestings[0].VestingStartBlock = accountVestings.Vestings[0].LockEndBlock
-	accountVestings.Vestings[0].LastModificationBlock = accountVestings.Vestings[0].LockEndBlock
+	accountVestings.Vestings[0].VestingStart = accountVestings.Vestings[0].LockEnd
+	accountVestings.Vestings[0].LastModification = accountVestings.Vestings[0].LockEnd
 
-	accountVestings.Vestings[0].LockEndBlock -= 100
+	accountVestings.Vestings[0].LockEnd -= 100
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
@@ -121,11 +121,11 @@ func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
 
-	accountVestings.Vestings[0].LastModificationBlock = accountVestings.Vestings[0].LockEndBlock
+	accountVestings.Vestings[0].LastModification = accountVestings.Vestings[0].LockEnd
 	accountVestings.Vestings[0].Sent = sdk.NewInt(100000)
 	accountVestings.Vestings[0].LastModificationVested = accountVestings.Vestings[0].LastModificationVested.Sub(sdk.NewInt(100000))
 
-	accountVestings.Vestings[0].LockEndBlock -= 100
+	accountVestings.Vestings[0].LockEnd -= 100
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
@@ -146,12 +146,12 @@ func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
 
-	accountVestings.Vestings[0].LastModificationBlock = accountVestings.Vestings[0].LockEndBlock
+	accountVestings.Vestings[0].LastModification = accountVestings.Vestings[0].LockEnd
 	accountVestings.Vestings[0].Sent = sdk.NewInt(100000)
 	accountVestings.Vestings[0].LastModificationVested = accountVestings.Vestings[0].LastModificationVested.Sub(sdk.NewInt(100000))
 	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(400)
 
-	accountVestings.Vestings[0].LockEndBlock -= 100
+	accountVestings.Vestings[0].LockEnd -= 100
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 

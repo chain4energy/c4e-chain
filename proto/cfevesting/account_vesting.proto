@@ -22,15 +22,15 @@ message Vesting {
 
   int32 id = 1;
   string vesting_type = 2;
-  int64 vesting_start_block = 3;
-  int64 lock_end_block = 4;
-  int64 vesting_end_block = 5;
+  int64 vesting_start = 3;
+  int64 lock_end = 4;
+  int64 vesting_end = 5;
   string vested = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  int64 free_coins_block_period = 7;
+  int64 release_period = 7;
   bool delegation_allowed = 8;
   string withdrawn = 9 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string sent = 10 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  int64 last_modification_block = 11;
+  int64 last_modification = 11;
   string last_modification_vested = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string last_modification_withdrawn = 13 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 

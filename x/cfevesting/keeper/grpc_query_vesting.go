@@ -28,9 +28,9 @@ func (k Keeper) Vesting(goCtx context.Context, req *types.QueryVestingRequest) (
 		vestingInfo := types.VestingInfo{
 			Id:                  vesting.Id,
 			VestingType:         vesting.VestingType,
-			VestingStartHeight:  vesting.VestingStartBlock,
-			LockEndHeight:       vesting.LockEndBlock,
-			VestingEndHeight:    vesting.VestingEndBlock,
+			VestingStart:  vesting.VestingStart,
+			LockEnd:       vesting.LockEnd,
+			VestingEnd:    vesting.VestingEnd,
 			Withdrawable:        withdrawable.String(),
 			DelegationAllowed:   vesting.DelegationAllowed,
 			Vested:              &coin,

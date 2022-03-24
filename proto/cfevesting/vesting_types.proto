@@ -10,11 +10,15 @@ message VestingTypes {
 
 message VestingType {
   
+  // vesting type name
   string name = 1; 
+  // period of locked coins (minutes) from vesting start
   int64 lockup_period = 2; 
+  // period of veesting coins (minutes) from lockup period end
   int64 vesting_period = 3; 
+  // vested coin periodical releasing (minutes)
   int64 token_releasing_period = 4; 
+  // defines if vesting type allows delegation
   bool delegations_allowed = 5; 
-
 }
 

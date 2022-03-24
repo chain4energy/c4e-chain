@@ -106,15 +106,15 @@ func (k Keeper) addVesting(
 	vesting := types.Vesting{
 		Id:                id,
 		VestingType:       vestingType,
-		VestingStartBlock: vestingStartHeight,
-		LockEndBlock:      lockEndHeight,
-		VestingEndBlock:   vestingEndHeight,
+		VestingStart: vestingStartHeight,
+		LockEnd:      lockEndHeight,
+		VestingEnd:   vestingEndHeight,
 		Vested:            amount,
-		FreeCoinsBlockPeriod: FreeCoinsBlockPeriod,
+		ReleasePeriod: FreeCoinsBlockPeriod,
 		DelegationAllowed:         delegationAllowed,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     vestingStartHeight,
+		LastModification:     vestingStartHeight,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -189,7 +189,7 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 		}
 	}
 	vesting.Sent = amount
-	vesting.LastModificationBlock = ctx.BlockHeight()
+	vesting.LastModification = ctx.BlockHeight()
 	vesting.LastModificationVested = available.Sub(amount)
 	vesting.LastModificationWithdrawn = sdk.ZeroInt()
 
@@ -207,8 +207,8 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 			vt.TokenReleasingPeriod)
 	} else {
 		return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockHeight(),
-			vesting.LockEndBlock, vesting.VestingEndBlock,
-			vesting.FreeCoinsBlockPeriod)
+			vesting.LockEnd, vesting.VestingEnd,
+			vesting.ReleasePeriod)
 	}
 }
 
@@ -271,30 +271,30 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 }
 
 func CalculateWithdrawable(height int64, vesting types.Vesting) sdk.Int {
-	if height <= vesting.VestingStartBlock {
+	if height <= vesting.VestingStart {
 		return sdk.ZeroInt()
 	}
-	if height <= vesting.LockEndBlock {
+	if height <= vesting.LockEnd {
 		return sdk.ZeroInt()
 	}
-	if height >= vesting.VestingEndBlock {
+	if height >= vesting.VestingEnd {
 		return vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
 	}
 
 	var lockEndHeight int64
-	if vesting.VestingStartBlock > vesting.LockEndBlock {
-		lockEndHeight = vesting.VestingStartBlock
+	if vesting.VestingStart > vesting.LockEnd {
+		lockEndHeight = vesting.VestingStart
 	} else {
-		lockEndHeight = vesting.LockEndBlock
+		lockEndHeight = vesting.LockEnd
 	}
 
-	if vesting.LastModificationBlock > lockEndHeight {
-		lockEndHeight = vesting.LastModificationBlock
+	if vesting.GetLastModification() > lockEndHeight {
+		lockEndHeight = vesting.LastModification
 	}
-	allVestingBlocks := vesting.VestingEndBlock - lockEndHeight
+	allVestingBlocks := vesting.VestingEnd - lockEndHeight
 	blocksFromStart := height - lockEndHeight
-	numOfPeriodsFromStart := blocksFromStart / vesting.FreeCoinsBlockPeriod
-	numOfPeriods := int64(math.Ceil(float64(allVestingBlocks) / float64(vesting.FreeCoinsBlockPeriod)))
+	numOfPeriodsFromStart := blocksFromStart / vesting.ReleasePeriod
+	numOfPeriods := int64(math.Ceil(float64(allVestingBlocks) / float64(vesting.ReleasePeriod)))
 
 	vested := vesting.LastModificationVested
 
