@@ -42,7 +42,7 @@ func vest(t *testing.T, delegationAllowed bool) {
 		makeVesting(t, ctx, app, accAddr, false, true, false, false, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, 0, vested)
 	}
 
-	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType}, []int64{vested})
+	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
 
 	if delegationAllowed {
 		makeVesting(t, ctx, app, accAddr, true, true, true, true, *usedVestingType, vested, accInitBalance-vested, vested, 0, accInitBalance-2*vested, 2*vested, 0)
@@ -50,7 +50,7 @@ func vest(t *testing.T, delegationAllowed bool) {
 		makeVesting(t, ctx, app, accAddr, true, true, false, false, *usedVestingType, vested, accInitBalance-vested, 0, vested, accInitBalance-2*vested, 0, 2*vested)
 	}
 
-	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType, *usedVestingType}, []int64{vested, vested})
+	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType, *usedVestingType}, []int64{vested, vested}, []int64{0, 0})
 
 }
 

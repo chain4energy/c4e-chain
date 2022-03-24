@@ -30,7 +30,7 @@ func TestRedelegate(t *testing.T) {
 	valAddr := validatorsAddresses[0]
 	valAddr2 := validatorsAddresses[1]
 
-	setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), vested, true)
+	setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 1, vested, 0, true)
 
 	delegate(t, ctx, app, accAddr, delegableAccAddr, valAddr, vested/2, 0, vested, 0, vested/2)
 	verifyDelegations(t, ctx, app, delegableAccAddr,  []sdk.ValAddress{valAddr}, []int64{vested/2})

@@ -3,629 +3,205 @@ package keeper_test
 import (
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
-
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 
-	"github.com/chain4energy/c4e-chain/app"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 )
 
 func TestWithdrawAllAvailableOnVestingStart(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-
-	const initBlock = 1000
-	const vested = 1000000
 	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupApp(1000)
 
-	accountVestings, vesting1 := createAccountVestings(addr, vested, 0)
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
-	app, ctx := setupApp(initBlock)
+	addCoinsToCfevestingModule(vested, ctx, app)
 
-	bank := app.BankKeeper
-	auth := app.AccountKeeper
+	accAddr := acountsAddresses[0]
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), "", 1, vested, 0, false)
 
-	denom := addCoinsToModule(vested, ctx, app)
-
-	k := app.CfevestingKeeper
-
-	k.SetAccountVestings(ctx, accountVestings)
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-
-	msg := types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
-	vesting := accVestings[0].Vestings[0]
-	verifyVesting(t, *vesting1, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, sdk.ZeroInt())
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.NewInt(vested))
-
+	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, 0, vested)
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
 
 func TestWithdrawAllAvailableManyVestingsOnVestingStart(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-
-	const vt1 = "test1"
-	const vt2 = "test2"
-	const vt3 = "test3"
-	const initBlock = 1000
-	const vested = 1000000
 	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupApp(1000)
 
-	accountVestings, vesting1, vesting2, vesting3 := createAccountVestingsMany(addr, vt1, vt2, vt3, vested, 0)
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	addCoinsToCfevestingModule(3*vested, ctx, app)
 
-	app, ctx := setupApp(initBlock)
+	accAddr := acountsAddresses[0]
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), "", 3, vested, 0, false)
 
-	bank := app.BankKeeper
-	auth := app.AccountKeeper
-
-	denom := addCoinsToModule(3*vested, ctx, app)
-
-	k := app.CfevestingKeeper
-
-	k.SetAccountVestings(ctx, accountVestings)
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-
-	msg := types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 3)
-	vesting := accVestings[0].Vestings[0]
-	verifyVesting(t, *vesting1, *vesting)
-
-	vesting = accVestings[0].Vestings[1]
-	verifyVesting(t, *vesting2, *vesting)
-
-	vesting = accVestings[0].Vestings[2]
-	verifyVesting(t, *vesting3, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, sdk.ZeroInt())
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.NewInt(3*vested))
-
+	withdrawAllAvailable(t, ctx, app, accAddr, 0, 3*vested, 0, 3*vested)
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
 
 func TestWithdrawAllAvailableSomeToWithdraw(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-
-	const initBlock = 10100
-	const vested = 1000000
 	addHelperModuleAccountPerms()
+	const vested = 1000000
+	const withdrawable = 1000
+	app, ctx := setupApp(10100)
 
-	accountVestings, vesting1 := createAccountVestings(addr, vested, 0)
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
-	app, ctx := setupApp(initBlock)
+	addCoinsToCfevestingModule(vested, ctx, app)
 
-	bank := app.BankKeeper
-	auth := app.AccountKeeper
-
-	denom := addCoinsToModule(vested, ctx, app)
-
-	k := app.CfevestingKeeper
-
-	k.SetAccountVestings(ctx, accountVestings)
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-
-	msg := types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
-	vesting := accVestings[0].Vestings[0]
-	vesting1.Withdrawn = sdk.NewInt(1000)
-	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
-	verifyVesting(t, *vesting1, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, vesting1.Withdrawn)
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.NewInt(vested).Sub(vesting1.Withdrawn))
-
+	accAddr := acountsAddresses[0]
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), "", 1, vested, 0, false)
+	
+	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawable, vested-withdrawable)
+	accountVestings.Vestings[0].Withdrawn = sdk.NewInt(withdrawable)
+	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(withdrawable)
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
 
 func TestWithdrawAllAvailableManyVestedSomeToWithdraw(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-
-	const vt1 = "test1"
-	const vt2 = "test2"
-	const vt3 = "test3"
-	const initBlock = 10100
-	const vested = 1000000
 	addHelperModuleAccountPerms()
+	const vested = 1000000
+	const withdrawable = 1000
+	app, ctx := setupApp(10100)
 
-	accountVestings, vesting1, vesting2, vesting3 := createAccountVestingsMany(addr, vt1, vt2, vt3, vested, 0)
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	addCoinsToCfevestingModule(3*vested, ctx, app)
 
-	app, ctx := setupApp(initBlock)
+	accAddr := acountsAddresses[0]
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), "", 3, vested, 0, false)
 
-	bank := app.BankKeeper
-	auth := app.AccountKeeper
-
-	denom := addCoinsToModule(3*vested, ctx, app)
-
-	k := app.CfevestingKeeper
-
-	k.SetAccountVestings(ctx, accountVestings)
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-
-	msg := types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 3)
-	vesting1.Withdrawn = sdk.NewInt(1000)
-	vesting2.Withdrawn = sdk.NewInt(1000)
-	vesting3.Withdrawn = sdk.NewInt(1000)
-
-	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting2.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting3.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting := accVestings[0].Vestings[0]
-	verifyVesting(t, *vesting1, *vesting)
-
-	vesting = accVestings[0].Vestings[1]
-	verifyVesting(t, *vesting2, *vesting)
-
-	vesting = accVestings[0].Vestings[2]
-	verifyVesting(t, *vesting3, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, vesting1.Withdrawn.MulRaw(3))
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.NewInt(3*vested).Sub(vesting1.Withdrawn.MulRaw(3)))
-
+	withdrawAllAvailable(t, ctx, app, accAddr, 0, 3*vested, 3*withdrawable, 3*vested-3*withdrawable)
+	for _, vesting := range accountVestings.Vestings {
+		vesting.Withdrawn = sdk.NewInt(withdrawable)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawable)
+	}
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
 
 func TestWithdrawAllAvailableSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-
-	const initBlock = 10100
-	const vested = 1000000
-	const withdrawn = 300
 	addHelperModuleAccountPerms()
+	const vested = 1000000
+	const withdrawable = 1000
+	const withdrawn = 300
 
-	accountVestings, vesting1 := createAccountVestings(addr, vested, withdrawn)
+	app, ctx := setupApp(10100)
 
-	app, ctx := setupApp(initBlock)
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
-	bank := app.BankKeeper
-	auth := app.AccountKeeper
+	addCoinsToCfevestingModule(vested, ctx, app)
 
-	denom := addCoinsToModule(vested, ctx, app)
-
-	k := app.CfevestingKeeper
-
-	k.SetAccountVestings(ctx, accountVestings)
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-
-	msg := types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
-	vesting := accVestings[0].Vestings[0]
-	vesting1.Withdrawn = sdk.NewInt(1000)
-	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
-	verifyVesting(t, *vesting1, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, vesting1.Withdrawn.SubRaw(withdrawn))
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.NewInt(vested).Sub(vesting1.Withdrawn).AddRaw(withdrawn))
+	accAddr := acountsAddresses[0]
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), "", 1, vested, withdrawn, false)
+	
+	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawable-withdrawn, vested-withdrawable+withdrawn)
+	accountVestings.Vestings[0].Withdrawn = sdk.NewInt(withdrawable)
+	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(withdrawable)
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 
 }
 
 func TestWithdrawAllAvailableManyVestedSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-
-	const vt1 = "test1"
-	const vt2 = "test2"
-	const vt3 = "test3"
-	const initBlock = 10100
-	const vested = 1000000
-	const withdrawn = 300
 	addHelperModuleAccountPerms()
+	const vested = 1000000
+	const withdrawable = 1000
+	const withdrawn = 300
 
-	accountVestings, vesting1, vesting2, vesting3 := createAccountVestingsMany(addr, vt1, vt2, vt3, vested, withdrawn)
+	app, ctx := setupApp(10100)
 
-	app, ctx := setupApp(initBlock)
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	addCoinsToCfevestingModule(3*vested, ctx, app)
 
-	bank := app.BankKeeper
-	auth := app.AccountKeeper
+	accAddr := acountsAddresses[0]
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), "", 3, vested, withdrawn, false)
 
-	denom := addCoinsToModule(3*vested, ctx, app)
-
-	k := app.CfevestingKeeper
-
-	k.SetAccountVestings(ctx, accountVestings)
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-
-	msg := types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 3)
-	vesting := accVestings[0].Vestings[0]
-	vesting1.Withdrawn = sdk.NewInt(1000)
-	vesting2.Withdrawn = sdk.NewInt(1000)
-	vesting3.Withdrawn = sdk.NewInt(1000)
-
-	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting2.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting3.LastModificationWithdrawn = sdk.NewInt(1000)
-	verifyVesting(t, *vesting1, *vesting)
-
-	vesting = accVestings[0].Vestings[1]
-	verifyVesting(t, *vesting2, *vesting)
-
-	vesting = accVestings[0].Vestings[2]
-	verifyVesting(t, *vesting3, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, vesting1.Withdrawn.SubRaw(withdrawn).MulRaw(3))
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.NewInt(3*vested).Sub(vesting1.Withdrawn.SubRaw(withdrawn).MulRaw(3)))
-
+	withdrawAllAvailable(t, ctx, app, accAddr, 0, 3*vested, 3*withdrawable-3*withdrawn, 3*vested-3*withdrawable+3*withdrawn)
+	for _, vesting := range accountVestings.Vestings {
+		vesting.Withdrawn = sdk.NewInt(withdrawable)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawable)
+	}
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
 
 func TestVestAndWithdrawAllAvailable(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-
-	const vt1 = "test1"
-	const initBlock = 1000
-
-	const vested = 1000000
 	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupApp(1000)
 
-	app, ctx := setupApp(initBlock)
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	accAddr := acountsAddresses[0]
+	addCoinsToAccount(vested, ctx, app, accAddr)
 
-	bank := app.BankKeeper
-	auth := app.AccountKeeper
-
-	denom := addCoinsToAccount(vested, ctx, app, accAddr)
-
-	k := app.CfevestingKeeper
-
-	vestingTypes := types.VestingTypes{}
-	vestingType1 := types.VestingType{
-		Name:                 vt1,
-		LockupPeriod:         9000,
-		VestingPeriod:        100000,
-		TokenReleasingPeriod: 10,
-		DelegationsAllowed:   false,
+	modifyVestingType := func(vt *types.VestingType) {
+		vt.LockupPeriod = 9000
+		vt.VestingPeriod = 100000
 	}
-	vestingTypesArray := []*types.VestingType{&vestingType1}
-	vestingTypes.VestingTypes = vestingTypesArray
-	k.SetVestingTypes(ctx, vestingTypes)
+	vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 1, 1, false, 1)
+	
+	makeVesting(t, ctx, app, accAddr, false, true, false, false, *vestingTypes.VestingTypes[0], vested, vested, 0, 0, 0, 0, vested)
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
+	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, 0, vested)
 
-	msg := types.MsgVest{Creator: addr, Amount: sdk.NewInt(vested), VestingType: vt1}
-	_, error := msgServer.Vest(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
+	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{0})
 
-	msgWithdraw := types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error = msgServer.WithdrawAllAvailable(msgServerCtx, &msgWithdraw)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
-	vesting := accVestings[0].Vestings[0]
-	vesting1 := types.Vesting{
-		Id:                1,
-		VestingType:       vt1,
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewInt(vested),
-		// Claimable:            0,
-		// LastFreeingBlock:     0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed:         false,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewIntFromUint64(vested),
-		LastModificationWithdrawn: sdk.ZeroInt(),
-	}
-	verifyVesting(t, vesting1, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, sdk.ZeroInt())
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.NewInt(vested))
-
+	oldCtx := ctx
 	ctx = ctx.WithBlockHeight(int64(10100))
-	msgServerCtx = sdk.WrapSDKContext(ctx)
 
-	msgWithdraw = types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error = msgServer.WithdrawAllAvailable(msgServerCtx, &msgWithdraw)
-	require.EqualValues(t, nil, error)
+	const withdrawn = 1000
+	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawn, vested-withdrawn)
 
-	accVestings = k.GetAllAccountVestings(ctx)
+	verifyAccountVestings(t, oldCtx, app, accAddr, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{withdrawn})
 
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 1)
-	vesting = accVestings[0].Vestings[0]
-	vesting1 = types.Vesting{
-		Id:                1,
-		VestingType:       vt1,
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewInt(vested),
-		// Claimable:            0,
-		// LastFreeingBlock:     0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed:         false,
-		Withdrawn:                 sdk.NewInt(1000),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewIntFromUint64(vested),
-		LastModificationWithdrawn: sdk.NewInt(1000),
-	}
-	verifyVesting(t, vesting1, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, sdk.NewInt(1000))
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.NewInt(vested-1000))
 }
 
 func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegable(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-	const delagableAddr = "cosmos1dfugyfm087qa3jrdglkeaew0wkn59jk8mgw6x6"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-	delegableAccAddr, _ := sdk.AccAddressFromBech32(delagableAddr)
-
-	const vt1 = "test1"
-	const vt2 = "test2"
-	const vt3 = "test3"
-	const initBlock = 10100
-	const vested = 1000000
-	accountVestings, vesting1, vesting2, vesting3 := createAccountVestingsMany(addr, vt1, vt2, vt3, vested, 0)
-	accountVestings.DelegableAddress = delagableAddr
-	vesting1.DelegationAllowed = true
-	vesting2.DelegationAllowed = true
-	vesting3.DelegationAllowed = true
 	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupApp(10100)
 
-	app, ctx := setupApp(initBlock)
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accAddr := acountsAddresses[0]
+	delegableAccAddr := acountsAddresses[1]
 
-	bank := app.BankKeeper
-	// mint := app.MintKeeper
-	auth := app.AccountKeeper
+	addCoinsToAccount(3*vested, ctx, app, delegableAccAddr)
+	
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
+	const withdrawn = 1000
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, 3*vested, 0, 3*withdrawn, 3*vested-3*withdrawn, 0)
 
-	// denom := addCoinsToModule(3*vested, mint, ctx, bank)
-	denom := addCoinsToAccount(3*vested, ctx, app, delegableAccAddr)
-
-	k := app.CfevestingKeeper
-
-	k.SetAccountVestings(ctx, accountVestings)
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-
-	msg := types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 3)
-	vesting1.Withdrawn = sdk.NewInt(1000)
-	vesting2.Withdrawn = sdk.NewInt(1000)
-	vesting3.Withdrawn = sdk.NewInt(1000)
-
-	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting2.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting3.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting := accVestings[0].Vestings[0]
-	verifyVesting(t, *vesting1, *vesting)
-
-	vesting = accVestings[0].Vestings[1]
-	verifyVesting(t, *vesting2, *vesting)
-
-	vesting = accVestings[0].Vestings[2]
-	verifyVesting(t, *vesting3, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, vesting1.Withdrawn.MulRaw(3))
-	verifyAccountBalance(t, app, ctx, delegableAccAddr, sdk.NewInt(3*vested).Sub(vesting1.Withdrawn.MulRaw(3)))
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.ZeroInt())
-
+	for _, vesting := range accountVestings.Vestings {
+		vesting.Withdrawn = sdk.NewInt(withdrawn)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
+	}
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
 
 func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllSomeDelegable(t *testing.T) {
-	const addr = "cosmos1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8245g3w"
-	const delagableAddr = "cosmos1dfugyfm087qa3jrdglkeaew0wkn59jk8mgw6x6"
-
-	accAddr, _ := sdk.AccAddressFromBech32(addr)
-	delegableAccAddr, _ := sdk.AccAddressFromBech32(delagableAddr)
-
-	const vt1 = "test1"
-	const vt2 = "test2"
-	const vt3 = "test3"
-	const initBlock = 10100
-	const vested = 1000000
 	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupApp(10100)
 
-	accountVestings, vesting1, vesting2, vesting3 := createAccountVestingsMany(addr, vt1, vt2, vt3, vested, 0)
-	accountVestings.DelegableAddress = delagableAddr
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accAddr := acountsAddresses[0]
+	delegableAccAddr := acountsAddresses[1]
 
-	vesting3.DelegationAllowed = true
+	addCoinsToCfevestingModule(2*vested, ctx, app)
+	addCoinsToAccount(vested, ctx, app, delegableAccAddr)
 
-	app, ctx := setupApp(initBlock)
-
-	bank := app.BankKeeper
-	// mint := app.MintKeeper
-	auth := app.AccountKeeper
-
-	addCoinsToModule(2*vested, ctx, app)
-	denom := addCoinsToAccount(vested, ctx, app, delegableAccAddr)
-
-	k := app.CfevestingKeeper
-
-	k.SetAccountVestings(ctx, accountVestings)
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-
-	msg := types.MsgWithdrawAllAvailable{Creator: addr}
-	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
-
-	accVestings := k.GetAllAccountVestings(ctx)
-
-	verifyAcountVestings(k, ctx, addr, t, accVestings, 3)
-	vesting1.Withdrawn = sdk.NewInt(1000)
-	vesting2.Withdrawn = sdk.NewInt(1000)
-	vesting3.Withdrawn = sdk.NewInt(1000)
-
-	vesting1.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting2.LastModificationWithdrawn = sdk.NewInt(1000)
-	vesting3.LastModificationWithdrawn = sdk.NewInt(1000)
-
-	vesting := accVestings[0].Vestings[0]
-	verifyVesting(t, *vesting1, *vesting)
-
-	vesting = accVestings[0].Vestings[1]
-	verifyVesting(t, *vesting2, *vesting)
-
-	vesting = accVestings[0].Vestings[2]
-	verifyVesting(t, *vesting3, *vesting)
-
-	verifyAccountBalance(t, app, ctx, accAddr, vesting1.Withdrawn.MulRaw(3))
-	verifyAccountBalance(t, app, ctx, delegableAccAddr, sdk.NewInt(vested).Sub(vesting1.Withdrawn))
-
-	verifyModuleAccount(auth, ctx, bank, denom, t, sdk.NewInt(2*vested).Sub(vesting1.Withdrawn.MulRaw(2)))
-
-}
-
-func verifyAcountVestings(k keeper.Keeper, ctx sdk.Context, addr string, t *testing.T, accVestings []types.AccountVestings, numOfVestings int) {
-	_, accFound := k.GetAccountVestings(ctx, addr)
-	require.EqualValues(t, true, accFound)
-
-	require.EqualValues(t, 1, len(accVestings))
-	require.EqualValues(t, numOfVestings, len(accVestings[0].Vestings))
-
-	require.EqualValues(t, addr, accVestings[0].Address)
-}
-
-func verifyVesting(t *testing.T, vestingExpected types.Vesting, vestingActual types.Vesting) {
-	require.EqualValues(t, vestingExpected, vestingActual)
-	require.EqualValues(t, vestingExpected.Id, vestingActual.Id)
-
-	require.EqualValues(t, vestingExpected.VestingType, vestingActual.VestingType)
-	require.EqualValues(t, vestingExpected.VestingStartBlock, vestingActual.VestingStartBlock)
-	require.EqualValues(t, vestingExpected.LockEndBlock, vestingActual.LockEndBlock)
-
-	require.EqualValues(t, vestingExpected.VestingEndBlock, vestingActual.VestingEndBlock)
-
-	require.EqualValues(t, vestingExpected.Vested, vestingActual.Vested)
-	// require.EqualValues(t, vestingExpected.Claimable, vestingActual.Claimable)
-	// require.EqualValues(t, vestingExpected.LastFreeingBlock, vestingActual.LastFreeingBlock)
-	require.EqualValues(t, vestingExpected.FreeCoinsBlockPeriod, vestingActual.FreeCoinsBlockPeriod)
-	// require.EqualValues(t, vestingExpected.FreeCoinsPerPeriod, vestingActual.FreeCoinsPerPeriod)
-	require.EqualValues(t, vestingExpected.DelegationAllowed, vestingActual.DelegationAllowed)
-}
-
-func setupApp(initBlock int64) (*app.App, sdk.Context) {
-	app := app.Setup(false)
-	header := tmproto.Header{}
-	header.Height = initBlock
-	ctx := app.BaseApp.NewContext(false, header)
-	return app, ctx
-}
-
-func createAccountVestingsMany(addr string, vt1 string, vt2 string, vt3 string, vested uint64, withdrawn uint64) (types.AccountVestings, *types.Vesting, *types.Vesting, *types.Vesting) {
-	accountVestings := types.AccountVestings{}
-	accountVestings.Address = addr
-	vesting1 := types.Vesting{
-		Id:                1,
-		VestingType:       vt1,
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewIntFromUint64(vested),
-		// Claimable:            0,
-		// LastFreeingBlock:     0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed:         false,
-		Withdrawn:                 sdk.NewIntFromUint64(withdrawn),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewIntFromUint64(vested),
-		LastModificationWithdrawn: sdk.NewIntFromUint64(withdrawn),
+	modifyVesting := func(v *types.Vesting) {
+		if v.Id == 3 {
+			v.DelegationAllowed = true
+		}
 	}
-	vesting2 := types.Vesting{
-		Id:                2,
-		VestingType:       vt1,
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewIntFromUint64(vested),
-		// Claimable:            0,
-		// LastFreeingBlock:     0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed:         false,
-		Withdrawn:                 sdk.NewIntFromUint64(withdrawn),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewIntFromUint64(vested),
-		LastModificationWithdrawn: sdk.NewIntFromUint64(withdrawn),
-	}
-	vesting3 := types.Vesting{
-		Id:                3,
-		VestingType:       vt1,
-		VestingStartBlock: 1000,
-		LockEndBlock:      10000,
-		VestingEndBlock:   110000,
-		Vested:            sdk.NewIntFromUint64(vested),
-		// Claimable:            0,
-		// LastFreeingBlock:     0,
-		FreeCoinsBlockPeriod: 10,
-		// FreeCoinsPerPeriod:   100,
-		DelegationAllowed:         false,
-		Withdrawn:                 sdk.NewIntFromUint64(withdrawn),
-		Sent:                      sdk.ZeroInt(),
-		LastModificationBlock:     1000,
-		LastModificationVested:    sdk.NewIntFromUint64(vested),
-		LastModificationWithdrawn: sdk.NewIntFromUint64(withdrawn),
-	}
+	accountVestings := setupAccountsVestingsWithModification(ctx, app, modifyVesting, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, false)
+	const withdrawn = 1000
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, vested, 2*vested, 3*withdrawn, vested-withdrawn, 2*vested-2*withdrawn)
 
-	vestingsArray := []*types.Vesting{&vesting1, &vesting2, &vesting3}
-	accountVestings.Vestings = vestingsArray
-	return accountVestings, &vesting1, &vesting2, &vesting3
+	for _, vesting := range accountVestings.Vestings {
+		vesting.Withdrawn = sdk.NewInt(withdrawn)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
+	}
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
 
-func addCoinsToModule(vested uint64, ctx sdk.Context, app *app.App) string {
-	return addCoinsToModuleByName(vested, types.ModuleName, ctx, app)
-}
+
