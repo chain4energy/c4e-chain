@@ -41,15 +41,6 @@ func (k Keeper) addVesting(
 	lockEndHeight int64,
 	vestingEndHeight int64,
 	FreeCoinsBlockPeriod int64) error {
-	// k.Logger(ctx).Debug("Vest: vestingAddr: " + vestingAddr + "amount: " + amount.String() + "vestingType: " + vestingType)
-	// vt, err := k.GetVestingType(ctx, vestingType)
-
-	// if err != nil {
-	// 	k.Logger(ctx).Error("Error: " + err.Error())
-
-	// 	return sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
-	// }
-	// k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
 
 	if amount.Equal(sdk.ZeroInt()) {
 		return nil
@@ -84,8 +75,6 @@ func (k Keeper) addVesting(
 		}
 	}
 
-	// return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Balance: " + balance.Amount.String())
-
 	accVestings, vestingsFound := k.GetAccountVestings(ctx, vestingAddr)
 	k.Logger(ctx).Debug("vestingsFound: " + strconv.FormatBool(vestingsFound))
 	var id int32
@@ -113,8 +102,7 @@ func (k Keeper) addVesting(
 		}
 		id = int32(len(accVestings.Vestings)) + 1
 	}
-	// numOfPeriods := vt.VestingPeriod / vt.TokenReleasingPeriod
-	// amountPerPeriod := amount / uint64(numOfPeriods)
+
 	vesting := types.Vesting{
 		Id:                id,
 		VestingType:       vestingType,
@@ -122,10 +110,7 @@ func (k Keeper) addVesting(
 		LockEndBlock:      lockEndHeight,
 		VestingEndBlock:   vestingEndHeight,
 		Vested:            amount,
-		// Claimable:            0,
-		// LastFreeingBlock:     0,
 		FreeCoinsBlockPeriod: FreeCoinsBlockPeriod,
-		// FreeCoinsPerPeriod:   amountPerPeriod,
 		DelegationAllowed:         delegationAllowed,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
@@ -158,6 +143,10 @@ func (k Keeper) addVesting(
 }
 
 func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, vestingId int32, amount sdk.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
+	if fromAddr == toAddr {
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "from address and to address cannot be identical")
+	}
+
 	w, err := k.WithdrawAllAvailable(ctx, fromAddr)
 	if err != nil {
 		return withdrawn, err
