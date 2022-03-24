@@ -14,14 +14,14 @@ import (
 )
 
 func TestVestDelegationNotAllowed(t *testing.T) {
-	vest(t, false)
+	vestTest(t, false)
 }
 
 func TestVestDelegationAllowed(t *testing.T) {
-	vest(t, true)
+	vestTest(t, true)
 }
 
-func vest(t *testing.T, delegationAllowed bool) {
+func vestTest(t *testing.T, delegationAllowed bool) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := setupApp(1000)
