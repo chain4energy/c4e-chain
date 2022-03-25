@@ -2,6 +2,8 @@ syntax = "proto3";
 package chain4energy.c4echain.cfevesting;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
@@ -22,15 +24,15 @@ message Vesting {
 
   int32 id = 1;
   string vesting_type = 2;
-  int64 vesting_start = 3;
-  int64 lock_end = 4;
-  int64 vesting_end = 5;
+  google.protobuf.Timestamp vesting_start = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp lock_end = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string vested = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  int64 release_period = 7;
+  google.protobuf.Duration release_period = 7 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
   bool delegation_allowed = 8;
   string withdrawn = 9 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string sent = 10 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  int64 last_modification = 11;
+  google.protobuf.Timestamp last_modification = 11 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string last_modification_vested = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string last_modification_withdrawn = 13 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 

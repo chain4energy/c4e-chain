@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -10,6 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
+
 )
 
 func TestSendVestingDelegationNotAllowedNoVestingRestart(t *testing.T) {
@@ -128,16 +131,16 @@ func sendVestingTest(t *testing.T, delegationAllowed bool, restartVesting bool, 
 
 	verifyAccountVestings(t, ctx, app, accSrcAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
 
-	addHeight := int64(500)
+	addTime := testutils.CreateDurationFromNumOfHours(500)
 	if testType == withdrawableEnoughToSend {
-		addHeight = int64(2000)
+		addTime = testutils.CreateDurationFromNumOfHours(2000)
 	} else if testType == withdrawableNotEnoughToSend {
-		addHeight = int64(5600)
+		addTime = testutils.CreateDurationFromNumOfHours(5600)
 	} else if testType == allWithdrawableEnoughToSend {
-		addHeight = int64(7000)
+		addTime = testutils.CreateDurationFromNumOfHours(7000)
 	}
 	oldCtx := ctx
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + addHeight)
+	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1000).WithBlockTime(ctx.BlockTime().Add(addTime))
 
 	witdrawable := int64(0)
 	if testType == withdrawableEnoughToSend {
@@ -150,7 +153,7 @@ func sendVestingTest(t *testing.T, delegationAllowed bool, restartVesting bool, 
 	verifyAccountVestings(t, oldCtx, app, accSrcAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
 
 	vestingData := getVestings(t, ctx, app, accSrcAddr)
-	verifyVestingResponseWithStoredAccountVestings(t, ctx, app, vestingData, accSrcAddr, ctx.BlockHeight(), delegationAllowed)
+	verifyVestingResponseWithStoredAccountVestings(t, ctx, app, vestingData, accSrcAddr, ctx.BlockTime(), delegationAllowed)
 
 	sentAmount := int64(vested / 10)
 
@@ -203,8 +206,8 @@ func sendVestingTest(t *testing.T, delegationAllowed bool, restartVesting bool, 
 		sentAmount = int64(0)
 	}
 	if wasSent {
-		verifyAccountVestingsWithModification(t, oldCtx, app, accSrcAddr, 2, []types.VestingType{*usedVestingType}, []int64{oldCtx.BlockHeight()}, []int64{vested}, []int64{witdrawable},
-			[]int64{sentAmount}, []int64{ctx.BlockHeight()}, []int64{vested-sentAmount-witdrawable}, []int64{0})
+		verifyAccountVestingsWithModification(t, oldCtx, app, accSrcAddr, 2, []types.VestingType{*usedVestingType}, []time.Time{oldCtx.BlockTime()}, []int64{vested}, []int64{witdrawable},
+			[]int64{sentAmount}, []time.Time{ctx.BlockTime()}, []int64{vested-sentAmount-witdrawable}, []int64{0})
 	} else {
 		verifyAccountVestings(t, oldCtx, app, accSrcAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{witdrawable})
 	}
@@ -225,11 +228,11 @@ func sendVestingTest(t *testing.T, delegationAllowed bool, restartVesting bool, 
 	}
 
 	if restartVesting {
-		verifyAccountVestingsWithModification(t, ctx, app, accDestAddr, 2, []types.VestingType{*usedVestingType}, []int64{ctx.BlockHeight()}, []int64{sentAmount}, []int64{0},
-			[]int64{0}, []int64{ctx.BlockHeight()}, []int64{sentAmount}, []int64{0})
+		verifyAccountVestingsWithModification(t, ctx, app, accDestAddr, 2, []types.VestingType{*usedVestingType}, []time.Time{ctx.BlockTime()}, []int64{sentAmount}, []int64{0},
+			[]int64{0}, []time.Time{ctx.BlockTime()}, []int64{sentAmount}, []int64{0})
 	} else {
-		verifyAccountVestingsWithModification(t, oldCtx, app, accDestAddr, 2, []types.VestingType{*usedVestingType}, []int64{ctx.BlockHeight()}, []int64{sentAmount}, []int64{0},
-			[]int64{0}, []int64{ctx.BlockHeight()}, []int64{sentAmount}, []int64{0})
+		verifyAccountVestingsWithModification(t, oldCtx, app, accDestAddr, 2, []types.VestingType{*usedVestingType}, []time.Time{ctx.BlockTime()}, []int64{sentAmount}, []int64{0},
+			[]int64{0}, []time.Time{ctx.BlockTime()}, []int64{sentAmount}, []int64{0})
 	}
 	verifyAccountBalance(t, app, ctx, accDestAddr, sdk.NewInt(0))
 	if delegationAllowed {

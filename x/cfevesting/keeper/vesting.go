@@ -3,6 +3,7 @@ package keeper
 import (
 	"math"
 	"strconv"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,9 +25,14 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount sdk.Int, vestingType s
 	}
 	k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
 
-	return k.addVesting(ctx, false, addr, addr, amount, vestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
-		vt.LockupPeriod+ctx.BlockHeight(), vt.LockupPeriod+vt.VestingPeriod+ctx.BlockHeight(),
+	// return k.addVesting(ctx, false, addr, addr, amount, vestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
+	// 	vt.LockupPeriod.Nanoseconds()+ctx.BlockHeight(), vt.LockupPeriod.Nanoseconds()+vt.VestingPeriod.Nanoseconds()+ctx.BlockHeight(),
+	// 	vt.TokenReleasingPeriod.Nanoseconds())
+
+	return k.addVesting(ctx, false, addr, addr, amount, vestingType, vt.DelegationsAllowed, ctx.BlockTime(),
+		ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod),
 		vt.TokenReleasingPeriod)
+		
 }
 
 func (k Keeper) addVesting(
@@ -37,10 +43,10 @@ func (k Keeper) addVesting(
 	amount sdk.Int,
 	vestingType string,
 	delegationAllowed bool,
-	vestingStartHeight int64,
-	lockEndHeight int64,
-	vestingEndHeight int64,
-	FreeCoinsBlockPeriod int64) error {
+	vestingStart time.Time,
+	lockEnd time.Time,
+	vestingEnd time.Time,
+	releasePeriod time.Duration) error {
 
 	if amount.Equal(sdk.ZeroInt()) {
 		return nil
@@ -106,15 +112,15 @@ func (k Keeper) addVesting(
 	vesting := types.Vesting{
 		Id:                id,
 		VestingType:       vestingType,
-		VestingStart: vestingStartHeight,
-		LockEnd:      lockEndHeight,
-		VestingEnd:   vestingEndHeight,
+		VestingStart: vestingStart,
+		LockEnd:      lockEnd,
+		VestingEnd:   vestingEnd,
 		Vested:            amount,
-		ReleasePeriod: FreeCoinsBlockPeriod,
+		ReleasePeriod: releasePeriod,
 		DelegationAllowed:         delegationAllowed,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:     vestingStartHeight,
+		LastModification:     vestingStart,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -189,7 +195,7 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 		}
 	}
 	vesting.Sent = amount
-	vesting.LastModification = ctx.BlockHeight()
+	vesting.LastModification = ctx.BlockTime()
 	vesting.LastModificationVested = available.Sub(amount)
 	vesting.LastModificationWithdrawn = sdk.ZeroInt()
 
@@ -202,11 +208,14 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 			return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
 		}
 		k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
-		return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
-			vt.LockupPeriod+ctx.BlockHeight(), vt.LockupPeriod+vt.VestingPeriod+ctx.BlockHeight(),
-			vt.TokenReleasingPeriod)
+		// return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
+		// 	vt.LockupPeriod.Nanoseconds()+ctx.BlockHeight(), vt.LockupPeriod.Nanoseconds()+vt.VestingPeriod.Nanoseconds()+ctx.BlockHeight(),
+		// 	vt.TokenReleasingPeriod.Nanoseconds())
+		return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockTime(),
+			ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod),
+			vt.TokenReleasingPeriod) 
 	} else {
-		return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockHeight(),
+		return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockTime(),
 			vesting.LockEnd, vesting.VestingEnd,
 			vesting.ReleasePeriod)
 	}
@@ -229,11 +238,11 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 		return withdrawn, status.Error(codes.NotFound, "No vestings")
 	}
 
-	height := ctx.BlockHeight()
+	current := ctx.BlockTime()
 	toWithdraw := sdk.ZeroInt()
 	toWithdrawDelegable := sdk.ZeroInt()
 	for _, vesting := range accVestings.Vestings {
-		withdrawable := CalculateWithdrawable(height, *vesting)
+		withdrawable := CalculateWithdrawable(current, *vesting)
 		vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
 		vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(withdrawable)
 		if vesting.DelegationAllowed {
@@ -270,31 +279,30 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 	return sdk.NewCoin(denom, toWithdraw.Add(toWithdrawDelegable)), nil
 }
 
-func CalculateWithdrawable(height int64, vesting types.Vesting) sdk.Int {
-	if height <= vesting.VestingStart {
+func CalculateWithdrawable(current time.Time, vesting types.Vesting) sdk.Int {
+	if current.Equal(vesting.VestingStart) || current.Before(vesting.VestingStart) {
 		return sdk.ZeroInt()
 	}
-	if height <= vesting.LockEnd {
+	if current.Equal(vesting.LockEnd) || current.Before(vesting.LockEnd) {
 		return sdk.ZeroInt()
 	}
-	if height >= vesting.VestingEnd {
+	if current.Equal(vesting.VestingEnd) || current.After(vesting.VestingEnd) {
 		return vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
 	}
 
-	var lockEndHeight int64
-	if vesting.VestingStart > vesting.LockEnd {
-		lockEndHeight = vesting.VestingStart
+	var lockEnd time.Time
+	if vesting.VestingStart.After(vesting.LockEnd) {
+		lockEnd = vesting.VestingStart
 	} else {
-		lockEndHeight = vesting.LockEnd
+		lockEnd = vesting.LockEnd
 	}
-
-	if vesting.GetLastModification() > lockEndHeight {
-		lockEndHeight = vesting.LastModification
+	if vesting.GetLastModification().After(lockEnd) {
+		lockEnd = vesting.LastModification
 	}
-	allVestingBlocks := vesting.VestingEnd - lockEndHeight
-	blocksFromStart := height - lockEndHeight
-	numOfPeriodsFromStart := blocksFromStart / vesting.ReleasePeriod
-	numOfPeriods := int64(math.Ceil(float64(allVestingBlocks) / float64(vesting.ReleasePeriod)))
+	wholeVestingPariod := vesting.VestingEnd.Sub(lockEnd).Nanoseconds()
+	fromStart := current.Sub(lockEnd).Nanoseconds()
+	numOfPeriodsFromStart := fromStart / vesting.ReleasePeriod.Nanoseconds()
+	numOfPeriods := int64(math.Ceil(float64(wholeVestingPariod) / float64(vesting.ReleasePeriod)))
 
 	vested := vesting.LastModificationVested
 

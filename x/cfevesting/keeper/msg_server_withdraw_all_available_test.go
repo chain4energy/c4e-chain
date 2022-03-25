@@ -7,12 +7,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
+
 )
 
 func TestWithdrawAllAvailableOnVestingStart(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := setupApp(1000)
+	app, ctx := setupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -28,7 +30,7 @@ func TestWithdrawAllAvailableOnVestingStart(t *testing.T) {
 func TestWithdrawAllAvailableManyVestingsOnVestingStart(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := setupApp(1000)
+	app, ctx := setupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addCoinsToCfevestingModule(3*vested, ctx, app)
@@ -44,7 +46,7 @@ func TestWithdrawAllAvailableSomeToWithdraw(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = 1000
-	app, ctx := setupApp(10100)
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -63,7 +65,7 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdraw(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = 1000
-	app, ctx := setupApp(10100)
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addCoinsToCfevestingModule(3*vested, ctx, app)
@@ -85,7 +87,7 @@ func TestWithdrawAllAvailableSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	const withdrawable = 1000
 	const withdrawn = 300
 
-	app, ctx := setupApp(10100)
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -107,7 +109,7 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAndSomeWithdrawn(t *testing
 	const withdrawable = 1000
 	const withdrawn = 300
 
-	app, ctx := setupApp(10100)
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addCoinsToCfevestingModule(3*vested, ctx, app)
@@ -126,15 +128,15 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAndSomeWithdrawn(t *testing
 func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := setupApp(1000)
+	app, ctx := setupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	accAddr := acountsAddresses[0]
 	addCoinsToAccount(vested, ctx, app, accAddr)
 
 	modifyVestingType := func(vt *types.VestingType) {
-		vt.LockupPeriod = 9000
-		vt.VestingPeriod = 100000
+		vt.LockupPeriod = testutils.CreateDurationFromNumOfHours(9000)
+		vt.VestingPeriod = testutils.CreateDurationFromNumOfHours(100000)
 	}
 	vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 1, 1, false, 1)
 	
@@ -145,7 +147,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{0})
 
 	oldCtx := ctx
-	ctx = ctx.WithBlockHeight(int64(10100))
+	ctx = ctx.WithBlockHeight(int64(10100)).WithBlockTime(testutils.CreateTimeFromNumOfHours(10100))
 
 	const withdrawn = 1000
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawn, vested-withdrawn)
@@ -157,7 +159,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegable(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := setupApp(10100)
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 	accAddr := acountsAddresses[0]
@@ -179,7 +181,7 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegable(t *testing.T) 
 func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllSomeDelegable(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := setupApp(10100)
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 	accAddr := acountsAddresses[0]

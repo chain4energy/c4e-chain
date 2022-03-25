@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/app"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
@@ -272,16 +273,24 @@ func newInts64Array(n int, v int64) []int64 {
 	return s
 }
 
+func newTimeArray(n int, v time.Time) []time.Time {
+	s := make([]time.Time, n)
+	for i := range s {
+		s[i] = v
+	}
+	return s
+}
+
 func verifyAccountVestings(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress,
 	vestingTypes []types.VestingType, vestedAmounts []int64, withdrawnAmounts []int64) {
 
-	verifyAccountVestingsWithModification(t, ctx, app, address, 1, vestingTypes, newInts64Array(len(vestingTypes), ctx.BlockHeight()), vestedAmounts, withdrawnAmounts,
-		newInts64Array(len(vestingTypes), 0), newInts64Array(len(vestingTypes), ctx.BlockHeight()), vestedAmounts, withdrawnAmounts)
+	verifyAccountVestingsWithModification(t, ctx, app, address, 1, vestingTypes, newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts,
+		newInts64Array(len(vestingTypes), 0), newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts)
 }
 
 func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress,
-	amountOfAllAccVestings int, vestingTypes []types.VestingType, startHeights []int64, vestedAmounts []int64, withdrawnAmounts []int64,
-	sentAmounts []int64, modificationsHeights []int64, modificationsVested []int64, modificationsWithdrawn []int64) {
+	amountOfAllAccVestings int, vestingTypes []types.VestingType, startsTimes []time.Time, vestedAmounts []int64, withdrawnAmounts []int64,
+	sentAmounts []int64, modificationsTimes []time.Time, modificationsVested []int64, modificationsWithdrawn []int64) {
 	allAccVestings := app.CfevestingKeeper.GetAllAccountVestings(ctx)
 
 	accVestings, accFound := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
@@ -310,16 +319,16 @@ func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *a
 		if vesting.Id == int32(i+1) {
 			require.EqualValues(t, i+1, vesting.Id)
 			require.EqualValues(t, vestingTypes[i].Name, vesting.VestingType)
-			require.EqualValues(t, startHeights[i], vesting.VestingStart)
-			require.EqualValues(t, ctx.BlockHeight()+vestingTypes[i].LockupPeriod, vesting.LockEnd)
-			require.EqualValues(t, ctx.BlockHeight()+vestingTypes[i].LockupPeriod+vestingTypes[i].VestingPeriod, vesting.VestingEnd)
+			require.EqualValues(t, true, startsTimes[i].Equal(vesting.VestingStart))
+			require.EqualValues(t, true, ctx.BlockTime().Add(vestingTypes[i].LockupPeriod).Equal(vesting.LockEnd))
+			require.EqualValues(t, true, ctx.BlockTime().Add(vestingTypes[i].LockupPeriod).Add(vestingTypes[i].VestingPeriod).Equal(vesting.VestingEnd))
 			require.EqualValues(t, sdk.NewInt(vestedAmounts[i]), vesting.Vested)
 			require.EqualValues(t, vestingTypes[i].TokenReleasingPeriod, vesting.ReleasePeriod)
 			require.EqualValues(t, vestingTypes[i].DelegationsAllowed, vesting.DelegationAllowed)
 			require.EqualValues(t, sdk.NewInt(withdrawnAmounts[i]), vesting.Withdrawn)
 
 			require.EqualValues(t, sdk.NewInt(sentAmounts[i]), vesting.Sent)
-			require.EqualValues(t, modificationsHeights[i], vesting.LastModification)
+			require.EqualValues(t, true, modificationsTimes[i].Equal(vesting.LastModification))
 			require.EqualValues(t, sdk.NewInt(modificationsVested[i]), vesting.LastModificationVested)
 			require.EqualValues(t, sdk.NewInt(modificationsWithdrawn[i]), vesting.LastModificationWithdrawn)
 			found = true
@@ -370,18 +379,19 @@ func withdrawAllAvailableDelegable(t *testing.T, ctx sdk.Context, app *app.App, 
 func compareStoredAcountVestings(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress, accVestings types.AccountVestings) {
 	storedAccVestings, accFound := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
 	require.EqualValues(t, true, accFound)
-	require.EqualValues(t, len(accVestings.Vestings), len(storedAccVestings.Vestings))
-	require.EqualValues(t, address.String(), storedAccVestings.Address)
-	require.EqualValues(t, accVestings.DelegableAddress, storedAccVestings.DelegableAddress)
 
-	require.EqualValues(t, accVestings.Vestings, storedAccVestings.Vestings)
-
+	testutils.AssertAccountVestings(t, accVestings, storedAccVestings)
 }
 
 func setupApp(initBlock int64) (*app.App, sdk.Context) {
+	return setupAppWithTime(initBlock, testutils.TestEnvTime)
+}
+
+func setupAppWithTime(initBlock int64, initTime time.Time) (*app.App, sdk.Context) {
 	app := app.Setup(false)
 	header := tmproto.Header{}
 	header.Height = initBlock
+	header.Time = initTime
 	ctx := app.BaseApp.NewContext(false, header)
 	return app, ctx
 }
@@ -413,13 +423,13 @@ func getVestings(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAdd
 	return vestingData
 }
 
-func verifyVestingResponseWithStoredAccountVestings(t *testing.T, ctx sdk.Context, app *app.App, response *types.QueryVestingResponse, address sdk.AccAddress, currentHeight int64, delegationAllowed bool) {
+func verifyVestingResponseWithStoredAccountVestings(t *testing.T, ctx sdk.Context, app *app.App, response *types.QueryVestingResponse, address sdk.AccAddress, current time.Time, delegationAllowed bool) {
 	accVests, found := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
 	require.EqualValues(t, true, found)
-	verifyVestingResponse(t, response, accVests, currentHeight, delegationAllowed)
+	verifyVestingResponse(t, response, accVests, current, delegationAllowed)
 }
 
-func verifyVestingResponse(t *testing.T, response *types.QueryVestingResponse, accVestings types.AccountVestings, currentHeight int64, delegationAllowed bool) {
+func verifyVestingResponse(t *testing.T, response *types.QueryVestingResponse, accVestings types.AccountVestings, current time.Time, delegationAllowed bool) {
 	require.EqualValues(t, len(accVestings.Vestings), len(response.Vestings))
 	require.EqualValues(t, accVestings.DelegableAddress, response.DelegableAddress)
 
@@ -428,10 +438,10 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingResponse, a
 		for _, vestingInfo := range response.Vestings {
 			if vesting.Id == vestingInfo.Id {
 				require.EqualValues(t, vesting.VestingType, vestingInfo.VestingType)
-				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, currentHeight).String(), response.Vestings[0].Withdrawable)
-				require.EqualValues(t, vesting.VestingStart, vestingInfo.VestingStart)
-				require.EqualValues(t, vesting.LockEnd, vestingInfo.LockEnd)
-				require.EqualValues(t, vesting.VestingEnd, vestingInfo.VestingEnd)
+				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, current).String(), response.Vestings[0].Withdrawable)
+				require.EqualValues(t, true, vesting.VestingStart.Equal(vestingInfo.VestingStart))
+				require.EqualValues(t, true, vesting.LockEnd.Equal(vestingInfo.LockEnd))
+				require.EqualValues(t, true, vesting.VestingEnd.Equal(vestingInfo.VestingEnd))
 				require.EqualValues(t, "uc4e", response.Vestings[0].Vested.Denom)
 				require.EqualValues(t, vesting.Vested, response.Vestings[0].Vested.Amount)
 				require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn).String(), response.Vestings[0].CurrentVestedAmount)

@@ -28,7 +28,7 @@ func TestVesting(t *testing.T) {
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
-	verifyVestingResponse(t, response, accountVestings, height, true)
+	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
 }
 
 func TestVestingWithDelegableAddress(t *testing.T) {
@@ -45,13 +45,14 @@ func TestVestingWithDelegableAddress(t *testing.T) {
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
-	verifyVestingResponse(t, response, accountVestings, height, true)
+	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
 
 }
 
 func TestVestingSomeToWithdraw(t *testing.T) {
 	height := int64(10100)
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
+	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
@@ -64,13 +65,14 @@ func TestVestingSomeToWithdraw(t *testing.T) {
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 
-	verifyVestingResponse(t, response, accountVestings, height, true)
+	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
 
 }
 
 func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	height := int64(10100)
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
+	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
@@ -84,13 +86,15 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
-	verifyVestingResponse(t, response, accountVestings, height, true)
+	verifyVestingResponse(t, response, accountVestings, time, true)
 
 }
 
 func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 	height := int64(10100)
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
+	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
@@ -100,20 +104,22 @@ func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 	accountVestings.Vestings[0].VestingStart = accountVestings.Vestings[0].LockEnd
 	accountVestings.Vestings[0].LastModification = accountVestings.Vestings[0].LockEnd
 
-	accountVestings.Vestings[0].LockEnd -= 100
+	accountVestings.Vestings[0].LockEnd = accountVestings.Vestings[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 
-	verifyVestingResponse(t, response, accountVestings, height, true)
+	verifyVestingResponse(t, response, accountVestings, time, true)
 
 }
 
 func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	height := int64(10100)
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
+	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
@@ -125,20 +131,22 @@ func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	accountVestings.Vestings[0].Sent = sdk.NewInt(100000)
 	accountVestings.Vestings[0].LastModificationVested = accountVestings.Vestings[0].LastModificationVested.Sub(sdk.NewInt(100000))
 
-	accountVestings.Vestings[0].LockEnd -= 100
+	accountVestings.Vestings[0].LockEnd = accountVestings.Vestings[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 
-	verifyVestingResponse(t, response, accountVestings, height, true)
+	verifyVestingResponse(t, response, accountVestings, time, true)
 
 }
 
 func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
 	height := int64(10100)
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
+	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+
+	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
@@ -151,14 +159,14 @@ func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
 	accountVestings.Vestings[0].LastModificationVested = accountVestings.Vestings[0].LastModificationVested.Sub(sdk.NewInt(100000))
 	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(400)
 
-	accountVestings.Vestings[0].LockEnd -= 100
+	accountVestings.Vestings[0].LockEnd = accountVestings.Vestings[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 
-	verifyVestingResponse(t, response, accountVestings, height, true)
+	verifyVestingResponse(t, response, accountVestings, time, true)
 
 }
 
@@ -177,7 +185,7 @@ func TestVestingManyVestings(t *testing.T) {
 	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
 	require.NoError(t, err)
 
-	verifyVestingResponse(t, response, accountVestings, height, true)
+	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
 
 }
 

@@ -16,10 +16,11 @@ func TestGetAccountVestings(t *testing.T) {
 	accountVestings := testutils.GenerateAccountVestingsWithRandomVestings(2, 10, 1, 1)
 
 	k.SetAccountVestings(ctx, *accountVestings[0])
-	accVestSored, _ := k.GetAccountVestings(ctx, accountVestings[0].Address)
-	require.EqualValues(t, *accountVestings[0], accVestSored)
 
-	require.EqualValues(t, *accountVestings[0], k.DeleteAccountVestings(ctx, accountVestings[0].Address))
+	accVestSored, _ := k.GetAccountVestings(ctx, accountVestings[0].Address)
+	testutils.AssertAccountVestings(t, *accountVestings[0], accVestSored)
+
+	testutils.AssertAccountVestings(t, *accountVestings[0], k.DeleteAccountVestings(ctx, accountVestings[0].Address))
 
 	_, foundVest := k.GetAccountVestings(ctx, accountVestings[0].Address)
 	require.False(t, foundVest, "Should not be found")
@@ -28,12 +29,12 @@ func TestGetAccountVestings(t *testing.T) {
 
 	accVestSored, _ = k.GetAccountVestings(ctx, accountVestings[0].Address)
 
-	require.EqualValues(t, *accountVestings[0], accVestSored)
+	testutils.AssertAccountVestings(t, *accountVestings[0], accVestSored)
 
 	k.SetAccountVestings(ctx, *accountVestings[1])
 
 	accVestSored, _ = k.GetAccountVestings(ctx, accountVestings[1].Address)
-	require.EqualValues(t, *accountVestings[1], accVestSored)
+	testutils.AssertAccountVestings(t, *accountVestings[1], accVestSored)
 
 	allVestings := k.GetAllAccountVestings(ctx)
 	require.EqualValues(t, 2, len(allVestings))
@@ -42,7 +43,7 @@ func TestGetAccountVestings(t *testing.T) {
 	for i, accVestExp := range allVestings {
 		fmt.Println("accVestExp: " + strconv.Itoa(i) + " - " + accVestExp.Address)
 		if accountVestings[0].Address == accVestExp.Address {
-			require.EqualValues(t, *accountVestings[0], accVestExp)
+			testutils.AssertAccountVestings(t, *accountVestings[0], accVestExp)
 			found = true
 		}
 	}
@@ -52,12 +53,12 @@ func TestGetAccountVestings(t *testing.T) {
 	for i, accVestExp := range allVestings {
 		fmt.Println("accVestExp: " + strconv.Itoa(i) + " - " + accVestExp.Address)
 		if accountVestings[1].Address == accVestExp.Address {
-			require.EqualValues(t, *accountVestings[1], accVestExp)
+			testutils.AssertAccountVestings(t, *accountVestings[1], accVestExp)
 			found = true
 		}
 	}
 	require.True(t, found, "not found: "+accountVestings[1].Address)
 
-	testutils.EqualAccountVestings(t, accountVestings, testutils.ToAccountVestingsPointersArray(allVestings))
+	testutils.AssertAccountVestingsArrays(t, accountVestings, testutils.ToAccountVestingsPointersArray(allVestings))
 
 }

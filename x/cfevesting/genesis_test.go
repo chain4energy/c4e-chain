@@ -61,6 +61,7 @@ func TestGenesisVestingTypes(t *testing.T) {
 
 func TestGenesisAccountVestingsList(t *testing.T) {
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
+	// accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(1, 1, 1, 1)
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams("test_denom"),
@@ -82,7 +83,7 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 	require.EqualValues(t, genesisState.VestingTypes, (*got).VestingTypes)
 	require.EqualValues(t, len(accountVestingsListArray), len((*got).AccountVestingsList.Vestings))
 
-	testutils.EqualAccountVestings(t, accountVestingsListArray, (*got).AccountVestingsList.Vestings)
+	testutils.AssertAccountVestingsArrays(t, accountVestingsListArray, (*got).AccountVestingsList.Vestings)
 
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
