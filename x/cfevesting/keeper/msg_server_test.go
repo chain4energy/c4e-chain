@@ -40,16 +40,16 @@ func addCoinsToAccount(vested uint64, ctx sdk.Context, app *app.App, toAddr sdk.
 	return denom
 }
 
-func createAccountVestings(addr string, vested uint64, withdrawn uint64) (types.AccountVestings, *types.Vesting) {
-	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
-	accountVestings.Address = addr
-	accountVestings.Vestings[0].Vested = sdk.NewIntFromUint64(vested)
-	accountVestings.Vestings[0].DelegationAllowed = false
-	accountVestings.Vestings[0].Withdrawn = sdk.NewIntFromUint64(withdrawn)
-	accountVestings.Vestings[0].LastModificationVested = sdk.NewIntFromUint64(vested)
-	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewIntFromUint64(withdrawn)
-	return accountVestings, accountVestings.Vestings[0]
-}
+// func createAccountVestings(addr string, vested uint64, withdrawn uint64) (types.AccountVestings, *types.Vesting) {
+// 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
+// 	accountVestings.Address = addr
+// 	accountVestings.Vestings[0].Vested = sdk.NewIntFromUint64(vested)
+// 	accountVestings.Vestings[0].DelegationAllowed = false
+// 	accountVestings.Vestings[0].Withdrawn = sdk.NewIntFromUint64(withdrawn)
+// 	accountVestings.Vestings[0].LastModificationVested = sdk.NewIntFromUint64(vested)
+// 	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewIntFromUint64(withdrawn)
+// 	return accountVestings, accountVestings.Vestings[0]
+// }
 
 func addCoinsToModuleByName(vested uint64, modulaName string, ctx sdk.Context, app *app.App) string {
 	denom := "uc4e"

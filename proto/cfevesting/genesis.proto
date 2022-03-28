@@ -3,7 +3,6 @@ package chain4energy.c4echain.cfevesting;
 
 import "gogoproto/gogo.proto";
 import "cfevesting/params.proto";
-import "cfevesting/vesting_types.proto";
 import "cfevesting/account_vesting.proto";
 
 // this line is used by starport scaffolding # genesis/proto/import
@@ -14,8 +13,31 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
-  VestingTypes vesting_types = 2 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vesting_types\""];
+  repeated GenesisVestingType vesting_types = 2 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vesting_types\""];
 
   AccountVestingsList account_vestings_list = 3 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"account_vestings_list\""];
 
+}
+
+message GenesisVestingType {
+  
+  // vesting type name
+  string name = 1; 
+  // period of locked coins from vesting start
+  int64 lockup_period = 2; 
+  string lockup_period_unit = 3; 
+  // period of veesting coins from lockup period end
+  int64 vesting_period = 4; 
+  string vesting_period_unit = 5; 
+  // vested coin periodical releasing 
+  int64 token_releasing_period = 6; 
+  string token_releasing_period_unit = 7; 
+  // defines if vesting type allows delegation
+  bool delegations_allowed = 8; 
+
+  // units to select:
+  // days
+  // hours
+  // minutes
+  // seconds
 }

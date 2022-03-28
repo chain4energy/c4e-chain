@@ -8,6 +8,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
 )
+
 func GenerateVestingTypes(numberOfVestingTypes int, startId int) []*types.VestingType {
 	return Generate10BasedVestingTypes(numberOfVestingTypes, 0, false, startId)
 }
