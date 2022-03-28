@@ -8,6 +8,7 @@ import "cfevesting/params.proto";
 import "cfevesting/vesting_types.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
+import "cfevesting/genesis.proto";
 
 // this line is used by starport scaffolding # 1
 
@@ -46,7 +47,7 @@ message QueryVestingTypeRequest {
 
 message QueryVestingTypeResponse {
 
-  VestingTypes vesting_types = 1 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vesting_types\""]; 
+  repeated GenesisVestingType vesting_types = 2 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vesting_types\""];
 }
 
 message QueryVestingRequest {

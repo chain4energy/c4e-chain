@@ -8,6 +8,8 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+
 
 	"github.com/chain4energy/c4e-chain/app"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
@@ -61,44 +63,44 @@ func TestGenesisVestingTypes(t *testing.T) {
 }
 
 func TestGenesisVestingTypesUnitsSecondsToDays(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 60*60*24, cfevesting.Second, cfevesting.Day)
+	genesisVestingTypesUnitsTest(t, 60*60*24, keeper.Second, keeper.Day)
 }
 
 func TestGenesisVestingTypesUnitsSecondsToHours(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 60*60, cfevesting.Second, cfevesting.Hour)
+	genesisVestingTypesUnitsTest(t, 60*60, keeper.Second, keeper.Hour)
 }
 
 func TestGenesisVestingTypesUnitsSecondsToMinutes(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 60, cfevesting.Second, cfevesting.Minute)
+	genesisVestingTypesUnitsTest(t, 60, keeper.Second, keeper.Minute)
 }
 
 func TestGenesisVestingTypesUnitsSecondsToSeconds(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 1, cfevesting.Second, cfevesting.Second)
+	genesisVestingTypesUnitsTest(t, 1, keeper.Second, keeper.Second)
 }
 
 
 func TestGenesisVestingTypesUnitsMinutesToDays(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 60*24, cfevesting.Minute, cfevesting.Day)
+	genesisVestingTypesUnitsTest(t, 60*24, keeper.Minute, keeper.Day)
 }
 
 func TestGenesisVestingTypesUnitsMinutesToHours(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 60, cfevesting.Minute, cfevesting.Hour)
+	genesisVestingTypesUnitsTest(t, 60, keeper.Minute, keeper.Hour)
 }
 
 func TestGenesisVestingTypesUnitsMinutesToMinutes(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 1, cfevesting.Minute, cfevesting.Minute)
+	genesisVestingTypesUnitsTest(t, 1, keeper.Minute, keeper.Minute)
 }
 
 func TestGenesisVestingTypesUnitsHoursToDays(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 24, cfevesting.Hour, cfevesting.Day)
+	genesisVestingTypesUnitsTest(t, 24, keeper.Hour, keeper.Day)
 }
 
 func TestGenesisVestingTypesUnitsHoursToHours(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 1, cfevesting.Hour, cfevesting.Hour)
+	genesisVestingTypesUnitsTest(t, 1, keeper.Hour, keeper.Hour)
 }
 
 func TestGenesisVestingTypesUnitsDaysToDays(t *testing.T) {
-	genesisVestingTypesUnitsTest(t, 1, cfevesting.Day, cfevesting.Day)
+	genesisVestingTypesUnitsTest(t, 1, keeper.Day, keeper.Day)
 }
 
 func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits string, dstUnits string) {
@@ -175,33 +177,33 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 
 func TestDurationFromUnits(t *testing.T) {
 	amount := int64(456)
-	require.EqualValues(t, amount*int64(time.Second), cfevesting.DurationFromUnits(cfevesting.Second, amount))
-	require.EqualValues(t, amount*int64(time.Minute), cfevesting.DurationFromUnits(cfevesting.Minute, amount))
-	require.EqualValues(t, amount*int64(time.Hour), cfevesting.DurationFromUnits(cfevesting.Hour, amount))
-	require.EqualValues(t, amount*int64(time.Hour*24), cfevesting.DurationFromUnits(cfevesting.Day, amount))
+	require.EqualValues(t, amount*int64(time.Second), keeper.DurationFromUnits(keeper.Second, amount))
+	require.EqualValues(t, amount*int64(time.Minute), keeper.DurationFromUnits(keeper.Minute, amount))
+	require.EqualValues(t, amount*int64(time.Hour), keeper.DurationFromUnits(keeper.Hour, amount))
+	require.EqualValues(t, amount*int64(time.Hour*24), keeper.DurationFromUnits(keeper.Day, amount))
 
 }
 
 func TestDurationFromUnitsWrongUnit(t *testing.T) {
-	require.PanicsWithError(t, "Unknown PeriodUnit: das: invalid type", func() { cfevesting.DurationFromUnits("das", 234) }, "")
+	require.PanicsWithError(t, "Unknown PeriodUnit: das: invalid type", func() { keeper.DurationFromUnits("das", 234) }, "")
 
 }
 
 func TestUnitsFromDuration(t *testing.T) {
-	unit, amount := cfevesting.UnitsFromDuration(234 * time.Second)
-	require.EqualValues(t, cfevesting.Second, unit)
+	unit, amount := keeper.UnitsFromDuration(234 * time.Second)
+	require.EqualValues(t, keeper.Second, unit)
 	require.EqualValues(t, 234, amount)
 
-	unit, amount = cfevesting.UnitsFromDuration(234 * 60 * time.Second)
-	require.EqualValues(t, cfevesting.Minute, unit)
+	unit, amount = keeper.UnitsFromDuration(234 * 60 * time.Second)
+	require.EqualValues(t, keeper.Minute, unit)
 	require.EqualValues(t, 234, amount)
 
-	unit, amount = cfevesting.UnitsFromDuration(234 * 60 * 60 * time.Second)
-	require.EqualValues(t, cfevesting.Hour, unit)
+	unit, amount = keeper.UnitsFromDuration(234 * 60 * 60 * time.Second)
+	require.EqualValues(t, keeper.Hour, unit)
 	require.EqualValues(t, 234, amount)
 
-	unit, amount = cfevesting.UnitsFromDuration(234 * 60 * 60 * 24 * time.Second)
-	require.EqualValues(t, cfevesting.Day, unit)
+	unit, amount = keeper.UnitsFromDuration(234 * 60 * 60 * 24 * time.Second)
+	require.EqualValues(t, keeper.Day, unit)
 	require.EqualValues(t, 234, amount)
 }
 
@@ -213,11 +215,11 @@ func generateGenesisVestingTypes(numberOfVestingTypes int, startId int) []types.
 		gvt := types.GenesisVestingType{
 			Name:                     vt.Name,
 			LockupPeriod:             vt.LockupPeriod.Nanoseconds() / int64(time.Hour),
-			LockupPeriodUnit:         cfevesting.Day,
+			LockupPeriodUnit:         keeper.Day,
 			VestingPeriod:            vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
-			VestingPeriodUnit:        cfevesting.Day,
+			VestingPeriodUnit:        keeper.Day,
 			TokenReleasingPeriod:     vt.TokenReleasingPeriod.Nanoseconds() / int64(time.Hour),
-			TokenReleasingPeriodUnit: cfevesting.Day,
+			TokenReleasingPeriodUnit: keeper.Day,
 			DelegationsAllowed:       vt.DelegationsAllowed,
 		}
 		result = append(result, gvt)

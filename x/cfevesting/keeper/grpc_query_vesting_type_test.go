@@ -8,27 +8,28 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 )
 
 func TestVestingTypesQueryEmpty(t *testing.T) {
-	keeper, ctx := testkeeper.CfevestingKeeper(t)
+	k, ctx := testkeeper.CfevestingKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 
-	response, err := keeper.VestingType(wctx, &types.QueryVestingTypeRequest{})
+	response, err := k.VestingType(wctx, &types.QueryVestingTypeRequest{})
 	require.NoError(t, err)
-	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: types.VestingTypes{}}, response)
+	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: []types.GenesisVestingType{}}, response)
 }
 
 func TestVestingTypesQueryNotEmpty(t *testing.T) {
-	keeper, ctx := testkeeper.CfevestingKeeper(t)
+	k, ctx := testkeeper.CfevestingKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	vestingTypes := types.VestingTypes{}
 	vestingTypesArray := testutils.GenerateVestingTypes(10, 1)
 	vestingTypes.VestingTypes = vestingTypesArray
 
-	keeper.SetVestingTypes(ctx, vestingTypes)
-	response, err := keeper.VestingType(wctx, &types.QueryVestingTypeRequest{})
+	k.SetVestingTypes(ctx, vestingTypes)
+	response, err := k.VestingType(wctx, &types.QueryVestingTypeRequest{})
 	require.NoError(t, err)
-	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: vestingTypes}, response)
+	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: keeper.ConvertVestingTypesToGenesisVestingTypes(&vestingTypes)}, response)
 
 }
