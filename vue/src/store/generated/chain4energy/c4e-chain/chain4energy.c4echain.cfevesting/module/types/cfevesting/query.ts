@@ -1,8 +1,8 @@
 /* eslint-disable */
-import { Reader, util, configure, Writer } from "protobufjs/minimal";
-import * as Long from "long";
+import { Reader, Writer } from "protobufjs/minimal";
+import { Timestamp } from "../google/protobuf/timestamp";
 import { Params } from "../cfevesting/params";
-import { VestingTypes } from "../cfevesting/vesting_types";
+import { GenesisVestingType } from "../cfevesting/genesis";
 import { Coin } from "../cosmos/base/v1beta1/coin";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
@@ -19,7 +19,7 @@ export interface QueryParamsResponse {
 export interface QueryVestingTypeRequest {}
 
 export interface QueryVestingTypeResponse {
-  vestingTypes: VestingTypes | undefined;
+  vesting_types: GenesisVestingType[];
 }
 
 export interface QueryVestingRequest {
@@ -27,20 +27,21 @@ export interface QueryVestingRequest {
 }
 
 export interface QueryVestingResponse {
-  delegableAddress: string;
+  delegable_address: string;
   vestings: VestingInfo[];
 }
 
 export interface VestingInfo {
   id: number;
-  vestingType: string;
-  vestingStartHeight: number;
-  lockEndHeight: number;
-  vestingEndHeight: number;
+  vesting_type: string;
+  vesting_start: Date | undefined;
+  lock_end: Date | undefined;
+  vesting_end: Date | undefined;
   withdrawable: string;
-  delegationAllowed: boolean;
+  delegation_allowed: boolean;
   vested: Coin | undefined;
-  currentVestedAmount: string;
+  current_vested_amount: string;
+  sent_amount: string;
 }
 
 const baseQueryParamsRequest: object = {};
@@ -193,11 +194,8 @@ export const QueryVestingTypeResponse = {
     message: QueryVestingTypeResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.vestingTypes !== undefined) {
-      VestingTypes.encode(
-        message.vestingTypes,
-        writer.uint32(10).fork()
-      ).ldelim();
+    for (const v of message.vesting_types) {
+      GenesisVestingType.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -211,11 +209,14 @@ export const QueryVestingTypeResponse = {
     const message = {
       ...baseQueryVestingTypeResponse,
     } as QueryVestingTypeResponse;
+    message.vesting_types = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.vestingTypes = VestingTypes.decode(reader, reader.uint32());
+        case 2:
+          message.vesting_types.push(
+            GenesisVestingType.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -229,20 +230,24 @@ export const QueryVestingTypeResponse = {
     const message = {
       ...baseQueryVestingTypeResponse,
     } as QueryVestingTypeResponse;
-    if (object.vestingTypes !== undefined && object.vestingTypes !== null) {
-      message.vestingTypes = VestingTypes.fromJSON(object.vestingTypes);
-    } else {
-      message.vestingTypes = undefined;
+    message.vesting_types = [];
+    if (object.vesting_types !== undefined && object.vesting_types !== null) {
+      for (const e of object.vesting_types) {
+        message.vesting_types.push(GenesisVestingType.fromJSON(e));
+      }
     }
     return message;
   },
 
   toJSON(message: QueryVestingTypeResponse): unknown {
     const obj: any = {};
-    message.vestingTypes !== undefined &&
-      (obj.vestingTypes = message.vestingTypes
-        ? VestingTypes.toJSON(message.vestingTypes)
-        : undefined);
+    if (message.vesting_types) {
+      obj.vesting_types = message.vesting_types.map((e) =>
+        e ? GenesisVestingType.toJSON(e) : undefined
+      );
+    } else {
+      obj.vesting_types = [];
+    }
     return obj;
   },
 
@@ -252,10 +257,11 @@ export const QueryVestingTypeResponse = {
     const message = {
       ...baseQueryVestingTypeResponse,
     } as QueryVestingTypeResponse;
-    if (object.vestingTypes !== undefined && object.vestingTypes !== null) {
-      message.vestingTypes = VestingTypes.fromPartial(object.vestingTypes);
-    } else {
-      message.vestingTypes = undefined;
+    message.vesting_types = [];
+    if (object.vesting_types !== undefined && object.vesting_types !== null) {
+      for (const e of object.vesting_types) {
+        message.vesting_types.push(GenesisVestingType.fromPartial(e));
+      }
     }
     return message;
   },
@@ -319,15 +325,15 @@ export const QueryVestingRequest = {
   },
 };
 
-const baseQueryVestingResponse: object = { delegableAddress: "" };
+const baseQueryVestingResponse: object = { delegable_address: "" };
 
 export const QueryVestingResponse = {
   encode(
     message: QueryVestingResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.delegableAddress !== "") {
-      writer.uint32(10).string(message.delegableAddress);
+    if (message.delegable_address !== "") {
+      writer.uint32(10).string(message.delegable_address);
     }
     for (const v of message.vestings) {
       VestingInfo.encode(v!, writer.uint32(18).fork()).ldelim();
@@ -344,7 +350,7 @@ export const QueryVestingResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.delegableAddress = reader.string();
+          message.delegable_address = reader.string();
           break;
         case 2:
           message.vestings.push(VestingInfo.decode(reader, reader.uint32()));
@@ -361,12 +367,12 @@ export const QueryVestingResponse = {
     const message = { ...baseQueryVestingResponse } as QueryVestingResponse;
     message.vestings = [];
     if (
-      object.delegableAddress !== undefined &&
-      object.delegableAddress !== null
+      object.delegable_address !== undefined &&
+      object.delegable_address !== null
     ) {
-      message.delegableAddress = String(object.delegableAddress);
+      message.delegable_address = String(object.delegable_address);
     } else {
-      message.delegableAddress = "";
+      message.delegable_address = "";
     }
     if (object.vestings !== undefined && object.vestings !== null) {
       for (const e of object.vestings) {
@@ -378,8 +384,8 @@ export const QueryVestingResponse = {
 
   toJSON(message: QueryVestingResponse): unknown {
     const obj: any = {};
-    message.delegableAddress !== undefined &&
-      (obj.delegableAddress = message.delegableAddress);
+    message.delegable_address !== undefined &&
+      (obj.delegable_address = message.delegable_address);
     if (message.vestings) {
       obj.vestings = message.vestings.map((e) =>
         e ? VestingInfo.toJSON(e) : undefined
@@ -394,12 +400,12 @@ export const QueryVestingResponse = {
     const message = { ...baseQueryVestingResponse } as QueryVestingResponse;
     message.vestings = [];
     if (
-      object.delegableAddress !== undefined &&
-      object.delegableAddress !== null
+      object.delegable_address !== undefined &&
+      object.delegable_address !== null
     ) {
-      message.delegableAddress = object.delegableAddress;
+      message.delegable_address = object.delegable_address;
     } else {
-      message.delegableAddress = "";
+      message.delegable_address = "";
     }
     if (object.vestings !== undefined && object.vestings !== null) {
       for (const e of object.vestings) {
@@ -412,13 +418,11 @@ export const QueryVestingResponse = {
 
 const baseVestingInfo: object = {
   id: 0,
-  vestingType: "",
-  vestingStartHeight: 0,
-  lockEndHeight: 0,
-  vestingEndHeight: 0,
+  vesting_type: "",
   withdrawable: "",
-  delegationAllowed: false,
-  currentVestedAmount: "",
+  delegation_allowed: false,
+  current_vested_amount: "",
+  sent_amount: "",
 };
 
 export const VestingInfo = {
@@ -426,29 +430,41 @@ export const VestingInfo = {
     if (message.id !== 0) {
       writer.uint32(8).int32(message.id);
     }
-    if (message.vestingType !== "") {
-      writer.uint32(18).string(message.vestingType);
+    if (message.vesting_type !== "") {
+      writer.uint32(18).string(message.vesting_type);
     }
-    if (message.vestingStartHeight !== 0) {
-      writer.uint32(24).int64(message.vestingStartHeight);
+    if (message.vesting_start !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.vesting_start),
+        writer.uint32(26).fork()
+      ).ldelim();
     }
-    if (message.lockEndHeight !== 0) {
-      writer.uint32(32).int64(message.lockEndHeight);
+    if (message.lock_end !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.lock_end),
+        writer.uint32(34).fork()
+      ).ldelim();
     }
-    if (message.vestingEndHeight !== 0) {
-      writer.uint32(40).int64(message.vestingEndHeight);
+    if (message.vesting_end !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.vesting_end),
+        writer.uint32(42).fork()
+      ).ldelim();
     }
     if (message.withdrawable !== "") {
       writer.uint32(50).string(message.withdrawable);
     }
-    if (message.delegationAllowed === true) {
-      writer.uint32(56).bool(message.delegationAllowed);
+    if (message.delegation_allowed === true) {
+      writer.uint32(56).bool(message.delegation_allowed);
     }
     if (message.vested !== undefined) {
       Coin.encode(message.vested, writer.uint32(66).fork()).ldelim();
     }
-    if (message.currentVestedAmount !== "") {
-      writer.uint32(74).string(message.currentVestedAmount);
+    if (message.current_vested_amount !== "") {
+      writer.uint32(74).string(message.current_vested_amount);
+    }
+    if (message.sent_amount !== "") {
+      writer.uint32(82).string(message.sent_amount);
     }
     return writer;
   },
@@ -464,28 +480,37 @@ export const VestingInfo = {
           message.id = reader.int32();
           break;
         case 2:
-          message.vestingType = reader.string();
+          message.vesting_type = reader.string();
           break;
         case 3:
-          message.vestingStartHeight = longToNumber(reader.int64() as Long);
+          message.vesting_start = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 4:
-          message.lockEndHeight = longToNumber(reader.int64() as Long);
+          message.lock_end = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 5:
-          message.vestingEndHeight = longToNumber(reader.int64() as Long);
+          message.vesting_end = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 6:
           message.withdrawable = reader.string();
           break;
         case 7:
-          message.delegationAllowed = reader.bool();
+          message.delegation_allowed = reader.bool();
           break;
         case 8:
           message.vested = Coin.decode(reader, reader.uint32());
           break;
         case 9:
-          message.currentVestedAmount = reader.string();
+          message.current_vested_amount = reader.string();
+          break;
+        case 10:
+          message.sent_amount = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -502,31 +527,25 @@ export const VestingInfo = {
     } else {
       message.id = 0;
     }
-    if (object.vestingType !== undefined && object.vestingType !== null) {
-      message.vestingType = String(object.vestingType);
+    if (object.vesting_type !== undefined && object.vesting_type !== null) {
+      message.vesting_type = String(object.vesting_type);
     } else {
-      message.vestingType = "";
+      message.vesting_type = "";
     }
-    if (
-      object.vestingStartHeight !== undefined &&
-      object.vestingStartHeight !== null
-    ) {
-      message.vestingStartHeight = Number(object.vestingStartHeight);
+    if (object.vesting_start !== undefined && object.vesting_start !== null) {
+      message.vesting_start = fromJsonTimestamp(object.vesting_start);
     } else {
-      message.vestingStartHeight = 0;
+      message.vesting_start = undefined;
     }
-    if (object.lockEndHeight !== undefined && object.lockEndHeight !== null) {
-      message.lockEndHeight = Number(object.lockEndHeight);
+    if (object.lock_end !== undefined && object.lock_end !== null) {
+      message.lock_end = fromJsonTimestamp(object.lock_end);
     } else {
-      message.lockEndHeight = 0;
+      message.lock_end = undefined;
     }
-    if (
-      object.vestingEndHeight !== undefined &&
-      object.vestingEndHeight !== null
-    ) {
-      message.vestingEndHeight = Number(object.vestingEndHeight);
+    if (object.vesting_end !== undefined && object.vesting_end !== null) {
+      message.vesting_end = fromJsonTimestamp(object.vesting_end);
     } else {
-      message.vestingEndHeight = 0;
+      message.vesting_end = undefined;
     }
     if (object.withdrawable !== undefined && object.withdrawable !== null) {
       message.withdrawable = String(object.withdrawable);
@@ -534,12 +553,12 @@ export const VestingInfo = {
       message.withdrawable = "";
     }
     if (
-      object.delegationAllowed !== undefined &&
-      object.delegationAllowed !== null
+      object.delegation_allowed !== undefined &&
+      object.delegation_allowed !== null
     ) {
-      message.delegationAllowed = Boolean(object.delegationAllowed);
+      message.delegation_allowed = Boolean(object.delegation_allowed);
     } else {
-      message.delegationAllowed = false;
+      message.delegation_allowed = false;
     }
     if (object.vested !== undefined && object.vested !== null) {
       message.vested = Coin.fromJSON(object.vested);
@@ -547,12 +566,17 @@ export const VestingInfo = {
       message.vested = undefined;
     }
     if (
-      object.currentVestedAmount !== undefined &&
-      object.currentVestedAmount !== null
+      object.current_vested_amount !== undefined &&
+      object.current_vested_amount !== null
     ) {
-      message.currentVestedAmount = String(object.currentVestedAmount);
+      message.current_vested_amount = String(object.current_vested_amount);
     } else {
-      message.currentVestedAmount = "";
+      message.current_vested_amount = "";
+    }
+    if (object.sent_amount !== undefined && object.sent_amount !== null) {
+      message.sent_amount = String(object.sent_amount);
+    } else {
+      message.sent_amount = "";
     }
     return message;
   },
@@ -560,22 +584,31 @@ export const VestingInfo = {
   toJSON(message: VestingInfo): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = message.id);
-    message.vestingType !== undefined &&
-      (obj.vestingType = message.vestingType);
-    message.vestingStartHeight !== undefined &&
-      (obj.vestingStartHeight = message.vestingStartHeight);
-    message.lockEndHeight !== undefined &&
-      (obj.lockEndHeight = message.lockEndHeight);
-    message.vestingEndHeight !== undefined &&
-      (obj.vestingEndHeight = message.vestingEndHeight);
+    message.vesting_type !== undefined &&
+      (obj.vesting_type = message.vesting_type);
+    message.vesting_start !== undefined &&
+      (obj.vesting_start =
+        message.vesting_start !== undefined
+          ? message.vesting_start.toISOString()
+          : null);
+    message.lock_end !== undefined &&
+      (obj.lock_end =
+        message.lock_end !== undefined ? message.lock_end.toISOString() : null);
+    message.vesting_end !== undefined &&
+      (obj.vesting_end =
+        message.vesting_end !== undefined
+          ? message.vesting_end.toISOString()
+          : null);
     message.withdrawable !== undefined &&
       (obj.withdrawable = message.withdrawable);
-    message.delegationAllowed !== undefined &&
-      (obj.delegationAllowed = message.delegationAllowed);
+    message.delegation_allowed !== undefined &&
+      (obj.delegation_allowed = message.delegation_allowed);
     message.vested !== undefined &&
       (obj.vested = message.vested ? Coin.toJSON(message.vested) : undefined);
-    message.currentVestedAmount !== undefined &&
-      (obj.currentVestedAmount = message.currentVestedAmount);
+    message.current_vested_amount !== undefined &&
+      (obj.current_vested_amount = message.current_vested_amount);
+    message.sent_amount !== undefined &&
+      (obj.sent_amount = message.sent_amount);
     return obj;
   },
 
@@ -586,31 +619,25 @@ export const VestingInfo = {
     } else {
       message.id = 0;
     }
-    if (object.vestingType !== undefined && object.vestingType !== null) {
-      message.vestingType = object.vestingType;
+    if (object.vesting_type !== undefined && object.vesting_type !== null) {
+      message.vesting_type = object.vesting_type;
     } else {
-      message.vestingType = "";
+      message.vesting_type = "";
     }
-    if (
-      object.vestingStartHeight !== undefined &&
-      object.vestingStartHeight !== null
-    ) {
-      message.vestingStartHeight = object.vestingStartHeight;
+    if (object.vesting_start !== undefined && object.vesting_start !== null) {
+      message.vesting_start = object.vesting_start;
     } else {
-      message.vestingStartHeight = 0;
+      message.vesting_start = undefined;
     }
-    if (object.lockEndHeight !== undefined && object.lockEndHeight !== null) {
-      message.lockEndHeight = object.lockEndHeight;
+    if (object.lock_end !== undefined && object.lock_end !== null) {
+      message.lock_end = object.lock_end;
     } else {
-      message.lockEndHeight = 0;
+      message.lock_end = undefined;
     }
-    if (
-      object.vestingEndHeight !== undefined &&
-      object.vestingEndHeight !== null
-    ) {
-      message.vestingEndHeight = object.vestingEndHeight;
+    if (object.vesting_end !== undefined && object.vesting_end !== null) {
+      message.vesting_end = object.vesting_end;
     } else {
-      message.vestingEndHeight = 0;
+      message.vesting_end = undefined;
     }
     if (object.withdrawable !== undefined && object.withdrawable !== null) {
       message.withdrawable = object.withdrawable;
@@ -618,12 +645,12 @@ export const VestingInfo = {
       message.withdrawable = "";
     }
     if (
-      object.delegationAllowed !== undefined &&
-      object.delegationAllowed !== null
+      object.delegation_allowed !== undefined &&
+      object.delegation_allowed !== null
     ) {
-      message.delegationAllowed = object.delegationAllowed;
+      message.delegation_allowed = object.delegation_allowed;
     } else {
-      message.delegationAllowed = false;
+      message.delegation_allowed = false;
     }
     if (object.vested !== undefined && object.vested !== null) {
       message.vested = Coin.fromPartial(object.vested);
@@ -631,12 +658,17 @@ export const VestingInfo = {
       message.vested = undefined;
     }
     if (
-      object.currentVestedAmount !== undefined &&
-      object.currentVestedAmount !== null
+      object.current_vested_amount !== undefined &&
+      object.current_vested_amount !== null
     ) {
-      message.currentVestedAmount = object.currentVestedAmount;
+      message.current_vested_amount = object.current_vested_amount;
     } else {
-      message.currentVestedAmount = "";
+      message.current_vested_amount = "";
+    }
+    if (object.sent_amount !== undefined && object.sent_amount !== null) {
+      message.sent_amount = object.sent_amount;
+    } else {
+      message.sent_amount = "";
     }
     return message;
   },
@@ -704,16 +736,6 @@ interface Rpc {
   ): Promise<Uint8Array>;
 }
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
-  throw "Unable to locate global object";
-})();
-
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
   ? T
@@ -725,14 +747,24 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
-function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  return long.toNumber();
+function toTimestamp(date: Date): Timestamp {
+  const seconds = date.getTime() / 1_000;
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
 }
 
-if (util.Long !== Long) {
-  util.Long = Long as any;
-  configure();
+function fromTimestamp(t: Timestamp): Date {
+  let millis = t.seconds * 1_000;
+  millis += t.nanos / 1_000_000;
+  return new Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
 }

@@ -4,23 +4,23 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgDelegate } from "./types/cfevesting/tx";
-import { MsgWithdrawDelegatorReward } from "./types/cfevesting/tx";
+import { MsgSendVesting } from "./types/cfevesting/tx";
 import { MsgVest } from "./types/cfevesting/tx";
 import { MsgWithdrawAllAvailable } from "./types/cfevesting/tx";
+import { MsgWithdrawDelegatorReward } from "./types/cfevesting/tx";
 import { MsgBeginRedelegate } from "./types/cfevesting/tx";
+import { MsgDelegate } from "./types/cfevesting/tx";
 import { MsgUndelegate } from "./types/cfevesting/tx";
-import { MsgSendVesting } from "./types/cfevesting/tx";
 
 
 const types = [
-  ["/chain4energy.c4echain.cfevesting.MsgDelegate", MsgDelegate],
-  ["/chain4energy.c4echain.cfevesting.MsgWithdrawDelegatorReward", MsgWithdrawDelegatorReward],
+  ["/chain4energy.c4echain.cfevesting.MsgSendVesting", MsgSendVesting],
   ["/chain4energy.c4echain.cfevesting.MsgVest", MsgVest],
   ["/chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailable", MsgWithdrawAllAvailable],
+  ["/chain4energy.c4echain.cfevesting.MsgWithdrawDelegatorReward", MsgWithdrawDelegatorReward],
   ["/chain4energy.c4echain.cfevesting.MsgBeginRedelegate", MsgBeginRedelegate],
+  ["/chain4energy.c4echain.cfevesting.MsgDelegate", MsgDelegate],
   ["/chain4energy.c4echain.cfevesting.MsgUndelegate", MsgUndelegate],
-  ["/chain4energy.c4echain.cfevesting.MsgSendVesting", MsgSendVesting],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -53,13 +53,13 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
-    msgDelegate: (data: MsgDelegate): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgDelegate", value: MsgDelegate.fromPartial( data ) }),
-    msgWithdrawDelegatorReward: (data: MsgWithdrawDelegatorReward): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgWithdrawDelegatorReward", value: MsgWithdrawDelegatorReward.fromPartial( data ) }),
+    msgSendVesting: (data: MsgSendVesting): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgSendVesting", value: MsgSendVesting.fromPartial( data ) }),
     msgVest: (data: MsgVest): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgVest", value: MsgVest.fromPartial( data ) }),
     msgWithdrawAllAvailable: (data: MsgWithdrawAllAvailable): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailable", value: MsgWithdrawAllAvailable.fromPartial( data ) }),
+    msgWithdrawDelegatorReward: (data: MsgWithdrawDelegatorReward): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgWithdrawDelegatorReward", value: MsgWithdrawDelegatorReward.fromPartial( data ) }),
     msgBeginRedelegate: (data: MsgBeginRedelegate): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgBeginRedelegate", value: MsgBeginRedelegate.fromPartial( data ) }),
+    msgDelegate: (data: MsgDelegate): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgDelegate", value: MsgDelegate.fromPartial( data ) }),
     msgUndelegate: (data: MsgUndelegate): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgUndelegate", value: MsgUndelegate.fromPartial( data ) }),
-    msgSendVesting: (data: MsgSendVesting): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgSendVesting", value: MsgSendVesting.fromPartial( data ) }),
     
   };
 };

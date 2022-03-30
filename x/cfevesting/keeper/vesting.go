@@ -99,11 +99,17 @@ func (k Keeper) addVesting(
 		id = 1
 	} else {
 		if delegationAllowed {
-			delegatableAddress, err = sdk.AccAddressFromBech32(accVestings.DelegableAddress)
-			k.Logger(ctx).Debug("delegatableAddress: " + delegatableAddress.String())
-			if err != nil {
-				k.Logger(ctx).Error("Error: " + err.Error())
-				return err
+			if (accVestings.DelegableAddress == "") {
+				delegatableAddress = k.CreateModuleAccountForDelegatableVesting(ctx, vestingAddr).GetAddress()
+				k.Logger(ctx).Debug("delegatableAddress: " + delegatableAddress.String())
+				accVestings.DelegableAddress = delegatableAddress.String()
+			} else {
+				delegatableAddress, err = sdk.AccAddressFromBech32(accVestings.DelegableAddress)
+				k.Logger(ctx).Debug("delegatableAddress: " + delegatableAddress.String())
+				if err != nil {
+					k.Logger(ctx).Error("Error: " + err.Error())
+					return err
+				}
 			}
 		}
 		id = int32(len(accVestings.Vestings)) + 1

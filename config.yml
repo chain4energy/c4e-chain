@@ -44,32 +44,46 @@ genesis:
       params:
         denom: "uc4e"
       vesting_types:
-        vesting_types:
-          - name: "Short vesting with lockup"
-            lockup_period: 10
-            vesting_period: 100
-            token_releasing_period: 5
-            delegations_allowed: false
-          - name: "Mid vesting with lockup"
-            lockup_period: 1500
-            vesting_period: 90000
-            token_releasing_period: 50
-            delegations_allowed: false
-          - name: "Long vesting with lockup"
-            lockup_period: 60000
-            vesting_period: 1000000
-            token_releasing_period: 100
-            delegations_allowed: false
-          - name: "Mid vesting delegable"
-            lockup_period: 0
-            vesting_period: 120000
-            token_releasing_period: 50
-            delegations_allowed: true
-          - name: "Long vesting delegable"
-            lockup_period: 0
-            vesting_period: 1000000
-            token_releasing_period: 100
-            delegations_allowed: true
+        - name: "Short vesting with lockup"
+          lockup_period: 1
+          lockup_period_unit: "minute"
+          vesting_period: 10
+          vesting_period_unit: "minute"
+          token_releasing_period: 30
+          token_releasing_period_unit: "second"
+          delegations_allowed: false
+        - name: "Mid vesting with lockup"
+          lockup_period: 150
+          lockup_period_unit: "minute"
+          vesting_period: 150
+          vesting_period_unit: "hour"
+          token_releasing_period: 5
+          token_releasing_period_unit: "minute"
+          delegations_allowed: false
+        - name: "Long vesting with lockup"
+          lockup_period: 600
+          lockup_period_unit: "hour"
+          vesting_period: 70
+          vesting_period_unit: "day"
+          token_releasing_period: 10
+          token_releasing_period_unit: "minute"
+          delegations_allowed: false
+        - name: "Mid vesting delegable"
+          lockup_period: 0
+          lockup_period_unit: "minute"
+          vesting_period: 200
+          vesting_period_unit: "hour"
+          token_releasing_period: 5
+          token_releasing_period_unit: "minute"
+          delegations_allowed: true
+        - name: "Long vesting delegable"
+          lockup_period: 0
+          lockup_period_unit: "minute"
+          vesting_period: 100
+          vesting_period_unit: "day"
+          token_releasing_period: 10
+          token_releasing_period_unit: "minute"
+          delegations_allowed: true
     # genutil:
     #   gen_txs:
     #     messages:

@@ -9,9 +9,26 @@
  * ---------------------------------------------------------------
  */
 
+export interface CfevestingGenesisVestingType {
+  name?: string;
+
+  /** @format int64 */
+  lockup_period?: string;
+  lockup_period_unit?: string;
+
+  /** @format int64 */
+  vesting_period?: string;
+  vesting_period_unit?: string;
+
+  /** @format int64 */
+  token_releasing_period?: string;
+  token_releasing_period_unit?: string;
+  delegations_allowed?: boolean;
+}
+
 export interface CfevestingMsgBeginRedelegateResponse {
   /** @format date-time */
-  completionTime?: string;
+  completion_time?: string;
 }
 
 export type CfevestingMsgDelegateResponse = object;
@@ -20,7 +37,7 @@ export type CfevestingMsgSendVestingResponse = object;
 
 export interface CfevestingMsgUndelegateResponse {
   /** @format date-time */
-  completionTime?: string;
+  completion_time?: string;
 }
 
 export type CfevestingMsgVestResponse = object;
@@ -45,29 +62,29 @@ export interface CfevestingQueryParamsResponse {
 }
 
 export interface CfevestingQueryVestingResponse {
-  delegableAddress?: string;
+  delegable_address?: string;
   vestings?: CfevestingVestingInfo[];
 }
 
 export interface CfevestingQueryVestingTypeResponse {
-  vestingTypes?: CfevestingVestingTypes;
+  vesting_types?: CfevestingGenesisVestingType[];
 }
 
 export interface CfevestingVestingInfo {
   /** @format int32 */
   id?: number;
-  vestingType?: string;
+  vesting_type?: string;
 
-  /** @format int64 */
-  vestingStartHeight?: string;
+  /** @format date-time */
+  vesting_start?: string;
 
-  /** @format int64 */
-  lockEndHeight?: string;
+  /** @format date-time */
+  lock_end?: string;
 
-  /** @format int64 */
-  vestingEndHeight?: string;
+  /** @format date-time */
+  vesting_end?: string;
   withdrawable?: string;
-  delegationAllowed?: boolean;
+  delegation_allowed?: boolean;
 
   /**
    * Coin defines a token with a denomination and an amount.
@@ -76,25 +93,8 @@ export interface CfevestingVestingInfo {
    * signatures required by gogoproto.
    */
   vested?: V1Beta1Coin;
-  currentVestedAmount?: string;
-}
-
-export interface CfevestingVestingType {
-  name?: string;
-
-  /** @format int64 */
-  lockupPeriod?: string;
-
-  /** @format int64 */
-  vestingPeriod?: string;
-
-  /** @format int64 */
-  tokenReleasingPeriod?: string;
-  delegationsAllowed?: boolean;
-}
-
-export interface CfevestingVestingTypes {
-  vestingTypes?: CfevestingVestingType[];
+  current_vested_amount?: string;
+  sent_amount?: string;
 }
 
 export interface ProtobufAny {
