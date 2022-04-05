@@ -12,7 +12,6 @@ import (
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
-
 )
 
 func TestSendVestingDelegationNotAllowedNoVestingRestart(t *testing.T) {
@@ -95,6 +94,97 @@ func TestSendVestingDelegationAllowedVestingRestartWithDelegatedNotEnoughToSend(
 	sendVestingTest(t, true, true, delegatedNotEnoughToSend)
 }
 
+func TestSendVestingButNotTransferable(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000
+	const accInitBalance = 10000
+	app, ctx := setupApp(1000)
+	setupStakingBondDenom(ctx, app)
+	
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accSrcAddr := acountsAddresses[0]
+	accDestAddr := acountsAddresses[1]
+
+	addCoinsToAccount(accInitBalance, ctx, app, accSrcAddr)
+
+	vestingTypes := setupVestingTypes(ctx, app, 2, 1, false, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+
+	makeVesting(t, ctx, app, accSrcAddr, false, true, false, false, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, 0, vested)
+
+	verifyAccountVestings(t, ctx, app, accSrcAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
+
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+
+	msgSendVesting := types.MsgSendVesting{FromAddress: accSrcAddr.String(), ToAddress: accDestAddr.String(), VestingId: 1, Amount: sdk.NewInt(10), RestartVesting: true}
+	_, err := msgServer.SendVesting(msgServerCtx, &msgSendVesting)
+
+	require.NotEqualValues(t, nil, err)
+	require.EqualError(t, err,
+			"vesting with id 1 is not tranferable: feature not supported")
+}
+
+func TestSendVestingButNotAccountVestings(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000
+	const accInitBalance = 10000
+	app, ctx := setupApp(1000)
+	setupStakingBondDenom(ctx, app)
+	
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accSrcAddr := acountsAddresses[0]
+	accDestAddr := acountsAddresses[1]
+
+	addCoinsToAccount(accInitBalance, ctx, app, accSrcAddr)
+
+	// vestingTypes := setupVestingTypes(ctx, app, 2, 1, false, 1)
+	// usedVestingType := vestingTypes.VestingTypes[0]
+
+	// makeVesting(t, ctx, app, accSrcAddr, false, true, false, false, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, 0, vested)
+
+	// verifyAccountVestings(t, ctx, app, accSrcAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
+
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+
+	msgSendVesting := types.MsgSendVesting{FromAddress: accSrcAddr.String(), ToAddress: accDestAddr.String(), VestingId: 1, Amount: sdk.NewInt(10), RestartVesting: true}
+	_, err := msgServer.SendVesting(msgServerCtx, &msgSendVesting)
+
+	require.NotEqualValues(t, nil, err)
+	require.EqualError(t, err,
+			"rpc error: code = NotFound desc = No vestings")
+}
+
+func TestSendVestingButSpecificVestingNotExists(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000
+	const accInitBalance = 10000
+	app, ctx := setupApp(1000)
+	setupStakingBondDenom(ctx, app)
+	
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accSrcAddr := acountsAddresses[0]
+	accDestAddr := acountsAddresses[1]
+
+	addCoinsToAccount(accInitBalance, ctx, app, accSrcAddr)
+
+	vestingTypes := setupVestingTypes(ctx, app, 2, 1, false, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+
+	makeVesting(t, ctx, app, accSrcAddr, false, true, false, false, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, 0, vested)
+
+	verifyAccountVestings(t, ctx, app, accSrcAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
+
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+
+	msgSendVesting := types.MsgSendVesting{FromAddress: accSrcAddr.String(), ToAddress: accDestAddr.String(), VestingId: 2, Amount: sdk.NewInt(10), RestartVesting: true}
+	_, err := msgServer.SendVesting(msgServerCtx, &msgSendVesting)
+
+	require.NotEqualValues(t, nil, err)
+	require.EqualError(t, err,
+			"vesting with id 2 not found: not found")
+}
+
+
 const noWithdrawableNoDelegatedEnoughToSend = 0
 const withdrawableEnoughToSend = 1
 const withdrawableNotEnoughToSend = 2
@@ -130,6 +220,11 @@ func sendVestingTest(t *testing.T, delegationAllowed bool, restartVesting bool, 
 	}
 
 	verifyAccountVestings(t, ctx, app, accSrcAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
+
+	// make vesting transferable
+	accVestings, _ := app.CfevestingKeeper.GetAccountVestings(ctx, accSrcAddr.String())
+	accVestings.Vestings[0].TransferAllowed = true
+	app.CfevestingKeeper.SetAccountVestings(ctx, accVestings)
 
 	addTime := testutils.CreateDurationFromNumOfHours(500)
 	if testType == withdrawableEnoughToSend {
@@ -167,7 +262,6 @@ func sendVestingTest(t *testing.T, delegationAllowed bool, restartVesting bool, 
 		delegableAccAddr = delegableAccAddrLocal
 	}
 
-
 	delegateAmount := uint64(0)
 	if testType == delegatedEnoughToSend || testType == delegatedNotEnoughToSend {
 		delegateAmount = uint64(300)
@@ -175,7 +269,7 @@ func sendVestingTest(t *testing.T, delegationAllowed bool, restartVesting bool, 
 		if testType == delegatedNotEnoughToSend {
 			delegateAmount = uint64(950)
 		}
-		
+
 		delegate(t, ctx, app, accSrcAddr, delegableAccAddr, valAddr, delegateAmount, accInitBalance-vested, vested, accInitBalance-vested, int64(vested-delegateAmount))
 		verifyDelegations(t, ctx, app, delegableAccAddr, []sdk.ValAddress{valAddr}, []int64{int64(delegateAmount)})
 
@@ -207,11 +301,11 @@ func sendVestingTest(t *testing.T, delegationAllowed bool, restartVesting bool, 
 	}
 	if wasSent {
 		verifyAccountVestingsWithModification(t, oldCtx, app, accSrcAddr, 2, []types.VestingType{*usedVestingType}, []time.Time{oldCtx.BlockTime()}, []int64{vested}, []int64{witdrawable},
-			[]int64{sentAmount}, []time.Time{ctx.BlockTime()}, []int64{vested-sentAmount-witdrawable}, []int64{0})
+			[]int64{sentAmount}, []time.Time{ctx.BlockTime()}, []int64{vested - sentAmount - witdrawable}, []int64{0})
 	} else {
 		verifyAccountVestings(t, oldCtx, app, accSrcAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{witdrawable})
 	}
-	
+
 	verifyAccountBalance(t, app, ctx, accSrcAddr, sdk.NewInt(accInitBalance-vested+witdrawable))
 	if delegationAllowed {
 		verifyModuleAccount(t, ctx, app, sdk.NewInt(0))

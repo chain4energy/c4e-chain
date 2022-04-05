@@ -29,6 +29,7 @@ export interface Vesting {
   last_modification: Date | undefined;
   last_modification_vested: string;
   last_modification_withdrawn: string;
+  transfer_allowed: boolean;
 }
 
 const baseAccountVestingsList: object = {};
@@ -214,6 +215,7 @@ const baseVesting: object = {
   sent: "",
   last_modification_vested: "",
   last_modification_withdrawn: "",
+  transfer_allowed: false,
 };
 
 export const Vesting = {
@@ -272,6 +274,9 @@ export const Vesting = {
     if (message.last_modification_withdrawn !== "") {
       writer.uint32(106).string(message.last_modification_withdrawn);
     }
+    if (message.transfer_allowed === true) {
+      writer.uint32(112).bool(message.transfer_allowed);
+    }
     return writer;
   },
 
@@ -328,6 +333,9 @@ export const Vesting = {
           break;
         case 13:
           message.last_modification_withdrawn = reader.string();
+          break;
+        case 14:
+          message.transfer_allowed = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -420,6 +428,14 @@ export const Vesting = {
     } else {
       message.last_modification_withdrawn = "";
     }
+    if (
+      object.transfer_allowed !== undefined &&
+      object.transfer_allowed !== null
+    ) {
+      message.transfer_allowed = Boolean(object.transfer_allowed);
+    } else {
+      message.transfer_allowed = false;
+    }
     return message;
   },
 
@@ -459,6 +475,8 @@ export const Vesting = {
       (obj.last_modification_vested = message.last_modification_vested);
     message.last_modification_withdrawn !== undefined &&
       (obj.last_modification_withdrawn = message.last_modification_withdrawn);
+    message.transfer_allowed !== undefined &&
+      (obj.transfer_allowed = message.transfer_allowed);
     return obj;
   },
 
@@ -540,6 +558,14 @@ export const Vesting = {
       message.last_modification_withdrawn = object.last_modification_withdrawn;
     } else {
       message.last_modification_withdrawn = "";
+    }
+    if (
+      object.transfer_allowed !== undefined &&
+      object.transfer_allowed !== null
+    ) {
+      message.transfer_allowed = object.transfer_allowed;
+    } else {
+      message.transfer_allowed = false;
     }
     return message;
   },

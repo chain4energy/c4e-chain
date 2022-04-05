@@ -177,6 +177,9 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 	if vesting == nil {
 		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" not found")
 	}
+	if !vesting.TransferAllowed {
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotSupported, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" is not tranferable")
+	}
 	available := vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
 	if available.LT(amount) {
 		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,

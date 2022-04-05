@@ -35,5 +35,5 @@ message Vesting {
   google.protobuf.Timestamp last_modification = 11 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string last_modification_vested = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string last_modification_withdrawn = 13 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-
+  bool transfer_allowed = 14;
 }

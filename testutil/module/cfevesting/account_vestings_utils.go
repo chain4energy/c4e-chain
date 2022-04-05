@@ -42,6 +42,7 @@ func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual 
 		require.EqualValues(t, true, expectedVesting.LastModification.Equal(actualVesting.LastModification)); j++
 		require.EqualValues(t, expectedVesting.LastModificationVested, actualVesting.LastModificationVested); j++
 		require.EqualValues(t, expectedVesting.LastModificationWithdrawn, actualVesting.LastModificationWithdrawn); j++
+		require.EqualValues(t, expectedVesting.TransferAllowed, actualVesting.TransferAllowed); j++
 		require.EqualValues(t, numOfFields, j);
 
 	}
