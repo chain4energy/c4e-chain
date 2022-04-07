@@ -8,6 +8,8 @@ import (
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+	"github.com/stretchr/testify/require"
 
 )
 
@@ -207,3 +209,213 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllSomeDelegable(t *testing
 }
 
 
+func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDelegableAccount1(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accAddr := acountsAddresses[0]
+	delegableAccAddr := acountsAddresses[1]
+
+	const withdrawn = 1000
+	addCoinsToAccount(2*withdrawn, ctx, app, delegableAccAddr)
+	
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
+	
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, 2*withdrawn, 0, 2*withdrawn, 0, 0)
+
+	for i, vesting := range accountVestings.Vestings {
+		if i == 2 {
+			vesting.Withdrawn = sdk.ZeroInt()
+			vesting.LastModificationWithdrawn = sdk.ZeroInt()
+		} else {
+			vesting.Withdrawn = sdk.NewInt(withdrawn)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
+		}
+	}
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
+}
+
+func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDelegableAccount2(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accAddr := acountsAddresses[0]
+	delegableAccAddr := acountsAddresses[1]
+
+	const withdrawn = 1000
+	addCoinsToAccount(2*withdrawn+withdrawn/4, ctx, app, delegableAccAddr)
+	
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
+	
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, 2*withdrawn+withdrawn/4, 0, 2*withdrawn +withdrawn/4, 0, 0)
+
+	for i, vesting := range accountVestings.Vestings {
+		if i == 2 {
+			vesting.Withdrawn = sdk.NewInt(withdrawn/4)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/4)
+		} else {
+			vesting.Withdrawn = sdk.NewInt(withdrawn)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
+		}
+	}
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
+}
+
+func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDelegableAccount3(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accAddr := acountsAddresses[0]
+	delegableAccAddr := acountsAddresses[1]
+
+	const withdrawn = 1000
+	addCoinsToAccount(withdrawn/2, ctx, app, delegableAccAddr)
+	
+	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
+	
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn/2, 0, withdrawn/2, 0, 0)
+
+	for i, vesting := range accountVestings.Vestings {
+		if i == 0 {
+			vesting.Withdrawn = sdk.NewInt(withdrawn/2)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/2)
+		} else {
+			vesting.Withdrawn = sdk.ZeroInt()
+			vesting.LastModificationWithdrawn = sdk.ZeroInt()
+		}
+	}
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
+}
+
+func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDelegableAccount4(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accAddr := acountsAddresses[0]
+	delegableAccAddr := acountsAddresses[1]
+
+	const withdrawn = 1000
+	addCoinsToAccount(withdrawn + withdrawn/2, ctx, app, delegableAccAddr)
+
+	modification := func(vesting *types.Vesting) {
+		vesting.Withdrawn = sdk.NewInt(withdrawn)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
+	}
+	
+	accountVestings := setupAccountsVestingsWithModification(ctx, app, modification, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
+	
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn + withdrawn/2, 0, 0, withdrawn + withdrawn/2, 0)
+
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
+}
+
+
+func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDelegableAccount5(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accAddr := acountsAddresses[0]
+	delegableAccAddr := acountsAddresses[1]
+
+	const withdrawn = 1000
+	addCoinsToAccount(withdrawn, ctx, app, delegableAccAddr)
+
+	modification := func(vesting *types.Vesting) {
+		vesting.Withdrawn = sdk.NewInt(withdrawn/2)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/2)
+	}
+	
+	accountVestings := setupAccountsVestingsWithModification(ctx, app, modification, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
+	
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn, 0, withdrawn, 0, 0)
+
+	for i, vesting := range accountVestings.Vestings {
+		if i != 2 {
+			vesting.Withdrawn = sdk.NewInt(withdrawn)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
+		}
+	}
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
+}
+
+func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDelegableAccount6(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accAddr := acountsAddresses[0]
+	delegableAccAddr := acountsAddresses[1]
+
+	const withdrawn = 1000
+	addCoinsToAccount(0, ctx, app, delegableAccAddr)
+
+	modification := func(vesting *types.Vesting) {
+		vesting.Withdrawn = sdk.NewInt(withdrawn/2)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/2)
+	}
+	
+	accountVestings := setupAccountsVestingsWithModification(ctx, app, modification, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
+	
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, 0, 0, 0, 0, 0)
+
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
+}
+
+func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDelegableAccount7(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000000
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	accAddr := acountsAddresses[0]
+	delegableAccAddr := acountsAddresses[1]
+
+	const withdrawn = 1000
+	addCoinsToAccount(withdrawn + withdrawn/4, ctx, app, delegableAccAddr)
+
+	modification := func(vesting *types.Vesting) {
+		vesting.Withdrawn = sdk.NewInt(withdrawn/2)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/2)
+	}
+	
+	accountVestings := setupAccountsVestingsWithModification(ctx, app, modification, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
+	
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn + withdrawn/4, 0, withdrawn + withdrawn/4, 0, 0)
+
+	for i, vesting := range accountVestings.Vestings {
+		if i != 2 {
+			vesting.Withdrawn = sdk.NewInt(withdrawn)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
+		} else {
+			vesting.Withdrawn = sdk.NewInt(withdrawn-withdrawn/4)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn-withdrawn/4)
+		}
+	}
+	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
+}
+
+func TestWithdrawAllAvailableBadAddress(t *testing.T) {
+
+	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+
+	msg := types.MsgWithdrawAllAvailable{Creator: "badaddress"}
+	_, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
+
+	require.EqualError(t, err,
+		"decoding bech32 failed: invalid separator index -1")
+
+
+}

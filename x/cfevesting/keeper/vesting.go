@@ -254,18 +254,22 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 	current := ctx.BlockTime()
 	toWithdraw := sdk.ZeroInt()
 	toWithdrawDelegable := sdk.ZeroInt()
+	toWithdrawDelegableMap := make(map[int32]sdk.Int)
 	for _, vesting := range accVestings.Vestings {
 		withdrawable := CalculateWithdrawable(current, *vesting)
-		vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
-		vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(withdrawable)
+		// vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
+		// vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(withdrawable)
 		if vesting.DelegationAllowed {
+			toWithdrawDelegableMap[vesting.Id] = withdrawable
 			toWithdrawDelegable = toWithdrawDelegable.Add(withdrawable)
 		} else {
+			vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
+			vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(withdrawable)
 			toWithdraw = toWithdraw.Add(withdrawable)
 		}
 	}
 
-	k.SetAccountVestings(ctx, accVestings)
+	
 
 	denom := k.GetParams(ctx).Denom
 	if toWithdraw.GT(sdk.ZeroInt()) {
@@ -276,20 +280,47 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 			return withdrawn, err
 		}
 	}
+	withdrawnDelegable := toWithdrawDelegable
 	if toWithdrawDelegable.GT(sdk.ZeroInt()) {
-		coinToSend := sdk.NewCoin(denom, toWithdrawDelegable)
-		coinsToSend := sdk.NewCoins(coinToSend)
 		delegatableAddress, err := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
 		if err != nil {
 			return withdrawn, err
 		}
-		err = k.bank.SendCoins(ctx, delegatableAddress, accAddress, coinsToSend)
-		if err != nil {
-			return withdrawn, err
+		coinToSend := sdk.NewCoin(denom, toWithdrawDelegable)
+		available := k.bank.GetBalance(ctx, delegatableAddress, denom)
+		if (available.Amount.GT(sdk.ZeroInt())) {
+			if available.Amount.LT(coinToSend.Amount) {
+				coinToSend = available
+				withdrawnDelegable = coinToSend.Amount
+			}
+			coinsToSend := sdk.NewCoins(coinToSend)
+			
+			err = k.bank.SendCoins(ctx, delegatableAddress, accAddress, coinsToSend)
+			if err != nil {
+				return withdrawn, err
+			}
+		} else {
+			withdrawnDelegable = sdk.ZeroInt()
 		}
 	}
 
-	return sdk.NewCoin(denom, toWithdraw.Add(toWithdrawDelegable)), nil
+	withdrawnDelegableHelper := withdrawnDelegable
+	for _, vesting := range accVestings.Vestings {
+		if vesting.DelegationAllowed {
+			toWithdraw := toWithdrawDelegableMap[vesting.Id]
+			diff := withdrawnDelegableHelper.Sub(toWithdraw)
+			if diff.IsNegative() {
+				toWithdraw = toWithdraw.Add(diff)
+			}
+			withdrawnDelegableHelper = withdrawnDelegableHelper.Sub(toWithdraw)
+			vesting.Withdrawn = vesting.Withdrawn.Add(toWithdraw)
+			vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(toWithdraw)
+		} 
+	}
+
+	k.SetAccountVestings(ctx, accVestings)
+
+	return sdk.NewCoin(denom, toWithdraw.Add(withdrawnDelegable)), nil
 }
 
 func CalculateWithdrawable(current time.Time, vesting types.Vesting) sdk.Int {

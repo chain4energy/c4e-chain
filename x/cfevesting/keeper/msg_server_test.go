@@ -362,8 +362,8 @@ func withdrawAllAvailable(t *testing.T, ctx sdk.Context, app *app.App, address s
 	verifyAccountBalance(t, app, ctx, address, sdk.NewInt(accountBalanceBefore))
 	verifyModuleAccount(t, ctx, app, sdk.NewInt(moduleBalanceBefore))
 	msg := types.MsgWithdrawAllAvailable{Creator: address.String()}
-	_, error := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
+	_, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
+	require.EqualValues(t, nil, err)
 	verifyAccountBalance(t, app, ctx, address, sdk.NewInt(accountBalanceAfter))
 	verifyModuleAccount(t, ctx, app, sdk.NewInt(moduleBalanceAfter))
 }
