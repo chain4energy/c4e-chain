@@ -1,17 +1,20 @@
 package cfevesting
 
 import (
+	"fmt"
+
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-
-
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, ak types.AccountKeeper) {
-
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) {
+	err := ValidateAccountsOnGenesis(ctx, k, genState, ak, bk, sk)
+	if err != nil {
+		panic(err)
+	}
 	k.Logger(ctx).Info("Init genesis")
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
@@ -35,6 +38,52 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 		k.SetAccountVestings(ctx, *av)
 	}
 	ak.GetModuleAccount(ctx, types.ModuleName)
+}
+
+func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
+		ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) error {
+	accsVestings := genState.AccountVestingsList.Vestings
+	undelegableAmount := sdk.ZeroInt()
+	delegableAmounts := make(map[string]sdk.Int)
+
+	for _, accVestings := range accsVestings {
+		for _, v := range accVestings.Vestings {
+			if v.DelegationAllowed {
+				if accVestings.DelegableAddress == "" {
+					return fmt.Errorf("acount vesting for: %s delegable address not exists, but delegable vesting exists", 
+						accVestings.Address)
+				}
+				_, ok := delegableAmounts[accVestings.DelegableAddress]
+				if !ok {
+					delegableAmounts[accVestings.DelegableAddress] = sdk.ZeroInt()
+				}
+				delegableAmounts[accVestings.DelegableAddress] = delegableAmounts[accVestings.DelegableAddress].Add(v.LastModificationVested)
+			} else {
+				undelegableAmount = undelegableAmount.Add(v.LastModificationVested)
+			}
+		}
+	}
+
+	mAcc := ak.GetModuleAccount(ctx, types.ModuleName)
+	modBalance := bk.GetBalance(ctx, mAcc.GetAddress(), genState.Params.Denom)
+	if (!undelegableAmount.Equal(modBalance.Amount)) {
+		return fmt.Errorf("module: %s account balance of denom %s not equal of sum of undelegable vestings: %s <> %s", 
+			types.ModuleName, genState.Params.Denom, modBalance.Amount.String(), undelegableAmount.String())
+	}
+
+	for delAddr, amount := range delegableAmounts {
+		acc, err := sdk.AccAddressFromBech32(delAddr)
+		if err != nil {
+			return fmt.Errorf("account vestings delegable address: %s: %s", delAddr, err.Error())
+		}
+		accBalance := bk.GetBalance(ctx, acc, genState.Params.Denom)
+
+		if (!accBalance.Amount.LTE(amount)) {
+			return fmt.Errorf("module: %s - delegable account: %s balance of denom %s is bigger than sum of delegable vestings: %s > %s", 
+				types.ModuleName, delAddr, genState.Params.Denom, accBalance.Amount.String(), amount.String())
+		}
+	}
+	return nil
 }
 
 // ExportGenesis returns the capability module's exported genesis.

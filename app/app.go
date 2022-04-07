@@ -364,7 +364,7 @@ func New(
 		app.AccountKeeper,
 		app.DistrKeeper,
 	)
-	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper)
+	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 

@@ -95,6 +95,7 @@ export interface CfevestingVestingInfo {
   vested?: V1Beta1Coin;
   current_vested_amount?: string;
   sent_amount?: string;
+  transfer_allowed?: boolean;
 }
 
 export interface ProtobufAny {

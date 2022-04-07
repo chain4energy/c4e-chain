@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+
 )
 
 var TestEnvTime = time.Now()
@@ -88,10 +90,15 @@ func GenerateAccountVestingsWith10BasedVestings(numberOfAccounts int, numberOfVe
 func generateAccountVestings(numberOfAccounts int, numberOfVestingsPerAccount int,
 	accountStartId int, vestingStartId int, generateVesting func(accuntId int, vestingId int) types.Vesting) []*types.AccountVestings {
 	accountVestingsArr := []*types.AccountVestings{}
+	accountsAddresses, _ := commontestutils.CreateAccounts(2*numberOfAccounts, 0)
+
 	for i := 0; i < numberOfAccounts; i++ {
 		accountVestings := types.AccountVestings{}
-		accountVestings.Address = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
-		accountVestings.DelegableAddress = "test-vesting-account-del-addr-" + strconv.Itoa(i+accountStartId)
+		// accountVestings.Address = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
+		// accountVestings.DelegableAddress = "test-vesting-account-del-addr-" + strconv.Itoa(i+accountStartId)
+
+		accountVestings.Address = accountsAddresses[i].String()
+		accountVestings.DelegableAddress = accountsAddresses[i+numberOfAccounts].String()
 
 		vestings := []*types.Vesting{}
 		for j := 0; j < numberOfVestingsPerAccount; j++ {
@@ -110,7 +117,7 @@ func generateRandomVesting(accuntId int, vestingId int) types.Vesting {
 	rgen := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return types.Vesting{
 		Id:                        int32(vestingId),
-		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(accuntId),
+		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingStart:         CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
 		LockEnd:              CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
 		VestingEnd:           CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
@@ -128,7 +135,7 @@ func generateRandomVesting(accuntId int, vestingId int) types.Vesting {
 func generate10BasedVesting(accuntId int, vestingId int) types.Vesting {
 	return types.Vesting{
 		Id:                        int32(vestingId),
-		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(accuntId),
+		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingStart:         CreateTimeFromNumOfHours(1000),
 		LockEnd:              CreateTimeFromNumOfHours(10000),
 		VestingEnd:           CreateTimeFromNumOfHours(110000),

@@ -126,7 +126,6 @@ func TestSendVestingButNotTransferable(t *testing.T) {
 
 func TestSendVestingButNotAccountVestings(t *testing.T) {
 	addHelperModuleAccountPerms()
-	const vested = 1000
 	const accInitBalance = 10000
 	app, ctx := setupApp(1000)
 	setupStakingBondDenom(ctx, app)
@@ -136,13 +135,6 @@ func TestSendVestingButNotAccountVestings(t *testing.T) {
 	accDestAddr := acountsAddresses[1]
 
 	addCoinsToAccount(accInitBalance, ctx, app, accSrcAddr)
-
-	// vestingTypes := setupVestingTypes(ctx, app, 2, 1, false, 1)
-	// usedVestingType := vestingTypes.VestingTypes[0]
-
-	// makeVesting(t, ctx, app, accSrcAddr, false, true, false, false, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, 0, vested)
-
-	// verifyAccountVestings(t, ctx, app, accSrcAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 

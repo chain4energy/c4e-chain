@@ -447,6 +447,7 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingResponse, a
 				require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn).String(), response.Vestings[0].CurrentVestedAmount)
 				require.EqualValues(t, delegationAllowed, response.Vestings[0].DelegationAllowed)
 				require.EqualValues(t, vesting.Sent.String(), response.Vestings[0].SentAmount)
+				require.EqualValues(t, vesting.TransferAllowed, response.Vestings[0].TransferAllowed)
 
 				found = true
 			}

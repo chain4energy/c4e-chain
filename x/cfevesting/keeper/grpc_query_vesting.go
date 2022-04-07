@@ -35,7 +35,9 @@ func (k Keeper) Vesting(goCtx context.Context, req *types.QueryVestingRequest) (
 			DelegationAllowed:   vesting.DelegationAllowed,
 			Vested:              &coin,
 			CurrentVestedAmount: current.String(),
-			SentAmount:          vesting.Sent.String()}
+			SentAmount:          vesting.Sent.String(),
+			TransferAllowed: 	 vesting.TransferAllowed,
+		}
 		result.Vestings = append(result.Vestings, &vestingInfo)
 
 	}
