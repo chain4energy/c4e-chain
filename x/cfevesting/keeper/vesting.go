@@ -32,7 +32,7 @@ func (k Keeper) Vest(ctx sdk.Context, addr string, amount sdk.Int, vestingType s
 	return k.addVesting(ctx, false, addr, addr, amount, vestingType, vt.DelegationsAllowed, ctx.BlockTime(),
 		ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod),
 		vt.TokenReleasingPeriod)
-		
+
 }
 
 func (k Keeper) addVesting(
@@ -99,7 +99,7 @@ func (k Keeper) addVesting(
 		id = 1
 	} else {
 		if delegationAllowed {
-			if (accVestings.DelegableAddress == "") {
+			if accVestings.DelegableAddress == "" {
 				delegatableAddress = k.CreateModuleAccountForDelegatableVesting(ctx, vestingAddr).GetAddress()
 				k.Logger(ctx).Debug("delegatableAddress: " + delegatableAddress.String())
 				accVestings.DelegableAddress = delegatableAddress.String()
@@ -116,22 +116,21 @@ func (k Keeper) addVesting(
 	}
 
 	vesting := types.Vesting{
-		Id:                id,
-		VestingType:       vestingType,
-		VestingStart: vestingStart,
-		LockEnd:      lockEnd,
-		VestingEnd:   vestingEnd,
-		Vested:            amount,
-		ReleasePeriod: releasePeriod,
+		Id:                        id,
+		VestingType:               vestingType,
+		VestingStart:              vestingStart,
+		LockEnd:                   lockEnd,
+		VestingEnd:                vestingEnd,
+		Vested:                    amount,
+		ReleasePeriod:             releasePeriod,
 		DelegationAllowed:         delegationAllowed,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:     vestingStart,
+		LastModification:          vestingStart,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 	accVestings.Vestings = append(accVestings.Vestings, &vesting)
-	
 
 	coinToSend := sdk.NewCoin(denom, amount)
 	coinsToSend := sdk.NewCoins(coinToSend)
@@ -222,7 +221,7 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 		// 	vt.TokenReleasingPeriod.Nanoseconds())
 		err = k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockTime(),
 			ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod),
-			vt.TokenReleasingPeriod) 
+			vt.TokenReleasingPeriod)
 	} else {
 		err = k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockTime(),
 			vesting.LockEnd, vesting.VestingEnd,
@@ -269,8 +268,6 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 		}
 	}
 
-	
-
 	denom := k.GetParams(ctx).Denom
 	if toWithdraw.GT(sdk.ZeroInt()) {
 		coinToSend := sdk.NewCoin(denom, toWithdraw)
@@ -288,13 +285,13 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 		}
 		coinToSend := sdk.NewCoin(denom, toWithdrawDelegable)
 		available := k.bank.GetBalance(ctx, delegatableAddress, denom)
-		if (available.Amount.GT(sdk.ZeroInt())) {
+		if available.Amount.GT(sdk.ZeroInt()) {
 			if available.Amount.LT(coinToSend.Amount) {
 				coinToSend = available
 				withdrawnDelegable = coinToSend.Amount
 			}
 			coinsToSend := sdk.NewCoins(coinToSend)
-			
+
 			err = k.bank.SendCoins(ctx, delegatableAddress, accAddress, coinsToSend)
 			if err != nil {
 				return withdrawn, err
@@ -315,7 +312,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 			withdrawnDelegableHelper = withdrawnDelegableHelper.Sub(toWithdraw)
 			vesting.Withdrawn = vesting.Withdrawn.Add(toWithdraw)
 			vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(toWithdraw)
-		} 
+		}
 	}
 
 	k.SetAccountVestings(ctx, accVestings)

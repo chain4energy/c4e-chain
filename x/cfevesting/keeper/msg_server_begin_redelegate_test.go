@@ -3,10 +3,10 @@ package keeper_test
 import (
 	"testing"
 
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingmodule "github.com/cosmos/cosmos-sdk/x/staking"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 )
 
 func TestRedelegate(t *testing.T) {
@@ -33,7 +33,7 @@ func TestRedelegate(t *testing.T) {
 	setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 1, vested, 0, true)
 
 	delegate(t, ctx, app, accAddr, delegableAccAddr, valAddr, vested/2, 0, vested, 0, vested/2)
-	verifyDelegations(t, ctx, app, delegableAccAddr,  []sdk.ValAddress{valAddr}, []int64{vested/2})
+	verifyDelegations(t, ctx, app, delegableAccAddr, []sdk.ValAddress{valAddr}, []int64{vested / 2})
 
 	stakingmodule.EndBlocker(ctx, app.StakingKeeper)
 	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1)
@@ -42,8 +42,6 @@ func TestRedelegate(t *testing.T) {
 	allocateRewardsToValidator(ctx, app, validatorRewards, valAddr)
 
 	redelegate(t, ctx, app, accAddr, delegableAccAddr, valAddr, valAddr2, vested/2, 0, vested/2, validatorRewards/2, vested/2)
-	verifyDelegations(t, ctx, app, delegableAccAddr,  []sdk.ValAddress{valAddr2}, []int64{vested/2})
+	verifyDelegations(t, ctx, app, delegableAccAddr, []sdk.ValAddress{valAddr2}, []int64{vested / 2})
 
 }
-
-

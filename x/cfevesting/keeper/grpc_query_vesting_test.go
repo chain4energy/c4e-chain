@@ -3,13 +3,12 @@ package keeper_test
 import (
 	"testing"
 
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 func TestVesting(t *testing.T) {
@@ -189,5 +188,3 @@ func TestVestingManyVestings(t *testing.T) {
 	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
 
 }
-
-

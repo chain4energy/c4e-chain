@@ -1,9 +1,9 @@
 package cfevesting_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
-	"fmt"
 
 	"github.com/chain4energy/c4e-chain/testutil/nullify"
 	"github.com/chain4energy/c4e-chain/x/cfevesting"
@@ -13,14 +13,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/chain4energy/c4e-chain/app"
-	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestGenesisWholeApp(t *testing.T) {
@@ -119,10 +118,10 @@ func TestGenesisValidationVestingAccountVestingsNoVestingTypesError(t *testing.T
 		VestingTypes:        []types.GenesisVestingType{},
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
-	
+
 	err := genesisState.Validate()
 	require.EqualError(t, err,
-		"vesting with id: 1 defined for account: " + accountVestingsListArray[0].Address + " - vesting type not found: test-vesting-account-1-1")
+		"vesting with id: 1 defined for account: "+accountVestingsListArray[0].Address+" - vesting type not found: test-vesting-account-1-1")
 
 }
 
@@ -140,7 +139,7 @@ func TestGenesisValidationVestingAccountVestingsOneVestingTypeNotExistError(t *t
 
 	err := genesisState.Validate()
 	require.EqualError(t, err,
-		"vesting with id: 8 defined for account: " + accountVestingsListArray[4].Address + " - vesting type not found: " + accountVestingsListArray[4].Vestings[7].VestingType)
+		"vesting with id: 8 defined for account: "+accountVestingsListArray[4].Address+" - vesting type not found: "+accountVestingsListArray[4].Vestings[7].VestingType)
 
 }
 
@@ -158,7 +157,7 @@ func TestGenesisValidationVestingAccountVestingsMoreThanOneIdError(t *testing.T)
 
 	err := genesisState.Validate()
 	require.EqualError(t, err,
-		"vesting with id: 7 defined more than once for account: " + accountVestingsListArray[4].Address)
+		"vesting with id: 7 defined more than once for account: "+accountVestingsListArray[4].Address)
 
 }
 
@@ -175,8 +174,8 @@ func TestGenesisValidationVestingAccountVestingsMoreThanOneAddressError(t *testi
 	}
 
 	err := genesisState.Validate()
-	require.EqualError(t, err, 
-		"account vestings with address: " + accountVestingsListArray[3].Address + " defined more than once")
+	require.EqualError(t, err,
+		"account vestings with address: "+accountVestingsListArray[3].Address+" defined more than once")
 
 }
 
@@ -194,7 +193,7 @@ func TestGenesisValidationVestingAccountVestingsMoreThanOneDelegableAddressError
 
 	err := genesisState.Validate()
 	require.EqualError(t, err,
-		"account vestings with delegable address: " + accountVestingsListArray[3].DelegableAddress + " defined more than once")
+		"account vestings with delegable address: "+accountVestingsListArray[3].DelegableAddress+" defined more than once")
 
 }
 
@@ -229,7 +228,7 @@ func TestGenesisValidationVestingAccountVestingsDelegableAddressEqualsAddressErr
 
 	err := genesisState.Validate()
 	require.EqualError(t, err,
-		"account vestings address: " + accountVestingsListArray[3].Address + " defined also as delegable address")
+		"account vestings address: "+accountVestingsListArray[3].Address+" defined also as delegable address")
 
 }
 
@@ -247,7 +246,7 @@ func TestGenesisValidationVestingAccountVestingsDelegableAddressEqualsAddressErr
 
 	err := genesisState.Validate()
 	require.EqualError(t, err,
-		"account vestings address: " + accountVestingsListArray[3].Address + " defined also as delegable address")
+		"account vestings address: "+accountVestingsListArray[3].Address+" defined also as delegable address")
 
 }
 
@@ -404,7 +403,7 @@ func TestGenesisAccountVestingsListWrongAmountInModuleAccount(t *testing.T) {
 	wrongAcountAmount := getUndelegableAmount(accountVestingsListArray).SubRaw(10)
 	mintUndelegableCoinsToModule(ctx, app, genesisState, wrongAcountAmount)
 
-	require.PanicsWithError(t, fmt.Sprintf("module: cfevesting account balance of denom uc4e not equal of sum of undelegable vestings: %s <> %s", wrongAcountAmount.String(), undelegableAmount.String())	, 
+	require.PanicsWithError(t, fmt.Sprintf("module: cfevesting account balance of denom uc4e not equal of sum of undelegable vestings: %s <> %s", wrongAcountAmount.String(), undelegableAmount.String()),
 		func() { cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper) }, "")
 
 }
@@ -412,7 +411,7 @@ func TestGenesisAccountVestingsListWrongAmountInModuleAccount(t *testing.T) {
 func TestGenesisAccountVestingsListNoDelegableAddressForDelegableVesting(t *testing.T) {
 	addModuleAccountPerms()
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
-	accountVestingsListArray[5].Vestings[4].DelegationAllowed =true
+	accountVestingsListArray[5].Vestings[4].DelegationAllowed = true
 	accountVestingsListArray[5].DelegableAddress = ""
 	genesisState := types.GenesisState{
 		Params: types.NewParams("uc4e"),
@@ -430,7 +429,7 @@ func TestGenesisAccountVestingsListNoDelegableAddressForDelegableVesting(t *test
 	undelegableAmount := getUndelegableAmount(accountVestingsListArray)
 	mintUndelegableCoinsToModule(ctx, app, genesisState, undelegableAmount)
 
-	require.PanicsWithError(t, fmt.Sprintf("acount vesting for: %s delegable address not exists, but delegable vesting exists", accountVestingsListArray[5].Address)	, 
+	require.PanicsWithError(t, fmt.Sprintf("acount vesting for: %s delegable address not exists, but delegable vesting exists", accountVestingsListArray[5].Address),
 		func() { cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper) }, "")
 
 }
@@ -461,10 +460,10 @@ func TestGenesisAccountVestingsListWrongDelegableAccountAmount(t *testing.T) {
 	mintDelegableAccordingToVestings(ctx, app, genesisState, accountVestingsListArray)
 	amount := app.BankKeeper.GetBalance(ctx, accountsAddresses[0], genesisState.Params.Denom).Amount
 	wrongAdditionalAmount := sdk.NewInt(10)
-	wrongAmount :=  amount.Add(wrongAdditionalAmount)
+	wrongAmount := amount.Add(wrongAdditionalAmount)
 	mintDelegableCoinsToAccount(ctx, app, genesisState, wrongAdditionalAmount, accountVestingsListArray[5].DelegableAddress)
 
-	require.PanicsWithError(t, fmt.Sprintf("module: cfevesting - delegable account: %s balance of denom uc4e is bigger than sum of delegable vestings: %s > %s", accountVestingsListArray[5].DelegableAddress, wrongAmount, amount)	, 
+	require.PanicsWithError(t, fmt.Sprintf("module: cfevesting - delegable account: %s balance of denom uc4e is bigger than sum of delegable vestings: %s > %s", accountVestingsListArray[5].DelegableAddress, wrongAmount, amount),
 		func() { cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper) }, "")
 
 }
@@ -622,16 +621,15 @@ func generateGenesisVestingTypesForAccounVestings(vestings []*types.AccountVesti
 				DelegationsAllowed:       vt.DelegationsAllowed,
 			}
 			m[v.VestingType] = gvt
-			
+
 		}
 	}
 	for _, gvt := range m {
 		result = append(result, gvt)
 	}
-	
+
 	return result
 }
-
 
 func setupValidators(t *testing.T, ctx sdk.Context, app *app.App, genesisState types.GenesisState, validators []sdk.ValAddress, delegatePerValidator uint64) {
 	denom := genesisState.Params.Denom

@@ -21,6 +21,7 @@ type (
 		staking      types.StakingKeeper
 		account      types.AccountKeeper
 		distribution types.DistributionKeeper
+		gov          types.GovKeeper
 	}
 )
 
@@ -33,6 +34,7 @@ func NewKeeper(
 	staking types.StakingKeeper,
 	account types.AccountKeeper,
 	distribution types.DistributionKeeper,
+	gov types.GovKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -49,6 +51,7 @@ func NewKeeper(
 		staking:      staking,
 		account:      account,
 		distribution: distribution,
+		gov:          gov,
 	}
 }
 

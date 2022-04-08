@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-
 )
 
 func GenerateVestingTypes(numberOfVestingTypes int, startId int) []*types.VestingType {

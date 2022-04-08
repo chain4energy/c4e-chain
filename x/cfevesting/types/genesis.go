@@ -34,7 +34,6 @@ func (gs GenesisState) Validate() error {
 	// 	testmapIndexMap[index] = struct{}{}
 	// }
 
-
 	err := gs.validateVestingTypes()
 	if err != nil {
 		return err
@@ -51,7 +50,9 @@ func (gs GenesisState) validateVestingTypes() error {
 	for _, vt := range vts {
 		numOfNames := 0
 		for _, vtCheck := range vts {
-			if vt.Name == vtCheck.Name {numOfNames++}
+			if vt.Name == vtCheck.Name {
+				numOfNames++
+			}
 			if numOfNames > 1 {
 				return fmt.Errorf("vesting type with name: %s defined more than once", vt.Name)
 			}
@@ -70,13 +71,17 @@ func (gs GenesisState) validateAccountsVestings() error {
 		}
 		numOfAddress := 0
 		numOfDelegableAddress := 0
-		
+
 		for _, avtCheck := range avts {
-			if avt.Address == avtCheck.Address {numOfAddress++}
+			if avt.Address == avtCheck.Address {
+				numOfAddress++
+			}
 			if numOfAddress > 1 {
 				return fmt.Errorf("account vestings with address: %s defined more than once", avt.Address)
 			}
-			if avt.DelegableAddress != "" && avt.DelegableAddress == avtCheck.DelegableAddress {numOfDelegableAddress++}
+			if avt.DelegableAddress != "" && avt.DelegableAddress == avtCheck.DelegableAddress {
+				numOfDelegableAddress++
+			}
 			if numOfDelegableAddress > 1 {
 				return fmt.Errorf("account vestings with delegable address: %s defined more than once", avt.DelegableAddress)
 			}
@@ -91,7 +96,6 @@ func (gs GenesisState) validateAccountsVestings() error {
 	}
 	return nil
 }
-
 
 func (av AccountVestings) Validate() error {
 	vs := av.Vestings
@@ -108,7 +112,9 @@ func (av AccountVestings) Validate() error {
 	for _, v := range vs {
 		numOfIds := 0
 		for _, vCheck := range vs {
-			if v.Id == vCheck.Id {numOfIds++}
+			if v.Id == vCheck.Id {
+				numOfIds++
+			}
 			if numOfIds > 1 {
 				return fmt.Errorf("vesting with id: %d defined more than once for account: %s", v.Id, av.Address)
 			}
@@ -122,7 +128,9 @@ func (av AccountVestings) ValidateAgainstVestingTypes(vestingTypes []GenesisVest
 	for _, v := range vs {
 		found := false
 		for _, vtCheck := range vestingTypes {
-			if v.VestingType == vtCheck.Name {found = true}
+			if v.VestingType == vtCheck.Name {
+				found = true
+			}
 		}
 		if !found {
 			return fmt.Errorf("vesting with id: %d defined for account: %s - vesting type not found: %s", v.Id, av.Address, v.VestingType)
@@ -130,5 +138,3 @@ func (av AccountVestings) ValidateAgainstVestingTypes(vestingTypes []GenesisVest
 	}
 	return nil
 }
-
-

@@ -12,7 +12,7 @@ const (
 	EventTypeWithdrawRewards = "vesting_withdraw_rewards"
 	EventTypeWithdrawVesting = "vesting_withdraw_vesting"
 	EventTypeVest            = "vesting_vest"
-	EventTypeTransfer            = "vesting_transfer"
+	EventTypeTransfer        = "vesting_transfer"
 
 	AttributeKeyValidator   = "validator"
 	AttributeKeyVestingType = "vesting_type"
@@ -25,8 +25,8 @@ const (
 	AttributeKeyDelegableAddress = "delegable_address"
 	AttributeKeyCompletionTime   = "completion_time"
 	// AttributeKeyNewShares         = "new_shares"
-	AttributeKeyRecipient = "recipient"
-	AttributeKeySender    = "sender"
-	AttributeKeyWithdrawn    = "withdrawn"
+	AttributeKeyRecipient  = "recipient"
+	AttributeKeySender     = "sender"
+	AttributeKeyWithdrawn  = "withdrawn"
 	AttributeValueCategory = ModuleName
 )

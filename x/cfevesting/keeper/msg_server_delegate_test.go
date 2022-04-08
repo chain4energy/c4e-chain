@@ -33,7 +33,7 @@ func TestDelegate(t *testing.T) {
 	setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 1, vested, 0, true)
 
 	delegate(t, ctx, app, accAddr, delegableAccAddr, valAddr, vested/2, 0, vested, 0, vested/2)
-	verifyDelegations(t, ctx, app, delegableAccAddr,  []sdk.ValAddress{valAddr}, []int64{vested/2})
+	verifyDelegations(t, ctx, app, delegableAccAddr, []sdk.ValAddress{valAddr}, []int64{vested / 2})
 
 	verifyQueryRewards(t, ctx, app, delegableAccAddr, valAddr, false, 0)
 
@@ -46,8 +46,6 @@ func TestDelegate(t *testing.T) {
 	verifyQueryRewards(t, ctx, app, delegableAccAddr, valAddr, true, validatorRewards/2)
 
 	delegate(t, ctx, app, accAddr, delegableAccAddr, valAddr, vested/2, 0, vested/2, int64(validatorRewards/2), 0)
-	verifyDelegations(t, ctx, app, delegableAccAddr,  []sdk.ValAddress{valAddr}, []int64{vested})
+	verifyDelegations(t, ctx, app, delegableAccAddr, []sdk.ValAddress{valAddr}, []int64{vested})
 
 }
-
-

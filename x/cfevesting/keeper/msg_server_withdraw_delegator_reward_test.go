@@ -3,11 +3,10 @@ package keeper_test
 import (
 	"testing"
 
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingmodule "github.com/cosmos/cosmos-sdk/x/staking"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 func TestWithdrawReward(t *testing.T) {
@@ -38,7 +37,7 @@ func TestWithdrawReward(t *testing.T) {
 
 	validatorRewards := uint64(10000)
 	allocateRewardsToValidator(ctx, app, validatorRewards, valAddr)
-	
+
 	withdrawDelegatorReward(t, ctx, app, accAddr, delegableAccAddr, valAddr, 0, vested/2, int64(validatorRewards/2), vested/2)
 
 }

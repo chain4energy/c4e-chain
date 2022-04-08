@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -18,8 +19,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
-	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
-
 )
 
 func CfevestingKeeperWithBlockHeightAndTimeAndStore(t testing.TB, blockHeight int64, blockTime time.Time, db *tmdb.MemDB, stateStore storetypes.CommitMultiStore) (*keeper.Keeper, sdk.Context) {
@@ -46,6 +45,7 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t testing.TB, blockHeight in
 		storeKey,
 		memStoreKey,
 		paramsSubspace,
+		nil,
 		nil,
 		nil,
 		nil,

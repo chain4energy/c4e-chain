@@ -40,8 +40,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 	ak.GetModuleAccount(ctx, types.ModuleName)
 }
 
-func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
-		ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) error {
+func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState,
+	ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) error {
 	accsVestings := genState.AccountVestingsList.Vestings
 	undelegableAmount := sdk.ZeroInt()
 	delegableAmounts := make(map[string]sdk.Int)
@@ -50,7 +50,7 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 		for _, v := range accVestings.Vestings {
 			if v.DelegationAllowed {
 				if accVestings.DelegableAddress == "" {
-					return fmt.Errorf("acount vesting for: %s delegable address not exists, but delegable vesting exists", 
+					return fmt.Errorf("acount vesting for: %s delegable address not exists, but delegable vesting exists",
 						accVestings.Address)
 				}
 				_, ok := delegableAmounts[accVestings.DelegableAddress]
@@ -66,8 +66,8 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 
 	mAcc := ak.GetModuleAccount(ctx, types.ModuleName)
 	modBalance := bk.GetBalance(ctx, mAcc.GetAddress(), genState.Params.Denom)
-	if (!undelegableAmount.Equal(modBalance.Amount)) {
-		return fmt.Errorf("module: %s account balance of denom %s not equal of sum of undelegable vestings: %s <> %s", 
+	if !undelegableAmount.Equal(modBalance.Amount) {
+		return fmt.Errorf("module: %s account balance of denom %s not equal of sum of undelegable vestings: %s <> %s",
 			types.ModuleName, genState.Params.Denom, modBalance.Amount.String(), undelegableAmount.String())
 	}
 
@@ -78,8 +78,8 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 		}
 		accBalance := bk.GetBalance(ctx, acc, genState.Params.Denom)
 
-		if (!accBalance.Amount.LTE(amount)) {
-			return fmt.Errorf("module: %s - delegable account: %s balance of denom %s is bigger than sum of delegable vestings: %s > %s", 
+		if !accBalance.Amount.LTE(amount) {
+			return fmt.Errorf("module: %s - delegable account: %s balance of denom %s is bigger than sum of delegable vestings: %s > %s",
 				types.ModuleName, delAddr, genState.Params.Denom, accBalance.Amount.String(), amount.String())
 		}
 	}
@@ -102,5 +102,3 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	return genesis
 }
-
-

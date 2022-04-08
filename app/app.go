@@ -363,6 +363,7 @@ func New(
 		app.StakingKeeper,
 		app.AccountKeeper,
 		app.DistrKeeper,
+		app.GovKeeper,
 	)
 	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 

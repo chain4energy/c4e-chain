@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"testing"
 
-	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/stretchr/testify/require"
 )
 

@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 func TestVestDelegationNotAllowed(t *testing.T) {
@@ -43,7 +42,7 @@ func vestTest(t *testing.T, delegationAllowed bool) {
 
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, delegationAllowed, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
-	
+
 	if delegationAllowed {
 		makeVesting(t, ctx, app, accAddr, false, true, false, true, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, vested, 0)
 	} else {
@@ -81,7 +80,7 @@ func vestTestLockupZero(t *testing.T, delegationAllowed bool) {
 
 	vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 2, 1, delegationAllowed, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
-	
+
 	if delegationAllowed {
 		makeVesting(t, ctx, app, accAddr, false, true, false, true, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, vested, 0)
 	} else {
@@ -118,7 +117,7 @@ func TestVestFirstDelagtionNotAllowedSecondAllowed(t *testing.T) {
 
 	i := 1
 	modifyVestingType := func(vt *types.VestingType) {
-		if (i == 1) {
+		if i == 1 {
 			vt.DelegationsAllowed = true
 		}
 		i++

@@ -7,9 +7,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cobra"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/spf13/cobra"
 )
 
 var _ = strconv.Itoa(0)
@@ -34,7 +34,7 @@ func CmdSendVesting() *cobra.Command {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "vesting-id must be a positive integer")
 			}
 			amountInt, ok := sdk.NewIntFromString(argAmount)
-			if !ok || amountInt.LTE(sdk.ZeroInt()){
+			if !ok || amountInt.LTE(sdk.ZeroInt()) {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "amount must be a positive integer")
 			}
 			restartVestingBool, err := strconv.ParseBool(argRestartVesting)

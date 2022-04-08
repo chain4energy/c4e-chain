@@ -28,15 +28,15 @@ func (k Keeper) Vesting(goCtx context.Context, req *types.QueryVestingRequest) (
 		vestingInfo := types.VestingInfo{
 			Id:                  vesting.Id,
 			VestingType:         vesting.VestingType,
-			VestingStart:  vesting.VestingStart,
-			LockEnd:       vesting.LockEnd,
-			VestingEnd:    vesting.VestingEnd,
+			VestingStart:        vesting.VestingStart,
+			LockEnd:             vesting.LockEnd,
+			VestingEnd:          vesting.VestingEnd,
 			Withdrawable:        withdrawable.String(),
 			DelegationAllowed:   vesting.DelegationAllowed,
 			Vested:              &coin,
 			CurrentVestedAmount: current.String(),
 			SentAmount:          vesting.Sent.String(),
-			TransferAllowed: 	 vesting.TransferAllowed,
+			TransferAllowed:     vesting.TransferAllowed,
 		}
 		result.Vestings = append(result.Vestings, &vestingInfo)
 

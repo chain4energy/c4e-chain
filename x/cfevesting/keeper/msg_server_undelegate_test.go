@@ -42,5 +42,5 @@ func TestUndelegate(t *testing.T) {
 
 	undelegate(t, ctx, app, accAddr, delegableAccAddr, valAddr, vested/2, 0, vested/2, int64(validatorRewards/2), vested/2)
 	verifyDelegations(t, ctx, app, delegableAccAddr, []sdk.ValAddress{}, []int64{})
-	verifyUnbondingDelegations(t, ctx, app, delegableAccAddr, []sdk.ValAddress{valAddr}, []int64{vested/2})
+	verifyUnbondingDelegations(t, ctx, app, delegableAccAddr, []sdk.ValAddress{valAddr}, []int64{vested / 2})
 }

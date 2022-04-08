@@ -5,10 +5,10 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
-	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 )
 
 func TestCalculateWithdrawable(t *testing.T) {
@@ -23,15 +23,15 @@ func TestCalculateWithdrawable(t *testing.T) {
 	vesting := types.Vesting{
 		Id:                        1,
 		VestingType:               "test",
-		VestingStart:         start,
-		LockEnd:              lockEnd,
-		VestingEnd:           end,
+		VestingStart:              start,
+		LockEnd:                   lockEnd,
+		VestingEnd:                end,
 		Vested:                    amount,
-		ReleasePeriod:      unlockingPeriod,
+		ReleasePeriod:             unlockingPeriod,
 		DelegationAllowed:         true,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:     start,
+		LastModification:          start,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -127,15 +127,15 @@ func TestCalculateWithdrawableAfterSendReceivingSide(t *testing.T) {
 	vesting := types.Vesting{
 		Id:                        1,
 		VestingType:               "test",
-		VestingStart:         startHeight,
-		LockEnd:              lockEndHeight,
-		VestingEnd:           endHeight,
+		VestingStart:              startHeight,
+		LockEnd:                   lockEndHeight,
+		VestingEnd:                endHeight,
 		Vested:                    amount,
-		ReleasePeriod:      unlockingPeriod,
+		ReleasePeriod:             unlockingPeriod,
 		DelegationAllowed:         true,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:     startHeight,
+		LastModification:          startHeight,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -228,15 +228,15 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	vesting := types.Vesting{
 		Id:                        1,
 		VestingType:               "test",
-		VestingStart:         startHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
-		LockEnd:              lockEndHeight,
-		VestingEnd:           endHeight,
+		VestingStart:              startHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
+		LockEnd:                   lockEndHeight,
+		VestingEnd:                endHeight,
 		Vested:                    amount.AddRaw(50000),
-		ReleasePeriod:      unlockingPeriod,
+		ReleasePeriod:             unlockingPeriod,
 		DelegationAllowed:         true,
 		Withdrawn:                 sdk.NewInt(500000),
 		Sent:                      sdk.NewInt(50000),
-		LastModification:     startHeight,
+		LastModification:          startHeight,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -329,15 +329,15 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	vesting := types.Vesting{
 		Id:                        1,
 		VestingType:               "test",
-		VestingStart:         lockEndHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
-		LockEnd:              lockEndHeight,
-		VestingEnd:           endHeight,
+		VestingStart:              lockEndHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
+		LockEnd:                   lockEndHeight,
+		VestingEnd:                endHeight,
 		Vested:                    amount.AddRaw(50000),
-		ReleasePeriod:      unlockingPeriod,
+		ReleasePeriod:             unlockingPeriod,
 		DelegationAllowed:         true,
 		Withdrawn:                 sdk.NewInt(500000),
 		Sent:                      sdk.NewInt(50000),
-		LastModification:     startHeight,
+		LastModification:          startHeight,
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
@@ -417,4 +417,3 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	withdrawable = keeper.CalculateWithdrawable(endHeight, vesting)
 	require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn), withdrawable)
 }
-

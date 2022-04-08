@@ -100,7 +100,7 @@ func TestSendVestingButNotTransferable(t *testing.T) {
 	const accInitBalance = 10000
 	app, ctx := setupApp(1000)
 	setupStakingBondDenom(ctx, app)
-	
+
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 	accSrcAddr := acountsAddresses[0]
 	accDestAddr := acountsAddresses[1]
@@ -121,7 +121,7 @@ func TestSendVestingButNotTransferable(t *testing.T) {
 
 	require.NotEqualValues(t, nil, err)
 	require.EqualError(t, err,
-			"vesting with id 1 is not tranferable: feature not supported")
+		"vesting with id 1 is not tranferable: feature not supported")
 }
 
 func TestSendVestingButNotAccountVestings(t *testing.T) {
@@ -129,7 +129,7 @@ func TestSendVestingButNotAccountVestings(t *testing.T) {
 	const accInitBalance = 10000
 	app, ctx := setupApp(1000)
 	setupStakingBondDenom(ctx, app)
-	
+
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 	accSrcAddr := acountsAddresses[0]
 	accDestAddr := acountsAddresses[1]
@@ -143,7 +143,7 @@ func TestSendVestingButNotAccountVestings(t *testing.T) {
 
 	require.NotEqualValues(t, nil, err)
 	require.EqualError(t, err,
-			"rpc error: code = NotFound desc = No vestings")
+		"rpc error: code = NotFound desc = No vestings")
 }
 
 func TestSendVestingButSpecificVestingNotExists(t *testing.T) {
@@ -152,7 +152,7 @@ func TestSendVestingButSpecificVestingNotExists(t *testing.T) {
 	const accInitBalance = 10000
 	app, ctx := setupApp(1000)
 	setupStakingBondDenom(ctx, app)
-	
+
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 	accSrcAddr := acountsAddresses[0]
 	accDestAddr := acountsAddresses[1]
@@ -173,9 +173,8 @@ func TestSendVestingButSpecificVestingNotExists(t *testing.T) {
 
 	require.NotEqualValues(t, nil, err)
 	require.EqualError(t, err,
-			"vesting with id 2 not found: not found")
+		"vesting with id 2 not found: not found")
 }
-
 
 const noWithdrawableNoDelegatedEnoughToSend = 0
 const withdrawableEnoughToSend = 1

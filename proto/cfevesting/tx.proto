@@ -4,6 +4,7 @@ package chain4energy.c4echain.cfevesting;
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
+import "cosmos/gov/v1beta1/gov.proto";
 
 
 // this line is used by starport scaffolding # proto/tx/import
@@ -19,6 +20,8 @@ service Msg {
   rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
   rpc WithdrawDelegatorReward(MsgWithdrawDelegatorReward) returns (MsgWithdrawDelegatorRewardResponse);
   rpc SendVesting(MsgSendVesting) returns (MsgSendVestingResponse);
+  rpc Vote(MsgVote) returns (MsgVoteResponse);
+  rpc VoteWeighted(MsgVoteWeighted) returns (MsgVoteWeightedResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -86,6 +89,24 @@ message MsgSendVesting {
 }
 
 message MsgSendVestingResponse {
+}
+
+message MsgVote {
+  uint64 proposal_id = 1 [(gogoproto.jsontag) = "proposal_id", (gogoproto.moretags) = "yaml:\"proposal_id\""];
+  string voter = 2;
+  cosmos.gov.v1beta1.VoteOption option = 3;
+}
+
+message MsgVoteResponse {
+}
+
+message MsgVoteWeighted {
+  uint64 proposal_id = 1 [(gogoproto.moretags) = "yaml:\"proposal_id\""];
+  string voter = 2;
+  repeated cosmos.gov.v1beta1.WeightedVoteOption options = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgVoteWeightedResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

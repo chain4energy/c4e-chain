@@ -5,16 +5,15 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 )
 
 type PeriodUnit string
 
 const (
-	Day               = "day"
-	Hour              = "hour"
-	Minute            = "minute"
-	Second            = "second"
+	Day    = "day"
+	Hour   = "hour"
+	Minute = "minute"
+	Second = "second"
 )
 
 func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *types.VestingTypes) []types.GenesisVestingType {
@@ -26,14 +25,14 @@ func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *types.VestingTypes) 
 		tokenReleasingPeriodUnit, tokenReleasingPeriod := UnitsFromDuration(vestingType.TokenReleasingPeriod)
 
 		gvt := types.GenesisVestingType{
-			Name:                 vestingType.Name,
-			LockupPeriod:         lockupPeriod,
-			LockupPeriodUnit: 	  string(lockupPeriodUnit),
-			VestingPeriod:        vestingPeriod,
-			VestingPeriodUnit:    string(vestingPeriodUnit),
-			TokenReleasingPeriod: tokenReleasingPeriod,
+			Name:                     vestingType.Name,
+			LockupPeriod:             lockupPeriod,
+			LockupPeriodUnit:         string(lockupPeriodUnit),
+			VestingPeriod:            vestingPeriod,
+			VestingPeriodUnit:        string(vestingPeriodUnit),
+			TokenReleasingPeriod:     tokenReleasingPeriod,
 			TokenReleasingPeriodUnit: string(tokenReleasingPeriodUnit),
-			DelegationsAllowed:   vestingType.DelegationsAllowed,
+			DelegationsAllowed:       vestingType.DelegationsAllowed,
 		}
 		gVestingTypes = append(gVestingTypes, gvt)
 	}

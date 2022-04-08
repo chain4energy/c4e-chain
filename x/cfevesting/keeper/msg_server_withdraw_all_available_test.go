@@ -10,7 +10,6 @@ import (
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/stretchr/testify/require"
-
 )
 
 func TestWithdrawAllAvailableOnVestingStart(t *testing.T) {
@@ -56,7 +55,7 @@ func TestWithdrawAllAvailableSomeToWithdraw(t *testing.T) {
 
 	accAddr := acountsAddresses[0]
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), "", 1, vested, 0, false)
-	
+
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawable, vested-withdrawable)
 	accountVestings.Vestings[0].Withdrawn = sdk.NewInt(withdrawable)
 	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(withdrawable)
@@ -97,7 +96,7 @@ func TestWithdrawAllAvailableSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 	accAddr := acountsAddresses[0]
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), "", 1, vested, withdrawn, false)
-	
+
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawable-withdrawn, vested-withdrawable+withdrawn)
 	accountVestings.Vestings[0].Withdrawn = sdk.NewInt(withdrawable)
 	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(withdrawable)
@@ -141,7 +140,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 		vt.VestingPeriod = testutils.CreateDurationFromNumOfHours(100000)
 	}
 	vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 1, 1, false, 1)
-	
+
 	makeVesting(t, ctx, app, accAddr, false, true, false, false, *vestingTypes.VestingTypes[0], vested, vested, 0, 0, 0, 0, vested)
 
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, 0, vested)
@@ -168,7 +167,7 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegable(t *testing.T) 
 	delegableAccAddr := acountsAddresses[1]
 
 	addCoinsToAccount(3*vested, ctx, app, delegableAccAddr)
-	
+
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
 	const withdrawn = 1000
 	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, 3*vested, 0, 3*withdrawn, 3*vested-3*withdrawn, 0)
@@ -208,7 +207,6 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllSomeDelegable(t *testing
 	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
 
-
 func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDelegableAccount1(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000000
@@ -220,9 +218,9 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDele
 
 	const withdrawn = 1000
 	addCoinsToAccount(2*withdrawn, ctx, app, delegableAccAddr)
-	
+
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
-	
+
 	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, 2*withdrawn, 0, 2*withdrawn, 0, 0)
 
 	for i, vesting := range accountVestings.Vestings {
@@ -248,15 +246,15 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDele
 
 	const withdrawn = 1000
 	addCoinsToAccount(2*withdrawn+withdrawn/4, ctx, app, delegableAccAddr)
-	
+
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
-	
-	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, 2*withdrawn+withdrawn/4, 0, 2*withdrawn +withdrawn/4, 0, 0)
+
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, 2*withdrawn+withdrawn/4, 0, 2*withdrawn+withdrawn/4, 0, 0)
 
 	for i, vesting := range accountVestings.Vestings {
 		if i == 2 {
-			vesting.Withdrawn = sdk.NewInt(withdrawn/4)
-			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/4)
+			vesting.Withdrawn = sdk.NewInt(withdrawn / 4)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn / 4)
 		} else {
 			vesting.Withdrawn = sdk.NewInt(withdrawn)
 			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
@@ -276,15 +274,15 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDele
 
 	const withdrawn = 1000
 	addCoinsToAccount(withdrawn/2, ctx, app, delegableAccAddr)
-	
+
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
-	
+
 	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn/2, 0, withdrawn/2, 0, 0)
 
 	for i, vesting := range accountVestings.Vestings {
 		if i == 0 {
-			vesting.Withdrawn = sdk.NewInt(withdrawn/2)
-			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/2)
+			vesting.Withdrawn = sdk.NewInt(withdrawn / 2)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn / 2)
 		} else {
 			vesting.Withdrawn = sdk.ZeroInt()
 			vesting.LastModificationWithdrawn = sdk.ZeroInt()
@@ -303,20 +301,19 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDele
 	delegableAccAddr := acountsAddresses[1]
 
 	const withdrawn = 1000
-	addCoinsToAccount(withdrawn + withdrawn/2, ctx, app, delegableAccAddr)
+	addCoinsToAccount(withdrawn+withdrawn/2, ctx, app, delegableAccAddr)
 
 	modification := func(vesting *types.Vesting) {
 		vesting.Withdrawn = sdk.NewInt(withdrawn)
 		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
 	}
-	
+
 	accountVestings := setupAccountsVestingsWithModification(ctx, app, modification, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
-	
-	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn + withdrawn/2, 0, 0, withdrawn + withdrawn/2, 0)
+
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn+withdrawn/2, 0, 0, withdrawn+withdrawn/2, 0)
 
 	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
-
 
 func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDelegableAccount5(t *testing.T) {
 	addHelperModuleAccountPerms()
@@ -331,12 +328,12 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDele
 	addCoinsToAccount(withdrawn, ctx, app, delegableAccAddr)
 
 	modification := func(vesting *types.Vesting) {
-		vesting.Withdrawn = sdk.NewInt(withdrawn/2)
-		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/2)
+		vesting.Withdrawn = sdk.NewInt(withdrawn / 2)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn / 2)
 	}
-	
+
 	accountVestings := setupAccountsVestingsWithModification(ctx, app, modification, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
-	
+
 	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn, 0, withdrawn, 0, 0)
 
 	for i, vesting := range accountVestings.Vestings {
@@ -361,12 +358,12 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDele
 	addCoinsToAccount(0, ctx, app, delegableAccAddr)
 
 	modification := func(vesting *types.Vesting) {
-		vesting.Withdrawn = sdk.NewInt(withdrawn/2)
-		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/2)
+		vesting.Withdrawn = sdk.NewInt(withdrawn / 2)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn / 2)
 	}
-	
+
 	accountVestings := setupAccountsVestingsWithModification(ctx, app, modification, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
-	
+
 	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, 0, 0, 0, 0, 0)
 
 	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
@@ -382,24 +379,24 @@ func TestWithdrawAllAvailableManyVestedSomeToWithdrawAllDelegableNotEnoughOnDele
 	delegableAccAddr := acountsAddresses[1]
 
 	const withdrawn = 1000
-	addCoinsToAccount(withdrawn + withdrawn/4, ctx, app, delegableAccAddr)
+	addCoinsToAccount(withdrawn+withdrawn/4, ctx, app, delegableAccAddr)
 
 	modification := func(vesting *types.Vesting) {
-		vesting.Withdrawn = sdk.NewInt(withdrawn/2)
-		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn/2)
+		vesting.Withdrawn = sdk.NewInt(withdrawn / 2)
+		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn / 2)
 	}
-	
+
 	accountVestings := setupAccountsVestingsWithModification(ctx, app, modification, accAddr.String(), delegableAccAddr.String(), 3, vested, 0, true)
-	
-	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn + withdrawn/4, 0, withdrawn + withdrawn/4, 0, 0)
+
+	withdrawAllAvailableDelegable(t, ctx, app, accAddr, delegableAccAddr, 0, withdrawn+withdrawn/4, 0, withdrawn+withdrawn/4, 0, 0)
 
 	for i, vesting := range accountVestings.Vestings {
 		if i != 2 {
 			vesting.Withdrawn = sdk.NewInt(withdrawn)
 			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn)
 		} else {
-			vesting.Withdrawn = sdk.NewInt(withdrawn-withdrawn/4)
-			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn-withdrawn/4)
+			vesting.Withdrawn = sdk.NewInt(withdrawn - withdrawn/4)
+			vesting.LastModificationWithdrawn = sdk.NewInt(withdrawn - withdrawn/4)
 		}
 	}
 	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
@@ -416,6 +413,5 @@ func TestWithdrawAllAvailableBadAddress(t *testing.T) {
 
 	require.EqualError(t, err,
 		"decoding bech32 failed: invalid separator index -1")
-
 
 }

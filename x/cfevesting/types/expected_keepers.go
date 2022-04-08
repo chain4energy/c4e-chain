@@ -42,3 +42,7 @@ type DistributionKeeper interface {
 	GetDelegatorWithdrawAddr(ctx sdk.Context, delAddr sdk.AccAddress) sdk.AccAddress
 	SetDelegatorWithdrawAddr(ctx sdk.Context, delAddr, withdrawAddr sdk.AccAddress)
 }
+
+// GovKeeper defines the expected interface needed for distribution functionality.
+type GovKeeper interface {
+}
