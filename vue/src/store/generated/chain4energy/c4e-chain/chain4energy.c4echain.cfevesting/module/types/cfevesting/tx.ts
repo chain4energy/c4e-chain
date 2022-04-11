@@ -92,19 +92,19 @@ export interface MsgVoteWeightedResponse {}
 export interface MsgCreateVestingAccount {
   from_address: string;
   to_address: string;
-  vesting_id: number;
-  amount: string;
-  restart_vesting: boolean;
+  amount: Coin[];
+  start_time: number;
+  end_time: number;
 }
 
 export interface MsgCreateVestingAccountResponse {}
 
 export interface MsgSendToVestingAccount {
-  fromAddress: string;
-  toAddress: string;
-  vestingId: string;
+  from_address: string;
+  to_address: string;
+  vesting_id: number;
   amount: string;
-  restartVesting: string;
+  restart_vesting: boolean;
 }
 
 export interface MsgSendToVestingAccountResponse {}
@@ -1510,9 +1510,8 @@ export const MsgVoteWeightedResponse = {
 const baseMsgCreateVestingAccount: object = {
   from_address: "",
   to_address: "",
-  vesting_id: 0,
-  amount: "",
-  restart_vesting: false,
+  start_time: 0,
+  end_time: 0,
 };
 
 export const MsgCreateVestingAccount = {
@@ -1526,14 +1525,14 @@ export const MsgCreateVestingAccount = {
     if (message.to_address !== "") {
       writer.uint32(18).string(message.to_address);
     }
-    if (message.vesting_id !== 0) {
-      writer.uint32(24).int32(message.vesting_id);
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
-    if (message.amount !== "") {
-      writer.uint32(34).string(message.amount);
+    if (message.start_time !== 0) {
+      writer.uint32(32).int64(message.start_time);
     }
-    if (message.restart_vesting === true) {
-      writer.uint32(40).bool(message.restart_vesting);
+    if (message.end_time !== 0) {
+      writer.uint32(40).int64(message.end_time);
     }
     return writer;
   },
@@ -1544,6 +1543,7 @@ export const MsgCreateVestingAccount = {
     const message = {
       ...baseMsgCreateVestingAccount,
     } as MsgCreateVestingAccount;
+    message.amount = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1554,13 +1554,13 @@ export const MsgCreateVestingAccount = {
           message.to_address = reader.string();
           break;
         case 3:
-          message.vesting_id = reader.int32();
+          message.amount.push(Coin.decode(reader, reader.uint32()));
           break;
         case 4:
-          message.amount = reader.string();
+          message.start_time = longToNumber(reader.int64() as Long);
           break;
         case 5:
-          message.restart_vesting = reader.bool();
+          message.end_time = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1574,6 +1574,7 @@ export const MsgCreateVestingAccount = {
     const message = {
       ...baseMsgCreateVestingAccount,
     } as MsgCreateVestingAccount;
+    message.amount = [];
     if (object.from_address !== undefined && object.from_address !== null) {
       message.from_address = String(object.from_address);
     } else {
@@ -1584,23 +1585,20 @@ export const MsgCreateVestingAccount = {
     } else {
       message.to_address = "";
     }
-    if (object.vesting_id !== undefined && object.vesting_id !== null) {
-      message.vesting_id = Number(object.vesting_id);
-    } else {
-      message.vesting_id = 0;
-    }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = String(object.amount);
-    } else {
-      message.amount = "";
+      for (const e of object.amount) {
+        message.amount.push(Coin.fromJSON(e));
+      }
     }
-    if (
-      object.restart_vesting !== undefined &&
-      object.restart_vesting !== null
-    ) {
-      message.restart_vesting = Boolean(object.restart_vesting);
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.start_time = Number(object.start_time);
     } else {
-      message.restart_vesting = false;
+      message.start_time = 0;
+    }
+    if (object.end_time !== undefined && object.end_time !== null) {
+      message.end_time = Number(object.end_time);
+    } else {
+      message.end_time = 0;
     }
     return message;
   },
@@ -1610,10 +1608,13 @@ export const MsgCreateVestingAccount = {
     message.from_address !== undefined &&
       (obj.from_address = message.from_address);
     message.to_address !== undefined && (obj.to_address = message.to_address);
-    message.vesting_id !== undefined && (obj.vesting_id = message.vesting_id);
-    message.amount !== undefined && (obj.amount = message.amount);
-    message.restart_vesting !== undefined &&
-      (obj.restart_vesting = message.restart_vesting);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => (e ? Coin.toJSON(e) : undefined));
+    } else {
+      obj.amount = [];
+    }
+    message.start_time !== undefined && (obj.start_time = message.start_time);
+    message.end_time !== undefined && (obj.end_time = message.end_time);
     return obj;
   },
 
@@ -1623,6 +1624,7 @@ export const MsgCreateVestingAccount = {
     const message = {
       ...baseMsgCreateVestingAccount,
     } as MsgCreateVestingAccount;
+    message.amount = [];
     if (object.from_address !== undefined && object.from_address !== null) {
       message.from_address = object.from_address;
     } else {
@@ -1633,23 +1635,20 @@ export const MsgCreateVestingAccount = {
     } else {
       message.to_address = "";
     }
-    if (object.vesting_id !== undefined && object.vesting_id !== null) {
-      message.vesting_id = object.vesting_id;
-    } else {
-      message.vesting_id = 0;
-    }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = object.amount;
-    } else {
-      message.amount = "";
+      for (const e of object.amount) {
+        message.amount.push(Coin.fromPartial(e));
+      }
     }
-    if (
-      object.restart_vesting !== undefined &&
-      object.restart_vesting !== null
-    ) {
-      message.restart_vesting = object.restart_vesting;
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.start_time = object.start_time;
     } else {
-      message.restart_vesting = false;
+      message.start_time = 0;
+    }
+    if (object.end_time !== undefined && object.end_time !== null) {
+      message.end_time = object.end_time;
+    } else {
+      message.end_time = 0;
     }
     return message;
   },
@@ -1708,11 +1707,11 @@ export const MsgCreateVestingAccountResponse = {
 };
 
 const baseMsgSendToVestingAccount: object = {
-  fromAddress: "",
-  toAddress: "",
-  vestingId: "",
+  from_address: "",
+  to_address: "",
+  vesting_id: 0,
   amount: "",
-  restartVesting: "",
+  restart_vesting: false,
 };
 
 export const MsgSendToVestingAccount = {
@@ -1720,20 +1719,20 @@ export const MsgSendToVestingAccount = {
     message: MsgSendToVestingAccount,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.fromAddress !== "") {
-      writer.uint32(10).string(message.fromAddress);
+    if (message.from_address !== "") {
+      writer.uint32(10).string(message.from_address);
     }
-    if (message.toAddress !== "") {
-      writer.uint32(18).string(message.toAddress);
+    if (message.to_address !== "") {
+      writer.uint32(18).string(message.to_address);
     }
-    if (message.vestingId !== "") {
-      writer.uint32(26).string(message.vestingId);
+    if (message.vesting_id !== 0) {
+      writer.uint32(24).int32(message.vesting_id);
     }
     if (message.amount !== "") {
       writer.uint32(34).string(message.amount);
     }
-    if (message.restartVesting !== "") {
-      writer.uint32(42).string(message.restartVesting);
+    if (message.restart_vesting === true) {
+      writer.uint32(40).bool(message.restart_vesting);
     }
     return writer;
   },
@@ -1748,19 +1747,19 @@ export const MsgSendToVestingAccount = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.fromAddress = reader.string();
+          message.from_address = reader.string();
           break;
         case 2:
-          message.toAddress = reader.string();
+          message.to_address = reader.string();
           break;
         case 3:
-          message.vestingId = reader.string();
+          message.vesting_id = reader.int32();
           break;
         case 4:
           message.amount = reader.string();
           break;
         case 5:
-          message.restartVesting = reader.string();
+          message.restart_vesting = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -1774,43 +1773,46 @@ export const MsgSendToVestingAccount = {
     const message = {
       ...baseMsgSendToVestingAccount,
     } as MsgSendToVestingAccount;
-    if (object.fromAddress !== undefined && object.fromAddress !== null) {
-      message.fromAddress = String(object.fromAddress);
+    if (object.from_address !== undefined && object.from_address !== null) {
+      message.from_address = String(object.from_address);
     } else {
-      message.fromAddress = "";
+      message.from_address = "";
     }
-    if (object.toAddress !== undefined && object.toAddress !== null) {
-      message.toAddress = String(object.toAddress);
+    if (object.to_address !== undefined && object.to_address !== null) {
+      message.to_address = String(object.to_address);
     } else {
-      message.toAddress = "";
+      message.to_address = "";
     }
-    if (object.vestingId !== undefined && object.vestingId !== null) {
-      message.vestingId = String(object.vestingId);
+    if (object.vesting_id !== undefined && object.vesting_id !== null) {
+      message.vesting_id = Number(object.vesting_id);
     } else {
-      message.vestingId = "";
+      message.vesting_id = 0;
     }
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = String(object.amount);
     } else {
       message.amount = "";
     }
-    if (object.restartVesting !== undefined && object.restartVesting !== null) {
-      message.restartVesting = String(object.restartVesting);
+    if (
+      object.restart_vesting !== undefined &&
+      object.restart_vesting !== null
+    ) {
+      message.restart_vesting = Boolean(object.restart_vesting);
     } else {
-      message.restartVesting = "";
+      message.restart_vesting = false;
     }
     return message;
   },
 
   toJSON(message: MsgSendToVestingAccount): unknown {
     const obj: any = {};
-    message.fromAddress !== undefined &&
-      (obj.fromAddress = message.fromAddress);
-    message.toAddress !== undefined && (obj.toAddress = message.toAddress);
-    message.vestingId !== undefined && (obj.vestingId = message.vestingId);
+    message.from_address !== undefined &&
+      (obj.from_address = message.from_address);
+    message.to_address !== undefined && (obj.to_address = message.to_address);
+    message.vesting_id !== undefined && (obj.vesting_id = message.vesting_id);
     message.amount !== undefined && (obj.amount = message.amount);
-    message.restartVesting !== undefined &&
-      (obj.restartVesting = message.restartVesting);
+    message.restart_vesting !== undefined &&
+      (obj.restart_vesting = message.restart_vesting);
     return obj;
   },
 
@@ -1820,30 +1822,33 @@ export const MsgSendToVestingAccount = {
     const message = {
       ...baseMsgSendToVestingAccount,
     } as MsgSendToVestingAccount;
-    if (object.fromAddress !== undefined && object.fromAddress !== null) {
-      message.fromAddress = object.fromAddress;
+    if (object.from_address !== undefined && object.from_address !== null) {
+      message.from_address = object.from_address;
     } else {
-      message.fromAddress = "";
+      message.from_address = "";
     }
-    if (object.toAddress !== undefined && object.toAddress !== null) {
-      message.toAddress = object.toAddress;
+    if (object.to_address !== undefined && object.to_address !== null) {
+      message.to_address = object.to_address;
     } else {
-      message.toAddress = "";
+      message.to_address = "";
     }
-    if (object.vestingId !== undefined && object.vestingId !== null) {
-      message.vestingId = object.vestingId;
+    if (object.vesting_id !== undefined && object.vesting_id !== null) {
+      message.vesting_id = object.vesting_id;
     } else {
-      message.vestingId = "";
+      message.vesting_id = 0;
     }
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = object.amount;
     } else {
       message.amount = "";
     }
-    if (object.restartVesting !== undefined && object.restartVesting !== null) {
-      message.restartVesting = object.restartVesting;
+    if (
+      object.restart_vesting !== undefined &&
+      object.restart_vesting !== null
+    ) {
+      message.restart_vesting = object.restart_vesting;
     } else {
-      message.restartVesting = "";
+      message.restart_vesting = false;
     }
     return message;
   },

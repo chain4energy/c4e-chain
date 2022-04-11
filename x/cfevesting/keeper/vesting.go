@@ -446,31 +446,10 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 
 	ak.SetAccount(ctx, acc)
 
-	// defer func() {
-	// 	telemetry.IncrCounter(1, "new", "account")
-
-	// 	for _, a := range msg.Amount {
-	// 		if a.Amount.IsInt64() {
-	// 			telemetry.SetGaugeWithLabels(
-	// 				[]string{"tx", "msg", "create_vesting_account"},
-	// 				float32(a.Amount.Int64()),
-	// 				[]metrics.Label{telemetry.NewLabel("denom", a.Denom)},
-	// 			)
-	// 		}
-	// 	}
-	// }()
-
 	err = bk.SendCoins(ctx, from, to, amount)
 	if err != nil {
 		return err
 	}
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-		),
-	)
 
 	return nil
 }

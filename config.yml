@@ -5,6 +5,12 @@ accounts:
   - name: bob
     coins: ["4000000000uc4e"]
     mnemonic: "genuine author egg good melt obey omit antique flight fade midnight funny security budget inquiry animal unfold film soft midnight company rack kitchen monitor"
+  - name: advisors_pool_owner
+    coins: ["15000000uc4e"]
+    mnemonic: "radar there legend edge jar across night figure dog oval clump endorse garage office upon square worth harvest twelve trust menu mother gossip simple"
+  - name: validators_pool_owner
+    coins: ["15000000uc4e"]
+    mnemonic: "forget mesh pet uphold prison daughter surround drop fire surface nurse swing long black hockey hover bulb reform female prefer aim ten category rhythm"
 validator:
   name: alice
   staked: "100000000uc4e"
@@ -23,6 +29,18 @@ init:
     log_format: "plain"
 genesis:
   app_state:
+    auth:
+      accounts:
+        - @type: "/cosmos.auth.v1beta1.ModuleAccount"
+          base_account:
+            account_number: "9"
+            address: "c4e1yl6hdjhmkf37639730gffanpzndzdpmhd80ywa"
+            pub_key: null
+            sequence: "0"
+          name: "transfer"
+          permissions:
+            - minter
+            - burner
     bank:
       denom_metadata:
         - description: "Chain4Energy Token"
@@ -37,6 +55,12 @@ genesis:
           display: "c4e"
           name: "Chain4Energy Coin"
           symbol: "C4E"
+      balances:
+        # cfevesting module account
+        - address: "c4e17yryahw88nkwsaphuywhv7ap8ty7zwgunjsple"
+          coins:
+            - denom: "uc4e"
+              amount: "32500000000000"
     staking:
       params:
         bond_denom: "uc4e"
@@ -84,6 +108,59 @@ genesis:
           token_releasing_period: 10
           token_releasing_period_unit: "minute"
           delegations_allowed: true
+        - name: "Advisors pool"
+          lockup_period: 5
+          lockup_period_unit: "minute"
+          vesting_period: 5
+          vesting_period_unit: "day"
+          token_releasing_period: 10
+          token_releasing_period_unit: "minute"
+          delegations_allowed: false
+        - name: "Validators pool"
+          lockup_period: 10
+          lockup_period_unit: "minute"
+          vesting_period: 10
+          vesting_period_unit: "day"
+          token_releasing_period: 10
+          token_releasing_period_unit: "minute"
+          delegations_allowed: false
+      account_vestings_list:
+        vestings:
+          - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
+            delegable_address: ""
+            vestings:
+              - id: 1
+                delegation_allowed: false
+                last_modification: "2022-03-30T00:00:00.00000000Z"
+                last_modification_vested: "15000000000000"
+                last_modification_withdrawn: "0"
+                lock_end: "2025-03-30T00:00:00.00000000Z"
+                release_period: "300s"
+                sent: "0"
+                vested: "15000000000000"
+                vesting_end: "2025-03-30T00:00:00.00000000Z"
+                vesting_start: "2022-03-30T00:00:00.00000000Z"
+                vesting_type: "Advisors pool"
+                withdrawn: "0"
+                transfer_allowed: true
+          - address: "c4e14z9cdze48aygze82e42a29h5gg5z3vda0qx5wc"
+            delegable_address: ""
+            vestings:
+              - id: 1
+                delegation_allowed: false
+                last_modification: "2022-03-30T00:00:00.00000000Z"
+                last_modification_vested: "17500000000000"
+                last_modification_withdrawn: "0"
+                lock_end: "2024-03-30T00:00:00.00000000Z"
+                release_period: "300s"
+                sent: "0"
+                vested: "17500000000000"
+                vesting_end: "2024-03-30T00:00:00.00000000Z"
+                vesting_start: "2022-03-30T00:00:00.00000000Z"
+                vesting_type: "Validators pool"
+                withdrawn: "0"
+                transfer_allowed: true
+
     # genutil:
     #   gen_txs:
     #     messages:
