@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -219,7 +220,8 @@ func (k Keeper) SendVesting(ctx sdk.Context, fromAddr string, toAddr string, ves
 		// return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
 		// 	vt.LockupPeriod.Nanoseconds()+ctx.BlockHeight(), vt.LockupPeriod.Nanoseconds()+vt.VestingPeriod.Nanoseconds()+ctx.BlockHeight(),
 		// 	vt.TokenReleasingPeriod.Nanoseconds())
-		err = k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockTime(),
+		err = k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, /*TODO iit should be checks vesting aprameter, but also dst shoul by like in type*/
+			ctx.BlockTime(),
 			ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod),
 			vt.TokenReleasingPeriod)
 	} else {
@@ -320,6 +322,159 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 	return sdk.NewCoin(denom, toWithdraw.Add(withdrawnDelegable)), nil
 }
 
+func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr string, vestingId int32, amount sdk.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
+	if fromAddr == toAddr {
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "from address and to address cannot be identical")
+	}
+
+	w, err := k.WithdrawAllAvailable(ctx, fromAddr)
+	if err != nil {
+		return withdrawn, err
+	}
+
+	accVestings, vestingsFound := k.GetAccountVestings(ctx, fromAddr)
+	if !vestingsFound || len(accVestings.Vestings) == 0 {
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "no vestings found")
+	}
+	var vesting *types.Vesting = nil
+	for _, vest := range accVestings.Vestings {
+		if vest.Id == vestingId {
+			vesting = vest
+		}
+	}
+	if vesting == nil {
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" not found")
+	}
+	if !vesting.TransferAllowed {
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotSupported, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" is not tranferable")
+	}
+	available := vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
+	if available.LT(amount) {
+		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+			"vesting available: %s is smaller than %s", available, amount)
+	}
+	if vesting.DelegationAllowed {
+		if len(accVestings.DelegableAddress) == 0 {
+			return withdrawn, sdkerrors.Wrap(sdkerrors.ErrLogic, "delegable vesting has no delegable address")
+		}
+		denom := k.GetParams(ctx).Denom
+		from, err := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
+		if err != nil {
+			return withdrawn, err
+		}
+		balance := k.bank.GetBalance(ctx, from, denom)
+		lockedCoins := k.bank.LockedCoins(ctx, from)
+		locked := sdk.NewCoin(denom, lockedCoins.AmountOf(denom))
+		spendable := balance.Sub(locked)
+		if spendable.Amount.LT(amount) {
+			return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+				"vesting available: %s is smaller than %s - probably delageted to validator.", spendable.Amount, amount)
+		}
+	}
+	vesting.Sent = amount
+	vesting.LastModification = ctx.BlockTime()
+	vesting.LastModificationVested = available.Sub(amount)
+	vesting.LastModificationWithdrawn = sdk.ZeroInt()
+
+	if restartVesting {
+		vt, vErr := k.GetVestingType(ctx, vesting.VestingType)
+		if vErr != nil {
+			k.Logger(ctx).Error("Error: " + err.Error())
+
+			return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
+		}
+		k.Logger(ctx).Debug("vt: DelegationsAllowed: " + strconv.FormatBool(vt.DelegationsAllowed))
+		// return w, k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockHeight(),
+		// 	vt.LockupPeriod.Nanoseconds()+ctx.BlockHeight(), vt.LockupPeriod.Nanoseconds()+vt.VestingPeriod.Nanoseconds()+ctx.BlockHeight(),
+		// 	vt.TokenReleasingPeriod.Nanoseconds())
+		// err = k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vt.DelegationsAllowed, ctx.BlockTime(),
+		// 	ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod),
+		// 	vt.TokenReleasingPeriod)
+
+		err = k.createVestingAccount(ctx, vesting.DelegationAllowed, accVestings.DelegableAddress, toAddr, amount,
+			ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod))
+	} else {
+		err = k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockTime(),
+			vesting.LockEnd, vesting.VestingEnd,
+			vesting.ReleasePeriod)
+
+		err = k.createVestingAccount(ctx, vesting.DelegationAllowed, accVestings.DelegableAddress, toAddr, amount,
+			vesting.LockEnd, vesting.VestingEnd)
+	}
+	if err == nil {
+		k.SetAccountVestings(ctx, accVestings)
+	}
+	return w, err
+}
+
+func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddress string,
+	amount sdk.Coins, startTime int64, endTime int64) error {
+	ak := k.account
+	bk := k.bank
+
+	if err := bk.IsSendEnabledCoins(ctx, amount...); err != nil {
+		return err
+	}
+
+	from, err := sdk.AccAddressFromBech32(fromAddress)
+	if err != nil {
+		return err
+	}
+	to, err := sdk.AccAddressFromBech32(toAddress)
+	if err != nil {
+		return err
+	}
+
+	if bk.BlockedAddr(to) {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", toAddress)
+	}
+
+	if acc := ak.GetAccount(ctx, to); acc != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "account %s already exists", toAddress)
+	}
+
+	baseAccount := ak.NewAccountWithAddress(ctx, to)
+	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
+	}
+
+	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), amount.Sort(), endTime)
+
+	var acc authtypes.AccountI
+
+	acc = vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime)
+
+	ak.SetAccount(ctx, acc)
+
+	// defer func() {
+	// 	telemetry.IncrCounter(1, "new", "account")
+
+	// 	for _, a := range msg.Amount {
+	// 		if a.Amount.IsInt64() {
+	// 			telemetry.SetGaugeWithLabels(
+	// 				[]string{"tx", "msg", "create_vesting_account"},
+	// 				float32(a.Amount.Int64()),
+	// 				[]metrics.Label{telemetry.NewLabel("denom", a.Denom)},
+	// 			)
+	// 		}
+	// 	}
+	// }()
+
+	err = bk.SendCoins(ctx, from, to, amount)
+	if err != nil {
+		return err
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+		),
+	)
+
+	return nil
+}
+
 func CalculateWithdrawable(current time.Time, vesting types.Vesting) sdk.Int {
 	if current.Equal(vesting.VestingStart) || current.Before(vesting.VestingStart) {
 		return sdk.ZeroInt()
@@ -367,4 +522,97 @@ func (k Keeper) GetModuleAccountForDelegableVesting(ctx sdk.Context, address sdk
 
 func createAccounNameForDelegatableVesting(address string) string {
 	return types.ModuleName + address
+}
+
+func (k Keeper) createVestingAccount(ctx sdk.Context, delegationAllowed bool, fromAddress string, toAddress string, amount sdk.Int,
+	lockEnd time.Time,
+	vestingEnd time.Time) error {
+	ak := k.account
+	bk := k.bank
+
+	denom := k.GetParams(ctx).Denom
+	coinToSend := sdk.NewCoin(denom, amount)
+	if err := bk.IsSendEnabledCoins(ctx, coinToSend); err != nil {
+		return err
+	}
+
+	from, err := sdk.AccAddressFromBech32(fromAddress)
+	if err != nil {
+		return err
+	}
+	to, err := sdk.AccAddressFromBech32(toAddress)
+	if err != nil {
+		return err
+	}
+
+	if bk.BlockedAddr(to) {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", toAddress)
+	}
+
+	if acc := ak.GetAccount(ctx, to); acc != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "account %s already exists", toAddress)
+	}
+
+	baseAccount := ak.NewAccountWithAddress(ctx, to)
+	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
+	}
+	coinsToSend := sdk.NewCoins(coinToSend)
+
+	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), coinsToSend.Sort(), vestingEnd.Unix())
+
+	var acc authtypes.AccountI
+
+	startTime := lockEnd
+	if lockEnd.Before(ctx.BlockTime()) {
+		startTime = ctx.BlockTime()
+	}
+	// if msg.Delayed {
+	// 	acc = types.NewDelayedVestingAccountRaw(baseVestingAccount)
+	// } else {
+	acc = vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime.Unix())
+	// }
+
+	ak.SetAccount(ctx, acc)
+
+	// defer func() {
+	// 	telemetry.IncrCounter(1, "new", "account")
+
+	// 	for _, a := range msg.Amount {
+	// 		if a.Amount.IsInt64() {
+	// 			telemetry.SetGaugeWithLabels(
+	// 				[]string{"tx", "msg", "create_vesting_account"},
+	// 				float32(a.Amount.Int64()),
+	// 				[]metrics.Label{telemetry.NewLabel("denom", a.Denom)},
+	// 			)
+	// 		}
+	// 	}
+	// }()
+
+	// err = bk.SendCoins(ctx, from, to, coinsToSend)
+	// if err != nil {
+	// 	return err
+	// }
+
+	if delegationAllowed {
+
+		err = bk.SendCoins(ctx, from, to, coinsToSend)
+		k.Logger(ctx).Info("after SendCoins: " + coinToSend.Amount.String())
+
+	} else {
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, to, coinsToSend)
+		k.Logger(ctx).Info("after SendCoinsFromModuleToAccount: " + coinToSend.Amount.String())
+
+	}
+	if err != nil {
+		return err
+	}
+	// ctx.EventManager().EmitEvent(
+	// 	sdk.NewEvent(
+	// 		sdk.EventTypeMessage,
+	// 		sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+	// 	),
+	// )
+
+	return nil
 }

@@ -1,6 +1,7 @@
 /* eslint-disable */
 import {
   VoteOption,
+  WeightedVoteOption,
   voteOptionFromJSON,
   voteOptionToJSON,
 } from "../cosmos/gov/v1beta1/gov";
@@ -81,12 +82,32 @@ export interface MsgVote {
 export interface MsgVoteResponse {}
 
 export interface MsgVoteWeighted {
+  proposal_id: number;
   voter: string;
-  proposalId: string;
-  options: string;
+  options: WeightedVoteOption[];
 }
 
 export interface MsgVoteWeightedResponse {}
+
+export interface MsgCreateVestingAccount {
+  from_address: string;
+  to_address: string;
+  vesting_id: number;
+  amount: string;
+  restart_vesting: boolean;
+}
+
+export interface MsgCreateVestingAccountResponse {}
+
+export interface MsgSendToVestingAccount {
+  fromAddress: string;
+  toAddress: string;
+  vestingId: string;
+  amount: string;
+  restartVesting: string;
+}
+
+export interface MsgSendToVestingAccountResponse {}
 
 const baseMsgVest: object = { creator: "", amount: "", vesting_type: "" };
 
@@ -1339,18 +1360,18 @@ export const MsgVoteResponse = {
   },
 };
 
-const baseMsgVoteWeighted: object = { voter: "", proposalId: "", options: "" };
+const baseMsgVoteWeighted: object = { proposal_id: 0, voter: "" };
 
 export const MsgVoteWeighted = {
   encode(message: MsgVoteWeighted, writer: Writer = Writer.create()): Writer {
+    if (message.proposal_id !== 0) {
+      writer.uint32(8).uint64(message.proposal_id);
+    }
     if (message.voter !== "") {
-      writer.uint32(10).string(message.voter);
+      writer.uint32(18).string(message.voter);
     }
-    if (message.proposalId !== "") {
-      writer.uint32(18).string(message.proposalId);
-    }
-    if (message.options !== "") {
-      writer.uint32(26).string(message.options);
+    for (const v of message.options) {
+      WeightedVoteOption.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -1359,17 +1380,20 @@ export const MsgVoteWeighted = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseMsgVoteWeighted } as MsgVoteWeighted;
+    message.options = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.voter = reader.string();
+          message.proposal_id = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.proposalId = reader.string();
+          message.voter = reader.string();
           break;
         case 3:
-          message.options = reader.string();
+          message.options.push(
+            WeightedVoteOption.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -1381,48 +1405,57 @@ export const MsgVoteWeighted = {
 
   fromJSON(object: any): MsgVoteWeighted {
     const message = { ...baseMsgVoteWeighted } as MsgVoteWeighted;
+    message.options = [];
+    if (object.proposal_id !== undefined && object.proposal_id !== null) {
+      message.proposal_id = Number(object.proposal_id);
+    } else {
+      message.proposal_id = 0;
+    }
     if (object.voter !== undefined && object.voter !== null) {
       message.voter = String(object.voter);
     } else {
       message.voter = "";
     }
-    if (object.proposalId !== undefined && object.proposalId !== null) {
-      message.proposalId = String(object.proposalId);
-    } else {
-      message.proposalId = "";
-    }
     if (object.options !== undefined && object.options !== null) {
-      message.options = String(object.options);
-    } else {
-      message.options = "";
+      for (const e of object.options) {
+        message.options.push(WeightedVoteOption.fromJSON(e));
+      }
     }
     return message;
   },
 
   toJSON(message: MsgVoteWeighted): unknown {
     const obj: any = {};
+    message.proposal_id !== undefined &&
+      (obj.proposal_id = message.proposal_id);
     message.voter !== undefined && (obj.voter = message.voter);
-    message.proposalId !== undefined && (obj.proposalId = message.proposalId);
-    message.options !== undefined && (obj.options = message.options);
+    if (message.options) {
+      obj.options = message.options.map((e) =>
+        e ? WeightedVoteOption.toJSON(e) : undefined
+      );
+    } else {
+      obj.options = [];
+    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<MsgVoteWeighted>): MsgVoteWeighted {
     const message = { ...baseMsgVoteWeighted } as MsgVoteWeighted;
+    message.options = [];
+    if (object.proposal_id !== undefined && object.proposal_id !== null) {
+      message.proposal_id = object.proposal_id;
+    } else {
+      message.proposal_id = 0;
+    }
     if (object.voter !== undefined && object.voter !== null) {
       message.voter = object.voter;
     } else {
       message.voter = "";
     }
-    if (object.proposalId !== undefined && object.proposalId !== null) {
-      message.proposalId = object.proposalId;
-    } else {
-      message.proposalId = "";
-    }
     if (object.options !== undefined && object.options !== null) {
-      message.options = object.options;
-    } else {
-      message.options = "";
+      for (const e of object.options) {
+        message.options.push(WeightedVoteOption.fromPartial(e));
+      }
     }
     return message;
   },
@@ -1474,6 +1507,400 @@ export const MsgVoteWeightedResponse = {
   },
 };
 
+const baseMsgCreateVestingAccount: object = {
+  from_address: "",
+  to_address: "",
+  vesting_id: 0,
+  amount: "",
+  restart_vesting: false,
+};
+
+export const MsgCreateVestingAccount = {
+  encode(
+    message: MsgCreateVestingAccount,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.from_address !== "") {
+      writer.uint32(10).string(message.from_address);
+    }
+    if (message.to_address !== "") {
+      writer.uint32(18).string(message.to_address);
+    }
+    if (message.vesting_id !== 0) {
+      writer.uint32(24).int32(message.vesting_id);
+    }
+    if (message.amount !== "") {
+      writer.uint32(34).string(message.amount);
+    }
+    if (message.restart_vesting === true) {
+      writer.uint32(40).bool(message.restart_vesting);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateVestingAccount {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgCreateVestingAccount,
+    } as MsgCreateVestingAccount;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.from_address = reader.string();
+          break;
+        case 2:
+          message.to_address = reader.string();
+          break;
+        case 3:
+          message.vesting_id = reader.int32();
+          break;
+        case 4:
+          message.amount = reader.string();
+          break;
+        case 5:
+          message.restart_vesting = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgCreateVestingAccount {
+    const message = {
+      ...baseMsgCreateVestingAccount,
+    } as MsgCreateVestingAccount;
+    if (object.from_address !== undefined && object.from_address !== null) {
+      message.from_address = String(object.from_address);
+    } else {
+      message.from_address = "";
+    }
+    if (object.to_address !== undefined && object.to_address !== null) {
+      message.to_address = String(object.to_address);
+    } else {
+      message.to_address = "";
+    }
+    if (object.vesting_id !== undefined && object.vesting_id !== null) {
+      message.vesting_id = Number(object.vesting_id);
+    } else {
+      message.vesting_id = 0;
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = String(object.amount);
+    } else {
+      message.amount = "";
+    }
+    if (
+      object.restart_vesting !== undefined &&
+      object.restart_vesting !== null
+    ) {
+      message.restart_vesting = Boolean(object.restart_vesting);
+    } else {
+      message.restart_vesting = false;
+    }
+    return message;
+  },
+
+  toJSON(message: MsgCreateVestingAccount): unknown {
+    const obj: any = {};
+    message.from_address !== undefined &&
+      (obj.from_address = message.from_address);
+    message.to_address !== undefined && (obj.to_address = message.to_address);
+    message.vesting_id !== undefined && (obj.vesting_id = message.vesting_id);
+    message.amount !== undefined && (obj.amount = message.amount);
+    message.restart_vesting !== undefined &&
+      (obj.restart_vesting = message.restart_vesting);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<MsgCreateVestingAccount>
+  ): MsgCreateVestingAccount {
+    const message = {
+      ...baseMsgCreateVestingAccount,
+    } as MsgCreateVestingAccount;
+    if (object.from_address !== undefined && object.from_address !== null) {
+      message.from_address = object.from_address;
+    } else {
+      message.from_address = "";
+    }
+    if (object.to_address !== undefined && object.to_address !== null) {
+      message.to_address = object.to_address;
+    } else {
+      message.to_address = "";
+    }
+    if (object.vesting_id !== undefined && object.vesting_id !== null) {
+      message.vesting_id = object.vesting_id;
+    } else {
+      message.vesting_id = 0;
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    } else {
+      message.amount = "";
+    }
+    if (
+      object.restart_vesting !== undefined &&
+      object.restart_vesting !== null
+    ) {
+      message.restart_vesting = object.restart_vesting;
+    } else {
+      message.restart_vesting = false;
+    }
+    return message;
+  },
+};
+
+const baseMsgCreateVestingAccountResponse: object = {};
+
+export const MsgCreateVestingAccountResponse = {
+  encode(
+    _: MsgCreateVestingAccountResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgCreateVestingAccountResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgCreateVestingAccountResponse,
+    } as MsgCreateVestingAccountResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgCreateVestingAccountResponse {
+    const message = {
+      ...baseMsgCreateVestingAccountResponse,
+    } as MsgCreateVestingAccountResponse;
+    return message;
+  },
+
+  toJSON(_: MsgCreateVestingAccountResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgCreateVestingAccountResponse>
+  ): MsgCreateVestingAccountResponse {
+    const message = {
+      ...baseMsgCreateVestingAccountResponse,
+    } as MsgCreateVestingAccountResponse;
+    return message;
+  },
+};
+
+const baseMsgSendToVestingAccount: object = {
+  fromAddress: "",
+  toAddress: "",
+  vestingId: "",
+  amount: "",
+  restartVesting: "",
+};
+
+export const MsgSendToVestingAccount = {
+  encode(
+    message: MsgSendToVestingAccount,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.fromAddress !== "") {
+      writer.uint32(10).string(message.fromAddress);
+    }
+    if (message.toAddress !== "") {
+      writer.uint32(18).string(message.toAddress);
+    }
+    if (message.vestingId !== "") {
+      writer.uint32(26).string(message.vestingId);
+    }
+    if (message.amount !== "") {
+      writer.uint32(34).string(message.amount);
+    }
+    if (message.restartVesting !== "") {
+      writer.uint32(42).string(message.restartVesting);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgSendToVestingAccount {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgSendToVestingAccount,
+    } as MsgSendToVestingAccount;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.fromAddress = reader.string();
+          break;
+        case 2:
+          message.toAddress = reader.string();
+          break;
+        case 3:
+          message.vestingId = reader.string();
+          break;
+        case 4:
+          message.amount = reader.string();
+          break;
+        case 5:
+          message.restartVesting = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgSendToVestingAccount {
+    const message = {
+      ...baseMsgSendToVestingAccount,
+    } as MsgSendToVestingAccount;
+    if (object.fromAddress !== undefined && object.fromAddress !== null) {
+      message.fromAddress = String(object.fromAddress);
+    } else {
+      message.fromAddress = "";
+    }
+    if (object.toAddress !== undefined && object.toAddress !== null) {
+      message.toAddress = String(object.toAddress);
+    } else {
+      message.toAddress = "";
+    }
+    if (object.vestingId !== undefined && object.vestingId !== null) {
+      message.vestingId = String(object.vestingId);
+    } else {
+      message.vestingId = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = String(object.amount);
+    } else {
+      message.amount = "";
+    }
+    if (object.restartVesting !== undefined && object.restartVesting !== null) {
+      message.restartVesting = String(object.restartVesting);
+    } else {
+      message.restartVesting = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgSendToVestingAccount): unknown {
+    const obj: any = {};
+    message.fromAddress !== undefined &&
+      (obj.fromAddress = message.fromAddress);
+    message.toAddress !== undefined && (obj.toAddress = message.toAddress);
+    message.vestingId !== undefined && (obj.vestingId = message.vestingId);
+    message.amount !== undefined && (obj.amount = message.amount);
+    message.restartVesting !== undefined &&
+      (obj.restartVesting = message.restartVesting);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<MsgSendToVestingAccount>
+  ): MsgSendToVestingAccount {
+    const message = {
+      ...baseMsgSendToVestingAccount,
+    } as MsgSendToVestingAccount;
+    if (object.fromAddress !== undefined && object.fromAddress !== null) {
+      message.fromAddress = object.fromAddress;
+    } else {
+      message.fromAddress = "";
+    }
+    if (object.toAddress !== undefined && object.toAddress !== null) {
+      message.toAddress = object.toAddress;
+    } else {
+      message.toAddress = "";
+    }
+    if (object.vestingId !== undefined && object.vestingId !== null) {
+      message.vestingId = object.vestingId;
+    } else {
+      message.vestingId = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    } else {
+      message.amount = "";
+    }
+    if (object.restartVesting !== undefined && object.restartVesting !== null) {
+      message.restartVesting = object.restartVesting;
+    } else {
+      message.restartVesting = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgSendToVestingAccountResponse: object = {};
+
+export const MsgSendToVestingAccountResponse = {
+  encode(
+    _: MsgSendToVestingAccountResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgSendToVestingAccountResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgSendToVestingAccountResponse,
+    } as MsgSendToVestingAccountResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgSendToVestingAccountResponse {
+    const message = {
+      ...baseMsgSendToVestingAccountResponse,
+    } as MsgSendToVestingAccountResponse;
+    return message;
+  },
+
+  toJSON(_: MsgSendToVestingAccountResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgSendToVestingAccountResponse>
+  ): MsgSendToVestingAccountResponse {
+    const message = {
+      ...baseMsgSendToVestingAccountResponse,
+    } as MsgSendToVestingAccountResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Vest(request: MsgVest): Promise<MsgVestResponse>;
@@ -1490,8 +1917,14 @@ export interface Msg {
   ): Promise<MsgWithdrawDelegatorRewardResponse>;
   SendVesting(request: MsgSendVesting): Promise<MsgSendVestingResponse>;
   Vote(request: MsgVote): Promise<MsgVoteResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   VoteWeighted(request: MsgVoteWeighted): Promise<MsgVoteWeightedResponse>;
+  CreateVestingAccount(
+    request: MsgCreateVestingAccount
+  ): Promise<MsgCreateVestingAccountResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  SendToVestingAccount(
+    request: MsgSendToVestingAccount
+  ): Promise<MsgSendToVestingAccountResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1604,6 +2037,34 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgVoteWeightedResponse.decode(new Reader(data))
+    );
+  }
+
+  CreateVestingAccount(
+    request: MsgCreateVestingAccount
+  ): Promise<MsgCreateVestingAccountResponse> {
+    const data = MsgCreateVestingAccount.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfevesting.Msg",
+      "CreateVestingAccount",
+      data
+    );
+    return promise.then((data) =>
+      MsgCreateVestingAccountResponse.decode(new Reader(data))
+    );
+  }
+
+  SendToVestingAccount(
+    request: MsgSendToVestingAccount
+  ): Promise<MsgSendToVestingAccountResponse> {
+    const data = MsgSendToVestingAccount.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfevesting.Msg",
+      "SendToVestingAccount",
+      data
+    );
+    return promise.then((data) =>
+      MsgSendToVestingAccountResponse.decode(new Reader(data))
     );
   }
 }

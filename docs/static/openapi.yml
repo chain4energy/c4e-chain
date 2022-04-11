@@ -28259,7 +28259,11 @@ definitions:
       completion_time:
         type: string
         format: date-time
+  chain4energy.c4echain.cfevesting.MsgCreateVestingAccountResponse:
+    type: object
   chain4energy.c4echain.cfevesting.MsgDelegateResponse:
+    type: object
+  chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgSendVestingResponse:
     type: object
@@ -28445,6 +28449,33 @@ definitions:
        - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
        - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
        - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
+  cosmos.gov.v1beta1.WeightedVoteOption:
+    type: object
+    properties:
+      option:
+        type: string
+        enum:
+          - VOTE_OPTION_UNSPECIFIED
+          - VOTE_OPTION_YES
+          - VOTE_OPTION_ABSTAIN
+          - VOTE_OPTION_NO
+          - VOTE_OPTION_NO_WITH_VETO
+        default: VOTE_OPTION_UNSPECIFIED
+        description: >-
+          VoteOption enumerates the valid vote options for a given governance
+          proposal.
+
+           - VOTE_OPTION_UNSPECIFIED: VOTE_OPTION_UNSPECIFIED defines a no-op vote option.
+           - VOTE_OPTION_YES: VOTE_OPTION_YES defines a yes vote option.
+           - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
+           - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
+           - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
+      weight:
+        type: string
+    description: |-
+      WeightedVoteOption defines a unit of vote for vote split.
+
+      Since: cosmos-sdk 0.43
   google.protobuf.Any:
     type: object
     properties:
@@ -36150,33 +36181,6 @@ definitions:
         type: string
         description: Length of the voting period.
     description: VotingParams defines the params for voting on governance proposals.
-  cosmos.gov.v1beta1.WeightedVoteOption:
-    type: object
-    properties:
-      option:
-        type: string
-        enum:
-          - VOTE_OPTION_UNSPECIFIED
-          - VOTE_OPTION_YES
-          - VOTE_OPTION_ABSTAIN
-          - VOTE_OPTION_NO
-          - VOTE_OPTION_NO_WITH_VETO
-        default: VOTE_OPTION_UNSPECIFIED
-        description: >-
-          VoteOption enumerates the valid vote options for a given governance
-          proposal.
-
-           - VOTE_OPTION_UNSPECIFIED: VOTE_OPTION_UNSPECIFIED defines a no-op vote option.
-           - VOTE_OPTION_YES: VOTE_OPTION_YES defines a yes vote option.
-           - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
-           - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
-           - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
-      weight:
-        type: string
-    description: |-
-      WeightedVoteOption defines a unit of vote for vote split.
-
-      Since: cosmos-sdk 0.43
   cosmos.params.v1beta1.ParamChange:
     type: object
     properties:

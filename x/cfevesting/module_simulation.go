@@ -60,6 +60,14 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgVoteWeighted int = 100
 
+	opWeightMsgCreateVestingAccount = "op_weight_msg_create_chain"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateVestingAccount int = 100
+
+	opWeightMsgSendToVestingAccount = "op_weight_msg_create_chain"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSendToVestingAccount int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -190,6 +198,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgVoteWeighted,
 		cfevestingsimulation.SimulateMsgVoteWeighted(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCreateVestingAccount int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateVestingAccount, &weightMsgCreateVestingAccount, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateVestingAccount = defaultWeightMsgCreateVestingAccount
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateVestingAccount,
+		cfevestingsimulation.SimulateMsgCreateVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSendToVestingAccount int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSendToVestingAccount, &weightMsgSendToVestingAccount, nil,
+		func(_ *rand.Rand) {
+			weightMsgSendToVestingAccount = defaultWeightMsgSendToVestingAccount
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSendToVestingAccount,
+		cfevestingsimulation.SimulateMsgSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

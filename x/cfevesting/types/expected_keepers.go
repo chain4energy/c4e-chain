@@ -13,6 +13,8 @@ type AccountKeeper interface {
 	GetModuleAccount(ctx sdk.Context, moduleName string) types.ModuleAccountI
 	NewAccount(ctx sdk.Context, acc types.AccountI) types.AccountI
 	SetModuleAccount(ctx sdk.Context, macc types.ModuleAccountI)
+	NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
+	SetAccount(ctx sdk.Context, acc types.AccountI)
 }
 
 // BankKeeper defines the expected interface needed to retrieve account balances.
@@ -25,6 +27,8 @@ type BankKeeper interface {
 
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 	LockedCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+	IsSendEnabledCoins(ctx sdk.Context, coins ...sdk.Coin) error
+	BlockedAddr(addr sdk.AccAddress) bool
 }
 
 // StakingKeeper defines the expected interface needed for staking functionality.

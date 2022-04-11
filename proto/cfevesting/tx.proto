@@ -22,6 +22,8 @@ service Msg {
   rpc SendVesting(MsgSendVesting) returns (MsgSendVestingResponse);
   rpc Vote(MsgVote) returns (MsgVoteResponse);
   rpc VoteWeighted(MsgVoteWeighted) returns (MsgVoteWeightedResponse);
+  rpc CreateVestingAccount(MsgCreateVestingAccount) returns (MsgCreateVestingAccountResponse);
+  rpc SendToVestingAccount(MsgSendToVestingAccount) returns (MsgSendToVestingAccountResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -107,6 +109,29 @@ message MsgVoteWeighted {
 }
 
 message MsgVoteWeightedResponse {
+}
+
+message MsgCreateVestingAccount {
+  string   from_address                    = 1 [(gogoproto.moretags) = "yaml:\"from_address\""];
+  string   to_address                      = 2 [(gogoproto.moretags) = "yaml:\"to_address\""];
+  repeated cosmos.base.v1beta1.Coin amount = 3
+      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  int64 start_time = 4 [(gogoproto.moretags) = "yaml:\"start_time\""];
+  int64 end_time = 5 [(gogoproto.moretags) = "yaml:\"end_time\""];
+}
+
+message MsgCreateVestingAccountResponse {
+}
+
+message MsgSendToVestingAccount {
+  string from_address = 1;
+  string to_address = 2;
+  int32 vesting_id = 3;
+  string amount = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  bool restart_vesting = 5;
+}
+
+message MsgSendToVestingAccountResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
