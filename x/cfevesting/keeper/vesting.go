@@ -394,9 +394,9 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 		err = k.createVestingAccount(ctx, vesting.DelegationAllowed, accVestings.DelegableAddress, toAddr, amount,
 			ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod))
 	} else {
-		err = k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockTime(),
-			vesting.LockEnd, vesting.VestingEnd,
-			vesting.ReleasePeriod)
+		// err = k.addVesting(ctx, true, toAddr, accVestings.DelegableAddress, amount, vesting.VestingType, vesting.DelegationAllowed, ctx.BlockTime(),
+		// 	vesting.LockEnd, vesting.VestingEnd,
+		// 	vesting.ReleasePeriod)
 
 		err = k.createVestingAccount(ctx, vesting.DelegationAllowed, accVestings.DelegableAddress, toAddr, amount,
 			vesting.LockEnd, vesting.VestingEnd)
@@ -506,6 +506,7 @@ func createAccounNameForDelegatableVesting(address string) string {
 func (k Keeper) createVestingAccount(ctx sdk.Context, delegationAllowed bool, fromAddress string, toAddress string, amount sdk.Int,
 	lockEnd time.Time,
 	vestingEnd time.Time) error {
+
 	ak := k.account
 	bk := k.bank
 
@@ -515,9 +516,13 @@ func (k Keeper) createVestingAccount(ctx sdk.Context, delegationAllowed bool, fr
 		return err
 	}
 
-	from, err := sdk.AccAddressFromBech32(fromAddress)
-	if err != nil {
-		return err
+	var from sdk.AccAddress
+	var err error
+	if delegationAllowed {
+		from, err = sdk.AccAddressFromBech32(fromAddress)
+		if err != nil {
+			return err
+		}
 	}
 	to, err := sdk.AccAddressFromBech32(toAddress)
 	if err != nil {
@@ -536,6 +541,7 @@ func (k Keeper) createVestingAccount(ctx sdk.Context, delegationAllowed bool, fr
 	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
 	}
+
 	coinsToSend := sdk.NewCoins(coinToSend)
 
 	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), coinsToSend.Sort(), vestingEnd.Unix())
@@ -546,32 +552,10 @@ func (k Keeper) createVestingAccount(ctx sdk.Context, delegationAllowed bool, fr
 	if lockEnd.Before(ctx.BlockTime()) {
 		startTime = ctx.BlockTime()
 	}
-	// if msg.Delayed {
-	// 	acc = types.NewDelayedVestingAccountRaw(baseVestingAccount)
-	// } else {
+
 	acc = vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime.Unix())
-	// }
 
 	ak.SetAccount(ctx, acc)
-
-	// defer func() {
-	// 	telemetry.IncrCounter(1, "new", "account")
-
-	// 	for _, a := range msg.Amount {
-	// 		if a.Amount.IsInt64() {
-	// 			telemetry.SetGaugeWithLabels(
-	// 				[]string{"tx", "msg", "create_vesting_account"},
-	// 				float32(a.Amount.Int64()),
-	// 				[]metrics.Label{telemetry.NewLabel("denom", a.Denom)},
-	// 			)
-	// 		}
-	// 	}
-	// }()
-
-	// err = bk.SendCoins(ctx, from, to, coinsToSend)
-	// if err != nil {
-	// 	return err
-	// }
 
 	if delegationAllowed {
 
@@ -586,12 +570,6 @@ func (k Keeper) createVestingAccount(ctx sdk.Context, delegationAllowed bool, fr
 	if err != nil {
 		return err
 	}
-	// ctx.EventManager().EmitEvent(
-	// 	sdk.NewEvent(
-	// 		sdk.EventTypeMessage,
-	// 		sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-	// 	),
-	// )
 
 	return nil
 }

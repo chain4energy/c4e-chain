@@ -41,6 +41,21 @@ genesis:
           permissions:
             - minter
             - burner
+        - @type: "/cosmos.vesting.v1beta1.ContinuousVestingAccount"
+          base_vesting_account:
+            base_account:
+              account_number: "11"
+              address: "c4e1xe3x4w0ma4dv805q0rhe0c7xk3mv24vatg7pm3"
+              # mnemonic: pyramid jump crumble supply fall april more inner jacket news clutch sustain century vendor observe carpet coach early grief very beauty solution orphan cattle
+              pub_key: null
+              sequence: "0"
+            delegated_free:
+            delegated_vesting:
+            end_time: "1770000000"
+            original_vesting:
+              - amount: "5000000000000"
+                denom: "uc4e"
+          start_time: "1670429736"
     bank:
       denom_metadata:
         - description: "Chain4Energy Token"
@@ -61,6 +76,10 @@ genesis:
           coins:
             - denom: "uc4e"
               amount: "32500000000000"
+        - address: "c4e1xe3x4w0ma4dv805q0rhe0c7xk3mv24vatg7pm3"
+          coins:
+            - denom: "uc4e"
+              amount: "5000000000000"
     staking:
       params:
         bond_denom: "uc4e"
