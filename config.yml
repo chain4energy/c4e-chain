@@ -5,7 +5,7 @@ accounts:
   - name: bob
     coins: ["4000000000uc4e"]
     mnemonic: "genuine author egg good melt obey omit antique flight fade midnight funny security budget inquiry animal unfold film soft midnight company rack kitchen monitor"
-  - name: advisors_pool_owner
+  - name: vesting_pools_owner
     coins: ["15000000uc4e"]
     mnemonic: "radar there legend edge jar across night figure dog oval clump endorse garage office upon square worth harvest twelve trust menu mother gossip simple"
   - name: validators_pool_owner
@@ -79,10 +79,11 @@ genesis:
         - address: "c4e1xe3x4w0ma4dv805q0rhe0c7xk3mv24vatg7pm3"
           coins:
             - denom: "uc4e"
-              amount: "5000000000000"
+              amount: "5000100000000"
     staking:
       params:
         bond_denom: "uc4e"
+        unbonding_time: "100s"
     cfevesting:
       params:
         denom: "uc4e"
@@ -162,10 +163,10 @@ genesis:
                 vesting_type: "Advisors pool"
                 withdrawn: "0"
                 transfer_allowed: true
-          - address: "c4e14z9cdze48aygze82e42a29h5gg5z3vda0qx5wc"
-            delegable_address: ""
-            vestings:
-              - id: 1
+          # - address: "c4e14z9cdze48aygze82e42a29h5gg5z3vda0qx5wc"
+          #   delegable_address: ""
+          #   vestings:
+              - id: 2
                 delegation_allowed: false
                 last_modification: "2022-03-30T00:00:00.00000000Z"
                 last_modification_vested: "17500000000000"
