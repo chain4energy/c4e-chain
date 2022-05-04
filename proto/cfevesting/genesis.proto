@@ -30,10 +30,10 @@ message GenesisVestingType {
   int64 vesting_period = 4; 
   string vesting_period_unit = 5; 
   // vested coin periodical releasing 
-  int64 token_releasing_period = 6; 
-  string token_releasing_period_unit = 7; 
+  // int64 token_releasing_period = 6; 
+  // string token_releasing_period_unit = 7; 
   // defines if vesting type allows delegation
-  bool delegations_allowed = 8; 
+  // bool delegations_allowed = 8; 
 
   // units to select:
   // days

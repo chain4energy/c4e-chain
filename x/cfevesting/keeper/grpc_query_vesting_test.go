@@ -21,7 +21,6 @@ func TestVesting(t *testing.T) {
 
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	accountVestings.DelegableAddress = ""
 	accountVestings.Vestings[0].TransferAllowed = true
 
 	keeper.SetAccountVestings(ctx, accountVestings)
@@ -101,7 +100,7 @@ func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	accountVestings.Vestings[0].VestingStart = accountVestings.Vestings[0].LockEnd
+	accountVestings.Vestings[0].LockStart = accountVestings.Vestings[0].LockEnd
 	accountVestings.Vestings[0].LastModification = accountVestings.Vestings[0].LockEnd
 
 	accountVestings.Vestings[0].LockEnd = accountVestings.Vestings[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))

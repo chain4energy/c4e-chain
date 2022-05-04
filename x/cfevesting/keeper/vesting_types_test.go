@@ -16,15 +16,11 @@ func TestGetVestingTypes(t *testing.T) {
 		Name:                 "test1",
 		LockupPeriod:         2324,
 		VestingPeriod:        42423,
-		TokenReleasingPeriod: 4243,
-		DelegationsAllowed:   true,
 	}
 	vestingType2 := types.VestingType{
 		Name:                 "test2",
 		LockupPeriod:         1111,
 		VestingPeriod:        112233,
-		TokenReleasingPeriod: 445566,
-		DelegationsAllowed:   false,
 	}
 
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
@@ -45,15 +41,11 @@ func TestGetVestingTypeByName(t *testing.T) {
 		Name:                 "test1",
 		LockupPeriod:         2324,
 		VestingPeriod:        42423,
-		TokenReleasingPeriod: 4243,
-		DelegationsAllowed:   true,
 	}
 	vestingType2 := types.VestingType{
 		Name:                 "test2",
 		LockupPeriod:         1111,
 		VestingPeriod:        112233,
-		TokenReleasingPeriod: 445566,
-		DelegationsAllowed:   false,
 	}
 
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}

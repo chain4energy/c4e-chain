@@ -70,7 +70,6 @@ func (gs GenesisState) validateAccountsVestings() error {
 			return err
 		}
 		numOfAddress := 0
-		numOfDelegableAddress := 0
 
 		for _, avtCheck := range avts {
 			if avt.Address == avtCheck.Address {
@@ -78,15 +77,6 @@ func (gs GenesisState) validateAccountsVestings() error {
 			}
 			if numOfAddress > 1 {
 				return fmt.Errorf("account vestings with address: %s defined more than once", avt.Address)
-			}
-			if avt.DelegableAddress != "" && avt.DelegableAddress == avtCheck.DelegableAddress {
-				numOfDelegableAddress++
-			}
-			if numOfDelegableAddress > 1 {
-				return fmt.Errorf("account vestings with delegable address: %s defined more than once", avt.DelegableAddress)
-			}
-			if avt.Address == avtCheck.DelegableAddress {
-				return fmt.Errorf("account vestings address: %s defined also as delegable address", avt.Address)
 			}
 		}
 		err = avt.ValidateAgainstVestingTypes(vts)
@@ -102,12 +92,6 @@ func (av AccountVestings) Validate() error {
 	_, err := sdk.AccAddressFromBech32(av.Address)
 	if err != nil {
 		return fmt.Errorf("account vestings address: %s: %s", av.Address, err.Error())
-	}
-	if av.DelegableAddress != "" {
-		_, err = sdk.AccAddressFromBech32(av.DelegableAddress)
-		if err != nil {
-			return fmt.Errorf("account vestings delegable address: %s: %s", av.Address, err.Error())
-		}
 	}
 	for _, v := range vs {
 		numOfIds := 0

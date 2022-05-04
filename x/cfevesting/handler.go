@@ -23,27 +23,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgWithdrawAllAvailable:
 			res, err := msgServer.WithdrawAllAvailable(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgDelegate:
-			res, err := msgServer.Delegate(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUndelegate:
-			res, err := msgServer.Undelegate(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgBeginRedelegate:
-			res, err := msgServer.BeginRedelegate(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgWithdrawDelegatorReward:
-			res, err := msgServer.WithdrawDelegatorReward(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgSendVesting:
-			res, err := msgServer.SendVesting(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgVote:
-			res, err := msgServer.Vote(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgVoteWeighted:
-			res, err := msgServer.VoteWeighted(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCreateVestingAccount:
 			res, err := msgServer.CreateVestingAccount(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

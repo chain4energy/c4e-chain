@@ -1,7 +1,7 @@
 package cfevesting
 
 import (
-	"math"
+	// "math"
 	"math/rand"
 	"reflect"
 	"strconv"
@@ -24,8 +24,8 @@ func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual 
 	require.EqualValues(t, len(expected.Vestings), len(actual.Vestings))
 	j++
 	require.EqualValues(t, expected.Address, actual.Address)
-	j++
-	require.EqualValues(t, expected.DelegableAddress, actual.DelegableAddress)
+	// j++
+	// require.EqualValues(t, expected.DelegableAddress, actual.DelegableAddress)
 	j++
 	require.EqualValues(t, numOfFields, j)
 
@@ -37,17 +37,17 @@ func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual 
 		j++
 		require.EqualValues(t, expectedVesting.VestingType, actualVesting.VestingType)
 		j++
-		require.EqualValues(t, true, expectedVesting.VestingStart.Equal(actualVesting.VestingStart))
+		require.EqualValues(t, true, expectedVesting.LockStart.Equal(actualVesting.LockStart))
 		j++
 		require.EqualValues(t, true, expectedVesting.LockEnd.Equal(actualVesting.LockEnd))
-		j++
-		require.EqualValues(t, true, expectedVesting.VestingEnd.Equal(actualVesting.VestingEnd))
+		// j++
+		// require.EqualValues(t, true, expectedVesting.VestingEnd.Equal(actualVesting.VestingEnd))
 		j++
 		require.EqualValues(t, expectedVesting.Vested, actualVesting.Vested)
-		j++
-		require.EqualValues(t, expectedVesting.ReleasePeriod, actualVesting.ReleasePeriod)
-		j++
-		require.EqualValues(t, expectedVesting.DelegationAllowed, actualVesting.DelegationAllowed)
+		// j++
+		// require.EqualValues(t, expectedVesting.ReleasePeriod, actualVesting.ReleasePeriod)
+		// j++
+		// require.EqualValues(t, expectedVesting.DelegationAllowed, actualVesting.DelegationAllowed)
 		j++
 		require.EqualValues(t, expectedVesting.Withdrawn, actualVesting.Withdrawn)
 		j++
@@ -110,11 +110,11 @@ func generateAccountVestings(numberOfAccounts int, numberOfVestingsPerAccount in
 
 	for i := 0; i < numberOfAccounts; i++ {
 		accountVestings := types.AccountVestings{}
-		// accountVestings.Address = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
+		accountVestings.Address = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
 		// accountVestings.DelegableAddress = "test-vesting-account-del-addr-" + strconv.Itoa(i+accountStartId)
 
 		accountVestings.Address = accountsAddresses[i].String()
-		accountVestings.DelegableAddress = accountsAddresses[i+numberOfAccounts].String()
+		// accountVestings.DelegableAddress = accountsAddresses[i+numberOfAccounts].String()
 
 		vestings := []*types.Vesting{}
 		for j := 0; j < numberOfVestingsPerAccount; j++ {
@@ -134,12 +134,12 @@ func generateRandomVesting(accuntId int, vestingId int) types.Vesting {
 	return types.Vesting{
 		Id:                        int32(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		VestingStart:              CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
+		LockStart:              CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
 		LockEnd:                   CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		VestingEnd:                CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
+		// VestingEnd:                CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
 		Vested:                    sdk.NewInt(int64(rgen.Intn(10000000))),
-		ReleasePeriod:             CreateDurationFromNumOfHours(int64(rgen.Intn(1000))),
-		DelegationAllowed:         rgen.Intn(2) == 1,
+		// ReleasePeriod:             CreateDurationFromNumOfHours(int64(rgen.Intn(1000))),
+		// DelegationAllowed:         rgen.Intn(2) == 1,
 		Withdrawn:                 sdk.NewInt(int64(rgen.Intn(10000000))),
 		Sent:                      sdk.NewInt(int64(rgen.Intn(10000000))),
 		LastModification:          CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
@@ -152,12 +152,12 @@ func generate10BasedVesting(accuntId int, vestingId int) types.Vesting {
 	return types.Vesting{
 		Id:                        int32(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		VestingStart:              CreateTimeFromNumOfHours(1000),
-		LockEnd:                   CreateTimeFromNumOfHours(10000),
-		VestingEnd:                CreateTimeFromNumOfHours(110000),
+		LockStart:              CreateTimeFromNumOfHours(1000),
+		LockEnd:                   CreateTimeFromNumOfHours(110000),
+		// VestingEnd:                CreateTimeFromNumOfHours(110000),
 		Vested:                    sdk.NewInt(1000000),
-		ReleasePeriod:             CreateDurationFromNumOfHours(10),
-		DelegationAllowed:         true,
+		// ReleasePeriod:             CreateDurationFromNumOfHours(10),
+		// DelegationAllowed:         true,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
 		LastModification:          CreateTimeFromNumOfHours(1000),
@@ -176,34 +176,39 @@ func ToAccountVestingsPointersArray(src []types.AccountVestings) []*types.Accoun
 
 func GetExpectedWithdrawableForVesting(vesting types.Vesting, current time.Time) sdk.Int {
 	unlockingStart := vesting.LockEnd
-	if vesting.VestingStart.After(unlockingStart) {
-		unlockingStart = vesting.VestingStart
+	if vesting.LockStart.After(unlockingStart) {
+		unlockingStart = vesting.LockStart
 	}
 	if vesting.LastModification.After(unlockingStart) {
 		unlockingStart = vesting.LastModification
 	}
-	expected := GetExpectedWithdrawable(unlockingStart, vesting.VestingEnd, vesting.ReleasePeriod, current, vesting.LastModificationVested)
-	return expected.Sub(vesting.LastModificationWithdrawn)
+	expected := GetExpectedWithdrawable(unlockingStart, vesting.LockEnd, current, vesting.LastModificationVested)
+	result := expected.Sub(vesting.LastModificationWithdrawn)
+	if result.LT(sdk.ZeroInt()) {
+		return sdk.ZeroInt()
+	}
+	return result
 }
 
-func GetExpectedWithdrawable(unlockingStart time.Time, vestingEnd time.Time, period time.Duration, current time.Time, amount sdk.Int) sdk.Int {
+func GetExpectedWithdrawable(unlockingStart time.Time, vestingEnd time.Time, current time.Time, amount sdk.Int) sdk.Int {
 	if current.Equal(vestingEnd) || current.After(vestingEnd) {
 		return amount
 	}
-	if current.Before(unlockingStart) {
-		return sdk.ZeroInt()
-	}
+	return sdk.ZeroInt()
+	// if current.Before(unlockingStart) {
+	// 	return sdk.ZeroInt()
+	// }
 
-	numOfAllPeriodsF := float64(vestingEnd.Sub(unlockingStart)) / float64(period)
-	numOfAllPeriods := int64(math.Ceil(numOfAllPeriodsF))
+	// numOfAllPeriodsF := float64(vestingEnd.Sub(unlockingStart)) / float64(period)
+	// numOfAllPeriods := int64(math.Ceil(numOfAllPeriodsF))
 
-	numOfPeriodsF := float64(current.Sub(unlockingStart)) / float64(period)
-	numOfPeriods := int64(math.Floor(numOfPeriodsF))
+	// numOfPeriodsF := float64(current.Sub(unlockingStart)) / float64(period)
+	// numOfPeriods := int64(math.Floor(numOfPeriodsF))
 
-	amountDec := sdk.NewDecFromInt(amount)
+	// amountDec := sdk.NewDecFromInt(amount)
 
-	resultDec := amountDec.MulInt64(numOfPeriods).QuoInt64(numOfAllPeriods)
-	return resultDec.TruncateInt()
+	// resultDec := amountDec.MulInt64(numOfPeriods).QuoInt64(numOfAllPeriods)
+	// return resultDec.TruncateInt()
 }
 
 func CreateTimeFromNumOfHours(numOfHours int64) time.Time {

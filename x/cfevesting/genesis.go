@@ -25,8 +25,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 			Name:                 gVestingType.Name,
 			LockupPeriod:         keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.LockupPeriodUnit), gVestingType.LockupPeriod),
 			VestingPeriod:        keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.VestingPeriodUnit), gVestingType.VestingPeriod),
-			TokenReleasingPeriod: keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.TokenReleasingPeriodUnit), gVestingType.TokenReleasingPeriod),
-			DelegationsAllowed:   gVestingType.DelegationsAllowed,
+			// TokenReleasingPeriod: keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.TokenReleasingPeriodUnit), gVestingType.TokenReleasingPeriod),
+			// DelegationsAllowed:   gVestingType.DelegationsAllowed,
 		}
 		vestingTypes.VestingTypes = append(vestingTypes.VestingTypes, &vt)
 	}
@@ -48,19 +48,19 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 
 	for _, accVestings := range accsVestings {
 		for _, v := range accVestings.Vestings {
-			if v.DelegationAllowed {
-				if accVestings.DelegableAddress == "" {
-					return fmt.Errorf("acount vesting for: %s delegable address not exists, but delegable vesting exists",
-						accVestings.Address)
-				}
-				_, ok := delegableAmounts[accVestings.DelegableAddress]
-				if !ok {
-					delegableAmounts[accVestings.DelegableAddress] = sdk.ZeroInt()
-				}
-				delegableAmounts[accVestings.DelegableAddress] = delegableAmounts[accVestings.DelegableAddress].Add(v.LastModificationVested)
-			} else {
-				undelegableAmount = undelegableAmount.Add(v.LastModificationVested)
-			}
+			// if v.DelegationAllowed {
+			// 	if accVestings.DelegableAddress == "" {
+			// 		return fmt.Errorf("acount vesting for: %s delegable address not exists, but delegable vesting exists",
+			// 			accVestings.Address)
+			// 	}
+			// 	_, ok := delegableAmounts[accVestings.DelegableAddress]
+			// 	if !ok {
+			// 		delegableAmounts[accVestings.DelegableAddress] = sdk.ZeroInt()
+			// 	}
+			// 	delegableAmounts[accVestings.DelegableAddress] = delegableAmounts[accVestings.DelegableAddress].Add(v.LastModificationVested)
+			// } else {
+			undelegableAmount = undelegableAmount.Add(v.LastModificationVested)
+			// }
 		}
 	}
 

@@ -62,11 +62,11 @@ message QueryVestingResponse {
 message VestingInfo {
   int32 id = 1;
   string vesting_type = 2;
-  google.protobuf.Timestamp vesting_start = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp lock_start = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   google.protobuf.Timestamp lock_end = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  // google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string withdrawable = 6;
-  bool delegation_allowed = 7;
+  // bool delegation_allowed = 7;
   cosmos.base.v1beta1.Coin vested = 8;
   string current_vested_amount = 9;
   string sent_amount = 10;

@@ -85,27 +85,27 @@ func createValidator(t *testing.T, ctx sdk.Context, sk stakingkeeper.Keeper, add
 
 }
 
-func redelegate(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sdk.AccAddress, delegableAddress sdk.AccAddress,
-	validatorSrcAddress sdk.ValAddress, validatorDstAddress sdk.ValAddress, redelegateAmount uint64, delegatorAmountBefore uint64, delegableAmountBefore uint64, delegatorAmountAfter uint64, delegableAmountAfter uint64) {
+// func redelegate(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sdk.AccAddress, delegableAddress sdk.AccAddress,
+// 	validatorSrcAddress sdk.ValAddress, validatorDstAddress sdk.ValAddress, redelegateAmount uint64, delegatorAmountBefore uint64, delegableAmountBefore uint64, delegatorAmountAfter uint64, delegableAmountAfter uint64) {
 
-	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewIntFromUint64(delegatorAmountBefore))
-	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewIntFromUint64(delegableAmountBefore))
+// 	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewIntFromUint64(delegatorAmountBefore))
+// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewIntFromUint64(delegableAmountBefore))
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
-	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(redelegateAmount))
-	msgRe := types.MsgBeginRedelegate{
-		DelegatorAddress:    delegatorAddress.String(),
-		ValidatorSrcAddress: validatorSrcAddress.String(),
-		ValidatorDstAddress: validatorDstAddress.String(),
-		Amount:              coin,
-	}
-	_, err := msgServer.BeginRedelegate(msgServerCtx, &msgRe)
-	require.EqualValues(t, nil, err)
+// 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+// 	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(redelegateAmount))
+// 	msgRe := types.MsgBeginRedelegate{
+// 		DelegatorAddress:    delegatorAddress.String(),
+// 		ValidatorSrcAddress: validatorSrcAddress.String(),
+// 		ValidatorDstAddress: validatorDstAddress.String(),
+// 		Amount:              coin,
+// 	}
+// 	_, err := msgServer.BeginRedelegate(msgServerCtx, &msgRe)
+// 	require.EqualValues(t, nil, err)
 
-	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewIntFromUint64(delegatorAmountAfter))
+// 	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewIntFromUint64(delegatorAmountAfter))
 
-	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewIntFromUint64(delegableAmountAfter))
-}
+// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewIntFromUint64(delegableAmountAfter))
+// }
 
 func setupValidators(t *testing.T, ctx sdk.Context, app *app.App, validators []sdk.ValAddress, delegatePerValidator uint64) {
 	PKs := commontestutils.CreateTestPubKeys(len(validators))
@@ -124,52 +124,52 @@ func setupStakingBondDenom(ctx sdk.Context, app *app.App) {
 	app.StakingKeeper.SetParams(ctx, stakeParams)
 }
 
-func delegate(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sdk.AccAddress, delegableAddress sdk.AccAddress,
-	validatorAddress sdk.ValAddress, delegateAmount uint64, delegatorAccountAmountBefore int64, delegableAccountAmountBefore int64, delegatorAccountAmountAfter int64, delegableAccountAmountAfter int64) {
-	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountBefore))
-	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountBefore))
+// func delegate(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sdk.AccAddress, delegableAddress sdk.AccAddress,
+// 	validatorAddress sdk.ValAddress, delegateAmount uint64, delegatorAccountAmountBefore int64, delegableAccountAmountBefore int64, delegatorAccountAmountAfter int64, delegableAccountAmountAfter int64) {
+// 	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountBefore))
+// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountBefore))
 
-	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(delegateAmount))
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+// 	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(delegateAmount))
+// 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgDelegate{DelegatorAddress: delegatorAddress.String(), ValidatorAddress: validatorAddress.String(), Amount: coin}
-	_, err := msgServer.Delegate(msgServerCtx, &msg)
-	require.EqualValues(t, nil, err)
-	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountAfter))
-	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountAfter))
-}
+// 	msg := types.MsgDelegate{DelegatorAddress: delegatorAddress.String(), ValidatorAddress: validatorAddress.String(), Amount: coin}
+// 	_, err := msgServer.Delegate(msgServerCtx, &msg)
+// 	require.EqualValues(t, nil, err)
+// 	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountAfter))
+// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountAfter))
+// }
 
-func undelegate(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sdk.AccAddress, delegableAddress sdk.AccAddress,
-	validatorAddress sdk.ValAddress, delegateAmount uint64, delegatorAccountAmountBefore int64, delegableAccountAmountBefore int64, delegatorAccountAmountAfter int64, delegableAccountAmountAfter int64) {
-	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountBefore))
-	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountBefore))
+// func undelegate(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sdk.AccAddress, delegableAddress sdk.AccAddress,
+// 	validatorAddress sdk.ValAddress, delegateAmount uint64, delegatorAccountAmountBefore int64, delegableAccountAmountBefore int64, delegatorAccountAmountAfter int64, delegableAccountAmountAfter int64) {
+// 	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountBefore))
+// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountBefore))
 
-	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(delegateAmount))
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+// 	coin := sdk.NewCoin(denom, sdk.NewIntFromUint64(delegateAmount))
+// 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	msgUn := types.MsgUndelegate{DelegatorAddress: delegatorAddress.String(), ValidatorAddress: validatorAddress.String(), Amount: coin}
-	_, err := msgServer.Undelegate(msgServerCtx, &msgUn)
-	require.EqualValues(t, nil, err)
-	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountAfter))
-	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountAfter))
-}
+// 	msgUn := types.MsgUndelegate{DelegatorAddress: delegatorAddress.String(), ValidatorAddress: validatorAddress.String(), Amount: coin}
+// 	_, err := msgServer.Undelegate(msgServerCtx, &msgUn)
+// 	require.EqualValues(t, nil, err)
+// 	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountAfter))
+// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountAfter))
+// }
 
-func verifyDelegations(t *testing.T, ctx sdk.Context, app *app.App, delegableAddress sdk.AccAddress,
-	validators []sdk.ValAddress, delegated []int64) {
-	delegations := app.StakingKeeper.GetAllDelegatorDelegations(ctx, delegableAddress)
-	require.EqualValues(t, len(validators), len(delegations))
-	for i, valAddr := range validators {
-		found := false
-		for _, delegation := range delegations {
-			if delegation.ValidatorAddress == valAddr.String() {
-				require.EqualValues(t, sdk.NewDec(delegated[i]), delegation.Shares)
-				found = true
-			}
-		}
-		require.True(t, found, "delegation not found. Validator Address: "+valAddr.String())
-	}
+// func verifyDelegations(t *testing.T, ctx sdk.Context, app *app.App, delegableAddress sdk.AccAddress,
+// 	validators []sdk.ValAddress, delegated []int64) {
+// 	delegations := app.StakingKeeper.GetAllDelegatorDelegations(ctx, delegableAddress)
+// 	require.EqualValues(t, len(validators), len(delegations))
+// 	for i, valAddr := range validators {
+// 		found := false
+// 		for _, delegation := range delegations {
+// 			if delegation.ValidatorAddress == valAddr.String() {
+// 				require.EqualValues(t, sdk.NewDec(delegated[i]), delegation.Shares)
+// 				found = true
+// 			}
+// 		}
+// 		require.True(t, found, "delegation not found. Validator Address: "+valAddr.String())
+// 	}
 
-}
+// }
 
 func verifyUnbondingDelegations(t *testing.T, ctx sdk.Context, app *app.App, delegableAddress sdk.AccAddress,
 	validators []sdk.ValAddress, unbondingAmount []int64) {
@@ -192,18 +192,18 @@ func verifyUnbondingDelegations(t *testing.T, ctx sdk.Context, app *app.App, del
 
 }
 
-func setupAccountsVestings(ctx sdk.Context, app *app.App, address string, delegableAddress string, numberOfVestings int, vestingAmount uint64, withdrawnAmount uint64, delegationAllowed bool) types.AccountVestings {
-	return setupAccountsVestingsWithModification(ctx, app, func(*types.Vesting) {}, address, delegableAddress, numberOfVestings, vestingAmount, withdrawnAmount, delegationAllowed)
+func setupAccountsVestings(ctx sdk.Context, app *app.App, address string, numberOfVestings int, vestingAmount uint64, withdrawnAmount uint64) types.AccountVestings {
+	return setupAccountsVestingsWithModification(ctx, app, func(*types.Vesting) {}, address, numberOfVestings, vestingAmount, withdrawnAmount)
 }
 
-func setupAccountsVestingsWithModification(ctx sdk.Context, app *app.App, modifyVesting func(*types.Vesting), address string, delegableAddress string, numberOfVestings int, vestingAmount uint64, withdrawnAmount uint64, delegationAllowed bool) types.AccountVestings {
+func setupAccountsVestingsWithModification(ctx sdk.Context, app *app.App, modifyVesting func(*types.Vesting), address string, numberOfVestings int, vestingAmount uint64, withdrawnAmount uint64) types.AccountVestings {
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(numberOfVestings, 1, 1)
 	accountVestings.Address = address
-	accountVestings.DelegableAddress = delegableAddress
+	// accountVestings.DelegableAddress = delegableAddress
 
 	for _, vesting := range accountVestings.Vestings {
 		vesting.Vested = sdk.NewIntFromUint64(vestingAmount)
-		vesting.DelegationAllowed = delegationAllowed
+		// vesting.DelegationAllowed = delegationAllowed
 		vesting.Withdrawn = sdk.NewIntFromUint64(withdrawnAmount)
 		vesting.LastModificationVested = sdk.NewIntFromUint64(vestingAmount)
 		vesting.LastModificationWithdrawn = sdk.NewIntFromUint64(withdrawnAmount)
@@ -233,20 +233,19 @@ func verifyQueryRewards(t *testing.T, ctx sdk.Context, app *app.App, delegableAd
 }
 
 func makeVesting(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress, accountVestingsExistsBefore bool, accountVestingsExistsAfter bool,
-	delegableAddressExistsBefore bool, delegableAddressExistsAfter bool,
-	vestingType types.VestingType, amountToVest int64, accAmountBefore int64, delegableAmountBefore int64, moduleAmountBefore int64,
-	accAmountAfter int64, delegableAmountAfter int64, moduleAmountAfter int64) {
+	vestingType types.VestingType, amountToVest int64, accAmountBefore int64, moduleAmountBefore int64,
+	accAmountAfter int64, moduleAmountAfter int64) {
 
-	accVestings, accFound := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
+	_, accFound := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
 	require.EqualValues(t, accountVestingsExistsBefore, accFound)
 
 	verifyAccountBalance(t, app, ctx, address, sdk.NewInt(accAmountBefore))
 	moduleAccAddr := app.AccountKeeper.GetModuleAccount(ctx, types.ModuleName).GetAddress()
 	verifyAccountBalance(t, app, ctx, moduleAccAddr, sdk.NewInt(moduleAmountBefore))
-	if delegableAddressExistsBefore {
-		delegableAddress, _ := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
-		verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAmountBefore))
-	}
+	// if delegableAddressExistsBefore {
+	// 	delegableAddress, _ := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
+	// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAmountBefore))
+	// }
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
@@ -254,15 +253,15 @@ func makeVesting(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAdd
 	_, error := msgServer.Vest(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
-	accVestings, accFound = app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
+	_, accFound = app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
 	require.EqualValues(t, accountVestingsExistsAfter, accFound)
 
 	verifyAccountBalance(t, app, ctx, address, sdk.NewInt(accAmountAfter))
 	verifyAccountBalance(t, app, ctx, moduleAccAddr, sdk.NewInt(moduleAmountAfter))
-	if delegableAddressExistsAfter {
-		delegableAddress, _ := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
-		verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAmountAfter))
-	}
+	// if delegableAddressExistsAfter {
+	// 	delegableAddress, _ := sdk.AccAddressFromBech32(accVestings.DelegableAddress)
+	// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAmountAfter))
+	// }
 }
 
 func newInts64Array(n int, v int64) []int64 {
@@ -299,32 +298,32 @@ func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *a
 	require.EqualValues(t, amountOfAllAccVestings, len(allAccVestings))
 	require.EqualValues(t, len(vestingTypes), len(accVestings.Vestings))
 
-	delegationsAllowed := false
-	for _, vestingType := range vestingTypes {
-		if vestingType.DelegationsAllowed {
-			delegationsAllowed = true
-			break
-		}
+	// delegationsAllowed := false
+	// for _, vestingType := range vestingTypes {
+	// 	if vestingType.DelegationsAllowed {
+	// 		delegationsAllowed = true
+	// 		break
+	// 	}
 
-	}
+	// }
 	require.EqualValues(t, address.String(), accVestings.Address)
-	if delegationsAllowed {
-		require.NotEqualValues(t, "", accVestings.DelegableAddress)
-	} else {
-		require.EqualValues(t, "", accVestings.DelegableAddress)
-	}
+	// if delegationsAllowed {
+	// 	require.NotEqualValues(t, "", accVestings.DelegableAddress)
+	// } else {
+	// require.EqualValues(t, "", accVestings.DelegableAddress)
+	// }
 
 	for i, vesting := range accVestings.Vestings {
 		found := false
 		if vesting.Id == int32(i+1) {
 			require.EqualValues(t, i+1, vesting.Id)
 			require.EqualValues(t, vestingTypes[i].Name, vesting.VestingType)
-			require.EqualValues(t, true, startsTimes[i].Equal(vesting.VestingStart))
-			require.EqualValues(t, true, ctx.BlockTime().Add(vestingTypes[i].LockupPeriod).Equal(vesting.LockEnd))
-			require.EqualValues(t, true, ctx.BlockTime().Add(vestingTypes[i].LockupPeriod).Add(vestingTypes[i].VestingPeriod).Equal(vesting.VestingEnd))
+			require.EqualValues(t, true, startsTimes[i].Equal(vesting.LockStart))
+			require.EqualValues(t, true, ctx.BlockTime().Add(vestingTypes[i].LockupPeriod + vestingTypes[i].VestingPeriod).Equal(vesting.LockEnd))
+			// require.EqualValues(t, true, ctx.BlockTime().Add(vestingTypes[i].LockupPeriod).Add(vestingTypes[i].VestingPeriod).Equal(vesting.VestingEnd))
 			require.EqualValues(t, sdk.NewInt(vestedAmounts[i]), vesting.Vested)
-			require.EqualValues(t, vestingTypes[i].TokenReleasingPeriod, vesting.ReleasePeriod)
-			require.EqualValues(t, vestingTypes[i].DelegationsAllowed, vesting.DelegationAllowed)
+			// require.EqualValues(t, vestingTypes[i].TokenReleasingPeriod, vesting.ReleasePeriod)
+			// require.EqualValues(t, vestingTypes[i].DelegationsAllowed, vesting.DelegationAllowed)
 			require.EqualValues(t, sdk.NewInt(withdrawnAmounts[i]), vesting.Withdrawn)
 
 			require.EqualValues(t, sdk.NewInt(sentAmounts[i]), vesting.Sent)
@@ -340,12 +339,12 @@ func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *a
 
 }
 
-func setupVestingTypes(ctx sdk.Context, app *app.App, numberOfVestingTypes int, amountOf10BasedVestingTypes int, a10BasedVestingTypesDelegationAllowe bool, startId int) types.VestingTypes {
-	return setupVestingTypesWithModification(ctx, app, func(*types.VestingType) {}, numberOfVestingTypes, amountOf10BasedVestingTypes, a10BasedVestingTypesDelegationAllowe, startId)
+func setupVestingTypes(ctx sdk.Context, app *app.App, numberOfVestingTypes int, amountOf10BasedVestingTypes int, startId int) types.VestingTypes {
+	return setupVestingTypesWithModification(ctx, app, func(*types.VestingType) {}, numberOfVestingTypes, amountOf10BasedVestingTypes, startId)
 }
 
-func setupVestingTypesWithModification(ctx sdk.Context, app *app.App, modifyVestingType func(*types.VestingType), numberOfVestingTypes int, amountOf10BasedVestingTypes int, a10BasedVestingTypesDelegationAllowe bool, startId int) types.VestingTypes {
-	vestingTypesArray := testutils.Generate10BasedVestingTypes(numberOfVestingTypes, amountOf10BasedVestingTypes, a10BasedVestingTypesDelegationAllowe, startId)
+func setupVestingTypesWithModification(ctx sdk.Context, app *app.App, modifyVestingType func(*types.VestingType), numberOfVestingTypes int, amountOf10BasedVestingTypes int, startId int) types.VestingTypes {
+	vestingTypesArray := testutils.Generate10BasedVestingTypes(numberOfVestingTypes, amountOf10BasedVestingTypes, startId)
 	for _, vestingType := range vestingTypesArray {
 		modifyVestingType(vestingType)
 	}
@@ -400,21 +399,21 @@ func addCoinsToCfevestingModule(vested uint64, ctx sdk.Context, app *app.App) st
 	return addCoinsToModuleByName(vested, types.ModuleName, ctx, app)
 }
 
-func withdrawDelegatorReward(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sdk.AccAddress, delegableAddress sdk.AccAddress,
-	validatorAddress sdk.ValAddress, delegatorAccountAmountBefore int64, delegableAccountAmountBefore int64, delegatorAccountAmountAfter int64, delegableAccountAmountAfter int64) {
+// func withdrawDelegatorReward(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sdk.AccAddress, delegableAddress sdk.AccAddress,
+// 	validatorAddress sdk.ValAddress, delegatorAccountAmountBefore int64, delegableAccountAmountBefore int64, delegatorAccountAmountAfter int64, delegableAccountAmountAfter int64) {
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+// 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountBefore))
-	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountBefore))
+// 	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountBefore))
+// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountBefore))
 
-	msgUn := types.MsgWithdrawDelegatorReward{DelegatorAddress: delegatorAddress.String(), ValidatorAddress: validatorAddress.String()}
-	_, error := msgServer.WithdrawDelegatorReward(msgServerCtx, &msgUn)
-	require.EqualValues(t, nil, error)
+// 	msgUn := types.MsgWithdrawDelegatorReward{DelegatorAddress: delegatorAddress.String(), ValidatorAddress: validatorAddress.String()}
+// 	_, error := msgServer.WithdrawDelegatorReward(msgServerCtx, &msgUn)
+// 	require.EqualValues(t, nil, error)
 
-	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountAfter))
-	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountAfter))
-}
+// 	verifyAccountBalance(t, app, ctx, delegatorAddress, sdk.NewInt(delegatorAccountAmountAfter))
+// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountAfter))
+// }
 
 func getVestings(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress) *types.QueryVestingResponse {
 	msgServerCtx := sdk.WrapSDKContext(ctx)
@@ -431,7 +430,7 @@ func verifyVestingResponseWithStoredAccountVestings(t *testing.T, ctx sdk.Contex
 
 func verifyVestingResponse(t *testing.T, response *types.QueryVestingResponse, accVestings types.AccountVestings, current time.Time, delegationAllowed bool) {
 	require.EqualValues(t, len(accVestings.Vestings), len(response.Vestings))
-	require.EqualValues(t, accVestings.DelegableAddress, response.DelegableAddress)
+	// require.EqualValues(t, accVestings.DelegableAddress, response.DelegableAddress)
 
 	for _, vesting := range accVestings.Vestings {
 		found := false
@@ -439,13 +438,13 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingResponse, a
 			if vesting.Id == vestingInfo.Id {
 				require.EqualValues(t, vesting.VestingType, vestingInfo.VestingType)
 				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, current).String(), response.Vestings[0].Withdrawable)
-				require.EqualValues(t, true, vesting.VestingStart.Equal(vestingInfo.VestingStart))
+				require.EqualValues(t, true, vesting.LockStart.Equal(vestingInfo.LockStart))
 				require.EqualValues(t, true, vesting.LockEnd.Equal(vestingInfo.LockEnd))
-				require.EqualValues(t, true, vesting.VestingEnd.Equal(vestingInfo.VestingEnd))
+				// require.EqualValues(t, true, vesting.VestingEnd.Equal(vestingInfo.VestingEnd))
 				require.EqualValues(t, "uc4e", response.Vestings[0].Vested.Denom)
 				require.EqualValues(t, vesting.Vested, response.Vestings[0].Vested.Amount)
 				require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn).String(), response.Vestings[0].CurrentVestedAmount)
-				require.EqualValues(t, delegationAllowed, response.Vestings[0].DelegationAllowed)
+				// require.EqualValues(t, delegationAllowed, response.Vestings[0].DelegationAllowed)
 				require.EqualValues(t, vesting.Sent.String(), response.Vestings[0].SentAmount)
 				require.EqualValues(t, vesting.TransferAllowed, response.Vestings[0].TransferAllowed)
 
