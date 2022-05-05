@@ -34,11 +34,11 @@ export interface QueryVestingResponse {
 export interface VestingInfo {
   id: number;
   vesting_type: string;
-  vesting_start: Date | undefined;
+  lock_start: Date | undefined;
   lock_end: Date | undefined;
-  vesting_end: Date | undefined;
+  /** google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true]; */
   withdrawable: string;
-  delegation_allowed: boolean;
+  /** bool delegation_allowed = 7; */
   vested: Coin | undefined;
   current_vested_amount: string;
   sent_amount: string;
@@ -421,7 +421,6 @@ const baseVestingInfo: object = {
   id: 0,
   vesting_type: "",
   withdrawable: "",
-  delegation_allowed: false,
   current_vested_amount: "",
   sent_amount: "",
   transfer_allowed: false,
@@ -435,9 +434,9 @@ export const VestingInfo = {
     if (message.vesting_type !== "") {
       writer.uint32(18).string(message.vesting_type);
     }
-    if (message.vesting_start !== undefined) {
+    if (message.lock_start !== undefined) {
       Timestamp.encode(
-        toTimestamp(message.vesting_start),
+        toTimestamp(message.lock_start),
         writer.uint32(26).fork()
       ).ldelim();
     }
@@ -447,17 +446,8 @@ export const VestingInfo = {
         writer.uint32(34).fork()
       ).ldelim();
     }
-    if (message.vesting_end !== undefined) {
-      Timestamp.encode(
-        toTimestamp(message.vesting_end),
-        writer.uint32(42).fork()
-      ).ldelim();
-    }
     if (message.withdrawable !== "") {
       writer.uint32(50).string(message.withdrawable);
-    }
-    if (message.delegation_allowed === true) {
-      writer.uint32(56).bool(message.delegation_allowed);
     }
     if (message.vested !== undefined) {
       Coin.encode(message.vested, writer.uint32(66).fork()).ldelim();
@@ -488,7 +478,7 @@ export const VestingInfo = {
           message.vesting_type = reader.string();
           break;
         case 3:
-          message.vesting_start = fromTimestamp(
+          message.lock_start = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
@@ -497,16 +487,8 @@ export const VestingInfo = {
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 5:
-          message.vesting_end = fromTimestamp(
-            Timestamp.decode(reader, reader.uint32())
-          );
-          break;
         case 6:
           message.withdrawable = reader.string();
-          break;
-        case 7:
-          message.delegation_allowed = reader.bool();
           break;
         case 8:
           message.vested = Coin.decode(reader, reader.uint32());
@@ -540,33 +522,20 @@ export const VestingInfo = {
     } else {
       message.vesting_type = "";
     }
-    if (object.vesting_start !== undefined && object.vesting_start !== null) {
-      message.vesting_start = fromJsonTimestamp(object.vesting_start);
+    if (object.lock_start !== undefined && object.lock_start !== null) {
+      message.lock_start = fromJsonTimestamp(object.lock_start);
     } else {
-      message.vesting_start = undefined;
+      message.lock_start = undefined;
     }
     if (object.lock_end !== undefined && object.lock_end !== null) {
       message.lock_end = fromJsonTimestamp(object.lock_end);
     } else {
       message.lock_end = undefined;
     }
-    if (object.vesting_end !== undefined && object.vesting_end !== null) {
-      message.vesting_end = fromJsonTimestamp(object.vesting_end);
-    } else {
-      message.vesting_end = undefined;
-    }
     if (object.withdrawable !== undefined && object.withdrawable !== null) {
       message.withdrawable = String(object.withdrawable);
     } else {
       message.withdrawable = "";
-    }
-    if (
-      object.delegation_allowed !== undefined &&
-      object.delegation_allowed !== null
-    ) {
-      message.delegation_allowed = Boolean(object.delegation_allowed);
-    } else {
-      message.delegation_allowed = false;
     }
     if (object.vested !== undefined && object.vested !== null) {
       message.vested = Coin.fromJSON(object.vested);
@@ -602,23 +571,16 @@ export const VestingInfo = {
     message.id !== undefined && (obj.id = message.id);
     message.vesting_type !== undefined &&
       (obj.vesting_type = message.vesting_type);
-    message.vesting_start !== undefined &&
-      (obj.vesting_start =
-        message.vesting_start !== undefined
-          ? message.vesting_start.toISOString()
+    message.lock_start !== undefined &&
+      (obj.lock_start =
+        message.lock_start !== undefined
+          ? message.lock_start.toISOString()
           : null);
     message.lock_end !== undefined &&
       (obj.lock_end =
         message.lock_end !== undefined ? message.lock_end.toISOString() : null);
-    message.vesting_end !== undefined &&
-      (obj.vesting_end =
-        message.vesting_end !== undefined
-          ? message.vesting_end.toISOString()
-          : null);
     message.withdrawable !== undefined &&
       (obj.withdrawable = message.withdrawable);
-    message.delegation_allowed !== undefined &&
-      (obj.delegation_allowed = message.delegation_allowed);
     message.vested !== undefined &&
       (obj.vested = message.vested ? Coin.toJSON(message.vested) : undefined);
     message.current_vested_amount !== undefined &&
@@ -642,33 +604,20 @@ export const VestingInfo = {
     } else {
       message.vesting_type = "";
     }
-    if (object.vesting_start !== undefined && object.vesting_start !== null) {
-      message.vesting_start = object.vesting_start;
+    if (object.lock_start !== undefined && object.lock_start !== null) {
+      message.lock_start = object.lock_start;
     } else {
-      message.vesting_start = undefined;
+      message.lock_start = undefined;
     }
     if (object.lock_end !== undefined && object.lock_end !== null) {
       message.lock_end = object.lock_end;
     } else {
       message.lock_end = undefined;
     }
-    if (object.vesting_end !== undefined && object.vesting_end !== null) {
-      message.vesting_end = object.vesting_end;
-    } else {
-      message.vesting_end = undefined;
-    }
     if (object.withdrawable !== undefined && object.withdrawable !== null) {
       message.withdrawable = object.withdrawable;
     } else {
       message.withdrawable = "";
-    }
-    if (
-      object.delegation_allowed !== undefined &&
-      object.delegation_allowed !== null
-    ) {
-      message.delegation_allowed = object.delegation_allowed;
-    } else {
-      message.delegation_allowed = false;
     }
     if (object.vested !== undefined && object.vested !== null) {
       message.vested = Coin.fromPartial(object.vested);

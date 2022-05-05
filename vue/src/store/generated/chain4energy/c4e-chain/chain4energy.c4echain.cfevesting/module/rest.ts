@@ -19,40 +19,15 @@ export interface CfevestingGenesisVestingType {
   /** @format int64 */
   vesting_period?: string;
   vesting_period_unit?: string;
-
-  /** @format int64 */
-  token_releasing_period?: string;
-  token_releasing_period_unit?: string;
-  delegations_allowed?: boolean;
-}
-
-export interface CfevestingMsgBeginRedelegateResponse {
-  /** @format date-time */
-  completion_time?: string;
 }
 
 export type CfevestingMsgCreateVestingAccountResponse = object;
 
-export type CfevestingMsgDelegateResponse = object;
-
 export type CfevestingMsgSendToVestingAccountResponse = object;
-
-export type CfevestingMsgSendVestingResponse = object;
-
-export interface CfevestingMsgUndelegateResponse {
-  /** @format date-time */
-  completion_time?: string;
-}
 
 export type CfevestingMsgVestResponse = object;
 
-export type CfevestingMsgVoteResponse = object;
-
-export type CfevestingMsgVoteWeightedResponse = object;
-
 export type CfevestingMsgWithdrawAllAvailableResponse = object;
-
-export type CfevestingMsgWithdrawDelegatorRewardResponse = object;
 
 /**
  * Params defines the parameters for the module.
@@ -84,15 +59,11 @@ export interface CfevestingVestingInfo {
   vesting_type?: string;
 
   /** @format date-time */
-  vesting_start?: string;
+  lock_start?: string;
 
   /** @format date-time */
   lock_end?: string;
-
-  /** @format date-time */
-  vesting_end?: string;
   withdrawable?: string;
-  delegation_allowed?: boolean;
 
   /**
    * Coin defines a token with a denomination and an amount.
@@ -239,42 +210,6 @@ signatures required by gogoproto.
 export interface V1Beta1Coin {
   denom?: string;
   amount?: string;
-}
-
-/**
-* VoteOption enumerates the valid vote options for a given governance proposal.
-
- - VOTE_OPTION_UNSPECIFIED: VOTE_OPTION_UNSPECIFIED defines a no-op vote option.
- - VOTE_OPTION_YES: VOTE_OPTION_YES defines a yes vote option.
- - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
- - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
- - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
-*/
-export enum V1Beta1VoteOption {
-  VOTE_OPTION_UNSPECIFIED = "VOTE_OPTION_UNSPECIFIED",
-  VOTE_OPTION_YES = "VOTE_OPTION_YES",
-  VOTE_OPTION_ABSTAIN = "VOTE_OPTION_ABSTAIN",
-  VOTE_OPTION_NO = "VOTE_OPTION_NO",
-  VOTE_OPTION_NO_WITH_VETO = "VOTE_OPTION_NO_WITH_VETO",
-}
-
-/**
-* WeightedVoteOption defines a unit of vote for vote split.
-
-Since: cosmos-sdk 0.43
-*/
-export interface V1Beta1WeightedVoteOption {
-  /**
-   * VoteOption enumerates the valid vote options for a given governance proposal.
-   *
-   *  - VOTE_OPTION_UNSPECIFIED: VOTE_OPTION_UNSPECIFIED defines a no-op vote option.
-   *  - VOTE_OPTION_YES: VOTE_OPTION_YES defines a yes vote option.
-   *  - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
-   *  - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
-   *  - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
-   */
-  option?: V1Beta1VoteOption;
-  weight?: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;

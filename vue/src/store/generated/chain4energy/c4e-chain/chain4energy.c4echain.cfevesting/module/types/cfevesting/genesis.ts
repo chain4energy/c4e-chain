@@ -22,12 +22,14 @@ export interface GenesisVestingType {
   lockup_period_unit: string;
   /** period of veesting coins from lockup period end */
   vesting_period: number;
+  /**
+   * vested coin periodical releasing
+   * int64 token_releasing_period = 6;
+   * string token_releasing_period_unit = 7;
+   * defines if vesting type allows delegation
+   * bool delegations_allowed = 8;
+   */
   vesting_period_unit: string;
-  /** vested coin periodical releasing */
-  token_releasing_period: number;
-  token_releasing_period_unit: string;
-  /** defines if vesting type allows delegation */
-  delegations_allowed: boolean;
 }
 
 const baseGenesisState: object = {};
@@ -156,9 +158,6 @@ const baseGenesisVestingType: object = {
   lockup_period_unit: "",
   vesting_period: 0,
   vesting_period_unit: "",
-  token_releasing_period: 0,
-  token_releasing_period_unit: "",
-  delegations_allowed: false,
 };
 
 export const GenesisVestingType = {
@@ -180,15 +179,6 @@ export const GenesisVestingType = {
     }
     if (message.vesting_period_unit !== "") {
       writer.uint32(42).string(message.vesting_period_unit);
-    }
-    if (message.token_releasing_period !== 0) {
-      writer.uint32(48).int64(message.token_releasing_period);
-    }
-    if (message.token_releasing_period_unit !== "") {
-      writer.uint32(58).string(message.token_releasing_period_unit);
-    }
-    if (message.delegations_allowed === true) {
-      writer.uint32(64).bool(message.delegations_allowed);
     }
     return writer;
   },
@@ -214,15 +204,6 @@ export const GenesisVestingType = {
           break;
         case 5:
           message.vesting_period_unit = reader.string();
-          break;
-        case 6:
-          message.token_releasing_period = longToNumber(reader.int64() as Long);
-          break;
-        case 7:
-          message.token_releasing_period_unit = reader.string();
-          break;
-        case 8:
-          message.delegations_allowed = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -265,32 +246,6 @@ export const GenesisVestingType = {
     } else {
       message.vesting_period_unit = "";
     }
-    if (
-      object.token_releasing_period !== undefined &&
-      object.token_releasing_period !== null
-    ) {
-      message.token_releasing_period = Number(object.token_releasing_period);
-    } else {
-      message.token_releasing_period = 0;
-    }
-    if (
-      object.token_releasing_period_unit !== undefined &&
-      object.token_releasing_period_unit !== null
-    ) {
-      message.token_releasing_period_unit = String(
-        object.token_releasing_period_unit
-      );
-    } else {
-      message.token_releasing_period_unit = "";
-    }
-    if (
-      object.delegations_allowed !== undefined &&
-      object.delegations_allowed !== null
-    ) {
-      message.delegations_allowed = Boolean(object.delegations_allowed);
-    } else {
-      message.delegations_allowed = false;
-    }
     return message;
   },
 
@@ -305,12 +260,6 @@ export const GenesisVestingType = {
       (obj.vesting_period = message.vesting_period);
     message.vesting_period_unit !== undefined &&
       (obj.vesting_period_unit = message.vesting_period_unit);
-    message.token_releasing_period !== undefined &&
-      (obj.token_releasing_period = message.token_releasing_period);
-    message.token_releasing_period_unit !== undefined &&
-      (obj.token_releasing_period_unit = message.token_releasing_period_unit);
-    message.delegations_allowed !== undefined &&
-      (obj.delegations_allowed = message.delegations_allowed);
     return obj;
   },
 
@@ -346,30 +295,6 @@ export const GenesisVestingType = {
       message.vesting_period_unit = object.vesting_period_unit;
     } else {
       message.vesting_period_unit = "";
-    }
-    if (
-      object.token_releasing_period !== undefined &&
-      object.token_releasing_period !== null
-    ) {
-      message.token_releasing_period = object.token_releasing_period;
-    } else {
-      message.token_releasing_period = 0;
-    }
-    if (
-      object.token_releasing_period_unit !== undefined &&
-      object.token_releasing_period_unit !== null
-    ) {
-      message.token_releasing_period_unit = object.token_releasing_period_unit;
-    } else {
-      message.token_releasing_period_unit = "";
-    }
-    if (
-      object.delegations_allowed !== undefined &&
-      object.delegations_allowed !== null
-    ) {
-      message.delegations_allowed = object.delegations_allowed;
-    } else {
-      message.delegations_allowed = false;
     }
     return message;
   },

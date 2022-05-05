@@ -232,20 +232,20 @@ paths:
                       format: int32
                     vesting_type:
                       type: string
-                    vesting_start:
+                    lock_start:
                       type: string
                       format: date-time
                     lock_end:
                       type: string
                       format: date-time
-                    vesting_end:
-                      type: string
-                      format: date-time
                     withdrawable:
                       type: string
-                    delegation_allowed:
-                      type: boolean
+                      title: >-
+                        google.protobuf.Timestamp vesting_end = 5
+                        [(gogoproto.nullable) = false, (gogoproto.stdtime) =
+                        true];
                     vested:
+                      title: bool delegation_allowed = 7;
                       type: object
                       properties:
                         denom:
@@ -488,15 +488,6 @@ paths:
                       title: period of veesting coins from lockup period end
                     vesting_period_unit:
                       type: string
-                    token_releasing_period:
-                      type: string
-                      format: int64
-                      title: vested coin periodical releasing
-                    token_releasing_period_unit:
-                      type: string
-                    delegations_allowed:
-                      type: boolean
-                      title: defines if vesting type allows delegation
         default:
           description: An unexpected error response.
           schema:
@@ -28244,44 +28235,13 @@ definitions:
         title: period of veesting coins from lockup period end
       vesting_period_unit:
         type: string
-      token_releasing_period:
-        type: string
-        format: int64
-        title: vested coin periodical releasing
-      token_releasing_period_unit:
-        type: string
-      delegations_allowed:
-        type: boolean
-        title: defines if vesting type allows delegation
-  chain4energy.c4echain.cfevesting.MsgBeginRedelegateResponse:
-    type: object
-    properties:
-      completion_time:
-        type: string
-        format: date-time
   chain4energy.c4echain.cfevesting.MsgCreateVestingAccountResponse:
-    type: object
-  chain4energy.c4echain.cfevesting.MsgDelegateResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:
     type: object
-  chain4energy.c4echain.cfevesting.MsgSendVestingResponse:
-    type: object
-  chain4energy.c4echain.cfevesting.MsgUndelegateResponse:
-    type: object
-    properties:
-      completion_time:
-        type: string
-        format: date-time
   chain4energy.c4echain.cfevesting.MsgVestResponse:
     type: object
-  chain4energy.c4echain.cfevesting.MsgVoteResponse:
-    type: object
-  chain4energy.c4echain.cfevesting.MsgVoteWeightedResponse:
-    type: object
   chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
-    type: object
-  chain4energy.c4echain.cfevesting.MsgWithdrawDelegatorRewardResponse:
     type: object
   chain4energy.c4echain.cfevesting.Params:
     type: object
@@ -28314,20 +28274,19 @@ definitions:
               format: int32
             vesting_type:
               type: string
-            vesting_start:
+            lock_start:
               type: string
               format: date-time
             lock_end:
               type: string
               format: date-time
-            vesting_end:
-              type: string
-              format: date-time
             withdrawable:
               type: string
-            delegation_allowed:
-              type: boolean
+              title: >-
+                google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable)
+                = false, (gogoproto.stdtime) = true];
             vested:
+              title: bool delegation_allowed = 7;
               type: object
               properties:
                 denom:
@@ -28371,15 +28330,6 @@ definitions:
               title: period of veesting coins from lockup period end
             vesting_period_unit:
               type: string
-            token_releasing_period:
-              type: string
-              format: int64
-              title: vested coin periodical releasing
-            token_releasing_period_unit:
-              type: string
-            delegations_allowed:
-              type: boolean
-              title: defines if vesting type allows delegation
   chain4energy.c4echain.cfevesting.VestingInfo:
     type: object
     properties:
@@ -28388,20 +28338,19 @@ definitions:
         format: int32
       vesting_type:
         type: string
-      vesting_start:
+      lock_start:
         type: string
         format: date-time
       lock_end:
         type: string
         format: date-time
-      vesting_end:
-        type: string
-        format: date-time
       withdrawable:
         type: string
-      delegation_allowed:
-        type: boolean
+        title: >-
+          google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) =
+          false, (gogoproto.stdtime) = true];
       vested:
+        title: bool delegation_allowed = 7;
         type: object
         properties:
           denom:
@@ -28431,51 +28380,6 @@ definitions:
 
       NOTE: The amount field is an Int which implements the custom method
       signatures required by gogoproto.
-  cosmos.gov.v1beta1.VoteOption:
-    type: string
-    enum:
-      - VOTE_OPTION_UNSPECIFIED
-      - VOTE_OPTION_YES
-      - VOTE_OPTION_ABSTAIN
-      - VOTE_OPTION_NO
-      - VOTE_OPTION_NO_WITH_VETO
-    default: VOTE_OPTION_UNSPECIFIED
-    description: >-
-      VoteOption enumerates the valid vote options for a given governance
-      proposal.
-
-       - VOTE_OPTION_UNSPECIFIED: VOTE_OPTION_UNSPECIFIED defines a no-op vote option.
-       - VOTE_OPTION_YES: VOTE_OPTION_YES defines a yes vote option.
-       - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
-       - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
-       - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
-  cosmos.gov.v1beta1.WeightedVoteOption:
-    type: object
-    properties:
-      option:
-        type: string
-        enum:
-          - VOTE_OPTION_UNSPECIFIED
-          - VOTE_OPTION_YES
-          - VOTE_OPTION_ABSTAIN
-          - VOTE_OPTION_NO
-          - VOTE_OPTION_NO_WITH_VETO
-        default: VOTE_OPTION_UNSPECIFIED
-        description: >-
-          VoteOption enumerates the valid vote options for a given governance
-          proposal.
-
-           - VOTE_OPTION_UNSPECIFIED: VOTE_OPTION_UNSPECIFIED defines a no-op vote option.
-           - VOTE_OPTION_YES: VOTE_OPTION_YES defines a yes vote option.
-           - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
-           - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
-           - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
-      weight:
-        type: string
-    description: |-
-      WeightedVoteOption defines a unit of vote for vote split.
-
-      Since: cosmos-sdk 0.43
   google.protobuf.Any:
     type: object
     properties:
@@ -36174,6 +36078,24 @@ definitions:
     description: |-
       Vote defines a vote on a governance proposal.
       A Vote consists of a proposal ID, the voter, and the vote option.
+  cosmos.gov.v1beta1.VoteOption:
+    type: string
+    enum:
+      - VOTE_OPTION_UNSPECIFIED
+      - VOTE_OPTION_YES
+      - VOTE_OPTION_ABSTAIN
+      - VOTE_OPTION_NO
+      - VOTE_OPTION_NO_WITH_VETO
+    default: VOTE_OPTION_UNSPECIFIED
+    description: >-
+      VoteOption enumerates the valid vote options for a given governance
+      proposal.
+
+       - VOTE_OPTION_UNSPECIFIED: VOTE_OPTION_UNSPECIFIED defines a no-op vote option.
+       - VOTE_OPTION_YES: VOTE_OPTION_YES defines a yes vote option.
+       - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
+       - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
+       - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
   cosmos.gov.v1beta1.VotingParams:
     type: object
     properties:
@@ -36181,6 +36103,33 @@ definitions:
         type: string
         description: Length of the voting period.
     description: VotingParams defines the params for voting on governance proposals.
+  cosmos.gov.v1beta1.WeightedVoteOption:
+    type: object
+    properties:
+      option:
+        type: string
+        enum:
+          - VOTE_OPTION_UNSPECIFIED
+          - VOTE_OPTION_YES
+          - VOTE_OPTION_ABSTAIN
+          - VOTE_OPTION_NO
+          - VOTE_OPTION_NO_WITH_VETO
+        default: VOTE_OPTION_UNSPECIFIED
+        description: >-
+          VoteOption enumerates the valid vote options for a given governance
+          proposal.
+
+           - VOTE_OPTION_UNSPECIFIED: VOTE_OPTION_UNSPECIFIED defines a no-op vote option.
+           - VOTE_OPTION_YES: VOTE_OPTION_YES defines a yes vote option.
+           - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
+           - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
+           - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
+      weight:
+        type: string
+    description: |-
+      WeightedVoteOption defines a unit of vote for vote split.
+
+      Since: cosmos-sdk 0.43
   cosmos.params.v1beta1.ParamChange:
     type: object
     properties:
