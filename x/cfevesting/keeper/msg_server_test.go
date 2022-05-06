@@ -201,7 +201,7 @@ func setupAccountsVestingsWithModification(ctx sdk.Context, app *app.App, modify
 	accountVestings.Address = address
 	// accountVestings.DelegableAddress = delegableAddress
 
-	for _, vesting := range accountVestings.Vestings {
+	for _, vesting := range accountVestings.VestingPools {
 		vesting.Vested = sdk.NewIntFromUint64(vestingAmount)
 		// vesting.DelegationAllowed = delegationAllowed
 		vesting.Withdrawn = sdk.NewIntFromUint64(withdrawnAmount)
@@ -297,7 +297,7 @@ func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *a
 	require.EqualValues(t, true, accFound)
 
 	require.EqualValues(t, amountOfAllAccVestings, len(allAccVestings))
-	require.EqualValues(t, len(vestingTypes), len(accVestings.Vestings))
+	require.EqualValues(t, len(vestingTypes), len(accVestings.VestingPools))
 
 	// delegationsAllowed := false
 	// for _, vestingType := range vestingTypes {
@@ -314,7 +314,7 @@ func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *a
 	// require.EqualValues(t, "", accVestings.DelegableAddress)
 	// }
 
-	for i, vesting := range accVestings.Vestings {
+	for i, vesting := range accVestings.VestingPools {
 		found := false
 		if vesting.Id == int32(i+1) {
 			require.EqualValues(t, i+1, vesting.Id)
@@ -417,38 +417,38 @@ func addCoinsToCfevestingModule(vested uint64, ctx sdk.Context, app *app.App) st
 // 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableAccountAmountAfter))
 // }
 
-func getVestings(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress) *types.QueryVestingResponse {
+func getVestings(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress) *types.QueryVestingPoolsResponse {
 	msgServerCtx := sdk.WrapSDKContext(ctx)
-	vestingData, error := app.CfevestingKeeper.Vesting(msgServerCtx, &types.QueryVestingRequest{Address: address.String()})
+	vestingData, error := app.CfevestingKeeper.VestingPools(msgServerCtx, &types.QueryVestingPoolsRequest{Address: address.String()})
 	require.EqualValues(t, nil, error)
 	return vestingData
 }
 
-func verifyVestingResponseWithStoredAccountVestings(t *testing.T, ctx sdk.Context, app *app.App, response *types.QueryVestingResponse, address sdk.AccAddress, current time.Time, delegationAllowed bool) {
+func verifyVestingResponseWithStoredAccountVestings(t *testing.T, ctx sdk.Context, app *app.App, response *types.QueryVestingPoolsResponse, address sdk.AccAddress, current time.Time, delegationAllowed bool) {
 	accVests, found := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
 	require.EqualValues(t, true, found)
 	verifyVestingResponse(t, response, accVests, current, delegationAllowed)
 }
 
-func verifyVestingResponse(t *testing.T, response *types.QueryVestingResponse, accVestings types.AccountVestings, current time.Time, delegationAllowed bool) {
-	require.EqualValues(t, len(accVestings.Vestings), len(response.Vestings))
+func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsResponse, accVestings types.AccountVestings, current time.Time, delegationAllowed bool) {
+	require.EqualValues(t, len(accVestings.VestingPools), len(response.VestingPools))
 	// require.EqualValues(t, accVestings.DelegableAddress, response.DelegableAddress)
 
-	for _, vesting := range accVestings.Vestings {
+	for _, vesting := range accVestings.VestingPools {
 		found := false
-		for _, vestingInfo := range response.Vestings {
+		for _, vestingInfo := range response.VestingPools {
 			if vesting.Id == vestingInfo.Id {
 				require.EqualValues(t, vesting.VestingType, vestingInfo.VestingType)
-				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, current).String(), response.Vestings[0].Withdrawable)
+				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, current).String(), response.VestingPools[0].Withdrawable)
 				require.EqualValues(t, true, vesting.LockStart.Equal(vestingInfo.LockStart))
 				require.EqualValues(t, true, vesting.LockEnd.Equal(vestingInfo.LockEnd))
 				// require.EqualValues(t, true, vesting.VestingEnd.Equal(vestingInfo.VestingEnd))
-				require.EqualValues(t, "uc4e", response.Vestings[0].Vested.Denom)
-				require.EqualValues(t, vesting.Vested, response.Vestings[0].Vested.Amount)
-				require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn).String(), response.Vestings[0].CurrentVestedAmount)
+				require.EqualValues(t, "uc4e", response.VestingPools[0].Vested.Denom)
+				require.EqualValues(t, vesting.Vested, response.VestingPools[0].Vested.Amount)
+				require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn).String(), response.VestingPools[0].CurrentVestedAmount)
 				// require.EqualValues(t, delegationAllowed, response.Vestings[0].DelegationAllowed)
-				require.EqualValues(t, vesting.Sent.String(), response.Vestings[0].SentAmount)
-				require.EqualValues(t, vesting.TransferAllowed, response.Vestings[0].TransferAllowed)
+				require.EqualValues(t, vesting.Sent.String(), response.VestingPools[0].SentAmount)
+				require.EqualValues(t, vesting.TransferAllowed, response.VestingPools[0].TransferAllowed)
 
 				found = true
 			}

@@ -44,16 +44,16 @@ export interface CfevestingQueryParamsResponse {
   params?: CfevestingParams;
 }
 
-export interface CfevestingQueryVestingResponse {
+export interface CfevestingQueryVestingPoolsResponse {
   delegable_address?: string;
-  vestings?: CfevestingVestingInfo[];
+  vesting_pools?: CfevestingVestingPoolInfo[];
 }
 
 export interface CfevestingQueryVestingTypeResponse {
   vesting_types?: CfevestingGenesisVestingType[];
 }
 
-export interface CfevestingVestingInfo {
+export interface CfevestingVestingPoolInfo {
   /** @format int32 */
   id?: number;
   vesting_type?: string;
@@ -428,13 +428,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryVesting
+   * @name QueryVestingPools
    * @summary Queries a list of Vesting items.
-   * @request GET:/chain4energy/vesting/vesting/{address}
+   * @request GET:/chain4energy/vesting/vesting_pools/{address}
    */
-  queryVesting = (address: string, params: RequestParams = {}) =>
-    this.request<CfevestingQueryVestingResponse, RpcStatus>({
-      path: `/chain4energy/vesting/vesting/${address}`,
+  queryVestingPools = (address: string, params: RequestParams = {}) =>
+    this.request<CfevestingQueryVestingPoolsResponse, RpcStatus>({
+      path: `/chain4energy/vesting/vesting_pools/${address}`,
       method: "GET",
       format: "json",
       ...params,

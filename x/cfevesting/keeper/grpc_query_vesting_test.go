@@ -21,11 +21,11 @@ func TestVesting(t *testing.T) {
 
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	accountVestings.Vestings[0].TransferAllowed = true
+	accountVestings.VestingPools[0].TransferAllowed = true
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	response, err := keeper.VestingPools(wctx, &types.QueryVestingPoolsRequest{Address: addr})
 	require.NoError(t, err)
 	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
 }
@@ -42,7 +42,7 @@ func TestVestingWithDelegableAddress(t *testing.T) {
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	response, err := keeper.VestingPools(wctx, &types.QueryVestingPoolsRequest{Address: addr})
 	require.NoError(t, err)
 	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
 
@@ -61,7 +61,7 @@ func TestVestingSomeToWithdraw(t *testing.T) {
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	response, err := keeper.VestingPools(wctx, &types.QueryVestingPoolsRequest{Address: addr})
 	require.NoError(t, err)
 
 	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
@@ -78,12 +78,12 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	accountVestings.Vestings[0].Withdrawn = sdk.NewInt(500)
-	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(500)
+	accountVestings.VestingPools[0].Withdrawn = sdk.NewInt(500)
+	accountVestings.VestingPools[0].LastModificationWithdrawn = sdk.NewInt(500)
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	response, err := keeper.VestingPools(wctx, &types.QueryVestingPoolsRequest{Address: addr})
 	require.NoError(t, err)
 	verifyVestingResponse(t, response, accountVestings, time, true)
 
@@ -100,14 +100,14 @@ func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	accountVestings.Vestings[0].LockStart = accountVestings.Vestings[0].LockEnd
-	accountVestings.Vestings[0].LastModification = accountVestings.Vestings[0].LockEnd
+	accountVestings.VestingPools[0].LockStart = accountVestings.VestingPools[0].LockEnd
+	accountVestings.VestingPools[0].LastModification = accountVestings.VestingPools[0].LockEnd
 
-	accountVestings.Vestings[0].LockEnd = accountVestings.Vestings[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
+	accountVestings.VestingPools[0].LockEnd = accountVestings.VestingPools[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	response, err := keeper.VestingPools(wctx, &types.QueryVestingPoolsRequest{Address: addr})
 	require.NoError(t, err)
 
 	verifyVestingResponse(t, response, accountVestings, time, true)
@@ -126,15 +126,15 @@ func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
 
-	accountVestings.Vestings[0].LastModification = accountVestings.Vestings[0].LockEnd
-	accountVestings.Vestings[0].Sent = sdk.NewInt(100000)
-	accountVestings.Vestings[0].LastModificationVested = accountVestings.Vestings[0].LastModificationVested.Sub(sdk.NewInt(100000))
+	accountVestings.VestingPools[0].LastModification = accountVestings.VestingPools[0].LockEnd
+	accountVestings.VestingPools[0].Sent = sdk.NewInt(100000)
+	accountVestings.VestingPools[0].LastModificationVested = accountVestings.VestingPools[0].LastModificationVested.Sub(sdk.NewInt(100000))
 
-	accountVestings.Vestings[0].LockEnd = accountVestings.Vestings[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
+	accountVestings.VestingPools[0].LockEnd = accountVestings.VestingPools[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	response, err := keeper.VestingPools(wctx, &types.QueryVestingPoolsRequest{Address: addr})
 	require.NoError(t, err)
 
 	verifyVestingResponse(t, response, accountVestings, time, true)
@@ -153,16 +153,16 @@ func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
 
-	accountVestings.Vestings[0].LastModification = accountVestings.Vestings[0].LockEnd
-	accountVestings.Vestings[0].Sent = sdk.NewInt(100000)
-	accountVestings.Vestings[0].LastModificationVested = accountVestings.Vestings[0].LastModificationVested.Sub(sdk.NewInt(100000))
-	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(400)
+	accountVestings.VestingPools[0].LastModification = accountVestings.VestingPools[0].LockEnd
+	accountVestings.VestingPools[0].Sent = sdk.NewInt(100000)
+	accountVestings.VestingPools[0].LastModificationVested = accountVestings.VestingPools[0].LastModificationVested.Sub(sdk.NewInt(100000))
+	accountVestings.VestingPools[0].LastModificationWithdrawn = sdk.NewInt(400)
 
-	accountVestings.Vestings[0].LockEnd = accountVestings.Vestings[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
+	accountVestings.VestingPools[0].LockEnd = accountVestings.VestingPools[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	response, err := keeper.VestingPools(wctx, &types.QueryVestingPoolsRequest{Address: addr})
 	require.NoError(t, err)
 
 	verifyVestingResponse(t, response, accountVestings, time, true)
@@ -181,7 +181,7 @@ func TestVestingManyVestings(t *testing.T) {
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 
-	response, err := keeper.Vesting(wctx, &types.QueryVestingRequest{Address: addr})
+	response, err := keeper.VestingPools(wctx, &types.QueryVestingPoolsRequest{Address: addr})
 	require.NoError(t, err)
 
 	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)

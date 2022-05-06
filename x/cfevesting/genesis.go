@@ -47,7 +47,7 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 	delegableAmounts := make(map[string]sdk.Int)
 
 	for _, accVestings := range accsVestings {
-		for _, v := range accVestings.Vestings {
+		for _, v := range accVestings.VestingPools {
 			// if v.DelegationAllowed {
 			// 	if accVestings.DelegableAddress == "" {
 			// 		return fmt.Errorf("acount vesting for: %s delegable address not exists, but delegable vesting exists",

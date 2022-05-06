@@ -105,9 +105,9 @@ func (k Keeper) addVestingPool(
 		// 	}
 		// }
 
-		id = int32(len(accVestings.Vestings)) + 1
+		id = int32(len(accVestings.VestingPools)) + 1
 
-		for _, pool := range accVestings.Vestings {
+		for _, pool := range accVestings.VestingPools {
 			if pool.Name == vestingPoolName {
 				k.Logger(ctx).Error("Error: " + "vesting pool name already exists: " + vestingPoolName)
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "vesting pool name already exists: " + vestingPoolName)
@@ -128,7 +128,7 @@ func (k Keeper) addVestingPool(
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
-	accVestings.Vestings = append(accVestings.Vestings, &vesting)
+	accVestings.VestingPools = append(accVestings.VestingPools, &vesting)
 
 	coinToSend := sdk.NewCoin(denom, amount)
 	coinsToSend := sdk.NewCoins(coinToSend)
@@ -165,7 +165,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 		return withdrawn, status.Error(codes.NotFound, "No vestings")
 	}
 
-	if len(accVestings.Vestings) == 0 {
+	if len(accVestings.VestingPools) == 0 {
 		return withdrawn, status.Error(codes.NotFound, "No vestings")
 	}
 
@@ -173,7 +173,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 	toWithdraw := sdk.ZeroInt()
 	// toWithdrawDelegable := sdk.ZeroInt()
 	// toWithdrawDelegableMap := make(map[int32]sdk.Int)
-	for _, vesting := range accVestings.Vestings {
+	for _, vesting := range accVestings.VestingPools {
 		withdrawable := CalculateWithdrawable(current, *vesting)
 		vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
 		vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(withdrawable)
@@ -243,11 +243,11 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 	}
 
 	accVestings, vestingsFound := k.GetAccountVestings(ctx, fromAddr)
-	if !vestingsFound || len(accVestings.Vestings) == 0 {
+	if !vestingsFound || len(accVestings.VestingPools) == 0 {
 		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "no vestings found")
 	}
 	var vesting *types.VestingPool = nil
-	for _, vest := range accVestings.Vestings {
+	for _, vest := range accVestings.VestingPools {
 		if vest.Id == vestingId {
 			vesting = vest
 		}

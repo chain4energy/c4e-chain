@@ -58,8 +58,8 @@ func TestWithdrawAllAvailableDuringLock(t *testing.T) {
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), 1, vested, 0)
 
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawable, vested-withdrawable)
-	accountVestings.Vestings[0].Withdrawn = sdk.NewInt(withdrawable)
-	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(withdrawable)
+	accountVestings.VestingPools[0].Withdrawn = sdk.NewInt(withdrawable)
+	accountVestings.VestingPools[0].LastModificationWithdrawn = sdk.NewInt(withdrawable)
 	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 }
 
@@ -76,7 +76,7 @@ func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), 3, vested, 0)
 
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, 3*vested, 3*withdrawable, 3*vested-3*withdrawable)
-	for _, vesting := range accountVestings.Vestings {
+	for _, vesting := range accountVestings.VestingPools {
 		vesting.Withdrawn = sdk.NewInt(withdrawable)
 		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawable)
 	}
@@ -99,8 +99,8 @@ func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), 1, vested, withdrawn)
 
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawable-withdrawn, vested-withdrawable+withdrawn)
-	accountVestings.Vestings[0].Withdrawn = sdk.NewInt(withdrawable)
-	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewInt(withdrawable)
+	accountVestings.VestingPools[0].Withdrawn = sdk.NewInt(withdrawable)
+	accountVestings.VestingPools[0].LastModificationWithdrawn = sdk.NewInt(withdrawable)
 	compareStoredAcountVestings(t, ctx, app, accAddr, accountVestings)
 
 }
@@ -120,7 +120,7 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 	accountVestings := setupAccountsVestings(ctx, app, accAddr.String(), 3, vested, withdrawn)
 
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, 3*vested, 3*withdrawable-3*withdrawn, 3*vested-3*withdrawable+3*withdrawn)
-	for _, vesting := range accountVestings.Vestings {
+	for _, vesting := range accountVestings.VestingPools {
 		vesting.Withdrawn = sdk.NewInt(withdrawable)
 		vesting.LastModificationWithdrawn = sdk.NewInt(withdrawable)
 	}

@@ -198,22 +198,22 @@ func (m *QueryVestingTypeResponse) GetVestingTypes() []GenesisVestingType {
 	return nil
 }
 
-type QueryVestingRequest struct {
+type QueryVestingPoolsRequest struct {
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 }
 
-func (m *QueryVestingRequest) Reset()         { *m = QueryVestingRequest{} }
-func (m *QueryVestingRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryVestingRequest) ProtoMessage()    {}
-func (*QueryVestingRequest) Descriptor() ([]byte, []int) {
+func (m *QueryVestingPoolsRequest) Reset()         { *m = QueryVestingPoolsRequest{} }
+func (m *QueryVestingPoolsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryVestingPoolsRequest) ProtoMessage()    {}
+func (*QueryVestingPoolsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1a48d110cdc5bffa, []int{4}
 }
-func (m *QueryVestingRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryVestingPoolsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryVestingRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryVestingPoolsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryVestingRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryVestingPoolsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -223,42 +223,42 @@ func (m *QueryVestingRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *QueryVestingRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryVestingRequest.Merge(m, src)
+func (m *QueryVestingPoolsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVestingPoolsRequest.Merge(m, src)
 }
-func (m *QueryVestingRequest) XXX_Size() int {
+func (m *QueryVestingPoolsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryVestingRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryVestingRequest.DiscardUnknown(m)
+func (m *QueryVestingPoolsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVestingPoolsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryVestingRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryVestingPoolsRequest proto.InternalMessageInfo
 
-func (m *QueryVestingRequest) GetAddress() string {
+func (m *QueryVestingPoolsRequest) GetAddress() string {
 	if m != nil {
 		return m.Address
 	}
 	return ""
 }
 
-type QueryVestingResponse struct {
-	DelegableAddress string         `protobuf:"bytes,1,opt,name=delegable_address,json=delegableAddress,proto3" json:"delegable_address,omitempty" yaml:"delegable_address"`
-	Vestings         []*VestingInfo `protobuf:"bytes,2,rep,name=vestings,proto3" json:"vestings,omitempty"`
+type QueryVestingPoolsResponse struct {
+	DelegableAddress string             `protobuf:"bytes,1,opt,name=delegable_address,json=delegableAddress,proto3" json:"delegable_address,omitempty" yaml:"delegable_address"`
+	VestingPools     []*VestingPoolInfo `protobuf:"bytes,2,rep,name=vesting_pools,json=vestingPools,proto3" json:"vesting_pools,omitempty"`
 }
 
-func (m *QueryVestingResponse) Reset()         { *m = QueryVestingResponse{} }
-func (m *QueryVestingResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryVestingResponse) ProtoMessage()    {}
-func (*QueryVestingResponse) Descriptor() ([]byte, []int) {
+func (m *QueryVestingPoolsResponse) Reset()         { *m = QueryVestingPoolsResponse{} }
+func (m *QueryVestingPoolsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryVestingPoolsResponse) ProtoMessage()    {}
+func (*QueryVestingPoolsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1a48d110cdc5bffa, []int{5}
 }
-func (m *QueryVestingResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryVestingPoolsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryVestingResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryVestingPoolsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryVestingResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryVestingPoolsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -268,33 +268,33 @@ func (m *QueryVestingResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *QueryVestingResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryVestingResponse.Merge(m, src)
+func (m *QueryVestingPoolsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVestingPoolsResponse.Merge(m, src)
 }
-func (m *QueryVestingResponse) XXX_Size() int {
+func (m *QueryVestingPoolsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryVestingResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryVestingResponse.DiscardUnknown(m)
+func (m *QueryVestingPoolsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVestingPoolsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryVestingResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryVestingPoolsResponse proto.InternalMessageInfo
 
-func (m *QueryVestingResponse) GetDelegableAddress() string {
+func (m *QueryVestingPoolsResponse) GetDelegableAddress() string {
 	if m != nil {
 		return m.DelegableAddress
 	}
 	return ""
 }
 
-func (m *QueryVestingResponse) GetVestings() []*VestingInfo {
+func (m *QueryVestingPoolsResponse) GetVestingPools() []*VestingPoolInfo {
 	if m != nil {
-		return m.Vestings
+		return m.VestingPools
 	}
 	return nil
 }
 
-type VestingInfo struct {
+type VestingPoolInfo struct {
 	Id          int32     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	VestingType string    `protobuf:"bytes,2,opt,name=vesting_type,json=vestingType,proto3" json:"vesting_type,omitempty"`
 	LockStart   time.Time `protobuf:"bytes,3,opt,name=lock_start,json=lockStart,proto3,stdtime" json:"lock_start"`
@@ -308,18 +308,18 @@ type VestingInfo struct {
 	TransferAllowed     bool        `protobuf:"varint,11,opt,name=transfer_allowed,json=transferAllowed,proto3" json:"transfer_allowed,omitempty"`
 }
 
-func (m *VestingInfo) Reset()         { *m = VestingInfo{} }
-func (m *VestingInfo) String() string { return proto.CompactTextString(m) }
-func (*VestingInfo) ProtoMessage()    {}
-func (*VestingInfo) Descriptor() ([]byte, []int) {
+func (m *VestingPoolInfo) Reset()         { *m = VestingPoolInfo{} }
+func (m *VestingPoolInfo) String() string { return proto.CompactTextString(m) }
+func (*VestingPoolInfo) ProtoMessage()    {}
+func (*VestingPoolInfo) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1a48d110cdc5bffa, []int{6}
 }
-func (m *VestingInfo) XXX_Unmarshal(b []byte) error {
+func (m *VestingPoolInfo) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *VestingInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *VestingPoolInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_VestingInfo.Marshal(b, m, deterministic)
+		return xxx_messageInfo_VestingPoolInfo.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -329,75 +329,75 @@ func (m *VestingInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *VestingInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VestingInfo.Merge(m, src)
+func (m *VestingPoolInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VestingPoolInfo.Merge(m, src)
 }
-func (m *VestingInfo) XXX_Size() int {
+func (m *VestingPoolInfo) XXX_Size() int {
 	return m.Size()
 }
-func (m *VestingInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_VestingInfo.DiscardUnknown(m)
+func (m *VestingPoolInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_VestingPoolInfo.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_VestingInfo proto.InternalMessageInfo
+var xxx_messageInfo_VestingPoolInfo proto.InternalMessageInfo
 
-func (m *VestingInfo) GetId() int32 {
+func (m *VestingPoolInfo) GetId() int32 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *VestingInfo) GetVestingType() string {
+func (m *VestingPoolInfo) GetVestingType() string {
 	if m != nil {
 		return m.VestingType
 	}
 	return ""
 }
 
-func (m *VestingInfo) GetLockStart() time.Time {
+func (m *VestingPoolInfo) GetLockStart() time.Time {
 	if m != nil {
 		return m.LockStart
 	}
 	return time.Time{}
 }
 
-func (m *VestingInfo) GetLockEnd() time.Time {
+func (m *VestingPoolInfo) GetLockEnd() time.Time {
 	if m != nil {
 		return m.LockEnd
 	}
 	return time.Time{}
 }
 
-func (m *VestingInfo) GetWithdrawable() string {
+func (m *VestingPoolInfo) GetWithdrawable() string {
 	if m != nil {
 		return m.Withdrawable
 	}
 	return ""
 }
 
-func (m *VestingInfo) GetVested() *types.Coin {
+func (m *VestingPoolInfo) GetVested() *types.Coin {
 	if m != nil {
 		return m.Vested
 	}
 	return nil
 }
 
-func (m *VestingInfo) GetCurrentVestedAmount() string {
+func (m *VestingPoolInfo) GetCurrentVestedAmount() string {
 	if m != nil {
 		return m.CurrentVestedAmount
 	}
 	return ""
 }
 
-func (m *VestingInfo) GetSentAmount() string {
+func (m *VestingPoolInfo) GetSentAmount() string {
 	if m != nil {
 		return m.SentAmount
 	}
 	return ""
 }
 
-func (m *VestingInfo) GetTransferAllowed() bool {
+func (m *VestingPoolInfo) GetTransferAllowed() bool {
 	if m != nil {
 		return m.TransferAllowed
 	}
@@ -409,64 +409,65 @@ func init() {
 	proto.RegisterType((*QueryParamsResponse)(nil), "chain4energy.c4echain.cfevesting.QueryParamsResponse")
 	proto.RegisterType((*QueryVestingTypeRequest)(nil), "chain4energy.c4echain.cfevesting.QueryVestingTypeRequest")
 	proto.RegisterType((*QueryVestingTypeResponse)(nil), "chain4energy.c4echain.cfevesting.QueryVestingTypeResponse")
-	proto.RegisterType((*QueryVestingRequest)(nil), "chain4energy.c4echain.cfevesting.QueryVestingRequest")
-	proto.RegisterType((*QueryVestingResponse)(nil), "chain4energy.c4echain.cfevesting.QueryVestingResponse")
-	proto.RegisterType((*VestingInfo)(nil), "chain4energy.c4echain.cfevesting.VestingInfo")
+	proto.RegisterType((*QueryVestingPoolsRequest)(nil), "chain4energy.c4echain.cfevesting.QueryVestingPoolsRequest")
+	proto.RegisterType((*QueryVestingPoolsResponse)(nil), "chain4energy.c4echain.cfevesting.QueryVestingPoolsResponse")
+	proto.RegisterType((*VestingPoolInfo)(nil), "chain4energy.c4echain.cfevesting.VestingPoolInfo")
 }
 
 func init() { proto.RegisterFile("cfevesting/query.proto", fileDescriptor_1a48d110cdc5bffa) }
 
 var fileDescriptor_1a48d110cdc5bffa = []byte{
-	// 779 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x55, 0xc1, 0x4e, 0xdb, 0x4a,
-	0x14, 0x8d, 0x03, 0x84, 0x30, 0xe1, 0xbd, 0xc7, 0x1b, 0xf2, 0x1e, 0x26, 0x8a, 0x9c, 0xd4, 0x42,
-	0x6a, 0x40, 0xc2, 0x16, 0x69, 0xa8, 0x54, 0x36, 0x15, 0x41, 0x6d, 0xc5, 0xa6, 0x6a, 0x5d, 0xc4,
-	0xa2, 0x52, 0x15, 0x4d, 0xec, 0x89, 0xb1, 0x9a, 0xcc, 0x18, 0x7b, 0x42, 0x1a, 0x55, 0xdd, 0x54,
-	0xfd, 0x00, 0x24, 0x96, 0x55, 0x3f, 0xa0, 0x52, 0x17, 0xfd, 0x0c, 0x96, 0x48, 0xdd, 0x74, 0x45,
-	0x2b, 0xe8, 0x17, 0xf0, 0x05, 0x95, 0x67, 0xc6, 0x60, 0x2b, 0x55, 0x21, 0x5d, 0x25, 0x73, 0xef,
-	0x39, 0xe7, 0x9e, 0xb9, 0xba, 0x77, 0x0c, 0xfe, 0xb7, 0x3b, 0xf8, 0x00, 0x87, 0xcc, 0x23, 0xae,
-	0xb9, 0xdf, 0xc7, 0xc1, 0xd0, 0xf0, 0x03, 0xca, 0x28, 0xac, 0xda, 0x7b, 0xc8, 0x23, 0x0d, 0x4c,
-	0x70, 0xe0, 0x0e, 0x0d, 0xbb, 0x81, 0xf9, 0xd9, 0xb8, 0x42, 0x97, 0x8a, 0x2e, 0x75, 0x29, 0x07,
-	0x9b, 0xd1, 0x3f, 0xc1, 0x2b, 0x95, 0x5d, 0x4a, 0xdd, 0x2e, 0x36, 0x91, 0xef, 0x99, 0x88, 0x10,
-	0xca, 0x10, 0xf3, 0x28, 0x09, 0x65, 0x76, 0xc5, 0xa6, 0x61, 0x8f, 0x86, 0x66, 0x1b, 0x85, 0x58,
-	0x94, 0x33, 0x0f, 0xd6, 0xda, 0x98, 0xa1, 0x35, 0xd3, 0x47, 0xae, 0x47, 0x38, 0x58, 0x62, 0x17,
-	0x12, 0xce, 0x7c, 0x14, 0xa0, 0x5e, 0x2c, 0xa2, 0x25, 0x12, 0xf2, 0xb7, 0xc5, 0x86, 0x3e, 0xbe,
-	0xca, 0x27, 0x8a, 0xc4, 0xf2, 0x36, 0xf5, 0x62, 0xe1, 0x8a, 0xb4, 0xc8, 0x4f, 0xed, 0x7e, 0xc7,
-	0x64, 0x5e, 0x0f, 0x87, 0x0c, 0xf5, 0x7c, 0x09, 0x50, 0x13, 0x05, 0x5c, 0x4c, 0x70, 0xe8, 0x49,
-	0x69, 0xbd, 0x08, 0xe0, 0xd3, 0xc8, 0xf5, 0x13, 0xee, 0xc7, 0xc2, 0xfb, 0x7d, 0x1c, 0x32, 0xfd,
-	0x05, 0x98, 0x4f, 0x45, 0x43, 0x9f, 0x92, 0x10, 0xc3, 0x87, 0x20, 0x27, 0x7c, 0xab, 0x4a, 0x55,
-	0xa9, 0x15, 0xea, 0x35, 0xe3, 0xba, 0x9e, 0x1a, 0x42, 0xa1, 0x39, 0x79, 0x7c, 0x5a, 0xc9, 0x58,
-	0x92, 0xad, 0x2f, 0x82, 0x05, 0x2e, 0xbf, 0x2b, 0x40, 0x3b, 0x43, 0x1f, 0xc7, 0x95, 0x8f, 0x14,
-	0xa0, 0x8e, 0xe6, 0x64, 0xfd, 0x01, 0xf8, 0x2b, 0xd5, 0x1e, 0x35, 0x5b, 0x9d, 0xa8, 0x15, 0xea,
-	0x8d, 0xeb, 0x6d, 0x3c, 0x12, 0x97, 0x4e, 0x88, 0x36, 0xcb, 0x91, 0xa5, 0x8b, 0xd3, 0x4a, 0x71,
-	0x88, 0x7a, 0xdd, 0x0d, 0x3d, 0x25, 0xac, 0x5b, 0xb3, 0x07, 0x57, 0xd0, 0x50, 0x37, 0x65, 0x3f,
-	0x24, 0x5f, 0x9a, 0x85, 0x2a, 0x98, 0x46, 0x8e, 0x13, 0xe0, 0x50, 0x34, 0x64, 0xc6, 0x8a, 0x8f,
-	0xfa, 0x27, 0x05, 0x14, 0xd3, 0x0c, 0x79, 0x85, 0x6d, 0xf0, 0xaf, 0x83, 0xbb, 0xd8, 0x45, 0xed,
-	0x2e, 0x6e, 0xa5, 0xc8, 0xcd, 0xf2, 0xc5, 0x69, 0x45, 0x15, 0x66, 0x46, 0x20, 0xba, 0x35, 0x77,
-	0x19, 0xdb, 0x14, 0x21, 0xb8, 0x0d, 0xf2, 0xd2, 0x64, 0xdc, 0x88, 0xd5, 0xeb, 0x1b, 0x21, 0xfd,
-	0x6c, 0x93, 0x0e, 0xb5, 0x2e, 0xe9, 0xfa, 0x87, 0x09, 0x50, 0x48, 0x64, 0xe0, 0xdf, 0x20, 0xeb,
-	0x39, 0xdc, 0xd6, 0x94, 0x95, 0xf5, 0x1c, 0x78, 0x0b, 0xcc, 0x26, 0xfb, 0xa3, 0x66, 0xf9, 0x6d,
-	0x0b, 0x89, 0x1e, 0xc1, 0x2d, 0x00, 0xba, 0xd4, 0x7e, 0xd9, 0x0a, 0x19, 0x0a, 0x98, 0x3a, 0xc1,
-	0xe7, 0xa3, 0x64, 0x88, 0xc1, 0x34, 0xe2, 0xc1, 0x34, 0x76, 0xe2, 0xc1, 0x6c, 0xe6, 0xa3, 0xf6,
-	0x1f, 0x7e, 0xab, 0x28, 0xd6, 0x4c, 0xc4, 0x7b, 0x16, 0xd1, 0xe0, 0x7d, 0x90, 0xe7, 0x22, 0x98,
-	0x38, 0xea, 0xe4, 0x18, 0x12, 0xd3, 0x11, 0xeb, 0x01, 0x71, 0xa0, 0x0e, 0x66, 0x07, 0x1e, 0xdb,
-	0x73, 0x02, 0x34, 0x88, 0x5a, 0xa5, 0xe6, 0xb8, 0xd1, 0x54, 0x0c, 0xae, 0x81, 0x5c, 0x64, 0x1c,
-	0x3b, 0x6a, 0x9e, 0x97, 0x58, 0x34, 0xc4, 0x7a, 0x19, 0xd1, 0x7a, 0x19, 0x72, 0xbd, 0x8c, 0x2d,
-	0xea, 0x11, 0x4b, 0x02, 0x61, 0x1d, 0xfc, 0x67, 0xf7, 0x83, 0x00, 0x13, 0xd6, 0x12, 0x91, 0x16,
-	0xea, 0xd1, 0x3e, 0x61, 0xea, 0x0c, 0xd7, 0x9f, 0x97, 0xc9, 0x5d, 0x9e, 0xdb, 0xe4, 0x29, 0x58,
-	0x01, 0x85, 0x30, 0x22, 0x48, 0x24, 0xe0, 0x48, 0x10, 0x85, 0x24, 0x60, 0x19, 0xcc, 0xb1, 0x00,
-	0x91, 0xb0, 0x83, 0x83, 0x16, 0xea, 0x76, 0xe9, 0x00, 0x3b, 0x6a, 0xa1, 0xaa, 0xd4, 0xf2, 0xd6,
-	0x3f, 0x71, 0x7c, 0x53, 0x84, 0xeb, 0xef, 0x26, 0xc1, 0x14, 0x1f, 0x27, 0xf8, 0x5e, 0x01, 0x39,
-	0xb1, 0x53, 0xf0, 0x06, 0x63, 0x3f, 0xba, 0xda, 0xa5, 0xf5, 0x31, 0x59, 0x62, 0x6e, 0xf5, 0xa5,
-	0xb7, 0x5f, 0x7e, 0x1c, 0x65, 0x35, 0x58, 0x36, 0x93, 0x74, 0x33, 0xfd, 0x9c, 0xc1, 0xcf, 0xca,
-	0xe5, 0x1c, 0xf1, 0xa1, 0xb8, 0x77, 0xc3, 0x62, 0xa3, 0x0f, 0x41, 0x69, 0xe3, 0x4f, 0xa8, 0xd2,
-	0xec, 0x0a, 0x37, 0xbb, 0x04, 0xf5, 0x5f, 0x9b, 0x4d, 0x8e, 0x32, 0xfc, 0xa8, 0x80, 0x69, 0xa9,
-	0x01, 0xd7, 0xc7, 0xab, 0x19, 0x5b, 0xbd, 0x3b, 0x2e, 0x4d, 0xda, 0x34, 0xb9, 0xcd, 0x65, 0x78,
-	0xfb, 0xb7, 0x36, 0xcd, 0xd7, 0xf2, 0x0d, 0x78, 0xd3, 0x7c, 0x7c, 0x7c, 0xa6, 0x29, 0x27, 0x67,
-	0x9a, 0xf2, 0xfd, 0x4c, 0x53, 0x0e, 0xcf, 0xb5, 0xcc, 0xc9, 0xb9, 0x96, 0xf9, 0x7a, 0xae, 0x65,
-	0x9e, 0x37, 0x5c, 0x8f, 0xed, 0xf5, 0xdb, 0x86, 0x4d, 0x7b, 0x69, 0x31, 0xbb, 0x81, 0x57, 0x79,
-	0xc0, 0x7c, 0x65, 0x26, 0x3e, 0x02, 0xfc, 0x95, 0x6b, 0xe7, 0xf8, 0x52, 0xdd, 0xf9, 0x19, 0x00,
-	0x00, 0xff, 0xff, 0x6f, 0x0b, 0xbe, 0x8d, 0x33, 0x07, 0x00, 0x00,
+	// 790 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x55, 0xcd, 0x4e, 0xdb, 0x4a,
+	0x14, 0x8e, 0x03, 0x84, 0x30, 0xc9, 0xbd, 0x70, 0x07, 0xee, 0xc5, 0x44, 0x91, 0x93, 0x6b, 0xb1,
+	0xc8, 0x45, 0xc2, 0x56, 0x72, 0xc3, 0xa2, 0x74, 0x51, 0x11, 0xd4, 0x56, 0x6c, 0x2a, 0xea, 0x22,
+	0x16, 0x95, 0xaa, 0x68, 0x62, 0x4f, 0x8c, 0x55, 0x67, 0xc6, 0xd8, 0x13, 0xd2, 0xa8, 0xea, 0xa6,
+	0x4f, 0x80, 0xc4, 0xaa, 0xea, 0xaa, 0x6f, 0xd0, 0x27, 0x60, 0xcd, 0x12, 0xa9, 0x9b, 0xae, 0x68,
+	0x05, 0x7d, 0x02, 0x9e, 0xa0, 0xf2, 0x78, 0x4c, 0xec, 0x06, 0x95, 0x9f, 0x55, 0x32, 0xe7, 0x7c,
+	0xe7, 0x3b, 0xdf, 0x7c, 0x39, 0x67, 0x02, 0xfe, 0x31, 0xbb, 0xf8, 0x00, 0x07, 0xcc, 0x21, 0xb6,
+	0xbe, 0xdf, 0xc7, 0xfe, 0x50, 0xf3, 0x7c, 0xca, 0x28, 0xac, 0x9a, 0x7b, 0xc8, 0x21, 0x4d, 0x4c,
+	0xb0, 0x6f, 0x0f, 0x35, 0xb3, 0x89, 0xf9, 0x59, 0x1b, 0xa1, 0x4b, 0x0b, 0x36, 0xb5, 0x29, 0x07,
+	0xeb, 0xe1, 0xb7, 0xa8, 0xae, 0x54, 0xb6, 0x29, 0xb5, 0x5d, 0xac, 0x23, 0xcf, 0xd1, 0x11, 0x21,
+	0x94, 0x21, 0xe6, 0x50, 0x12, 0x88, 0xec, 0x8a, 0x49, 0x83, 0x1e, 0x0d, 0xf4, 0x0e, 0x0a, 0x70,
+	0xd4, 0x4e, 0x3f, 0xa8, 0x77, 0x30, 0x43, 0x75, 0xdd, 0x43, 0xb6, 0x43, 0x38, 0x58, 0x60, 0x17,
+	0x13, 0xca, 0x3c, 0xe4, 0xa3, 0x5e, 0x4c, 0xa2, 0x24, 0x12, 0xe2, 0xb3, 0xcd, 0x86, 0x1e, 0x1e,
+	0xe5, 0x13, 0x4d, 0x62, 0x7a, 0x93, 0x3a, 0x31, 0x71, 0x45, 0x48, 0xe4, 0xa7, 0x4e, 0xbf, 0xab,
+	0x33, 0xa7, 0x87, 0x03, 0x86, 0x7a, 0x9e, 0x00, 0xc8, 0x89, 0x06, 0x36, 0x26, 0x38, 0x70, 0x04,
+	0xb5, 0xba, 0x00, 0xe0, 0xf3, 0x50, 0xf5, 0x36, 0xd7, 0x63, 0xe0, 0xfd, 0x3e, 0x0e, 0x98, 0xfa,
+	0x0a, 0xcc, 0xa7, 0xa2, 0x81, 0x47, 0x49, 0x80, 0xe1, 0x13, 0x90, 0x8b, 0x74, 0xcb, 0x52, 0x55,
+	0xaa, 0x15, 0x1a, 0x35, 0xed, 0x26, 0x4f, 0xb5, 0x88, 0xa1, 0x35, 0x79, 0x72, 0x56, 0xc9, 0x18,
+	0xa2, 0x5a, 0x5d, 0x02, 0x8b, 0x9c, 0x7e, 0x37, 0x02, 0xed, 0x0c, 0x3d, 0x1c, 0x77, 0x3e, 0x92,
+	0x80, 0x3c, 0x9e, 0x13, 0xfd, 0x07, 0xe0, 0x8f, 0x94, 0x3d, 0x72, 0xb6, 0x3a, 0x51, 0x2b, 0x34,
+	0x9a, 0x37, 0xcb, 0x78, 0x1a, 0x5d, 0x3a, 0x41, 0xda, 0x2a, 0x87, 0x92, 0x2e, 0xcf, 0x2a, 0x0b,
+	0x43, 0xd4, 0x73, 0xd7, 0xd5, 0x14, 0xb1, 0x6a, 0x14, 0x0f, 0x46, 0xd0, 0x40, 0x6d, 0xa6, 0x45,
+	0x6d, 0x53, 0xea, 0xc6, 0x5e, 0x41, 0x19, 0x4c, 0x23, 0xcb, 0xf2, 0x71, 0x10, 0xb9, 0x32, 0x63,
+	0xc4, 0x47, 0xf5, 0x58, 0x02, 0x4b, 0xd7, 0x94, 0x89, 0xcb, 0x6c, 0x81, 0xbf, 0x2c, 0xec, 0x62,
+	0x1b, 0x75, 0x5c, 0xdc, 0x4e, 0x31, 0xb4, 0xca, 0x97, 0x67, 0x15, 0x39, 0x92, 0x35, 0x06, 0x51,
+	0x8d, 0xb9, 0xab, 0xd8, 0x46, 0x14, 0x82, 0xbb, 0x23, 0x5f, 0xbc, 0xb0, 0x87, 0xf0, 0xa5, 0x7e,
+	0xb3, 0x2f, 0x09, 0x65, 0x5b, 0xa4, 0x4b, 0xaf, 0xae, 0xcd, 0xa5, 0xaa, 0x9f, 0x26, 0xc0, 0xec,
+	0x2f, 0x08, 0xf8, 0x27, 0xc8, 0x3a, 0x16, 0xd7, 0x39, 0x65, 0x64, 0x1d, 0x0b, 0xfe, 0x0b, 0x8a,
+	0x49, 0xeb, 0xe4, 0x2c, 0xf7, 0xa0, 0x90, 0xb0, 0x0f, 0x6e, 0x02, 0xe0, 0x52, 0xf3, 0x75, 0x3b,
+	0x60, 0xc8, 0x67, 0xf2, 0x04, 0x1f, 0x9d, 0x92, 0x16, 0xcd, 0xac, 0x16, 0xcf, 0xac, 0xb6, 0x13,
+	0xcf, 0x6c, 0x2b, 0x1f, 0xfe, 0x32, 0x87, 0xdf, 0x2a, 0x92, 0x31, 0x13, 0xd6, 0xbd, 0x08, 0xcb,
+	0xe0, 0x23, 0x90, 0xe7, 0x24, 0x98, 0x58, 0xf2, 0xe4, 0x1d, 0x28, 0xa6, 0xc3, 0xaa, 0xc7, 0xc4,
+	0x82, 0x2a, 0x28, 0x0e, 0x1c, 0xb6, 0x67, 0xf9, 0x68, 0x10, 0x7a, 0x27, 0xe7, 0xb8, 0xd0, 0x54,
+	0x0c, 0xd6, 0x41, 0x2e, 0x14, 0x8e, 0x2d, 0x39, 0xcf, 0x5b, 0x2c, 0x69, 0xd1, 0xe6, 0x69, 0xe1,
+	0xe6, 0x69, 0x62, 0xf3, 0xb4, 0x4d, 0xea, 0x10, 0x43, 0x00, 0x61, 0x03, 0xfc, 0x6d, 0xf6, 0x7d,
+	0x1f, 0x13, 0xd6, 0x8e, 0x22, 0x6d, 0xd4, 0xa3, 0x7d, 0xc2, 0xe4, 0x19, 0xce, 0x3f, 0x2f, 0x92,
+	0xbb, 0x3c, 0xb7, 0xc1, 0x53, 0xb0, 0x02, 0x0a, 0x41, 0x58, 0x20, 0x90, 0x80, 0x23, 0x41, 0x18,
+	0x12, 0x80, 0xff, 0xc0, 0x1c, 0xf3, 0x11, 0x09, 0xba, 0xd8, 0x6f, 0x23, 0xd7, 0xa5, 0x03, 0x6c,
+	0xc9, 0x85, 0xaa, 0x54, 0xcb, 0x1b, 0xb3, 0x71, 0x7c, 0x23, 0x0a, 0x37, 0x3e, 0x4c, 0x82, 0x29,
+	0x3e, 0x64, 0xf0, 0xa3, 0x04, 0x72, 0xd1, 0xba, 0xc1, 0x5b, 0x6c, 0xc4, 0xf8, 0xd6, 0x97, 0xd6,
+	0xee, 0x58, 0x15, 0x0d, 0xb2, 0xba, 0xfc, 0xfe, 0xcb, 0x8f, 0xa3, 0xac, 0x02, 0xcb, 0x7a, 0xb2,
+	0x5c, 0x4f, 0xbf, 0x74, 0xf0, 0xb3, 0x04, 0x0a, 0x89, 0xf5, 0x83, 0x0f, 0x6e, 0xd9, 0x6c, 0xfc,
+	0x8d, 0x28, 0xad, 0xdf, 0xa7, 0x54, 0x88, 0x5d, 0xe1, 0x62, 0x97, 0xa1, 0x7a, 0xbd, 0xd8, 0xe4,
+	0x28, 0xc3, 0x63, 0x09, 0x14, 0x93, 0xab, 0x0b, 0xef, 0xd8, 0x38, 0xf9, 0x4c, 0x94, 0x1e, 0xde,
+	0xab, 0x56, 0xa8, 0x5e, 0xe3, 0xaa, 0x75, 0xb8, 0xfa, 0x7b, 0xd5, 0x7c, 0xf9, 0xf5, 0xb7, 0xe2,
+	0xa5, 0x78, 0xd7, 0x7a, 0x76, 0x72, 0xae, 0x48, 0xa7, 0xe7, 0x8a, 0xf4, 0xfd, 0x5c, 0x91, 0x0e,
+	0x2f, 0x94, 0xcc, 0xe9, 0x85, 0x92, 0xf9, 0x7a, 0xa1, 0x64, 0x5e, 0x36, 0x6d, 0x87, 0xed, 0xf5,
+	0x3b, 0x9a, 0x49, 0x7b, 0x69, 0x4a, 0xb3, 0x89, 0x57, 0x79, 0x40, 0x7f, 0xa3, 0x27, 0xfe, 0x34,
+	0xf8, 0xab, 0xd8, 0xc9, 0xf1, 0x4d, 0xfb, 0xff, 0x67, 0x00, 0x00, 0x00, 0xff, 0xff, 0x9b, 0xf1,
+	0x7b, 0x15, 0x63, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -486,7 +487,7 @@ type QueryClient interface {
 	// Queries a list of VestingType items.
 	VestingType(ctx context.Context, in *QueryVestingTypeRequest, opts ...grpc.CallOption) (*QueryVestingTypeResponse, error)
 	// Queries a list of Vesting items.
-	Vesting(ctx context.Context, in *QueryVestingRequest, opts ...grpc.CallOption) (*QueryVestingResponse, error)
+	VestingPools(ctx context.Context, in *QueryVestingPoolsRequest, opts ...grpc.CallOption) (*QueryVestingPoolsResponse, error)
 }
 
 type queryClient struct {
@@ -515,9 +516,9 @@ func (c *queryClient) VestingType(ctx context.Context, in *QueryVestingTypeReque
 	return out, nil
 }
 
-func (c *queryClient) Vesting(ctx context.Context, in *QueryVestingRequest, opts ...grpc.CallOption) (*QueryVestingResponse, error) {
-	out := new(QueryVestingResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfevesting.Query/Vesting", in, out, opts...)
+func (c *queryClient) VestingPools(ctx context.Context, in *QueryVestingPoolsRequest, opts ...grpc.CallOption) (*QueryVestingPoolsResponse, error) {
+	out := new(QueryVestingPoolsResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfevesting.Query/VestingPools", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -531,7 +532,7 @@ type QueryServer interface {
 	// Queries a list of VestingType items.
 	VestingType(context.Context, *QueryVestingTypeRequest) (*QueryVestingTypeResponse, error)
 	// Queries a list of Vesting items.
-	Vesting(context.Context, *QueryVestingRequest) (*QueryVestingResponse, error)
+	VestingPools(context.Context, *QueryVestingPoolsRequest) (*QueryVestingPoolsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -544,8 +545,8 @@ func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsReq
 func (*UnimplementedQueryServer) VestingType(ctx context.Context, req *QueryVestingTypeRequest) (*QueryVestingTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VestingType not implemented")
 }
-func (*UnimplementedQueryServer) Vesting(ctx context.Context, req *QueryVestingRequest) (*QueryVestingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Vesting not implemented")
+func (*UnimplementedQueryServer) VestingPools(ctx context.Context, req *QueryVestingPoolsRequest) (*QueryVestingPoolsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VestingPools not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -588,20 +589,20 @@ func _Query_VestingType_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Vesting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryVestingRequest)
+func _Query_VestingPools_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVestingPoolsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).Vesting(ctx, in)
+		return srv.(QueryServer).VestingPools(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfevesting.Query/Vesting",
+		FullMethod: "/chain4energy.c4echain.cfevesting.Query/VestingPools",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Vesting(ctx, req.(*QueryVestingRequest))
+		return srv.(QueryServer).VestingPools(ctx, req.(*QueryVestingPoolsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -619,8 +620,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_VestingType_Handler,
 		},
 		{
-			MethodName: "Vesting",
-			Handler:    _Query_Vesting_Handler,
+			MethodName: "VestingPools",
+			Handler:    _Query_VestingPools_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -743,7 +744,7 @@ func (m *QueryVestingTypeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryVestingRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryVestingPoolsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -753,12 +754,12 @@ func (m *QueryVestingRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryVestingRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryVestingPoolsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryVestingRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryVestingPoolsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -773,7 +774,7 @@ func (m *QueryVestingRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryVestingResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryVestingPoolsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -783,20 +784,20 @@ func (m *QueryVestingResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryVestingResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryVestingPoolsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryVestingResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryVestingPoolsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Vestings) > 0 {
-		for iNdEx := len(m.Vestings) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.VestingPools) > 0 {
+		for iNdEx := len(m.VestingPools) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Vestings[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.VestingPools[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -817,7 +818,7 @@ func (m *QueryVestingResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *VestingInfo) Marshal() (dAtA []byte, err error) {
+func (m *VestingPoolInfo) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -827,12 +828,12 @@ func (m *VestingInfo) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *VestingInfo) MarshalTo(dAtA []byte) (int, error) {
+func (m *VestingPoolInfo) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *VestingInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *VestingPoolInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -966,7 +967,7 @@ func (m *QueryVestingTypeResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryVestingRequest) Size() (n int) {
+func (m *QueryVestingPoolsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -979,7 +980,7 @@ func (m *QueryVestingRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryVestingResponse) Size() (n int) {
+func (m *QueryVestingPoolsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -989,8 +990,8 @@ func (m *QueryVestingResponse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	if len(m.Vestings) > 0 {
-		for _, e := range m.Vestings {
+	if len(m.VestingPools) > 0 {
+		for _, e := range m.VestingPools {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -998,7 +999,7 @@ func (m *QueryVestingResponse) Size() (n int) {
 	return n
 }
 
-func (m *VestingInfo) Size() (n int) {
+func (m *VestingPoolInfo) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1310,7 +1311,7 @@ func (m *QueryVestingTypeResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryVestingRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryVestingPoolsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1333,10 +1334,10 @@ func (m *QueryVestingRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryVestingRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryVestingPoolsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryVestingRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryVestingPoolsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1392,7 +1393,7 @@ func (m *QueryVestingRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryVestingResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryVestingPoolsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1415,10 +1416,10 @@ func (m *QueryVestingResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryVestingResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryVestingPoolsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryVestingResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryVestingPoolsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1455,7 +1456,7 @@ func (m *QueryVestingResponse) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Vestings", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field VestingPools", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1482,8 +1483,8 @@ func (m *QueryVestingResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Vestings = append(m.Vestings, &VestingInfo{})
-			if err := m.Vestings[len(m.Vestings)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.VestingPools = append(m.VestingPools, &VestingPoolInfo{})
+			if err := m.VestingPools[len(m.VestingPools)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1508,7 +1509,7 @@ func (m *QueryVestingResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *VestingInfo) Unmarshal(dAtA []byte) error {
+func (m *VestingPoolInfo) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1531,10 +1532,10 @@ func (m *VestingInfo) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: VestingInfo: wiretype end group for non-group")
+			return fmt.Errorf("proto: VestingPoolInfo: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: VestingInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: VestingPoolInfo: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -21,7 +21,7 @@ func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual 
 
 	numOfFields := reflect.TypeOf(types.AccountVestings{}).NumField()
 	j := 0
-	require.EqualValues(t, len(expected.Vestings), len(actual.Vestings))
+	require.EqualValues(t, len(expected.VestingPools), len(actual.VestingPools))
 	j++
 	require.EqualValues(t, expected.Address, actual.Address)
 	// j++
@@ -30,8 +30,8 @@ func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual 
 	require.EqualValues(t, numOfFields, j)
 
 	numOfFields = reflect.TypeOf(types.VestingPool{}).NumField()
-	for i, expectedVesting := range expected.Vestings {
-		actualVesting := actual.Vestings[i]
+	for i, expectedVesting := range expected.VestingPools {
+		actualVesting := actual.VestingPools[i]
 		j := 0
 		require.EqualValues(t, expectedVesting.Id, actualVesting.Id)
 		j++
@@ -123,7 +123,7 @@ func generateAccountVestings(numberOfAccounts int, numberOfVestingsPerAccount in
 			vesting := generateVesting(i+accountStartId, j+vestingStartId)
 			vestings = append(vestings, &vesting)
 		}
-		accountVestings.Vestings = vestings
+		accountVestings.VestingPools = vestings
 
 		accountVestingsArr = append(accountVestingsArr, &accountVestings)
 	}

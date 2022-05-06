@@ -17,7 +17,7 @@ message AccountVestings {
   
   string address = 1;
   // string delegable_address = 2;
-  repeated VestingPool vestings = 3; 
+  repeated VestingPool vesting_pools = 3; 
 }
 
 message VestingPool {

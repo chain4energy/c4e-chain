@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) Vesting(goCtx context.Context, req *types.QueryVestingRequest) (*types.QueryVestingResponse, error) {
+func (k Keeper) VestingPools(goCtx context.Context, req *types.QueryVestingPoolsRequest) (*types.QueryVestingPoolsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -17,15 +17,15 @@ func (k Keeper) Vesting(goCtx context.Context, req *types.QueryVestingRequest) (
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	vestings, found := k.GetAccountVestings(ctx, req.Address)
 	if !found {
-		return &types.QueryVestingResponse{}, nil
+		return &types.QueryVestingPoolsResponse{}, nil
 	}
 
-	result := types.QueryVestingResponse{}
-	for _, vesting := range vestings.Vestings {
+	result := types.QueryVestingPoolsResponse{}
+	for _, vesting := range vestings.VestingPools {
 		coin := sdk.Coin{Denom: k.GetParams(ctx).Denom, Amount: vesting.Vested}
 		withdrawable := CalculateWithdrawable(ctx.BlockTime(), *vesting)
 		current := vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
-		vestingInfo := types.VestingInfo{
+		vestingInfo := types.VestingPoolInfo{
 			Id:                  vesting.Id,
 			VestingType:         vesting.VestingType,
 			LockStart:        	 vesting.LockStart,
@@ -36,7 +36,7 @@ func (k Keeper) Vesting(goCtx context.Context, req *types.QueryVestingRequest) (
 			SentAmount:          vesting.Sent.String(),
 			TransferAllowed:     vesting.TransferAllowed,
 		}
-		result.Vestings = append(result.Vestings, &vestingInfo)
+		result.VestingPools = append(result.VestingPools, &vestingInfo)
 
 	}
 	return &result, nil

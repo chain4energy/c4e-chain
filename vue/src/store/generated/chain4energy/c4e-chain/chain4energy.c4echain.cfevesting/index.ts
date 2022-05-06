@@ -5,12 +5,12 @@ import { AccountVestings } from "./module/types/cfevesting/account_vesting"
 import { VestingPool } from "./module/types/cfevesting/account_vesting"
 import { GenesisVestingType } from "./module/types/cfevesting/genesis"
 import { Params } from "./module/types/cfevesting/params"
-import { VestingInfo } from "./module/types/cfevesting/query"
+import { VestingPoolInfo } from "./module/types/cfevesting/query"
 import { VestingTypes } from "./module/types/cfevesting/vesting_types"
 import { VestingType } from "./module/types/cfevesting/vesting_types"
 
 
-export { AccountVestingsList, AccountVestings, VestingPool, GenesisVestingType, Params, VestingInfo, VestingTypes, VestingType };
+export { AccountVestingsList, AccountVestings, VestingPool, GenesisVestingType, Params, VestingPoolInfo, VestingTypes, VestingType };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -50,7 +50,7 @@ const getDefaultState = () => {
 	return {
 				Params: {},
 				VestingType: {},
-				Vesting: {},
+				VestingPools: {},
 				
 				_Structure: {
 						AccountVestingsList: getStructure(AccountVestingsList.fromPartial({})),
@@ -58,7 +58,7 @@ const getDefaultState = () => {
 						VestingPool: getStructure(VestingPool.fromPartial({})),
 						GenesisVestingType: getStructure(GenesisVestingType.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
-						VestingInfo: getStructure(VestingInfo.fromPartial({})),
+						VestingPoolInfo: getStructure(VestingPoolInfo.fromPartial({})),
 						VestingTypes: getStructure(VestingTypes.fromPartial({})),
 						VestingType: getStructure(VestingType.fromPartial({})),
 						
@@ -101,11 +101,11 @@ export default {
 					}
 			return state.VestingType[JSON.stringify(params)] ?? {}
 		},
-				getVesting: (state) => (params = { params: {}}) => {
+				getVestingPools: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.Vesting[JSON.stringify(params)] ?? {}
+			return state.VestingPools[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -190,38 +190,23 @@ export default {
 		 		
 		
 		
-		async QueryVesting({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryVestingPools({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryVesting( key.address)).data
+				let value= (await queryClient.queryVestingPools( key.address)).data
 				
 					
-				commit('QUERY', { query: 'Vesting', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryVesting', payload: { options: { all }, params: {...key},query }})
-				return getters['getVesting']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'VestingPools', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryVestingPools', payload: { options: { all }, params: {...key},query }})
+				return getters['getVestingPools']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryVesting API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryVestingPools API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
 		
 		
-		async sendMsgCreateVestingPool({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateVestingPool(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateVestingPool:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgCreateVestingPool:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		async sendMsgWithdrawAllAvailable({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -234,21 +219,6 @@ export default {
 					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new Error('TxClient:MsgWithdrawAllAvailable:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgCreateVestingAccount({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateVestingAccount(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgCreateVestingAccount:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -267,20 +237,37 @@ export default {
 				}
 			}
 		},
-		
-		async MsgCreateVestingPool({ rootGetters }, { value }) {
+		async sendMsgCreateVestingPool({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
 				const msg = await txClient.msgCreateVestingPool(value)
-				return msg
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgCreateVestingPool:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgCreateVestingPool:Create Could not create message: ' + e.message)
+				}else{
+					throw new Error('TxClient:MsgCreateVestingPool:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
+		async sendMsgCreateVestingAccount({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgCreateVestingAccount(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgCreateVestingAccount:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		
 		async MsgWithdrawAllAvailable({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -294,19 +281,6 @@ export default {
 				}
 			}
 		},
-		async MsgCreateVestingAccount({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateVestingAccount(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgCreateVestingAccount:Create Could not create message: ' + e.message)
-				}
-			}
-		},
 		async MsgSendToVestingAccount({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -317,6 +291,32 @@ export default {
 					throw new Error('TxClient:MsgSendToVestingAccount:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgSendToVestingAccount:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgCreateVestingPool({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgCreateVestingPool(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreateVestingPool:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCreateVestingPool:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgCreateVestingAccount({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgCreateVestingAccount(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCreateVestingAccount:Create Could not create message: ' + e.message)
 				}
 			}
 		},

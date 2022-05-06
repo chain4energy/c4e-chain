@@ -11,7 +11,7 @@ export interface AccountVestingsList {
 export interface AccountVestings {
   address: string;
   /** string delegable_address = 2; */
-  vestings: VestingPool[];
+  vesting_pools: VestingPool[];
 }
 
 export interface VestingPool {
@@ -110,7 +110,7 @@ export const AccountVestings = {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
-    for (const v of message.vestings) {
+    for (const v of message.vesting_pools) {
       VestingPool.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
@@ -120,7 +120,7 @@ export const AccountVestings = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAccountVestings } as AccountVestings;
-    message.vestings = [];
+    message.vesting_pools = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -128,7 +128,9 @@ export const AccountVestings = {
           message.address = reader.string();
           break;
         case 3:
-          message.vestings.push(VestingPool.decode(reader, reader.uint32()));
+          message.vesting_pools.push(
+            VestingPool.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -140,15 +142,15 @@ export const AccountVestings = {
 
   fromJSON(object: any): AccountVestings {
     const message = { ...baseAccountVestings } as AccountVestings;
-    message.vestings = [];
+    message.vesting_pools = [];
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
     } else {
       message.address = "";
     }
-    if (object.vestings !== undefined && object.vestings !== null) {
-      for (const e of object.vestings) {
-        message.vestings.push(VestingPool.fromJSON(e));
+    if (object.vesting_pools !== undefined && object.vesting_pools !== null) {
+      for (const e of object.vesting_pools) {
+        message.vesting_pools.push(VestingPool.fromJSON(e));
       }
     }
     return message;
@@ -157,27 +159,27 @@ export const AccountVestings = {
   toJSON(message: AccountVestings): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
-    if (message.vestings) {
-      obj.vestings = message.vestings.map((e) =>
+    if (message.vesting_pools) {
+      obj.vesting_pools = message.vesting_pools.map((e) =>
         e ? VestingPool.toJSON(e) : undefined
       );
     } else {
-      obj.vestings = [];
+      obj.vesting_pools = [];
     }
     return obj;
   },
 
   fromPartial(object: DeepPartial<AccountVestings>): AccountVestings {
     const message = { ...baseAccountVestings } as AccountVestings;
-    message.vestings = [];
+    message.vesting_pools = [];
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     } else {
       message.address = "";
     }
-    if (object.vestings !== undefined && object.vestings !== null) {
-      for (const e of object.vestings) {
-        message.vestings.push(VestingPool.fromPartial(e));
+    if (object.vesting_pools !== undefined && object.vesting_pools !== null) {
+      for (const e of object.vesting_pools) {
+        message.vesting_pools.push(VestingPool.fromPartial(e));
       }
     }
     return message;

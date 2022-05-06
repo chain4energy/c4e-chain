@@ -205,9 +205,9 @@ func TestVestingId(t *testing.T) {
 	accVesting, accFound := k.GetAccountVestings(ctx, addr)
 	require.EqualValues(t, true, accFound)
 
-	require.EqualValues(t, 1, len(accVesting.Vestings))
+	require.EqualValues(t, 1, len(accVesting.VestingPools))
 
-	vesting := accVesting.Vestings[0]
+	vesting := accVesting.VestingPools[0]
 	require.EqualValues(t, 1, vesting.Id)
 
 	msg.Name = "v-pool-2"
@@ -218,12 +218,12 @@ func TestVestingId(t *testing.T) {
 	accVesting, accFound = k.GetAccountVestings(ctx, addr)
 	require.EqualValues(t, true, accFound)
 
-	require.EqualValues(t, 2, len(accVesting.Vestings))
+	require.EqualValues(t, 2, len(accVesting.VestingPools))
 
-	vesting = accVesting.Vestings[0]
+	vesting = accVesting.VestingPools[0]
 	require.EqualValues(t, 1, vesting.Id)
 
-	vesting = accVesting.Vestings[1]
+	vesting = accVesting.VestingPools[1]
 	require.EqualValues(t, 2, vesting.Id)
 
 	msg.Name = "v-pool-3"
@@ -234,14 +234,14 @@ func TestVestingId(t *testing.T) {
 	accVesting, accFound = k.GetAccountVestings(ctx, addr)
 	require.EqualValues(t, true, accFound)
 
-	require.EqualValues(t, 3, len(accVesting.Vestings))
+	require.EqualValues(t, 3, len(accVesting.VestingPools))
 
-	vesting = accVesting.Vestings[0]
+	vesting = accVesting.VestingPools[0]
 	require.EqualValues(t, 1, vesting.Id)
 
-	vesting = accVesting.Vestings[1]
+	vesting = accVesting.VestingPools[1]
 	require.EqualValues(t, 2, vesting.Id)
 
-	vesting = accVesting.Vestings[2]
+	vesting = accVesting.VestingPools[2]
 	require.EqualValues(t, 3, vesting.Id)
 }

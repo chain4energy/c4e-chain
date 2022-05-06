@@ -88,7 +88,7 @@ func (gs GenesisState) validateAccountsVestings() error {
 }
 
 func (av AccountVestings) Validate() error {
-	vs := av.Vestings
+	vs := av.VestingPools
 	_, err := sdk.AccAddressFromBech32(av.Address)
 	if err != nil {
 		return fmt.Errorf("account vestings address: %s: %s", av.Address, err.Error())
@@ -108,7 +108,7 @@ func (av AccountVestings) Validate() error {
 }
 
 func (av AccountVestings) ValidateAgainstVestingTypes(vestingTypes []GenesisVestingType) error {
-	vs := av.Vestings
+	vs := av.VestingPools
 	for _, v := range vs {
 		found := false
 		for _, vtCheck := range vestingTypes {

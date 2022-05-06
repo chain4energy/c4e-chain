@@ -26,8 +26,8 @@ service Query {
 	}
 
 // Queries a list of Vesting items.
-	rpc Vesting(QueryVestingRequest) returns (QueryVestingResponse) {
-		option (google.api.http).get = "/chain4energy/vesting/vesting/{address}";
+	rpc VestingPools(QueryVestingPoolsRequest) returns (QueryVestingPoolsResponse) {
+		option (google.api.http).get = "/chain4energy/vesting/vesting_pools/{address}";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -50,16 +50,16 @@ message QueryVestingTypeResponse {
   repeated GenesisVestingType vesting_types = 2 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vesting_types\""];
 }
 
-message QueryVestingRequest {
+message QueryVestingPoolsRequest {
   string address = 1;
 }
 
-message QueryVestingResponse {
+message QueryVestingPoolsResponse {
   string delegable_address = 1 [(gogoproto.moretags) = "yaml:\"delegable_address\""];
-  repeated VestingInfo vestings = 2; 
+  repeated VestingPoolInfo vesting_pools = 2; 
 }
 
-message VestingInfo {
+message VestingPoolInfo {
   int32 id = 1;
   string vesting_type = 2;
   google.protobuf.Timestamp lock_start = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];

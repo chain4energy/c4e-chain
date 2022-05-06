@@ -22,16 +22,16 @@ export interface QueryVestingTypeResponse {
   vesting_types: GenesisVestingType[];
 }
 
-export interface QueryVestingRequest {
+export interface QueryVestingPoolsRequest {
   address: string;
 }
 
-export interface QueryVestingResponse {
+export interface QueryVestingPoolsResponse {
   delegable_address: string;
-  vestings: VestingInfo[];
+  vesting_pools: VestingPoolInfo[];
 }
 
-export interface VestingInfo {
+export interface VestingPoolInfo {
   id: number;
   vesting_type: string;
   lock_start: Date | undefined;
@@ -268,11 +268,11 @@ export const QueryVestingTypeResponse = {
   },
 };
 
-const baseQueryVestingRequest: object = { address: "" };
+const baseQueryVestingPoolsRequest: object = { address: "" };
 
-export const QueryVestingRequest = {
+export const QueryVestingPoolsRequest = {
   encode(
-    message: QueryVestingRequest,
+    message: QueryVestingPoolsRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.address !== "") {
@@ -281,10 +281,15 @@ export const QueryVestingRequest = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryVestingRequest {
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVestingPoolsRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQueryVestingRequest } as QueryVestingRequest;
+    const message = {
+      ...baseQueryVestingPoolsRequest,
+    } as QueryVestingPoolsRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -299,8 +304,10 @@ export const QueryVestingRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryVestingRequest {
-    const message = { ...baseQueryVestingRequest } as QueryVestingRequest;
+  fromJSON(object: any): QueryVestingPoolsRequest {
+    const message = {
+      ...baseQueryVestingPoolsRequest,
+    } as QueryVestingPoolsRequest;
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
     } else {
@@ -309,14 +316,18 @@ export const QueryVestingRequest = {
     return message;
   },
 
-  toJSON(message: QueryVestingRequest): unknown {
+  toJSON(message: QueryVestingPoolsRequest): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<QueryVestingRequest>): QueryVestingRequest {
-    const message = { ...baseQueryVestingRequest } as QueryVestingRequest;
+  fromPartial(
+    object: DeepPartial<QueryVestingPoolsRequest>
+  ): QueryVestingPoolsRequest {
+    const message = {
+      ...baseQueryVestingPoolsRequest,
+    } as QueryVestingPoolsRequest;
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     } else {
@@ -326,27 +337,32 @@ export const QueryVestingRequest = {
   },
 };
 
-const baseQueryVestingResponse: object = { delegable_address: "" };
+const baseQueryVestingPoolsResponse: object = { delegable_address: "" };
 
-export const QueryVestingResponse = {
+export const QueryVestingPoolsResponse = {
   encode(
-    message: QueryVestingResponse,
+    message: QueryVestingPoolsResponse,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.delegable_address !== "") {
       writer.uint32(10).string(message.delegable_address);
     }
-    for (const v of message.vestings) {
-      VestingInfo.encode(v!, writer.uint32(18).fork()).ldelim();
+    for (const v of message.vesting_pools) {
+      VestingPoolInfo.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryVestingResponse {
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVestingPoolsResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQueryVestingResponse } as QueryVestingResponse;
-    message.vestings = [];
+    const message = {
+      ...baseQueryVestingPoolsResponse,
+    } as QueryVestingPoolsResponse;
+    message.vesting_pools = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -354,7 +370,9 @@ export const QueryVestingResponse = {
           message.delegable_address = reader.string();
           break;
         case 2:
-          message.vestings.push(VestingInfo.decode(reader, reader.uint32()));
+          message.vesting_pools.push(
+            VestingPoolInfo.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -364,9 +382,11 @@ export const QueryVestingResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryVestingResponse {
-    const message = { ...baseQueryVestingResponse } as QueryVestingResponse;
-    message.vestings = [];
+  fromJSON(object: any): QueryVestingPoolsResponse {
+    const message = {
+      ...baseQueryVestingPoolsResponse,
+    } as QueryVestingPoolsResponse;
+    message.vesting_pools = [];
     if (
       object.delegable_address !== undefined &&
       object.delegable_address !== null
@@ -375,31 +395,35 @@ export const QueryVestingResponse = {
     } else {
       message.delegable_address = "";
     }
-    if (object.vestings !== undefined && object.vestings !== null) {
-      for (const e of object.vestings) {
-        message.vestings.push(VestingInfo.fromJSON(e));
+    if (object.vesting_pools !== undefined && object.vesting_pools !== null) {
+      for (const e of object.vesting_pools) {
+        message.vesting_pools.push(VestingPoolInfo.fromJSON(e));
       }
     }
     return message;
   },
 
-  toJSON(message: QueryVestingResponse): unknown {
+  toJSON(message: QueryVestingPoolsResponse): unknown {
     const obj: any = {};
     message.delegable_address !== undefined &&
       (obj.delegable_address = message.delegable_address);
-    if (message.vestings) {
-      obj.vestings = message.vestings.map((e) =>
-        e ? VestingInfo.toJSON(e) : undefined
+    if (message.vesting_pools) {
+      obj.vesting_pools = message.vesting_pools.map((e) =>
+        e ? VestingPoolInfo.toJSON(e) : undefined
       );
     } else {
-      obj.vestings = [];
+      obj.vesting_pools = [];
     }
     return obj;
   },
 
-  fromPartial(object: DeepPartial<QueryVestingResponse>): QueryVestingResponse {
-    const message = { ...baseQueryVestingResponse } as QueryVestingResponse;
-    message.vestings = [];
+  fromPartial(
+    object: DeepPartial<QueryVestingPoolsResponse>
+  ): QueryVestingPoolsResponse {
+    const message = {
+      ...baseQueryVestingPoolsResponse,
+    } as QueryVestingPoolsResponse;
+    message.vesting_pools = [];
     if (
       object.delegable_address !== undefined &&
       object.delegable_address !== null
@@ -408,16 +432,16 @@ export const QueryVestingResponse = {
     } else {
       message.delegable_address = "";
     }
-    if (object.vestings !== undefined && object.vestings !== null) {
-      for (const e of object.vestings) {
-        message.vestings.push(VestingInfo.fromPartial(e));
+    if (object.vesting_pools !== undefined && object.vesting_pools !== null) {
+      for (const e of object.vesting_pools) {
+        message.vesting_pools.push(VestingPoolInfo.fromPartial(e));
       }
     }
     return message;
   },
 };
 
-const baseVestingInfo: object = {
+const baseVestingPoolInfo: object = {
   id: 0,
   vesting_type: "",
   withdrawable: "",
@@ -426,8 +450,8 @@ const baseVestingInfo: object = {
   transfer_allowed: false,
 };
 
-export const VestingInfo = {
-  encode(message: VestingInfo, writer: Writer = Writer.create()): Writer {
+export const VestingPoolInfo = {
+  encode(message: VestingPoolInfo, writer: Writer = Writer.create()): Writer {
     if (message.id !== 0) {
       writer.uint32(8).int32(message.id);
     }
@@ -464,10 +488,10 @@ export const VestingInfo = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): VestingInfo {
+  decode(input: Reader | Uint8Array, length?: number): VestingPoolInfo {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseVestingInfo } as VestingInfo;
+    const message = { ...baseVestingPoolInfo } as VestingPoolInfo;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -510,8 +534,8 @@ export const VestingInfo = {
     return message;
   },
 
-  fromJSON(object: any): VestingInfo {
-    const message = { ...baseVestingInfo } as VestingInfo;
+  fromJSON(object: any): VestingPoolInfo {
+    const message = { ...baseVestingPoolInfo } as VestingPoolInfo;
     if (object.id !== undefined && object.id !== null) {
       message.id = Number(object.id);
     } else {
@@ -566,7 +590,7 @@ export const VestingInfo = {
     return message;
   },
 
-  toJSON(message: VestingInfo): unknown {
+  toJSON(message: VestingPoolInfo): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = message.id);
     message.vesting_type !== undefined &&
@@ -592,8 +616,8 @@ export const VestingInfo = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<VestingInfo>): VestingInfo {
-    const message = { ...baseVestingInfo } as VestingInfo;
+  fromPartial(object: DeepPartial<VestingPoolInfo>): VestingPoolInfo {
+    const message = { ...baseVestingPoolInfo } as VestingPoolInfo;
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
     } else {
@@ -658,7 +682,9 @@ export interface Query {
     request: QueryVestingTypeRequest
   ): Promise<QueryVestingTypeResponse>;
   /** Queries a list of Vesting items. */
-  Vesting(request: QueryVestingRequest): Promise<QueryVestingResponse>;
+  VestingPools(
+    request: QueryVestingPoolsRequest
+  ): Promise<QueryVestingPoolsResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -690,15 +716,17 @@ export class QueryClientImpl implements Query {
     );
   }
 
-  Vesting(request: QueryVestingRequest): Promise<QueryVestingResponse> {
-    const data = QueryVestingRequest.encode(request).finish();
+  VestingPools(
+    request: QueryVestingPoolsRequest
+  ): Promise<QueryVestingPoolsResponse> {
+    const data = QueryVestingPoolsRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfevesting.Query",
-      "Vesting",
+      "VestingPools",
       data
     );
     return promise.then((data) =>
-      QueryVestingResponse.decode(new Reader(data))
+      QueryVestingPoolsResponse.decode(new Reader(data))
     );
   }
 }

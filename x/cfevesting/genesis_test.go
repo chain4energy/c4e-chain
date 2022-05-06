@@ -128,7 +128,7 @@ func TestGenesisValidationVestingAccountVestingsNoVestingTypesError(t *testing.T
 func TestGenesisValidationVestingAccountVestingsOneVestingTypeNotExistError(t *testing.T) {
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
-	accountVestingsListArray[4].Vestings[7].VestingType = "wrong type"
+	accountVestingsListArray[4].VestingPools[7].VestingType = "wrong type"
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams("test_denom"),
@@ -139,13 +139,13 @@ func TestGenesisValidationVestingAccountVestingsOneVestingTypeNotExistError(t *t
 
 	err := genesisState.Validate()
 	require.EqualError(t, err,
-		"vesting with id: 8 defined for account: "+accountVestingsListArray[4].Address+" - vesting type not found: "+accountVestingsListArray[4].Vestings[7].VestingType)
+		"vesting with id: 8 defined for account: "+accountVestingsListArray[4].Address+" - vesting type not found: "+accountVestingsListArray[4].VestingPools[7].VestingType)
 
 }
 
 func TestGenesisValidationVestingAccountVestingsMoreThanOneIdError(t *testing.T) {
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
-	accountVestingsListArray[4].Vestings[3].Id = accountVestingsListArray[4].Vestings[6].Id
+	accountVestingsListArray[4].VestingPools[3].Id = accountVestingsListArray[4].VestingPools[6].Id
 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
 
 	genesisState := types.GenesisState{
@@ -335,7 +335,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 func getUndelegableAmount(accvestings []*types.AccountVestings) sdk.Int {
 	result := sdk.ZeroInt()
 	for _, accV := range accvestings {
-		for _, v := range accV.Vestings {
+		for _, v := range accV.VestingPools {
 			// if !v.DelegationAllowed {
 			result = result.Add(v.LastModificationVested)
 			// }
@@ -609,7 +609,7 @@ func generateGenesisVestingTypesForAccounVestings(vestings []*types.AccountVesti
 	m := make(map[string]types.GenesisVestingType)
 	result := []types.GenesisVestingType{}
 	for _, av := range vestings {
-		for _, v := range av.Vestings {
+		for _, v := range av.VestingPools {
 			gvt := types.GenesisVestingType{
 				Name:                     v.VestingType,
 				LockupPeriod:             vt.LockupPeriod.Nanoseconds() / int64(time.Hour),
