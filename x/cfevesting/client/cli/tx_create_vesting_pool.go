@@ -17,8 +17,8 @@ var _ = strconv.Itoa(0)
 
 func CmdVest() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-vesting-account [name] [amount] [duration] [vesting-type]",
-		Short: "Broadcast message createVestingAccount",
+		Use:   "create-vesting-pool [name] [amount] [duration] [vesting-type]",
+		Short: "Broadcast message createVestingPool",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
