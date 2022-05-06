@@ -93,7 +93,7 @@ func TestGenesisValidationVestingTypesNameMoreThanOnceError(t *testing.T) {
 		"vesting type with name: test-vesting-type-7 defined more than once")
 }
 
-func TestGenesisValidationVestingAccountVestings(t *testing.T) {
+func TestGenesisValidationVestingAccountVestingPools(t *testing.T) {
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
 
@@ -109,7 +109,7 @@ func TestGenesisValidationVestingAccountVestings(t *testing.T) {
 
 }
 
-func TestGenesisValidationVestingAccountVestingsNoVestingTypesError(t *testing.T) {
+func TestGenesisValidationVestingAccountVestingPoolsNoVestingTypesError(t *testing.T) {
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
 
 	genesisState := types.GenesisState{
@@ -125,7 +125,7 @@ func TestGenesisValidationVestingAccountVestingsNoVestingTypesError(t *testing.T
 
 }
 
-func TestGenesisValidationVestingAccountVestingsOneVestingTypeNotExistError(t *testing.T) {
+func TestGenesisValidationVestingAccountVestingPoolsOneVestingTypeNotExistError(t *testing.T) {
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
 	accountVestingsListArray[4].VestingPools[7].VestingType = "wrong type"
@@ -143,7 +143,7 @@ func TestGenesisValidationVestingAccountVestingsOneVestingTypeNotExistError(t *t
 
 }
 
-func TestGenesisValidationVestingAccountVestingsMoreThanOneIdError(t *testing.T) {
+func TestGenesisValidationVestingAccountVestingPoolsMoreThanOneIdError(t *testing.T) {
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
 	accountVestingsListArray[4].VestingPools[3].Id = accountVestingsListArray[4].VestingPools[6].Id
 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
@@ -161,7 +161,25 @@ func TestGenesisValidationVestingAccountVestingsMoreThanOneIdError(t *testing.T)
 
 }
 
-func TestGenesisValidationVestingAccountVestingsMoreThanOneAddressError(t *testing.T) {
+func TestGenesisValidationVestingAccountVestingPoolsMoreThanOneNameError(t *testing.T) {
+	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
+	accountVestingsListArray[4].VestingPools[3].Name = accountVestingsListArray[4].VestingPools[6].Name
+	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
+
+	genesisState := types.GenesisState{
+		Params: types.NewParams("test_denom"),
+
+		VestingTypes:        vestingTypes,
+		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
+	}
+
+	err := genesisState.Validate()
+	require.EqualError(t, err,
+		"vesting with name: "+accountVestingsListArray[4].VestingPools[3].Name+" defined more than once for account: "+accountVestingsListArray[4].Address)
+
+}
+
+func TestGenesisValidationVestingAccountVestingPoolsMoreThanOneAddressError(t *testing.T) {
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
 	accountVestingsListArray[3].Address = accountVestingsListArray[7].Address
 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
@@ -590,11 +608,11 @@ func generateGenesisVestingTypes(numberOfVestingTypes int, startId int) []types.
 	for _, vt := range vts {
 
 		gvt := types.GenesisVestingType{
-			Name:                     vt.Name,
-			LockupPeriod:             vt.LockupPeriod.Nanoseconds() / int64(time.Hour),
-			LockupPeriodUnit:         keeper.Day,
-			VestingPeriod:            vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
-			VestingPeriodUnit:        keeper.Day,
+			Name:              vt.Name,
+			LockupPeriod:      vt.LockupPeriod.Nanoseconds() / int64(time.Hour),
+			LockupPeriodUnit:  keeper.Day,
+			VestingPeriod:     vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
+			VestingPeriodUnit: keeper.Day,
 			// TokenReleasingPeriod:     vt.TokenReleasingPeriod.Nanoseconds() / int64(time.Hour),
 			// TokenReleasingPeriodUnit: keeper.Day,
 			// DelegationsAllowed:       vt.DelegationsAllowed,
@@ -611,11 +629,11 @@ func generateGenesisVestingTypesForAccounVestings(vestings []*types.AccountVesti
 	for _, av := range vestings {
 		for _, v := range av.VestingPools {
 			gvt := types.GenesisVestingType{
-				Name:                     v.VestingType,
-				LockupPeriod:             vt.LockupPeriod.Nanoseconds() / int64(time.Hour),
-				LockupPeriodUnit:         keeper.Day,
-				VestingPeriod:            vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
-				VestingPeriodUnit:        keeper.Day,
+				Name:              v.VestingType,
+				LockupPeriod:      vt.LockupPeriod.Nanoseconds() / int64(time.Hour),
+				LockupPeriodUnit:  keeper.Day,
+				VestingPeriod:     vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
+				VestingPeriodUnit: keeper.Day,
 				// TokenReleasingPeriod:     vt.TokenReleasingPeriod.Nanoseconds() / int64(time.Hour),
 				// TokenReleasingPeriodUnit: keeper.Day,
 				// DelegationsAllowed:       vt.DelegationsAllowed,

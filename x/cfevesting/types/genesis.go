@@ -95,12 +95,20 @@ func (av AccountVestings) Validate() error {
 	}
 	for _, v := range vs {
 		numOfIds := 0
+		numOfNames := 0
 		for _, vCheck := range vs {
 			if v.Id == vCheck.Id {
 				numOfIds++
 			}
 			if numOfIds > 1 {
 				return fmt.Errorf("vesting with id: %d defined more than once for account: %s", v.Id, av.Address)
+			}
+
+			if v.Name == vCheck.Name {
+				numOfNames++
+			}
+			if numOfNames > 1 {
+				return fmt.Errorf("vesting with name: %s defined more than once for account: %s", v.Name, av.Address)
 			}
 		}
 	}
