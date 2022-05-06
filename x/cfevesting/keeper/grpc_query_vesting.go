@@ -27,8 +27,9 @@ func (k Keeper) VestingPools(goCtx context.Context, req *types.QueryVestingPools
 		current := vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
 		vestingInfo := types.VestingPoolInfo{
 			Id:                  vesting.Id,
+			Name:                vesting.Name,
 			VestingType:         vesting.VestingType,
-			LockStart:        	 vesting.LockStart,
+			LockStart:           vesting.LockStart,
 			LockEnd:             vesting.LockEnd,
 			Withdrawable:        withdrawable.String(),
 			Vested:              &coin,

@@ -33,6 +33,7 @@ export interface QueryVestingPoolsResponse {
 
 export interface VestingPoolInfo {
   id: number;
+  name: string;
   vesting_type: string;
   lock_start: Date | undefined;
   lock_end: Date | undefined;
@@ -443,6 +444,7 @@ export const QueryVestingPoolsResponse = {
 
 const baseVestingPoolInfo: object = {
   id: 0,
+  name: "",
   vesting_type: "",
   withdrawable: "",
   current_vested_amount: "",
@@ -455,35 +457,38 @@ export const VestingPoolInfo = {
     if (message.id !== 0) {
       writer.uint32(8).int32(message.id);
     }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
     if (message.vesting_type !== "") {
-      writer.uint32(18).string(message.vesting_type);
+      writer.uint32(26).string(message.vesting_type);
     }
     if (message.lock_start !== undefined) {
       Timestamp.encode(
         toTimestamp(message.lock_start),
-        writer.uint32(26).fork()
+        writer.uint32(34).fork()
       ).ldelim();
     }
     if (message.lock_end !== undefined) {
       Timestamp.encode(
         toTimestamp(message.lock_end),
-        writer.uint32(34).fork()
+        writer.uint32(42).fork()
       ).ldelim();
     }
     if (message.withdrawable !== "") {
       writer.uint32(50).string(message.withdrawable);
     }
     if (message.vested !== undefined) {
-      Coin.encode(message.vested, writer.uint32(66).fork()).ldelim();
+      Coin.encode(message.vested, writer.uint32(58).fork()).ldelim();
     }
     if (message.current_vested_amount !== "") {
-      writer.uint32(74).string(message.current_vested_amount);
+      writer.uint32(66).string(message.current_vested_amount);
     }
     if (message.sent_amount !== "") {
-      writer.uint32(82).string(message.sent_amount);
+      writer.uint32(74).string(message.sent_amount);
     }
     if (message.transfer_allowed === true) {
-      writer.uint32(88).bool(message.transfer_allowed);
+      writer.uint32(80).bool(message.transfer_allowed);
     }
     return writer;
   },
@@ -499,14 +504,17 @@ export const VestingPoolInfo = {
           message.id = reader.int32();
           break;
         case 2:
-          message.vesting_type = reader.string();
+          message.name = reader.string();
           break;
         case 3:
+          message.vesting_type = reader.string();
+          break;
+        case 4:
           message.lock_start = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 4:
+        case 5:
           message.lock_end = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
@@ -514,16 +522,16 @@ export const VestingPoolInfo = {
         case 6:
           message.withdrawable = reader.string();
           break;
-        case 8:
+        case 7:
           message.vested = Coin.decode(reader, reader.uint32());
           break;
-        case 9:
+        case 8:
           message.current_vested_amount = reader.string();
           break;
-        case 10:
+        case 9:
           message.sent_amount = reader.string();
           break;
-        case 11:
+        case 10:
           message.transfer_allowed = reader.bool();
           break;
         default:
@@ -540,6 +548,11 @@ export const VestingPoolInfo = {
       message.id = Number(object.id);
     } else {
       message.id = 0;
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
     }
     if (object.vesting_type !== undefined && object.vesting_type !== null) {
       message.vesting_type = String(object.vesting_type);
@@ -593,6 +606,7 @@ export const VestingPoolInfo = {
   toJSON(message: VestingPoolInfo): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = message.id);
+    message.name !== undefined && (obj.name = message.name);
     message.vesting_type !== undefined &&
       (obj.vesting_type = message.vesting_type);
     message.lock_start !== undefined &&
@@ -622,6 +636,11 @@ export const VestingPoolInfo = {
       message.id = object.id;
     } else {
       message.id = 0;
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
     }
     if (object.vesting_type !== undefined && object.vesting_type !== null) {
       message.vesting_type = object.vesting_type;

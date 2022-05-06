@@ -61,16 +61,17 @@ message QueryVestingPoolsResponse {
 
 message VestingPoolInfo {
   int32 id = 1;
-  string vesting_type = 2;
-  google.protobuf.Timestamp lock_start = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp lock_end = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string name = 2;
+  string vesting_type = 3;
+  google.protobuf.Timestamp lock_start = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp lock_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   // google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string withdrawable = 6;
   // bool delegation_allowed = 7;
-  cosmos.base.v1beta1.Coin vested = 8;
-  string current_vested_amount = 9;
-  string sent_amount = 10;
-  bool transfer_allowed = 11;
+  cosmos.base.v1beta1.Coin vested = 7;
+  string current_vested_amount = 8;
+  string sent_amount = 9;
+  bool transfer_allowed = 10;
 }
 
 // this line is used by starport scaffolding # 3

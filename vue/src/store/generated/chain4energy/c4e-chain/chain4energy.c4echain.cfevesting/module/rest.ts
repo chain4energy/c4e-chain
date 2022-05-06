@@ -56,6 +56,7 @@ export interface CfevestingQueryVestingTypeResponse {
 export interface CfevestingVestingPoolInfo {
   /** @format int32 */
   id?: number;
+  name?: string;
   vesting_type?: string;
 
   /** @format date-time */

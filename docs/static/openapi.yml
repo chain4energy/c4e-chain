@@ -230,6 +230,8 @@ paths:
                     id:
                       type: integer
                       format: int32
+                    name:
+                      type: string
                     vesting_type:
                       type: string
                     lock_start:
@@ -28272,6 +28274,8 @@ definitions:
             id:
               type: integer
               format: int32
+            name:
+              type: string
             vesting_type:
               type: string
             lock_start:
@@ -28336,6 +28340,8 @@ definitions:
       id:
         type: integer
         format: int32
+      name:
+        type: string
       vesting_type:
         type: string
       lock_start:

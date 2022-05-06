@@ -439,6 +439,7 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsRespon
 		for _, vestingInfo := range response.VestingPools {
 			if vesting.Id == vestingInfo.Id {
 				require.EqualValues(t, vesting.VestingType, vestingInfo.VestingType)
+				require.EqualValues(t, vesting.Name, vestingInfo.Name)
 				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, current).String(), response.VestingPools[0].Withdrawable)
 				require.EqualValues(t, true, vesting.LockStart.Equal(vestingInfo.LockStart))
 				require.EqualValues(t, true, vesting.LockEnd.Equal(vestingInfo.LockEnd))
