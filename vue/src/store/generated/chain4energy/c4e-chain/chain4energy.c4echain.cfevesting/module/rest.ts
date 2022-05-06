@@ -23,9 +23,9 @@ export interface CfevestingGenesisVestingType {
 
 export type CfevestingMsgCreateVestingAccountResponse = object;
 
-export type CfevestingMsgSendToVestingAccountResponse = object;
+export type CfevestingMsgCreateVestingPoolResponse = object;
 
-export type CfevestingMsgVestResponse = object;
+export type CfevestingMsgSendToVestingAccountResponse = object;
 
 export type CfevestingMsgWithdrawAllAvailableResponse = object;
 

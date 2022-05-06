@@ -9,11 +9,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) Vest(goCtx context.Context, msg *types.MsgVest) (*types.MsgVestResponse, error) {
+func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreateVestingPool) (*types.MsgCreateVestingPoolResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	keeper := k.Keeper
-	err := keeper.Vest(ctx, msg.Creator, msg.Amount, msg.VestingType)
+	err := keeper.CreateVestingPool(ctx, msg.Creator, msg.Name, msg.Amount, msg.Duration, msg.VestingType)
 	if err != nil {
 		return nil, err
 	}
@@ -44,5 +44,5 @@ func (k msgServer) Vest(goCtx context.Context, msg *types.MsgVest) (*types.MsgVe
 		),
 	})
 
-	return &types.MsgVestResponse{}, nil
+	return &types.MsgCreateVestingPoolResponse{}, nil
 }

@@ -193,10 +193,10 @@ func verifyUnbondingDelegations(t *testing.T, ctx sdk.Context, app *app.App, del
 }
 
 func setupAccountsVestings(ctx sdk.Context, app *app.App, address string, numberOfVestings int, vestingAmount uint64, withdrawnAmount uint64) types.AccountVestings {
-	return setupAccountsVestingsWithModification(ctx, app, func(*types.Vesting) {}, address, numberOfVestings, vestingAmount, withdrawnAmount)
+	return setupAccountsVestingsWithModification(ctx, app, func(*types.VestingPool) {}, address, numberOfVestings, vestingAmount, withdrawnAmount)
 }
 
-func setupAccountsVestingsWithModification(ctx sdk.Context, app *app.App, modifyVesting func(*types.Vesting), address string, numberOfVestings int, vestingAmount uint64, withdrawnAmount uint64) types.AccountVestings {
+func setupAccountsVestingsWithModification(ctx sdk.Context, app *app.App, modifyVesting func(*types.VestingPool), address string, numberOfVestings int, vestingAmount uint64, withdrawnAmount uint64) types.AccountVestings {
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(numberOfVestings, 1, 1)
 	accountVestings.Address = address
 	// accountVestings.DelegableAddress = delegableAddress
@@ -232,8 +232,8 @@ func verifyQueryRewards(t *testing.T, ctx sdk.Context, app *app.App, delegableAd
 
 }
 
-func makeVesting(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress, accountVestingsExistsBefore bool, accountVestingsExistsAfter bool,
-	vestingType types.VestingType, amountToVest int64, accAmountBefore int64, moduleAmountBefore int64,
+func createVestingPool(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress, accountVestingsExistsBefore bool, accountVestingsExistsAfter bool,
+	vestingPoolName string, lockupDuration time.Duration, vestingType types.VestingType, amountToVest int64, accAmountBefore int64, moduleAmountBefore int64,
 	accAmountAfter int64, moduleAmountAfter int64) {
 
 	_, accFound := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
@@ -249,8 +249,9 @@ func makeVesting(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAdd
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgVest{Creator: address.String(), Amount: sdk.NewInt(amountToVest), VestingType: vestingType.Name}
-	_, error := msgServer.Vest(msgServerCtx, &msg)
+	msg := types.MsgCreateVestingPool{Creator: address.String(), Name: vestingPoolName, 
+										Amount: sdk.NewInt(amountToVest), Duration: lockupDuration, VestingType: vestingType.Name}
+	_, error := msgServer.CreateVestingPool(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
 	_, accFound = app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
@@ -280,15 +281,15 @@ func newTimeArray(n int, v time.Time) []time.Time {
 	return s
 }
 
-func verifyAccountVestings(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress,
-	vestingTypes []types.VestingType, vestedAmounts []int64, withdrawnAmounts []int64) {
+func verifyAccountVestingPools(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress,
+		vestingNames []string, durations []time.Duration, vestingTypes []types.VestingType, vestedAmounts []int64, withdrawnAmounts []int64) {
 
-	verifyAccountVestingsWithModification(t, ctx, app, address, 1, vestingTypes, newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts,
+	verifyAccountVestingsWithModification(t, ctx, app, address, 1, vestingNames, durations, vestingTypes, newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts,
 		newInts64Array(len(vestingTypes), 0), newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts)
 }
 
 func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress,
-	amountOfAllAccVestings int, vestingTypes []types.VestingType, startsTimes []time.Time, vestedAmounts []int64, withdrawnAmounts []int64,
+	amountOfAllAccVestings int, vestingNames []string, durations []time.Duration, vestingTypes []types.VestingType, startsTimes []time.Time, vestedAmounts []int64, withdrawnAmounts []int64,
 	sentAmounts []int64, modificationsTimes []time.Time, modificationsVested []int64, modificationsWithdrawn []int64) {
 	allAccVestings := app.CfevestingKeeper.GetAllAccountVestings(ctx)
 
@@ -317,9 +318,10 @@ func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *a
 		found := false
 		if vesting.Id == int32(i+1) {
 			require.EqualValues(t, i+1, vesting.Id)
+			require.EqualValues(t, vestingNames[i], vesting.Name)
 			require.EqualValues(t, vestingTypes[i].Name, vesting.VestingType)
 			require.EqualValues(t, true, startsTimes[i].Equal(vesting.LockStart))
-			require.EqualValues(t, true, ctx.BlockTime().Add(vestingTypes[i].LockupPeriod + vestingTypes[i].VestingPeriod).Equal(vesting.LockEnd))
+			require.EqualValues(t, true, ctx.BlockTime().Add(durations[i]).Equal(vesting.LockEnd))
 			// require.EqualValues(t, true, ctx.BlockTime().Add(vestingTypes[i].LockupPeriod).Add(vestingTypes[i].VestingPeriod).Equal(vesting.VestingEnd))
 			require.EqualValues(t, sdk.NewInt(vestedAmounts[i]), vesting.Vested)
 			// require.EqualValues(t, vestingTypes[i].TokenReleasingPeriod, vesting.ReleasePeriod)

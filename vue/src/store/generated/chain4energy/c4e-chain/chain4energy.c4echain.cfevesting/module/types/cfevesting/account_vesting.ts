@@ -11,11 +11,12 @@ export interface AccountVestingsList {
 export interface AccountVestings {
   address: string;
   /** string delegable_address = 2; */
-  vestings: Vesting[];
+  vestings: VestingPool[];
 }
 
-export interface Vesting {
+export interface VestingPool {
   id: number;
+  name: string;
   vesting_type: string;
   lock_start: Date | undefined;
   lock_end: Date | undefined;
@@ -110,7 +111,7 @@ export const AccountVestings = {
       writer.uint32(10).string(message.address);
     }
     for (const v of message.vestings) {
-      Vesting.encode(v!, writer.uint32(26).fork()).ldelim();
+      VestingPool.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -127,7 +128,7 @@ export const AccountVestings = {
           message.address = reader.string();
           break;
         case 3:
-          message.vestings.push(Vesting.decode(reader, reader.uint32()));
+          message.vestings.push(VestingPool.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -147,7 +148,7 @@ export const AccountVestings = {
     }
     if (object.vestings !== undefined && object.vestings !== null) {
       for (const e of object.vestings) {
-        message.vestings.push(Vesting.fromJSON(e));
+        message.vestings.push(VestingPool.fromJSON(e));
       }
     }
     return message;
@@ -158,7 +159,7 @@ export const AccountVestings = {
     message.address !== undefined && (obj.address = message.address);
     if (message.vestings) {
       obj.vestings = message.vestings.map((e) =>
-        e ? Vesting.toJSON(e) : undefined
+        e ? VestingPool.toJSON(e) : undefined
       );
     } else {
       obj.vestings = [];
@@ -176,15 +177,16 @@ export const AccountVestings = {
     }
     if (object.vestings !== undefined && object.vestings !== null) {
       for (const e of object.vestings) {
-        message.vestings.push(Vesting.fromPartial(e));
+        message.vestings.push(VestingPool.fromPartial(e));
       }
     }
     return message;
   },
 };
 
-const baseVesting: object = {
+const baseVestingPool: object = {
   id: 0,
+  name: "",
   vesting_type: "",
   vested: "",
   withdrawn: "",
@@ -194,57 +196,60 @@ const baseVesting: object = {
   transfer_allowed: false,
 };
 
-export const Vesting = {
-  encode(message: Vesting, writer: Writer = Writer.create()): Writer {
+export const VestingPool = {
+  encode(message: VestingPool, writer: Writer = Writer.create()): Writer {
     if (message.id !== 0) {
       writer.uint32(8).int32(message.id);
     }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
     if (message.vesting_type !== "") {
-      writer.uint32(18).string(message.vesting_type);
+      writer.uint32(26).string(message.vesting_type);
     }
     if (message.lock_start !== undefined) {
       Timestamp.encode(
         toTimestamp(message.lock_start),
-        writer.uint32(26).fork()
+        writer.uint32(34).fork()
       ).ldelim();
     }
     if (message.lock_end !== undefined) {
       Timestamp.encode(
         toTimestamp(message.lock_end),
-        writer.uint32(34).fork()
+        writer.uint32(42).fork()
       ).ldelim();
     }
     if (message.vested !== "") {
       writer.uint32(50).string(message.vested);
     }
     if (message.withdrawn !== "") {
-      writer.uint32(74).string(message.withdrawn);
+      writer.uint32(58).string(message.withdrawn);
     }
     if (message.sent !== "") {
-      writer.uint32(82).string(message.sent);
+      writer.uint32(66).string(message.sent);
     }
     if (message.last_modification !== undefined) {
       Timestamp.encode(
         toTimestamp(message.last_modification),
-        writer.uint32(90).fork()
+        writer.uint32(74).fork()
       ).ldelim();
     }
     if (message.last_modification_vested !== "") {
-      writer.uint32(98).string(message.last_modification_vested);
+      writer.uint32(82).string(message.last_modification_vested);
     }
     if (message.last_modification_withdrawn !== "") {
-      writer.uint32(106).string(message.last_modification_withdrawn);
+      writer.uint32(90).string(message.last_modification_withdrawn);
     }
     if (message.transfer_allowed === true) {
-      writer.uint32(112).bool(message.transfer_allowed);
+      writer.uint32(96).bool(message.transfer_allowed);
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): Vesting {
+  decode(input: Reader | Uint8Array, length?: number): VestingPool {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseVesting } as Vesting;
+    const message = { ...baseVestingPool } as VestingPool;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -252,14 +257,17 @@ export const Vesting = {
           message.id = reader.int32();
           break;
         case 2:
-          message.vesting_type = reader.string();
+          message.name = reader.string();
           break;
         case 3:
+          message.vesting_type = reader.string();
+          break;
+        case 4:
           message.lock_start = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 4:
+        case 5:
           message.lock_end = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
@@ -267,24 +275,24 @@ export const Vesting = {
         case 6:
           message.vested = reader.string();
           break;
-        case 9:
+        case 7:
           message.withdrawn = reader.string();
           break;
-        case 10:
+        case 8:
           message.sent = reader.string();
           break;
-        case 11:
+        case 9:
           message.last_modification = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 12:
+        case 10:
           message.last_modification_vested = reader.string();
           break;
-        case 13:
+        case 11:
           message.last_modification_withdrawn = reader.string();
           break;
-        case 14:
+        case 12:
           message.transfer_allowed = reader.bool();
           break;
         default:
@@ -295,12 +303,17 @@ export const Vesting = {
     return message;
   },
 
-  fromJSON(object: any): Vesting {
-    const message = { ...baseVesting } as Vesting;
+  fromJSON(object: any): VestingPool {
+    const message = { ...baseVestingPool } as VestingPool;
     if (object.id !== undefined && object.id !== null) {
       message.id = Number(object.id);
     } else {
       message.id = 0;
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
     }
     if (object.vesting_type !== undefined && object.vesting_type !== null) {
       message.vesting_type = String(object.vesting_type);
@@ -371,9 +384,10 @@ export const Vesting = {
     return message;
   },
 
-  toJSON(message: Vesting): unknown {
+  toJSON(message: VestingPool): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = message.id);
+    message.name !== undefined && (obj.name = message.name);
     message.vesting_type !== undefined &&
       (obj.vesting_type = message.vesting_type);
     message.lock_start !== undefined &&
@@ -401,12 +415,17 @@ export const Vesting = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Vesting>): Vesting {
-    const message = { ...baseVesting } as Vesting;
+  fromPartial(object: DeepPartial<VestingPool>): VestingPool {
+    const message = { ...baseVestingPool } as VestingPool;
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
     } else {
       message.id = 0;
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
     }
     if (object.vesting_type !== undefined && object.vesting_type !== null) {
       message.vesting_type = object.vesting_type;

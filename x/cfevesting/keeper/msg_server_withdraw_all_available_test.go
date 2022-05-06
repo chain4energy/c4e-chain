@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -141,11 +142,11 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	}
 	vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 1, 1, 1)
 
-	makeVesting(t, ctx, app, accAddr, false, true, /*false, false,*/ *vestingTypes.VestingTypes[0], vested, vested, /*0,*/ 0, 0, /*0,*/ vested)
+	createVestingPool(t, ctx, app, accAddr, false, true,  "v-pool-1", 1000, *vestingTypes.VestingTypes[0], vested, vested, /*0,*/ 0, 0, /*0,*/ vested)
 
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, 0, vested)
 
-	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{0})
+	verifyAccountVestingPools(t, ctx, app, accAddr, []string{"v-pool-1"}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{0})
 
 	oldCtx := ctx
 	ctx = ctx.WithBlockHeight(int64(110000)).WithBlockTime(testutils.CreateTimeFromNumOfHours(110000))
@@ -153,7 +154,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	const withdrawn = vested
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawn, vested-withdrawn)
 
-	verifyAccountVestings(t, oldCtx, app, accAddr, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{withdrawn})
+	verifyAccountVestingPools(t, oldCtx, app, accAddr, []string{"v-pool-1"}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{withdrawn})
 
 }
 

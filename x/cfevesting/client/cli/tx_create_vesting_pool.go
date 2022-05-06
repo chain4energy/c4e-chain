@@ -2,6 +2,7 @@ package cli
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -16,12 +17,14 @@ var _ = strconv.Itoa(0)
 
 func CmdVest() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vest [amount] [vesting-type]",
-		Short: "Broadcast message vest",
+		Use:   "create-vesting-account [name] [amount] [duration] [vesting-type]",
+		Short: "Broadcast message createVestingAccount",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argAmount := args[0]
-			argVestingType := args[1]
+			argName := args[0]
+			argAmount := args[1]
+			argDuration := args[2]
+			argVestingType := args[3]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -31,9 +34,17 @@ func CmdVest() *cobra.Command {
 			if !ok {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "amount must be a positive integer")
 			}
-			msg := types.NewMsgVest(
+
+			duration, err := time.ParseDuration(argDuration)
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+			}
+
+			msg := types.NewMsgCreateVestingPool(
 				clientCtx.GetFromAddress().String(),
+				argName,
 				amountInt,
+				duration,
 				argVestingType,
 			)
 			if err := msg.ValidateBasic(); err != nil {

@@ -17,23 +17,24 @@ message AccountVestings {
   
   string address = 1;
   // string delegable_address = 2;
-  repeated Vesting vestings = 3; 
+  repeated VestingPool vestings = 3; 
 }
 
-message Vesting {
+message VestingPool {
 
   int32 id = 1;
-  string vesting_type = 2;
-  google.protobuf.Timestamp lock_start = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp lock_end = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string name = 2;
+  string vesting_type = 3;
+  google.protobuf.Timestamp lock_start = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp lock_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   // google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string vested = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   // google.protobuf.Duration release_period = 7 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
   // bool delegation_allowed = 8;
-  string withdrawn = 9 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  string sent = 10 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  google.protobuf.Timestamp last_modification = 11 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  string last_modification_vested = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  string last_modification_withdrawn = 13 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  bool transfer_allowed = 14;
+  string withdrawn = 7 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string sent = 8 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  google.protobuf.Timestamp last_modification = 9 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string last_modification_vested = 10 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string last_modification_withdrawn = 11 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  bool transfer_allowed = 12;
 }

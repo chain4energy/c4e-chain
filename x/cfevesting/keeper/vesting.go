@@ -16,22 +16,23 @@ import (
 
 // vest
 
-func (k Keeper) Vest(ctx sdk.Context, addr string, amount sdk.Int, vestingType string) error {
+func (k Keeper) CreateVestingPool(ctx sdk.Context, addr string, name string, amount sdk.Int, duration time.Duration, vestingType string) error {
 	k.Logger(ctx).Debug("Vest: addr: " + addr + "amount: " + amount.String() + "vestingType: " + vestingType)
-	vt, err := k.GetVestingType(ctx, vestingType)
+	_, err := k.GetVestingType(ctx, vestingType)
 	if err != nil {
 		k.Logger(ctx).Error("Error: " + err.Error())
 
 		return sdkerrors.Wrap(sdkerrors.ErrNotFound, err.Error())
 	}
 
-	return k.addVesting(ctx, addr, addr, amount, vestingType, ctx.BlockTime(),
-		ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod))
+	return k.addVestingPool(ctx, name, addr, addr, amount, vestingType, ctx.BlockTime(),
+		ctx.BlockTime().Add(duration))
 
 }
 
-func (k Keeper) addVesting(
+func (k Keeper) addVestingPool(
 	ctx sdk.Context,
+	vestingPoolName string, 
 	vestingAddr string,
 	coinSrcAddr string,
 	amount sdk.Int,
@@ -103,11 +104,20 @@ func (k Keeper) addVesting(
 		// 		}
 		// 	}
 		// }
+
 		id = int32(len(accVestings.Vestings)) + 1
+
+		for _, pool := range accVestings.Vestings {
+			if pool.Name == vestingPoolName {
+				k.Logger(ctx).Error("Error: " + "vesting pool name already exists: " + vestingPoolName)
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "vesting pool name already exists: " + vestingPoolName)
+			}
+		}
 	}
 
-	vesting := types.Vesting{
+	vesting := types.VestingPool{
 		Id:                        id,
+		Name: 					   vestingPoolName,
 		VestingType:               vestingType,
 		LockStart:                 lockStart,
 		LockEnd:                   lockEnd,
@@ -141,8 +151,6 @@ func (k Keeper) addVesting(
 	k.Logger(ctx).Info("Vest exit: " + vestingAddr)
 	return nil
 }
-
-
 
 func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sdk.Coin, returnedError error) {
 	k.Logger(ctx).Debug("WithdrawAllAvailable: " + addr)
@@ -238,7 +246,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 	if !vestingsFound || len(accVestings.Vestings) == 0 {
 		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "no vestings found")
 	}
-	var vesting *types.Vesting = nil
+	var vesting *types.VestingPool = nil
 	for _, vest := range accVestings.Vestings {
 		if vest.Id == vestingId {
 			vesting = vest
@@ -350,7 +358,7 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 	return nil
 }
 
-func CalculateWithdrawable(current time.Time, vesting types.Vesting) sdk.Int {
+func CalculateWithdrawable(current time.Time, vesting types.VestingPool) sdk.Int {
 	// if current.Equal(vesting.VestingStart) || current.Before(vesting.VestingStart) {
 	// 	return sdk.ZeroInt()
 	// }

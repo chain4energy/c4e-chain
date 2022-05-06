@@ -17,8 +17,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgVest:
-			res, err := msgServer.Vest(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgCreateVestingPool:
+			res, err := msgServer.CreateVestingPool(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgWithdrawAllAvailable:
 			res, err := msgServer.WithdrawAllAvailable(sdk.WrapSDKContext(ctx), msg)

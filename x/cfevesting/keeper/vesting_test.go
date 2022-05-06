@@ -20,7 +20,7 @@ func TestCalculateWithdrawable(t *testing.T) {
 	// withdrawn := sdk.NewInt(500)
 	// notDivisibleAmount := sdk.NewInt(1000)
 
-	vesting := types.Vesting{
+	vesting := types.VestingPool{
 		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
@@ -161,7 +161,7 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	// withdrawn := sdk.NewInt(500)
 	// notDivisibleAmount := sdk.NewInt(1000)
 
-	vesting := types.Vesting{
+	vesting := types.VestingPool{
 		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 startHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
@@ -263,7 +263,7 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	// withdrawn := sdk.NewInt(500)
 	// notDivisibleAmount := sdk.NewInt(1000)
 
-	vesting := types.Vesting{
+	vesting := types.VestingPool{
 		Id:          1,
 		VestingType: "test",
 		LockStart:   lockEndHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),

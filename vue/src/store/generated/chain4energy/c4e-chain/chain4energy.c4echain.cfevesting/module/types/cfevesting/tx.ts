@@ -1,18 +1,21 @@
 /* eslint-disable */
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
+import { Duration } from "../google/protobuf/duration";
 import { Coin } from "../cosmos/base/v1beta1/coin";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
-export interface MsgVest {
+export interface MsgCreateVestingPool {
   creator: string;
   /** uint64 amount = 2; */
+  name: string;
   amount: string;
+  duration: Duration | undefined;
   vesting_type: string;
 }
 
-export interface MsgVestResponse {}
+export interface MsgCreateVestingPoolResponse {}
 
 export interface MsgWithdrawAllAvailable {
   creator: string;
@@ -40,36 +43,56 @@ export interface MsgSendToVestingAccount {
 
 export interface MsgSendToVestingAccountResponse {}
 
-const baseMsgVest: object = { creator: "", amount: "", vesting_type: "" };
+const baseMsgCreateVestingPool: object = {
+  creator: "",
+  name: "",
+  amount: "",
+  vesting_type: "",
+};
 
-export const MsgVest = {
-  encode(message: MsgVest, writer: Writer = Writer.create()): Writer {
+export const MsgCreateVestingPool = {
+  encode(
+    message: MsgCreateVestingPool,
+    writer: Writer = Writer.create()
+  ): Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
+    if (message.name !== "") {
+      writer.uint32(26).string(message.name);
+    }
     if (message.amount !== "") {
-      writer.uint32(18).string(message.amount);
+      writer.uint32(34).string(message.amount);
+    }
+    if (message.duration !== undefined) {
+      Duration.encode(message.duration, writer.uint32(42).fork()).ldelim();
     }
     if (message.vesting_type !== "") {
-      writer.uint32(26).string(message.vesting_type);
+      writer.uint32(50).string(message.vesting_type);
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgVest {
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateVestingPool {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgVest } as MsgVest;
+    const message = { ...baseMsgCreateVestingPool } as MsgCreateVestingPool;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
           message.creator = reader.string();
           break;
-        case 2:
+        case 3:
+          message.name = reader.string();
+          break;
+        case 4:
           message.amount = reader.string();
           break;
-        case 3:
+        case 5:
+          message.duration = Duration.decode(reader, reader.uint32());
+          break;
+        case 6:
           message.vesting_type = reader.string();
           break;
         default:
@@ -80,17 +103,27 @@ export const MsgVest = {
     return message;
   },
 
-  fromJSON(object: any): MsgVest {
-    const message = { ...baseMsgVest } as MsgVest;
+  fromJSON(object: any): MsgCreateVestingPool {
+    const message = { ...baseMsgCreateVestingPool } as MsgCreateVestingPool;
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = String(object.creator);
     } else {
       message.creator = "";
     }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
+    }
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = String(object.amount);
     } else {
       message.amount = "";
+    }
+    if (object.duration !== undefined && object.duration !== null) {
+      message.duration = Duration.fromJSON(object.duration);
+    } else {
+      message.duration = undefined;
     }
     if (object.vesting_type !== undefined && object.vesting_type !== null) {
       message.vesting_type = String(object.vesting_type);
@@ -100,26 +133,41 @@ export const MsgVest = {
     return message;
   },
 
-  toJSON(message: MsgVest): unknown {
+  toJSON(message: MsgCreateVestingPool): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
+    message.name !== undefined && (obj.name = message.name);
     message.amount !== undefined && (obj.amount = message.amount);
+    message.duration !== undefined &&
+      (obj.duration = message.duration
+        ? Duration.toJSON(message.duration)
+        : undefined);
     message.vesting_type !== undefined &&
       (obj.vesting_type = message.vesting_type);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgVest>): MsgVest {
-    const message = { ...baseMsgVest } as MsgVest;
+  fromPartial(object: DeepPartial<MsgCreateVestingPool>): MsgCreateVestingPool {
+    const message = { ...baseMsgCreateVestingPool } as MsgCreateVestingPool;
     if (object.creator !== undefined && object.creator !== null) {
       message.creator = object.creator;
     } else {
       message.creator = "";
     }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
+    }
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = object.amount;
     } else {
       message.amount = "";
+    }
+    if (object.duration !== undefined && object.duration !== null) {
+      message.duration = Duration.fromPartial(object.duration);
+    } else {
+      message.duration = undefined;
     }
     if (object.vesting_type !== undefined && object.vesting_type !== null) {
       message.vesting_type = object.vesting_type;
@@ -130,17 +178,25 @@ export const MsgVest = {
   },
 };
 
-const baseMsgVestResponse: object = {};
+const baseMsgCreateVestingPoolResponse: object = {};
 
-export const MsgVestResponse = {
-  encode(_: MsgVestResponse, writer: Writer = Writer.create()): Writer {
+export const MsgCreateVestingPoolResponse = {
+  encode(
+    _: MsgCreateVestingPoolResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgVestResponse {
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgCreateVestingPoolResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgVestResponse } as MsgVestResponse;
+    const message = {
+      ...baseMsgCreateVestingPoolResponse,
+    } as MsgCreateVestingPoolResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -152,18 +208,24 @@ export const MsgVestResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgVestResponse {
-    const message = { ...baseMsgVestResponse } as MsgVestResponse;
+  fromJSON(_: any): MsgCreateVestingPoolResponse {
+    const message = {
+      ...baseMsgCreateVestingPoolResponse,
+    } as MsgCreateVestingPoolResponse;
     return message;
   },
 
-  toJSON(_: MsgVestResponse): unknown {
+  toJSON(_: MsgCreateVestingPoolResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgVestResponse>): MsgVestResponse {
-    const message = { ...baseMsgVestResponse } as MsgVestResponse;
+  fromPartial(
+    _: DeepPartial<MsgCreateVestingPoolResponse>
+  ): MsgCreateVestingPoolResponse {
+    const message = {
+      ...baseMsgCreateVestingPoolResponse,
+    } as MsgCreateVestingPoolResponse;
     return message;
   },
 };
@@ -687,7 +749,9 @@ export const MsgSendToVestingAccountResponse = {
 
 /** Msg defines the Msg service. */
 export interface Msg {
-  Vest(request: MsgVest): Promise<MsgVestResponse>;
+  CreateVestingPool(
+    request: MsgCreateVestingPool
+  ): Promise<MsgCreateVestingPoolResponse>;
   WithdrawAllAvailable(
     request: MsgWithdrawAllAvailable
   ): Promise<MsgWithdrawAllAvailableResponse>;
@@ -714,14 +778,18 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
   }
-  Vest(request: MsgVest): Promise<MsgVestResponse> {
-    const data = MsgVest.encode(request).finish();
+  CreateVestingPool(
+    request: MsgCreateVestingPool
+  ): Promise<MsgCreateVestingPoolResponse> {
+    const data = MsgCreateVestingPool.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfevesting.Msg",
-      "Vest",
+      "CreateVestingPool",
       data
     );
-    return promise.then((data) => MsgVestResponse.decode(new Reader(data)));
+    return promise.then((data) =>
+      MsgCreateVestingPoolResponse.decode(new Reader(data))
+    );
   }
 
   WithdrawAllAvailable(

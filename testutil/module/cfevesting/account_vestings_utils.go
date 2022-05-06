@@ -29,11 +29,13 @@ func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual 
 	j++
 	require.EqualValues(t, numOfFields, j)
 
-	numOfFields = reflect.TypeOf(types.Vesting{}).NumField()
+	numOfFields = reflect.TypeOf(types.VestingPool{}).NumField()
 	for i, expectedVesting := range expected.Vestings {
 		actualVesting := actual.Vestings[i]
 		j := 0
 		require.EqualValues(t, expectedVesting.Id, actualVesting.Id)
+		j++
+		require.EqualValues(t, expectedVesting.Name, actualVesting.Name)
 		j++
 		require.EqualValues(t, expectedVesting.VestingType, actualVesting.VestingType)
 		j++
@@ -104,7 +106,7 @@ func GenerateAccountVestingsWith10BasedVestings(numberOfAccounts int, numberOfVe
 }
 
 func generateAccountVestings(numberOfAccounts int, numberOfVestingsPerAccount int,
-	accountStartId int, vestingStartId int, generateVesting func(accuntId int, vestingId int) types.Vesting) []*types.AccountVestings {
+	accountStartId int, vestingStartId int, generateVesting func(accuntId int, vestingId int) types.VestingPool) []*types.AccountVestings {
 	accountVestingsArr := []*types.AccountVestings{}
 	accountsAddresses, _ := commontestutils.CreateAccounts(2*numberOfAccounts, 0)
 
@@ -116,7 +118,7 @@ func generateAccountVestings(numberOfAccounts int, numberOfVestingsPerAccount in
 		accountVestings.Address = accountsAddresses[i].String()
 		// accountVestings.DelegableAddress = accountsAddresses[i+numberOfAccounts].String()
 
-		vestings := []*types.Vesting{}
+		vestings := []*types.VestingPool{}
 		for j := 0; j < numberOfVestingsPerAccount; j++ {
 			vesting := generateVesting(i+accountStartId, j+vestingStartId)
 			vestings = append(vestings, &vesting)
@@ -129,9 +131,9 @@ func generateAccountVestings(numberOfAccounts int, numberOfVestingsPerAccount in
 	return accountVestingsArr
 }
 
-func generateRandomVesting(accuntId int, vestingId int) types.Vesting {
+func generateRandomVesting(accuntId int, vestingId int) types.VestingPool {
 	rgen := rand.New(rand.NewSource(time.Now().UnixNano()))
-	return types.Vesting{
+	return types.VestingPool{
 		Id:                        int32(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:              CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
@@ -148,8 +150,8 @@ func generateRandomVesting(accuntId int, vestingId int) types.Vesting {
 	}
 }
 
-func generate10BasedVesting(accuntId int, vestingId int) types.Vesting {
-	return types.Vesting{
+func generate10BasedVesting(accuntId int, vestingId int) types.VestingPool {
+	return types.VestingPool{
 		Id:                        int32(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:              CreateTimeFromNumOfHours(1000),
@@ -174,7 +176,7 @@ func ToAccountVestingsPointersArray(src []types.AccountVestings) []*types.Accoun
 	return result
 }
 
-func GetExpectedWithdrawableForVesting(vesting types.Vesting, current time.Time) sdk.Int {
+func GetExpectedWithdrawableForVesting(vesting types.VestingPool, current time.Time) sdk.Int {
 	unlockingStart := vesting.LockEnd
 	if vesting.LockStart.After(unlockingStart) {
 		unlockingStart = vesting.LockStart

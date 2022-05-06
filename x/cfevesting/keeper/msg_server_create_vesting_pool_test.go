@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 
@@ -12,23 +13,23 @@ import (
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 )
 
-func TestVestDelegationNotAllowed(t *testing.T) {
-	vestTest(t)
-}
+// func TestVestDelegationNotAllowed(t *testing.T) {
+// 	vestTest(t)
+// }
 
 // func TestVestDelegationAllowed(t *testing.T) {
 // 	vestTest(t, true)
 // }
 
-func TestVestLockupZeroDelegationNotAllowed(t *testing.T) {
-	vestTestLockupZero(t)
-}
+// func TestVestLockupZeroDelegationNotAllowed(t *testing.T) {
+// 	vestTestLockupZero(t)
+// }
 
 // func TestVestLockupZeroDelegationAllowed(t *testing.T) {
 // 	vestTestLockupZero(t, true)
 // }
 
-func vestTest(t *testing.T) {
+func TestCreateVestingPool(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := setupApp(1000)
@@ -43,25 +44,17 @@ func vestTest(t *testing.T) {
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	// if delegationAllowed {
-	// 	makeVesting(t, ctx, app, accAddr, false, true, false, true, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, vested, 0)
-	// } else {
-		makeVesting(t, ctx, app, accAddr, false, true, /*false, false,*/ *usedVestingType, vested, accInitBalance, 0, /*0,*/ accInitBalance-vested, /*0,*/ vested)
-	// }
+	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *usedVestingType, vested, accInitBalance, 0, /*0,*/ accInitBalance-vested, /*0,*/ vested)
 
-	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
+	verifyAccountVestingPools(t, ctx, app, accAddr, []string{"v-pool-1"}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
 
-	// if delegationAllowed {
-	// 	makeVesting(t, ctx, app, accAddr, true, true, true, true, *usedVestingType, vested, accInitBalance-vested, vested, 0, accInitBalance-2*vested, 2*vested, 0)
-	// } else {
-		makeVesting(t, ctx, app, accAddr, true, true, /*false, false,*/ *usedVestingType, vested, accInitBalance-vested, /*0,*/ vested, accInitBalance-2*vested, /*0,*/ 2*vested)
-	// }
+	createVestingPool(t, ctx, app, accAddr, true, true,  "v-pool-2", 1200, *usedVestingType, vested, accInitBalance-vested, /*0,*/ vested, accInitBalance-2*vested, /*0,*/ 2*vested)
 
-	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType, *usedVestingType}, []int64{vested, vested}, []int64{0, 0})
+	verifyAccountVestingPools(t, ctx, app, accAddr, []string{"v-pool-1", "v-pool-2"},[]time.Duration{1000, 1200}, []types.VestingType{*usedVestingType, *usedVestingType}, []int64{vested, vested}, []int64{0, 0})
 
 }
 
-func vestTestLockupZero(t *testing.T) {
+func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := setupApp(1000)
@@ -73,31 +66,77 @@ func vestTestLockupZero(t *testing.T) {
 	const accInitBalance = 10000
 	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
-	modifyVestingType := func(vt *types.VestingType) {
-		vt.LockupPeriod = 0
-	}
-	// vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 1, 1, false, 1)
+	setupVestingTypes(ctx, app, 2, 1, 1)
 
-	vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 2, 1, 1)
-	usedVestingType := vestingTypes.VestingTypes[0]
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	// if delegationAllowed {
-	// 	makeVesting(t, ctx, app, accAddr, false, true, false, true, *usedVestingType, vested, accInitBalance, 0, 0, accInitBalance-vested, vested, 0)
-	// } else {
-	makeVesting(t, ctx, app, accAddr, false, true, /*false, false,*/ *usedVestingType, vested, accInitBalance, /*0,*/ 0, accInitBalance-vested, /*0,*/ vested)
-	// }
+	msg := types.MsgCreateVestingPool{Creator: accAddr.String(), Name: "pool", 
+										Amount: sdk.NewInt(vested), Duration: 1000, VestingType: "unknown"}
+	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
 
-	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
-
-	// if delegationAllowed {
-	// 	makeVesting(t, ctx, app, accAddr, true, true, true, true, *usedVestingType, vested, accInitBalance-vested, vested, 0, accInitBalance-2*vested, 2*vested, 0)
-	// } else {
-	makeVesting(t, ctx, app, accAddr, true, true, /*false, false,*/ *usedVestingType, vested, accInitBalance-vested, /*0,*/ vested, accInitBalance-2*vested, /*0,*/ 2*vested)
-	// }
-
-	verifyAccountVestings(t, ctx, app, accAddr, []types.VestingType{*usedVestingType, *usedVestingType}, []int64{vested, vested}, []int64{0, 0})
+	require.EqualError(t, err,
+		"vesting type not found: unknown: not found")
 
 }
+
+func TestCreateVestingPoolNameDuplication(t *testing.T) {
+	addHelperModuleAccountPerms()
+	const vested = 1000
+	app, ctx := setupApp(1000)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+
+	accAddr := acountsAddresses[0]
+
+	const accInitBalance = 10000
+	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+
+	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+
+	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *usedVestingType, vested, accInitBalance, 0, /*0,*/ accInitBalance-vested, /*0,*/ vested)
+
+	verifyAccountVestingPools(t, ctx, app, accAddr, []string{"v-pool-1"}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
+
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+
+	msg := types.MsgCreateVestingPool{Creator: accAddr.String(), Name: "v-pool-1", 
+										Amount: sdk.NewInt(vested), Duration: 1000, VestingType: usedVestingType.Name}
+	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
+
+	require.EqualError(t, err,
+		"vesting pool name already exists: v-pool-1: invalid request")
+
+}
+
+// func vestTestLockupZero(t *testing.T) {
+// 	addHelperModuleAccountPerms()
+// 	const vested = 1000
+// 	app, ctx := setupApp(1000)
+
+// 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+
+// 	accAddr := acountsAddresses[0]
+
+// 	const accInitBalance = 10000
+// 	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+
+// 	modifyVestingType := func(vt *types.VestingType) {
+// 		vt.LockupPeriod = 0
+// 	}
+
+// 	vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 2, 1, 1)
+// 	usedVestingType := vestingTypes.VestingTypes[0]
+
+// 	createVestingPool(t, ctx, app, accAddr, false, true, /*false, false,*/ *usedVestingType, vested, accInitBalance, /*0,*/ 0, accInitBalance-vested, /*0,*/ vested)
+
+// 	verifyAccountVestingPools(t, ctx, app, accAddr, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
+
+// 	createVestingPool(t, ctx, app, accAddr, true, true, /*false, false,*/ *usedVestingType, vested, accInitBalance-vested, /*0,*/ vested, accInitBalance-2*vested, /*0,*/ 2*vested)
+
+// 	verifyAccountVestingPools(t, ctx, app, accAddr, []types.VestingType{*usedVestingType, *usedVestingType}, []int64{vested, vested}, []int64{0, 0})
+
+// }
 
 // func TestVestFirstDelagtionNotAllowedSecondAllowed(t *testing.T) {
 // 	addHelperModuleAccountPerms()
@@ -159,8 +198,8 @@ func TestVestingId(t *testing.T) {
 	k.SetVestingTypes(ctx, vestingTypes)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgVest{Creator: addr, Amount: sdk.NewInt(vested), VestingType: usedVestingType.Name}
-	_, error := msgServer.Vest(msgServerCtx, &msg)
+	msg := types.MsgCreateVestingPool{Creator: addr, Name: "v-pool-1", Amount: sdk.NewInt(vested), Duration: 1000, VestingType: usedVestingType.Name}
+	_, error := msgServer.CreateVestingPool(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
 	accVesting, accFound := k.GetAccountVestings(ctx, addr)
@@ -171,7 +210,8 @@ func TestVestingId(t *testing.T) {
 	vesting := accVesting.Vestings[0]
 	require.EqualValues(t, 1, vesting.Id)
 
-	_, error = msgServer.Vest(msgServerCtx, &msg)
+	msg.Name = "v-pool-2"
+	_, error = msgServer.CreateVestingPool(msgServerCtx, &msg)
 
 	require.EqualValues(t, nil, error)
 
@@ -186,7 +226,8 @@ func TestVestingId(t *testing.T) {
 	vesting = accVesting.Vestings[1]
 	require.EqualValues(t, 2, vesting.Id)
 
-	_, error = msgServer.Vest(msgServerCtx, &msg)
+	msg.Name = "v-pool-3"
+	_, error = msgServer.CreateVestingPool(msgServerCtx, &msg)
 
 	require.EqualValues(t, nil, error)
 

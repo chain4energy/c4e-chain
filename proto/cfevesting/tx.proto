@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/gov/v1beta1/gov.proto";
-
+import "google/protobuf/duration.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -13,7 +13,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc Vest(MsgVest) returns (MsgVestResponse);
+  rpc CreateVestingPool (MsgCreateVestingPool) returns (MsgCreateVestingPoolResponse);
   rpc WithdrawAllAvailable(MsgWithdrawAllAvailable) returns (MsgWithdrawAllAvailableResponse);
   // rpc Delegate(MsgDelegate) returns (MsgDelegateResponse);
   // rpc Undelegate(MsgUndelegate) returns (MsgUndelegateResponse);
@@ -27,14 +27,16 @@ service Msg {
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
-message MsgVest {
+message MsgCreateVestingPool {
   string creator = 1;
   // uint64 amount = 2;
-  string amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  string vesting_type = 3;
+  string name = 3;
+  string amount = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  google.protobuf.Duration duration = 5 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  string vesting_type = 6;
 }
 
-message MsgVestResponse {
+message MsgCreateVestingPoolResponse {
 }
 
 message MsgWithdrawAllAvailable {

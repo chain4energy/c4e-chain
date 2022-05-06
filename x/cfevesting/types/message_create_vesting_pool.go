@@ -1,31 +1,35 @@
 package types
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const TypeMsgVest = "vest"
 
-var _ sdk.Msg = &MsgVest{}
+var _ sdk.Msg = &MsgCreateVestingPool{}
 
-func NewMsgVest(creator string, amount sdk.Int, vestingType string) *MsgVest {
-	return &MsgVest{
+func NewMsgCreateVestingPool(creator string, name string, amount sdk.Int, duration time.Duration, vestingType string) *MsgCreateVestingPool {
+	return &MsgCreateVestingPool{
 		Creator:     creator,
+		Name: 		 name,
 		Amount:      amount,
+		Duration: 	 duration,
 		VestingType: vestingType,
 	}
 }
 
-func (msg *MsgVest) Route() string {
+func (msg *MsgCreateVestingPool) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgVest) Type() string {
+func (msg *MsgCreateVestingPool) Type() string {
 	return TypeMsgVest
 }
 
-func (msg *MsgVest) GetSigners() []sdk.AccAddress {
+func (msg *MsgCreateVestingPool) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -33,12 +37,12 @@ func (msg *MsgVest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgVest) GetSignBytes() []byte {
+func (msg *MsgCreateVestingPool) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgVest) ValidateBasic() error {
+func (msg *MsgCreateVestingPool) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
