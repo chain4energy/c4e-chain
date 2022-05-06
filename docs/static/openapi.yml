@@ -210,10 +210,10 @@ paths:
                         }
       tags:
         - Query
-  '/chain4energy/vesting/vesting/{address}':
+  '/chain4energy/vesting/vesting_pools/{address}':
     get:
       summary: Queries a list of Vesting items.
-      operationId: Chain4EnergyC4EchainCfevestingVesting
+      operationId: Chain4EnergyC4EchainCfevestingVestingPools
       responses:
         '200':
           description: A successful response.
@@ -222,7 +222,7 @@ paths:
             properties:
               delegable_address:
                 type: string
-              vestings:
+              vesting_pools:
                 type: array
                 items:
                   type: object
@@ -28237,9 +28237,9 @@ definitions:
         type: string
   chain4energy.c4echain.cfevesting.MsgCreateVestingAccountResponse:
     type: object
-  chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:
+  chain4energy.c4echain.cfevesting.MsgCreateVestingPoolResponse:
     type: object
-  chain4energy.c4echain.cfevesting.MsgVestResponse:
+  chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
     type: object
@@ -28259,12 +28259,12 @@ definitions:
           denom:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfevesting.QueryVestingResponse:
+  chain4energy.c4echain.cfevesting.QueryVestingPoolsResponse:
     type: object
     properties:
       delegable_address:
         type: string
-      vestings:
+      vesting_pools:
         type: array
         items:
           type: object
@@ -28330,7 +28330,7 @@ definitions:
               title: period of veesting coins from lockup period end
             vesting_period_unit:
               type: string
-  chain4energy.c4echain.cfevesting.VestingInfo:
+  chain4energy.c4echain.cfevesting.VestingPoolInfo:
     type: object
     properties:
       id:

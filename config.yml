@@ -148,8 +148,9 @@ genesis:
         vestings:
           - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
             # delegable_address: ""
-            vestings:
+            vesting_pools:
               - id: 1
+                name: "Advisors pool"
                 # delegation_allowed: false
                 last_modification: "2022-03-30T00:00:00.00000000Z"
                 last_modification_vested: "15000000000000"
@@ -167,6 +168,7 @@ genesis:
           #   delegable_address: ""
           #   vestings:
               - id: 2
+                name: "Validators pool"
                 # delegation_allowed: false
                 last_modification: "2022-03-30T00:00:00.00000000Z"
                 last_modification_vested: "17500000000000"
