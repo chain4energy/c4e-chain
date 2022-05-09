@@ -13,14 +13,14 @@ func TestGetVestingTypes(t *testing.T) {
 	k, ctx := testkeeper.CfevestingKeeper(t)
 	vestingTypes := types.VestingTypes{}
 	vestingType1 := types.VestingType{
-		Name:                 "test1",
-		LockupPeriod:         2324,
-		VestingPeriod:        42423,
+		Name:          "test1",
+		LockupPeriod:  2324,
+		VestingPeriod: 42423,
 	}
 	vestingType2 := types.VestingType{
-		Name:                 "test2",
-		LockupPeriod:         1111,
-		VestingPeriod:        112233,
+		Name:          "test2",
+		LockupPeriod:  1111,
+		VestingPeriod: 112233,
 	}
 
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
@@ -38,14 +38,14 @@ func TestGetVestingTypeByName(t *testing.T) {
 	k, ctx := testkeeper.CfevestingKeeper(t)
 	vestingTypes := types.VestingTypes{}
 	vestingType1 := types.VestingType{
-		Name:                 "test1",
-		LockupPeriod:         2324,
-		VestingPeriod:        42423,
+		Name:          "test1",
+		LockupPeriod:  2324,
+		VestingPeriod: 42423,
 	}
 	vestingType2 := types.VestingType{
-		Name:                 "test2",
-		LockupPeriod:         1111,
-		VestingPeriod:        112233,
+		Name:          "test2",
+		LockupPeriod:  1111,
+		VestingPeriod: 112233,
 	}
 
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}

@@ -19,16 +19,16 @@ func Generate10BasedVestingTypes(numberOfVestingTypes int, amountOf10BasedVestin
 	for i := 0; i < numberOfVestingTypes; i++ {
 		if i < amountOf10BasedVestingTypes {
 			vestingType := types.VestingType{
-				Name:                 "test-vesting-type-" + strconv.Itoa(i+startId),
-				LockupPeriod:         CreateDurationFromNumOfHours(1000),
-				VestingPeriod:        CreateDurationFromNumOfHours(5000),
+				Name:          "test-vesting-type-" + strconv.Itoa(i+startId),
+				LockupPeriod:  CreateDurationFromNumOfHours(1000),
+				VestingPeriod: CreateDurationFromNumOfHours(5000),
 			}
 			vestingTypes = append(vestingTypes, &vestingType)
 		} else {
 			vestingType := types.VestingType{
-				Name:                 "test-vesting-type-" + strconv.Itoa(i+startId),
-				LockupPeriod:         CreateDurationFromNumOfHours(int64(rgen.Intn(100000))),
-				VestingPeriod:        CreateDurationFromNumOfHours(int64(rgen.Intn(100000))),
+				Name:          "test-vesting-type-" + strconv.Itoa(i+startId),
+				LockupPeriod:  CreateDurationFromNumOfHours(int64(rgen.Intn(100000))),
+				VestingPeriod: CreateDurationFromNumOfHours(int64(rgen.Intn(100000))),
 			}
 			vestingTypes = append(vestingTypes, &vestingType)
 		}

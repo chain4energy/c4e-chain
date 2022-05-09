@@ -14,9 +14,9 @@ var _ sdk.Msg = &MsgCreateVestingPool{}
 func NewMsgCreateVestingPool(creator string, name string, amount sdk.Int, duration time.Duration, vestingType string) *MsgCreateVestingPool {
 	return &MsgCreateVestingPool{
 		Creator:     creator,
-		Name: 		 name,
+		Name:        name,
 		Amount:      amount,
-		Duration: 	 duration,
+		Duration:    duration,
 		VestingType: vestingType,
 	}
 }
