@@ -20,7 +20,9 @@ export interface MsgPublishReferencePayloadLink {
   value: string;
 }
 
-export interface MsgPublishReferencePayloadLinkResponse {}
+export interface MsgPublishReferencePayloadLinkResponse {
+  txTimestamp: string;
+}
 
 const baseMsgStoreSignature: object = {
   creator: "",
@@ -310,13 +312,16 @@ export const MsgPublishReferencePayloadLink = {
   },
 };
 
-const baseMsgPublishReferencePayloadLinkResponse: object = {};
+const baseMsgPublishReferencePayloadLinkResponse: object = { txTimestamp: "" };
 
 export const MsgPublishReferencePayloadLinkResponse = {
   encode(
-    _: MsgPublishReferencePayloadLinkResponse,
+    message: MsgPublishReferencePayloadLinkResponse,
     writer: Writer = Writer.create()
   ): Writer {
+    if (message.txTimestamp !== "") {
+      writer.uint32(10).string(message.txTimestamp);
+    }
     return writer;
   },
 
@@ -332,6 +337,9 @@ export const MsgPublishReferencePayloadLinkResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.txTimestamp = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -340,24 +348,36 @@ export const MsgPublishReferencePayloadLinkResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgPublishReferencePayloadLinkResponse {
+  fromJSON(object: any): MsgPublishReferencePayloadLinkResponse {
     const message = {
       ...baseMsgPublishReferencePayloadLinkResponse,
     } as MsgPublishReferencePayloadLinkResponse;
+    if (object.txTimestamp !== undefined && object.txTimestamp !== null) {
+      message.txTimestamp = String(object.txTimestamp);
+    } else {
+      message.txTimestamp = "";
+    }
     return message;
   },
 
-  toJSON(_: MsgPublishReferencePayloadLinkResponse): unknown {
+  toJSON(message: MsgPublishReferencePayloadLinkResponse): unknown {
     const obj: any = {};
+    message.txTimestamp !== undefined &&
+      (obj.txTimestamp = message.txTimestamp);
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<MsgPublishReferencePayloadLinkResponse>
+    object: DeepPartial<MsgPublishReferencePayloadLinkResponse>
   ): MsgPublishReferencePayloadLinkResponse {
     const message = {
       ...baseMsgPublishReferencePayloadLinkResponse,
     } as MsgPublishReferencePayloadLinkResponse;
+    if (object.txTimestamp !== undefined && object.txTimestamp !== null) {
+      message.txTimestamp = object.txTimestamp;
+    } else {
+      message.txTimestamp = "";
+    }
     return message;
   },
 };

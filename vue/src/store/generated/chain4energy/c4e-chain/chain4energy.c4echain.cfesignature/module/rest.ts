@@ -9,7 +9,9 @@
  * ---------------------------------------------------------------
  */
 
-export type CfesignatureMsgPublishReferencePayloadLinkResponse = object;
+export interface CfesignatureMsgPublishReferencePayloadLinkResponse {
+  txTimestamp?: string;
+}
 
 export interface CfesignatureMsgStoreSignatureResponse {
   txId?: string;
@@ -21,6 +23,19 @@ export interface CfesignatureMsgStoreSignatureResponse {
  */
 export type CfesignatureParams = object;
 
+export interface CfesignatureQueryCreateReferenceIdResponse {
+  referenceId?: string;
+}
+
+export interface CfesignatureQueryCreateReferencePayloadLinkResponse {
+  referenceKey?: string;
+  referenceValue?: string;
+}
+
+export interface CfesignatureQueryCreateStorageKeyResponse {
+  storageKey?: string;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
@@ -28,6 +43,8 @@ export interface CfesignatureQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: CfesignatureParams;
 }
+
+export type CfesignatureQueryVerifySignatureResponse = object;
 
 export interface ProtobufAny {
   "@type"?: string;
@@ -240,6 +257,54 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
+   * @name QueryCreateReferenceId
+   * @summary Queries a list of CreateReferenceId items.
+   * @request GET:/chain4energy/c4e-chain/cfesignature/create_reference_id/{creator}
+   */
+  queryCreateReferenceId = (creator: string, params: RequestParams = {}) =>
+    this.request<CfesignatureQueryCreateReferenceIdResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfesignature/create_reference_id/${creator}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryCreateReferencePayloadLink
+   * @summary Queries a list of CreateReferencePayloadLink items.
+   * @request GET:/chain4energy/c4e-chain/cfesignature/create_reference_payload_link/{referenceId}/{payloadHash}
+   */
+  queryCreateReferencePayloadLink = (referenceId: string, payloadHash: string, params: RequestParams = {}) =>
+    this.request<CfesignatureQueryCreateReferencePayloadLinkResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfesignature/create_reference_payload_link/${referenceId}/${payloadHash}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryCreateStorageKey
+   * @summary Queries a list of CreateStorageKey items.
+   * @request GET:/chain4energy/c4e-chain/cfesignature/create_storage_key/{targetAccAddress}/{referenceId}
+   */
+  queryCreateStorageKey = (targetAccAddress: string, referenceId: string, params: RequestParams = {}) =>
+    this.request<CfesignatureQueryCreateStorageKeyResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfesignature/create_storage_key/${targetAccAddress}/${referenceId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
    * @request GET:/chain4energy/c4e-chain/cfesignature/params
@@ -247,6 +312,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<CfesignatureQueryParamsResponse, RpcStatus>({
       path: `/chain4energy/c4e-chain/cfesignature/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryVerifySignature
+   * @summary Queries a list of VerifySignature items.
+   * @request GET:/chain4energy/c4e-chain/cfesignature/verify_signature/{referenceId}/{targetAccAddress}
+   */
+  queryVerifySignature = (referenceId: string, targetAccAddress: string, params: RequestParams = {}) =>
+    this.request<CfesignatureQueryVerifySignatureResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfesignature/verify_signature/${referenceId}/${targetAccAddress}`,
       method: "GET",
       format: "json",
       ...params,
