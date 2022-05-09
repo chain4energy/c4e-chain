@@ -4,9 +4,13 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
+import { MsgPublishReferencePayloadLink } from "./types/cfesignature/tx";
+import { MsgStoreSignature } from "./types/cfesignature/tx";
 
 
 const types = [
+  ["/chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLink", MsgPublishReferencePayloadLink],
+  ["/chain4energy.c4echain.cfesignature.MsgStoreSignature", MsgStoreSignature],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -39,6 +43,8 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
+    msgPublishReferencePayloadLink: (data: MsgPublishReferencePayloadLink): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLink", value: MsgPublishReferencePayloadLink.fromPartial( data ) }),
+    msgStoreSignature: (data: MsgStoreSignature): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfesignature.MsgStoreSignature", value: MsgStoreSignature.fromPartial( data ) }),
     
   };
 };

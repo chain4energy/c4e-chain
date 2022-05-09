@@ -30271,6 +30271,15 @@ paths:
       tags:
         - Query
 definitions:
+  chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLinkResponse:
+    type: object
+  chain4energy.c4echain.cfesignature.MsgStoreSignatureResponse:
+    type: object
+    properties:
+      txId:
+        type: string
+      txTimestamp:
+        type: string
   chain4energy.c4echain.cfesignature.Params:
     type: object
     description: Params defines the parameters for the module.
