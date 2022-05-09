@@ -8,6 +8,8 @@ import { MsgWithdrawAllAvailable } from "./types/cfevesting/tx";
 import { MsgSendToVestingAccount } from "./types/cfevesting/tx";
 import { MsgCreateVestingAccount } from "./types/cfevesting/tx";
 import { MsgCreateVestingPool } from "./types/cfevesting/tx";
+import { MsgCreateVestingAccount } from "./types/cfevesting/tx";
+import { MsgSendToVestingAccount } from "./types/cfevesting/tx";
 
 
 const types = [
@@ -15,6 +17,8 @@ const types = [
   ["/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", MsgSendToVestingAccount],
   ["/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", MsgCreateVestingAccount],
   ["/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", MsgCreateVestingPool],
+  ["/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", MsgCreateVestingAccount],
+  ["/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", MsgSendToVestingAccount],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -51,6 +55,8 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
     msgSendToVestingAccount: (data: MsgSendToVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", value: MsgSendToVestingAccount.fromPartial( data ) }),
     msgCreateVestingAccount: (data: MsgCreateVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", value: MsgCreateVestingAccount.fromPartial( data ) }),
     msgCreateVestingPool: (data: MsgCreateVestingPool): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", value: MsgCreateVestingPool.fromPartial( data ) }),
+    msgCreateVestingAccount: (data: MsgCreateVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", value: MsgCreateVestingAccount.fromPartial( data ) }),
+    msgSendToVestingAccount: (data: MsgSendToVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", value: MsgSendToVestingAccount.fromPartial( data ) }),
     
   };
 };

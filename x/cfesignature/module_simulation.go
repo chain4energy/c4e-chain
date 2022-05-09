@@ -24,7 +24,15 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgStoreSignature = "op_weight_msg_store_signature"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgStoreSignature int = 100
+
+	opWeightMsgPublishReferencePayloadLink = "op_weight_msg_publish_reference_payload_link"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgPublishReferencePayloadLink int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -57,6 +65,28 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
+
+	var weightMsgStoreSignature int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgStoreSignature, &weightMsgStoreSignature, nil,
+		func(_ *rand.Rand) {
+			weightMsgStoreSignature = defaultWeightMsgStoreSignature
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgStoreSignature,
+		cfesignaturesimulation.SimulateMsgStoreSignature(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgPublishReferencePayloadLink int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPublishReferencePayloadLink, &weightMsgPublishReferencePayloadLink, nil,
+		func(_ *rand.Rand) {
+			weightMsgPublishReferencePayloadLink = defaultWeightMsgPublishReferencePayloadLink
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgPublishReferencePayloadLink,
+		cfesignaturesimulation.SimulateMsgPublishReferencePayloadLink(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

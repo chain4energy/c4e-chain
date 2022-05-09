@@ -9,6 +9,13 @@
  * ---------------------------------------------------------------
  */
 
+export type CfesignatureMsgPublishReferencePayloadLinkResponse = object;
+
+export interface CfesignatureMsgStoreSignatureResponse {
+  txId?: string;
+  txTimestamp?: string;
+}
+
 /**
  * Params defines the parameters for the module.
  */
