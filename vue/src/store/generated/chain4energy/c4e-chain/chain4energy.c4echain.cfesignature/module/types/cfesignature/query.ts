@@ -13,6 +13,40 @@ export interface QueryParamsResponse {
   params: Params | undefined;
 }
 
+export interface QueryCreateReferenceIdRequest {
+  creator: string;
+}
+
+export interface QueryCreateReferenceIdResponse {
+  referenceId: string;
+}
+
+export interface QueryCreateStorageKeyRequest {
+  targetAccAddress: string;
+  referenceId: string;
+}
+
+export interface QueryCreateStorageKeyResponse {
+  storageKey: string;
+}
+
+export interface QueryCreateReferencePayloadLinkRequest {
+  referenceId: string;
+  payloadHash: string;
+}
+
+export interface QueryCreateReferencePayloadLinkResponse {
+  referenceKey: string;
+  referenceValue: string;
+}
+
+export interface QueryVerifySignatureRequest {
+  referenceId: string;
+  targetAccAddress: string;
+}
+
+export interface QueryVerifySignatureResponse {}
+
 const baseQueryParamsRequest: object = {};
 
 export const QueryParamsRequest = {
@@ -110,10 +144,662 @@ export const QueryParamsResponse = {
   },
 };
 
+const baseQueryCreateReferenceIdRequest: object = { creator: "" };
+
+export const QueryCreateReferenceIdRequest = {
+  encode(
+    message: QueryCreateReferenceIdRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryCreateReferenceIdRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryCreateReferenceIdRequest,
+    } as QueryCreateReferenceIdRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCreateReferenceIdRequest {
+    const message = {
+      ...baseQueryCreateReferenceIdRequest,
+    } as QueryCreateReferenceIdRequest;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCreateReferenceIdRequest): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryCreateReferenceIdRequest>
+  ): QueryCreateReferenceIdRequest {
+    const message = {
+      ...baseQueryCreateReferenceIdRequest,
+    } as QueryCreateReferenceIdRequest;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryCreateReferenceIdResponse: object = { referenceId: "" };
+
+export const QueryCreateReferenceIdResponse = {
+  encode(
+    message: QueryCreateReferenceIdResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.referenceId !== "") {
+      writer.uint32(10).string(message.referenceId);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryCreateReferenceIdResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryCreateReferenceIdResponse,
+    } as QueryCreateReferenceIdResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.referenceId = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCreateReferenceIdResponse {
+    const message = {
+      ...baseQueryCreateReferenceIdResponse,
+    } as QueryCreateReferenceIdResponse;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = String(object.referenceId);
+    } else {
+      message.referenceId = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCreateReferenceIdResponse): unknown {
+    const obj: any = {};
+    message.referenceId !== undefined &&
+      (obj.referenceId = message.referenceId);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryCreateReferenceIdResponse>
+  ): QueryCreateReferenceIdResponse {
+    const message = {
+      ...baseQueryCreateReferenceIdResponse,
+    } as QueryCreateReferenceIdResponse;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = object.referenceId;
+    } else {
+      message.referenceId = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryCreateStorageKeyRequest: object = {
+  targetAccAddress: "",
+  referenceId: "",
+};
+
+export const QueryCreateStorageKeyRequest = {
+  encode(
+    message: QueryCreateStorageKeyRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.targetAccAddress !== "") {
+      writer.uint32(10).string(message.targetAccAddress);
+    }
+    if (message.referenceId !== "") {
+      writer.uint32(18).string(message.referenceId);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryCreateStorageKeyRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryCreateStorageKeyRequest,
+    } as QueryCreateStorageKeyRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.targetAccAddress = reader.string();
+          break;
+        case 2:
+          message.referenceId = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCreateStorageKeyRequest {
+    const message = {
+      ...baseQueryCreateStorageKeyRequest,
+    } as QueryCreateStorageKeyRequest;
+    if (
+      object.targetAccAddress !== undefined &&
+      object.targetAccAddress !== null
+    ) {
+      message.targetAccAddress = String(object.targetAccAddress);
+    } else {
+      message.targetAccAddress = "";
+    }
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = String(object.referenceId);
+    } else {
+      message.referenceId = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCreateStorageKeyRequest): unknown {
+    const obj: any = {};
+    message.targetAccAddress !== undefined &&
+      (obj.targetAccAddress = message.targetAccAddress);
+    message.referenceId !== undefined &&
+      (obj.referenceId = message.referenceId);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryCreateStorageKeyRequest>
+  ): QueryCreateStorageKeyRequest {
+    const message = {
+      ...baseQueryCreateStorageKeyRequest,
+    } as QueryCreateStorageKeyRequest;
+    if (
+      object.targetAccAddress !== undefined &&
+      object.targetAccAddress !== null
+    ) {
+      message.targetAccAddress = object.targetAccAddress;
+    } else {
+      message.targetAccAddress = "";
+    }
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = object.referenceId;
+    } else {
+      message.referenceId = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryCreateStorageKeyResponse: object = { storageKey: "" };
+
+export const QueryCreateStorageKeyResponse = {
+  encode(
+    message: QueryCreateStorageKeyResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.storageKey !== "") {
+      writer.uint32(10).string(message.storageKey);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryCreateStorageKeyResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryCreateStorageKeyResponse,
+    } as QueryCreateStorageKeyResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.storageKey = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCreateStorageKeyResponse {
+    const message = {
+      ...baseQueryCreateStorageKeyResponse,
+    } as QueryCreateStorageKeyResponse;
+    if (object.storageKey !== undefined && object.storageKey !== null) {
+      message.storageKey = String(object.storageKey);
+    } else {
+      message.storageKey = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCreateStorageKeyResponse): unknown {
+    const obj: any = {};
+    message.storageKey !== undefined && (obj.storageKey = message.storageKey);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryCreateStorageKeyResponse>
+  ): QueryCreateStorageKeyResponse {
+    const message = {
+      ...baseQueryCreateStorageKeyResponse,
+    } as QueryCreateStorageKeyResponse;
+    if (object.storageKey !== undefined && object.storageKey !== null) {
+      message.storageKey = object.storageKey;
+    } else {
+      message.storageKey = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryCreateReferencePayloadLinkRequest: object = {
+  referenceId: "",
+  payloadHash: "",
+};
+
+export const QueryCreateReferencePayloadLinkRequest = {
+  encode(
+    message: QueryCreateReferencePayloadLinkRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.referenceId !== "") {
+      writer.uint32(10).string(message.referenceId);
+    }
+    if (message.payloadHash !== "") {
+      writer.uint32(18).string(message.payloadHash);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryCreateReferencePayloadLinkRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryCreateReferencePayloadLinkRequest,
+    } as QueryCreateReferencePayloadLinkRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.referenceId = reader.string();
+          break;
+        case 2:
+          message.payloadHash = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCreateReferencePayloadLinkRequest {
+    const message = {
+      ...baseQueryCreateReferencePayloadLinkRequest,
+    } as QueryCreateReferencePayloadLinkRequest;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = String(object.referenceId);
+    } else {
+      message.referenceId = "";
+    }
+    if (object.payloadHash !== undefined && object.payloadHash !== null) {
+      message.payloadHash = String(object.payloadHash);
+    } else {
+      message.payloadHash = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCreateReferencePayloadLinkRequest): unknown {
+    const obj: any = {};
+    message.referenceId !== undefined &&
+      (obj.referenceId = message.referenceId);
+    message.payloadHash !== undefined &&
+      (obj.payloadHash = message.payloadHash);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryCreateReferencePayloadLinkRequest>
+  ): QueryCreateReferencePayloadLinkRequest {
+    const message = {
+      ...baseQueryCreateReferencePayloadLinkRequest,
+    } as QueryCreateReferencePayloadLinkRequest;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = object.referenceId;
+    } else {
+      message.referenceId = "";
+    }
+    if (object.payloadHash !== undefined && object.payloadHash !== null) {
+      message.payloadHash = object.payloadHash;
+    } else {
+      message.payloadHash = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryCreateReferencePayloadLinkResponse: object = {
+  referenceKey: "",
+  referenceValue: "",
+};
+
+export const QueryCreateReferencePayloadLinkResponse = {
+  encode(
+    message: QueryCreateReferencePayloadLinkResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.referenceKey !== "") {
+      writer.uint32(10).string(message.referenceKey);
+    }
+    if (message.referenceValue !== "") {
+      writer.uint32(18).string(message.referenceValue);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryCreateReferencePayloadLinkResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryCreateReferencePayloadLinkResponse,
+    } as QueryCreateReferencePayloadLinkResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.referenceKey = reader.string();
+          break;
+        case 2:
+          message.referenceValue = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCreateReferencePayloadLinkResponse {
+    const message = {
+      ...baseQueryCreateReferencePayloadLinkResponse,
+    } as QueryCreateReferencePayloadLinkResponse;
+    if (object.referenceKey !== undefined && object.referenceKey !== null) {
+      message.referenceKey = String(object.referenceKey);
+    } else {
+      message.referenceKey = "";
+    }
+    if (object.referenceValue !== undefined && object.referenceValue !== null) {
+      message.referenceValue = String(object.referenceValue);
+    } else {
+      message.referenceValue = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCreateReferencePayloadLinkResponse): unknown {
+    const obj: any = {};
+    message.referenceKey !== undefined &&
+      (obj.referenceKey = message.referenceKey);
+    message.referenceValue !== undefined &&
+      (obj.referenceValue = message.referenceValue);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryCreateReferencePayloadLinkResponse>
+  ): QueryCreateReferencePayloadLinkResponse {
+    const message = {
+      ...baseQueryCreateReferencePayloadLinkResponse,
+    } as QueryCreateReferencePayloadLinkResponse;
+    if (object.referenceKey !== undefined && object.referenceKey !== null) {
+      message.referenceKey = object.referenceKey;
+    } else {
+      message.referenceKey = "";
+    }
+    if (object.referenceValue !== undefined && object.referenceValue !== null) {
+      message.referenceValue = object.referenceValue;
+    } else {
+      message.referenceValue = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryVerifySignatureRequest: object = {
+  referenceId: "",
+  targetAccAddress: "",
+};
+
+export const QueryVerifySignatureRequest = {
+  encode(
+    message: QueryVerifySignatureRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.referenceId !== "") {
+      writer.uint32(10).string(message.referenceId);
+    }
+    if (message.targetAccAddress !== "") {
+      writer.uint32(18).string(message.targetAccAddress);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVerifySignatureRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryVerifySignatureRequest,
+    } as QueryVerifySignatureRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.referenceId = reader.string();
+          break;
+        case 2:
+          message.targetAccAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryVerifySignatureRequest {
+    const message = {
+      ...baseQueryVerifySignatureRequest,
+    } as QueryVerifySignatureRequest;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = String(object.referenceId);
+    } else {
+      message.referenceId = "";
+    }
+    if (
+      object.targetAccAddress !== undefined &&
+      object.targetAccAddress !== null
+    ) {
+      message.targetAccAddress = String(object.targetAccAddress);
+    } else {
+      message.targetAccAddress = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryVerifySignatureRequest): unknown {
+    const obj: any = {};
+    message.referenceId !== undefined &&
+      (obj.referenceId = message.referenceId);
+    message.targetAccAddress !== undefined &&
+      (obj.targetAccAddress = message.targetAccAddress);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryVerifySignatureRequest>
+  ): QueryVerifySignatureRequest {
+    const message = {
+      ...baseQueryVerifySignatureRequest,
+    } as QueryVerifySignatureRequest;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = object.referenceId;
+    } else {
+      message.referenceId = "";
+    }
+    if (
+      object.targetAccAddress !== undefined &&
+      object.targetAccAddress !== null
+    ) {
+      message.targetAccAddress = object.targetAccAddress;
+    } else {
+      message.targetAccAddress = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryVerifySignatureResponse: object = {};
+
+export const QueryVerifySignatureResponse = {
+  encode(
+    _: QueryVerifySignatureResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVerifySignatureResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryVerifySignatureResponse,
+    } as QueryVerifySignatureResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryVerifySignatureResponse {
+    const message = {
+      ...baseQueryVerifySignatureResponse,
+    } as QueryVerifySignatureResponse;
+    return message;
+  },
+
+  toJSON(_: QueryVerifySignatureResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<QueryVerifySignatureResponse>
+  ): QueryVerifySignatureResponse {
+    const message = {
+      ...baseQueryVerifySignatureResponse,
+    } as QueryVerifySignatureResponse;
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
+  /** Queries a list of CreateReferenceId items. */
+  CreateReferenceId(
+    request: QueryCreateReferenceIdRequest
+  ): Promise<QueryCreateReferenceIdResponse>;
+  /** Queries a list of CreateStorageKey items. */
+  CreateStorageKey(
+    request: QueryCreateStorageKeyRequest
+  ): Promise<QueryCreateStorageKeyResponse>;
+  /** Queries a list of CreateReferencePayloadLink items. */
+  CreateReferencePayloadLink(
+    request: QueryCreateReferencePayloadLinkRequest
+  ): Promise<QueryCreateReferencePayloadLinkResponse>;
+  /** Queries a list of VerifySignature items. */
+  VerifySignature(
+    request: QueryVerifySignatureRequest
+  ): Promise<QueryVerifySignatureResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -129,6 +815,64 @@ export class QueryClientImpl implements Query {
       data
     );
     return promise.then((data) => QueryParamsResponse.decode(new Reader(data)));
+  }
+
+  CreateReferenceId(
+    request: QueryCreateReferenceIdRequest
+  ): Promise<QueryCreateReferenceIdResponse> {
+    const data = QueryCreateReferenceIdRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfesignature.Query",
+      "CreateReferenceId",
+      data
+    );
+    return promise.then((data) =>
+      QueryCreateReferenceIdResponse.decode(new Reader(data))
+    );
+  }
+
+  CreateStorageKey(
+    request: QueryCreateStorageKeyRequest
+  ): Promise<QueryCreateStorageKeyResponse> {
+    const data = QueryCreateStorageKeyRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfesignature.Query",
+      "CreateStorageKey",
+      data
+    );
+    return promise.then((data) =>
+      QueryCreateStorageKeyResponse.decode(new Reader(data))
+    );
+  }
+
+  CreateReferencePayloadLink(
+    request: QueryCreateReferencePayloadLinkRequest
+  ): Promise<QueryCreateReferencePayloadLinkResponse> {
+    const data = QueryCreateReferencePayloadLinkRequest.encode(
+      request
+    ).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfesignature.Query",
+      "CreateReferencePayloadLink",
+      data
+    );
+    return promise.then((data) =>
+      QueryCreateReferencePayloadLinkResponse.decode(new Reader(data))
+    );
+  }
+
+  VerifySignature(
+    request: QueryVerifySignatureRequest
+  ): Promise<QueryVerifySignatureResponse> {
+    const data = QueryVerifySignatureRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfesignature.Query",
+      "VerifySignature",
+      data
+    );
+    return promise.then((data) =>
+      QueryVerifySignatureResponse.decode(new Reader(data))
+    );
   }
 }
 

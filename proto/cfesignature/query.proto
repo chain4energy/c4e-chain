@@ -15,7 +15,27 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/chain4energy/c4e-chain/cfesignature/params";
   }
-  // this line is used by starport scaffolding # 2
+  // Queries a list of CreateReferenceId items.
+	rpc CreateReferenceId(QueryCreateReferenceIdRequest) returns (QueryCreateReferenceIdResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfesignature/create_reference_id/{creator}";
+	}
+
+// Queries a list of CreateStorageKey items.
+	rpc CreateStorageKey(QueryCreateStorageKeyRequest) returns (QueryCreateStorageKeyResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfesignature/create_storage_key/{targetAccAddress}/{referenceId}";
+	}
+
+// Queries a list of CreateReferencePayloadLink items.
+	rpc CreateReferencePayloadLink(QueryCreateReferencePayloadLinkRequest) returns (QueryCreateReferencePayloadLinkResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfesignature/create_reference_payload_link/{referenceId}/{payloadHash}";
+	}
+
+// Queries a list of VerifySignature items.
+	rpc VerifySignature(QueryVerifySignatureRequest) returns (QueryVerifySignatureResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfesignature/verify_signature/{referenceId}/{targetAccAddress}";
+	}
+
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -25,6 +45,46 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCreateReferenceIdRequest {
+  string creator = 1;
+}
+
+message QueryCreateReferenceIdResponse {
+  string referenceId = 1;
+}
+
+message QueryCreateStorageKeyRequest {
+  string targetAccAddress = 1;
+  string referenceId = 2;
+}
+
+message QueryCreateStorageKeyResponse {
+  string storageKey = 1;
+}
+
+message QueryCreateReferencePayloadLinkRequest {
+  string referenceId = 1;
+  string payloadHash = 2;
+}
+
+message QueryCreateReferencePayloadLinkResponse {
+  string referenceKey = 1;
+  string referenceValue = 2;
+}
+
+message QueryVerifySignatureRequest {
+  string referenceId = 1;
+  string targetAccAddress = 2;
+}
+
+message QueryVerifySignatureResponse {
+  string signature = 1;
+  string algorithm = 2;
+  string certificate = 3;
+  string timestamp = 4;
+  string valid = 5;
 }
 
 // this line is used by starport scaffolding # 3

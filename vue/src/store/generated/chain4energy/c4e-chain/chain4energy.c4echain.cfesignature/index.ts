@@ -42,6 +42,10 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				CreateReferenceId: {},
+				CreateStorageKey: {},
+				CreateReferencePayloadLink: {},
+				VerifySignature: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
@@ -78,6 +82,30 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getCreateReferenceId: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.CreateReferenceId[JSON.stringify(params)] ?? {}
+		},
+				getCreateStorageKey: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.CreateStorageKey[JSON.stringify(params)] ?? {}
+		},
+				getCreateReferencePayloadLink: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.CreateReferencePayloadLink[JSON.stringify(params)] ?? {}
+		},
+				getVerifySignature: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.VerifySignature[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -130,6 +158,94 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryCreateReferenceId({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryCreateReferenceId( key.creator)).data
+				
+					
+				commit('QUERY', { query: 'CreateReferenceId', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryCreateReferenceId', payload: { options: { all }, params: {...key},query }})
+				return getters['getCreateReferenceId']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryCreateReferenceId API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryCreateStorageKey({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryCreateStorageKey( key.targetAccAddress,  key.referenceId)).data
+				
+					
+				commit('QUERY', { query: 'CreateStorageKey', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryCreateStorageKey', payload: { options: { all }, params: {...key},query }})
+				return getters['getCreateStorageKey']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryCreateStorageKey API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryCreateReferencePayloadLink({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryCreateReferencePayloadLink( key.referenceId,  key.payloadHash)).data
+				
+					
+				commit('QUERY', { query: 'CreateReferencePayloadLink', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryCreateReferencePayloadLink', payload: { options: { all }, params: {...key},query }})
+				return getters['getCreateReferencePayloadLink']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryCreateReferencePayloadLink API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryVerifySignature({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryVerifySignature( key.referenceId,  key.targetAccAddress)).data
+				
+					
+				commit('QUERY', { query: 'VerifySignature', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryVerifySignature', payload: { options: { all }, params: {...key},query }})
+				return getters['getVerifySignature']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryVerifySignature API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
