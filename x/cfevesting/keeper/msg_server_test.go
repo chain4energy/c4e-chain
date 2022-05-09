@@ -249,8 +249,8 @@ func createVestingPool(t *testing.T, ctx sdk.Context, app *app.App, address sdk.
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgCreateVestingPool{Creator: address.String(), Name: vestingPoolName, 
-										Amount: sdk.NewInt(amountToVest), Duration: lockupDuration, VestingType: vestingType.Name}
+	msg := types.MsgCreateVestingPool{Creator: address.String(), Name: vestingPoolName,
+		Amount: sdk.NewInt(amountToVest), Duration: lockupDuration, VestingType: vestingType.Name}
 	_, error := msgServer.CreateVestingPool(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -282,7 +282,7 @@ func newTimeArray(n int, v time.Time) []time.Time {
 }
 
 func verifyAccountVestingPools(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress,
-		vestingNames []string, durations []time.Duration, vestingTypes []types.VestingType, vestedAmounts []int64, withdrawnAmounts []int64) {
+	vestingNames []string, durations []time.Duration, vestingTypes []types.VestingType, vestedAmounts []int64, withdrawnAmounts []int64) {
 
 	verifyAccountVestingsWithModification(t, ctx, app, address, 1, vestingNames, durations, vestingTypes, newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts,
 		newInts64Array(len(vestingTypes), 0), newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts)

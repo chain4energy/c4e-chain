@@ -11,11 +11,11 @@ var _ sdk.Msg = &MsgCreateVestingAccount{}
 
 func NewMsgCreateVestingAccount(fromAddress string, toAddress string, amount sdk.Coins, startTime int64, endTime int64) *MsgCreateVestingAccount {
 	return &MsgCreateVestingAccount{
-		FromAddress:    fromAddress,
-		ToAddress:      toAddress,
+		FromAddress: fromAddress,
+		ToAddress:   toAddress,
 		Amount:      amount,
-		StartTime:         startTime,
-		EndTime: endTime,
+		StartTime:   startTime,
+		EndTime:     endTime,
 	}
 }
 
