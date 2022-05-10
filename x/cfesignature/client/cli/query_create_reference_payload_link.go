@@ -14,7 +14,7 @@ var _ = strconv.Itoa(0)
 func CmdCreateReferencePayloadLink() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-reference-payload-link [reference-id] [payload-hash]",
-		Short: "Query CreateReferencePayloadLink",
+		Short: "Query createReferencePayloadLink",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			reqReferenceId := args[0]

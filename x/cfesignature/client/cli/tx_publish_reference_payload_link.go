@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 func CmdPublishReferencePayloadLink() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "publish-reference-payload-link [key] [value]",
-		Short: "Broadcast message PublishReferencePayloadLink",
+		Short: "Broadcast message publishReferencePayloadLink",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argKey := args[0]

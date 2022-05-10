@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 func CmdStoreSignature() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "store-signature [storage-key] [signature-json]",
-		Short: "Broadcast message StoreSignature",
+		Short: "Broadcast message storeSignature",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argStorageKey := args[0]
