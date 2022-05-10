@@ -11,6 +11,8 @@ import (
 func (k msgServer) CreateAccount(goCtx context.Context, msg *types.MsgCreateAccount) (*types.MsgCreateAccountResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	// TODO: add logic to check that only a user with ADMIN role can add new blockchain users
+
 	accAddress, _ := sdk.AccAddressFromBech32(msg.AccAddressString)
 	newAccount := k.authKeeper.NewAccountWithAddress(ctx, accAddress)
 
