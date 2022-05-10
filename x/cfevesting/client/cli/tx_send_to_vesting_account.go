@@ -7,10 +7,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cobra"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
+	"github.com/spf13/cobra"
 )
 
 var _ = strconv.Itoa(0)
@@ -43,7 +42,6 @@ func CmdSendToVestingAccount() *cobra.Command {
 			if err != nil {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "restart-vesting must be a boolean [1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False]")
 			}
-
 
 			msg := types.NewMsgSendToVestingAccount(
 				clientCtx.GetFromAddress().String(),

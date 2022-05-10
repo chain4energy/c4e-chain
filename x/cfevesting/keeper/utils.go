@@ -25,11 +25,11 @@ func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *types.VestingTypes) 
 		// tokenReleasingPeriodUnit, tokenReleasingPeriod := UnitsFromDuration(vestingType.TokenReleasingPeriod)
 
 		gvt := types.GenesisVestingType{
-			Name:                     vestingType.Name,
-			LockupPeriod:             lockupPeriod,
-			LockupPeriodUnit:         string(lockupPeriodUnit),
-			VestingPeriod:            vestingPeriod,
-			VestingPeriodUnit:        string(vestingPeriodUnit),
+			Name:              vestingType.Name,
+			LockupPeriod:      lockupPeriod,
+			LockupPeriodUnit:  string(lockupPeriodUnit),
+			VestingPeriod:     vestingPeriod,
+			VestingPeriodUnit: string(vestingPeriodUnit),
 			// TokenReleasingPeriod:     tokenReleasingPeriod,
 			// TokenReleasingPeriodUnit: string(tokenReleasingPeriodUnit),
 			// DelegationsAllowed:       vestingType.DelegationsAllowed,

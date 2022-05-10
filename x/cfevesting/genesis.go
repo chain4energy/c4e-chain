@@ -22,9 +22,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 	vestingTypes := types.VestingTypes{}
 	for _, gVestingType := range genState.VestingTypes {
 		vt := types.VestingType{
-			Name:                 gVestingType.Name,
-			LockupPeriod:         keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.LockupPeriodUnit), gVestingType.LockupPeriod),
-			VestingPeriod:        keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.VestingPeriodUnit), gVestingType.VestingPeriod),
+			Name:          gVestingType.Name,
+			LockupPeriod:  keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.LockupPeriodUnit), gVestingType.LockupPeriod),
+			VestingPeriod: keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.VestingPeriodUnit), gVestingType.VestingPeriod),
 			// TokenReleasingPeriod: keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.TokenReleasingPeriodUnit), gVestingType.TokenReleasingPeriod),
 			// DelegationsAllowed:   gVestingType.DelegationsAllowed,
 		}

@@ -32,7 +32,7 @@ func (k Keeper) CreateVestingPool(ctx sdk.Context, addr string, name string, amo
 
 func (k Keeper) addVestingPool(
 	ctx sdk.Context,
-	vestingPoolName string, 
+	vestingPoolName string,
 	vestingAddr string,
 	coinSrcAddr string,
 	amount sdk.Int,
@@ -110,14 +110,14 @@ func (k Keeper) addVestingPool(
 		for _, pool := range accVestings.VestingPools {
 			if pool.Name == vestingPoolName {
 				k.Logger(ctx).Error("Error: " + "vesting pool name already exists: " + vestingPoolName)
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "vesting pool name already exists: " + vestingPoolName)
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "vesting pool name already exists: "+vestingPoolName)
 			}
 		}
 	}
 
 	vesting := types.VestingPool{
 		Id:                        id,
-		Name: 					   vestingPoolName,
+		Name:                      vestingPoolName,
 		VestingType:               vestingType,
 		LockStart:                 lockStart,
 		LockEnd:                   lockEnd,
