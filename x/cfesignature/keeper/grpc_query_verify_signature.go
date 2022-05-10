@@ -25,7 +25,7 @@ func (k Keeper) VerifySignature(goCtx context.Context, req *types.QueryVerifySig
 	referenceId := req.ReferenceId
 	targetAccAddress := req.TargetAccAddress
 
-	var signature types.Signature
+	var signature *types.Signature
 
 	param := types.QueryCreateStorageKeyRequest{TargetAccAddress: req.TargetAccAddress, ReferenceId: req.ReferenceId}
 
@@ -55,7 +55,7 @@ func (k Keeper) VerifySignature(goCtx context.Context, req *types.QueryVerifySig
 
 	validationError := k.isValidSignature(goCtx, targetAccAddress, signaturePayload, signature.Signature, signature.Algorithm, signature.Certificate)
 	if validationError != nil {
-
+		// it is safe to forward local errors
 		return nil, validationError
 	}
 
