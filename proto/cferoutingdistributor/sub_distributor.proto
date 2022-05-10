@@ -9,26 +9,16 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/t
 
 // DenomUnit represents a struct that describes a given
 // denomination unit of the basic token.
-message DenomUnit {
+message SubDistributor {
   //represent list of module account from which
-  repeated string sources = 3;
-
-  // denom represents the string name of the given denom unit (e.g uatom).
-  string denom = 1;
-  // exponent represents power of 10 exponent that one must
-  // raise the base_denom to in order to equal the given DenomUnit's denom
-  // 1 denom = 10^exponent base_denom
-  // (e.g. with a base_denom of uatom, one can create a DenomUnit of 'atom' with
-  // exponent = 6, thus: 1 atom = 10^6 uatom).
-  int32 exponent = 2;
-  // aliases is a list of string aliases for the given denom
-
+  repeated string sources = 1;
+  Destination destination = 2;
 }
 
 message Destination {
   string default_share_account = 1;
   repeated Share share = 2;
-
+  int32  burn_share = 3;
 }
 
 message Share {
