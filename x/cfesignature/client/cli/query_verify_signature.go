@@ -14,7 +14,7 @@ var _ = strconv.Itoa(0)
 func CmdVerifySignature() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "verify-signature [reference-id] [target-acc-address]",
-		Short: "Query VerifySignature",
+		Short: "Query verifySignature",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			reqReferenceId := args[0]

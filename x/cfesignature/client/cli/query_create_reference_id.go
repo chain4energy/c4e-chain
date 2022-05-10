@@ -14,7 +14,7 @@ var _ = strconv.Itoa(0)
 func CmdCreateReferenceId() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-reference-id [creator]",
-		Short: "Query CreateReferenceId",
+		Short: "Query createReferenceId",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			reqCreator := args[0]

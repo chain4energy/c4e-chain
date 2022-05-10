@@ -74,7 +74,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgStoreSignature,
-		cfesignaturesimulation.SimulateMsgStoreSignature(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfesignaturesimulation.SimulateMsgStoreSignature(am.keeper),
 	))
 
 	var weightMsgPublishReferencePayloadLink int
@@ -85,7 +85,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPublishReferencePayloadLink,
-		cfesignaturesimulation.SimulateMsgPublishReferencePayloadLink(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfesignaturesimulation.SimulateMsgPublishReferencePayloadLink(am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

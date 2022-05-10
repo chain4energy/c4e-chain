@@ -380,7 +380,7 @@ func New(
 		keys[cfesignaturemoduletypes.MemStoreKey],
 		app.GetSubspace(cfesignaturemoduletypes.ModuleName),
 	)
-	cfesignatureModule := cfesignaturemodule.NewAppModule(appCodec, app.CfesignatureKeeper, app.AccountKeeper, app.BankKeeper)
+	cfesignatureModule := cfesignaturemodule.NewAppModule(appCodec, app.CfesignatureKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 

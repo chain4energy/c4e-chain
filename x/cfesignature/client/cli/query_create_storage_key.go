@@ -14,7 +14,7 @@ var _ = strconv.Itoa(0)
 func CmdCreateStorageKey() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-storage-key [target-acc-address] [reference-id]",
-		Short: "Query CreateStorageKey",
+		Short: "Query createStorageKey",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			reqTargetAccAddress := args[0]

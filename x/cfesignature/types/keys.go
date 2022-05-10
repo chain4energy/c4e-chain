@@ -15,6 +15,10 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_cfesignature"
+
+	SignatureKey = "Signature-Value-"
+
+	PayloadLinkKey = "Payload-Value-"
 )
 
 func KeyPrefix(p string) []byte {
