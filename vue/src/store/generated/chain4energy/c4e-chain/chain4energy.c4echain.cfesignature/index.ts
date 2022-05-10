@@ -1,9 +1,10 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
 import { Params } from "./module/types/cfesignature/params"
+import { Signature } from "./module/types/cfesignature/signature"
 
 
-export { Params };
+export { Params, Signature };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -46,9 +47,11 @@ const getDefaultState = () => {
 				CreateStorageKey: {},
 				CreateReferencePayloadLink: {},
 				VerifySignature: {},
+				GetAccountInfo: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
+						Signature: getStructure(Signature.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -106,6 +109,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.VerifySignature[JSON.stringify(params)] ?? {}
+		},
+				getGetAccountInfo: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.GetAccountInfo[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -251,18 +260,40 @@ export default {
 		},
 		
 		
-		async sendMsgPublishReferencePayloadLink({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		
+		 		
+		
+		
+		async QueryGetAccountInfo({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryGetAccountInfo( key.accAddressString)).data
+				
+					
+				commit('QUERY', { query: 'GetAccountInfo', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryGetAccountInfo', payload: { options: { all }, params: {...key},query }})
+				return getters['getGetAccountInfo']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryGetAccountInfo API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		async sendMsgCreateAccount({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgPublishReferencePayloadLink(value)
+				const msg = await txClient.msgCreateAccount(value)
 				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
 	gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgPublishReferencePayloadLink:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgCreateAccount:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgPublishReferencePayloadLink:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgCreateAccount:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -281,17 +312,32 @@ export default {
 				}
 			}
 		},
-		
-		async MsgPublishReferencePayloadLink({ rootGetters }, { value }) {
+		async sendMsgPublishReferencePayloadLink({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
 				const msg = await txClient.msgPublishReferencePayloadLink(value)
-				return msg
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgPublishReferencePayloadLink:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		
+		async MsgCreateAccount({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgCreateAccount(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreateAccount:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgPublishReferencePayloadLink:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgCreateAccount:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -305,6 +351,19 @@ export default {
 					throw new Error('TxClient:MsgStoreSignature:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgStoreSignature:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgPublishReferencePayloadLink({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgPublishReferencePayloadLink(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Create Could not create message: ' + e.message)
 				}
 			}
 		},

@@ -13,7 +13,7 @@ func (k msgServer) PublishReferencePayloadLink(goCtx context.Context, msg *types
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	var err error
-	
+
 	// Check if a Payload Link was already stored at the given key
 	if !(k.checkIfPayloadLinkExists(ctx, msg.Key)) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "data was found at the given key, cannot overwrite present payloadlinks")

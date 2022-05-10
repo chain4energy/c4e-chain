@@ -9,6 +9,10 @@
  * ---------------------------------------------------------------
  */
 
+export interface CfesignatureMsgCreateAccountResponse {
+  accountId?: string;
+}
+
 export interface CfesignatureMsgPublishReferencePayloadLinkResponse {
   txTimestamp?: string;
 }
@@ -36,6 +40,11 @@ export interface CfesignatureQueryCreateStorageKeyResponse {
   storageKey?: string;
 }
 
+export interface CfesignatureQueryGetAccountInfoResponse {
+  accAddress?: string;
+  pubKey?: string;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
@@ -44,7 +53,13 @@ export interface CfesignatureQueryParamsResponse {
   params?: CfesignatureParams;
 }
 
-export type CfesignatureQueryVerifySignatureResponse = object;
+export interface CfesignatureQueryVerifySignatureResponse {
+  signature?: string;
+  algorithm?: string;
+  certificate?: string;
+  timestamp?: string;
+  valid?: string;
+}
 
 export interface ProtobufAny {
   "@type"?: string;
@@ -296,6 +311,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryCreateStorageKey = (targetAccAddress: string, referenceId: string, params: RequestParams = {}) =>
     this.request<CfesignatureQueryCreateStorageKeyResponse, RpcStatus>({
       path: `/chain4energy/c4e-chain/cfesignature/create_storage_key/${targetAccAddress}/${referenceId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryGetAccountInfo
+   * @summary Queries a list of GetAccountInfo items.
+   * @request GET:/chain4energy/c4e-chain/cfesignature/get_account_info/{accAddressString}
+   */
+  queryGetAccountInfo = (accAddressString: string, params: RequestParams = {}) =>
+    this.request<CfesignatureQueryGetAccountInfoResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfesignature/get_account_info/${accAddressString}`,
       method: "GET",
       format: "json",
       ...params,
