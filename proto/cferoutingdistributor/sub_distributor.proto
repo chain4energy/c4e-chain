@@ -7,17 +7,28 @@ import "cferoutingdistributor/params.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types";
 
-// DenomUnit represents a struct that describes a given
-// denomination unit of the basic token.
+message RoutingDistributor {
+
+  //List contains distributors
+  repeated SubDistributor subDistributor = 1;
+
+  //module account to load on start genesis
+  repeated string moduleAccounts = 2;
+}
+
 message SubDistributor {
   //represent list of module account from which
   repeated string sources = 1;
+
+  //represent destinations
   Destination destination = 2;
 }
 
 message Destination {
   string default_share_account = 1;
   repeated Share share = 2;
+
+  //can be null
   int32  burn_share = 3;
 }
 
