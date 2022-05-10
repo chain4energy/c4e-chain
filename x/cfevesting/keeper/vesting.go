@@ -244,7 +244,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 
 	accVestings, vestingsFound := k.GetAccountVestings(ctx, fromAddr)
 	if !vestingsFound || len(accVestings.VestingPools) == 0 {
-		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "no vestings found")
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "no vesting pools found")
 	}
 	var vesting *types.VestingPool = nil
 	for _, vest := range accVestings.VestingPools {
@@ -253,11 +253,11 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 		}
 	}
 	if vesting == nil {
-		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" not found")
+		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotFound, "vesting pool with id "+strconv.FormatInt(int64(vestingId), 10)+" not found")
 	}
-	if !vesting.TransferAllowed {
-		return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotSupported, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" is not tranferable")
-	}
+	// if !vesting.TransferAllowed {
+	// 	return withdrawn, sdkerrors.Wrap(sdkerrors.ErrNotSupported, "vesting with id "+strconv.FormatInt(int64(vestingId), 10)+" is not tranferable")
+	// }
 	available := vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
 	if available.LT(amount) {
 		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,

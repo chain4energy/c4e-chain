@@ -43,7 +43,6 @@ export interface VestingPoolInfo {
   vested: Coin | undefined;
   current_vested_amount: string;
   sent_amount: string;
-  transfer_allowed: boolean;
 }
 
 const baseQueryParamsRequest: object = {};
@@ -449,7 +448,6 @@ const baseVestingPoolInfo: object = {
   withdrawable: "",
   current_vested_amount: "",
   sent_amount: "",
-  transfer_allowed: false,
 };
 
 export const VestingPoolInfo = {
@@ -486,9 +484,6 @@ export const VestingPoolInfo = {
     }
     if (message.sent_amount !== "") {
       writer.uint32(74).string(message.sent_amount);
-    }
-    if (message.transfer_allowed === true) {
-      writer.uint32(80).bool(message.transfer_allowed);
     }
     return writer;
   },
@@ -530,9 +525,6 @@ export const VestingPoolInfo = {
           break;
         case 9:
           message.sent_amount = reader.string();
-          break;
-        case 10:
-          message.transfer_allowed = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -592,14 +584,6 @@ export const VestingPoolInfo = {
     } else {
       message.sent_amount = "";
     }
-    if (
-      object.transfer_allowed !== undefined &&
-      object.transfer_allowed !== null
-    ) {
-      message.transfer_allowed = Boolean(object.transfer_allowed);
-    } else {
-      message.transfer_allowed = false;
-    }
     return message;
   },
 
@@ -625,8 +609,6 @@ export const VestingPoolInfo = {
       (obj.current_vested_amount = message.current_vested_amount);
     message.sent_amount !== undefined &&
       (obj.sent_amount = message.sent_amount);
-    message.transfer_allowed !== undefined &&
-      (obj.transfer_allowed = message.transfer_allowed);
     return obj;
   },
 
@@ -679,14 +661,6 @@ export const VestingPoolInfo = {
       message.sent_amount = object.sent_amount;
     } else {
       message.sent_amount = "";
-    }
-    if (
-      object.transfer_allowed !== undefined &&
-      object.transfer_allowed !== null
-    ) {
-      message.transfer_allowed = object.transfer_allowed;
-    } else {
-      message.transfer_allowed = false;
     }
     return message;
   },

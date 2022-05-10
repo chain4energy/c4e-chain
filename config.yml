@@ -163,7 +163,7 @@ genesis:
                 lock_start: "2022-03-30T00:00:00.00000000Z"
                 vesting_type: "Advisors pool"
                 withdrawn: "0"
-                transfer_allowed: true
+                # transfer_allowed: true
           # - address: "c4e14z9cdze48aygze82e42a29h5gg5z3vda0qx5wc"
           #   delegable_address: ""
           #   vestings:
@@ -181,7 +181,7 @@ genesis:
                 lock_start: "2022-03-30T00:00:00.00000000Z"
                 vesting_type: "Validators pool"
                 withdrawn: "0"
-                transfer_allowed: true
+                # transfer_allowed: true
 
     # genutil:
     #   gen_txs:

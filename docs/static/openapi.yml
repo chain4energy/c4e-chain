@@ -266,8 +266,6 @@ paths:
                       type: string
                     sent_amount:
                       type: string
-                    transfer_allowed:
-                      type: boolean
         default:
           description: An unexpected error response.
           schema:
@@ -28309,8 +28307,6 @@ definitions:
               type: string
             sent_amount:
               type: string
-            transfer_allowed:
-              type: boolean
   chain4energy.c4echain.cfevesting.QueryVestingTypeResponse:
     type: object
     properties:
@@ -28372,8 +28368,6 @@ definitions:
         type: string
       sent_amount:
         type: string
-      transfer_allowed:
-        type: boolean
   cosmos.base.v1beta1.Coin:
     type: object
     properties:
