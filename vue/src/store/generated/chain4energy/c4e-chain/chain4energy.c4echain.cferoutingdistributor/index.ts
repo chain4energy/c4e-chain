@@ -1,9 +1,13 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
 import { Params } from "./module/types/cferoutingdistributor/params"
+import { DenomUnit } from "./module/types/cferoutingdistributor/sub_distributor"
+import { Destination } from "./module/types/cferoutingdistributor/sub_distributor"
+import { Share } from "./module/types/cferoutingdistributor/sub_distributor"
+import { account } from "./module/types/cferoutingdistributor/sub_distributor"
 
 
-export { Params };
+export { Params, DenomUnit, Destination, Share, account };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -45,6 +49,10 @@ const getDefaultState = () => {
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
+						DenomUnit: getStructure(DenomUnit.fromPartial({})),
+						Destination: getStructure(Destination.fromPartial({})),
+						Share: getStructure(Share.fromPartial({})),
+						account: getStructure(account.fromPartial({})),
 						
 		},
 		_Registry: registry,
