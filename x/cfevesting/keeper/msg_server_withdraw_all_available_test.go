@@ -142,7 +142,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	}
 	vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 1, 1, 1)
 
-	createVestingPool(t, ctx, app, accAddr, false, true,  "v-pool-1", 1000, *vestingTypes.VestingTypes[0], vested, vested, /*0,*/ 0, 0, /*0,*/ vested)
+	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *vestingTypes.VestingTypes[0], vested, vested /*0,*/, 0, 0 /*0,*/, vested)
 
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, 0, vested)
 

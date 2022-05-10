@@ -3,10 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	metrics "github.com/armon/go-metrics"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCreateVestingAccount) (*types.MsgCreateVestingAccountResponse, error) {
