@@ -21,7 +21,7 @@ func (k Keeper) AppendSignature(ctx sdk.Context, storageKey string, signature ty
 	return signature.Timestamp
 }
 
-func (k Keeper) GetSignature(ctx sdk.Context, storageKey string) (types.Signature, error) {
+func (k Keeper) GetSignature(ctx sdk.Context, storageKey string) (*types.Signature, error) {
 	// get the store
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.SignatureKey))
 
@@ -31,12 +31,12 @@ func (k Keeper) GetSignature(ctx sdk.Context, storageKey string) (types.Signatur
 
 	if signatureBytes == nil {
 		// return the zero value of the types.Signature
-		return types.Signature{}, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to get signature")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to get signature")
 	}
 
 	k.cdc.MustUnmarshal(signatureBytes, &signature)
 
-	return signature, nil
+	return &signature, nil
 }
 
 func (k Keeper) AppendPayloadLink(ctx sdk.Context, key string, value string) error {

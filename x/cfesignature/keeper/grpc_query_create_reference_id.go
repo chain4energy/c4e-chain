@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -11,6 +12,7 @@ import (
 	"encoding/hex"
 )
 
+// CreateReferenceID creates a referenceID and verifies that is has not been used yet
 func (k Keeper) CreateReferenceId(goCtx context.Context, req *types.QueryCreateReferenceIdRequest) (*types.QueryCreateReferenceIdResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -22,17 +24,30 @@ func (k Keeper) CreateReferenceId(goCtx context.Context, req *types.QueryCreateR
 	rand32 := make([]byte, 32)
 	_, err := rand.Read(rand32)
 	if err != nil {
-		// return "", errorcode.Internal.WithMessage("failed to generate referenceID, %v", err).LogReturn()
-		return nil, err
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "failed to generate referenceID")
 	}
-
-	// k.CreateStorageKey()
 
 	// encode random numbers to hex string
 	referenceID := hex.EncodeToString(rand32)
 
-	// TODO: Process the query
-	_ = ctx
+	// make sure that there is no such referenceID for this account address on the ledger yet:
+	targetAccAddress := req.Creator
+	param := &types.QueryCreateStorageKeyRequest{TargetAccAddress: targetAccAddress, ReferenceId: referenceID}
+	storageKey, err := k.CreateStorageKey(goCtx, param)
+	if err != nil {
+		// it is safe to return local errors
+		return nil, err
+	}
+
+	data, err := k.GetSignature(ctx, storageKey.StorageKey)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "unable to get ledger state")
+
+	}
+
+	if data != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "data for this referenceID already exists")
+	}
 
 	return &types.QueryCreateReferenceIdResponse{ReferenceId: referenceID}, nil
 }

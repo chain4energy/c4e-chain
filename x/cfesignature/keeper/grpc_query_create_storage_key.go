@@ -17,8 +17,6 @@ func (k Keeper) CreateStorageKey(goCtx context.Context, req *types.QueryCreateSt
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// TODO: Process the query
 	_ = ctx
 
 	if len(req.ReferenceId) != 64 {

@@ -3,10 +3,11 @@ package cli
 import (
 	"strconv"
 
+	"github.com/spf13/cobra"
+
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/spf13/cobra"
 )
 
 var _ = strconv.Itoa(0)
