@@ -125,6 +125,45 @@ paths:
           type: string
       tags:
         - Query
+  '/chain4energy/c4e-chain/cfesignature/get_account_info/{accAddressString}':
+    get:
+      summary: Queries a list of GetAccountInfo items.
+      operationId: Chain4EnergyC4EchainCfesignatureGetAccountInfo
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              accAddress:
+                type: string
+              pubKey:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: accAddressString
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /chain4energy/c4e-chain/cfesignature/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -170,6 +209,17 @@ paths:
           description: A successful response.
           schema:
             type: object
+            properties:
+              signature:
+                type: string
+              algorithm:
+                type: string
+              certificate:
+                type: string
+              timestamp:
+                type: string
+              valid:
+                type: string
         default:
           description: An unexpected error response.
           schema:
@@ -28412,6 +28462,11 @@ paths:
       tags:
         - Query
 definitions:
+  chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
+    type: object
+    properties:
+      accountId:
+        type: string
   chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLinkResponse:
     type: object
     properties:
@@ -28444,6 +28499,13 @@ definitions:
     properties:
       storageKey:
         type: string
+  chain4energy.c4echain.cfesignature.QueryGetAccountInfoResponse:
+    type: object
+    properties:
+      accAddress:
+        type: string
+      pubKey:
+        type: string
   chain4energy.c4echain.cfesignature.QueryParamsResponse:
     type: object
     properties:
@@ -28453,6 +28515,17 @@ definitions:
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfesignature.QueryVerifySignatureResponse:
     type: object
+    properties:
+      signature:
+        type: string
+      algorithm:
+        type: string
+      certificate:
+        type: string
+      timestamp:
+        type: string
+      valid:
+        type: string
   google.protobuf.Any:
     type: object
     properties:

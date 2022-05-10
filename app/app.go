@@ -376,9 +376,11 @@ func New(
 
 	app.CfesignatureKeeper = *cfesignaturemodulekeeper.NewKeeper(
 		appCodec,
+		appCodec,
 		keys[cfesignaturemoduletypes.StoreKey],
 		keys[cfesignaturemoduletypes.MemStoreKey],
 		app.GetSubspace(cfesignaturemoduletypes.ModuleName),
+		app.AccountKeeper,
 	)
 	cfesignatureModule := cfesignaturemodule.NewAppModule(appCodec, app.CfesignatureKeeper)
 

@@ -45,7 +45,22 @@ export interface QueryVerifySignatureRequest {
   targetAccAddress: string;
 }
 
-export interface QueryVerifySignatureResponse {}
+export interface QueryVerifySignatureResponse {
+  signature: string;
+  algorithm: string;
+  certificate: string;
+  timestamp: string;
+  valid: string;
+}
+
+export interface QueryGetAccountInfoRequest {
+  accAddressString: string;
+}
+
+export interface QueryGetAccountInfoResponse {
+  accAddress: string;
+  pubKey: string;
+}
 
 const baseQueryParamsRequest: object = {};
 
@@ -728,13 +743,34 @@ export const QueryVerifySignatureRequest = {
   },
 };
 
-const baseQueryVerifySignatureResponse: object = {};
+const baseQueryVerifySignatureResponse: object = {
+  signature: "",
+  algorithm: "",
+  certificate: "",
+  timestamp: "",
+  valid: "",
+};
 
 export const QueryVerifySignatureResponse = {
   encode(
-    _: QueryVerifySignatureResponse,
+    message: QueryVerifySignatureResponse,
     writer: Writer = Writer.create()
   ): Writer {
+    if (message.signature !== "") {
+      writer.uint32(10).string(message.signature);
+    }
+    if (message.algorithm !== "") {
+      writer.uint32(18).string(message.algorithm);
+    }
+    if (message.certificate !== "") {
+      writer.uint32(26).string(message.certificate);
+    }
+    if (message.timestamp !== "") {
+      writer.uint32(34).string(message.timestamp);
+    }
+    if (message.valid !== "") {
+      writer.uint32(42).string(message.valid);
+    }
     return writer;
   },
 
@@ -750,6 +786,21 @@ export const QueryVerifySignatureResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.signature = reader.string();
+          break;
+        case 2:
+          message.algorithm = reader.string();
+          break;
+        case 3:
+          message.certificate = reader.string();
+          break;
+        case 4:
+          message.timestamp = reader.string();
+          break;
+        case 5:
+          message.valid = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -758,24 +809,242 @@ export const QueryVerifySignatureResponse = {
     return message;
   },
 
-  fromJSON(_: any): QueryVerifySignatureResponse {
+  fromJSON(object: any): QueryVerifySignatureResponse {
     const message = {
       ...baseQueryVerifySignatureResponse,
     } as QueryVerifySignatureResponse;
+    if (object.signature !== undefined && object.signature !== null) {
+      message.signature = String(object.signature);
+    } else {
+      message.signature = "";
+    }
+    if (object.algorithm !== undefined && object.algorithm !== null) {
+      message.algorithm = String(object.algorithm);
+    } else {
+      message.algorithm = "";
+    }
+    if (object.certificate !== undefined && object.certificate !== null) {
+      message.certificate = String(object.certificate);
+    } else {
+      message.certificate = "";
+    }
+    if (object.timestamp !== undefined && object.timestamp !== null) {
+      message.timestamp = String(object.timestamp);
+    } else {
+      message.timestamp = "";
+    }
+    if (object.valid !== undefined && object.valid !== null) {
+      message.valid = String(object.valid);
+    } else {
+      message.valid = "";
+    }
     return message;
   },
 
-  toJSON(_: QueryVerifySignatureResponse): unknown {
+  toJSON(message: QueryVerifySignatureResponse): unknown {
     const obj: any = {};
+    message.signature !== undefined && (obj.signature = message.signature);
+    message.algorithm !== undefined && (obj.algorithm = message.algorithm);
+    message.certificate !== undefined &&
+      (obj.certificate = message.certificate);
+    message.timestamp !== undefined && (obj.timestamp = message.timestamp);
+    message.valid !== undefined && (obj.valid = message.valid);
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<QueryVerifySignatureResponse>
+    object: DeepPartial<QueryVerifySignatureResponse>
   ): QueryVerifySignatureResponse {
     const message = {
       ...baseQueryVerifySignatureResponse,
     } as QueryVerifySignatureResponse;
+    if (object.signature !== undefined && object.signature !== null) {
+      message.signature = object.signature;
+    } else {
+      message.signature = "";
+    }
+    if (object.algorithm !== undefined && object.algorithm !== null) {
+      message.algorithm = object.algorithm;
+    } else {
+      message.algorithm = "";
+    }
+    if (object.certificate !== undefined && object.certificate !== null) {
+      message.certificate = object.certificate;
+    } else {
+      message.certificate = "";
+    }
+    if (object.timestamp !== undefined && object.timestamp !== null) {
+      message.timestamp = object.timestamp;
+    } else {
+      message.timestamp = "";
+    }
+    if (object.valid !== undefined && object.valid !== null) {
+      message.valid = object.valid;
+    } else {
+      message.valid = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryGetAccountInfoRequest: object = { accAddressString: "" };
+
+export const QueryGetAccountInfoRequest = {
+  encode(
+    message: QueryGetAccountInfoRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.accAddressString !== "") {
+      writer.uint32(10).string(message.accAddressString);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetAccountInfoRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetAccountInfoRequest,
+    } as QueryGetAccountInfoRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.accAddressString = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetAccountInfoRequest {
+    const message = {
+      ...baseQueryGetAccountInfoRequest,
+    } as QueryGetAccountInfoRequest;
+    if (
+      object.accAddressString !== undefined &&
+      object.accAddressString !== null
+    ) {
+      message.accAddressString = String(object.accAddressString);
+    } else {
+      message.accAddressString = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetAccountInfoRequest): unknown {
+    const obj: any = {};
+    message.accAddressString !== undefined &&
+      (obj.accAddressString = message.accAddressString);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetAccountInfoRequest>
+  ): QueryGetAccountInfoRequest {
+    const message = {
+      ...baseQueryGetAccountInfoRequest,
+    } as QueryGetAccountInfoRequest;
+    if (
+      object.accAddressString !== undefined &&
+      object.accAddressString !== null
+    ) {
+      message.accAddressString = object.accAddressString;
+    } else {
+      message.accAddressString = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryGetAccountInfoResponse: object = { accAddress: "", pubKey: "" };
+
+export const QueryGetAccountInfoResponse = {
+  encode(
+    message: QueryGetAccountInfoResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.accAddress !== "") {
+      writer.uint32(10).string(message.accAddress);
+    }
+    if (message.pubKey !== "") {
+      writer.uint32(18).string(message.pubKey);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetAccountInfoResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetAccountInfoResponse,
+    } as QueryGetAccountInfoResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.accAddress = reader.string();
+          break;
+        case 2:
+          message.pubKey = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetAccountInfoResponse {
+    const message = {
+      ...baseQueryGetAccountInfoResponse,
+    } as QueryGetAccountInfoResponse;
+    if (object.accAddress !== undefined && object.accAddress !== null) {
+      message.accAddress = String(object.accAddress);
+    } else {
+      message.accAddress = "";
+    }
+    if (object.pubKey !== undefined && object.pubKey !== null) {
+      message.pubKey = String(object.pubKey);
+    } else {
+      message.pubKey = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetAccountInfoResponse): unknown {
+    const obj: any = {};
+    message.accAddress !== undefined && (obj.accAddress = message.accAddress);
+    message.pubKey !== undefined && (obj.pubKey = message.pubKey);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetAccountInfoResponse>
+  ): QueryGetAccountInfoResponse {
+    const message = {
+      ...baseQueryGetAccountInfoResponse,
+    } as QueryGetAccountInfoResponse;
+    if (object.accAddress !== undefined && object.accAddress !== null) {
+      message.accAddress = object.accAddress;
+    } else {
+      message.accAddress = "";
+    }
+    if (object.pubKey !== undefined && object.pubKey !== null) {
+      message.pubKey = object.pubKey;
+    } else {
+      message.pubKey = "";
+    }
     return message;
   },
 };
@@ -800,6 +1069,10 @@ export interface Query {
   VerifySignature(
     request: QueryVerifySignatureRequest
   ): Promise<QueryVerifySignatureResponse>;
+  /** Queries a list of GetAccountInfo items. */
+  GetAccountInfo(
+    request: QueryGetAccountInfoRequest
+  ): Promise<QueryGetAccountInfoResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -872,6 +1145,20 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryVerifySignatureResponse.decode(new Reader(data))
+    );
+  }
+
+  GetAccountInfo(
+    request: QueryGetAccountInfoRequest
+  ): Promise<QueryGetAccountInfoResponse> {
+    const data = QueryGetAccountInfoRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfesignature.Query",
+      "GetAccountInfo",
+      data
+    );
+    return promise.then((data) =>
+      QueryGetAccountInfoResponse.decode(new Reader(data))
     );
   }
 }

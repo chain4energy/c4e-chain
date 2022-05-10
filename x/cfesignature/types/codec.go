@@ -10,6 +10,7 @@ import (
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgStoreSignature{}, "cfesignature/StoreSignature", nil)
 	cdc.RegisterConcrete(&MsgPublishReferencePayloadLink{}, "cfesignature/PublishReferencePayloadLink", nil)
+	cdc.RegisterConcrete(&MsgCreateAccount{}, "cfesignature/CreateAccount", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -19,6 +20,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgPublishReferencePayloadLink{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgCreateAccount{},
 	)
 	// this line is used by starport scaffolding # 3
 

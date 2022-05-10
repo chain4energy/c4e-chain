@@ -24,6 +24,16 @@ export interface MsgPublishReferencePayloadLinkResponse {
   txTimestamp: string;
 }
 
+export interface MsgCreateAccount {
+  creator: string;
+  accAddressString: string;
+  pubKeyString: string;
+}
+
+export interface MsgCreateAccountResponse {
+  accountId: string;
+}
+
 const baseMsgStoreSignature: object = {
   creator: "",
   storageKey: "",
@@ -382,15 +392,186 @@ export const MsgPublishReferencePayloadLinkResponse = {
   },
 };
 
+const baseMsgCreateAccount: object = {
+  creator: "",
+  accAddressString: "",
+  pubKeyString: "",
+};
+
+export const MsgCreateAccount = {
+  encode(message: MsgCreateAccount, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.accAddressString !== "") {
+      writer.uint32(18).string(message.accAddressString);
+    }
+    if (message.pubKeyString !== "") {
+      writer.uint32(26).string(message.pubKeyString);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateAccount {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgCreateAccount } as MsgCreateAccount;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.accAddressString = reader.string();
+          break;
+        case 3:
+          message.pubKeyString = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgCreateAccount {
+    const message = { ...baseMsgCreateAccount } as MsgCreateAccount;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    if (
+      object.accAddressString !== undefined &&
+      object.accAddressString !== null
+    ) {
+      message.accAddressString = String(object.accAddressString);
+    } else {
+      message.accAddressString = "";
+    }
+    if (object.pubKeyString !== undefined && object.pubKeyString !== null) {
+      message.pubKeyString = String(object.pubKeyString);
+    } else {
+      message.pubKeyString = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgCreateAccount): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.accAddressString !== undefined &&
+      (obj.accAddressString = message.accAddressString);
+    message.pubKeyString !== undefined &&
+      (obj.pubKeyString = message.pubKeyString);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgCreateAccount>): MsgCreateAccount {
+    const message = { ...baseMsgCreateAccount } as MsgCreateAccount;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    if (
+      object.accAddressString !== undefined &&
+      object.accAddressString !== null
+    ) {
+      message.accAddressString = object.accAddressString;
+    } else {
+      message.accAddressString = "";
+    }
+    if (object.pubKeyString !== undefined && object.pubKeyString !== null) {
+      message.pubKeyString = object.pubKeyString;
+    } else {
+      message.pubKeyString = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgCreateAccountResponse: object = { accountId: "" };
+
+export const MsgCreateAccountResponse = {
+  encode(
+    message: MsgCreateAccountResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.accountId !== "") {
+      writer.uint32(10).string(message.accountId);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgCreateAccountResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgCreateAccountResponse,
+    } as MsgCreateAccountResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.accountId = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgCreateAccountResponse {
+    const message = {
+      ...baseMsgCreateAccountResponse,
+    } as MsgCreateAccountResponse;
+    if (object.accountId !== undefined && object.accountId !== null) {
+      message.accountId = String(object.accountId);
+    } else {
+      message.accountId = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgCreateAccountResponse): unknown {
+    const obj: any = {};
+    message.accountId !== undefined && (obj.accountId = message.accountId);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<MsgCreateAccountResponse>
+  ): MsgCreateAccountResponse {
+    const message = {
+      ...baseMsgCreateAccountResponse,
+    } as MsgCreateAccountResponse;
+    if (object.accountId !== undefined && object.accountId !== null) {
+      message.accountId = object.accountId;
+    } else {
+      message.accountId = "";
+    }
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   StoreSignature(
     request: MsgStoreSignature
   ): Promise<MsgStoreSignatureResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   PublishReferencePayloadLink(
     request: MsgPublishReferencePayloadLink
   ): Promise<MsgPublishReferencePayloadLinkResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  CreateAccount(request: MsgCreateAccount): Promise<MsgCreateAccountResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -423,6 +604,18 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgPublishReferencePayloadLinkResponse.decode(new Reader(data))
+    );
+  }
+
+  CreateAccount(request: MsgCreateAccount): Promise<MsgCreateAccountResponse> {
+    const data = MsgCreateAccount.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfesignature.Msg",
+      "CreateAccount",
+      data
+    );
+    return promise.then((data) =>
+      MsgCreateAccountResponse.decode(new Reader(data))
     );
   }
 }

@@ -9,6 +9,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfesignature/types";
 service Msg {
       rpc StoreSignature(MsgStoreSignature) returns (MsgStoreSignatureResponse);
   rpc PublishReferencePayloadLink(MsgPublishReferencePayloadLink) returns (MsgPublishReferencePayloadLinkResponse);
+  rpc CreateAccount(MsgCreateAccount) returns (MsgCreateAccountResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -31,6 +32,16 @@ message MsgPublishReferencePayloadLink {
 
 message MsgPublishReferencePayloadLinkResponse {
   string txTimestamp = 1;
+}
+
+message MsgCreateAccount {
+  string creator = 1;
+  string accAddressString = 2;
+  string pubKeyString = 3;
+}
+
+message MsgCreateAccountResponse {
+  string accountId = 1;
 }
 
 // this line is used by starport scaffolding # proto/tx/message

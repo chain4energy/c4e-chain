@@ -32,6 +32,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdStoreSignature())
 	cmd.AddCommand(CmdPublishReferencePayloadLink())
+	cmd.AddCommand(CmdCreateAccount())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

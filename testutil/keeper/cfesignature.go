@@ -27,6 +27,8 @@ func CfesignatureKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
 	require.NoError(t, stateStore.LoadLatestVersion())
 
+	var accountKeeper types.AccountKeeper
+
 	registry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(registry)
 
@@ -38,9 +40,11 @@ func CfesignatureKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	)
 	k := keeper.NewKeeper(
 		cdc,
+		cdc,
 		storeKey,
 		memStoreKey,
 		paramsSubspace,
+		accountKeeper,
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
