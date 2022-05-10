@@ -252,18 +252,18 @@ export default {
 				}
 			}
 		},
-		async sendMsgWithdrawAllAvailable({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgCreateVestingAccount({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgWithdrawAllAvailable(value)
+				const msg = await txClient.msgCreateVestingAccount(value)
 				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
 	gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgWithdrawAllAvailable:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgCreateVestingAccount:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -284,16 +284,19 @@ export default {
 		async MsgWithdrawAllAvailable({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateVestingAccount(value)
-				return msg
+				const msg = await txClient.msgWithdrawAllAvailable(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgCreateVestingAccount:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgWithdrawAllAvailable:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
+		
 		async MsgSendToVestingAccount({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -302,21 +305,21 @@ export default {
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgSendToVestingAccount:Init Could not initialize signing client. Wallet is required.')
-				}else{
+				} else{
 					throw new Error('TxClient:MsgSendToVestingAccount:Create Could not create message: ' + e.message)
 				}
 			}
 		},
-		async MsgWithdrawAllAvailable({ rootGetters }, { value }) {
+		async MsgCreateVestingAccount({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgWithdrawAllAvailable(value)
+				const msg = await txClient.msgCreateVestingAccount(value)
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgWithdrawAllAvailable:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCreateVestingAccount:Create Could not create message: ' + e.message)
 				}
 			}
 		},
