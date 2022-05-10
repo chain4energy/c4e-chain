@@ -1,5 +1,6 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter from './chain4energy/c4e-chain/chain4energy.c4echain.cfeminter'
 import Chain4EnergyC4EChainChain4EnergyC4EchainCfevesting from './chain4energy/c4e-chain/chain4energy.c4echain.cfevesting'
 import CosmosCosmosSdkCosmosAuthV1Beta1 from './cosmos/cosmos-sdk/cosmos.auth.v1beta1'
 import CosmosCosmosSdkCosmosAuthzV1Beta1 from './cosmos/cosmos-sdk/cosmos.authz.v1beta1'
@@ -24,6 +25,7 @@ import CosmosIbcGoIbcCorePortV1 from './cosmos/ibc-go/ibc.core.port.v1'
 
 
 export default { 
+  Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter, 'chain4energy.c4echain.cfeminter'),
   Chain4EnergyC4EChainChain4EnergyC4EchainCfevesting: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfevesting, 'chain4energy.c4echain.cfevesting'),
   CosmosCosmosSdkCosmosAuthV1Beta1: load(CosmosCosmosSdkCosmosAuthV1Beta1, 'cosmos.auth.v1beta1'),
   CosmosCosmosSdkCosmosAuthzV1Beta1: load(CosmosCosmosSdkCosmosAuthzV1Beta1, 'cosmos.authz.v1beta1'),
