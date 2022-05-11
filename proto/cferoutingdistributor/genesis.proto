@@ -3,6 +3,8 @@ package chain4energy.c4echain.cferoutingdistributor;
 
 import "gogoproto/gogo.proto";
 import "cferoutingdistributor/params.proto";
+import "cferoutingdistributor/sub_distributor.proto";
+
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types";
@@ -11,5 +13,5 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/t
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
-  RoutingDistributor routingDistributor = 2;
+  RoutingDistributor routing_distributor = 2;
 }

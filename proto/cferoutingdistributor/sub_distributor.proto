@@ -10,10 +10,10 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/t
 message RoutingDistributor {
 
   //List contains distributors
-  repeated SubDistributor subDistributor = 1;
+  repeated SubDistributor sub_distributor = 1;
 
   //module account to load on start genesis
-  repeated string moduleAccounts = 2;
+  repeated string module_accounts = 2;
 }
 
 message SubDistributor {
@@ -22,6 +22,9 @@ message SubDistributor {
 
   //represent destinations
   Destination destination = 2;
+
+  int32 order =3;
+
 }
 
 message Destination {
@@ -40,5 +43,5 @@ message Share {
 
 message account {
   string address = 1;
-  bool isModuleAccount = 2;
+  bool is_module_account = 2;
 }
