@@ -10,26 +10,27 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/t
 message RoutingDistributor {
 
   //List contains distributors
-  repeated SubDistributor sub_distributor = 1;
+  repeated SubDistributor sub_distributor = 1         [(gogoproto.nullable) = false];
 
   //module account to load on start genesis
   repeated string module_accounts = 2;
 }
 
 message SubDistributor {
+  string name = 1;
   //represent list of module account from which
-  repeated string sources = 1;
+  repeated string sources = 2;
 
   //represent destinations
-  Destination destination = 2;
+  Destination destination = 3         [(gogoproto.nullable) = false];
 
-  int32 order =3;
+  int32 order = 4;
 
 }
 
 message Destination {
-  string default_share_account = 1;
-  repeated Share share = 2;
+  account default_share_account = 1;
+  repeated Share share = 2         [(gogoproto.nullable) = false];
 
   //can be null
   int32  burn_share = 3;
@@ -37,8 +38,8 @@ message Destination {
 
 message Share {
   string name = 1;
-  int32 percent = 2;
-  account account = 3;
+  int64 percent = 2;
+  account account = 3          [(gogoproto.nullable) = false];
 }
 
 message account {
