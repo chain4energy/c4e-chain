@@ -18,7 +18,7 @@ func TestGenesis(t *testing.T) {
 	}
 
 	k, ctx := keepertest.CferoutingdistributorKeeper(t)
-	cferoutingdistributor.InitGenesis(ctx, *k, genesisState)
+	cferoutingdistributor.InitGenesis(ctx, *k, genesisState, nil /* TODO AccountKeeper*/)
 	got := cferoutingdistributor.ExportGenesis(ctx, *k)
 	require.NotNil(t, got)
 

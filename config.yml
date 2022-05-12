@@ -84,6 +84,68 @@ genesis:
       params:
         bond_denom: "uc4e"
         unbonding_time: "100s"
+    cferoutingdistributor:
+      routing_distributor:
+        module_accounts:
+          - fee_collector
+          - inflation_collector
+          - validators_rewards_collector
+          - payment_collector
+          - liquididty_rewards_collector
+          - governance_locking_rewards_collector
+          - users_incentive_collector
+          - community_pool_rewards_collector
+        sub_distributor:
+            - order: 1
+              name: inflation_distributor
+              sources:
+                  - inflation_collector
+              destination:
+                default_share_account:
+                  address: "validators_rewards_collector"
+                  is_module_account: true
+                share:
+                  - name: users_incentive_share
+                    percent: 30
+                    account:
+                      address: users_incentive_collector
+                      is_module_account: true
+
+            - order: 2
+              name: fee_and_payment_distributor
+              sources:
+                - fee_collector
+                - payment_collector
+              destination:
+                default_share_account:
+                  address: "validators_rewards_collector"
+                  is_module_account: true
+                share:
+                  - name: community_pool_rewards_share
+                    percent: 30
+                    account:
+                      address: "community_pool_rewards_collector"
+                      is_module_account: true
+
+            - order: 3
+              name: community_pool_rewards_distributor
+              sources:
+                - community_pool_rewards_collector
+              destination:
+                default_share_account:
+                  address: "c4e1wejevyydp409tz0necwfg4mzj8md4vfy9n95xu"
+                  is_module_account: false
+                share:
+                  - name: liquidity_and_gov_rewards_share
+                    percent: 30
+                    account:
+                      address: "c4e132g4u3qzf890cqaz9yhaegc6v45ew7qzmzlywg"
+                      is_module_account: false
+                  - name: strategic_reserve_share
+                    percent: 30
+                    account:
+                      address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+                      is_module_account: false
     cfevesting:
       params:
         denom: "uc4e"

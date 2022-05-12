@@ -166,6 +166,12 @@ var (
 		ibctransfertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		cfevestingmoduletypes.ModuleName: nil,
 		// this line is used by starport scaffolding # stargate/app/maccPerms
+		"validators_rewards_collector":              nil,
+		"payment_collector":                         {authtypes.Minter},
+		"liquididty_rewards_collector":              nil,
+		"governance_locking_rewards_collector":      nil,
+		"users_incentive_collector":                 nil,
+		"community_pool_rewards_collector":          nil,
 	}
 )
 
@@ -308,7 +314,7 @@ func New(
 	// )
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec, keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
+		&stakingKeeper, "validators_rewards_collector", app.ModuleAccountAddrs(),
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec, keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
@@ -379,6 +385,8 @@ func New(
 		keys[cferoutingdistributormoduletypes.StoreKey],
 		keys[cferoutingdistributormoduletypes.MemStoreKey],
 		app.GetSubspace(cferoutingdistributormoduletypes.ModuleName),
+		app.BankKeeper,
+		app.AccountKeeper,
 	)
 	cferoutingdistributorModule := cferoutingdistributormodule.NewAppModule(appCodec, app.CferoutingdistributorKeeper, app.AccountKeeper, app.BankKeeper)
 
@@ -430,7 +438,7 @@ func New(
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
-		upgradetypes.ModuleName, capabilitytypes.ModuleName /*minttypes.ModuleName, (TODO clean this)*/, distrtypes.ModuleName, slashingtypes.ModuleName,
+		upgradetypes.ModuleName, capabilitytypes.ModuleName /*minttypes.ModuleName, (TODO clean this)*/, cferoutingdistributormoduletypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
 		feegrant.ModuleName,
 	)
