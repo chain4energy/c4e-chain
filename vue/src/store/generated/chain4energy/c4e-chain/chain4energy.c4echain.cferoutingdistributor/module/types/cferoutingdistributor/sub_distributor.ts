@@ -1,30 +1,30 @@
 /* eslint-disable */
-import { Writer, Reader } from "protobufjs/minimal";
+import * as Long from "long";
+import { util, configure, Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
 
-/**
- * DenomUnit represents a struct that describes a given
- * denomination unit of the basic token.
- */
-export interface DenomUnit {
+export interface RoutingDistributor {
+  /** List contains distributors */
+  sub_distributor: SubDistributor[];
+  /** module account to load on start genesis */
+  module_accounts: string[];
+}
+
+export interface SubDistributor {
+  name: string;
   /** represent list of module account from which */
   sources: string[];
-  /** denom represents the string name of the given denom unit (e.g uatom). */
-  denom: string;
-  /**
-   * exponent represents power of 10 exponent that one must
-   * raise the base_denom to in order to equal the given DenomUnit's denom
-   * 1 denom = 10^exponent base_denom
-   * (e.g. with a base_denom of uatom, one can create a DenomUnit of 'atom' with
-   * exponent = 6, thus: 1 atom = 10^6 uatom).
-   */
-  exponent: number;
+  /** represent destinations */
+  destination: Destination | undefined;
+  order: number;
 }
 
 export interface Destination {
-  default_share_account: string;
+  default_share_account: account | undefined;
   share: Share[];
+  /** can be null */
+  burn_share: number;
 }
 
 export interface Share {
@@ -35,41 +35,41 @@ export interface Share {
 
 export interface account {
   address: string;
-  isModuleAccount: boolean;
+  is_module_account: boolean;
 }
 
-const baseDenomUnit: object = { sources: "", denom: "", exponent: 0 };
+const baseRoutingDistributor: object = { module_accounts: "" };
 
-export const DenomUnit = {
-  encode(message: DenomUnit, writer: Writer = Writer.create()): Writer {
-    for (const v of message.sources) {
-      writer.uint32(26).string(v!);
+export const RoutingDistributor = {
+  encode(
+    message: RoutingDistributor,
+    writer: Writer = Writer.create()
+  ): Writer {
+    for (const v of message.sub_distributor) {
+      SubDistributor.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    if (message.denom !== "") {
-      writer.uint32(10).string(message.denom);
-    }
-    if (message.exponent !== 0) {
-      writer.uint32(16).int32(message.exponent);
+    for (const v of message.module_accounts) {
+      writer.uint32(18).string(v!);
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): DenomUnit {
+  decode(input: Reader | Uint8Array, length?: number): RoutingDistributor {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseDenomUnit } as DenomUnit;
-    message.sources = [];
+    const message = { ...baseRoutingDistributor } as RoutingDistributor;
+    message.sub_distributor = [];
+    message.module_accounts = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 3:
-          message.sources.push(reader.string());
-          break;
         case 1:
-          message.denom = reader.string();
+          message.sub_distributor.push(
+            SubDistributor.decode(reader, reader.uint32())
+          );
           break;
         case 2:
-          message.exponent = reader.int32();
+          message.module_accounts.push(reader.string());
           break;
         default:
           reader.skipType(tag & 7);
@@ -79,70 +79,203 @@ export const DenomUnit = {
     return message;
   },
 
-  fromJSON(object: any): DenomUnit {
-    const message = { ...baseDenomUnit } as DenomUnit;
-    message.sources = [];
-    if (object.sources !== undefined && object.sources !== null) {
-      for (const e of object.sources) {
-        message.sources.push(String(e));
+  fromJSON(object: any): RoutingDistributor {
+    const message = { ...baseRoutingDistributor } as RoutingDistributor;
+    message.sub_distributor = [];
+    message.module_accounts = [];
+    if (
+      object.sub_distributor !== undefined &&
+      object.sub_distributor !== null
+    ) {
+      for (const e of object.sub_distributor) {
+        message.sub_distributor.push(SubDistributor.fromJSON(e));
       }
     }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = String(object.denom);
-    } else {
-      message.denom = "";
-    }
-    if (object.exponent !== undefined && object.exponent !== null) {
-      message.exponent = Number(object.exponent);
-    } else {
-      message.exponent = 0;
+    if (
+      object.module_accounts !== undefined &&
+      object.module_accounts !== null
+    ) {
+      for (const e of object.module_accounts) {
+        message.module_accounts.push(String(e));
+      }
     }
     return message;
   },
 
-  toJSON(message: DenomUnit): unknown {
+  toJSON(message: RoutingDistributor): unknown {
     const obj: any = {};
-    if (message.sources) {
-      obj.sources = message.sources.map((e) => e);
+    if (message.sub_distributor) {
+      obj.sub_distributor = message.sub_distributor.map((e) =>
+        e ? SubDistributor.toJSON(e) : undefined
+      );
     } else {
-      obj.sources = [];
+      obj.sub_distributor = [];
     }
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.exponent !== undefined && (obj.exponent = message.exponent);
+    if (message.module_accounts) {
+      obj.module_accounts = message.module_accounts.map((e) => e);
+    } else {
+      obj.module_accounts = [];
+    }
     return obj;
   },
 
-  fromPartial(object: DeepPartial<DenomUnit>): DenomUnit {
-    const message = { ...baseDenomUnit } as DenomUnit;
-    message.sources = [];
-    if (object.sources !== undefined && object.sources !== null) {
-      for (const e of object.sources) {
-        message.sources.push(e);
+  fromPartial(object: DeepPartial<RoutingDistributor>): RoutingDistributor {
+    const message = { ...baseRoutingDistributor } as RoutingDistributor;
+    message.sub_distributor = [];
+    message.module_accounts = [];
+    if (
+      object.sub_distributor !== undefined &&
+      object.sub_distributor !== null
+    ) {
+      for (const e of object.sub_distributor) {
+        message.sub_distributor.push(SubDistributor.fromPartial(e));
       }
     }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = object.denom;
-    } else {
-      message.denom = "";
-    }
-    if (object.exponent !== undefined && object.exponent !== null) {
-      message.exponent = object.exponent;
-    } else {
-      message.exponent = 0;
+    if (
+      object.module_accounts !== undefined &&
+      object.module_accounts !== null
+    ) {
+      for (const e of object.module_accounts) {
+        message.module_accounts.push(e);
+      }
     }
     return message;
   },
 };
 
-const baseDestination: object = { default_share_account: "" };
+const baseSubDistributor: object = { name: "", sources: "", order: 0 };
+
+export const SubDistributor = {
+  encode(message: SubDistributor, writer: Writer = Writer.create()): Writer {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    for (const v of message.sources) {
+      writer.uint32(18).string(v!);
+    }
+    if (message.destination !== undefined) {
+      Destination.encode(
+        message.destination,
+        writer.uint32(26).fork()
+      ).ldelim();
+    }
+    if (message.order !== 0) {
+      writer.uint32(32).int32(message.order);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): SubDistributor {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseSubDistributor } as SubDistributor;
+    message.sources = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.name = reader.string();
+          break;
+        case 2:
+          message.sources.push(reader.string());
+          break;
+        case 3:
+          message.destination = Destination.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.order = reader.int32();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SubDistributor {
+    const message = { ...baseSubDistributor } as SubDistributor;
+    message.sources = [];
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
+    }
+    if (object.sources !== undefined && object.sources !== null) {
+      for (const e of object.sources) {
+        message.sources.push(String(e));
+      }
+    }
+    if (object.destination !== undefined && object.destination !== null) {
+      message.destination = Destination.fromJSON(object.destination);
+    } else {
+      message.destination = undefined;
+    }
+    if (object.order !== undefined && object.order !== null) {
+      message.order = Number(object.order);
+    } else {
+      message.order = 0;
+    }
+    return message;
+  },
+
+  toJSON(message: SubDistributor): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    if (message.sources) {
+      obj.sources = message.sources.map((e) => e);
+    } else {
+      obj.sources = [];
+    }
+    message.destination !== undefined &&
+      (obj.destination = message.destination
+        ? Destination.toJSON(message.destination)
+        : undefined);
+    message.order !== undefined && (obj.order = message.order);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<SubDistributor>): SubDistributor {
+    const message = { ...baseSubDistributor } as SubDistributor;
+    message.sources = [];
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
+    }
+    if (object.sources !== undefined && object.sources !== null) {
+      for (const e of object.sources) {
+        message.sources.push(e);
+      }
+    }
+    if (object.destination !== undefined && object.destination !== null) {
+      message.destination = Destination.fromPartial(object.destination);
+    } else {
+      message.destination = undefined;
+    }
+    if (object.order !== undefined && object.order !== null) {
+      message.order = object.order;
+    } else {
+      message.order = 0;
+    }
+    return message;
+  },
+};
+
+const baseDestination: object = { burn_share: 0 };
 
 export const Destination = {
   encode(message: Destination, writer: Writer = Writer.create()): Writer {
-    if (message.default_share_account !== "") {
-      writer.uint32(10).string(message.default_share_account);
+    if (message.default_share_account !== undefined) {
+      account
+        .encode(message.default_share_account, writer.uint32(10).fork())
+        .ldelim();
     }
     for (const v of message.share) {
       Share.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.burn_share !== 0) {
+      writer.uint32(24).int32(message.burn_share);
     }
     return writer;
   },
@@ -156,10 +289,16 @@ export const Destination = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.default_share_account = reader.string();
+          message.default_share_account = account.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         case 2:
           message.share.push(Share.decode(reader, reader.uint32()));
+          break;
+        case 3:
+          message.burn_share = reader.int32();
           break;
         default:
           reader.skipType(tag & 7);
@@ -176,14 +315,21 @@ export const Destination = {
       object.default_share_account !== undefined &&
       object.default_share_account !== null
     ) {
-      message.default_share_account = String(object.default_share_account);
+      message.default_share_account = account.fromJSON(
+        object.default_share_account
+      );
     } else {
-      message.default_share_account = "";
+      message.default_share_account = undefined;
     }
     if (object.share !== undefined && object.share !== null) {
       for (const e of object.share) {
         message.share.push(Share.fromJSON(e));
       }
+    }
+    if (object.burn_share !== undefined && object.burn_share !== null) {
+      message.burn_share = Number(object.burn_share);
+    } else {
+      message.burn_share = 0;
     }
     return message;
   },
@@ -191,12 +337,15 @@ export const Destination = {
   toJSON(message: Destination): unknown {
     const obj: any = {};
     message.default_share_account !== undefined &&
-      (obj.default_share_account = message.default_share_account);
+      (obj.default_share_account = message.default_share_account
+        ? account.toJSON(message.default_share_account)
+        : undefined);
     if (message.share) {
       obj.share = message.share.map((e) => (e ? Share.toJSON(e) : undefined));
     } else {
       obj.share = [];
     }
+    message.burn_share !== undefined && (obj.burn_share = message.burn_share);
     return obj;
   },
 
@@ -207,14 +356,21 @@ export const Destination = {
       object.default_share_account !== undefined &&
       object.default_share_account !== null
     ) {
-      message.default_share_account = object.default_share_account;
+      message.default_share_account = account.fromPartial(
+        object.default_share_account
+      );
     } else {
-      message.default_share_account = "";
+      message.default_share_account = undefined;
     }
     if (object.share !== undefined && object.share !== null) {
       for (const e of object.share) {
         message.share.push(Share.fromPartial(e));
       }
+    }
+    if (object.burn_share !== undefined && object.burn_share !== null) {
+      message.burn_share = object.burn_share;
+    } else {
+      message.burn_share = 0;
     }
     return message;
   },
@@ -228,7 +384,7 @@ export const Share = {
       writer.uint32(10).string(message.name);
     }
     if (message.percent !== 0) {
-      writer.uint32(16).int32(message.percent);
+      writer.uint32(16).int64(message.percent);
     }
     if (message.account !== undefined) {
       account.encode(message.account, writer.uint32(26).fork()).ldelim();
@@ -247,7 +403,7 @@ export const Share = {
           message.name = reader.string();
           break;
         case 2:
-          message.percent = reader.int32();
+          message.percent = longToNumber(reader.int64() as Long);
           break;
         case 3:
           message.account = account.decode(reader, reader.uint32());
@@ -312,15 +468,15 @@ export const Share = {
   },
 };
 
-const baseaccount: object = { address: "", isModuleAccount: false };
+const baseaccount: object = { address: "", is_module_account: false };
 
 export const account = {
   encode(message: account, writer: Writer = Writer.create()): Writer {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
-    if (message.isModuleAccount === true) {
-      writer.uint32(16).bool(message.isModuleAccount);
+    if (message.is_module_account === true) {
+      writer.uint32(16).bool(message.is_module_account);
     }
     return writer;
   },
@@ -336,7 +492,7 @@ export const account = {
           message.address = reader.string();
           break;
         case 2:
-          message.isModuleAccount = reader.bool();
+          message.is_module_account = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -354,12 +510,12 @@ export const account = {
       message.address = "";
     }
     if (
-      object.isModuleAccount !== undefined &&
-      object.isModuleAccount !== null
+      object.is_module_account !== undefined &&
+      object.is_module_account !== null
     ) {
-      message.isModuleAccount = Boolean(object.isModuleAccount);
+      message.is_module_account = Boolean(object.is_module_account);
     } else {
-      message.isModuleAccount = false;
+      message.is_module_account = false;
     }
     return message;
   },
@@ -367,8 +523,8 @@ export const account = {
   toJSON(message: account): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
-    message.isModuleAccount !== undefined &&
-      (obj.isModuleAccount = message.isModuleAccount);
+    message.is_module_account !== undefined &&
+      (obj.is_module_account = message.is_module_account);
     return obj;
   },
 
@@ -380,16 +536,26 @@ export const account = {
       message.address = "";
     }
     if (
-      object.isModuleAccount !== undefined &&
-      object.isModuleAccount !== null
+      object.is_module_account !== undefined &&
+      object.is_module_account !== null
     ) {
-      message.isModuleAccount = object.isModuleAccount;
+      message.is_module_account = object.is_module_account;
     } else {
-      message.isModuleAccount = false;
+      message.is_module_account = false;
     }
     return message;
   },
 };
+
+declare var self: any | undefined;
+declare var window: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
 
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
@@ -401,3 +567,15 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (util.Long !== Long) {
+  util.Long = Long as any;
+  configure();
+}
