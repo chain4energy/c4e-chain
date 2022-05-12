@@ -1,13 +1,14 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
 import { Params } from "./module/types/cferoutingdistributor/params"
-import { DenomUnit } from "./module/types/cferoutingdistributor/sub_distributor"
+import { RoutingDistributor } from "./module/types/cferoutingdistributor/sub_distributor"
+import { SubDistributor } from "./module/types/cferoutingdistributor/sub_distributor"
 import { Destination } from "./module/types/cferoutingdistributor/sub_distributor"
 import { Share } from "./module/types/cferoutingdistributor/sub_distributor"
 import { account } from "./module/types/cferoutingdistributor/sub_distributor"
 
 
-export { Params, DenomUnit, Destination, Share, account };
+export { Params, RoutingDistributor, SubDistributor, Destination, Share, account };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -49,7 +50,8 @@ const getDefaultState = () => {
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
-						DenomUnit: getStructure(DenomUnit.fromPartial({})),
+						RoutingDistributor: getStructure(RoutingDistributor.fromPartial({})),
+						SubDistributor: getStructure(SubDistributor.fromPartial({})),
 						Destination: getStructure(Destination.fromPartial({})),
 						Share: getStructure(Share.fromPartial({})),
 						account: getStructure(account.fromPartial({})),
