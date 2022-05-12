@@ -519,6 +519,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		monitoringptypes.ModuleName,
 		cfevestingmoduletypes.ModuleName,
+		cferoutingdistributormoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
