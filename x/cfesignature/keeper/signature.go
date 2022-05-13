@@ -12,10 +12,10 @@ func (k Keeper) AppendSignature(ctx sdk.Context, storageKey string, signature ty
 	// get the store
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.SignatureKey))
 
-	// Marshal the signature into a slice of bytes
+	// Marshal the signature into a slice of bytes.
 	appendedValue := k.cdc.MustMarshal(&signature)
 
-	// Insert the signature bytes using storageKey as a key
+	// Insert the signature bytes using storageKey as a key.
 	store.Set(getStoreKeyBytes(storageKey), appendedValue)
 
 	return signature.Timestamp
@@ -27,11 +27,10 @@ func (k Keeper) GetSignature(ctx sdk.Context, storageKey string) (*types.Signatu
 
 	var signature types.Signature
 
-	signatureBytes := store.Get(getStoreKeyBytes(storageKey))
+	signatureBytes := store.Get(getStoreKeyBytes(storageKey)) // Get returns nil if key doesn't exist.
 
 	if signatureBytes == nil {
-		// return the zero value of the types.Signature
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to get signature")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "failed to get signature")
 	}
 
 	k.cdc.MustUnmarshal(signatureBytes, &signature)

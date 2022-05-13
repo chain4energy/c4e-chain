@@ -41,7 +41,7 @@ message MsgCreateAccount {
 }
 
 message MsgCreateAccountResponse {
-  string accountId = 1;
+  string accountNumber = 1;
 }
 
 // this line is used by starport scaffolding # proto/tx/message
