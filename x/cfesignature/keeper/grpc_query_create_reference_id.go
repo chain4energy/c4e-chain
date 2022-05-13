@@ -32,17 +32,20 @@ func (k Keeper) CreateReferenceId(goCtx context.Context, req *types.QueryCreateR
 
 	// make sure that there is no such referenceID for this account address on the ledger yet:
 	targetAccAddress := req.Creator
-	param := &types.QueryCreateStorageKeyRequest{TargetAccAddress: targetAccAddress, ReferenceId: referenceID}
-	storageKey, err := k.CreateStorageKey(goCtx, param)
+	createStorageKeyRequest := &types.QueryCreateStorageKeyRequest{TargetAccAddress: targetAccAddress, ReferenceId: referenceID}
+	storageKey, err := k.CreateStorageKey(goCtx, createStorageKeyRequest)
 	if err != nil {
 		// it is safe to return local errors
 		return nil, err
 	}
 
-	data, err := k.GetSignature(ctx, storageKey.StorageKey)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "unable to get ledger state")
+	var err1 error
 
+	data, err1 := k.GetSignature(ctx, storageKey.StorageKey)
+	if err != nil {
+		if !sdkerrors.IsOf(err1, sdkerrors.ErrKeyNotFound) {
+			return nil, err1
+		}
 	}
 
 	if data != nil {

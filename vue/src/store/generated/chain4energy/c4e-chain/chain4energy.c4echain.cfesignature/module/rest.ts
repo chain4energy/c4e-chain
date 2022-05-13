@@ -10,7 +10,7 @@
  */
 
 export interface CfesignatureMsgCreateAccountResponse {
-  accountId?: string;
+  accountNumber?: string;
 }
 
 export interface CfesignatureMsgPublishReferencePayloadLinkResponse {

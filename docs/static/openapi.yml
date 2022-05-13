@@ -30483,7 +30483,7 @@ definitions:
   chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
     type: object
     properties:
-      accountId:
+      accountNumber:
         type: string
   chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLinkResponse:
     type: object

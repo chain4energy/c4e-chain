@@ -31,7 +31,7 @@ export interface MsgCreateAccount {
 }
 
 export interface MsgCreateAccountResponse {
-  accountId: string;
+  accountNumber: string;
 }
 
 const baseMsgStoreSignature: object = {
@@ -493,15 +493,15 @@ export const MsgCreateAccount = {
   },
 };
 
-const baseMsgCreateAccountResponse: object = { accountId: "" };
+const baseMsgCreateAccountResponse: object = { accountNumber: "" };
 
 export const MsgCreateAccountResponse = {
   encode(
     message: MsgCreateAccountResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.accountId !== "") {
-      writer.uint32(10).string(message.accountId);
+    if (message.accountNumber !== "") {
+      writer.uint32(10).string(message.accountNumber);
     }
     return writer;
   },
@@ -519,7 +519,7 @@ export const MsgCreateAccountResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.accountId = reader.string();
+          message.accountNumber = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -533,17 +533,18 @@ export const MsgCreateAccountResponse = {
     const message = {
       ...baseMsgCreateAccountResponse,
     } as MsgCreateAccountResponse;
-    if (object.accountId !== undefined && object.accountId !== null) {
-      message.accountId = String(object.accountId);
+    if (object.accountNumber !== undefined && object.accountNumber !== null) {
+      message.accountNumber = String(object.accountNumber);
     } else {
-      message.accountId = "";
+      message.accountNumber = "";
     }
     return message;
   },
 
   toJSON(message: MsgCreateAccountResponse): unknown {
     const obj: any = {};
-    message.accountId !== undefined && (obj.accountId = message.accountId);
+    message.accountNumber !== undefined &&
+      (obj.accountNumber = message.accountNumber);
     return obj;
   },
 
@@ -553,10 +554,10 @@ export const MsgCreateAccountResponse = {
     const message = {
       ...baseMsgCreateAccountResponse,
     } as MsgCreateAccountResponse;
-    if (object.accountId !== undefined && object.accountId !== null) {
-      message.accountId = object.accountId;
+    if (object.accountNumber !== undefined && object.accountNumber !== null) {
+      message.accountNumber = object.accountNumber;
     } else {
-      message.accountId = "";
+      message.accountNumber = "";
     }
     return message;
   },
