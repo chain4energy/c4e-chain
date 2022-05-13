@@ -379,6 +379,8 @@ func New(
 		keys[cfemintermoduletypes.StoreKey],
 		keys[cfemintermoduletypes.MemStoreKey],
 		app.GetSubspace(cfemintermoduletypes.ModuleName),
+
+		app.BankKeeper,
 	)
 	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper)
 
@@ -432,7 +434,7 @@ func New(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName /*minttypes.ModuleName, (TODO clean this)*/, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
-		feegrant.ModuleName,
+		feegrant.ModuleName, cfemintermoduletypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName)

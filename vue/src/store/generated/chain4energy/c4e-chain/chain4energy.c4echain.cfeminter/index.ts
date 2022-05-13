@@ -1,9 +1,10 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
+import { HalvingMinter } from "./module/types/cfeminter/mintparams"
 import { Params } from "./module/types/cfeminter/params"
 
 
-export { Params };
+export { HalvingMinter, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -44,6 +45,7 @@ const getDefaultState = () => {
 				Params: {},
 				
 				_Structure: {
+						HalvingMinter: getStructure(HalvingMinter.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						
 		},

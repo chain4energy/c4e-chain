@@ -1,5 +1,8 @@
 package types
 
+// MinterKey is the key to use for the keeper store.
+var HalvingMinterKey = []byte{0x01}
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "cfeminter"
@@ -15,6 +18,8 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_cfeminter"
+
+	InflationCollectorName = "inflation_collector"
 )
 
 func KeyPrefix(p string) []byte {
