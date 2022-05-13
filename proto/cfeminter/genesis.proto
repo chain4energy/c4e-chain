@@ -3,6 +3,7 @@ package chain4energy.c4echain.cfeminter;
 
 import "gogoproto/gogo.proto";
 import "cfeminter/params.proto";
+import "cfeminter/mintparams.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
@@ -11,4 +12,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
+
+
+  HalvingMinter halving_minter = 2 [(gogoproto.nullable) = false];
 }
