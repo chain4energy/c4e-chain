@@ -18,8 +18,8 @@ func (m HalvingMinter) NextCointCount(blockHeight int64) int64 {
 
 func InitialHalvingMinter() HalvingMinter {
 	return HalvingMinter{
-		BlocksPerYear: 2000,
-		NewCoinsMint:  100,
-		MintDenom:     "C4E",
+		BlocksPerYear: 10,
+		NewCoinsMint:  20596877,
+		MintDenom:     "uc4e",
 	}
 }
