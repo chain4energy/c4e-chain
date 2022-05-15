@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/app"
+	testapp "github.com/chain4energy/c4e-chain/app"
+	"github.com/chain4energy/c4e-chain/x/cfeminter"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -30,8 +32,9 @@ func TestHalvingMinter_NextCointCount(t *testing.T) {
 	}{
 		//{1999, 100},
 		//{2000, 50},
-		{3999, 50},
+		// {3999, 50},
 		//{4000, 25},
+		{4000, 10298438},
 	}
 
 	for i, tc := range tests {
@@ -69,11 +72,16 @@ type MintKeeperTestSuite struct {
 //}
 
 func TestGenesis(t *testing.T) {
-	//genesisState := types.GenesisState{
-	//	Params: types.DefaultParams(),
-	//
-	//	// this line is used by starport scaffolding # genesis/test/state
-	//}
+
+	perms := []string{authtypes.Minter}
+	testapp.AddMaccPerms("fee_collector", perms)
+	testapp.AddMaccPerms("payment_collector", perms)
+
+	genesisState := types.GenesisState{
+		Params:        types.DefaultParams(),
+		HalvingMinter: types.InitialHalvingMinter(),
+		// this line is used by starport scaffolding # genesis/test/state
+	}
 	//
 	//k, ctx := keepertest.EnergyminterKeeper(t)
 	//energyminter.InitGenesis(ctx, *k, genesisState)
@@ -85,7 +93,10 @@ func TestGenesis(t *testing.T) {
 
 	// this line is used by starport scaffolding # genesis/test/assert
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, genesisState, app.AccountKeeper)
 
 	//ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
