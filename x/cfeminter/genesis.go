@@ -12,7 +12,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 	k.SetHalvingMinter(ctx, genState.HalvingMinter)
-	ak.GetModuleAccount(ctx, types.ModuleName)
+	ak.GetModuleAccount(ctx, types.InflationCollectorName)
 }
 
 // ExportGenesis returns the capability module's exported genesis.
