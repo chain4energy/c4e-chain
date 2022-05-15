@@ -1,11 +1,13 @@
 package cfeminter_test
 
 import (
-	"github.com/chain4energy/c4e-chain/app"
-	"github.com/stretchr/testify/require"
+	testapp "github.com/chain4energy/c4e-chain/app"
+	// "github.com/stretchr/testify/require"
+	"testing"
+
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"testing"
 )
 
 //func TestGenesis(t *testing.T) {
@@ -27,9 +29,12 @@ import (
 //}
 
 func TestGenesis2(t *testing.T) {
-
+	perms := []string{authtypes.Minter}
+	testapp.AddMaccPerms("fee_collector", perms)
+	testapp.AddMaccPerms("payment_collector", perms)
 	// Setup main app
-	app := app.Setup(false)
+	app := testapp.Setup(false)
+
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	//Setup minter params
