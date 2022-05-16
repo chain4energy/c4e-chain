@@ -28,5 +28,4 @@ func (k msgServer) PublishReferencePayloadLink(goCtx context.Context, msg *types
 	timestampString := ctx.BlockTime().String()
 
 	return &types.MsgPublishReferencePayloadLinkResponse{TxTimestamp: timestampString}, nil
-	// return &types.MsgPublishReferencePayloadLinkResponse{TxTimestamp: ""}, nil
 }
