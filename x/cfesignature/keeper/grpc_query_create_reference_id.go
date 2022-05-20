@@ -49,7 +49,7 @@ func (k Keeper) CreateReferenceId(goCtx context.Context, req *types.QueryCreateR
 	}
 
 	if data != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "data for this referenceID already exists")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "KVStore data for this referenceID already exists")
 	}
 
 	return &types.QueryCreateReferenceIdResponse{ReferenceId: referenceID}, nil
