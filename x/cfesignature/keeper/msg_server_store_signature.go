@@ -20,14 +20,14 @@ func (k msgServer) StoreSignature(goCtx context.Context, msg *types.MsgStoreSign
 	var err error
 
 	txHash := sha256.Sum256(ctx.TxBytes())
-	_ = txHash
+	txId := hex.EncodeToString(txHash[:])
 
 	// try to extract all values from the given JSON
 	// .signature
 	signatureObject.Signature, err = util.ExtractFieldFromJSON(signatureJSON, "signature")
 	if err != nil {
 		// it is safe to forward local errors
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to parse signature"+signatureJSON)
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to parse signature: "+signatureJSON)
 	}
 	// .algorithm
 	signatureObject.Algorithm, err = util.ExtractFieldFromJSON(signatureJSON, "algorithm")
@@ -44,10 +44,10 @@ func (k msgServer) StoreSignature(goCtx context.Context, msg *types.MsgStoreSign
 
 	// .timestamp
 	signatureObject.Timestamp = ctx.BlockTime().String()
-
 	timestamp := k.AppendSignature(ctx, msg.StorageKey, signatureObject)
 
-	txId := hex.EncodeToString(txHash[:])
+	// TODO: extract and verify user cert
+	// TODO: if support for multiple signatures is added then TODO: Check if the certificate was used for signing before
 
 	return &types.MsgStoreSignatureResponse{TxId: txId, TxTimestamp: timestamp}, nil
 }
