@@ -47,7 +47,7 @@ func (k msgServer) StoreSignature(goCtx context.Context, msg *types.MsgStoreSign
 	timestamp := k.AppendSignature(ctx, msg.StorageKey, signatureObject)
 
 	// TODO: extract and verify user cert
-	// TODO: if support for multiple signatures is added then TODO: Check if the certificate was used for signing before
+	// TODO: if support for multiple signatures is added then another TODO: check if the certificate was used for signing before
 
 	return &types.MsgStoreSignatureResponse{TxId: txId, TxTimestamp: timestamp}, nil
 }

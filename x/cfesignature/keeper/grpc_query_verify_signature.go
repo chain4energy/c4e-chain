@@ -27,10 +27,10 @@ func (k Keeper) VerifySignature(goCtx context.Context, req *types.QueryVerifySig
 
 	var signature *types.Signature
 
-	param := types.QueryCreateStorageKeyRequest{TargetAccAddress: req.TargetAccAddress, ReferenceId: req.ReferenceId}
+	queryCreateStorageKeyRequest := types.QueryCreateStorageKeyRequest{TargetAccAddress: req.TargetAccAddress, ReferenceId: req.ReferenceId}
 
 	// fetch storage keys for signature and document hash
-	storageKeySignature, err := k.CreateStorageKey(goCtx, &param)
+	storageKeySignature, err := k.CreateStorageKey(goCtx, &queryCreateStorageKeyRequest)
 	if err != nil {
 		//it is safe to forward local errors
 		return nil, err
@@ -86,7 +86,7 @@ func (k Keeper) isValidSignature(goCtx context.Context, targetAccAddress, signat
 
 	// verifies that signature is a valid signature
 	if err = userCert.CheckSignature(x509signatureAlgorithm, []byte(signaturePayload), signatureBytes); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, "signature validation failed")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "signature validation failed")
 	}
 
 	return nil
