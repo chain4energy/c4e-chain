@@ -54,7 +54,7 @@ func (k Keeper) GetPayloadLink(ctx sdk.Context, referenceID string) (string, err
 
 	// get the store
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.PayloadLinkKey))
-
+	// get reference payload link value
 	referencePayloadLinkValue := store.Get(getStoreKeyBytes(referencePayloadLink))
 
 	// check if there is no document

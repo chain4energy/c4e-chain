@@ -27,7 +27,7 @@ func (k Keeper) VerifySignature(goCtx context.Context, req *types.QueryVerifySig
 
 	var signature *types.Signature
 
-	queryCreateStorageKeyRequest := types.QueryCreateStorageKeyRequest{TargetAccAddress: req.TargetAccAddress, ReferenceId: req.ReferenceId}
+	queryCreateStorageKeyRequest := types.QueryCreateStorageKeyRequest{TargetAccAddress: req.TargetAccAddress, ReferenceId: referenceId}
 
 	// fetch storage keys for signature and document hash
 	storageKeySignature, err := k.CreateStorageKey(goCtx, &queryCreateStorageKeyRequest)
