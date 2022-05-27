@@ -21,7 +21,8 @@ func (k Keeper) CreateStorageKey(goCtx context.Context, req *types.QueryCreateSt
 
 	if len(req.ReferenceId) != 64 {
 
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid input size of referenceID")
+		error_message := "invalid input size of referenceID: " + strconv.Itoa(len(req.ReferenceId))
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, error_message)
 	}
 
 	if len(req.TargetAccAddress) == 0 {
