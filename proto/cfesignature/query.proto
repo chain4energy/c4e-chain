@@ -40,6 +40,16 @@ service Query {
 		option (google.api.http).get = "/chain4energy/c4e-chain/cfesignature/get_account_info/{accAddressString}";
 	}
 
+// Queries a list of VerifyReferencePayloadLink items.
+	rpc VerifyReferencePayloadLink(QueryVerifyReferencePayloadLinkRequest) returns (QueryVerifyReferencePayloadLinkResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfesignature/verify_reference_payload_link/{referenceId}/{payloadHash}";
+	}
+
+// Queries a list of GetReferencePayloadLink items.
+	rpc GetReferencePayloadLink(QueryGetReferencePayloadLinkRequest) returns (QueryGetReferencePayloadLinkResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfesignature/get_reference_payload_link/{referenceId}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -99,6 +109,23 @@ message QueryGetAccountInfoRequest {
 message QueryGetAccountInfoResponse {
   string accAddress = 1;
   string pubKey = 2;
+}
+
+message QueryVerifyReferencePayloadLinkRequest {
+  string referenceId = 1;
+  string payloadHash = 2;
+}
+
+message QueryVerifyReferencePayloadLinkResponse {
+  bool isValid = 1;
+}
+
+message QueryGetReferencePayloadLinkRequest {
+  string referenceId = 1;
+}
+
+message QueryGetReferencePayloadLinkResponse {
+  string referencePayloadLinkValue = 1;
 }
 
 // this line is used by starport scaffolding # 3

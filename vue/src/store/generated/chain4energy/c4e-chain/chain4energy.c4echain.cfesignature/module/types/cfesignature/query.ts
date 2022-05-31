@@ -62,6 +62,23 @@ export interface QueryGetAccountInfoResponse {
   pubKey: string;
 }
 
+export interface QueryVerifyReferencePayloadLinkRequest {
+  referenceId: string;
+  payloadHash: string;
+}
+
+export interface QueryVerifyReferencePayloadLinkResponse {
+  isValid: boolean;
+}
+
+export interface QueryGetReferencePayloadLinkRequest {
+  referenceId: string;
+}
+
+export interface QueryGetReferencePayloadLinkResponse {
+  referencePayloadLinkValue: string;
+}
+
 const baseQueryParamsRequest: object = {};
 
 export const QueryParamsRequest = {
@@ -1049,6 +1066,316 @@ export const QueryGetAccountInfoResponse = {
   },
 };
 
+const baseQueryVerifyReferencePayloadLinkRequest: object = {
+  referenceId: "",
+  payloadHash: "",
+};
+
+export const QueryVerifyReferencePayloadLinkRequest = {
+  encode(
+    message: QueryVerifyReferencePayloadLinkRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.referenceId !== "") {
+      writer.uint32(10).string(message.referenceId);
+    }
+    if (message.payloadHash !== "") {
+      writer.uint32(18).string(message.payloadHash);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVerifyReferencePayloadLinkRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryVerifyReferencePayloadLinkRequest,
+    } as QueryVerifyReferencePayloadLinkRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.referenceId = reader.string();
+          break;
+        case 2:
+          message.payloadHash = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryVerifyReferencePayloadLinkRequest {
+    const message = {
+      ...baseQueryVerifyReferencePayloadLinkRequest,
+    } as QueryVerifyReferencePayloadLinkRequest;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = String(object.referenceId);
+    } else {
+      message.referenceId = "";
+    }
+    if (object.payloadHash !== undefined && object.payloadHash !== null) {
+      message.payloadHash = String(object.payloadHash);
+    } else {
+      message.payloadHash = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryVerifyReferencePayloadLinkRequest): unknown {
+    const obj: any = {};
+    message.referenceId !== undefined &&
+      (obj.referenceId = message.referenceId);
+    message.payloadHash !== undefined &&
+      (obj.payloadHash = message.payloadHash);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryVerifyReferencePayloadLinkRequest>
+  ): QueryVerifyReferencePayloadLinkRequest {
+    const message = {
+      ...baseQueryVerifyReferencePayloadLinkRequest,
+    } as QueryVerifyReferencePayloadLinkRequest;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = object.referenceId;
+    } else {
+      message.referenceId = "";
+    }
+    if (object.payloadHash !== undefined && object.payloadHash !== null) {
+      message.payloadHash = object.payloadHash;
+    } else {
+      message.payloadHash = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryVerifyReferencePayloadLinkResponse: object = { isValid: false };
+
+export const QueryVerifyReferencePayloadLinkResponse = {
+  encode(
+    message: QueryVerifyReferencePayloadLinkResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.isValid === true) {
+      writer.uint32(8).bool(message.isValid);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVerifyReferencePayloadLinkResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryVerifyReferencePayloadLinkResponse,
+    } as QueryVerifyReferencePayloadLinkResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.isValid = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryVerifyReferencePayloadLinkResponse {
+    const message = {
+      ...baseQueryVerifyReferencePayloadLinkResponse,
+    } as QueryVerifyReferencePayloadLinkResponse;
+    if (object.isValid !== undefined && object.isValid !== null) {
+      message.isValid = Boolean(object.isValid);
+    } else {
+      message.isValid = false;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryVerifyReferencePayloadLinkResponse): unknown {
+    const obj: any = {};
+    message.isValid !== undefined && (obj.isValid = message.isValid);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryVerifyReferencePayloadLinkResponse>
+  ): QueryVerifyReferencePayloadLinkResponse {
+    const message = {
+      ...baseQueryVerifyReferencePayloadLinkResponse,
+    } as QueryVerifyReferencePayloadLinkResponse;
+    if (object.isValid !== undefined && object.isValid !== null) {
+      message.isValid = object.isValid;
+    } else {
+      message.isValid = false;
+    }
+    return message;
+  },
+};
+
+const baseQueryGetReferencePayloadLinkRequest: object = { referenceId: "" };
+
+export const QueryGetReferencePayloadLinkRequest = {
+  encode(
+    message: QueryGetReferencePayloadLinkRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.referenceId !== "") {
+      writer.uint32(10).string(message.referenceId);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetReferencePayloadLinkRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetReferencePayloadLinkRequest,
+    } as QueryGetReferencePayloadLinkRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.referenceId = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetReferencePayloadLinkRequest {
+    const message = {
+      ...baseQueryGetReferencePayloadLinkRequest,
+    } as QueryGetReferencePayloadLinkRequest;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = String(object.referenceId);
+    } else {
+      message.referenceId = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetReferencePayloadLinkRequest): unknown {
+    const obj: any = {};
+    message.referenceId !== undefined &&
+      (obj.referenceId = message.referenceId);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetReferencePayloadLinkRequest>
+  ): QueryGetReferencePayloadLinkRequest {
+    const message = {
+      ...baseQueryGetReferencePayloadLinkRequest,
+    } as QueryGetReferencePayloadLinkRequest;
+    if (object.referenceId !== undefined && object.referenceId !== null) {
+      message.referenceId = object.referenceId;
+    } else {
+      message.referenceId = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryGetReferencePayloadLinkResponse: object = {
+  referencePayloadLinkValue: "",
+};
+
+export const QueryGetReferencePayloadLinkResponse = {
+  encode(
+    message: QueryGetReferencePayloadLinkResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.referencePayloadLinkValue !== "") {
+      writer.uint32(10).string(message.referencePayloadLinkValue);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetReferencePayloadLinkResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetReferencePayloadLinkResponse,
+    } as QueryGetReferencePayloadLinkResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.referencePayloadLinkValue = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetReferencePayloadLinkResponse {
+    const message = {
+      ...baseQueryGetReferencePayloadLinkResponse,
+    } as QueryGetReferencePayloadLinkResponse;
+    if (
+      object.referencePayloadLinkValue !== undefined &&
+      object.referencePayloadLinkValue !== null
+    ) {
+      message.referencePayloadLinkValue = String(
+        object.referencePayloadLinkValue
+      );
+    } else {
+      message.referencePayloadLinkValue = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetReferencePayloadLinkResponse): unknown {
+    const obj: any = {};
+    message.referencePayloadLinkValue !== undefined &&
+      (obj.referencePayloadLinkValue = message.referencePayloadLinkValue);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetReferencePayloadLinkResponse>
+  ): QueryGetReferencePayloadLinkResponse {
+    const message = {
+      ...baseQueryGetReferencePayloadLinkResponse,
+    } as QueryGetReferencePayloadLinkResponse;
+    if (
+      object.referencePayloadLinkValue !== undefined &&
+      object.referencePayloadLinkValue !== null
+    ) {
+      message.referencePayloadLinkValue = object.referencePayloadLinkValue;
+    } else {
+      message.referencePayloadLinkValue = "";
+    }
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -1073,6 +1400,14 @@ export interface Query {
   GetAccountInfo(
     request: QueryGetAccountInfoRequest
   ): Promise<QueryGetAccountInfoResponse>;
+  /** Queries a list of VerifyReferencePayloadLink items. */
+  VerifyReferencePayloadLink(
+    request: QueryVerifyReferencePayloadLinkRequest
+  ): Promise<QueryVerifyReferencePayloadLinkResponse>;
+  /** Queries a list of GetReferencePayloadLink items. */
+  GetReferencePayloadLink(
+    request: QueryGetReferencePayloadLinkRequest
+  ): Promise<QueryGetReferencePayloadLinkResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1159,6 +1494,36 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryGetAccountInfoResponse.decode(new Reader(data))
+    );
+  }
+
+  VerifyReferencePayloadLink(
+    request: QueryVerifyReferencePayloadLinkRequest
+  ): Promise<QueryVerifyReferencePayloadLinkResponse> {
+    const data = QueryVerifyReferencePayloadLinkRequest.encode(
+      request
+    ).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfesignature.Query",
+      "VerifyReferencePayloadLink",
+      data
+    );
+    return promise.then((data) =>
+      QueryVerifyReferencePayloadLinkResponse.decode(new Reader(data))
+    );
+  }
+
+  GetReferencePayloadLink(
+    request: QueryGetReferencePayloadLinkRequest
+  ): Promise<QueryGetReferencePayloadLinkResponse> {
+    const data = QueryGetReferencePayloadLinkRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfesignature.Query",
+      "GetReferencePayloadLink",
+      data
+    );
+    return promise.then((data) =>
+      QueryGetReferencePayloadLinkResponse.decode(new Reader(data))
     );
   }
 }

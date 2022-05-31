@@ -45,12 +45,20 @@ export interface CfesignatureQueryGetAccountInfoResponse {
   pubKey?: string;
 }
 
+export interface CfesignatureQueryGetReferencePayloadLinkResponse {
+  referencePayloadLinkValue?: string;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CfesignatureQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: CfesignatureParams;
+}
+
+export interface CfesignatureQueryVerifyReferencePayloadLinkResponse {
+  isValid?: boolean;
 }
 
 export interface CfesignatureQueryVerifySignatureResponse {
@@ -336,6 +344,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
+   * @name QueryGetReferencePayloadLink
+   * @summary Queries a list of GetReferencePayloadLink items.
+   * @request GET:/chain4energy/c4e-chain/cfesignature/get_reference_payload_link/{referenceId}
+   */
+  queryGetReferencePayloadLink = (referenceId: string, params: RequestParams = {}) =>
+    this.request<CfesignatureQueryGetReferencePayloadLinkResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfesignature/get_reference_payload_link/${referenceId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
    * @request GET:/chain4energy/c4e-chain/cfesignature/params
@@ -343,6 +367,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<CfesignatureQueryParamsResponse, RpcStatus>({
       path: `/chain4energy/c4e-chain/cfesignature/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryVerifyReferencePayloadLink
+   * @summary Queries a list of VerifyReferencePayloadLink items.
+   * @request GET:/chain4energy/c4e-chain/cfesignature/verify_reference_payload_link/{referenceId}/{payloadHash}
+   */
+  queryVerifyReferencePayloadLink = (referenceId: string, payloadHash: string, params: RequestParams = {}) =>
+    this.request<CfesignatureQueryVerifyReferencePayloadLinkResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfesignature/verify_reference_payload_link/${referenceId}/${payloadHash}`,
       method: "GET",
       format: "json",
       ...params,
