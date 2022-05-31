@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	"github.com/chain4energy/c4e-chain/x/cfesignature/util"
@@ -17,10 +18,12 @@ func (k Keeper) CreateStorageKey(goCtx context.Context, req *types.QueryCreateSt
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	_ = ctx
+
+	// module specific logger
+	logger := ctx.Logger()
+	logger.Info("CreateStorageKey invoked")
 
 	if len(req.ReferenceId) != 64 {
-
 		error_message := "invalid input size of referenceID: " + strconv.Itoa(len(req.ReferenceId))
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, error_message)
 	}

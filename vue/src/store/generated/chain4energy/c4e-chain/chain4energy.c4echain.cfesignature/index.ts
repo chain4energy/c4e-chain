@@ -48,6 +48,8 @@ const getDefaultState = () => {
 				CreateReferencePayloadLink: {},
 				VerifySignature: {},
 				GetAccountInfo: {},
+				VerifyReferencePayloadLink: {},
+				GetReferencePayloadLink: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
@@ -115,6 +117,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.GetAccountInfo[JSON.stringify(params)] ?? {}
+		},
+				getVerifyReferencePayloadLink: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.VerifyReferencePayloadLink[JSON.stringify(params)] ?? {}
+		},
+				getGetReferencePayloadLink: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.GetReferencePayloadLink[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -282,6 +296,50 @@ export default {
 		},
 		
 		
+		
+		
+		 		
+		
+		
+		async QueryVerifyReferencePayloadLink({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryVerifyReferencePayloadLink( key.referenceId,  key.payloadHash)).data
+				
+					
+				commit('QUERY', { query: 'VerifyReferencePayloadLink', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryVerifyReferencePayloadLink', payload: { options: { all }, params: {...key},query }})
+				return getters['getVerifyReferencePayloadLink']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryVerifyReferencePayloadLink API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryGetReferencePayloadLink({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryGetReferencePayloadLink( key.referenceId)).data
+				
+					
+				commit('QUERY', { query: 'GetReferencePayloadLink', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryGetReferencePayloadLink', payload: { options: { all }, params: {...key},query }})
+				return getters['getGetReferencePayloadLink']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryGetReferencePayloadLink API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
 		async sendMsgStoreSignature({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -294,21 +352,6 @@ export default {
 					throw new Error('TxClient:MsgStoreSignature:Init Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new Error('TxClient:MsgStoreSignature:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgPublishReferencePayloadLink({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgPublishReferencePayloadLink(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgPublishReferencePayloadLink:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgPublishReferencePayloadLink:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -327,6 +370,21 @@ export default {
 				}
 			}
 		},
+		async sendMsgPublishReferencePayloadLink({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgPublishReferencePayloadLink(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		
 		async MsgStoreSignature({ rootGetters }, { value }) {
 			try {
@@ -341,19 +399,6 @@ export default {
 				}
 			}
 		},
-		async MsgPublishReferencePayloadLink({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgPublishReferencePayloadLink(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgPublishReferencePayloadLink:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgPublishReferencePayloadLink:Create Could not create message: ' + e.message)
-				}
-			}
-		},
 		async MsgCreateAccount({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -364,6 +409,19 @@ export default {
 					throw new Error('TxClient:MsgCreateAccount:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgCreateAccount:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgPublishReferencePayloadLink({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgPublishReferencePayloadLink(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Create Could not create message: ' + e.message)
 				}
 			}
 		},
