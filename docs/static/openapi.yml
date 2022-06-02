@@ -205,6 +205,10 @@ paths:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfesignatureParams
+  /chain4energy/c4echain/cfeminter/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: Chain4EnergyC4EchainCfeminterParams
       responses:
         '200':
           description: A successful response.
@@ -30608,6 +30612,10 @@ definitions:
       referencePayloadLinkValue:
         type: string
   chain4energy.c4echain.cfesignature.QueryParamsResponse:
+  chain4energy.c4echain.cfeminter.Params:
+    type: object
+    description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfeminter.QueryParamsResponse:
     type: object
     properties:
       params:

@@ -84,6 +84,11 @@ genesis:
       params:
         bond_denom: "uc4e"
         unbonding_time: "100s"
+    cfeminter:
+      halving_minter:
+        new_coins_mint: 30
+        blocks_per_year: 4000
+        mint_denom: "uc4e"
     cfevesting:
       params:
         denom: "uc4e"
