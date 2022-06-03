@@ -103,6 +103,15 @@ import (
 	// monitoringptypes "github.com/tendermint/spn/x/monitoringp/types"
 
 	"github.com/chain4energy/c4e-chain/docs"
+	cfesignaturemodule "github.com/chain4energy/c4e-chain/x/cfesignature"
+	cfesignaturemodulekeeper "github.com/chain4energy/c4e-chain/x/cfesignature/keeper"
+	cfesignaturemoduletypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
+	cfemintermodule "github.com/chain4energy/c4e-chain/x/cfeminter"
+	cfemintermodulekeeper "github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
+	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	cferoutingdistributormodule "github.com/chain4energy/c4e-chain/x/cferoutingdistributor"
+	cferoutingdistributormodulekeeper "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/keeper"
+	cferoutingdistributormoduletypes "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
 	cfevestingmodule "github.com/chain4energy/c4e-chain/x/cfevesting"
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -161,6 +170,9 @@ var (
 		vesting.AppModuleBasic{},
 		// monitoringp.AppModuleBasic{},
 		cfevestingmodule.AppModuleBasic{},
+		cfesignaturemodule.AppModuleBasic{},
+		cfemintermodule.AppModuleBasic{},
+		cferoutingdistributormodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -174,7 +186,15 @@ var (
 		govtypes.ModuleName:              {authtypes.Burner},
 		ibctransfertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		cfevestingmoduletypes.ModuleName: nil,
+		cfemintermoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
+		cfemintermoduletypes.InflationCollectorName: nil,
+		"validators_rewards_collector":         nil,
+		"payment_collector":                    {authtypes.Minter},
+		"liquididty_rewards_collector":         nil,
+		"governance_locking_rewards_collector": nil,
+		"users_incentive_collector":            nil,
+		"community_pool_rewards_collector":     nil,
 	}
 )
 
@@ -235,6 +255,10 @@ type App struct {
 	// ScopedMonitoringKeeper capabilitykeeper.ScopedKeeper
 
 	CfevestingKeeper cfevestingmodulekeeper.Keeper
+
+	CfesignatureKeeper cfesignaturemodulekeeper.Keeper
+	CfeminterKeeper cfemintermodulekeeper.Keeper
+	CferoutingdistributorKeeper cferoutingdistributormodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -272,6 +296,9 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, /*monitoringptypes.StoreKey,*/
 		cfevestingmoduletypes.StoreKey,
+		cfesignaturemoduletypes.StoreKey,
+		cfemintermoduletypes.StoreKey,
+		cferoutingdistributormoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 
@@ -324,7 +351,7 @@ func New(
 	// )
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec, keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
+		&stakingKeeper, "validators_rewards_collector", app.ModuleAccountAddrs(),
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec, keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
@@ -408,6 +435,34 @@ func New(
 	)
 	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 
+	app.CfesignatureKeeper = *cfesignaturemodulekeeper.NewKeeper(
+		appCodec,
+		appCodec,
+		keys[cfesignaturemoduletypes.StoreKey],
+		keys[cfesignaturemoduletypes.MemStoreKey],
+		app.GetSubspace(cfesignaturemoduletypes.ModuleName),
+		app.AccountKeeper,
+	)
+	cfesignatureModule := cfesignaturemodule.NewAppModule(appCodec, app.CfesignatureKeeper)
+	app.CfeminterKeeper = *cfemintermodulekeeper.NewKeeper(
+		appCodec,
+		keys[cfemintermoduletypes.StoreKey],
+		keys[cfemintermoduletypes.MemStoreKey],
+		app.GetSubspace(cfemintermoduletypes.ModuleName),
+
+		app.BankKeeper,
+	)
+	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper)
+	app.CferoutingdistributorKeeper = *cferoutingdistributormodulekeeper.NewKeeper(
+		appCodec,
+		keys[cferoutingdistributormoduletypes.StoreKey],
+		keys[cferoutingdistributormoduletypes.MemStoreKey],
+		app.GetSubspace(cferoutingdistributormoduletypes.ModuleName),
+		app.BankKeeper,
+		app.AccountKeeper,
+	)
+	cferoutingdistributorModule := cferoutingdistributormodule.NewAppModule(appCodec, app.CferoutingdistributorKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -451,6 +506,9 @@ func New(
 		transferModule,
 		// monitoringModule,
 		cfevestingModule,
+		cfesignatureModule,
+		cfeminterModule,
+		cferoutingdistributorModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -462,6 +520,7 @@ func New(
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
 		/*minttypes.ModuleName, (TODO clean this,)*/
+		cferoutingdistributormoduletypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -479,6 +538,8 @@ func New(
 		paramstypes.ModuleName,
 		// monitoringptypes.ModuleName,
 		cfevestingmoduletypes.ModuleName,
+		cfesignaturemoduletypes.ModuleName,
+		cfemintermoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -503,6 +564,9 @@ func New(
 		ibctransfertypes.ModuleName,
 		// monitoringptypes.ModuleName,
 		cfevestingmoduletypes.ModuleName,
+		cfesignaturemoduletypes.ModuleName,
+		cfemintermoduletypes.ModuleName,
+		cferoutingdistributormoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -532,6 +596,9 @@ func New(
 		feegrant.ModuleName,
 		// monitoringptypes.ModuleName,
 		cfevestingmoduletypes.ModuleName,
+		cfesignaturemoduletypes.ModuleName,
+		cfemintermoduletypes.ModuleName,
+		cferoutingdistributormoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -557,6 +624,9 @@ func New(
 		transferModule,
 		// monitoringModule,
 		cfevestingModule,
+		cfesignatureModule,
+		cfeminterModule,
+		cferoutingdistributorModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -747,6 +817,9 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	// paramsKeeper.Subspace(monitoringptypes.ModuleName)
 	paramsKeeper.Subspace(cfevestingmoduletypes.ModuleName)
+	paramsKeeper.Subspace(cfesignaturemoduletypes.ModuleName)
+	paramsKeeper.Subspace(cfemintermoduletypes.ModuleName)
+	paramsKeeper.Subspace(cferoutingdistributormoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

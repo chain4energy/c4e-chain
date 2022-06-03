@@ -1,0 +1,48 @@
+syntax = "proto3";
+package chain4energy.c4echain.cferoutingdistributor;
+
+import "gogoproto/gogo.proto";
+import "cferoutingdistributor/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types";
+
+message RoutingDistributor {
+
+  //List contains distributors
+  repeated SubDistributor sub_distributor = 1         [(gogoproto.nullable) = false];
+
+  //module account to load on start genesis
+  repeated string module_accounts = 2;
+}
+
+message SubDistributor {
+  string name = 1;
+  //represent list of module account from which
+  repeated string sources = 2;
+
+  //represent destinations
+  Destination destination = 3         [(gogoproto.nullable) = false];
+
+  int32 order = 4;
+
+}
+
+message Destination {
+  account default_share_account = 1;
+  repeated Share share = 2         [(gogoproto.nullable) = false];
+
+  //can be null
+  int32  burn_share = 3;
+}
+
+message Share {
+  string name = 1;
+  int64 percent = 2;
+  account account = 3          [(gogoproto.nullable) = false];
+}
+
+message account {
+  string address = 1;
+  bool is_module_account = 2;
+}

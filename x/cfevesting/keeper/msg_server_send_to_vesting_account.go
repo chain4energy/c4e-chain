@@ -3,10 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	metrics "github.com/armon/go-metrics"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) SendToVestingAccount(goCtx context.Context, msg *types.MsgSendToVestingAccount) (*types.MsgSendToVestingAccountResponse, error) {
@@ -22,7 +22,7 @@ func (k msgServer) SendToVestingAccount(goCtx context.Context, msg *types.MsgSen
 				[]metrics.Label{telemetry.NewLabel("denom", k.Keeper.Denom(ctx))},
 			)
 		}
-		
+
 	}()
 
 	keeper := k.Keeper
