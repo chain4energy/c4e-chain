@@ -3,25 +3,29 @@ package cferoutingdistributor_test
 import (
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/app"
+	testapp "github.com/chain4energy/c4e-chain/app"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
 )
 
 func TestAbci(t *testing.T) {
-
+	perms := []string{authtypes.Minter}
+	testapp.AddMaccPerms("fee_collector", perms)
+	testapp.AddMaccPerms("payment_collector", perms)
 	// Setup main app
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	// app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx) TODO
 
-	//Setup minter params - TODO
-	// minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
-	// minterNew.MintDenom = "uC4E"
-	// minterNew.NewCoinsMint = 20596877
-	// minterNew.BlocksPerYear = 4855105
-	// app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
+	//Setup minter params
+	minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
+	minterNew.MintDenom = "uC4E"
+	minterNew.NewCoinsMint = 20596877
+	minterNew.BlocksPerYear = 4855105
+	app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
 
 	for i := 1; i < 100; i++ {
 		ctx = ctx.WithBlockHeight(int64(i))
