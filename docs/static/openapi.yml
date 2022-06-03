@@ -209,6 +209,10 @@ paths:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfeminterParams
+  /chain4energy/c4echain/cferoutingdistributor/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: Chain4EnergyC4EchainCferoutingdistributorParams
       responses:
         '200':
           description: A successful response.
@@ -30616,6 +30620,10 @@ definitions:
     type: object
     description: Params defines the parameters for the module.
   chain4energy.c4echain.cfeminter.QueryParamsResponse:
+  chain4energy.c4echain.cferoutingdistributor.Params:
+    type: object
+    description: Params defines the parameters for the module.
+  chain4energy.c4echain.cferoutingdistributor.QueryParamsResponse:
     type: object
     properties:
       params:
