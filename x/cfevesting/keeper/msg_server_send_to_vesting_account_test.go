@@ -17,7 +17,7 @@ import (
 func TestSendVestingAccount(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := setupApp(1000)
+	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -59,7 +59,7 @@ func TestSendVestingAccount(t *testing.T) {
 func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	addHelperModuleAccountPerms()
 	// const vested = 1000
-	app, ctx := setupApp(1000)
+	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -88,7 +88,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := setupApp(1000)
+	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -117,7 +117,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := setupApp(1000)
+	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -146,7 +146,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := setupApp(1000)
+	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 

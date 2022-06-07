@@ -15,8 +15,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var TestEnvTime = time.Now()
-
 func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual types.AccountVestings) {
 
 	numOfFields := reflect.TypeOf(types.AccountVestings{}).NumField()
@@ -216,7 +214,7 @@ func GetExpectedWithdrawable(unlockingStart time.Time, vestingEnd time.Time, cur
 }
 
 func CreateTimeFromNumOfHours(numOfHours int64) time.Time {
-	return TestEnvTime.Add(time.Hour * time.Duration(numOfHours))
+	return commontestutils.TestEnvTime.Add(time.Hour * time.Duration(numOfHours))
 }
 
 func CreateDurationFromNumOfHours(numOfHours int64) time.Duration {

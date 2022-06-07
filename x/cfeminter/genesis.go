@@ -11,7 +11,7 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, ak types.AccountKeeper) {
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
-	k.SetHalvingMinter(ctx, genState.HalvingMinter)
+	// k.SetHalvingMinter(ctx, genState.HalvingMinter)
 	ak.GetModuleAccount(ctx, types.InflationCollectorName)
 }
 
@@ -19,6 +19,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
-	genesis.HalvingMinter = k.GetHalvingMinter(ctx)
+	// genesis.HalvingMinter = k.GetHalvingMinter(ctx)
 	return genesis
 }

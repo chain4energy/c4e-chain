@@ -32,7 +32,7 @@ import (
 func TestCreateVestingPool(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := setupApp(1000)
+	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -57,7 +57,7 @@ func TestCreateVestingPool(t *testing.T) {
 func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := setupApp(1000)
+	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -82,7 +82,7 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := setupApp(1000)
+	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -180,7 +180,7 @@ func TestVestingId(t *testing.T) {
 	addHelperModuleAccountPerms()
 	const vested = 1000
 	const accInitBalance = 10000
-	app, ctx := setupApp(1000)
+	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 

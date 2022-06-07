@@ -16,7 +16,6 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"testing"
 
@@ -382,19 +381,6 @@ func compareStoredAcountVestings(t *testing.T, ctx sdk.Context, app *app.App, ad
 	require.EqualValues(t, true, accFound)
 
 	testutils.AssertAccountVestings(t, accVestings, storedAccVestings)
-}
-
-func setupApp(initBlock int64) (*app.App, sdk.Context) {
-	return setupAppWithTime(initBlock, testutils.TestEnvTime)
-}
-
-func setupAppWithTime(initBlock int64, initTime time.Time) (*app.App, sdk.Context) {
-	app := app.Setup(false)
-	header := tmproto.Header{}
-	header.Height = initBlock
-	header.Time = initTime
-	ctx := app.BaseApp.NewContext(false, header)
-	return app, ctx
 }
 
 func addCoinsToCfevestingModule(vested uint64, ctx sdk.Context, app *app.App) string {

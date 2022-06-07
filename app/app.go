@@ -443,6 +443,7 @@ func New(
 		app.GetSubspace(cfemintermoduletypes.ModuleName),
 
 		app.BankKeeper,
+		authtypes.FeeCollectorName, // TODO
 	)
 	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper)
 	app.CferoutingdistributorKeeper = *cferoutingdistributormodulekeeper.NewKeeper(

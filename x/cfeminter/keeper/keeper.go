@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -19,6 +20,7 @@ type (
 		paramstore paramtypes.Subspace
 
 		bankKeeper types.BankKeeper
+		collectorName string
 	}
 )
 
@@ -29,6 +31,7 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 
 	bankKeeper types.BankKeeper,
+	collectorName string,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -42,6 +45,7 @@ func NewKeeper(
 		memKey:     memKey,
 		paramstore: ps,
 		bankKeeper: bankKeeper,
+		collectorName: collectorName,
 	}
 }
 
@@ -68,6 +72,69 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
+func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
+	minter := k.GetMinter(ctx)
+	minterState := k.GetMinterState(ctx)
+	params := k.GetParams(ctx)
+
+	currentId := minterState.CurrentOrderingId
+	var currentPeriod *types.MintingPeriod = nil
+	var previousPeriod *types.MintingPeriod = nil
+	for _, period := range minter.Periods {
+		if period.OrderingId == currentId {
+			currentPeriod = period
+		}
+		if previousPeriod == nil {
+			if period.OrderingId < currentId {
+				previousPeriod = period
+			}
+		} else {
+			if period.OrderingId < currentId && period.OrderingId > previousPeriod.OrderingId {
+				previousPeriod = period
+			}
+		}
+	}
+
+	if currentPeriod == nil {
+		//  TODO return error
+		return sdk.ZeroInt(), nil
+	}
+
+	var periodStart time.Time
+	if previousPeriod == nil {
+		periodStart = minter.Start
+	} else {
+		periodStart = *previousPeriod.PeriodEnd
+	}
+
+	amount := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
+
+	coin := sdk.NewCoin(params.MintDenom, amount)
+	coins := sdk.NewCoins(coin)
+
+	err := k.MintCoins(ctx, coins)
+	if err != nil {
+		return sdk.ZeroInt(), err
+	}
+
+	err = k.AddCollectedFees(ctx, coins)
+	if err != nil {
+		return sdk.ZeroInt(), err
+	}
+
+	if (currentPeriod.PeriodEnd == nil || ctx.BlockTime().Before(*currentPeriod.PeriodEnd)) {
+		minterState.AmountMinted = minterState.AmountMinted.Add(amount)
+		k.SetMinterState(ctx, minterState)
+		return amount, nil
+	} else {
+		minterState.CurrentOrderingId++
+		minterState.AmountMinted = sdk.ZeroInt()
+		k.SetMinterState(ctx, minterState)
+		return k.Mint(ctx)
+	}
+}
+
+
 // MintCoins implements an alias call to the underlying supply keeper's
 // MintCoins to be used in BeginBlocker.
 func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
@@ -80,13 +147,19 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 	//k.bankKeeper.
 }
 
-func (k Keeper) SendCoinsToCommonAccount(ctx sdk.Context, coins sdk.Coins) error {
-	k.Logger(ctx).Info("SendCoinsToCommonAccount")
-	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, types.InflationCollectorName, coins)
-
+// AddCollectedFees implements an alias call to the underlying supply keeper's
+// AddCollectedFees to be used in BeginBlocker.
+func (k Keeper) AddCollectedFees(ctx sdk.Context, fees sdk.Coins) error {
+	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.collectorName, fees)
 }
 
-func (k Keeper) MintSomeCoinEndSendToTest(ctx sdk.Context) {
-	k.bankKeeper.MintCoins(ctx, "fee_collector", sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(50))))
-	k.bankKeeper.MintCoins(ctx, "payment_collector", sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(30))))
-}
+// func (k Keeper) SendCoinsToCommonAccount(ctx sdk.Context, coins sdk.Coins) error {
+// 	k.Logger(ctx).Info("SendCoinsToCommonAccount")
+// 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, types.InflationCollectorName, coins)
+
+// }
+
+// func (k Keeper) MintSomeCoinEndSendToTest(ctx sdk.Context) {
+// 	k.bankKeeper.MintCoins(ctx, "fee_collector", sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(50))))
+// 	k.bankKeeper.MintCoins(ctx, "payment_collector", sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(30))))
+// }
