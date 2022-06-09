@@ -52,7 +52,7 @@ func (p Params) String() string {
 	return string(out)
 }
 
-// validateInflation validates the Inflation param
+// validateDenom validates the Denom param
 func validateDenom(v interface{}) error {
 	denom, ok := v.(string)
 	if !ok {

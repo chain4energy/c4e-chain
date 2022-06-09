@@ -19,7 +19,7 @@ type (
 		memKey     sdk.StoreKey
 		paramstore paramtypes.Subspace
 
-		bankKeeper types.BankKeeper
+		bankKeeper    types.BankKeeper
 		collectorName string
 	}
 )
@@ -40,13 +40,17 @@ func NewKeeper(
 
 	return &Keeper{
 
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
-		bankKeeper: bankKeeper,
+		cdc:           cdc,
+		storeKey:      storeKey,
+		memKey:        memKey,
+		paramstore:    ps,
+		bankKeeper:    bankKeeper,
 		collectorName: collectorName,
 	}
+}
+
+func (k Keeper) GetCollectorName() string {
+	return k.collectorName
 }
 
 // get the minter
@@ -122,7 +126,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		return sdk.ZeroInt(), err
 	}
 
-	if (currentPeriod.PeriodEnd == nil || ctx.BlockTime().Before(*currentPeriod.PeriodEnd)) {
+	if currentPeriod.PeriodEnd == nil || ctx.BlockTime().Before(*currentPeriod.PeriodEnd) {
 		minterState.AmountMinted = minterState.AmountMinted.Add(amount)
 		k.SetMinterState(ctx, minterState)
 		return amount, nil
@@ -130,10 +134,13 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		minterState.CurrentOrderingId++
 		minterState.AmountMinted = sdk.ZeroInt()
 		k.SetMinterState(ctx, minterState)
-		return k.Mint(ctx)
+		minted, err := k.Mint(ctx)
+		if err != nil {
+			return minted, err
+		}
+		return minted.Add(amount), nil
 	}
 }
-
 
 // MintCoins implements an alias call to the underlying supply keeper's
 // MintCoins to be used in BeginBlocker.

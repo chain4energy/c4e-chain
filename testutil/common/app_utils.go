@@ -11,6 +11,8 @@ import (
 
 var TestEnvTime = time.Now()
 
+const Denom = "uc4e"
+
 func SetupApp(initBlock int64) (*app.App, sdk.Context) {
 	return SetupAppWithTime(initBlock, TestEnvTime)
 }

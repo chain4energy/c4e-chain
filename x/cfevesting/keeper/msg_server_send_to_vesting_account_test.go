@@ -41,13 +41,13 @@ func TestSendVestingAccount(t *testing.T) {
 
 	account := app.AccountKeeper.GetAccount(ctx, accAddr2)
 
-	bal := app.BankKeeper.GetBalance(ctx, accAddr2, denom)
+	bal := app.BankKeeper.GetBalance(ctx, accAddr2, commontestutils.Denom)
 	require.Equal(t, sdk.NewInt(100), bal.Amount)
 
 	vacc, ok := account.(vestexported.VestingAccount)
 	require.Equal(t, true, ok)
 	locked := vacc.LockedCoins(ctx.BlockTime())
-	require.Equal(t, denom, locked[0].Denom)
+	require.Equal(t, commontestutils.Denom, locked[0].Denom)
 	require.Equal(t, sdk.NewInt(100), locked[0].Amount)
 
 	require.Equal(t, (ctx.BlockTime().UnixNano()+int64(usedVestingType.VestingPeriod+usedVestingType.LockupPeriod))/1000000000, vacc.GetEndTime())
