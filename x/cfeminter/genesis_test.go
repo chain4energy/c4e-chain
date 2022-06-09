@@ -38,11 +38,11 @@ func TestGenesis2(t *testing.T) {
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	//Setup minter params
-	minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
-	minterNew.MintDenom = "uc4e"
-	minterNew.NewCoinsMint = 20596877
-	minterNew.BlocksPerYear = 100
-	app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
+	// minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
+	// minterNew.MintDenom = "uc4e"
+	// minterNew.NewCoinsMint = 20596877
+	// minterNew.BlocksPerYear = 100
+	// app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
 
 	for i := 1; i < 4000; i++ {
 		ctx = ctx.WithBlockHeight(int64(i))

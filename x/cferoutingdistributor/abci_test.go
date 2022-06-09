@@ -21,11 +21,11 @@ func TestAbci(t *testing.T) {
 	// app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx) TODO
 
 	//Setup minter params
-	minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
-	minterNew.MintDenom = "uC4E"
-	minterNew.NewCoinsMint = 20596877
-	minterNew.BlocksPerYear = 4855105
-	app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
+	// minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
+	// minterNew.MintDenom = "uC4E"
+	// minterNew.NewCoinsMint = 20596877
+	// minterNew.BlocksPerYear = 4855105
+	// app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
 
 	for i := 1; i < 100; i++ {
 		ctx = ctx.WithBlockHeight(int64(i))

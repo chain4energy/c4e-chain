@@ -53,25 +53,6 @@ func (k Keeper) GetCollectorName() string {
 	return k.collectorName
 }
 
-// get the minter
-func (k Keeper) GetHalvingMinter(ctx sdk.Context) (minter types.HalvingMinter) {
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.HalvingMinterKey)
-	if b == nil {
-		panic("stored minter should not have been nil")
-	}
-
-	k.cdc.MustUnmarshal(b, &minter)
-	return
-}
-
-// set the minter
-func (k Keeper) SetHalvingMinter(ctx sdk.Context, minter types.HalvingMinter) {
-	store := ctx.KVStore(k.storeKey)
-	b := k.cdc.MustMarshal(&minter)
-	store.Set(types.HalvingMinterKey, b)
-}
-
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
