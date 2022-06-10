@@ -82,7 +82,6 @@ func TestMintSecondPeriod(t *testing.T) {
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(authtypes.FeeCollectorName, ctx, app, t, MyDenom, sdk.NewInt(0))
 
-
 	ctx = ctx.WithBlockTime(periodStart.Add(PeriodDuration / 4))
 	amount, err = k.Mint(ctx)
 	require.NoError(t, err)
@@ -169,8 +168,8 @@ func prepareApp(startTime time.Time) (*app.App, sdk.Context) {
 }
 
 func createMinter(startTime time.Time) types.Minter {
-	endTime1 := startTime.Add(time.Duration(345600000000 * 1000000))
-	endTime2 := endTime1.Add(time.Duration(345600000000 * 1000000))
+	endTime1 := startTime.Add(time.Duration(PeriodDuration))
+	endTime2 := endTime1.Add(time.Duration(PeriodDuration))
 
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
 	linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
