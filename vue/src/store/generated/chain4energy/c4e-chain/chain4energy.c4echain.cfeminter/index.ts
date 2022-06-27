@@ -1,10 +1,14 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
-import { HalvingMinter } from "./module/types/cfeminter/mintparams"
+import { HalvingMinter } from "./module/types/cfeminter/minter"
+import { Minter } from "./module/types/cfeminter/minter"
+import { MintingPeriod } from "./module/types/cfeminter/minter"
+import { TimeLinearMinter } from "./module/types/cfeminter/minter"
+import { MinterState } from "./module/types/cfeminter/minter"
 import { Params } from "./module/types/cfeminter/params"
 
 
-export { HalvingMinter, Params };
+export { HalvingMinter, Minter, MintingPeriod, TimeLinearMinter, MinterState, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -43,9 +47,14 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				Inflation: {},
 				
 				_Structure: {
 						HalvingMinter: getStructure(HalvingMinter.fromPartial({})),
+						Minter: getStructure(Minter.fromPartial({})),
+						MintingPeriod: getStructure(MintingPeriod.fromPartial({})),
+						TimeLinearMinter: getStructure(TimeLinearMinter.fromPartial({})),
+						MinterState: getStructure(MinterState.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						
 		},
@@ -80,6 +89,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getInflation: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Inflation[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -132,6 +147,28 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryInflation({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryInflation()).data
+				
+					
+				commit('QUERY', { query: 'Inflation', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryInflation', payload: { options: { all }, params: {...key},query }})
+				return getters['getInflation']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryInflation API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

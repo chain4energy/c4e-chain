@@ -18,4 +18,3 @@ func VerifyModuleAccountDenomBalanceByName(accName string, ctx sdk.Context, app 
 	moduleBalance := app.BankKeeper.GetBalance(ctx, moduleAccAddr, denom)
 	require.EqualValues(t, expectedAmount, moduleBalance.Amount)
 }
-

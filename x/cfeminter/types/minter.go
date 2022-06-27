@@ -8,6 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+const year = time.Hour*24*365
+
 func (m *MintingPeriod) AmountToMint(state *MinterState, periodStart time.Time, blockTime time.Time) sdk.Int {
 	switch m.Type {
 	case MintingPeriod_NO_MINTING:
@@ -112,13 +114,11 @@ func (m Minter) ContainsId(id int32) bool {
 	return false
 }
 
-
 type ByOrderingId []*MintingPeriod
 
 func (a ByOrderingId) Len() int           { return len(a) }
 func (a ByOrderingId) Less(i, j int) bool { return a[i].OrderingId < a[j].OrderingId }
 func (a ByOrderingId) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-
 
 func (m MinterState) Validate() error {
 	if m.AmountMinted.IsNegative() {
@@ -127,3 +127,30 @@ func (m MinterState) Validate() error {
 	}
 	return nil
 }
+
+
+func (m *MintingPeriod) CalculateInfation(totalSupply sdk.Int, periodStart time.Time) sdk.Dec {
+	switch m.Type {
+	case MintingPeriod_NO_MINTING:
+		return sdk.ZeroDec()
+	case MintingPeriod_TIME_LINEAR_MINTER:
+		return m.TimeLinearMinter.calculateInfation(totalSupply, periodStart, *m.PeriodEnd)
+	default:
+		return sdk.ZeroDec()
+	}
+}
+
+func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart time.Time, periodEnd time.Time) sdk.Dec {
+	if totalSupply.LTE(sdk.ZeroInt()) {
+		return sdk.ZeroDec()
+	}
+	
+	amount := m.Amount
+
+	periodDuration := periodEnd.Sub(periodStart)
+	mintedYearly := sdk.NewDecFromInt(amount).MulInt64(int64(year)).QuoInt64(int64(periodDuration))
+
+	return mintedYearly.QuoInt(totalSupply)
+
+}
+

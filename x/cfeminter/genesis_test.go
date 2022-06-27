@@ -10,26 +10,24 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeminter"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 
+	testminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	testminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
-
-
 )
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
-		Params: types.NewParams("myc4e"),
-		Minter: createMinter(time.Now()),
+		Params:      types.NewParams("myc4e"),
+		Minter:      createMinter(time.Now()),
 		MinterState: types.MinterState{CurrentOrderingId: 9, AmountMinted: sdk.NewInt(12312)},
 
 		// this line is used by starport scaffolding # genesis/test/state
-		
+
 	}
 
 	app := testapp.Setup(false)
@@ -73,7 +71,6 @@ func TestGenesis2(t *testing.T) {
 	//app.BankKeeper.
 	//require.Equal(t, app.BankKeeper.GetSupply(ctx, "uC4E").Amount.String(), 20596877, "asd")
 }
-
 
 func createMinter(startTime time.Time) types.Minter {
 	endTime1 := startTime.Add(time.Duration(PeriodDuration))

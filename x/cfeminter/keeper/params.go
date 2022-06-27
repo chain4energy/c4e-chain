@@ -19,4 +19,4 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 func (k Keeper) MintDenom(ctx sdk.Context) (res string) {
 	k.paramstore.Get(ctx, types.KeyMintDenom, &res)
 	return
-} 
+}

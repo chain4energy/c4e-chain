@@ -12,7 +12,11 @@
 /**
  * Params defines the parameters for the module.
  */
-export type CfeminterParams = object;
+export interface CfeminterParams {
+  mint_denom?: string;
+}
+
+export type CfeminterQueryInflationResponse = object;
 
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
@@ -229,6 +233,22 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryInflation
+   * @summary Queries a list of Inflation items.
+   * @request GET:/chain4energy/c4e-chain/cfeminter/inflation
+   */
+  queryInflation = (params: RequestParams = {}) =>
+    this.request<CfeminterQueryInflationResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfeminter/inflation`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *

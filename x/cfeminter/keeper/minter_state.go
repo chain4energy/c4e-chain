@@ -5,8 +5,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-
-
 // get the minter
 func (k Keeper) GetMinterState(ctx sdk.Context) (minter types.MinterState) {
 	store := ctx.KVStore(k.storeKey)
@@ -25,5 +23,3 @@ func (k Keeper) SetMinterState(ctx sdk.Context, minter types.MinterState) {
 	b := k.cdc.MustMarshal(&minter)
 	store.Set(types.MinterStateKey, b)
 }
-
-

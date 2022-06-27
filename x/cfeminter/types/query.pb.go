@@ -6,6 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
@@ -113,35 +114,116 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+type QueryInflationRequest struct {
+}
+
+func (m *QueryInflationRequest) Reset()         { *m = QueryInflationRequest{} }
+func (m *QueryInflationRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryInflationRequest) ProtoMessage()    {}
+func (*QueryInflationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_52f8d6dae0cd4899, []int{2}
+}
+func (m *QueryInflationRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryInflationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryInflationRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryInflationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryInflationRequest.Merge(m, src)
+}
+func (m *QueryInflationRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryInflationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryInflationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryInflationRequest proto.InternalMessageInfo
+
+type QueryInflationResponse struct {
+	Inflation github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=inflation,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"inflation"`
+}
+
+func (m *QueryInflationResponse) Reset()         { *m = QueryInflationResponse{} }
+func (m *QueryInflationResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryInflationResponse) ProtoMessage()    {}
+func (*QueryInflationResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_52f8d6dae0cd4899, []int{3}
+}
+func (m *QueryInflationResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryInflationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryInflationResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryInflationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryInflationResponse.Merge(m, src)
+}
+func (m *QueryInflationResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryInflationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryInflationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryInflationResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "chain4energy.c4echain.cfeminter.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "chain4energy.c4echain.cfeminter.QueryParamsResponse")
+	proto.RegisterType((*QueryInflationRequest)(nil), "chain4energy.c4echain.cfeminter.QueryInflationRequest")
+	proto.RegisterType((*QueryInflationResponse)(nil), "chain4energy.c4echain.cfeminter.QueryInflationResponse")
 }
 
 func init() { proto.RegisterFile("cfeminter/query.proto", fileDescriptor_52f8d6dae0cd4899) }
 
 var fileDescriptor_52f8d6dae0cd4899 = []byte{
-	// 315 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x90, 0xcf, 0x4a, 0x3b, 0x31,
-	0x10, 0xc7, 0x37, 0x3f, 0x7e, 0xf6, 0xb0, 0xde, 0xd6, 0x2a, 0x52, 0x24, 0x95, 0x5e, 0xaa, 0x82,
-	0x09, 0xfd, 0xf3, 0x04, 0x05, 0x8f, 0x82, 0xf6, 0x28, 0x5e, 0xb2, 0xcb, 0x98, 0x06, 0xdc, 0x4c,
-	0xba, 0x49, 0xc5, 0x5e, 0x7d, 0x02, 0xc1, 0x57, 0xf0, 0xec, 0x73, 0xf4, 0x58, 0xf0, 0xe2, 0x49,
-	0xa4, 0xf5, 0x41, 0xa4, 0xc9, 0xaa, 0xd5, 0x1e, 0x8a, 0xb7, 0x64, 0xf2, 0xfd, 0x7c, 0x32, 0x33,
-	0xf1, 0x76, 0x76, 0x05, 0xb9, 0xd2, 0x0e, 0x0a, 0x3e, 0x1c, 0x41, 0x31, 0x66, 0xa6, 0x40, 0x87,
-	0x49, 0x3d, 0x1b, 0x08, 0xa5, 0xbb, 0xa0, 0xa1, 0x90, 0x63, 0x96, 0x75, 0xc1, 0xdf, 0xd9, 0x57,
-	0xb8, 0x56, 0x95, 0x28, 0xd1, 0x67, 0xf9, 0xe2, 0x14, 0xb0, 0xda, 0x9e, 0x44, 0x94, 0xd7, 0xc0,
-	0x85, 0x51, 0x5c, 0x68, 0x8d, 0x4e, 0x38, 0x85, 0xda, 0x96, 0xaf, 0x47, 0x19, 0xda, 0x1c, 0x2d,
-	0x4f, 0x85, 0x85, 0xf0, 0x1b, 0xbf, 0x69, 0xa5, 0xe0, 0x44, 0x8b, 0x1b, 0x21, 0x95, 0xf6, 0xe1,
-	0x32, 0xbb, 0xf3, 0xdd, 0x97, 0x11, 0x85, 0xc8, 0x4b, 0x47, 0xa3, 0x1a, 0x27, 0xe7, 0x0b, 0xf2,
-	0xcc, 0x17, 0xfb, 0x30, 0x1c, 0x81, 0x75, 0x8d, 0xcb, 0x78, 0xeb, 0x47, 0xd5, 0x1a, 0xd4, 0x16,
-	0x92, 0x93, 0xb8, 0x12, 0xe0, 0x5d, 0xb2, 0x4f, 0x0e, 0x36, 0xdb, 0x4d, 0xb6, 0x66, 0x2c, 0x16,
-	0x04, 0xbd, 0xff, 0x93, 0xd7, 0x7a, 0xd4, 0x2f, 0xe1, 0xf6, 0x13, 0x89, 0x37, 0xbc, 0x3e, 0x79,
-	0x24, 0x71, 0x25, 0x44, 0x92, 0xce, 0x5a, 0xd7, 0x6a, 0x9f, 0xb5, 0xee, 0xdf, 0xa0, 0x30, 0x46,
-	0x83, 0xdf, 0x3d, 0xbf, 0x3f, 0xfc, 0x3b, 0x4c, 0x9a, 0x7c, 0x99, 0xe6, 0x9f, 0x34, 0xff, 0xbd,
-	0xaa, 0xde, 0xe9, 0x64, 0x46, 0xc9, 0x74, 0x46, 0xc9, 0xdb, 0x8c, 0x92, 0xfb, 0x39, 0x8d, 0xa6,
-	0x73, 0x1a, 0xbd, 0xcc, 0x69, 0x74, 0xd1, 0x91, 0xca, 0x0d, 0x46, 0x29, 0xcb, 0x30, 0x5f, 0x91,
-	0x1d, 0x07, 0xdb, 0xed, 0x92, 0xcf, 0x8d, 0x0d, 0xd8, 0xb4, 0xe2, 0x57, 0xdf, 0xf9, 0x08, 0x00,
-	0x00, 0xff, 0xff, 0x21, 0x93, 0x51, 0xcb, 0x2c, 0x02, 0x00, 0x00,
+	// 406 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x52, 0xbd, 0x4e, 0xe3, 0x40,
+	0x10, 0xb6, 0xa3, 0xbb, 0x48, 0xd9, 0xeb, 0xf6, 0xf2, 0x27, 0xeb, 0xce, 0x89, 0x5c, 0xdc, 0x9d,
+	0x4e, 0xca, 0xae, 0x92, 0x58, 0x77, 0x7d, 0x04, 0x05, 0x12, 0x48, 0x90, 0x12, 0xd1, 0xac, 0xcd,
+	0xc6, 0xb1, 0x88, 0x77, 0x1d, 0xef, 0x06, 0x91, 0x96, 0x27, 0x40, 0xd0, 0xf3, 0x26, 0xf4, 0x29,
+	0x23, 0xd1, 0x20, 0x8a, 0x08, 0x25, 0x3c, 0x08, 0xf2, 0xda, 0xf9, 0xc1, 0x14, 0x21, 0x95, 0xed,
+	0x99, 0xf9, 0x7e, 0xe6, 0x1b, 0x83, 0x92, 0xdb, 0xa3, 0x81, 0xcf, 0x24, 0x8d, 0xf0, 0x70, 0x44,
+	0xa3, 0x31, 0x0a, 0x23, 0x2e, 0x39, 0xac, 0xb9, 0x7d, 0xe2, 0x33, 0x9b, 0x32, 0x1a, 0x79, 0x63,
+	0xe4, 0xda, 0x54, 0x7d, 0xa3, 0xd5, 0xb0, 0x51, 0xf4, 0xb8, 0xc7, 0xd5, 0x2c, 0x8e, 0xdf, 0x12,
+	0x98, 0xf1, 0xc3, 0xe3, 0xdc, 0x1b, 0x50, 0x4c, 0x42, 0x1f, 0x13, 0xc6, 0xb8, 0x24, 0xd2, 0xe7,
+	0x4c, 0xa4, 0xdd, 0xbf, 0x2e, 0x17, 0x01, 0x17, 0xd8, 0x21, 0x82, 0x26, 0x6a, 0xf8, 0xb2, 0xe9,
+	0x50, 0x49, 0x9a, 0x38, 0x24, 0x9e, 0xcf, 0xd4, 0x70, 0x3a, 0x5b, 0x5e, 0xfb, 0x0a, 0x49, 0x44,
+	0x82, 0x94, 0xc3, 0x2a, 0x02, 0x78, 0x12, 0x23, 0x8f, 0x55, 0xb1, 0x4b, 0x87, 0x23, 0x2a, 0xa4,
+	0x75, 0x06, 0xbe, 0xbf, 0xab, 0x8a, 0x90, 0x33, 0x41, 0xe1, 0x3e, 0xc8, 0x27, 0xe0, 0xaa, 0x5e,
+	0xd7, 0xff, 0x7c, 0x6b, 0xfd, 0x46, 0x5b, 0xd6, 0x42, 0x09, 0x41, 0xe7, 0xcb, 0x64, 0x56, 0xd3,
+	0xba, 0x29, 0xd8, 0xaa, 0x80, 0x92, 0x62, 0x3f, 0x60, 0xbd, 0x81, 0xf2, 0xb8, 0x94, 0xed, 0x81,
+	0x72, 0xb6, 0x91, 0x2a, 0x1f, 0x82, 0x82, 0xbf, 0x2c, 0x2a, 0xf1, 0x42, 0x07, 0xc5, 0x9c, 0xcf,
+	0xb3, 0xda, 0x2f, 0xcf, 0x97, 0xfd, 0x91, 0x83, 0x5c, 0x1e, 0xe0, 0x34, 0x90, 0xe4, 0xd1, 0x10,
+	0xe7, 0x17, 0x58, 0x8e, 0x43, 0x2a, 0xd0, 0x1e, 0x75, 0xbb, 0x6b, 0x82, 0xd6, 0x43, 0x0e, 0x7c,
+	0x55, 0x42, 0xf0, 0x56, 0x07, 0xf9, 0xc4, 0x23, 0x6c, 0x6f, 0x5d, 0xe6, 0x63, 0x50, 0x86, 0xbd,
+	0x1b, 0x28, 0xd9, 0xc6, 0xfa, 0x79, 0xfd, 0xf8, 0x7a, 0x97, 0xab, 0xc0, 0x12, 0x76, 0x6d, 0x8a,
+	0xb3, 0x97, 0x81, 0xf7, 0x3a, 0x28, 0xac, 0x22, 0x80, 0xff, 0x3e, 0x27, 0x91, 0x0d, 0xd3, 0xf8,
+	0xbf, 0x33, 0x2e, 0x75, 0x57, 0x57, 0xee, 0x0c, 0x58, 0xcd, 0xb8, 0x5b, 0xe5, 0xd7, 0x39, 0x9a,
+	0xcc, 0x4d, 0x7d, 0x3a, 0x37, 0xf5, 0x97, 0xb9, 0xa9, 0xdf, 0x2c, 0x4c, 0x6d, 0xba, 0x30, 0xb5,
+	0xa7, 0x85, 0xa9, 0x9d, 0xb6, 0x37, 0x8f, 0xb1, 0x21, 0x1f, 0x53, 0x35, 0x54, 0x01, 0x5f, 0x6d,
+	0x50, 0xaa, 0xeb, 0x38, 0x79, 0xf5, 0x2b, 0xb6, 0xdf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x83, 0x54,
+	0x6e, 0xf8, 0x3c, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -158,6 +240,8 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Queries a list of Inflation items.
+	Inflation(ctx context.Context, in *QueryInflationRequest, opts ...grpc.CallOption) (*QueryInflationResponse, error)
 }
 
 type queryClient struct {
@@ -177,10 +261,21 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) Inflation(ctx context.Context, in *QueryInflationRequest, opts ...grpc.CallOption) (*QueryInflationResponse, error) {
+	out := new(QueryInflationResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeminter.Query/Inflation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Queries a list of Inflation items.
+	Inflation(context.Context, *QueryInflationRequest) (*QueryInflationResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -189,6 +284,9 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) Inflation(ctx context.Context, req *QueryInflationRequest) (*QueryInflationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Inflation not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -213,6 +311,24 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Inflation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryInflationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Inflation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfeminter.Query/Inflation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Inflation(ctx, req.(*QueryInflationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "chain4energy.c4echain.cfeminter.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -220,6 +336,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "Inflation",
+			Handler:    _Query_Inflation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -282,6 +402,62 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryInflationRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryInflationRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryInflationRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryInflationResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryInflationResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryInflationResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.Inflation.Size()
+		i -= size
+		if _, err := m.Inflation.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -309,6 +485,26 @@ func (m *QueryParamsResponse) Size() (n int) {
 	var l int
 	_ = l
 	l = m.Params.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryInflationRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryInflationResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Inflation.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -428,6 +624,140 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryInflationRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryInflationRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryInflationRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryInflationResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryInflationResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryInflationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Inflation", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Inflation.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

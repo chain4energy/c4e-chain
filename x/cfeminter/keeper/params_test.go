@@ -17,7 +17,6 @@ func TestGetParams(t *testing.T) {
 	require.EqualValues(t, params, k.GetParams(ctx))
 }
 
-
 func TestGetParams2(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()

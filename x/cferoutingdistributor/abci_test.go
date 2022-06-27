@@ -4,10 +4,9 @@ import (
 	"testing"
 
 	testapp "github.com/chain4energy/c4e-chain/app"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 )
 
 func TestAbci(t *testing.T) {

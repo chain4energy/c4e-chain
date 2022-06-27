@@ -9,9 +9,8 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type (
@@ -64,23 +63,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	minterState := k.GetMinterState(ctx)
 	params := k.GetParams(ctx)
 
-	currentId := minterState.CurrentOrderingId
-	var currentPeriod *types.MintingPeriod = nil
-	var previousPeriod *types.MintingPeriod = nil
-	for _, period := range minter.Periods {
-		if period.OrderingId == currentId {
-			currentPeriod = period
-		}
-		if previousPeriod == nil {
-			if period.OrderingId < currentId {
-				previousPeriod = period
-			}
-		} else {
-			if period.OrderingId < currentId && period.OrderingId > previousPeriod.OrderingId {
-				previousPeriod = period
-			}
-		}
-	}
+	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
 
 	if currentPeriod == nil {
 		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentOrderingId)
@@ -123,6 +106,49 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		}
 		return minted.Add(amount), nil
 	}
+}
+
+func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
+	minter := k.GetMinter(ctx)
+	minterState := k.GetMinterState(ctx)
+	params := k.GetParams(ctx)
+
+	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
+
+	if currentPeriod == nil {
+		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentOrderingId)
+
+	}
+
+	var periodStart time.Time
+	if previousPeriod == nil {
+		periodStart = minter.Start
+	} else {
+		periodStart = *previousPeriod.PeriodEnd
+	}
+
+	supply := k.bankKeeper.GetSupply(ctx, params.MintDenom)
+
+	return currentPeriod.CalculateInfation(supply.Amount, periodStart), nil
+}
+
+func getCurrentAndPreviousPeriod(minter types.Minter, state *types.MinterState) (currentPeriod *types.MintingPeriod, previousPeriod *types.MintingPeriod) {
+	currentId := state.CurrentOrderingId
+	for _, period := range minter.Periods {
+		if period.OrderingId == currentId {
+			currentPeriod = period
+		}
+		if previousPeriod == nil {
+			if period.OrderingId < currentId {
+				previousPeriod = period
+			}
+		} else {
+			if period.OrderingId < currentId && period.OrderingId > previousPeriod.OrderingId {
+				previousPeriod = period
+			}
+		}
+	}
+	return currentPeriod, previousPeriod
 }
 
 // MintCoins implements an alias call to the underlying supply keeper's

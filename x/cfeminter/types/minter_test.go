@@ -362,3 +362,57 @@ func TestValidateMinterState(t *testing.T) {
 	minterState = types.MinterState{CurrentOrderingId: 1, AmountMinted: sdk.NewInt(-123)}
 	require.EqualError(t, minterState.Validate(), "minter state amount cannot be less than 0")
 }
+
+func TestTimeLinearMinterInfation(t *testing.T) {
+	startTime := time.Now()
+	duration := time.Hour*24*365
+	endTime := startTime.Add(duration)
+	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
+
+	period1 := types.MintingPeriod{OrderingId: 1, PeriodEnd: &endTime, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
+	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	expected, _ := sdk.NewDecFromStr("0.1")
+	require.EqualValues(t, expected, inflation)
+
+	duration = time.Hour*24*73
+	endTime = startTime.Add(duration)
+	period1.PeriodEnd = &endTime
+
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	expected, _ = sdk.NewDecFromStr("0.5")
+	require.EqualValues(t, expected, inflation)
+
+	duration = time.Hour*24*365*5
+	endTime = startTime.Add(duration)
+	period1.PeriodEnd = &endTime
+
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	expected, _ = sdk.NewDecFromStr("0.02")
+	require.EqualValues(t, expected, inflation)
+}
+
+func TestNoMintingInfation(t *testing.T) {
+	startTime := time.Now()
+	duration := time.Hour*24*365
+	endTime := startTime.Add(duration)
+
+	period1 := types.MintingPeriod{OrderingId: 3, Type: types.MintingPeriod_NO_MINTING}
+
+	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	expected := sdk.ZeroDec()
+	require.EqualValues(t, expected, inflation)
+
+	duration = time.Hour*24*73
+	endTime = startTime.Add(duration)
+	period1.PeriodEnd = &endTime
+
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	require.EqualValues(t, expected, inflation)
+
+	duration = time.Hour*24*365*5
+	endTime = startTime.Add(duration)
+	period1.PeriodEnd = &endTime
+
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	require.EqualValues(t, expected, inflation)
+}

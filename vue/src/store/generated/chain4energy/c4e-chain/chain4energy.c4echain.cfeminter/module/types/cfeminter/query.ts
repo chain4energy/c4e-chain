@@ -13,6 +13,10 @@ export interface QueryParamsResponse {
   params: Params | undefined;
 }
 
+export interface QueryInflationRequest {}
+
+export interface QueryInflationResponse {}
+
 const baseQueryParamsRequest: object = {};
 
 export const QueryParamsRequest = {
@@ -110,10 +114,88 @@ export const QueryParamsResponse = {
   },
 };
 
+const baseQueryInflationRequest: object = {};
+
+export const QueryInflationRequest = {
+  encode(_: QueryInflationRequest, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryInflationRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryInflationRequest } as QueryInflationRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryInflationRequest {
+    const message = { ...baseQueryInflationRequest } as QueryInflationRequest;
+    return message;
+  },
+
+  toJSON(_: QueryInflationRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<QueryInflationRequest>): QueryInflationRequest {
+    const message = { ...baseQueryInflationRequest } as QueryInflationRequest;
+    return message;
+  },
+};
+
+const baseQueryInflationResponse: object = {};
+
+export const QueryInflationResponse = {
+  encode(_: QueryInflationResponse, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryInflationResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryInflationResponse } as QueryInflationResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryInflationResponse {
+    const message = { ...baseQueryInflationResponse } as QueryInflationResponse;
+    return message;
+  },
+
+  toJSON(_: QueryInflationResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<QueryInflationResponse>): QueryInflationResponse {
+    const message = { ...baseQueryInflationResponse } as QueryInflationResponse;
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
+  /** Queries a list of Inflation items. */
+  Inflation(request: QueryInflationRequest): Promise<QueryInflationResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -129,6 +211,18 @@ export class QueryClientImpl implements Query {
       data
     );
     return promise.then((data) => QueryParamsResponse.decode(new Reader(data)));
+  }
+
+  Inflation(request: QueryInflationRequest): Promise<QueryInflationResponse> {
+    const data = QueryInflationRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeminter.Query",
+      "Inflation",
+      data
+    );
+    return promise.then((data) =>
+      QueryInflationResponse.decode(new Reader(data))
+    );
   }
 }
 

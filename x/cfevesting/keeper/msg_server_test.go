@@ -24,7 +24,6 @@ import (
 
 const helperModuleAccount = "helperTestAcc"
 
-
 func addHelperModuleAccountPerms() {
 	perms := []string{authtypes.Minter}
 	app.AddMaccPerms(helperModuleAccount, perms)
