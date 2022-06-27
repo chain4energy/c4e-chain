@@ -10,6 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 )
 
 type (
@@ -81,8 +83,8 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	}
 
 	if currentPeriod == nil {
-		//  TODO return error
-		return sdk.ZeroInt(), nil
+		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentOrderingId)
+
 	}
 
 	var periodStart time.Time

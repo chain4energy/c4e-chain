@@ -27,7 +27,7 @@ message Minter {
 
 message MintingPeriod {
 
-  int32 ordering_id = 1;
+  int32 ordering_id = 1; // TODO change name to position
   google.protobuf.Timestamp period_end = 2 [(gogoproto.stdtime) = true];
   enum MinterType {
     NO_MINTING = 0;
