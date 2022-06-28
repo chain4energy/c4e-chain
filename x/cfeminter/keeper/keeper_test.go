@@ -10,7 +10,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
-
 )
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
@@ -140,6 +139,21 @@ func TestMintBetweenSecondAndThirdPeriods(t *testing.T) {
 	minterState.CurrentOrderingId = 3
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(authtypes.FeeCollectorName, ctx, app, t, MyDenom, sdk.NewInt(25000))
+
+}
+
+func TestMintPeriodNotFound(t *testing.T) {
+	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
+
+	app, ctx := prepareApp(startTime, createMinter(startTime))
+	k := app.CfeminterKeeper
+
+	minterState := types.MinterState{CurrentOrderingId: 9, AmountMinted: sdk.NewInt(0)}
+	k.SetMinterState(ctx, minterState)
+
+	ctx = ctx.WithBlockTime(startTime)
+	_, err := k.Mint(ctx)
+	require.EqualError(t, err, "minter current period for position 9 not found: not found")
 
 }
 

@@ -149,6 +149,11 @@ func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart ti
 
 	periodDuration := periodEnd.Sub(periodStart)
 	mintedYearly := sdk.NewDecFromInt(amount).MulInt64(int64(year)).QuoInt64(int64(periodDuration))
+	// fmt.Println("amount: " + amount.String())
+	// fmt.Println("mintedYearly: " + mintedYearly.String())
+	// fmt.Println("year: " + year.String())
+	// fmt.Println("periodDuration: " + periodDuration.String())
+	// fmt.Println("totalSupply: " + totalSupply.String())
 
 	return mintedYearly.QuoInt(totalSupply)
 

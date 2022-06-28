@@ -12,10 +12,12 @@ import (
 
 	testminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
@@ -45,30 +47,71 @@ func TestGenesis(t *testing.T) {
 	// this line is used by starport scaffolding # genesis/test/assert
 }
 
-func TestGenesis2(t *testing.T) {
-	perms := []string{authtypes.Minter}
-	testapp.AddMaccPerms("fee_collector", perms)
-	testapp.AddMaccPerms("payment_collector", perms)
-	// Setup main app
-	app := testapp.Setup(false)
+func TestOneYear(t *testing.T) {
+	totalSupply := int64(40000000000000)
+	commontestutils.AddHelperModuleAccountPerms()
+	now := time.Now()
+	yearFromNow := now.Add(time.Hour * 24 * 365)
+	minter := types.Minter{
+		Start: time.Now(),
+		Periods: []*types.MintingPeriod{
+			{OrderingId: 1, PeriodEnd: &yearFromNow, Type: types.MintingPeriod_TIME_LINEAR_MINTER,
+				TimeLinearMinter: &types.TimeLinearMinter{Amount: sdk.NewInt(totalSupply)}},
+			{OrderingId: 2, Type: types.MintingPeriod_NO_MINTING},
+		}}
 
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-
-	//Setup minter params
-	// minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
-	// minterNew.MintDenom = "uc4e"
-	// minterNew.NewCoinsMint = 20596877
-	// minterNew.BlocksPerYear = 100
-	// app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
-
-	for i := 1; i < 4000; i++ {
-		ctx = ctx.WithBlockHeight(int64(i))
-		app.BeginBlocker(ctx, abci.RequestBeginBlock{})
-		app.EndBlocker(ctx, abci.RequestEndBlock{})
+	genesisState := types.GenesisState{
+		Params:      types.NewParams(commontestutils.Denom, minter),
+		MinterState: types.MinterState{CurrentOrderingId: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
-	//app.BankKeeper.
-	//require.Equal(t, app.BankKeeper.GetSupply(ctx, "uC4E").Amount.String(), 20596877, "asd")
+	app := testapp.Setup(false)
+
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: now})
+	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	commontestutils.AddCoinsToAccount(uint64(totalSupply), ctx, app, acountsAddresses[0])
+
+	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
+	require.NoError(t, err)
+	require.EqualValues(t, sdk.NewDec(1), inflation) // TODO check - simetes not passed becouse probably Dec calclulation limited precision
+	state := app.CfeminterKeeper.GetMinterState(ctx)
+	require.EqualValues(t, int32(1), state.CurrentOrderingId)
+	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
+	commontestutils.VerifyModuleAccountBalanceByName(authtypes.FeeCollectorName, ctx, app, t, sdk.ZeroInt())
+
+	numOfHours := 365 * 24
+	for i := 1; i <= numOfHours; i++ {
+		ctx = ctx.WithBlockHeight(int64(i)).WithBlockTime(ctx.BlockTime().Add(time.Hour))
+		app.BeginBlocker(ctx, abci.RequestBeginBlock{})
+		app.EndBlocker(ctx, abci.RequestEndBlock{})
+
+		expectedMinted := totalSupply * int64(i) / int64(numOfHours)
+		expectedInflation := sdk.NewDec(totalSupply).QuoInt64(totalSupply + expectedMinted)
+
+		commontestutils.VerifyModuleAccountBalanceByName(authtypes.FeeCollectorName, ctx, app, t, sdk.NewInt(expectedMinted))
+
+		inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
+		require.NoError(t, err)
+		if i < numOfHours {
+			require.EqualValuesf(t, expectedInflation, inflation, "iterarion %d", i)
+			state := app.CfeminterKeeper.GetMinterState(ctx)
+			require.EqualValues(t, int32(1), state.CurrentOrderingId)
+			require.EqualValues(t, sdk.NewInt(expectedMinted), state.AmountMinted)
+		} else {
+			require.EqualValuesf(t, sdk.ZeroDec(), inflation, "iterarion %d", i)
+			state := app.CfeminterKeeper.GetMinterState(ctx)
+			require.EqualValues(t, int32(2), state.CurrentOrderingId)
+			require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
+		}
+
+	}
+
+	commontestutils.VerifyModuleAccountBalanceByName(authtypes.FeeCollectorName, ctx, app, t, sdk.NewInt(totalSupply))
+	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
+	require.EqualValues(t, sdk.NewInt(2*totalSupply), supp.Amount)
+
 }
 
 func createMinter(startTime time.Time) types.Minter {

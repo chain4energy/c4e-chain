@@ -15,7 +15,7 @@ import (
 )
 
 func TestSendVestingAccount(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := commontestutils.SetupApp(1000)
 
@@ -25,7 +25,7 @@ func TestSendVestingAccount(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	const accInitBalance = 10000
-	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -57,7 +57,7 @@ func TestSendVestingAccount(t *testing.T) {
 }
 
 func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	// const vested = 1000
 	app, ctx := commontestutils.SetupApp(1000)
 
@@ -67,7 +67,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	const accInitBalance = 10000
-	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	// vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	// usedVestingType := vestingTypes.VestingTypes[0]
@@ -86,7 +86,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 }
 
 func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := commontestutils.SetupApp(1000)
 
@@ -96,7 +96,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	const accInitBalance = 10000
-	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -115,7 +115,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 }
 
 func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := commontestutils.SetupApp(1000)
 
@@ -125,7 +125,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	const accInitBalance = 10000
-	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -144,7 +144,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 }
 
 func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := commontestutils.SetupApp(1000)
 
@@ -154,7 +154,7 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	const accInitBalance = 10000
-	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]

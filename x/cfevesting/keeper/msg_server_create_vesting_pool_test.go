@@ -30,7 +30,7 @@ import (
 // }
 
 func TestCreateVestingPool(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := commontestutils.SetupApp(1000)
 
@@ -39,7 +39,7 @@ func TestCreateVestingPool(t *testing.T) {
 	accAddr := acountsAddresses[0]
 
 	const accInitBalance = 10000
-	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -55,7 +55,7 @@ func TestCreateVestingPool(t *testing.T) {
 }
 
 func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := commontestutils.SetupApp(1000)
 
@@ -64,7 +64,7 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 	accAddr := acountsAddresses[0]
 
 	const accInitBalance = 10000
-	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	setupVestingTypes(ctx, app, 2, 1, 1)
 
@@ -80,7 +80,7 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 }
 
 func TestCreateVestingPoolNameDuplication(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
 	app, ctx := commontestutils.SetupApp(1000)
 
@@ -89,7 +89,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	accAddr := acountsAddresses[0]
 
 	const accInitBalance = 10000
-	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -177,7 +177,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 // }
 
 func TestVestingId(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
 	const accInitBalance = 10000
 	app, ctx := commontestutils.SetupApp(1000)
@@ -186,7 +186,7 @@ func TestVestingId(t *testing.T) {
 
 	accAddr := acountsAddresses[0]
 
-	addCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
 
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]

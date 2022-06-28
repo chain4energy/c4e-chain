@@ -14,7 +14,7 @@ import (
 )
 
 func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	app, ctx := commontestutils.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
@@ -30,7 +30,7 @@ func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableManyVestingsOnLockStart(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	app, ctx := commontestutils.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
@@ -45,7 +45,7 @@ func TestWithdrawAllAvailableManyVestingsOnLockStart(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableDuringLock(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = 0
 	app, ctx := commontestutils.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
@@ -64,7 +64,7 @@ func TestWithdrawAllAvailableDuringLock(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = 0
 	app, ctx := commontestutils.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
@@ -84,7 +84,7 @@ func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = vested
 	const withdrawn = 300
@@ -106,7 +106,7 @@ func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = vested
 	const withdrawn = 300
@@ -128,13 +128,13 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 }
 
 func TestVestAndWithdrawAllAvailable(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	app, ctx := commontestutils.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	accAddr := acountsAddresses[0]
-	addCoinsToAccount(vested, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(vested, ctx, app, accAddr)
 
 	modifyVestingType := func(vt *types.VestingType) {
 		vt.LockupPeriod = testutils.CreateDurationFromNumOfHours(9000)
