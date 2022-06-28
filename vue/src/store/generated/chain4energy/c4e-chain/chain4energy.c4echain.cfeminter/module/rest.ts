@@ -9,14 +9,38 @@
  * ---------------------------------------------------------------
  */
 
+export enum MintingPeriodMinterType {
+  NO_MINTING = "NO_MINTING",
+  TIME_LINEAR_MINTER = "TIME_LINEAR_MINTER",
+}
+
+export interface CfeminterMinter {
+  /** @format date-time */
+  start?: string;
+  periods?: CfeminterMintingPeriod[];
+}
+
+export interface CfeminterMintingPeriod {
+  /** @format int32 */
+  ordering_id?: number;
+
+  /** @format date-time */
+  period_end?: string;
+  type?: MintingPeriodMinterType;
+  time_linear_minter?: CfeminterTimeLinearMinter;
+}
+
 /**
  * Params defines the parameters for the module.
  */
 export interface CfeminterParams {
   mint_denom?: string;
+  minter?: CfeminterMinter;
 }
 
-export type CfeminterQueryInflationResponse = object;
+export interface CfeminterQueryInflationResponse {
+  inflation?: string;
+}
 
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
@@ -24,6 +48,10 @@ export type CfeminterQueryInflationResponse = object;
 export interface CfeminterQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: CfeminterParams;
+}
+
+export interface CfeminterTimeLinearMinter {
+  amount?: string;
 }
 
 export interface ProtobufAny {
@@ -239,11 +267,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryInflation
    * @summary Queries a list of Inflation items.
-   * @request GET:/chain4energy/c4e-chain/cfeminter/inflation
+   * @request GET:/c4e/cfeminter/inflation
    */
   queryInflation = (params: RequestParams = {}) =>
     this.request<CfeminterQueryInflationResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfeminter/inflation`,
+      path: `/c4e/cfeminter/inflation`,
       method: "GET",
       format: "json",
       ...params,
@@ -255,11 +283,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/chain4energy/c4echain/cfeminter/params
+   * @request GET:/c4e/cfeminter/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfeminterQueryParamsResponse, RpcStatus>({
-      path: `/chain4energy/c4echain/cfeminter/params`,
+      path: `/c4e/cfeminter/params`,
       method: "GET",
       format: "json",
       ...params,

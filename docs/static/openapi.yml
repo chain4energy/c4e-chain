@@ -4,7 +4,7 @@ info:
   name: ''
   description: ''
 paths:
-  /chain4energy/c4e-chain/cfeminter/inflation:
+  /c4e/cfeminter/inflation:
     get:
       summary: Queries a list of Inflation items.
       operationId: Chain4EnergyC4EchainCfeminterInflation
@@ -13,6 +13,9 @@ paths:
           description: A successful response.
           schema:
             type: object
+            properties:
+              inflation:
+                type: string
         default:
           description: An unexpected error response.
           schema:
@@ -33,7 +36,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /chain4energy/c4echain/cfeminter/params:
+  /c4e/cfeminter/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfeminterParams
@@ -49,6 +52,34 @@ paths:
                 properties:
                   mint_denom:
                     type: string
+                  minter:
+                    type: object
+                    properties:
+                      start:
+                        type: string
+                        format: date-time
+                      periods:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            ordering_id:
+                              type: integer
+                              format: int32
+                            period_end:
+                              type: string
+                              format: date-time
+                            type:
+                              type: string
+                              enum:
+                                - NO_MINTING
+                                - TIME_LINEAR_MINTER
+                              default: NO_MINTING
+                            time_linear_minter:
+                              type: object
+                              properties:
+                                amount:
+                                  type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -30662,14 +30693,99 @@ paths:
       tags:
         - Query
 definitions:
+  chain4energy.c4echain.cfeminter.Minter:
+    type: object
+    properties:
+      start:
+        type: string
+        format: date-time
+      periods:
+        type: array
+        items:
+          type: object
+          properties:
+            ordering_id:
+              type: integer
+              format: int32
+            period_end:
+              type: string
+              format: date-time
+            type:
+              type: string
+              enum:
+                - NO_MINTING
+                - TIME_LINEAR_MINTER
+              default: NO_MINTING
+            time_linear_minter:
+              type: object
+              properties:
+                amount:
+                  type: string
+  chain4energy.c4echain.cfeminter.MintingPeriod:
+    type: object
+    properties:
+      ordering_id:
+        type: integer
+        format: int32
+      period_end:
+        type: string
+        format: date-time
+      type:
+        type: string
+        enum:
+          - NO_MINTING
+          - TIME_LINEAR_MINTER
+        default: NO_MINTING
+      time_linear_minter:
+        type: object
+        properties:
+          amount:
+            type: string
+  chain4energy.c4echain.cfeminter.MintingPeriod.MinterType:
+    type: string
+    enum:
+      - NO_MINTING
+      - TIME_LINEAR_MINTER
+    default: NO_MINTING
   chain4energy.c4echain.cfeminter.Params:
     type: object
     properties:
       mint_denom:
         type: string
+      minter:
+        type: object
+        properties:
+          start:
+            type: string
+            format: date-time
+          periods:
+            type: array
+            items:
+              type: object
+              properties:
+                ordering_id:
+                  type: integer
+                  format: int32
+                period_end:
+                  type: string
+                  format: date-time
+                type:
+                  type: string
+                  enum:
+                    - NO_MINTING
+                    - TIME_LINEAR_MINTER
+                  default: NO_MINTING
+                time_linear_minter:
+                  type: object
+                  properties:
+                    amount:
+                      type: string
     description: Params defines the parameters for the module.
   chain4energy.c4echain.cfeminter.QueryInflationResponse:
     type: object
+    properties:
+      inflation:
+        type: string
   chain4energy.c4echain.cfeminter.QueryParamsResponse:
     type: object
     properties:
@@ -30679,7 +30795,40 @@ definitions:
         properties:
           mint_denom:
             type: string
+          minter:
+            type: object
+            properties:
+              start:
+                type: string
+                format: date-time
+              periods:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    ordering_id:
+                      type: integer
+                      format: int32
+                    period_end:
+                      type: string
+                      format: date-time
+                    type:
+                      type: string
+                      enum:
+                        - NO_MINTING
+                        - TIME_LINEAR_MINTER
+                      default: NO_MINTING
+                    time_linear_minter:
+                      type: object
+                      properties:
+                        amount:
+                          type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cfeminter.TimeLinearMinter:
+    type: object
+    properties:
+      amount:
+        type: string
   google.protobuf.Any:
     type: object
     properties:

@@ -15,7 +15,9 @@ export interface QueryParamsResponse {
 
 export interface QueryInflationRequest {}
 
-export interface QueryInflationResponse {}
+export interface QueryInflationResponse {
+  inflation: string;
+}
 
 const baseQueryParamsRequest: object = {};
 
@@ -152,10 +154,16 @@ export const QueryInflationRequest = {
   },
 };
 
-const baseQueryInflationResponse: object = {};
+const baseQueryInflationResponse: object = { inflation: "" };
 
 export const QueryInflationResponse = {
-  encode(_: QueryInflationResponse, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: QueryInflationResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.inflation !== "") {
+      writer.uint32(10).string(message.inflation);
+    }
     return writer;
   },
 
@@ -166,6 +174,9 @@ export const QueryInflationResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.inflation = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -174,18 +185,31 @@ export const QueryInflationResponse = {
     return message;
   },
 
-  fromJSON(_: any): QueryInflationResponse {
+  fromJSON(object: any): QueryInflationResponse {
     const message = { ...baseQueryInflationResponse } as QueryInflationResponse;
+    if (object.inflation !== undefined && object.inflation !== null) {
+      message.inflation = String(object.inflation);
+    } else {
+      message.inflation = "";
+    }
     return message;
   },
 
-  toJSON(_: QueryInflationResponse): unknown {
+  toJSON(message: QueryInflationResponse): unknown {
     const obj: any = {};
+    message.inflation !== undefined && (obj.inflation = message.inflation);
     return obj;
   },
 
-  fromPartial(_: DeepPartial<QueryInflationResponse>): QueryInflationResponse {
+  fromPartial(
+    object: DeepPartial<QueryInflationResponse>
+  ): QueryInflationResponse {
     const message = { ...baseQueryInflationResponse } as QueryInflationResponse;
+    if (object.inflation !== undefined && object.inflation !== null) {
+      message.inflation = object.inflation;
+    } else {
+      message.inflation = "";
+    }
     return message;
   },
 };

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Params } from "../cfeminter/params";
-import { Minter, MinterState } from "../cfeminter/minter";
+import { MinterState } from "../cfeminter/minter";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
@@ -9,7 +9,6 @@ export const protobufPackage = "chain4energy.c4echain.cfeminter";
 export interface GenesisState {
   /** this line is used by starport scaffolding # genesis/proto/state */
   params: Params | undefined;
-  minter: Minter | undefined;
   minter_state: MinterState | undefined;
 }
 
@@ -20,13 +19,10 @@ export const GenesisState = {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
-    if (message.minter !== undefined) {
-      Minter.encode(message.minter, writer.uint32(18).fork()).ldelim();
-    }
     if (message.minter_state !== undefined) {
       MinterState.encode(
         message.minter_state,
-        writer.uint32(26).fork()
+        writer.uint32(18).fork()
       ).ldelim();
     }
     return writer;
@@ -43,9 +39,6 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
-          message.minter = Minter.decode(reader, reader.uint32());
-          break;
-        case 3:
           message.minter_state = MinterState.decode(reader, reader.uint32());
           break;
         default:
@@ -63,11 +56,6 @@ export const GenesisState = {
     } else {
       message.params = undefined;
     }
-    if (object.minter !== undefined && object.minter !== null) {
-      message.minter = Minter.fromJSON(object.minter);
-    } else {
-      message.minter = undefined;
-    }
     if (object.minter_state !== undefined && object.minter_state !== null) {
       message.minter_state = MinterState.fromJSON(object.minter_state);
     } else {
@@ -80,8 +68,6 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    message.minter !== undefined &&
-      (obj.minter = message.minter ? Minter.toJSON(message.minter) : undefined);
     message.minter_state !== undefined &&
       (obj.minter_state = message.minter_state
         ? MinterState.toJSON(message.minter_state)
@@ -95,11 +81,6 @@ export const GenesisState = {
       message.params = Params.fromPartial(object.params);
     } else {
       message.params = undefined;
-    }
-    if (object.minter !== undefined && object.minter !== null) {
-      message.minter = Minter.fromPartial(object.minter);
-    } else {
-      message.minter = undefined;
     }
     if (object.minter_state !== undefined && object.minter_state !== null) {
       message.minter_state = MinterState.fromPartial(object.minter_state);
