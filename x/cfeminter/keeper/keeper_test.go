@@ -10,6 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
+
 )
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
@@ -18,15 +19,11 @@ const MyDenom = "myc4e"
 func TestMintFirstPeriod(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 
-	app, ctx := prepareApp(startTime)
+	app, ctx := prepareApp(startTime, createMinter(startTime))
 	k := app.CfeminterKeeper
 
 	minterState := types.MinterState{CurrentOrderingId: 1, AmountMinted: sdk.NewInt(0)}
 	k.SetMinterState(ctx, minterState)
-
-	minter := createMinter(startTime)
-
-	k.SetMinter(ctx, minter)
 
 	ctx = ctx.WithBlockTime(startTime)
 	amount, err := k.Mint(ctx)
@@ -65,15 +62,12 @@ func TestMintFirstPeriod(t *testing.T) {
 func TestMintSecondPeriod(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 
-	app, ctx := prepareApp(startTime)
+	app, ctx := prepareApp(startTime, createMinter(startTime))
 	k := app.CfeminterKeeper
 
 	minterState := types.MinterState{CurrentOrderingId: 2, AmountMinted: sdk.NewInt(0)}
 	k.SetMinterState(ctx, minterState)
 
-	minter := createMinter(startTime)
-
-	k.SetMinter(ctx, minter)
 	periodStart := startTime.Add(PeriodDuration)
 	ctx = ctx.WithBlockTime(periodStart)
 	amount, err := k.Mint(ctx)
@@ -112,15 +106,11 @@ func TestMintSecondPeriod(t *testing.T) {
 func TestMintBetweenFirstAndSecondPeriods(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 
-	app, ctx := prepareApp(startTime)
+	app, ctx := prepareApp(startTime, createMinter(startTime))
 	k := app.CfeminterKeeper
 
 	minterState := types.MinterState{CurrentOrderingId: 1, AmountMinted: sdk.NewInt(750000)}
 	k.SetMinterState(ctx, minterState)
-
-	minter := createMinter(startTime)
-
-	k.SetMinter(ctx, minter)
 
 	ctx = ctx.WithBlockTime(startTime.Add(PeriodDuration + PeriodDuration/4))
 	amount, err := k.Mint(ctx)
@@ -136,15 +126,11 @@ func TestMintBetweenFirstAndSecondPeriods(t *testing.T) {
 func TestMintBetweenSecondAndThirdPeriods(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 
-	app, ctx := prepareApp(startTime)
+	app, ctx := prepareApp(startTime, createMinter(startTime))
 	k := app.CfeminterKeeper
 
 	minterState := types.MinterState{CurrentOrderingId: 2, AmountMinted: sdk.NewInt(75000)}
 	k.SetMinterState(ctx, minterState)
-
-	minter := createMinter(startTime)
-
-	k.SetMinter(ctx, minter)
 
 	ctx = ctx.WithBlockTime(startTime.Add(2*PeriodDuration + PeriodDuration/4))
 	amount, err := k.Mint(ctx)
@@ -157,10 +143,11 @@ func TestMintBetweenSecondAndThirdPeriods(t *testing.T) {
 
 }
 
-func prepareApp(startTime time.Time) (*app.App, sdk.Context) {
+func prepareApp(startTime time.Time, minter types.Minter) (*app.App, sdk.Context) {
 	app, ctx := commontestutils.SetupAppWithTime(1000, startTime)
 	params := types.DefaultParams()
 	params.MintDenom = MyDenom
+	params.Minter = minter
 
 	k := app.CfeminterKeeper
 	k.SetParams(ctx, params)

@@ -22,8 +22,7 @@ const PeriodDuration = time.Duration(345600000000 * 1000000)
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
-		Params:      types.NewParams("myc4e"),
-		Minter:      createMinter(time.Now()),
+		Params:      types.NewParams("myc4e", createMinter(time.Now())),
 		MinterState: types.MinterState{CurrentOrderingId: 9, AmountMinted: sdk.NewInt(12312)},
 
 		// this line is used by starport scaffolding # genesis/test/state
@@ -39,8 +38,8 @@ func TestGenesis(t *testing.T) {
 	// nullify.Fill(&genesisState)
 	// nullify.Fill(got)
 
-	require.EqualValues(t, genesisState.Params, got.Params)
-	testminter.CompareMinters(t, genesisState.Minter, got.Minter)
+	require.EqualValues(t, genesisState.Params.MintDenom, got.Params.MintDenom)
+	testminter.CompareMinters(t, genesisState.Params.Minter, got.Params.Minter)
 	require.EqualValues(t, genesisState.MinterState, got.MinterState)
 
 	// this line is used by starport scaffolding # genesis/test/assert

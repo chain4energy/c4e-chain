@@ -2,6 +2,7 @@ package types
 
 import (
 	fmt "fmt"
+	"time"
 
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
@@ -9,7 +10,10 @@ import (
 
 var (
 	KeyMintDenom            = []byte("MintDenom")
+	KeyMinter            = []byte("Minter")
 	DefaultMintDenom string = "uc4e"
+	DefaultMinter Minter = Minter{Start: time.Now(), Periods: []*MintingPeriod{{OrderingId: 1, Type: MintingPeriod_NO_MINTING}}}
+
 ) //
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -20,19 +24,20 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params instance
-func NewParams(denom string) Params {
-	return Params{MintDenom: denom}
+func NewParams(denom string, minter Minter) Params {
+	return Params{MintDenom: denom, Minter: minter}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	return NewParams(DefaultMintDenom)
+	return NewParams(DefaultMintDenom, DefaultMinter)
 }
 
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyMintDenom, &p.MintDenom, validateDenom),
+		paramtypes.NewParamSetPair(KeyMinter, &p.Minter, validateMinter),
 	}
 }
 
@@ -40,7 +45,10 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 func (p Params) Validate() error {
 	if err := validateDenom(p.MintDenom); err != nil {
 		return err
-	} //
+	}
+	if err := validateMinter(p.Minter); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -61,4 +69,13 @@ func validateDenom(v interface{}) error {
 	_ = denom //
 
 	return nil
+}
+
+// validateDenom validates the Denom param
+func validateMinter(v interface{}) error {
+	minter, ok := v.(Minter)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", v)
+	} //
+	return minter.Validate()
 }

@@ -13,6 +13,5 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 
-  Minter minter  = 2 [(gogoproto.nullable) = false];
-  MinterState minter_state = 3  [(gogoproto.nullable) = false];
+  MinterState minter_state = 2  [(gogoproto.nullable) = false];
 }

@@ -59,9 +59,9 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
-	minter := k.GetMinter(ctx)
 	minterState := k.GetMinterState(ctx)
 	params := k.GetParams(ctx)
+	minter := params.Minter
 
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
 
@@ -109,9 +109,9 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 }
 
 func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
-	minter := k.GetMinter(ctx)
 	minterState := k.GetMinterState(ctx)
 	params := k.GetParams(ctx)
+	minter := params.Minter
 
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
 

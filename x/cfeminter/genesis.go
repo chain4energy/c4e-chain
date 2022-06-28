@@ -11,7 +11,6 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, ak types.AccountKeeper, genState types.GenesisState) {
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
-	k.SetMinter(ctx, genState.Minter)
 	k.SetMinterState(ctx, genState.MinterState)
 	ak.GetModuleAccount(ctx, types.ModuleName)
 	ak.GetModuleAccount(ctx, k.GetCollectorName())
@@ -21,7 +20,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, ak types.AccountKeeper, genSt
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
-	genesis.Minter = k.GetMinter(ctx)
 	genesis.MinterState = k.GetMinterState(ctx)
 	return genesis
 }

@@ -17,16 +17,24 @@ func TestGenesisState_Validate(t *testing.T) {
 		errorMassage string
 	}{
 		{
-			desc:         "default is not valid",
-			genState:     types.DefaultGenesis(),
+			desc: "no periods",
+			genState: &types.GenesisState{
+				Params:      types.NewParams("myc4e", types.Minter{}),
+				MinterState: types.MinterState{2, sdk.NewInt(123)},
+				// this line is used by starport scaffolding # types/genesis/validField
+			},
 			valid:        false,
 			errorMassage: "no minter periods defined",
 		},
 		{
+			desc:     "default is valid",
+			genState: types.DefaultGenesis(),
+			valid:    true,
+		},
+		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-				Params:      types.NewParams("myc4e"),
-				Minter:      createOkMinter(),
+				Params:      types.NewParams("myc4e", createOkMinter()),
 				MinterState: types.MinterState{2, sdk.NewInt(123)},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
@@ -35,8 +43,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid genesis state - wrong minter",
 			genState: &types.GenesisState{
-				Params:      types.NewParams("myc4e"),
-				Minter:      createNotOkMinter(),
+				Params:      types.NewParams("myc4e", createNotOkMinter()),
 				MinterState: types.MinterState{2, sdk.NewInt(123)},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
@@ -46,8 +53,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid genesis state - wrong minter state",
 			genState: &types.GenesisState{
-				Params:      types.NewParams("myc4e"),
-				Minter:      createOkMinter(),
+				Params:      types.NewParams("myc4e", createOkMinter()),
 				MinterState: types.MinterState{2, sdk.NewInt(-123)},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
@@ -57,8 +63,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid genesis state - wrong minter state ordering id",
 			genState: &types.GenesisState{
-				Params:      types.NewParams("myc4e"),
-				Minter:      createOkMinter(),
+				Params:      types.NewParams("myc4e", createOkMinter()),
 				MinterState: types.MinterState{6, sdk.NewInt(123)},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
