@@ -10,10 +10,9 @@ import (
 
 var (
 	KeyMintDenom            = []byte("MintDenom")
-	KeyMinter            = []byte("Minter")
+	KeyMinter               = []byte("Minter")
 	DefaultMintDenom string = "uc4e"
-	DefaultMinter Minter = Minter{Start: time.Now(), Periods: []*MintingPeriod{{OrderingId: 1, Type: MintingPeriod_NO_MINTING}}}
-
+	DefaultMinter    Minter = Minter{Start: time.Now(), Periods: []*MintingPeriod{{OrderingId: 1, Type: MintingPeriod_NO_MINTING}}}
 ) //
 
 var _ paramtypes.ParamSet = (*Params)(nil)

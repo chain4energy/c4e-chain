@@ -365,7 +365,7 @@ func TestValidateMinterState(t *testing.T) {
 
 func TestTimeLinearMinterInfation(t *testing.T) {
 	startTime := time.Now()
-	duration := time.Hour*24*365
+	duration := time.Hour * 24 * 365
 	endTime := startTime.Add(duration)
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
 
@@ -374,7 +374,7 @@ func TestTimeLinearMinterInfation(t *testing.T) {
 	expected, _ := sdk.NewDecFromStr("0.1")
 	require.EqualValues(t, expected, inflation)
 
-	duration = time.Hour*24*73
+	duration = time.Hour * 24 * 73
 	endTime = startTime.Add(duration)
 	period1.PeriodEnd = &endTime
 
@@ -382,7 +382,7 @@ func TestTimeLinearMinterInfation(t *testing.T) {
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	duration = time.Hour*24*365*5
+	duration = time.Hour * 24 * 365 * 5
 	endTime = startTime.Add(duration)
 	period1.PeriodEnd = &endTime
 
@@ -393,7 +393,7 @@ func TestTimeLinearMinterInfation(t *testing.T) {
 
 func TestNoMintingInfation(t *testing.T) {
 	startTime := time.Now()
-	duration := time.Hour*24*365
+	duration := time.Hour * 24 * 365
 	endTime := startTime.Add(duration)
 
 	period1 := types.MintingPeriod{OrderingId: 3, Type: types.MintingPeriod_NO_MINTING}
@@ -402,14 +402,14 @@ func TestNoMintingInfation(t *testing.T) {
 	expected := sdk.ZeroDec()
 	require.EqualValues(t, expected, inflation)
 
-	duration = time.Hour*24*73
+	duration = time.Hour * 24 * 73
 	endTime = startTime.Add(duration)
 	period1.PeriodEnd = &endTime
 
 	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime)
 	require.EqualValues(t, expected, inflation)
 
-	duration = time.Hour*24*365*5
+	duration = time.Hour * 24 * 365 * 5
 	endTime = startTime.Add(duration)
 	period1.PeriodEnd = &endTime
 

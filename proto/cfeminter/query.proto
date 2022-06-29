@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cfeminter/params.proto";
+import "cfeminter/minter.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
@@ -18,6 +19,11 @@ service Query {
   // Queries a list of Inflation items.
 	rpc Inflation(QueryInflationRequest) returns (QueryInflationResponse) {
 		option (google.api.http).get = "/c4e/cfeminter/inflation";
+	}
+
+// Queries a list of State items.
+	rpc State(QueryStateRequest) returns (QueryStateResponse) {
+		option (google.api.http).get = "/c4e/cfeminter/state";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -38,6 +44,13 @@ message QueryInflationRequest {
 message QueryInflationResponse {
   string inflation = 1
       [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+}
+
+message QueryStateRequest {
+}
+
+message QueryStateResponse {
+  MinterState minter_state = 1 [(gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # 3

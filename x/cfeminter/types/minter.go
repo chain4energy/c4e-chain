@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-const year = time.Hour*24*365
+const year = time.Hour * 24 * 365
 
 func (m *MintingPeriod) AmountToMint(state *MinterState, periodStart time.Time, blockTime time.Time) sdk.Int {
 	switch m.Type {
@@ -128,7 +128,6 @@ func (m MinterState) Validate() error {
 	return nil
 }
 
-
 func (m *MintingPeriod) CalculateInfation(totalSupply sdk.Int, periodStart time.Time) sdk.Dec {
 	switch m.Type {
 	case MintingPeriod_NO_MINTING:
@@ -144,7 +143,7 @@ func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart ti
 	if totalSupply.LTE(sdk.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
-	
+
 	amount := m.Amount
 
 	periodDuration := periodEnd.Sub(periodStart)
@@ -158,4 +157,3 @@ func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart ti
 	return mintedYearly.QuoInt(totalSupply)
 
 }
-

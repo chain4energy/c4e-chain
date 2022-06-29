@@ -1,14 +1,13 @@
 package keeper_test
 
 import (
-	"testing"
-	"time"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	testminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	testminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
-
+	"testing"
+	"time"
 )
 
 func TestParamsQuery(t *testing.T) {

@@ -1,13 +1,12 @@
 package keeper_test
 
 import (
-	"testing"
-	"time"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	testminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/stretchr/testify/require"
-	testminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
-
+	"testing"
+	"time"
 )
 
 func TestGetParams(t *testing.T) {
@@ -33,4 +32,3 @@ func TestGetParams2(t *testing.T) {
 	testminter.CompareMinters(t, params.Minter, getParams.Minter)
 
 }
-

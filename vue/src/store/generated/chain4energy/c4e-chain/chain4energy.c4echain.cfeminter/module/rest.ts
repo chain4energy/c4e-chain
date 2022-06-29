@@ -20,6 +20,12 @@ export interface CfeminterMinter {
   periods?: CfeminterMintingPeriod[];
 }
 
+export interface CfeminterMinterState {
+  /** @format int32 */
+  current_ordering_id?: number;
+  amount_minted?: string;
+}
+
 export interface CfeminterMintingPeriod {
   /** @format int32 */
   ordering_id?: number;
@@ -48,6 +54,10 @@ export interface CfeminterQueryInflationResponse {
 export interface CfeminterQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: CfeminterParams;
+}
+
+export interface CfeminterQueryStateResponse {
+  minter_state?: CfeminterMinterState;
 }
 
 export interface CfeminterTimeLinearMinter {
@@ -288,6 +298,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<CfeminterQueryParamsResponse, RpcStatus>({
       path: `/c4e/cfeminter/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryState
+   * @summary Queries a list of State items.
+   * @request GET:/c4e/cfeminter/state
+   */
+  queryState = (params: RequestParams = {}) =>
+    this.request<CfeminterQueryStateResponse, RpcStatus>({
+      path: `/c4e/cfeminter/state`,
       method: "GET",
       format: "json",
       ...params,

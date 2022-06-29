@@ -21,8 +21,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
-
 // func createAccountVestings(addr string, vested uint64, withdrawn uint64) (types.AccountVestings, *types.Vesting) {
 // 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 // 	accountVestings.Address = addr
@@ -33,8 +31,6 @@ import (
 // 	accountVestings.Vestings[0].LastModificationWithdrawn = sdk.NewIntFromUint64(withdrawn)
 // 	return accountVestings, accountVestings.Vestings[0]
 // }
-
-
 
 func verifyAccountBalance(t *testing.T, app *app.App, ctx sdk.Context, accAddr sdk.AccAddress, expectedAmount sdk.Int) {
 	balance := app.BankKeeper.GetBalance(ctx, accAddr, commontestutils.Denom)

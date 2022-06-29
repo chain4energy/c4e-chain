@@ -103,6 +103,44 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
+  /c4e/cfeminter/state:
+    get:
+      summary: Queries a list of State items.
+      operationId: Chain4EnergyC4EchainCfeminterState
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              minter_state:
+                type: object
+                properties:
+                  current_ordering_id:
+                    type: integer
+                    format: int32
+                  amount_minted:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /chain4energy/c4echain/cferoutingdistributor/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -30721,6 +30759,14 @@ definitions:
               properties:
                 amount:
                   type: string
+  chain4energy.c4echain.cfeminter.MinterState:
+    type: object
+    properties:
+      current_ordering_id:
+        type: integer
+        format: int32
+      amount_minted:
+        type: string
   chain4energy.c4echain.cfeminter.MintingPeriod:
     type: object
     properties:
@@ -30824,6 +30870,17 @@ definitions:
                         amount:
                           type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cfeminter.QueryStateResponse:
+    type: object
+    properties:
+      minter_state:
+        type: object
+        properties:
+          current_ordering_id:
+            type: integer
+            format: int32
+          amount_minted:
+            type: string
   chain4energy.c4echain.cfeminter.TimeLinearMinter:
     type: object
     properties:

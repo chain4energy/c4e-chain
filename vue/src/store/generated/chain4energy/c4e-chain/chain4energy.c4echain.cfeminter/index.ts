@@ -48,6 +48,7 @@ const getDefaultState = () => {
 	return {
 				Params: {},
 				Inflation: {},
+				State: {},
 				
 				_Structure: {
 						HalvingMinter: getStructure(HalvingMinter.fromPartial({})),
@@ -95,6 +96,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Inflation[JSON.stringify(params)] ?? {}
+		},
+				getState: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.State[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -169,6 +176,28 @@ export default {
 				return getters['getInflation']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryInflation API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryState({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryState()).data
+				
+					
+				commit('QUERY', { query: 'State', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryState', payload: { options: { all }, params: {...key},query }})
+				return getters['getState']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryState API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
