@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	testapp "github.com/chain4energy/c4e-chain/app"
-	"github.com/chain4energy/c4e-chain/x/cfeminter"
+	// "github.com/chain4energy/c4e-chain/x/cfeminter"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp"
@@ -77,11 +77,11 @@ func TestGenesis(t *testing.T) {
 	testapp.AddMaccPerms("fee_collector", perms)
 	testapp.AddMaccPerms("payment_collector", perms)
 
-	genesisState := types.GenesisState{
-		Params:        types.DefaultParams(),
-		HalvingMinter: types.InitialHalvingMinter(),
-		// this line is used by starport scaffolding # genesis/test/state
-	}
+	// genesisState := types.GenesisState{
+	// 	Params:        types.DefaultParams(),
+	// 	HalvingMinter: types.InitialHalvingMinter(),
+	// 	// this line is used by starport scaffolding # genesis/test/state
+	// }
 	//
 	//k, ctx := keepertest.EnergyminterKeeper(t)
 	//energyminter.InitGenesis(ctx, *k, genesisState)
@@ -94,9 +94,9 @@ func TestGenesis(t *testing.T) {
 	// this line is used by starport scaffolding # genesis/test/assert
 
 	app := testapp.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	// ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, genesisState, app.AccountKeeper)
+	// cfeminter.InitGenesis(ctx, app.CfeminterKeeper, genesisState, app.AccountKeeper)
 
 	//ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 

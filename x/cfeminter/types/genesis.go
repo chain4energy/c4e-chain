@@ -1,8 +1,12 @@
 package types
 
 import (
-// this line is used by starport scaffolding # genesis/types/import
+	fmt "fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+// this line is used by starport scaffolding # genesis/types/import
 
 // DefaultIndex is the default capability global index
 const DefaultIndex uint64 = 1
@@ -11,7 +15,8 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		// this line is used by starport scaffolding # genesis/types/default
-		Params: DefaultParams(),
+		Params:      DefaultParams(),
+		MinterState: MinterState{1, sdk.ZeroInt()},
 	}
 }
 
@@ -19,6 +24,25 @@ func DefaultGenesis() *GenesisState {
 // failure.
 func (gs GenesisState) Validate() error {
 	// this line is used by starport scaffolding # genesis/types/validate
+	err := gs.Params.Validate()
+	if err != nil {
+		return err
+	}
+	// minter := gs.Minter
+	// err = minter.Validate()
+	// if err != nil {
+	// 	return err
+	// }
 
-	return gs.Params.Validate()
+	minterState := gs.MinterState
+	err = minterState.Validate()
+	if err != nil {
+		return err
+	}
+
+	if !gs.Params.Minter.ContainsId(minterState.CurrentOrderingId) {
+		return fmt.Errorf("minter state Current Ordering Id not found in minter periods")
+	}
+	return nil
+
 }

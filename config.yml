@@ -85,10 +85,23 @@ genesis:
         bond_denom: "uc4e"
         unbonding_time: "100s"
     cfeminter:
-      halving_minter:
-        new_coins_mint: 30
-        blocks_per_year: 4000
+      params:
         mint_denom: "uc4e"
+        minter:
+          start: "2022-03-30T00:00:00.00000000Z"
+          periods:
+            - ordering_id: 1
+              period_end: "2024-03-30T00:00:00.00000000Z"
+              type: "TIME_LINEAR_MINTER"
+              time_linear_minter:
+                amount: "40000000000000"
+            - ordering_id: 2
+              # period_end: "2024-03-30T00:00:00.00000000Z"
+              type: "NO_MINTING"
+
+      minter_state:
+        current_ordering_id: 1
+        amount_minted: "0"
     cferoutingdistributor:
       routing_distributor:
         module_accounts:

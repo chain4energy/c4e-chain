@@ -103,15 +103,15 @@ import (
 	// monitoringptypes "github.com/tendermint/spn/x/monitoringp/types"
 
 	"github.com/chain4energy/c4e-chain/docs"
-	cfesignaturemodule "github.com/chain4energy/c4e-chain/x/cfesignature"
-	cfesignaturemodulekeeper "github.com/chain4energy/c4e-chain/x/cfesignature/keeper"
-	cfesignaturemoduletypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	cfemintermodule "github.com/chain4energy/c4e-chain/x/cfeminter"
 	cfemintermodulekeeper "github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cferoutingdistributormodule "github.com/chain4energy/c4e-chain/x/cferoutingdistributor"
 	cferoutingdistributormodulekeeper "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/keeper"
 	cferoutingdistributormoduletypes "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
+	cfesignaturemodule "github.com/chain4energy/c4e-chain/x/cfesignature"
+	cfesignaturemodulekeeper "github.com/chain4energy/c4e-chain/x/cfesignature/keeper"
+	cfesignaturemoduletypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	cfevestingmodule "github.com/chain4energy/c4e-chain/x/cfevesting"
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -186,15 +186,15 @@ var (
 		govtypes.ModuleName:              {authtypes.Burner},
 		ibctransfertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		cfevestingmoduletypes.ModuleName: nil,
-		cfemintermoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		cfemintermoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 		cfemintermoduletypes.InflationCollectorName: nil,
-		"validators_rewards_collector":         nil,
-		"payment_collector":                    {authtypes.Minter},
-		"liquididty_rewards_collector":         nil,
-		"governance_locking_rewards_collector": nil,
-		"users_incentive_collector":            nil,
-		"community_pool_rewards_collector":     nil,
+		"validators_rewards_collector":              nil,
+		"payment_collector":                         {authtypes.Minter},
+		"liquididty_rewards_collector":              nil,
+		"governance_locking_rewards_collector":      nil,
+		"users_incentive_collector":                 nil,
+		"community_pool_rewards_collector":          nil,
 	}
 )
 
@@ -256,8 +256,8 @@ type App struct {
 
 	CfevestingKeeper cfevestingmodulekeeper.Keeper
 
-	CfesignatureKeeper cfesignaturemodulekeeper.Keeper
-	CfeminterKeeper cfemintermodulekeeper.Keeper
+	CfesignatureKeeper          cfesignaturemodulekeeper.Keeper
+	CfeminterKeeper             cfemintermodulekeeper.Keeper
 	CferoutingdistributorKeeper cferoutingdistributormodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -451,6 +451,7 @@ func New(
 		app.GetSubspace(cfemintermoduletypes.ModuleName),
 
 		app.BankKeeper,
+		authtypes.FeeCollectorName, // TODO
 	)
 	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper)
 	app.CferoutingdistributorKeeper = *cferoutingdistributormodulekeeper.NewKeeper(

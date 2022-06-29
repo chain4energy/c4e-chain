@@ -4,10 +4,9 @@ import (
 	"testing"
 
 	testapp "github.com/chain4energy/c4e-chain/app"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 )
 
 func TestAbci(t *testing.T) {
@@ -21,11 +20,11 @@ func TestAbci(t *testing.T) {
 	// app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx) TODO
 
 	//Setup minter params
-	minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
-	minterNew.MintDenom = "uC4E"
-	minterNew.NewCoinsMint = 20596877
-	minterNew.BlocksPerYear = 4855105
-	app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
+	// minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
+	// minterNew.MintDenom = "uC4E"
+	// minterNew.NewCoinsMint = 20596877
+	// minterNew.BlocksPerYear = 4855105
+	// app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
 
 	for i := 1; i < 100; i++ {
 		ctx = ctx.WithBlockHeight(int64(i))

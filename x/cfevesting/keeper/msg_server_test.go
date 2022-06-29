@@ -12,33 +12,14 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
-
-const helperModuleAccount = "helperTestAcc"
-const denom = "uc4e"
-
-func addHelperModuleAccountPerms() {
-	perms := []string{authtypes.Minter}
-	app.AddMaccPerms(helperModuleAccount, perms)
-}
-
-func addCoinsToAccount(vested uint64, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
-	denom := "uc4e"
-	mintedCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested))
-	mintedCoins := sdk.NewCoins(mintedCoin)
-	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
-	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, mintedCoins)
-	return denom
-}
 
 // func createAccountVestings(addr string, vested uint64, withdrawn uint64) (types.AccountVestings, *types.Vesting) {
 // 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
@@ -51,28 +32,13 @@ func addCoinsToAccount(vested uint64, ctx sdk.Context, app *app.App, toAddr sdk.
 // 	return accountVestings, accountVestings.Vestings[0]
 // }
 
-func addCoinsToModuleByName(vested uint64, modulaName string, ctx sdk.Context, app *app.App) string {
-	denom := "uc4e"
-	mintedCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(vested))
-	mintedCoins := sdk.NewCoins(mintedCoin)
-	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
-	app.BankKeeper.SendCoinsFromModuleToModule(ctx, helperModuleAccount, modulaName, mintedCoins)
-	return denom
-}
-
 func verifyAccountBalance(t *testing.T, app *app.App, ctx sdk.Context, accAddr sdk.AccAddress, expectedAmount sdk.Int) {
-	balance := app.BankKeeper.GetBalance(ctx, accAddr, denom)
+	balance := app.BankKeeper.GetBalance(ctx, accAddr, commontestutils.Denom)
 	require.EqualValues(t, expectedAmount, balance.Amount)
 }
 
-func verifyModuleAccountByName(accName string, ctx sdk.Context, app *app.App, t *testing.T, expected sdk.Int) {
-	moduleAccAddr := app.AccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
-	moduleBalance := app.BankKeeper.GetBalance(ctx, moduleAccAddr, denom)
-	require.EqualValues(t, expected, moduleBalance.Amount)
-}
-
 func verifyModuleAccount(t *testing.T, ctx sdk.Context, app *app.App, expected sdk.Int) {
-	verifyModuleAccountByName(types.ModuleName, ctx, app, t, expected)
+	commontestutils.VerifyModuleAccountBalanceByName(types.ModuleName, ctx, app, t, expected)
 }
 
 func createValidator(t *testing.T, ctx sdk.Context, sk stakingkeeper.Keeper, addr sdk.ValAddress, pk cryptotypes.PubKey, coin sdk.Coin, commisions stakingtypes.CommissionRates) {
@@ -110,9 +76,9 @@ func createValidator(t *testing.T, ctx sdk.Context, sk stakingkeeper.Keeper, add
 func setupValidators(t *testing.T, ctx sdk.Context, app *app.App, validators []sdk.ValAddress, delegatePerValidator uint64) {
 	PKs := commontestutils.CreateTestPubKeys(len(validators))
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
-	delCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(delegatePerValidator))
+	delCoin := sdk.NewCoin(commontestutils.Denom, sdk.NewIntFromUint64(delegatePerValidator))
 	for i, valAddr := range validators {
-		addCoinsToAccount(delegatePerValidator, ctx, app, valAddr.Bytes())
+		commontestutils.AddCoinsToAccount(delegatePerValidator, ctx, app, valAddr.Bytes())
 		createValidator(t, ctx, app.StakingKeeper, valAddr, PKs[i], delCoin, commission)
 	}
 	require.EqualValues(t, len(validators), len(app.StakingKeeper.GetAllValidators(ctx)))
@@ -120,7 +86,7 @@ func setupValidators(t *testing.T, ctx sdk.Context, app *app.App, validators []s
 
 func setupStakingBondDenom(ctx sdk.Context, app *app.App) {
 	stakeParams := app.StakingKeeper.GetParams(ctx)
-	stakeParams.BondDenom = denom
+	stakeParams.BondDenom = commontestutils.Denom
 	app.StakingKeeper.SetParams(ctx, stakeParams)
 }
 
@@ -214,7 +180,7 @@ func setupAccountsVestingsWithModification(ctx sdk.Context, app *app.App, modify
 }
 
 func allocateRewardsToValidator(ctx sdk.Context, app *app.App, validatorRewards uint64, valAddr sdk.ValAddress) {
-	valCons := sdk.NewDecCoin(denom, sdk.NewIntFromUint64(validatorRewards))
+	valCons := sdk.NewDecCoin(commontestutils.Denom, sdk.NewIntFromUint64(validatorRewards))
 	val := app.StakingKeeper.Validator(ctx, valAddr)
 	app.DistrKeeper.AllocateTokensToValidator(ctx, val, sdk.NewDecCoins(valCons))
 }
@@ -384,21 +350,8 @@ func compareStoredAcountVestings(t *testing.T, ctx sdk.Context, app *app.App, ad
 	testutils.AssertAccountVestings(t, accVestings, storedAccVestings)
 }
 
-func setupApp(initBlock int64) (*app.App, sdk.Context) {
-	return setupAppWithTime(initBlock, testutils.TestEnvTime)
-}
-
-func setupAppWithTime(initBlock int64, initTime time.Time) (*app.App, sdk.Context) {
-	app := app.Setup(false)
-	header := tmproto.Header{}
-	header.Height = initBlock
-	header.Time = initTime
-	ctx := app.BaseApp.NewContext(false, header)
-	return app, ctx
-}
-
 func addCoinsToCfevestingModule(vested uint64, ctx sdk.Context, app *app.App) string {
-	return addCoinsToModuleByName(vested, types.ModuleName, ctx, app)
+	return commontestutils.AddCoinsToModuleByName(vested, types.ModuleName, ctx, app)
 }
 
 // func withdrawDelegatorReward(t *testing.T, ctx sdk.Context, app *app.App, delegatorAddress sdk.AccAddress, delegableAddress sdk.AccAddress,

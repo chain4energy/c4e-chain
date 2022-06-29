@@ -50,7 +50,7 @@ func TestVestingWithDelegableAddress(t *testing.T) {
 
 func TestVestingSomeToWithdraw(t *testing.T) {
 	height := int64(10100)
-	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
@@ -70,7 +70,7 @@ func TestVestingSomeToWithdraw(t *testing.T) {
 
 func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	height := int64(10100)
-	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
@@ -91,7 +91,7 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 	height := int64(10100)
-	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
@@ -116,7 +116,7 @@ func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 
 func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	height := int64(10100)
-	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
@@ -143,7 +143,7 @@ func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 
 func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
 	height := int64(10100)
-	time := testutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)

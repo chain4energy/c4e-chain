@@ -1,7 +1,8 @@
 package types
 
 // MinterKey is the key to use for the keeper store.
-var HalvingMinterKey = []byte{0x01}
+
+var MinterStateKey = []byte{0x02}
 
 const (
 	// ModuleName defines the module name

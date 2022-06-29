@@ -14,9 +14,9 @@ import (
 )
 
 func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := setupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
+	app, ctx := commontestutils.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -30,9 +30,9 @@ func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableManyVestingsOnLockStart(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := setupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
+	app, ctx := commontestutils.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addCoinsToCfevestingModule(3*vested, ctx, app)
@@ -45,10 +45,10 @@ func TestWithdrawAllAvailableManyVestingsOnLockStart(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableDuringLock(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = 0
-	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+	app, ctx := commontestutils.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -64,10 +64,10 @@ func TestWithdrawAllAvailableDuringLock(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = 0
-	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+	app, ctx := commontestutils.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addCoinsToCfevestingModule(3*vested, ctx, app)
@@ -84,12 +84,12 @@ func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = vested
 	const withdrawn = 300
 
-	app, ctx := setupAppWithTime(110000, testutils.CreateTimeFromNumOfHours(110000))
+	app, ctx := commontestutils.SetupAppWithTime(110000, testutils.CreateTimeFromNumOfHours(110000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -106,12 +106,12 @@ func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 }
 
 func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = vested
 	const withdrawn = 300
 
-	app, ctx := setupAppWithTime(110000, testutils.CreateTimeFromNumOfHours(110000))
+	app, ctx := commontestutils.SetupAppWithTime(110000, testutils.CreateTimeFromNumOfHours(110000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addCoinsToCfevestingModule(3*vested, ctx, app)
@@ -128,13 +128,13 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 }
 
 func TestVestAndWithdrawAllAvailable(t *testing.T) {
-	addHelperModuleAccountPerms()
+	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := setupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
+	app, ctx := commontestutils.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	accAddr := acountsAddresses[0]
-	addCoinsToAccount(vested, ctx, app, accAddr)
+	commontestutils.AddCoinsToAccount(vested, ctx, app, accAddr)
 
 	modifyVestingType := func(vt *types.VestingType) {
 		vt.LockupPeriod = testutils.CreateDurationFromNumOfHours(9000)
@@ -405,7 +405,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 
 func TestWithdrawAllAvailableBadAddress(t *testing.T) {
 
-	app, ctx := setupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+	app, ctx := commontestutils.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 

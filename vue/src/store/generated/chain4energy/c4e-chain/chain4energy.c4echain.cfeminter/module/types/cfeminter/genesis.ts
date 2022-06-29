@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Params } from "../cfeminter/params";
-import { HalvingMinter } from "../cfeminter/mintparams";
+import { MinterState } from "../cfeminter/minter";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
@@ -9,7 +9,7 @@ export const protobufPackage = "chain4energy.c4echain.cfeminter";
 export interface GenesisState {
   /** this line is used by starport scaffolding # genesis/proto/state */
   params: Params | undefined;
-  halving_minter: HalvingMinter | undefined;
+  minter_state: MinterState | undefined;
 }
 
 const baseGenesisState: object = {};
@@ -19,9 +19,9 @@ export const GenesisState = {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
-    if (message.halving_minter !== undefined) {
-      HalvingMinter.encode(
-        message.halving_minter,
+    if (message.minter_state !== undefined) {
+      MinterState.encode(
+        message.minter_state,
         writer.uint32(18).fork()
       ).ldelim();
     }
@@ -39,10 +39,7 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
-          message.halving_minter = HalvingMinter.decode(
-            reader,
-            reader.uint32()
-          );
+          message.minter_state = MinterState.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -59,10 +56,10 @@ export const GenesisState = {
     } else {
       message.params = undefined;
     }
-    if (object.halving_minter !== undefined && object.halving_minter !== null) {
-      message.halving_minter = HalvingMinter.fromJSON(object.halving_minter);
+    if (object.minter_state !== undefined && object.minter_state !== null) {
+      message.minter_state = MinterState.fromJSON(object.minter_state);
     } else {
-      message.halving_minter = undefined;
+      message.minter_state = undefined;
     }
     return message;
   },
@@ -71,9 +68,9 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    message.halving_minter !== undefined &&
-      (obj.halving_minter = message.halving_minter
-        ? HalvingMinter.toJSON(message.halving_minter)
+    message.minter_state !== undefined &&
+      (obj.minter_state = message.minter_state
+        ? MinterState.toJSON(message.minter_state)
         : undefined);
     return obj;
   },
@@ -85,10 +82,10 @@ export const GenesisState = {
     } else {
       message.params = undefined;
     }
-    if (object.halving_minter !== undefined && object.halving_minter !== null) {
-      message.halving_minter = HalvingMinter.fromPartial(object.halving_minter);
+    if (object.minter_state !== undefined && object.minter_state !== null) {
+      message.minter_state = MinterState.fromPartial(object.minter_state);
     } else {
-      message.halving_minter = undefined;
+      message.minter_state = undefined;
     }
     return message;
   },

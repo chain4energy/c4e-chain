@@ -15,7 +15,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramstore.SetParamSet(ctx, &params)
 }
 
-// Inflation returns the Inflation param
+// Denom returns the denom param
 func (k Keeper) Denom(ctx sdk.Context) (res string) {
 	k.paramstore.Get(ctx, types.KeyDenom, &res)
 	return

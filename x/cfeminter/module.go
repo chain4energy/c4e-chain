@@ -1,6 +1,7 @@
 package cfeminter
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -79,6 +80,7 @@ func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Rout
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	// this line is used by starport scaffolding # 2
+	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
 
 // GetTxCmd returns the capability module's root tx command.
@@ -152,7 +154,7 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.Ra
 	// Initialize global index to index in genesis state
 	cdc.MustUnmarshalJSON(gs, &genState)
 
-	InitGenesis(ctx, am.keeper, genState, am.accountKeeper)
+	InitGenesis(ctx, am.keeper, am.accountKeeper, genState)
 
 	return []abci.ValidatorUpdate{}
 }
@@ -171,7 +173,7 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 	am.keeper.Logger(ctx).Info("BeginBlock - cfeminter")
 	BeginBlocker(ctx, am.keeper)
 
-	am.keeper.MintSomeCoinEndSendToTest(ctx)
+	// am.keeper.MintSomeCoinEndSendToTest(ctx)
 }
 
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It

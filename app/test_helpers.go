@@ -62,7 +62,6 @@ func Setup(isCheckTx bool) *App {
 			},
 		)
 	}
-
 	return app.(SimApp).GetApp()
 }
 

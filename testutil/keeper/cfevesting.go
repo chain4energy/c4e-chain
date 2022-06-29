@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -72,19 +72,19 @@ func CfevestingKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 func CfevestingKeeperWithBlockHeight(t testing.TB, blockHeight int64) (*keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, testutils.TestEnvTime, db, stateStore)
+	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, commontestutils.TestEnvTime, db, stateStore)
 }
 
 func CfevestingKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, testutils.TestEnvTime, db, stateStore)
+	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, commontestutils.TestEnvTime, db, stateStore)
 }
 
 func CfevestingKeeperWithStore(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, testutils.TestEnvTime, db, stateStore)
+	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, commontestutils.TestEnvTime, db, stateStore)
 }
 
 func AccountKeeperWithBlockHeight(t testing.TB, ctx sdk.Context, stateStore storetypes.CommitMultiStore, db *tmdb.MemDB) (*authkeeper.AccountKeeper, sdk.Context) {
