@@ -37,8 +37,8 @@ message TimeLinearMinter {
 message PeriodicReductionMinter {
   google.protobuf.Duration mint_period = 1 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
   string mint_amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  int32 redection_period_length = 3;
-  string reduction_level = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  int32 reduction_period_length = 3;
+  string reduction_factor = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
 }
 
 message MinterState {

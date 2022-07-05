@@ -172,24 +172,24 @@ func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart t
 	}
 	passedTime := int64(now.Sub(periodStart))
 
-	epoch := int64(m.MintPeriod) * int64(m.RedectionPeriodLength)
+	epoch := int64(m.MintPeriod) * int64(m.ReductionPeriodLength)
 
 	numOfPassedEpochs := passedTime/epoch
 
-	initialEpochAmount := m.MintAmount.MulRaw(int64(m.RedectionPeriodLength))
+	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
 
 	amountToMint := sdk.ZeroDec()
 	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
 	for i := int64(0); i < numOfPassedEpochs; i++ {
 		if i > 0 {
-			epochAmount = epochAmount.Mul(m.ReductionLevel)
+			epochAmount = epochAmount.Mul(m.ReductionFactor)
 		}
 		amountToMint = amountToMint.Add(epochAmount)
 	}
 
 	currentEpochStart := periodStart.Add(time.Duration(numOfPassedEpochs * epoch))
 	currentEpochPassedTime:= now.Sub(currentEpochStart)
-	currentEpochAmount := epochAmount.Mul(m.ReductionLevel)
+	currentEpochAmount := epochAmount.Mul(m.ReductionFactor)
 
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
 	amountToMint = amountToMint.Add(currentEpochAmountToMint)
@@ -204,7 +204,7 @@ func (m PeriodicReductionMinter) validate(id int32) error {
 	if m.MintPeriod <= 0 {
 		return fmt.Errorf("period id: %d - PeriodicReductionMinter MintPeriod must be bigger than 0", id)
 	}
-	if m.RedectionPeriodLength <= 0 {
+	if m.ReductionPeriodLength <= 0 {
 		return fmt.Errorf("period id: %d - PeriodicReductionMinter ReductionPeriodLength must be bigger than 0", id)
 	}
 	return nil
@@ -216,17 +216,17 @@ func (m *PeriodicReductionMinter) calculateInfation(totalSupply sdk.Int, periodS
 	}
 
 	passedTime := int64(blockTime.Sub(periodStart))
-	epoch := int64(m.MintPeriod) * int64(m.RedectionPeriodLength)
+	epoch := int64(m.MintPeriod) * int64(m.ReductionPeriodLength)
 	numOfPassedEpochs := passedTime/epoch
-	initialEpochAmount := m.MintAmount.MulRaw(int64(m.RedectionPeriodLength))
+	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
 
 	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
 	for i := int64(0); i < numOfPassedEpochs; i++ {
 		if i > 0 {
-			epochAmount = epochAmount.Mul(m.ReductionLevel)
+			epochAmount = epochAmount.Mul(m.ReductionFactor)
 		}
 	}
-	currentEpochAmount := epochAmount.Mul(m.ReductionLevel)
+	currentEpochAmount := epochAmount.Mul(m.ReductionFactor)
 	mintedYearly := currentEpochAmount.MulInt64(int64(year)).QuoInt64(epoch)
 	// fmt.Println("amount: " + amount.String())
 	// fmt.Println("mintedYearly: " + mintedYearly.String())
