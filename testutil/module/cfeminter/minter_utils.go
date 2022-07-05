@@ -16,7 +16,7 @@ func CompareMinters(t *testing.T, m1 types.Minter, m2 types.Minter) {
 		} else {
 			require.True(t, p1.PeriodEnd.Equal(*p2.PeriodEnd))
 		}
-		require.EqualValues(t, p1.OrderingId, p2.OrderingId)
+		require.EqualValues(t, p1.Position, p2.Position)
 		require.EqualValues(t, p1.TimeLinearMinter, p2.TimeLinearMinter)
 		require.EqualValues(t, p1.Type, p2.Type)
 	}

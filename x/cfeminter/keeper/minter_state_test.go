@@ -12,7 +12,7 @@ import (
 func TestGetMinterState(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 
-	minterState := types.MinterState{CurrentOrderingId: 7, AmountMinted: sdk.NewInt(123412)}
+	minterState := types.MinterState{CurrentPosition: 7, AmountMinted: sdk.NewInt(123412)}
 
 	k.SetMinterState(ctx, minterState)
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))

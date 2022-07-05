@@ -66,7 +66,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
 
 	if currentPeriod == nil {
-		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentOrderingId)
+		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentPosition)
 
 	}
 
@@ -97,7 +97,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		k.SetMinterState(ctx, minterState)
 		return amount, nil
 	} else {
-		minterState.CurrentOrderingId++
+		minterState.CurrentPosition++
 		minterState.AmountMinted = sdk.ZeroInt()
 		k.SetMinterState(ctx, minterState)
 		minted, err := k.Mint(ctx)
@@ -116,7 +116,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
 
 	if currentPeriod == nil {
-		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentOrderingId)
+		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentPosition)
 
 	}
 
@@ -133,17 +133,17 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
 }
 
 func getCurrentAndPreviousPeriod(minter types.Minter, state *types.MinterState) (currentPeriod *types.MintingPeriod, previousPeriod *types.MintingPeriod) {
-	currentId := state.CurrentOrderingId
+	currentId := state.CurrentPosition
 	for _, period := range minter.Periods {
-		if period.OrderingId == currentId {
+		if period.Position == currentId {
 			currentPeriod = period
 		}
 		if previousPeriod == nil {
-			if period.OrderingId < currentId {
+			if period.Position < currentId {
 				previousPeriod = period
 			}
 		} else {
-			if period.OrderingId < currentId && period.OrderingId > previousPeriod.OrderingId {
+			if period.Position < currentId && period.Position > previousPeriod.Position {
 				previousPeriod = period
 			}
 		}

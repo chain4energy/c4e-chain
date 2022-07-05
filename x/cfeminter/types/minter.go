@@ -11,7 +11,7 @@ import (
 const year = time.Hour * 24 * 365
 
 func (m Minter) Validate() error {
-	sort.Sort(ByOrderingId(m.Periods))
+	sort.Sort(ByPosition(m.Periods))
 	id := int32(0)
 	lastPos := len(m.Periods) - 1
 	if len(m.Periods) < 1 {
@@ -19,15 +19,15 @@ func (m Minter) Validate() error {
 	}
 	for i, period := range m.Periods {
 		if id == 0 {
-			if period.OrderingId <= id {
-				return fmt.Errorf("first period ordering id must be bigger than 0, but is %d", period.OrderingId)
+			if period.Position <= id {
+				return fmt.Errorf("first period ordering id must be bigger than 0, but is %d", period.Position)
 			}
-			id = period.OrderingId
+			id = period.Position
 		} else {
-			if period.OrderingId != id+1 {
+			if period.Position != id+1 {
 				return fmt.Errorf("missing period with ordering id %d", id+1)
 			}
-			id = period.OrderingId
+			id = period.Position
 		}
 		if i == lastPos && period.PeriodEnd != nil {
 			return fmt.Errorf("last period cannot have PeriodEnd set, but is set to %s", period.PeriodEnd)
@@ -40,7 +40,7 @@ func (m Minter) Validate() error {
 			} else if i < lastPos {
 				prev := i - 1
 				if period.PeriodEnd.Before(*m.Periods[prev].PeriodEnd) || period.PeriodEnd.Equal(*m.Periods[prev].PeriodEnd) {
-					return fmt.Errorf("period with Id %d mast have PeriodEnd bigger than period with id %d", period.OrderingId, m.Periods[prev].OrderingId)
+					return fmt.Errorf("period with Id %d mast have PeriodEnd bigger than period with id %d", period.Position, m.Periods[prev].Position)
 				}
 			}
 		}
@@ -54,7 +54,7 @@ func (m Minter) Validate() error {
 
 func (m Minter) ContainsId(id int32) bool {
 	for _, period := range m.Periods {
-		if id == period.OrderingId {
+		if id == period.Position {
 			return true
 		}
 	}
@@ -78,29 +78,29 @@ func (m MintingPeriod) Validate() error {
 	switch m.Type {
 	case MintingPeriod_NO_MINTING:
 		if m.TimeLinearMinter != nil {
-			return fmt.Errorf("period id: %d - for NO_MINTING type (0) TimeLinearMinter must not be set", m.OrderingId)
+			return fmt.Errorf("period id: %d - for NO_MINTING type (0) TimeLinearMinter must not be set", m.Position)
 		}
 	case MintingPeriod_TIME_LINEAR_MINTER:
 		if m.TimeLinearMinter == nil {
-			return fmt.Errorf("period id: %d - for MintingPeriod_TIME_LINEAR_MINTER type (1) TimeLinearMinter must be set", m.OrderingId)
+			return fmt.Errorf("period id: %d - for MintingPeriod_TIME_LINEAR_MINTER type (1) TimeLinearMinter must be set", m.Position)
 		}
 		if m.PeriodEnd == nil {
-			return fmt.Errorf("period id: %d - for MintingPeriod_TIME_LINEAR_MINTER type (1) PeriodEnd must be set", m.OrderingId)
+			return fmt.Errorf("period id: %d - for MintingPeriod_TIME_LINEAR_MINTER type (1) PeriodEnd must be set", m.Position)
 		}
-		err := m.TimeLinearMinter.validate(m.OrderingId)
+		err := m.TimeLinearMinter.validate(m.Position)
 		if err != nil {
 			return err
 		}
 	case MintingPeriod_PERIODIC_REDUCTION_MINTER:
 		if m.PeriodicReductionMinter == nil {
-			return fmt.Errorf("period id: %d - for MintingPeriod_PERIODIC_REDUCTION_MINTER type (1) PeriodicReductionMinter must be set", m.OrderingId)
+			return fmt.Errorf("period id: %d - for MintingPeriod_PERIODIC_REDUCTION_MINTER type (1) PeriodicReductionMinter must be set", m.Position)
 		}
-		err := m.PeriodicReductionMinter.validate(m.OrderingId)
+		err := m.PeriodicReductionMinter.validate(m.Position)
 		if err != nil {
 			return err
 		}
 	default:
-		return fmt.Errorf("period id: %d - unknow minting period type: %d", m.OrderingId, m.Type)
+		return fmt.Errorf("period id: %d - unknow minting period type: %d", m.Position, m.Type)
 
 	}
 	return nil
@@ -119,11 +119,11 @@ func (m *MintingPeriod) CalculateInfation(totalSupply sdk.Int, periodStart time.
 	}
 }
 
-type ByOrderingId []*MintingPeriod
+type ByPosition []*MintingPeriod
 
-func (a ByOrderingId) Len() int           { return len(a) }
-func (a ByOrderingId) Less(i, j int) bool { return a[i].OrderingId < a[j].OrderingId }
-func (a ByOrderingId) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByPosition) Len() int           { return len(a) }
+func (a ByPosition) Less(i, j int) bool { return a[i].Position < a[j].Position }
+func (a ByPosition) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func (m *TimeLinearMinter) amountToMint(state *MinterState, periodStart time.Time, periodEnd time.Time, blockTime time.Time) sdk.Int {
 	amount := m.Amount

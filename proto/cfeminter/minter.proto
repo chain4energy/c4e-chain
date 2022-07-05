@@ -17,7 +17,7 @@ message Minter {
 
 message MintingPeriod {
 
-  int32 ordering_id = 1; // TODO change name to position
+  int32 position = 1;
   google.protobuf.Timestamp period_end = 2 [(gogoproto.stdtime) = true];
   enum MinterType {
     NO_MINTING = 0;
@@ -42,6 +42,6 @@ message PeriodicReductionMinter {
 }
 
 message MinterState {
-  int32 current_ordering_id = 1;
+  int32 current_position = 1;
   string amount_minted = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }

@@ -25,7 +25,7 @@ const PeriodDuration = time.Duration(345600000000 * 1000000)
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params:      types.NewParams("myc4e", createMinter(time.Now())),
-		MinterState: types.MinterState{CurrentOrderingId: 9, AmountMinted: sdk.NewInt(12312)},
+		MinterState: types.MinterState{CurrentPosition: 9, AmountMinted: sdk.NewInt(12312)},
 
 		// this line is used by starport scaffolding # genesis/test/state
 
@@ -55,14 +55,14 @@ func TestOneYear(t *testing.T) {
 	minter := types.Minter{
 		Start: time.Now(),
 		Periods: []*types.MintingPeriod{
-			{OrderingId: 1, PeriodEnd: &yearFromNow, Type: types.MintingPeriod_TIME_LINEAR_MINTER,
+			{Position: 1, PeriodEnd: &yearFromNow, Type: types.MintingPeriod_TIME_LINEAR_MINTER,
 				TimeLinearMinter: &types.TimeLinearMinter{Amount: sdk.NewInt(totalSupply)}},
-			{OrderingId: 2, Type: types.MintingPeriod_NO_MINTING},
+			{Position: 2, Type: types.MintingPeriod_NO_MINTING},
 		}}
 
 	genesisState := types.GenesisState{
 		Params:      types.NewParams(commontestutils.Denom, minter),
-		MinterState: types.MinterState{CurrentOrderingId: 1, AmountMinted: sdk.NewInt(0)},
+		MinterState: types.MinterState{CurrentPosition: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
 	app := testapp.Setup(false)
@@ -77,7 +77,7 @@ func TestOneYear(t *testing.T) {
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewDec(1), inflation) // TODO check - simetes not passed becouse probably Dec calclulation limited precision
 	state := app.CfeminterKeeper.GetMinterState(ctx)
-	require.EqualValues(t, int32(1), state.CurrentOrderingId)
+	require.EqualValues(t, int32(1), state.CurrentPosition)
 	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
 	commontestutils.VerifyModuleAccountBalanceByName(authtypes.FeeCollectorName, ctx, app, t, sdk.ZeroInt())
 
@@ -97,12 +97,12 @@ func TestOneYear(t *testing.T) {
 		if i < numOfHours {
 			require.EqualValuesf(t, expectedInflation, inflation, "iterarion %d", i)
 			state := app.CfeminterKeeper.GetMinterState(ctx)
-			require.EqualValues(t, int32(1), state.CurrentOrderingId)
+			require.EqualValues(t, int32(1), state.CurrentPosition)
 			require.EqualValues(t, sdk.NewInt(expectedMinted), state.AmountMinted)
 		} else {
 			require.EqualValuesf(t, sdk.ZeroDec(), inflation, "iterarion %d", i)
 			state := app.CfeminterKeeper.GetMinterState(ctx)
-			require.EqualValues(t, int32(2), state.CurrentOrderingId)
+			require.EqualValues(t, int32(2), state.CurrentPosition)
 			require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
 		}
 
@@ -121,10 +121,10 @@ func createMinter(startTime time.Time) types.Minter {
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
 	linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
-	period1 := types.MintingPeriod{OrderingId: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
-	period2 := types.MintingPeriod{OrderingId: 2, PeriodEnd: &endTime2, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter2}
+	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
+	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter2}
 
-	period3 := types.MintingPeriod{OrderingId: 3, Type: types.MintingPeriod_NO_MINTING}
+	period3 := types.MintingPeriod{Position: 3, Type: types.MintingPeriod_NO_MINTING}
 	periods := []*types.MintingPeriod{&period1, &period2, &period3}
 	minter := types.Minter{Start: startTime, Periods: periods}
 	return minter
