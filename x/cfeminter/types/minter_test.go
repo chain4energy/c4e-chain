@@ -370,7 +370,7 @@ func TestTimeLinearMinterInfation(t *testing.T) {
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
 
 	period1 := types.MintingPeriod{OrderingId: 1, PeriodEnd: &endTime, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
-	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
 	expected, _ := sdk.NewDecFromStr("0.1")
 	require.EqualValues(t, expected, inflation)
 
@@ -378,7 +378,7 @@ func TestTimeLinearMinterInfation(t *testing.T) {
 	endTime = startTime.Add(duration)
 	period1.PeriodEnd = &endTime
 
-	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
@@ -386,7 +386,7 @@ func TestTimeLinearMinterInfation(t *testing.T) {
 	endTime = startTime.Add(duration)
 	period1.PeriodEnd = &endTime
 
-	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
 	expected, _ = sdk.NewDecFromStr("0.02")
 	require.EqualValues(t, expected, inflation)
 }
@@ -398,7 +398,7 @@ func TestNoMintingInfation(t *testing.T) {
 
 	period1 := types.MintingPeriod{OrderingId: 3, Type: types.MintingPeriod_NO_MINTING}
 
-	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
 	expected := sdk.ZeroDec()
 	require.EqualValues(t, expected, inflation)
 
@@ -406,13 +406,13 @@ func TestNoMintingInfation(t *testing.T) {
 	endTime = startTime.Add(duration)
 	period1.PeriodEnd = &endTime
 
-	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
 	require.EqualValues(t, expected, inflation)
 
 	duration = time.Hour * 24 * 365 * 5
 	endTime = startTime.Add(duration)
 	period1.PeriodEnd = &endTime
 
-	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime)
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
 	require.EqualValues(t, expected, inflation)
 }

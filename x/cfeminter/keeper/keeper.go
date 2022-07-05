@@ -129,7 +129,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
 
 	supply := k.bankKeeper.GetSupply(ctx, params.MintDenom)
 
-	return currentPeriod.CalculateInfation(supply.Amount, periodStart), nil
+	return currentPeriod.CalculateInfation(supply.Amount, periodStart, ctx.BlockHeader().Time), nil
 }
 
 func getCurrentAndPreviousPeriod(minter types.Minter, state *types.MinterState) (currentPeriod *types.MintingPeriod, previousPeriod *types.MintingPeriod) {
