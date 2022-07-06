@@ -32,6 +32,9 @@ func (m Minter) Validate() error {
 		if i == lastPos && period.PeriodEnd != nil {
 			return fmt.Errorf("last period cannot have PeriodEnd set, but is set to %s", period.PeriodEnd)
 		}
+		if i < lastPos && period.PeriodEnd == nil {
+			return fmt.Errorf("only last period can have PeriodEnd empty")
+		}
 		if lastPos > 0 {
 			if i == 0 {
 				if period.PeriodEnd.Before(m.Start) || period.PeriodEnd.Equal(m.Start) {
@@ -174,7 +177,7 @@ func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart t
 
 	epoch := int64(m.MintPeriod) * int64(m.ReductionPeriodLength)
 
-	numOfPassedEpochs := passedTime/epoch
+	numOfPassedEpochs := passedTime / epoch
 
 	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
 
@@ -188,11 +191,24 @@ func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart t
 	}
 
 	currentEpochStart := periodStart.Add(time.Duration(numOfPassedEpochs * epoch))
-	currentEpochPassedTime:= now.Sub(currentEpochStart)
-	currentEpochAmount := epochAmount.Mul(m.ReductionFactor)
+	currentEpochPassedTime := now.Sub(currentEpochStart)
+	currentEpochAmount := epochAmount
+
+	if numOfPassedEpochs > 0 {
+		currentEpochAmount = currentEpochAmount.Mul(m.ReductionFactor)
+	}
 
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
+	// fmt.Println("currentEpochAmount: " + currentEpochAmount.String())
+	// fmt.Printf("currentEpochPassedTime: %d", currentEpochPassedTime)
+	// fmt.Printf("hour: %d", time.Hour)
+
+	// fmt.Printf("epoch: %d", epoch)
+	// fmt.Println("currentEpochAmountToMint: " + currentEpochAmountToMint.String())
+
 	amountToMint = amountToMint.Add(currentEpochAmountToMint)
+	// fmt.Println("amountToMint:" + amountToMint.String())
+	// fmt.Println("amountToMint diff" + amountToMint.TruncateInt().Sub(state.AmountMinted).String())
 
 	return amountToMint.TruncateInt().Sub(state.AmountMinted)
 }
@@ -215,9 +231,13 @@ func (m *PeriodicReductionMinter) calculateInfation(totalSupply sdk.Int, periodS
 		return sdk.ZeroDec()
 	}
 
+	if periodEnd != nil && (blockTime.Equal(*periodEnd) || blockTime.After(*periodEnd)) {
+		return sdk.ZeroDec()
+	}
+
 	passedTime := int64(blockTime.Sub(periodStart))
 	epoch := int64(m.MintPeriod) * int64(m.ReductionPeriodLength)
-	numOfPassedEpochs := passedTime/epoch
+	numOfPassedEpochs := passedTime / epoch
 	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
 
 	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
@@ -226,8 +246,10 @@ func (m *PeriodicReductionMinter) calculateInfation(totalSupply sdk.Int, periodS
 			epochAmount = epochAmount.Mul(m.ReductionFactor)
 		}
 	}
-	currentEpochAmount := epochAmount.Mul(m.ReductionFactor)
-	mintedYearly := currentEpochAmount.MulInt64(int64(year)).QuoInt64(epoch)
+	if numOfPassedEpochs > 0 {
+		epochAmount = epochAmount.Mul(m.ReductionFactor)
+	}
+	mintedYearly := epochAmount.MulInt64(int64(year)).QuoInt64(epoch)
 	// fmt.Println("amount: " + amount.String())
 	// fmt.Println("mintedYearly: " + mintedYearly.String())
 	// fmt.Println("year: " + year.String())
@@ -245,6 +267,3 @@ func (m MinterState) Validate() error {
 	}
 	return nil
 }
-
-
-

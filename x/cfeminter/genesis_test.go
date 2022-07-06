@@ -21,6 +21,7 @@ import (
 )
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
+const Year = time.Hour * 24 * 365
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
@@ -47,13 +48,13 @@ func TestGenesis(t *testing.T) {
 	// this line is used by starport scaffolding # genesis/test/assert
 }
 
-func TestOneYear(t *testing.T) {
+func TestOneYearLinear(t *testing.T) {
 	totalSupply := int64(40000000000000)
 	commontestutils.AddHelperModuleAccountPerms()
 	now := time.Now()
 	yearFromNow := now.Add(time.Hour * 24 * 365)
 	minter := types.Minter{
-		Start: time.Now(),
+		Start: now,
 		Periods: []*types.MintingPeriod{
 			{Position: 1, PeriodEnd: &yearFromNow, Type: types.MintingPeriod_TIME_LINEAR_MINTER,
 				TimeLinearMinter: &types.TimeLinearMinter{Amount: sdk.NewInt(totalSupply)}},
@@ -111,6 +112,83 @@ func TestOneYear(t *testing.T) {
 	commontestutils.VerifyModuleAccountBalanceByName(authtypes.FeeCollectorName, ctx, app, t, sdk.NewInt(totalSupply))
 	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
 	require.EqualValues(t, sdk.NewInt(2*totalSupply), supp.Amount)
+
+}
+
+func TestFewYearsPeridocicReduction(t *testing.T) {
+	totalSupply := int64(400000000000000)
+	startAmountYearly := int64(40000000000000)
+	commontestutils.AddHelperModuleAccountPerms()
+	now := time.Now()
+	// yearFromNow := now.Add(time.Hour * 24 * 365)
+	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(startAmountYearly), MintPeriod: Year, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
+
+	minter := types.Minter{
+		Start: now,
+		Periods: []*types.MintingPeriod{
+			{Position: 1, Type: types.MintingPeriod_PERIODIC_REDUCTION_MINTER,
+				PeriodicReductionMinter: &pminter},
+		}}
+
+	genesisState := types.GenesisState{
+		Params:      types.NewParams(commontestutils.Denom, minter),
+		MinterState: types.MinterState{CurrentPosition: 1, AmountMinted: sdk.NewInt(0)},
+	}
+
+	app := testapp.Setup(false)
+
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: now})
+	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	commontestutils.AddCoinsToAccount(uint64(totalSupply), ctx, app, acountsAddresses[0])
+
+	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
+	require.NoError(t, err)
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.1"), inflation) // TODO check - simetes not passed becouse probably Dec calclulation limited precision
+	state := app.CfeminterKeeper.GetMinterState(ctx)
+	require.EqualValues(t, int32(1), state.CurrentPosition)
+	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
+	commontestutils.VerifyModuleAccountBalanceByName(authtypes.FeeCollectorName, ctx, app, t, sdk.ZeroInt())
+
+	year := 365 //* 24
+	numOfHours := 4 * year
+	amountYearly := startAmountYearly
+	prevPeriodMinted := int64(0)
+
+	for periodsCount := 1; periodsCount <= 5; periodsCount++ {
+		for i := 1; i <= numOfHours; i++ {
+			ctx = ctx.WithBlockHeight(int64(i)).WithBlockTime(ctx.BlockTime().Add(24 * time.Hour))
+			app.BeginBlocker(ctx, abci.RequestBeginBlock{})
+			app.EndBlocker(ctx, abci.RequestEndBlock{})
+
+			expectedMinted := amountYearly * int64(i) / int64(year)
+			expectedInflation := sdk.NewDec(amountYearly).QuoInt64(totalSupply + prevPeriodMinted + expectedMinted)
+
+			commontestutils.VerifyModuleAccountBalanceByName(authtypes.FeeCollectorName, ctx, app, t, sdk.NewInt(prevPeriodMinted+expectedMinted))
+
+			inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
+			require.NoError(t, err)
+			if i < numOfHours {
+				require.EqualValuesf(t, expectedInflation, inflation, "iterarion %d", i)
+				state := app.CfeminterKeeper.GetMinterState(ctx)
+				require.EqualValues(t, int32(1), state.CurrentPosition)
+				require.EqualValues(t, sdk.NewInt(prevPeriodMinted+expectedMinted), state.AmountMinted)
+			} else {
+				require.EqualValuesf(t, expectedInflation.QuoInt64(2), inflation, "iterarion %d", i)
+				state := app.CfeminterKeeper.GetMinterState(ctx)
+				require.EqualValues(t, int32(1), state.CurrentPosition)
+				require.EqualValues(t, sdk.NewInt(prevPeriodMinted+expectedMinted), state.AmountMinted)
+				prevPeriodMinted += expectedMinted
+			}
+
+		}
+		amountYearly = amountYearly / 2
+	}
+	expectedMinted := int64(310000000000000)
+	commontestutils.VerifyModuleAccountBalanceByName(authtypes.FeeCollectorName, ctx, app, t, sdk.NewInt(expectedMinted))
+	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
+	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
 
 }
 
