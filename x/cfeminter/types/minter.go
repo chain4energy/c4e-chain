@@ -10,16 +10,123 @@ import (
 
 const year = time.Hour * 24 * 365
 
+func (m Minter) Validate() error {
+	sort.Sort(ByPosition(m.Periods))
+	id := int32(0)
+	lastPos := len(m.Periods) - 1
+	if len(m.Periods) < 1 {
+		return fmt.Errorf("no minter periods defined")
+	}
+	for i, period := range m.Periods {
+		if id == 0 {
+			if period.Position <= id {
+				return fmt.Errorf("first period ordering id must be bigger than 0, but is %d", period.Position)
+			}
+			id = period.Position
+		} else {
+			if period.Position != id+1 {
+				return fmt.Errorf("missing period with ordering id %d", id+1)
+			}
+			id = period.Position
+		}
+		if i == lastPos && period.PeriodEnd != nil {
+			return fmt.Errorf("last period cannot have PeriodEnd set, but is set to %s", period.PeriodEnd)
+		}
+		if i < lastPos && period.PeriodEnd == nil {
+			return fmt.Errorf("only last period can have PeriodEnd empty")
+		}
+		if lastPos > 0 {
+			if i == 0 {
+				if period.PeriodEnd.Before(m.Start) || period.PeriodEnd.Equal(m.Start) {
+					return fmt.Errorf("first period end must be bigger than minter start")
+				}
+			} else if i < lastPos {
+				prev := i - 1
+				if period.PeriodEnd.Before(*m.Periods[prev].PeriodEnd) || period.PeriodEnd.Equal(*m.Periods[prev].PeriodEnd) {
+					return fmt.Errorf("period with Id %d mast have PeriodEnd bigger than period with id %d", period.Position, m.Periods[prev].Position)
+				}
+			}
+		}
+		err := period.Validate()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m Minter) ContainsId(id int32) bool {
+	for _, period := range m.Periods {
+		if id == period.Position {
+			return true
+		}
+	}
+	return false
+}
+
 func (m *MintingPeriod) AmountToMint(state *MinterState, periodStart time.Time, blockTime time.Time) sdk.Int {
 	switch m.Type {
 	case MintingPeriod_NO_MINTING:
 		return sdk.ZeroInt()
 	case MintingPeriod_TIME_LINEAR_MINTER:
 		return m.TimeLinearMinter.amountToMint(state, periodStart, *m.PeriodEnd, blockTime)
+	case MintingPeriod_PERIODIC_REDUCTION_MINTER:
+		return m.PeriodicReductionMinter.amountToMint(state, periodStart, m.PeriodEnd, blockTime)
 	default:
 		return sdk.ZeroInt()
 	}
 }
+
+func (m MintingPeriod) Validate() error {
+	switch m.Type {
+	case MintingPeriod_NO_MINTING:
+		if m.TimeLinearMinter != nil {
+			return fmt.Errorf("period id: %d - for NO_MINTING type (0) TimeLinearMinter must not be set", m.Position)
+		}
+	case MintingPeriod_TIME_LINEAR_MINTER:
+		if m.TimeLinearMinter == nil {
+			return fmt.Errorf("period id: %d - for MintingPeriod_TIME_LINEAR_MINTER type (1) TimeLinearMinter must be set", m.Position)
+		}
+		if m.PeriodEnd == nil {
+			return fmt.Errorf("period id: %d - for MintingPeriod_TIME_LINEAR_MINTER type (1) PeriodEnd must be set", m.Position)
+		}
+		err := m.TimeLinearMinter.validate(m.Position)
+		if err != nil {
+			return err
+		}
+	case MintingPeriod_PERIODIC_REDUCTION_MINTER:
+		if m.PeriodicReductionMinter == nil {
+			return fmt.Errorf("period id: %d - for MintingPeriod_PERIODIC_REDUCTION_MINTER type (1) PeriodicReductionMinter must be set", m.Position)
+		}
+		err := m.PeriodicReductionMinter.validate(m.Position)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("period id: %d - unknow minting period type: %d", m.Position, m.Type)
+
+	}
+	return nil
+}
+
+func (m *MintingPeriod) CalculateInfation(totalSupply sdk.Int, periodStart time.Time, blockTime time.Time) sdk.Dec {
+	switch m.Type {
+	case MintingPeriod_NO_MINTING:
+		return sdk.ZeroDec()
+	case MintingPeriod_TIME_LINEAR_MINTER:
+		return m.TimeLinearMinter.calculateInfation(totalSupply, periodStart, *m.PeriodEnd)
+	case MintingPeriod_PERIODIC_REDUCTION_MINTER:
+		return m.PeriodicReductionMinter.calculateInfation(totalSupply, periodStart, m.PeriodEnd, blockTime)
+	default:
+		return sdk.ZeroDec()
+	}
+}
+
+type ByPosition []*MintingPeriod
+
+func (a ByPosition) Len() int           { return len(a) }
+func (a ByPosition) Less(i, j int) bool { return a[i].Position < a[j].Position }
+func (a ByPosition) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func (m *TimeLinearMinter) amountToMint(state *MinterState, periodStart time.Time, periodEnd time.Time, blockTime time.Time) sdk.Int {
 	amount := m.Amount
@@ -34,109 +141,12 @@ func (m *TimeLinearMinter) amountToMint(state *MinterState, periodStart time.Tim
 	return amount.MulRaw(passedTime).QuoRaw(period).Sub(state.AmountMinted)
 }
 
-func (m MintingPeriod) Validate() error {
-	switch m.Type {
-	case MintingPeriod_NO_MINTING:
-		if m.TimeLinearMinter != nil {
-			return fmt.Errorf("period id: %d - for NO_MINTING type (0) TimeLinearMinter must not be set", m.OrderingId)
-		}
-	case MintingPeriod_TIME_LINEAR_MINTER:
-		if m.TimeLinearMinter == nil {
-			return fmt.Errorf("period id: %d - for MintingPeriod_TIME_LINEAR_MINTER type (1) TimeLinearMinter must be set", m.OrderingId)
-		}
-		err := m.TimeLinearMinter.validate(m.OrderingId)
-		if err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("period id: %d - unknow minting period type: %d", m.OrderingId, m.Type)
-
-	}
-	return nil
-}
-
 func (m TimeLinearMinter) validate(id int32) error {
 	if m.Amount.IsNegative() {
 		return fmt.Errorf("period id: %d - TimeLinearMinter amount cannot be less than 0", id)
 
 	}
 	return nil
-}
-
-func (m Minter) Validate() error {
-	sort.Sort(ByOrderingId(m.Periods))
-	id := int32(0)
-	lastPos := len(m.Periods) - 1
-	if len(m.Periods) < 1 {
-		return fmt.Errorf("no minter periods defined")
-	}
-	for i, period := range m.Periods {
-		if id == 0 {
-			if period.OrderingId <= id {
-				return fmt.Errorf("first period ordering id must be bigger than 0, but is %d", period.OrderingId)
-			}
-			id = period.OrderingId
-		} else {
-			if period.OrderingId != id+1 {
-				return fmt.Errorf("missing period with ordering id %d", id+1)
-			}
-			id = period.OrderingId
-		}
-		if i == lastPos && period.PeriodEnd != nil {
-			return fmt.Errorf("last period cannot have PeriodEnd set, but is set to %s", period.PeriodEnd)
-		}
-		if lastPos > 0 {
-			if i == 0 {
-				if period.PeriodEnd.Before(m.Start) || period.PeriodEnd.Equal(m.Start) {
-					return fmt.Errorf("first period end must be bigger than minter start")
-				}
-			} else if i < lastPos {
-				prev := i - 1
-				if period.PeriodEnd.Before(*m.Periods[prev].PeriodEnd) || period.PeriodEnd.Equal(*m.Periods[prev].PeriodEnd) {
-					return fmt.Errorf("period with Id %d mast have PeriodEnd bigger than period with id %d", period.OrderingId, m.Periods[prev].OrderingId)
-				}
-			}
-		}
-		err := period.Validate()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (m Minter) ContainsId(id int32) bool {
-	for _, period := range m.Periods {
-		if id == period.OrderingId {
-			return true
-		}
-	}
-	return false
-}
-
-type ByOrderingId []*MintingPeriod
-
-func (a ByOrderingId) Len() int           { return len(a) }
-func (a ByOrderingId) Less(i, j int) bool { return a[i].OrderingId < a[j].OrderingId }
-func (a ByOrderingId) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-
-func (m MinterState) Validate() error {
-	if m.AmountMinted.IsNegative() {
-		return fmt.Errorf("minter state amount cannot be less than 0")
-
-	}
-	return nil
-}
-
-func (m *MintingPeriod) CalculateInfation(totalSupply sdk.Int, periodStart time.Time) sdk.Dec {
-	switch m.Type {
-	case MintingPeriod_NO_MINTING:
-		return sdk.ZeroDec()
-	case MintingPeriod_TIME_LINEAR_MINTER:
-		return m.TimeLinearMinter.calculateInfation(totalSupply, periodStart, *m.PeriodEnd)
-	default:
-		return sdk.ZeroDec()
-	}
 }
 
 func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart time.Time, periodEnd time.Time) sdk.Dec {
@@ -156,4 +166,104 @@ func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart ti
 
 	return mintedYearly.QuoInt(totalSupply)
 
+}
+
+func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart time.Time, periodEnd *time.Time, blockTime time.Time) sdk.Int {
+	now := blockTime
+	if periodEnd != nil && blockTime.After(*periodEnd) {
+		now = *periodEnd
+	}
+	passedTime := int64(now.Sub(periodStart))
+
+	epoch := int64(m.MintPeriod) * int64(m.ReductionPeriodLength)
+
+	numOfPassedEpochs := passedTime / epoch
+
+	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
+
+	amountToMint := sdk.ZeroDec()
+	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
+	for i := int64(0); i < numOfPassedEpochs; i++ {
+		if i > 0 {
+			epochAmount = epochAmount.Mul(m.ReductionFactor)
+		}
+		amountToMint = amountToMint.Add(epochAmount)
+	}
+
+	currentEpochStart := periodStart.Add(time.Duration(numOfPassedEpochs * epoch))
+	currentEpochPassedTime := now.Sub(currentEpochStart)
+	currentEpochAmount := epochAmount
+
+	if numOfPassedEpochs > 0 {
+		currentEpochAmount = currentEpochAmount.Mul(m.ReductionFactor)
+	}
+
+	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
+	// fmt.Println("currentEpochAmount: " + currentEpochAmount.String())
+	// fmt.Printf("currentEpochPassedTime: %d", currentEpochPassedTime)
+	// fmt.Printf("hour: %d", time.Hour)
+
+	// fmt.Printf("epoch: %d", epoch)
+	// fmt.Println("currentEpochAmountToMint: " + currentEpochAmountToMint.String())
+
+	amountToMint = amountToMint.Add(currentEpochAmountToMint)
+	// fmt.Println("amountToMint:" + amountToMint.String())
+	// fmt.Println("amountToMint diff" + amountToMint.TruncateInt().Sub(state.AmountMinted).String())
+
+	return amountToMint.TruncateInt().Sub(state.AmountMinted)
+}
+
+func (m PeriodicReductionMinter) validate(id int32) error {
+	if m.MintAmount.IsNegative() {
+		return fmt.Errorf("period id: %d - PeriodicReductionMinter MintAmount cannot be less than 0", id)
+	}
+	if m.MintPeriod <= 0 {
+		return fmt.Errorf("period id: %d - PeriodicReductionMinter MintPeriod must be bigger than 0", id)
+	}
+	if m.ReductionPeriodLength <= 0 {
+		return fmt.Errorf("period id: %d - PeriodicReductionMinter ReductionPeriodLength must be bigger than 0", id)
+	}
+	return nil
+}
+
+func (m *PeriodicReductionMinter) calculateInfation(totalSupply sdk.Int, periodStart time.Time, periodEnd *time.Time, blockTime time.Time) sdk.Dec {
+	if totalSupply.LTE(sdk.ZeroInt()) {
+		return sdk.ZeroDec()
+	}
+
+	if periodEnd != nil && (blockTime.Equal(*periodEnd) || blockTime.After(*periodEnd)) {
+		return sdk.ZeroDec()
+	}
+
+	passedTime := int64(blockTime.Sub(periodStart))
+	epoch := int64(m.MintPeriod) * int64(m.ReductionPeriodLength)
+	numOfPassedEpochs := passedTime / epoch
+	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
+
+	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
+	for i := int64(0); i < numOfPassedEpochs; i++ {
+		if i > 0 {
+			epochAmount = epochAmount.Mul(m.ReductionFactor)
+		}
+	}
+	if numOfPassedEpochs > 0 {
+		epochAmount = epochAmount.Mul(m.ReductionFactor)
+	}
+	mintedYearly := epochAmount.MulInt64(int64(year)).QuoInt64(epoch)
+	// fmt.Println("amount: " + amount.String())
+	// fmt.Println("mintedYearly: " + mintedYearly.String())
+	// fmt.Println("year: " + year.String())
+	// fmt.Println("periodDuration: " + periodDuration.String())
+	// fmt.Println("totalSupply: " + totalSupply.String())
+
+	return mintedYearly.QuoInt(totalSupply)
+
+}
+
+func (m MinterState) Validate() error {
+	if m.AmountMinted.IsNegative() {
+		return fmt.Errorf("minter state amount cannot be less than 0")
+
+	}
+	return nil
 }

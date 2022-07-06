@@ -40,7 +40,7 @@ func (gs GenesisState) Validate() error {
 		return err
 	}
 
-	if !gs.Params.Minter.ContainsId(minterState.CurrentOrderingId) {
+	if !gs.Params.Minter.ContainsId(minterState.CurrentPosition) {
 		return fmt.Errorf("minter state Current Ordering Id not found in minter periods")
 	}
 	return nil

@@ -3,20 +3,10 @@ package chain4energy.c4echain.cfeminter;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
-
-// HalvingMinter represents the inflation parameters.
-message HalvingMinter {
-  // the number of coins produced from the first block
-  int64 new_coins_mint = 1;
-
-  // expected blocks per year
-  int64 blocks_per_year = 6;
-
-  // type of coin to mint
-  string mint_denom = 3;
-}
 
 message Minter {
 
@@ -27,14 +17,16 @@ message Minter {
 
 message MintingPeriod {
 
-  int32 ordering_id = 1; // TODO change name to position
+  int32 position = 1;
   google.protobuf.Timestamp period_end = 2 [(gogoproto.stdtime) = true];
   enum MinterType {
     NO_MINTING = 0;
     TIME_LINEAR_MINTER = 1;
+    PERIODIC_REDUCTION_MINTER = 2;
   }
   MinterType type = 3;
   TimeLinearMinter time_linear_minter = 4;
+  PeriodicReductionMinter periodic_reduction_minter = 5;
 
 }
 
@@ -42,7 +34,14 @@ message TimeLinearMinter {
   string amount = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }
 
+message PeriodicReductionMinter {
+  google.protobuf.Duration mint_period = 1 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
+  string mint_amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  int32 reduction_period_length = 3;
+  string reduction_factor = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+}
+
 message MinterState {
-  int32 current_ordering_id = 1;
+  int32 current_position = 1;
   string amount_minted = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }
