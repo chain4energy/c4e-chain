@@ -63,7 +63,7 @@ paths:
                         items:
                           type: object
                           properties:
-                            ordering_id:
+                            position:
                               type: integer
                               format: int32
                             period_end:
@@ -74,11 +74,24 @@ paths:
                               enum:
                                 - NO_MINTING
                                 - TIME_LINEAR_MINTER
+                                - PERIODIC_REDUCTION_MINTER
                               default: NO_MINTING
                             time_linear_minter:
                               type: object
                               properties:
                                 amount:
+                                  type: string
+                            periodic_reduction_minter:
+                              type: object
+                              properties:
+                                mint_period:
+                                  type: string
+                                mint_amount:
+                                  type: string
+                                reduction_period_length:
+                                  type: integer
+                                  format: int32
+                                reduction_factor:
                                   type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
@@ -116,7 +129,7 @@ paths:
               minter_state:
                 type: object
                 properties:
-                  current_ordering_id:
+                  current_position:
                     type: integer
                     format: int32
                   amount_minted:
@@ -30742,7 +30755,7 @@ definitions:
         items:
           type: object
           properties:
-            ordering_id:
+            position:
               type: integer
               format: int32
             period_end:
@@ -30753,16 +30766,29 @@ definitions:
               enum:
                 - NO_MINTING
                 - TIME_LINEAR_MINTER
+                - PERIODIC_REDUCTION_MINTER
               default: NO_MINTING
             time_linear_minter:
               type: object
               properties:
                 amount:
                   type: string
+            periodic_reduction_minter:
+              type: object
+              properties:
+                mint_period:
+                  type: string
+                mint_amount:
+                  type: string
+                reduction_period_length:
+                  type: integer
+                  format: int32
+                reduction_factor:
+                  type: string
   chain4energy.c4echain.cfeminter.MinterState:
     type: object
     properties:
-      current_ordering_id:
+      current_position:
         type: integer
         format: int32
       amount_minted:
@@ -30770,7 +30796,7 @@ definitions:
   chain4energy.c4echain.cfeminter.MintingPeriod:
     type: object
     properties:
-      ordering_id:
+      position:
         type: integer
         format: int32
       period_end:
@@ -30781,17 +30807,31 @@ definitions:
         enum:
           - NO_MINTING
           - TIME_LINEAR_MINTER
+          - PERIODIC_REDUCTION_MINTER
         default: NO_MINTING
       time_linear_minter:
         type: object
         properties:
           amount:
             type: string
+      periodic_reduction_minter:
+        type: object
+        properties:
+          mint_period:
+            type: string
+          mint_amount:
+            type: string
+          reduction_period_length:
+            type: integer
+            format: int32
+          reduction_factor:
+            type: string
   chain4energy.c4echain.cfeminter.MintingPeriod.MinterType:
     type: string
     enum:
       - NO_MINTING
       - TIME_LINEAR_MINTER
+      - PERIODIC_REDUCTION_MINTER
     default: NO_MINTING
   chain4energy.c4echain.cfeminter.Params:
     type: object
@@ -30809,7 +30849,7 @@ definitions:
             items:
               type: object
               properties:
-                ordering_id:
+                position:
                   type: integer
                   format: int32
                 period_end:
@@ -30820,13 +30860,38 @@ definitions:
                   enum:
                     - NO_MINTING
                     - TIME_LINEAR_MINTER
+                    - PERIODIC_REDUCTION_MINTER
                   default: NO_MINTING
                 time_linear_minter:
                   type: object
                   properties:
                     amount:
                       type: string
+                periodic_reduction_minter:
+                  type: object
+                  properties:
+                    mint_period:
+                      type: string
+                    mint_amount:
+                      type: string
+                    reduction_period_length:
+                      type: integer
+                      format: int32
+                    reduction_factor:
+                      type: string
     description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfeminter.PeriodicReductionMinter:
+    type: object
+    properties:
+      mint_period:
+        type: string
+      mint_amount:
+        type: string
+      reduction_period_length:
+        type: integer
+        format: int32
+      reduction_factor:
+        type: string
   chain4energy.c4echain.cfeminter.QueryInflationResponse:
     type: object
     properties:
@@ -30852,7 +30917,7 @@ definitions:
                 items:
                   type: object
                   properties:
-                    ordering_id:
+                    position:
                       type: integer
                       format: int32
                     period_end:
@@ -30863,11 +30928,24 @@ definitions:
                       enum:
                         - NO_MINTING
                         - TIME_LINEAR_MINTER
+                        - PERIODIC_REDUCTION_MINTER
                       default: NO_MINTING
                     time_linear_minter:
                       type: object
                       properties:
                         amount:
+                          type: string
+                    periodic_reduction_minter:
+                      type: object
+                      properties:
+                        mint_period:
+                          type: string
+                        mint_amount:
+                          type: string
+                        reduction_period_length:
+                          type: integer
+                          format: int32
+                        reduction_factor:
                           type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfeminter.QueryStateResponse:
@@ -30876,7 +30954,7 @@ definitions:
       minter_state:
         type: object
         properties:
-          current_ordering_id:
+          current_position:
             type: integer
             format: int32
           amount_minted:
