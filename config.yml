@@ -107,14 +107,12 @@ genesis:
         remains_coin_module_account: "remains"
         module_accounts:
           - c4e_distributor
-          - fee_collector
           - inflation_collector
           - validators_rewards_collector
-          - payment_collector
-          - liquididty_rewards_collector
-          - governance_locking_rewards_collector
-          - users_incentive_collector
-          - community_pool_rewards_collector
+          - usage_incentives_collector
+          - green_energy_booster_collector
+          - governance_booster_collector
+
         sub_distributor:
             - order: 1
               name: tx_fee_distributor
@@ -129,23 +127,58 @@ genesis:
                   percent: "33.3"
                   leftover_coin: "0"
             - order: 2
-              name: inflation_distributor
+              name: inflation_and_fee_distributor
               sources:
-                - inflation_collector
+                - c4e_distributor
               destination:
                 account:
                   address: "validators_rewards_collector"
                   is_module_account: true
                   leftover_coin: "0"
                 share:
-                  - name: community_pool_rewards_share
-                    percent: "12.345"
+                  - name: development_fund
+                    percent: "10.345"
                     account:
+                      #insert proper address
                       address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
                       is_module_account: false
                       leftover_coin: "0"
 
-#            - order: 3
+                  - name: usage_incentives
+                    percent: "30"
+                    account:
+                      #insert proper address
+                      address: "usage_incentives_collector"
+                      is_module_account: true
+                      leftover_coin: "0"
+
+            - order: 3
+              name: usage_incentives_distributor
+              sources:
+                - usage_incentives_collector
+              destination:
+                account:
+                  #insert proper address
+                  address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+                  is_module_account: false
+                  leftover_coin: "0"
+                share:
+                  - name: green_energy_booster
+                    percent: "34"
+                    account:
+                      address: "green_energy_booster_collector"
+                      is_module_account: true
+                      leftover_coin: "0"
+
+                  - name: governance_booster
+                    percent: "30"
+                    account:
+                      #insert proper address
+                      address: "governance_booster_collector"
+                      is_module_account: true
+                      leftover_coin: "0"
+
+    #            - order: 3
 #              name: community_pool_rewards_distributor
 #              sources:
 #                - community_pool_rewards_collector

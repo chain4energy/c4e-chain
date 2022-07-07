@@ -194,6 +194,9 @@ var (
 		"community_pool_rewards_collector":          {authtypes.Burner},
 		"c4e_distributor":                           {authtypes.Burner},
 		"remains":                                   {authtypes.Minter, authtypes.Burner},
+		"usage_incentives_collector":                {authtypes.Minter, authtypes.Burner},
+		"green_energy_booster_collector":            {authtypes.Minter, authtypes.Burner},
+		"governance_booster_collector":              {authtypes.Minter, authtypes.Burner},
 	}
 )
 
@@ -445,7 +448,7 @@ func New(
 		app.GetSubspace(cfemintermoduletypes.ModuleName),
 
 		app.BankKeeper,
-		cfemintermoduletypes.InflationCollectorName, // TODO
+		"c4e_distributor", // TODO
 	)
 	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper)
 	app.CferoutingdistributorKeeper = *cferoutingdistributormodulekeeper.NewKeeper(
