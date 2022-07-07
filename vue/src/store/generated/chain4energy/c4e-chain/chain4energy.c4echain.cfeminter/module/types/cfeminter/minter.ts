@@ -1,19 +1,9 @@
 /* eslint-disable */
 import { Timestamp } from "../google/protobuf/timestamp";
-import * as Long from "long";
-import { util, configure, Writer, Reader } from "protobufjs/minimal";
+import { Duration } from "../google/protobuf/duration";
+import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
-
-/** HalvingMinter represents the inflation parameters. */
-export interface HalvingMinter {
-  /** the number of coins produced from the first block */
-  new_coins_mint: number;
-  /** expected blocks per year */
-  blocks_per_year: number;
-  /** type of coin to mint */
-  mint_denom: string;
-}
 
 export interface Minter {
   start: Date | undefined;
@@ -21,16 +11,17 @@ export interface Minter {
 }
 
 export interface MintingPeriod {
-  /** TODO change name to position */
-  ordering_id: number;
+  position: number;
   period_end: Date | undefined;
   type: MintingPeriod_MinterType;
   time_linear_minter: TimeLinearMinter | undefined;
+  periodic_reduction_minter: PeriodicReductionMinter | undefined;
 }
 
 export enum MintingPeriod_MinterType {
   NO_MINTING = 0,
   TIME_LINEAR_MINTER = 1,
+  PERIODIC_REDUCTION_MINTER = 2,
   UNRECOGNIZED = -1,
 }
 
@@ -44,6 +35,9 @@ export function mintingPeriod_MinterTypeFromJSON(
     case 1:
     case "TIME_LINEAR_MINTER":
       return MintingPeriod_MinterType.TIME_LINEAR_MINTER;
+    case 2:
+    case "PERIODIC_REDUCTION_MINTER":
+      return MintingPeriod_MinterType.PERIODIC_REDUCTION_MINTER;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -59,6 +53,8 @@ export function mintingPeriod_MinterTypeToJSON(
       return "NO_MINTING";
     case MintingPeriod_MinterType.TIME_LINEAR_MINTER:
       return "TIME_LINEAR_MINTER";
+    case MintingPeriod_MinterType.PERIODIC_REDUCTION_MINTER:
+      return "PERIODIC_REDUCTION_MINTER";
     default:
       return "UNKNOWN";
   }
@@ -68,111 +64,17 @@ export interface TimeLinearMinter {
   amount: string;
 }
 
-export interface MinterState {
-  current_ordering_id: number;
-  amount_minted: string;
+export interface PeriodicReductionMinter {
+  mint_period: Duration | undefined;
+  mint_amount: string;
+  reduction_period_length: number;
+  reduction_factor: string;
 }
 
-const baseHalvingMinter: object = {
-  new_coins_mint: 0,
-  blocks_per_year: 0,
-  mint_denom: "",
-};
-
-export const HalvingMinter = {
-  encode(message: HalvingMinter, writer: Writer = Writer.create()): Writer {
-    if (message.new_coins_mint !== 0) {
-      writer.uint32(8).int64(message.new_coins_mint);
-    }
-    if (message.blocks_per_year !== 0) {
-      writer.uint32(48).int64(message.blocks_per_year);
-    }
-    if (message.mint_denom !== "") {
-      writer.uint32(26).string(message.mint_denom);
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): HalvingMinter {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseHalvingMinter } as HalvingMinter;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.new_coins_mint = longToNumber(reader.int64() as Long);
-          break;
-        case 6:
-          message.blocks_per_year = longToNumber(reader.int64() as Long);
-          break;
-        case 3:
-          message.mint_denom = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): HalvingMinter {
-    const message = { ...baseHalvingMinter } as HalvingMinter;
-    if (object.new_coins_mint !== undefined && object.new_coins_mint !== null) {
-      message.new_coins_mint = Number(object.new_coins_mint);
-    } else {
-      message.new_coins_mint = 0;
-    }
-    if (
-      object.blocks_per_year !== undefined &&
-      object.blocks_per_year !== null
-    ) {
-      message.blocks_per_year = Number(object.blocks_per_year);
-    } else {
-      message.blocks_per_year = 0;
-    }
-    if (object.mint_denom !== undefined && object.mint_denom !== null) {
-      message.mint_denom = String(object.mint_denom);
-    } else {
-      message.mint_denom = "";
-    }
-    return message;
-  },
-
-  toJSON(message: HalvingMinter): unknown {
-    const obj: any = {};
-    message.new_coins_mint !== undefined &&
-      (obj.new_coins_mint = message.new_coins_mint);
-    message.blocks_per_year !== undefined &&
-      (obj.blocks_per_year = message.blocks_per_year);
-    message.mint_denom !== undefined && (obj.mint_denom = message.mint_denom);
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<HalvingMinter>): HalvingMinter {
-    const message = { ...baseHalvingMinter } as HalvingMinter;
-    if (object.new_coins_mint !== undefined && object.new_coins_mint !== null) {
-      message.new_coins_mint = object.new_coins_mint;
-    } else {
-      message.new_coins_mint = 0;
-    }
-    if (
-      object.blocks_per_year !== undefined &&
-      object.blocks_per_year !== null
-    ) {
-      message.blocks_per_year = object.blocks_per_year;
-    } else {
-      message.blocks_per_year = 0;
-    }
-    if (object.mint_denom !== undefined && object.mint_denom !== null) {
-      message.mint_denom = object.mint_denom;
-    } else {
-      message.mint_denom = "";
-    }
-    return message;
-  },
-};
+export interface MinterState {
+  current_position: number;
+  amount_minted: string;
+}
 
 const baseMinter: object = {};
 
@@ -262,12 +164,12 @@ export const Minter = {
   },
 };
 
-const baseMintingPeriod: object = { ordering_id: 0, type: 0 };
+const baseMintingPeriod: object = { position: 0, type: 0 };
 
 export const MintingPeriod = {
   encode(message: MintingPeriod, writer: Writer = Writer.create()): Writer {
-    if (message.ordering_id !== 0) {
-      writer.uint32(8).int32(message.ordering_id);
+    if (message.position !== 0) {
+      writer.uint32(8).int32(message.position);
     }
     if (message.period_end !== undefined) {
       Timestamp.encode(
@@ -284,6 +186,12 @@ export const MintingPeriod = {
         writer.uint32(34).fork()
       ).ldelim();
     }
+    if (message.periodic_reduction_minter !== undefined) {
+      PeriodicReductionMinter.encode(
+        message.periodic_reduction_minter,
+        writer.uint32(42).fork()
+      ).ldelim();
+    }
     return writer;
   },
 
@@ -295,7 +203,7 @@ export const MintingPeriod = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.ordering_id = reader.int32();
+          message.position = reader.int32();
           break;
         case 2:
           message.period_end = fromTimestamp(
@@ -311,6 +219,12 @@ export const MintingPeriod = {
             reader.uint32()
           );
           break;
+        case 5:
+          message.periodic_reduction_minter = PeriodicReductionMinter.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -321,10 +235,10 @@ export const MintingPeriod = {
 
   fromJSON(object: any): MintingPeriod {
     const message = { ...baseMintingPeriod } as MintingPeriod;
-    if (object.ordering_id !== undefined && object.ordering_id !== null) {
-      message.ordering_id = Number(object.ordering_id);
+    if (object.position !== undefined && object.position !== null) {
+      message.position = Number(object.position);
     } else {
-      message.ordering_id = 0;
+      message.position = 0;
     }
     if (object.period_end !== undefined && object.period_end !== null) {
       message.period_end = fromJsonTimestamp(object.period_end);
@@ -346,13 +260,22 @@ export const MintingPeriod = {
     } else {
       message.time_linear_minter = undefined;
     }
+    if (
+      object.periodic_reduction_minter !== undefined &&
+      object.periodic_reduction_minter !== null
+    ) {
+      message.periodic_reduction_minter = PeriodicReductionMinter.fromJSON(
+        object.periodic_reduction_minter
+      );
+    } else {
+      message.periodic_reduction_minter = undefined;
+    }
     return message;
   },
 
   toJSON(message: MintingPeriod): unknown {
     const obj: any = {};
-    message.ordering_id !== undefined &&
-      (obj.ordering_id = message.ordering_id);
+    message.position !== undefined && (obj.position = message.position);
     message.period_end !== undefined &&
       (obj.period_end =
         message.period_end !== undefined
@@ -364,15 +287,19 @@ export const MintingPeriod = {
       (obj.time_linear_minter = message.time_linear_minter
         ? TimeLinearMinter.toJSON(message.time_linear_minter)
         : undefined);
+    message.periodic_reduction_minter !== undefined &&
+      (obj.periodic_reduction_minter = message.periodic_reduction_minter
+        ? PeriodicReductionMinter.toJSON(message.periodic_reduction_minter)
+        : undefined);
     return obj;
   },
 
   fromPartial(object: DeepPartial<MintingPeriod>): MintingPeriod {
     const message = { ...baseMintingPeriod } as MintingPeriod;
-    if (object.ordering_id !== undefined && object.ordering_id !== null) {
-      message.ordering_id = object.ordering_id;
+    if (object.position !== undefined && object.position !== null) {
+      message.position = object.position;
     } else {
-      message.ordering_id = 0;
+      message.position = 0;
     }
     if (object.period_end !== undefined && object.period_end !== null) {
       message.period_end = object.period_end;
@@ -393,6 +320,16 @@ export const MintingPeriod = {
       );
     } else {
       message.time_linear_minter = undefined;
+    }
+    if (
+      object.periodic_reduction_minter !== undefined &&
+      object.periodic_reduction_minter !== null
+    ) {
+      message.periodic_reduction_minter = PeriodicReductionMinter.fromPartial(
+        object.periodic_reduction_minter
+      );
+    } else {
+      message.periodic_reduction_minter = undefined;
     }
     return message;
   },
@@ -453,12 +390,151 @@ export const TimeLinearMinter = {
   },
 };
 
-const baseMinterState: object = { current_ordering_id: 0, amount_minted: "" };
+const basePeriodicReductionMinter: object = {
+  mint_amount: "",
+  reduction_period_length: 0,
+  reduction_factor: "",
+};
+
+export const PeriodicReductionMinter = {
+  encode(
+    message: PeriodicReductionMinter,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.mint_period !== undefined) {
+      Duration.encode(message.mint_period, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.mint_amount !== "") {
+      writer.uint32(18).string(message.mint_amount);
+    }
+    if (message.reduction_period_length !== 0) {
+      writer.uint32(24).int32(message.reduction_period_length);
+    }
+    if (message.reduction_factor !== "") {
+      writer.uint32(34).string(message.reduction_factor);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): PeriodicReductionMinter {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...basePeriodicReductionMinter,
+    } as PeriodicReductionMinter;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.mint_period = Duration.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.mint_amount = reader.string();
+          break;
+        case 3:
+          message.reduction_period_length = reader.int32();
+          break;
+        case 4:
+          message.reduction_factor = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PeriodicReductionMinter {
+    const message = {
+      ...basePeriodicReductionMinter,
+    } as PeriodicReductionMinter;
+    if (object.mint_period !== undefined && object.mint_period !== null) {
+      message.mint_period = Duration.fromJSON(object.mint_period);
+    } else {
+      message.mint_period = undefined;
+    }
+    if (object.mint_amount !== undefined && object.mint_amount !== null) {
+      message.mint_amount = String(object.mint_amount);
+    } else {
+      message.mint_amount = "";
+    }
+    if (
+      object.reduction_period_length !== undefined &&
+      object.reduction_period_length !== null
+    ) {
+      message.reduction_period_length = Number(object.reduction_period_length);
+    } else {
+      message.reduction_period_length = 0;
+    }
+    if (
+      object.reduction_factor !== undefined &&
+      object.reduction_factor !== null
+    ) {
+      message.reduction_factor = String(object.reduction_factor);
+    } else {
+      message.reduction_factor = "";
+    }
+    return message;
+  },
+
+  toJSON(message: PeriodicReductionMinter): unknown {
+    const obj: any = {};
+    message.mint_period !== undefined &&
+      (obj.mint_period = message.mint_period
+        ? Duration.toJSON(message.mint_period)
+        : undefined);
+    message.mint_amount !== undefined &&
+      (obj.mint_amount = message.mint_amount);
+    message.reduction_period_length !== undefined &&
+      (obj.reduction_period_length = message.reduction_period_length);
+    message.reduction_factor !== undefined &&
+      (obj.reduction_factor = message.reduction_factor);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<PeriodicReductionMinter>
+  ): PeriodicReductionMinter {
+    const message = {
+      ...basePeriodicReductionMinter,
+    } as PeriodicReductionMinter;
+    if (object.mint_period !== undefined && object.mint_period !== null) {
+      message.mint_period = Duration.fromPartial(object.mint_period);
+    } else {
+      message.mint_period = undefined;
+    }
+    if (object.mint_amount !== undefined && object.mint_amount !== null) {
+      message.mint_amount = object.mint_amount;
+    } else {
+      message.mint_amount = "";
+    }
+    if (
+      object.reduction_period_length !== undefined &&
+      object.reduction_period_length !== null
+    ) {
+      message.reduction_period_length = object.reduction_period_length;
+    } else {
+      message.reduction_period_length = 0;
+    }
+    if (
+      object.reduction_factor !== undefined &&
+      object.reduction_factor !== null
+    ) {
+      message.reduction_factor = object.reduction_factor;
+    } else {
+      message.reduction_factor = "";
+    }
+    return message;
+  },
+};
+
+const baseMinterState: object = { current_position: 0, amount_minted: "" };
 
 export const MinterState = {
   encode(message: MinterState, writer: Writer = Writer.create()): Writer {
-    if (message.current_ordering_id !== 0) {
-      writer.uint32(8).int32(message.current_ordering_id);
+    if (message.current_position !== 0) {
+      writer.uint32(8).int32(message.current_position);
     }
     if (message.amount_minted !== "") {
       writer.uint32(18).string(message.amount_minted);
@@ -474,7 +550,7 @@ export const MinterState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.current_ordering_id = reader.int32();
+          message.current_position = reader.int32();
           break;
         case 2:
           message.amount_minted = reader.string();
@@ -490,12 +566,12 @@ export const MinterState = {
   fromJSON(object: any): MinterState {
     const message = { ...baseMinterState } as MinterState;
     if (
-      object.current_ordering_id !== undefined &&
-      object.current_ordering_id !== null
+      object.current_position !== undefined &&
+      object.current_position !== null
     ) {
-      message.current_ordering_id = Number(object.current_ordering_id);
+      message.current_position = Number(object.current_position);
     } else {
-      message.current_ordering_id = 0;
+      message.current_position = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = String(object.amount_minted);
@@ -507,8 +583,8 @@ export const MinterState = {
 
   toJSON(message: MinterState): unknown {
     const obj: any = {};
-    message.current_ordering_id !== undefined &&
-      (obj.current_ordering_id = message.current_ordering_id);
+    message.current_position !== undefined &&
+      (obj.current_position = message.current_position);
     message.amount_minted !== undefined &&
       (obj.amount_minted = message.amount_minted);
     return obj;
@@ -517,12 +593,12 @@ export const MinterState = {
   fromPartial(object: DeepPartial<MinterState>): MinterState {
     const message = { ...baseMinterState } as MinterState;
     if (
-      object.current_ordering_id !== undefined &&
-      object.current_ordering_id !== null
+      object.current_position !== undefined &&
+      object.current_position !== null
     ) {
-      message.current_ordering_id = object.current_ordering_id;
+      message.current_position = object.current_position;
     } else {
-      message.current_ordering_id = 0;
+      message.current_position = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = object.amount_minted;
@@ -532,16 +608,6 @@ export const MinterState = {
     return message;
   },
 };
-
-declare var self: any | undefined;
-declare var window: any | undefined;
-var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
-  throw "Unable to locate global object";
-})();
 
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
@@ -574,16 +640,4 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
-}
-
-function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  return long.toNumber();
-}
-
-if (util.Long !== Long) {
-  util.Long = Long as any;
-  configure();
 }

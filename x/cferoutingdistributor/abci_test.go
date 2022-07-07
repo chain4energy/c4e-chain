@@ -1,6 +1,8 @@
 package cferoutingdistributor_test
 
 import (
+	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 
 	testapp "github.com/chain4energy/c4e-chain/app"
@@ -26,11 +28,11 @@ func TestAbci(t *testing.T) {
 	// minterNew.BlocksPerYear = 4855105
 	// app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
 
-	for i := 1; i < 100; i++ {
-		ctx = ctx.WithBlockHeight(int64(i))
-		app.BeginBlocker(ctx, abci.RequestBeginBlock{})
-		app.EndBlocker(ctx, abci.RequestEndBlock{})
-	}
+	//for i := 1; i < 100; i++ {
+	//	ctx = ctx.WithBlockHeight(int64(i))
+	//	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
+	//	app.EndBlocker(ctx, abci.RequestEndBlock{})
+	//}
 
 	//app.BankKeeper. TODO
 	// require.Equal(t, app.BankKeeper.GetSupply(ctx, "uC4E").Amount.String(), 20596877, "asd")

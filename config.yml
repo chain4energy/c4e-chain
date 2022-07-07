@@ -6,7 +6,7 @@ accounts:
     coins: ["4000000000uc4e"]
     mnemonic: "genuine author egg good melt obey omit antique flight fade midnight funny security budget inquiry animal unfold film soft midnight company rack kitchen monitor"
   - name: vesting_pools_owner
-    coins: ["15000000uc4e"]
+    coins: ["15000000000000uc4e"]
     mnemonic: "radar there legend edge jar across night figure dog oval clump endorse garage office upon square worth harvest twelve trust menu mother gossip simple"
   - name: validators_pool_owner
     coins: ["15000000uc4e"]
@@ -90,21 +90,23 @@ genesis:
         minter:
           start: "2022-03-30T00:00:00.00000000Z"
           periods:
-            - ordering_id: 1
+            - position: 1
               period_end: "2024-03-30T00:00:00.00000000Z"
               type: "TIME_LINEAR_MINTER"
               time_linear_minter:
                 amount: "40000000000000"
-            - ordering_id: 2
+            - position: 2
               # period_end: "2024-03-30T00:00:00.00000000Z"
               type: "NO_MINTING"
 
       minter_state:
-        current_ordering_id: 1
+        current_position: 1
         amount_minted: "0"
     cferoutingdistributor:
       routing_distributor:
+        remains_coin_module_account: "remains"
         module_accounts:
+          - c4e_distributor
           - fee_collector
           - inflation_collector
           - validators_rewards_collector
@@ -115,55 +117,56 @@ genesis:
           - community_pool_rewards_collector
         sub_distributor:
             - order: 1
+              name: tx_fee_distributor
+              sources:
+                  - fee_collector
+              destination:
+                account:
+                  address: "c4e_distributor"
+                  is_module_account: true
+                  leftover_coin: "0"
+                burn_share:
+                  percent: "33.3"
+                  leftover_coin: "0"
+            - order: 2
               name: inflation_distributor
               sources:
-                  - inflation_collector
+                - inflation_collector
               destination:
-                default_share_account:
+                account:
                   address: "validators_rewards_collector"
                   is_module_account: true
-                share:
-                  - name: users_incentive_share
-                    percent: 30
-                    account:
-                      address: users_incentive_collector
-                      is_module_account: true
-
-            - order: 2
-              name: fee_and_payment_distributor
-              sources:
-                - fee_collector
-                - payment_collector
-              destination:
-                default_share_account:
-                  address: "validators_rewards_collector"
-                  is_module_account: true
+                  leftover_coin: "0"
                 share:
                   - name: community_pool_rewards_share
-                    percent: 30
-                    account:
-                      address: "community_pool_rewards_collector"
-                      is_module_account: true
-
-            - order: 3
-              name: community_pool_rewards_distributor
-              sources:
-                - community_pool_rewards_collector
-              destination:
-                default_share_account:
-                  address: "c4e1wejevyydp409tz0necwfg4mzj8md4vfy9n95xu"
-                  is_module_account: false
-                share:
-                  - name: liquidity_and_gov_rewards_share
-                    percent: 30
-                    account:
-                      address: "c4e132g4u3qzf890cqaz9yhaegc6v45ew7qzmzlywg"
-                      is_module_account: false
-                  - name: strategic_reserve_share
-                    percent: 30
+                    percent: "12.345"
                     account:
                       address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
                       is_module_account: false
+                      leftover_coin: "0"
+
+#            - order: 3
+#              name: community_pool_rewards_distributor
+#              sources:
+#                - community_pool_rewards_collector
+#              destination:
+#                account:
+#                  address: "c4e1wejevyydp409tz0necwfg4mzj8md4vfy9n95xu"
+#                  is_module_account: false
+#                  leftover_coin: "0"
+#                share:
+#                  - name: liquidity_and_gov_rewards_share
+#                    percent: "11.345"
+#                    account:
+#                      address: "c4e132g4u3qzf890cqaz9yhaegc6v45ew7qzmzlywg"
+#                      is_module_account: false
+#                      leftover_coin: "0"
+#                  - name: strategic_reserve_share
+#                    percent: "18.345"
+#                    account:
+#                      address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+#                      is_module_account: false
+#                      leftover_coin: "0"
     cfevesting:
       params:
         denom: "uc4e"

@@ -79,6 +79,11 @@ func (k Keeper) SendCoinsFromModuleAccount(ctx sdk.Context, coins sdk.Coins, mod
 	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, moduleFrom, account, coins)
 }
 
+func (k Keeper) BurnCoinsForSpecifiedModuleAccount(ctx sdk.Context, coins sdk.Coins, moduleAccountName string) error {
+	return k.bankKeeper.BurnCoins(ctx, moduleAccountName, coins)
+
+}
+
 func (k Keeper) GetAccountCoins(ctx sdk.Context, account sdk.AccAddress) sdk.Coins {
 	return k.bankKeeper.GetAllBalances(ctx, account)
 }

@@ -175,7 +175,7 @@ var (
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName: nil,
+		authtypes.FeeCollectorName: {authtypes.Burner},
 		distrtypes.ModuleName:      nil,
 		// minttypes.ModuleName:           {authtypes.Minter}, // TODO clean this
 		stakingtypes.BondedPoolName:      {authtypes.Burner, authtypes.Staking},
@@ -186,12 +186,14 @@ var (
 		cfemintermoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 		cfemintermoduletypes.InflationCollectorName: nil,
-		"validators_rewards_collector":              nil,
-		"payment_collector":                         {authtypes.Minter},
-		"liquididty_rewards_collector":              nil,
-		"governance_locking_rewards_collector":      nil,
-		"users_incentive_collector":                 nil,
-		"community_pool_rewards_collector":          nil,
+		"validators_rewards_collector":              {authtypes.Burner},
+		"payment_collector":                         {authtypes.Minter, authtypes.Burner},
+		"liquididty_rewards_collector":              {authtypes.Burner},
+		"governance_locking_rewards_collector":      {authtypes.Burner},
+		"users_incentive_collector":                 {authtypes.Burner},
+		"community_pool_rewards_collector":          {authtypes.Burner},
+		"c4e_distributor":                           {authtypes.Burner},
+		"remains":                                   {authtypes.Minter, authtypes.Burner},
 	}
 )
 
@@ -443,7 +445,7 @@ func New(
 		app.GetSubspace(cfemintermoduletypes.ModuleName),
 
 		app.BankKeeper,
-		authtypes.FeeCollectorName, // TODO
+		cfemintermoduletypes.InflationCollectorName, // TODO
 	)
 	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper)
 	app.CferoutingdistributorKeeper = *cferoutingdistributormodulekeeper.NewKeeper(

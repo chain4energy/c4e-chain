@@ -14,6 +14,7 @@ message RoutingDistributor {
 
   //module account to load on start genesis
   repeated string module_accounts = 2;
+  string remains_coin_module_account = 3;
 }
 
 message SubDistributor {
@@ -29,20 +30,45 @@ message SubDistributor {
 }
 
 message Destination {
-  account default_share_account = 1;
+  Account account = 1;
   repeated Share share = 2         [(gogoproto.nullable) = false];
 
   //can be null
-  int32  burn_share = 3;
+  BurnShare burn_share = 3;
+}
+
+message BurnShare {
+  string percent                = 1 [
+    (gogoproto.moretags)   = "yaml:\"percent\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+
+  string leftover_coin      = 2 [
+    (gogoproto.moretags)   = "yaml:\"leftoverCoin\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
 }
 
 message Share {
   string name = 1;
-  int64 percent = 2;
-  account account = 3          [(gogoproto.nullable) = false];
+  string percent                = 2 [
+    (gogoproto.moretags)   = "yaml:\"percent\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+  Account account = 3          [(gogoproto.nullable) = false];
+
+
 }
 
-message account {
+message Account {
   string address = 1;
   bool is_module_account = 2;
+  string leftover_coin      = 3 [
+    (gogoproto.moretags)   = "yaml:\"leftoverCoin\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
 }
