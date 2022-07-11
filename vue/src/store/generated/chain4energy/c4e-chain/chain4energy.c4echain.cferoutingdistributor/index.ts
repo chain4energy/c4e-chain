@@ -4,11 +4,12 @@ import { Params } from "./module/types/cferoutingdistributor/params"
 import { RoutingDistributor } from "./module/types/cferoutingdistributor/sub_distributor"
 import { SubDistributor } from "./module/types/cferoutingdistributor/sub_distributor"
 import { Destination } from "./module/types/cferoutingdistributor/sub_distributor"
+import { BurnShare } from "./module/types/cferoutingdistributor/sub_distributor"
 import { Share } from "./module/types/cferoutingdistributor/sub_distributor"
-import { account } from "./module/types/cferoutingdistributor/sub_distributor"
+import { Account } from "./module/types/cferoutingdistributor/sub_distributor"
 
 
-export { Params, RoutingDistributor, SubDistributor, Destination, Share, account };
+export { Params, RoutingDistributor, SubDistributor, Destination, BurnShare, Share, Account };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -53,8 +54,9 @@ const getDefaultState = () => {
 						RoutingDistributor: getStructure(RoutingDistributor.fromPartial({})),
 						SubDistributor: getStructure(SubDistributor.fromPartial({})),
 						Destination: getStructure(Destination.fromPartial({})),
+						BurnShare: getStructure(BurnShare.fromPartial({})),
 						Share: getStructure(Share.fromPartial({})),
-						account: getStructure(account.fromPartial({})),
+						Account: getStructure(Account.fromPartial({})),
 						
 		},
 		_Registry: registry,

@@ -30,11 +30,11 @@ message SubDistributor {
 }
 
 message Destination {
-  Account account = 1;
+  Account account = 1         [(gogoproto.nullable) = false];
   repeated Share share = 2         [(gogoproto.nullable) = false];
 
   //can be null
-  BurnShare burn_share = 3;
+  BurnShare burn_share = 3         [(gogoproto.nullable) = false];
 }
 
 message BurnShare {

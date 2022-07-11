@@ -4,20 +4,16 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
-
-	testapp "github.com/chain4energy/c4e-chain/app"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestAbci(t *testing.T) {
-	perms := []string{authtypes.Minter}
-	testapp.AddMaccPerms("fee_collector", perms)
-	testapp.AddMaccPerms("payment_collector", perms)
-	// Setup main app
-	app := testapp.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	//perms := []string{authtypes.Minter}
+	//testapp.AddMaccPerms("fee_collector", perms)
+	//testapp.AddMaccPerms("payment_collector", perms)
+	//// Setup main app
+	//app := testapp.Setup(false)
+	//ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	fmt.Println(sdk.MustNewDecFromStr("1.7").TruncateInt())
 
 	// app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx) TODO
 

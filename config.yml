@@ -131,10 +131,14 @@ genesis:
               sources:
                 - c4e_distributor
               destination:
+                burn_share:
+                  percent: "0"
+                  leftover_coin: "0"
                 account:
                   address: "validators_rewards_collector"
                   is_module_account: true
                   leftover_coin: "0"
+
                 share:
                   - name: development_fund
                     percent: "10.345"
@@ -157,6 +161,9 @@ genesis:
               sources:
                 - usage_incentives_collector
               destination:
+                burn_share:
+                  percent: "0"
+                  leftover_coin: "0"
                 account:
                   #insert proper address
                   address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
