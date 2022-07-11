@@ -32,6 +32,7 @@ type SimApp interface {
 // Setup initializes a new chainforenergyApp
 func Setup(isCheckTx bool) *App {
 	db := dbm.NewMemDB()
+	cosmoscmd.SetPrefixes("c4e")
 	encoding := cosmoscmd.MakeEncodingConfig(ModuleBasics)
 
 	app := New(
