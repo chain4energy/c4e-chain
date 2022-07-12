@@ -57,6 +57,24 @@ func (k Keeper) SetRoutingDistributor(ctx sdk.Context, routingDistributor types.
 	store.Set(types.RoutingDistributorKey, b)
 }
 
+//func (k Keeper) SetRemainsMap(ctx sdk.Context, remainsMap map[string]types.Remains) {
+//	store := ctx.KVStore(k.storeKey)
+//	b := k.cdc.MustMarshal(&remainsMap)
+//	store.Set(types.RemainsMapKey, b)
+//}
+//
+//// GetRoutingDistributorr get the routing distributor
+//func (k Keeper) GetRemainsMap(ctx sdk.Context) (remainsMap map[string]types.Remains) {
+//	store := ctx.KVStore(k.storeKey)
+//	b := store.Get(types.RemainsMapKey)
+//	if b == nil {
+//		panic("stored remains map should not have been nil")
+//	}
+//
+//	k.cdc.MustUnmarshal(b, &remainsMap)
+//	return
+//}
+
 // GetRoutingDistributorr get the routing distributor
 func (k Keeper) GetRoutingDistributorr(ctx sdk.Context) (routingDistributor types.RoutingDistributor) {
 	store := ctx.KVStore(k.storeKey)

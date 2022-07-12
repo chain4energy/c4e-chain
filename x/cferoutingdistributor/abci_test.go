@@ -15,12 +15,10 @@ func prepareBurningDistributor() types.RoutingDistributor {
 	destAccount := types.Account{
 		Address:         "c4e_distributor",
 		IsModuleAccount: true,
-		LeftoverCoin:    sdk.MustNewDecFromStr("0"),
 	}
 
 	burnShare := types.BurnShare{
-		Percent:      sdk.MustNewDecFromStr("51"),
-		LeftoverCoin: sdk.MustNewDecFromStr("0"),
+		Percent: sdk.MustNewDecFromStr("51"),
 	}
 
 	destination := types.Destination{
@@ -48,20 +46,17 @@ func prepareBurningDistributor() types.RoutingDistributor {
 func prepareInflationSubDistributor() types.SubDistributor {
 
 	burnShare := types.BurnShare{
-		Percent:      sdk.MustNewDecFromStr("0"),
-		LeftoverCoin: sdk.MustNewDecFromStr("0"),
+		Percent: sdk.MustNewDecFromStr("0"),
 	}
 
 	destAccount := types.Account{
 		Address:         "validators_rewards_collector",
 		IsModuleAccount: true,
-		LeftoverCoin:    sdk.MustNewDecFromStr("0"),
 	}
 
 	shareDevelopmentFundAccount := types.Account{
 		Address:         "c4e1p20lmfzp4g9vywl2jxwexwh6akvkxzpae05wyk",
 		IsModuleAccount: false,
-		LeftoverCoin:    sdk.MustNewDecFromStr("0"),
 	}
 
 	shareDevelopmentFund := types.Share{
@@ -103,7 +98,7 @@ func TestBurningDistributor(t *testing.T) {
 	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 
 	//coin on "c4e_distributor" should be equal 498, remains: 1 and 0.33 on remains
-	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).SubDistributor[0].Destination.Account.LeftoverCoin
+	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e_distributor"].LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains)
 
 	coinOnRemainAccount := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "remains")
@@ -148,7 +143,7 @@ func TestBurningWithInflationDistributor(t *testing.T) {
 	require.EqualValues(t, sdk.MustNewDecFromStr("0"), coinOnDistributorAccount.AmountOf(denom).ToDec())
 
 	//coin on tx_fee_distributor distributor should have 0.33 remains left
-	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).SubDistributor[0].Destination.Account.LeftoverCoin
+	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e_distributor"].LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains)
 
 	//development_fund account should have 573
@@ -157,15 +152,15 @@ func TestBurningWithInflationDistributor(t *testing.T) {
 	require.EqualValues(t, sdk.MustNewDecFromStr("573"), developmentFundAccount.AmountOf(denom).ToDec())
 
 	//development_fund account  remains should have 0.00955
-	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.
-		GetRoutingDistributorr(ctx).SubDistributor[1].Destination.Share[0].Account.LeftoverCoin
+	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e1p20lmfzp4g9vywl2jxwexwh6akvkxzpae05wyk"].LeftoverCoin
+
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.3199"), coinRemainsDevelopmentFund)
 
 	//validators_rewards_collector should have be 0, distributor getting the coin
 	validatorRewardCollectorAccountCoin := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "validators_rewards_collector")
 	require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(denom).ToDec())
 
-	coinRemainsValidatorsReward := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).SubDistributor[1].Destination.Account.LeftoverCoin
+	coinRemainsValidatorsReward := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["validators_rewards_collector"].LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.6801"), coinRemainsValidatorsReward)
 
 	//coins on remains module account should be equal 2

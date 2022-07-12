@@ -3,12 +3,23 @@ import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
 
+export interface Remains {
+  account: Account | undefined;
+  leftover_coin: string;
+}
+
 export interface RoutingDistributor {
   /** List contains distributors */
   sub_distributor: SubDistributor[];
   /** module account to load on start genesis */
   module_accounts: string[];
   remains_coin_module_account: string;
+  remains_map: { [key: string]: Remains };
+}
+
+export interface RoutingDistributor_RemainsMapEntry {
+  key: string;
+  value: Remains | undefined;
 }
 
 export interface SubDistributor {
@@ -23,13 +34,11 @@ export interface SubDistributor {
 export interface Destination {
   account: Account | undefined;
   share: Share[];
-  /** can be null */
   burn_share: BurnShare | undefined;
 }
 
 export interface BurnShare {
   percent: string;
-  leftover_coin: string;
 }
 
 export interface Share {
@@ -41,8 +50,83 @@ export interface Share {
 export interface Account {
   address: string;
   is_module_account: boolean;
-  leftover_coin: string;
 }
+
+const baseRemains: object = { leftover_coin: "" };
+
+export const Remains = {
+  encode(message: Remains, writer: Writer = Writer.create()): Writer {
+    if (message.account !== undefined) {
+      Account.encode(message.account, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.leftover_coin !== "") {
+      writer.uint32(18).string(message.leftover_coin);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): Remains {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseRemains } as Remains;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.account = Account.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.leftover_coin = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Remains {
+    const message = { ...baseRemains } as Remains;
+    if (object.account !== undefined && object.account !== null) {
+      message.account = Account.fromJSON(object.account);
+    } else {
+      message.account = undefined;
+    }
+    if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
+      message.leftover_coin = String(object.leftover_coin);
+    } else {
+      message.leftover_coin = "";
+    }
+    return message;
+  },
+
+  toJSON(message: Remains): unknown {
+    const obj: any = {};
+    message.account !== undefined &&
+      (obj.account = message.account
+        ? Account.toJSON(message.account)
+        : undefined);
+    message.leftover_coin !== undefined &&
+      (obj.leftover_coin = message.leftover_coin);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<Remains>): Remains {
+    const message = { ...baseRemains } as Remains;
+    if (object.account !== undefined && object.account !== null) {
+      message.account = Account.fromPartial(object.account);
+    } else {
+      message.account = undefined;
+    }
+    if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
+      message.leftover_coin = object.leftover_coin;
+    } else {
+      message.leftover_coin = "";
+    }
+    return message;
+  },
+};
 
 const baseRoutingDistributor: object = {
   module_accounts: "",
@@ -63,6 +147,12 @@ export const RoutingDistributor = {
     if (message.remains_coin_module_account !== "") {
       writer.uint32(26).string(message.remains_coin_module_account);
     }
+    Object.entries(message.remains_map).forEach(([key, value]) => {
+      RoutingDistributor_RemainsMapEntry.encode(
+        { key: key as any, value },
+        writer.uint32(34).fork()
+      ).ldelim();
+    });
     return writer;
   },
 
@@ -72,6 +162,7 @@ export const RoutingDistributor = {
     const message = { ...baseRoutingDistributor } as RoutingDistributor;
     message.sub_distributor = [];
     message.module_accounts = [];
+    message.remains_map = {};
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -86,6 +177,15 @@ export const RoutingDistributor = {
         case 3:
           message.remains_coin_module_account = reader.string();
           break;
+        case 4:
+          const entry4 = RoutingDistributor_RemainsMapEntry.decode(
+            reader,
+            reader.uint32()
+          );
+          if (entry4.value !== undefined) {
+            message.remains_map[entry4.key] = entry4.value;
+          }
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -98,6 +198,7 @@ export const RoutingDistributor = {
     const message = { ...baseRoutingDistributor } as RoutingDistributor;
     message.sub_distributor = [];
     message.module_accounts = [];
+    message.remains_map = {};
     if (
       object.sub_distributor !== undefined &&
       object.sub_distributor !== null
@@ -124,6 +225,11 @@ export const RoutingDistributor = {
     } else {
       message.remains_coin_module_account = "";
     }
+    if (object.remains_map !== undefined && object.remains_map !== null) {
+      Object.entries(object.remains_map).forEach(([key, value]) => {
+        message.remains_map[key] = Remains.fromJSON(value);
+      });
+    }
     return message;
   },
 
@@ -143,6 +249,12 @@ export const RoutingDistributor = {
     }
     message.remains_coin_module_account !== undefined &&
       (obj.remains_coin_module_account = message.remains_coin_module_account);
+    obj.remains_map = {};
+    if (message.remains_map) {
+      Object.entries(message.remains_map).forEach(([k, v]) => {
+        obj.remains_map[k] = Remains.toJSON(v);
+      });
+    }
     return obj;
   },
 
@@ -150,6 +262,7 @@ export const RoutingDistributor = {
     const message = { ...baseRoutingDistributor } as RoutingDistributor;
     message.sub_distributor = [];
     message.module_accounts = [];
+    message.remains_map = {};
     if (
       object.sub_distributor !== undefined &&
       object.sub_distributor !== null
@@ -173,6 +286,100 @@ export const RoutingDistributor = {
       message.remains_coin_module_account = object.remains_coin_module_account;
     } else {
       message.remains_coin_module_account = "";
+    }
+    if (object.remains_map !== undefined && object.remains_map !== null) {
+      Object.entries(object.remains_map).forEach(([key, value]) => {
+        if (value !== undefined) {
+          message.remains_map[key] = Remains.fromPartial(value);
+        }
+      });
+    }
+    return message;
+  },
+};
+
+const baseRoutingDistributor_RemainsMapEntry: object = { key: "" };
+
+export const RoutingDistributor_RemainsMapEntry = {
+  encode(
+    message: RoutingDistributor_RemainsMapEntry,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      Remains.encode(message.value, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): RoutingDistributor_RemainsMapEntry {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseRoutingDistributor_RemainsMapEntry,
+    } as RoutingDistributor_RemainsMapEntry;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = Remains.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RoutingDistributor_RemainsMapEntry {
+    const message = {
+      ...baseRoutingDistributor_RemainsMapEntry,
+    } as RoutingDistributor_RemainsMapEntry;
+    if (object.key !== undefined && object.key !== null) {
+      message.key = String(object.key);
+    } else {
+      message.key = "";
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = Remains.fromJSON(object.value);
+    } else {
+      message.value = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: RoutingDistributor_RemainsMapEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined &&
+      (obj.value = message.value ? Remains.toJSON(message.value) : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<RoutingDistributor_RemainsMapEntry>
+  ): RoutingDistributor_RemainsMapEntry {
+    const message = {
+      ...baseRoutingDistributor_RemainsMapEntry,
+    } as RoutingDistributor_RemainsMapEntry;
+    if (object.key !== undefined && object.key !== null) {
+      message.key = object.key;
+    } else {
+      message.key = "";
+    }
+    if (object.value !== undefined && object.value !== null) {
+      message.value = Remains.fromPartial(object.value);
+    } else {
+      message.value = undefined;
     }
     return message;
   },
@@ -399,15 +606,12 @@ export const Destination = {
   },
 };
 
-const baseBurnShare: object = { percent: "", leftover_coin: "" };
+const baseBurnShare: object = { percent: "" };
 
 export const BurnShare = {
   encode(message: BurnShare, writer: Writer = Writer.create()): Writer {
     if (message.percent !== "") {
       writer.uint32(10).string(message.percent);
-    }
-    if (message.leftover_coin !== "") {
-      writer.uint32(18).string(message.leftover_coin);
     }
     return writer;
   },
@@ -421,9 +625,6 @@ export const BurnShare = {
       switch (tag >>> 3) {
         case 1:
           message.percent = reader.string();
-          break;
-        case 2:
-          message.leftover_coin = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -440,19 +641,12 @@ export const BurnShare = {
     } else {
       message.percent = "";
     }
-    if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
-      message.leftover_coin = String(object.leftover_coin);
-    } else {
-      message.leftover_coin = "";
-    }
     return message;
   },
 
   toJSON(message: BurnShare): unknown {
     const obj: any = {};
     message.percent !== undefined && (obj.percent = message.percent);
-    message.leftover_coin !== undefined &&
-      (obj.leftover_coin = message.leftover_coin);
     return obj;
   },
 
@@ -462,11 +656,6 @@ export const BurnShare = {
       message.percent = object.percent;
     } else {
       message.percent = "";
-    }
-    if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
-      message.leftover_coin = object.leftover_coin;
-    } else {
-      message.leftover_coin = "";
     }
     return message;
   },
@@ -564,11 +753,7 @@ export const Share = {
   },
 };
 
-const baseAccount: object = {
-  address: "",
-  is_module_account: false,
-  leftover_coin: "",
-};
+const baseAccount: object = { address: "", is_module_account: false };
 
 export const Account = {
   encode(message: Account, writer: Writer = Writer.create()): Writer {
@@ -577,9 +762,6 @@ export const Account = {
     }
     if (message.is_module_account === true) {
       writer.uint32(16).bool(message.is_module_account);
-    }
-    if (message.leftover_coin !== "") {
-      writer.uint32(26).string(message.leftover_coin);
     }
     return writer;
   },
@@ -596,9 +778,6 @@ export const Account = {
           break;
         case 2:
           message.is_module_account = reader.bool();
-          break;
-        case 3:
-          message.leftover_coin = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -623,11 +802,6 @@ export const Account = {
     } else {
       message.is_module_account = false;
     }
-    if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
-      message.leftover_coin = String(object.leftover_coin);
-    } else {
-      message.leftover_coin = "";
-    }
     return message;
   },
 
@@ -636,8 +810,6 @@ export const Account = {
     message.address !== undefined && (obj.address = message.address);
     message.is_module_account !== undefined &&
       (obj.is_module_account = message.is_module_account);
-    message.leftover_coin !== undefined &&
-      (obj.leftover_coin = message.leftover_coin);
     return obj;
   },
 
@@ -655,11 +827,6 @@ export const Account = {
       message.is_module_account = object.is_module_account;
     } else {
       message.is_module_account = false;
-    }
-    if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
-      message.leftover_coin = object.leftover_coin;
-    } else {
-      message.leftover_coin = "";
     }
     return message;
   },
