@@ -1,14 +1,14 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
-import { HalvingMinter } from "./module/types/cfeminter/minter"
 import { Minter } from "./module/types/cfeminter/minter"
 import { MintingPeriod } from "./module/types/cfeminter/minter"
 import { TimeLinearMinter } from "./module/types/cfeminter/minter"
+import { PeriodicReductionMinter } from "./module/types/cfeminter/minter"
 import { MinterState } from "./module/types/cfeminter/minter"
 import { Params } from "./module/types/cfeminter/params"
 
 
-export { HalvingMinter, Minter, MintingPeriod, TimeLinearMinter, MinterState, Params };
+export { Minter, MintingPeriod, TimeLinearMinter, PeriodicReductionMinter, MinterState, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -51,10 +51,10 @@ const getDefaultState = () => {
 				State: {},
 				
 				_Structure: {
-						HalvingMinter: getStructure(HalvingMinter.fromPartial({})),
 						Minter: getStructure(Minter.fromPartial({})),
 						MintingPeriod: getStructure(MintingPeriod.fromPartial({})),
 						TimeLinearMinter: getStructure(TimeLinearMinter.fromPartial({})),
+						PeriodicReductionMinter: getStructure(PeriodicReductionMinter.fromPartial({})),
 						MinterState: getStructure(MinterState.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						

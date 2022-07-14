@@ -4,15 +4,15 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgCreateVestingPool } from "./types/cfevesting/tx";
 import { MsgSendToVestingAccount } from "./types/cfevesting/tx";
+import { MsgCreateVestingPool } from "./types/cfevesting/tx";
 import { MsgWithdrawAllAvailable } from "./types/cfevesting/tx";
 import { MsgCreateVestingAccount } from "./types/cfevesting/tx";
 
 
 const types = [
-  ["/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", MsgCreateVestingPool],
   ["/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", MsgSendToVestingAccount],
+  ["/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", MsgCreateVestingPool],
   ["/chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailable", MsgWithdrawAllAvailable],
   ["/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", MsgCreateVestingAccount],
   
@@ -47,8 +47,8 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
-    msgCreateVestingPool: (data: MsgCreateVestingPool): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", value: MsgCreateVestingPool.fromPartial( data ) }),
     msgSendToVestingAccount: (data: MsgSendToVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", value: MsgSendToVestingAccount.fromPartial( data ) }),
+    msgCreateVestingPool: (data: MsgCreateVestingPool): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", value: MsgCreateVestingPool.fromPartial( data ) }),
     msgWithdrawAllAvailable: (data: MsgWithdrawAllAvailable): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailable", value: MsgWithdrawAllAvailable.fromPartial( data ) }),
     msgCreateVestingAccount: (data: MsgCreateVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", value: MsgCreateVestingAccount.fromPartial( data ) }),
     

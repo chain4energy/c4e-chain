@@ -88,19 +88,25 @@ genesis:
       params:
         mint_denom: "uc4e"
         minter:
-          start: "2022-03-30T00:00:00.00000000Z"
+          start: "2022-07-05T00:00:00.00000000Z"
           periods:
             - position: 1
-              period_end: "2024-03-30T00:00:00.00000000Z"
-              type: "TIME_LINEAR_MINTER"
-              time_linear_minter:
-                amount: "40000000000000"
-            - position: 2
-              # period_end: "2024-03-30T00:00:00.00000000Z"
-              type: "NO_MINTING"
+              type: "PERIODIC_REDUCTION_MINTER"
+              periodic_reduction_minter:
+                mint_period: "8760h" # year - 365*24
+                mint_amount: "40000000000000"
+                reduction_period_length: 4
+                reduction_factor: "0.5"
+            # - position: 1
+            #   period_end: "2024-03-30T00:00:00.00000000Z"
+            #   type: "TIME_LINEAR_MINTER"
+            #   time_linear_minter:
+            #     amount: "40000000000000"
+            # - position: 2
+            #   type: "NO_MINTING"
 
       minter_state:
-        current_position: 1
+        current_ordering_id: 1
         amount_minted: "0"
     cferoutingdistributor:
       routing_distributor:
