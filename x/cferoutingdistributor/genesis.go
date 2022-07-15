@@ -1,7 +1,6 @@
 package cferoutingdistributor
 
 import (
-	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/keeper"
 	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,8 +9,6 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, ak types.AccountKeeper) {
 	k.SetParams(ctx, genState.Params)
-
-	fmt.Printf("%+v\n", genState.RoutingDistributor) // Print with Variable Name
 
 	k.SetRoutingDistributor(ctx, genState.RoutingDistributor)
 
