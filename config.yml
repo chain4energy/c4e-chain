@@ -106,7 +106,7 @@ genesis:
             #   type: "NO_MINTING"
 
       minter_state:
-        current_ordering_id: 1
+        current_position: 1
         amount_minted: "0"
     cferoutingdistributor:
       routing_distributor:
