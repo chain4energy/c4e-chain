@@ -55,7 +55,7 @@ func prepareInflationSubDistributor() types.SubDistributor {
 	}
 
 	shareDevelopmentFundAccount := types.Account{
-		Address:         "c4e1p20lmfzp4g9vywl2jxwexwh6akvkxzpae05wyk",
+		Address:         "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag",
 		IsModuleAccount: false,
 	}
 
@@ -147,12 +147,12 @@ func TestBurningWithInflationDistributor(t *testing.T) {
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains)
 
 	//development_fund account should have 573
-	acc, _ := sdk.AccAddressFromBech32("c4e1p20lmfzp4g9vywl2jxwexwh6akvkxzpae05wyk")
+	acc, _ := sdk.AccAddressFromBech32("cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
 	developmentFundAccount := app.CferoutingdistributorKeeper.GetAccountCoins(ctx, acc)
 	require.EqualValues(t, sdk.MustNewDecFromStr("573"), developmentFundAccount.AmountOf(denom).ToDec())
 
 	//development_fund account  remains should have 0.00955
-	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e1p20lmfzp4g9vywl2jxwexwh6akvkxzpae05wyk"].LeftoverCoin
+	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag"].LeftoverCoin
 
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.3199"), coinRemainsDevelopmentFund)
 
@@ -210,11 +210,11 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	burnRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["burn"].LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.670000000000000000"), burnRemains)
 
-	acc, _ := sdk.AccAddressFromBech32("c4e1p20lmfzp4g9vywl2jxwexwh6akvkxzpae05wyk")
+	acc, _ := sdk.AccAddressFromBech32("cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
 	developmentFundAccount := app.CferoutingdistributorKeeper.GetAccountCoins(ctx, acc)
 	require.EqualValues(t, sdk.MustNewDecFromStr("1720635"), developmentFundAccount.AmountOf(denom).ToDec())
 
-	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e1p20lmfzp4g9vywl2jxwexwh6akvkxzpae05wyk"].LeftoverCoin
+	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag"].LeftoverCoin
 
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.4354"), coinRemainsDevelopmentFund)
 

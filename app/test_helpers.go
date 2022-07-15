@@ -32,7 +32,12 @@ type SimApp interface {
 // Setup initializes a new chainforenergyApp
 func Setup(isCheckTx bool) *App {
 	db := dbm.NewMemDB()
-	cosmoscmd.SetPrefixes("c4e")
+	//fmt.Println(sdk.GetConfig().GetBech32AccountAddrPrefix())
+	//
+	//if sdk.GetConfig().GetBech32AccountAddrPrefix() != "c4e" {
+	//	cosmoscmd.SetPrefixes("c4e")
+	//}
+
 	encoding := cosmoscmd.MakeEncodingConfig(ModuleBasics)
 
 	app := New(
