@@ -79,7 +79,7 @@ func TestOneYearLinear(t *testing.T) {
 	state := app.CfeminterKeeper.GetMinterState(ctx)
 	require.EqualValues(t, int32(1), state.CurrentPosition)
 	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
-	commontestutils.VerifyModuleAccountBalanceByName("c4e_distributor", ctx, app, t, sdk.ZeroInt())
+	commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.ZeroInt())
 
 	numOfHours := 365 * 24
 	for i := 1; i <= numOfHours; i++ {
@@ -90,7 +90,7 @@ func TestOneYearLinear(t *testing.T) {
 		expectedMinted := totalSupply * int64(i) / int64(numOfHours)
 		expectedInflation := sdk.NewDec(totalSupply).QuoInt64(totalSupply + expectedMinted)
 
-		commontestutils.VerifyModuleAccountBalanceByName("c4e_distributor", ctx, app, t, sdk.NewInt(expectedMinted))
+		commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.NewInt(expectedMinted))
 
 		inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 		require.NoError(t, err)
@@ -108,7 +108,7 @@ func TestOneYearLinear(t *testing.T) {
 
 	}
 
-	commontestutils.VerifyModuleAccountBalanceByName("c4e_distributor", ctx, app, t, sdk.NewInt(totalSupply))
+	commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.NewInt(totalSupply))
 	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
 	require.EqualValues(t, sdk.NewInt(2*totalSupply), supp.Amount)
 
@@ -148,7 +148,7 @@ func TestFewYearsPeridocicReduction(t *testing.T) {
 	state := app.CfeminterKeeper.GetMinterState(ctx)
 	require.EqualValues(t, int32(1), state.CurrentPosition)
 	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
-	commontestutils.VerifyModuleAccountBalanceByName("c4e_distributor", ctx, app, t, sdk.ZeroInt())
+	commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.ZeroInt())
 
 	year := 365 //* 24
 	numOfHours := 4 * year
@@ -164,7 +164,7 @@ func TestFewYearsPeridocicReduction(t *testing.T) {
 			expectedMinted := amountYearly * int64(i) / int64(year)
 			expectedInflation := sdk.NewDec(amountYearly).QuoInt64(totalSupply + prevPeriodMinted + expectedMinted)
 
-			commontestutils.VerifyModuleAccountBalanceByName("c4e_distributor", ctx, app, t, sdk.NewInt(prevPeriodMinted+expectedMinted))
+			commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.NewInt(prevPeriodMinted+expectedMinted))
 
 			inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 			require.NoError(t, err)
@@ -185,7 +185,7 @@ func TestFewYearsPeridocicReduction(t *testing.T) {
 		amountYearly = amountYearly / 2
 	}
 	expectedMinted := int64(310000000000000)
-	commontestutils.VerifyModuleAccountBalanceByName("c4e_distributor", ctx, app, t, sdk.NewInt(expectedMinted))
+	commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.NewInt(expectedMinted))
 	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
 	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
 
