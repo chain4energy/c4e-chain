@@ -3,8 +3,10 @@ package cferoutingdistributor
 import (
 	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/keeper"
 	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"sort"
+	"time"
 )
 
 func sendCoinToProperAccount(ctx sdk.Context, k keeper.Keeper, destinationAddress string,
@@ -18,6 +20,8 @@ func sendCoinToProperAccount(ctx sdk.Context, k keeper.Keeper, destinationAddres
 		k.SendCoinsFromModuleAccount(ctx,
 			sdk.NewCoins(sdk.NewCoin("uc4e", coinsToTransfer)), source, destinationAccount)
 	}
+	telemetry.IncrCounter(float32(coinsToTransfer.Int64()), destinationAddress+"-counter")
+
 }
 
 func saveRemainsToMap(ctx sdk.Context, k keeper.Keeper, destinationAddress string, remainsCount sdk.Dec) {
@@ -76,9 +80,11 @@ func calculateAndBurnCoin(ctx sdk.Context, k keeper.Keeper, coinsToDistributeDec
 
 func burnCoinForModuleAccount(ctx sdk.Context, k keeper.Keeper, coinsToBurn sdk.Int, sourceModule string) {
 	k.BurnCoinsForSpecifiedModuleAccount(ctx, sdk.NewCoins(sdk.NewCoin("uc4e", coinsToBurn)), sourceModule)
+	telemetry.IncrCounter(float32(coinsToBurn.Int64()), "burn-counter")
 }
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
 	routingDistributor := k.GetRoutingDistributorr(ctx)
 
