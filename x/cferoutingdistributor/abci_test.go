@@ -1,85 +1,229 @@
 package cferoutingdistributor_test
 
 import (
-	"testing"
-
 	testapp "github.com/chain4energy/c4e-chain/app"
+	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"testing"
 )
 
-func TestAbci(t *testing.T) {
-	perms := []string{authtypes.Minter}
-	testapp.AddMaccPerms("fee_collector", perms)
-	testapp.AddMaccPerms("payment_collector", perms)
-	// Setup main app
+func prepareBurningDistributor() types.RoutingDistributor {
+	destAccount := types.Account{
+		Address:         "c4e_distributor",
+		IsModuleAccount: true,
+	}
+
+	burnShare := types.BurnShare{
+		Percent: sdk.MustNewDecFromStr("51"),
+	}
+
+	destination := types.Destination{
+		Account:   destAccount,
+		Share:     nil,
+		BurnShare: burnShare,
+	}
+
+	distributor1 := types.SubDistributor{
+		Name:        "tx_fee_distributor",
+		Sources:     []string{"fee_collector"},
+		Destination: destination,
+		Order:       0,
+	}
+
+	routingDistributor := types.RoutingDistributor{
+		SubDistributor:           []types.SubDistributor{distributor1},
+		ModuleAccounts:           nil,
+		RemainsCoinModuleAccount: "remains",
+	}
+
+	return routingDistributor
+}
+
+func prepareInflationSubDistributor() types.SubDistributor {
+
+	burnShare := types.BurnShare{
+		Percent: sdk.MustNewDecFromStr("0"),
+	}
+
+	destAccount := types.Account{
+		Address:         "validators_rewards_collector",
+		IsModuleAccount: true,
+	}
+
+	shareDevelopmentFundAccount := types.Account{
+		Address:         "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag",
+		IsModuleAccount: false,
+	}
+
+	shareDevelopmentFund := types.Share{
+		Name:    "development_fund",
+		Percent: sdk.MustNewDecFromStr("10.345"),
+		Account: shareDevelopmentFundAccount,
+	}
+
+	destination := types.Destination{
+		Account:   destAccount,
+		Share:     []types.Share{shareDevelopmentFund},
+		BurnShare: burnShare,
+	}
+
+	return types.SubDistributor{
+		Name:        "tx_fee_distributor",
+		Sources:     []string{"c4e_distributor"},
+		Destination: destination,
+		Order:       0,
+	}
+}
+
+func TestBurningDistributor(t *testing.T) {
+
+	perms := []string{authtypes.Minter, authtypes.Burner}
+	collector := "fee_collector"
+	denom := "uc4e"
+	testapp.AddMaccPerms(collector, perms)
 	app := testapp.Setup(false)
+
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-	// app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx) TODO
+	//prepare module account with coin to distribute fee_collector 1017
+	cointToMint := sdk.NewCoin(denom, sdk.NewInt(1017))
+	app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
 
-	//Setup minter params
-	// minterNew := app.CfeminterKeeper.GetHalvingMinter(ctx)
-	// minterNew.MintDenom = "uC4E"
-	// minterNew.NewCoinsMint = 20596877
-	// minterNew.BlocksPerYear = 4855105
-	// app.CfeminterKeeper.SetHalvingMinter(ctx, minterNew)
+	app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx, prepareBurningDistributor())
+	ctx = ctx.WithBlockHeight(int64(2))
+	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 
-	for i := 1; i < 100; i++ {
+	//coin on "c4e_distributor" should be equal 498, remains: 1 and 0.33 on remains
+	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e_distributor"].LeftoverCoin
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains)
+
+	coinOnRemainAccount := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "remains")
+	require.EqualValues(t, sdk.NewInt(1), coinOnRemainAccount.AmountOf(denom))
+
+	coinAfterDistribution :=
+		app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "c4e_distributor")
+
+	require.EqualValues(t, sdk.NewInt(498), coinAfterDistribution.AmountOf(denom))
+}
+
+func TestBurningWithInflationDistributor(t *testing.T) {
+	perms := []string{authtypes.Minter, authtypes.Burner}
+	collector := "fee_collector"
+	denom := "uc4e"
+	inflationCollector := "c4e_distributor"
+	testapp.AddMaccPerms(collector, perms)
+	testapp.AddMaccPerms(inflationCollector, perms)
+	app := testapp.Setup(false)
+
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	//prepare module account with coin to distribute fee_collector 1017
+	cointToMint := sdk.NewCoin(denom, sdk.NewInt(1017))
+	app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
+
+	//prepare coin minted from inflation 899
+	cointToMintFromInflation := sdk.NewCoin(denom, sdk.NewInt(5044))
+	app.BankKeeper.MintCoins(ctx, inflationCollector, sdk.NewCoins(cointToMintFromInflation))
+
+	routingDistibutor := prepareBurningDistributor()
+	subDistributors := append(routingDistibutor.SubDistributor, prepareInflationSubDistributor())
+	routingDistibutor.SubDistributor = subDistributors
+
+	app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx, routingDistibutor)
+	ctx = ctx.WithBlockHeight(int64(2))
+	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
+
+	//c4e_distributor should be empty
+	coinOnDistributorAccount :=
+		app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "c4e_distributor")
+	require.EqualValues(t, sdk.MustNewDecFromStr("0"), coinOnDistributorAccount.AmountOf(denom).ToDec())
+
+	//coin on tx_fee_distributor distributor should have 0.33 remains left
+	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e_distributor"].LeftoverCoin
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains)
+
+	//development_fund account should have 573
+	acc, _ := sdk.AccAddressFromBech32("cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
+	developmentFundAccount := app.CferoutingdistributorKeeper.GetAccountCoins(ctx, acc)
+	require.EqualValues(t, sdk.MustNewDecFromStr("573"), developmentFundAccount.AmountOf(denom).ToDec())
+
+	//development_fund account  remains should have 0.00955
+	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag"].LeftoverCoin
+
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.3199"), coinRemainsDevelopmentFund)
+
+	//validators_rewards_collector should have be 0, distributor getting the coin
+	validatorRewardCollectorAccountCoin := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "validators_rewards_collector")
+	require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(denom).ToDec())
+
+	coinRemainsValidatorsReward := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["validators_rewards_collector"].LeftoverCoin
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.6801"), coinRemainsValidatorsReward)
+
+	//coins on remains module account should be equal 2
+	coinOnRemainAccount := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "remains")
+	require.EqualValues(t, sdk.NewInt(2), coinOnRemainAccount.AmountOf(denom))
+}
+
+func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
+	perms := []string{authtypes.Minter, authtypes.Burner}
+	collector := "fee_collector"
+	denom := "uc4e"
+	inflationCollector := "c4e_distributor"
+	testapp.AddMaccPerms(collector, perms)
+	testapp.AddMaccPerms(inflationCollector, perms)
+	app := testapp.Setup(false)
+
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	routingDistibutor := prepareBurningDistributor()
+	subDistributors := append(routingDistibutor.SubDistributor, prepareInflationSubDistributor())
+	routingDistibutor.SubDistributor = subDistributors
+
+	app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx, routingDistibutor)
+
+	//coin from fee 1017 * 3000
+	for i := 1; i <= 3001; i++ {
+		//prepare module account with coin to distribute fee_collector 1017
+
+		cointToMint := sdk.NewCoin(denom, sdk.NewInt(1017))
+		app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
+
+		//prepare coin minted from inflation 899
+		cointToMintFromInflation := sdk.NewCoin(denom, sdk.NewInt(5044))
+		app.BankKeeper.MintCoins(ctx, inflationCollector, sdk.NewCoins(cointToMintFromInflation))
 		ctx = ctx.WithBlockHeight(int64(i))
 		app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 		app.EndBlocker(ctx, abci.RequestEndBlock{})
 	}
 
-	//app.BankKeeper. TODO
-	// require.Equal(t, app.BankKeeper.GetSupply(ctx, "uC4E").Amount.String(), 20596877, "asd")
+	ctx = ctx.WithBlockHeight(int64(3002))
+	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
+	app.EndBlocker(ctx, abci.RequestEndBlock{})
 
-	// -------------------
-	// types.RoutingDistributor{
-	// 	SubDistributor: [
-	// 	{Name:inflation_distributor Sources:[inflation_collector]
-	// 	Destination:{DefaultShareAccount:address:"validators_rewards_collector" is_module_account:true
-	// 	Share:[{Name:users_incentive_share Percent:30 Account:{Address:users_incentive_collector IsModuleAccount:true}}] BurnShare:0} Order:1}
+	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e_distributor"].LeftoverCoin
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains)
 
-	// 	{Name:fee_and_payment_distributor Sources:[fee_collector payment_collector] Destination:{DefaultShareAccount:address:"validators_rewards_collector" is_module_account:true  Share:[{Name:community_pool_rewards_share Percent:30 Account:{Address:community_pool_rewards_collector IsModuleAccount:true}}] BurnShare:0} Order:2} {Name:community_pool_rewards_distributor Sources:[community_pool_rewards_collector] Destination:{DefaultShareAccount:address:"c4e1wejevyydp409tz0necwfg4mzj8md4vfy9n95xu"  Share:[{Name:liquidity_and_gov_rewards_share Percent:30 Account:{Address:c4e132g4u3qzf890cqaz9yhaegc6v45ew7qzmzlywg IsModuleAccount:false11:03}} {Name:strategic_reserve_share Percent:30 Account:{Address:c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n IsModuleAccount:false}}] BurnShare:0} Order:3}] ModuleAccounts:[fee_collector inflation_collector validators_rewards_collector payment_collector liquididty_rewards_collector governance_locking_rewards_collector users_incentive_collector community_pool_rewards_collector]}
-	// }
-	// --------------------
-	//
-	//func prepareRoutingDistributor() (routingDistributor types.RoutingDistributor) {
-	//
-	//	routingDistributor types.RoutingDistributor {
-	//		SubDistributor: types.SubDistributor{
-	//			Name: "inflation_distributor",
-	//			Sources: "inflation_collector",
-	//
-	//		}
-	//	}
-	//}
+	burnRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["burn"].LeftoverCoin
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.670000000000000000"), burnRemains)
 
-	//inflation_distributor := types.SubDistributor {
-	//	Order: 1,
-	//	Sources: [] string {"inflation_collector"},
-	//	Destination: types.Desti
-	//	}
-	//}
-	//
-	//
-	//
-	//routingDistributor := types.RoutingDistributor {
-	//
-	//
-	//
-	//
-	//	SubDistributor: [] types.SubDistributor {
-	//		[			Name: "inflation_distributor",
-	//		Sources: [] string {"inflation_collector"},
-	//		],
-	//
-	//
-	//	},
-	//	ModuleAccounts: [] string {"asdasd","asdasdas"},
-	//
-	//}
+	acc, _ := sdk.AccAddressFromBech32("cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
+	developmentFundAccount := app.CferoutingdistributorKeeper.GetAccountCoins(ctx, acc)
+	require.EqualValues(t, sdk.MustNewDecFromStr("1720635"), developmentFundAccount.AmountOf(denom).ToDec())
 
+	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag"].LeftoverCoin
+
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.4354"), coinRemainsDevelopmentFund)
+
+	validatorRewardCollectorAccountCoin := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "validators_rewards_collector")
+	require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(denom).ToDec())
+
+	coinRemainsValidatorsReward := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["validators_rewards_collector"].LeftoverCoin
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.5646"), coinRemainsValidatorsReward)
+
+	coinOnRemainAccount := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "remains")
+	require.EqualValues(t, sdk.NewInt(2), coinOnRemainAccount.AmountOf(denom))
 }

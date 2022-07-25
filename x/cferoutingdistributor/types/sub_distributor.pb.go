@@ -5,6 +5,7 @@ package types
 
 import (
 	fmt "fmt"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"
@@ -23,18 +24,65 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type Remains struct {
+	Account      Account                                `protobuf:"bytes,1,opt,name=account,proto3" json:"account"`
+	LeftoverCoin github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=leftover_coin,json=leftoverCoin,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"leftover_coin" yaml:"leftoverCoin"`
+}
+
+func (m *Remains) Reset()         { *m = Remains{} }
+func (m *Remains) String() string { return proto.CompactTextString(m) }
+func (*Remains) ProtoMessage()    {}
+func (*Remains) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0c639462a28accb4, []int{0}
+}
+func (m *Remains) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Remains) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Remains.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Remains) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Remains.Merge(m, src)
+}
+func (m *Remains) XXX_Size() int {
+	return m.Size()
+}
+func (m *Remains) XXX_DiscardUnknown() {
+	xxx_messageInfo_Remains.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Remains proto.InternalMessageInfo
+
+func (m *Remains) GetAccount() Account {
+	if m != nil {
+		return m.Account
+	}
+	return Account{}
+}
+
 type RoutingDistributor struct {
 	//List contains distributors
 	SubDistributor []SubDistributor `protobuf:"bytes,1,rep,name=sub_distributor,json=subDistributor,proto3" json:"sub_distributor"`
 	//module account to load on start genesis
-	ModuleAccounts []string `protobuf:"bytes,2,rep,name=module_accounts,json=moduleAccounts,proto3" json:"module_accounts,omitempty"`
+	ModuleAccounts           []string           `protobuf:"bytes,2,rep,name=module_accounts,json=moduleAccounts,proto3" json:"module_accounts,omitempty"`
+	RemainsCoinModuleAccount string             `protobuf:"bytes,3,opt,name=remains_coin_module_account,json=remainsCoinModuleAccount,proto3" json:"remains_coin_module_account,omitempty"`
+	RemainsMap               map[string]Remains `protobuf:"bytes,4,rep,name=remains_map,json=remainsMap,proto3" json:"remains_map" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (m *RoutingDistributor) Reset()         { *m = RoutingDistributor{} }
 func (m *RoutingDistributor) String() string { return proto.CompactTextString(m) }
 func (*RoutingDistributor) ProtoMessage()    {}
 func (*RoutingDistributor) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0c639462a28accb4, []int{0}
+	return fileDescriptor_0c639462a28accb4, []int{1}
 }
 func (m *RoutingDistributor) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -77,6 +125,20 @@ func (m *RoutingDistributor) GetModuleAccounts() []string {
 	return nil
 }
 
+func (m *RoutingDistributor) GetRemainsCoinModuleAccount() string {
+	if m != nil {
+		return m.RemainsCoinModuleAccount
+	}
+	return ""
+}
+
+func (m *RoutingDistributor) GetRemainsMap() map[string]Remains {
+	if m != nil {
+		return m.RemainsMap
+	}
+	return nil
+}
+
 type SubDistributor struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	//represent list of module account from which
@@ -90,7 +152,7 @@ func (m *SubDistributor) Reset()         { *m = SubDistributor{} }
 func (m *SubDistributor) String() string { return proto.CompactTextString(m) }
 func (*SubDistributor) ProtoMessage()    {}
 func (*SubDistributor) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0c639462a28accb4, []int{1}
+	return fileDescriptor_0c639462a28accb4, []int{2}
 }
 func (m *SubDistributor) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -148,17 +210,16 @@ func (m *SubDistributor) GetOrder() int32 {
 }
 
 type Destination struct {
-	DefaultShareAccount *Account `protobuf:"bytes,1,opt,name=default_share_account,json=defaultShareAccount,proto3" json:"default_share_account,omitempty"`
-	Share               []Share  `protobuf:"bytes,2,rep,name=share,proto3" json:"share"`
-	//can be null
-	BurnShare int32 `protobuf:"varint,3,opt,name=burn_share,json=burnShare,proto3" json:"burn_share,omitempty"`
+	Account   Account   `protobuf:"bytes,1,opt,name=account,proto3" json:"account"`
+	Share     []Share   `protobuf:"bytes,2,rep,name=share,proto3" json:"share"`
+	BurnShare BurnShare `protobuf:"bytes,3,opt,name=burn_share,json=burnShare,proto3" json:"burn_share"`
 }
 
 func (m *Destination) Reset()         { *m = Destination{} }
 func (m *Destination) String() string { return proto.CompactTextString(m) }
 func (*Destination) ProtoMessage()    {}
 func (*Destination) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0c639462a28accb4, []int{2}
+	return fileDescriptor_0c639462a28accb4, []int{3}
 }
 func (m *Destination) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -187,11 +248,11 @@ func (m *Destination) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Destination proto.InternalMessageInfo
 
-func (m *Destination) GetDefaultShareAccount() *Account {
+func (m *Destination) GetAccount() Account {
 	if m != nil {
-		return m.DefaultShareAccount
+		return m.Account
 	}
-	return nil
+	return Account{}
 }
 
 func (m *Destination) GetShare() []Share {
@@ -201,24 +262,61 @@ func (m *Destination) GetShare() []Share {
 	return nil
 }
 
-func (m *Destination) GetBurnShare() int32 {
+func (m *Destination) GetBurnShare() BurnShare {
 	if m != nil {
 		return m.BurnShare
 	}
-	return 0
+	return BurnShare{}
 }
 
+type BurnShare struct {
+	Percent github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=percent,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"percent" yaml:"percent"`
+}
+
+func (m *BurnShare) Reset()         { *m = BurnShare{} }
+func (m *BurnShare) String() string { return proto.CompactTextString(m) }
+func (*BurnShare) ProtoMessage()    {}
+func (*BurnShare) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0c639462a28accb4, []int{4}
+}
+func (m *BurnShare) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BurnShare) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BurnShare.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BurnShare) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BurnShare.Merge(m, src)
+}
+func (m *BurnShare) XXX_Size() int {
+	return m.Size()
+}
+func (m *BurnShare) XXX_DiscardUnknown() {
+	xxx_messageInfo_BurnShare.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BurnShare proto.InternalMessageInfo
+
 type Share struct {
-	Name    string  `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Percent int64   `protobuf:"varint,2,opt,name=percent,proto3" json:"percent,omitempty"`
-	Account Account `protobuf:"bytes,3,opt,name=account,proto3" json:"account"`
+	Name    string                                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Percent github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=percent,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"percent" yaml:"percent"`
+	Account Account                                `protobuf:"bytes,3,opt,name=account,proto3" json:"account"`
 }
 
 func (m *Share) Reset()         { *m = Share{} }
 func (m *Share) String() string { return proto.CompactTextString(m) }
 func (*Share) ProtoMessage()    {}
 func (*Share) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0c639462a28accb4, []int{3}
+	return fileDescriptor_0c639462a28accb4, []int{5}
 }
 func (m *Share) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -254,13 +352,6 @@ func (m *Share) GetName() string {
 	return ""
 }
 
-func (m *Share) GetPercent() int64 {
-	if m != nil {
-		return m.Percent
-	}
-	return 0
-}
-
 func (m *Share) GetAccount() Account {
 	if m != nil {
 		return m.Account
@@ -277,7 +368,7 @@ func (m *Account) Reset()         { *m = Account{} }
 func (m *Account) String() string { return proto.CompactTextString(m) }
 func (*Account) ProtoMessage()    {}
 func (*Account) Descriptor() ([]byte, []int) {
-	return fileDescriptor_0c639462a28accb4, []int{4}
+	return fileDescriptor_0c639462a28accb4, []int{6}
 }
 func (m *Account) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -321,11 +412,14 @@ func (m *Account) GetIsModuleAccount() bool {
 }
 
 func init() {
+	proto.RegisterType((*Remains)(nil), "chain4energy.c4echain.cferoutingdistributor.Remains")
 	proto.RegisterType((*RoutingDistributor)(nil), "chain4energy.c4echain.cferoutingdistributor.RoutingDistributor")
+	proto.RegisterMapType((map[string]Remains)(nil), "chain4energy.c4echain.cferoutingdistributor.RoutingDistributor.RemainsMapEntry")
 	proto.RegisterType((*SubDistributor)(nil), "chain4energy.c4echain.cferoutingdistributor.SubDistributor")
 	proto.RegisterType((*Destination)(nil), "chain4energy.c4echain.cferoutingdistributor.Destination")
+	proto.RegisterType((*BurnShare)(nil), "chain4energy.c4echain.cferoutingdistributor.BurnShare")
 	proto.RegisterType((*Share)(nil), "chain4energy.c4echain.cferoutingdistributor.Share")
-	proto.RegisterType((*Account)(nil), "chain4energy.c4echain.cferoutingdistributor.account")
+	proto.RegisterType((*Account)(nil), "chain4energy.c4echain.cferoutingdistributor.Account")
 }
 
 func init() {
@@ -333,38 +427,92 @@ func init() {
 }
 
 var fileDescriptor_0c639462a28accb4 = []byte{
-	// 482 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0xcf, 0x8e, 0xd3, 0x30,
-	0x10, 0xc6, 0xeb, 0x4d, 0xc3, 0x52, 0x47, 0x6a, 0x85, 0x59, 0xa4, 0x68, 0x25, 0x42, 0x94, 0x0b,
-	0x11, 0x2b, 0x12, 0x29, 0xf4, 0x80, 0xc4, 0x01, 0xb1, 0xda, 0x2b, 0x20, 0x65, 0xb9, 0xc0, 0xa5,
-	0x38, 0x8e, 0x37, 0x35, 0xda, 0xda, 0x95, 0xff, 0x48, 0xec, 0x33, 0x70, 0xe1, 0x35, 0x78, 0x01,
-	0x9e, 0x61, 0x8f, 0x7b, 0xe4, 0x84, 0x50, 0x2b, 0xf1, 0x1c, 0x28, 0x4e, 0xb2, 0x4d, 0x51, 0x39,
-	0x94, 0x9b, 0xbf, 0xd1, 0xcc, 0x6f, 0xbe, 0x19, 0xdb, 0xf0, 0x84, 0x5c, 0x50, 0x29, 0x8c, 0x66,
-	0xbc, 0x2a, 0x99, 0xd2, 0x92, 0x15, 0x46, 0x0b, 0x99, 0x2a, 0x53, 0xcc, 0x7a, 0x3a, 0x59, 0x4a,
-	0xa1, 0x05, 0x3a, 0x21, 0x73, 0xcc, 0xf8, 0x94, 0x72, 0x2a, 0xab, 0xab, 0x84, 0x4c, 0xa9, 0xd5,
-	0xc9, 0x4e, 0xc4, 0xf1, 0x51, 0x25, 0x2a, 0x61, 0xeb, 0xd2, 0xfa, 0xd4, 0x20, 0x8e, 0xa3, 0xdd,
-	0xfd, 0x96, 0x58, 0xe2, 0x85, 0x6a, 0x72, 0xa2, 0x6f, 0x00, 0xa2, 0xbc, 0xc9, 0x39, 0xdb, 0xe4,
-	0xa0, 0x4f, 0x70, 0xf2, 0x97, 0x2d, 0x1f, 0x84, 0x4e, 0xec, 0x65, 0x2f, 0x92, 0x3d, 0x7c, 0x25,
-	0xe7, 0xa6, 0xe8, 0x51, 0x4f, 0x87, 0xd7, 0x3f, 0x1f, 0x0d, 0xf2, 0xb1, 0xda, 0x8a, 0xa2, 0xc7,
-	0x70, 0xb2, 0x10, 0xa5, 0xb9, 0xa4, 0x33, 0x4c, 0x88, 0x30, 0x5c, 0x2b, 0xff, 0x20, 0x74, 0xe2,
-	0x51, 0x3e, 0x6e, 0xc2, 0xaf, 0xda, 0x68, 0xf4, 0x1d, 0xc0, 0xf1, 0x36, 0x11, 0x21, 0x38, 0xe4,
-	0x78, 0x41, 0x7d, 0x10, 0x82, 0x78, 0x94, 0xdb, 0x33, 0xf2, 0xe1, 0xa1, 0x12, 0x46, 0x12, 0xda,
-	0x71, 0x3a, 0x89, 0x3e, 0x42, 0xaf, 0xa4, 0x4a, 0x33, 0x8e, 0x35, 0x13, 0xdc, 0x77, 0x42, 0x10,
-	0x7b, 0xd9, 0xf3, 0xbd, 0x26, 0x3a, 0xdb, 0xd4, 0xb7, 0xe3, 0xf4, 0x91, 0xe8, 0x08, 0xba, 0x42,
-	0x96, 0x54, 0xfa, 0xc3, 0x10, 0xc4, 0x6e, 0xde, 0x88, 0xe8, 0x37, 0x80, 0x5e, 0xaf, 0x10, 0xcd,
-	0xe1, 0x83, 0x92, 0x5e, 0x60, 0x73, 0xa9, 0x67, 0x6a, 0x8e, 0xe5, 0xed, 0xe0, 0x76, 0x0c, 0x2f,
-	0x9b, 0xee, 0xe5, 0xa8, 0xad, 0xcd, 0xef, 0xb7, 0xc8, 0xf3, 0x9a, 0xd8, 0xee, 0x0c, 0xbd, 0x81,
-	0xae, 0xed, 0x60, 0x37, 0xe1, 0x65, 0xd9, 0x7e, 0xb7, 0x57, 0x57, 0xb6, 0x53, 0x36, 0x18, 0xf4,
-	0x10, 0xc2, 0xc2, 0x48, 0xde, 0xd8, 0xb6, 0x0b, 0x74, 0xf3, 0x51, 0x1d, 0xb1, 0xb9, 0xd1, 0x17,
-	0x00, 0x5d, 0x7b, 0xfa, 0xd7, 0xc5, 0x2c, 0xa9, 0x24, 0x94, 0x6b, 0xff, 0x20, 0x04, 0xb1, 0x93,
-	0x77, 0x12, 0xbd, 0x83, 0x87, 0xdd, 0x0a, 0x9c, 0xff, 0x5f, 0x41, 0x6b, 0xb5, 0x43, 0x45, 0x6f,
-	0x6f, 0xa9, 0x75, 0x6b, 0x5c, 0x96, 0x92, 0x2a, 0xd5, 0x3a, 0xea, 0x24, 0x7a, 0x02, 0xef, 0x31,
-	0x35, 0xdb, 0x7e, 0x80, 0xd6, 0xde, 0xdd, 0x7c, 0xc2, 0xd4, 0xeb, 0xfe, 0x0b, 0x3c, 0x7d, 0x7f,
-	0xbd, 0x0a, 0xc0, 0xcd, 0x2a, 0x00, 0xbf, 0x56, 0x01, 0xf8, 0xba, 0x0e, 0x06, 0x37, 0xeb, 0x60,
-	0xf0, 0x63, 0x1d, 0x0c, 0x3e, 0xbc, 0xac, 0x98, 0x9e, 0x9b, 0x22, 0x21, 0x62, 0x91, 0xf6, 0x9d,
-	0xa7, 0x64, 0x4a, 0x9f, 0xda, 0x40, 0xfa, 0x39, 0xdd, 0xfd, 0x1d, 0xf5, 0xd5, 0x92, 0xaa, 0xe2,
-	0x8e, 0xfd, 0x8e, 0xcf, 0xfe, 0x04, 0x00, 0x00, 0xff, 0xff, 0x77, 0xd5, 0x79, 0x98, 0x24, 0x04,
-	0x00, 0x00,
+	// 661 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0x8e, 0xf3, 0x43, 0xc8, 0x18, 0x12, 0x58, 0x7a, 0xb0, 0x8a, 0x94, 0x46, 0x3e, 0x40, 0x44,
+	0x55, 0x5b, 0x0a, 0x11, 0xaa, 0x8a, 0x10, 0x10, 0xda, 0x0b, 0x52, 0xa9, 0x64, 0xb8, 0x50, 0x0e,
+	0x61, 0x6d, 0x6f, 0x53, 0xb7, 0xf1, 0xae, 0xb5, 0x6b, 0x57, 0xe4, 0x2d, 0xfa, 0x34, 0x3c, 0x43,
+	0x25, 0x84, 0xd4, 0x0b, 0x12, 0xe2, 0x50, 0xa1, 0xf6, 0x0d, 0x78, 0x02, 0x64, 0xef, 0xba, 0x75,
+	0x4a, 0x2e, 0x96, 0xca, 0x29, 0x3b, 0x93, 0xfd, 0xbe, 0x99, 0xef, 0xdb, 0xf1, 0x2e, 0xac, 0x7a,
+	0x7b, 0x84, 0xb3, 0x24, 0x0e, 0xe8, 0xc4, 0x0f, 0x44, 0xcc, 0x03, 0x37, 0x89, 0x19, 0xb7, 0x45,
+	0xe2, 0x8e, 0x0b, 0xb1, 0x15, 0x71, 0x16, 0x33, 0xb4, 0xea, 0xed, 0xe3, 0x80, 0x0e, 0x09, 0x25,
+	0x7c, 0x32, 0xb3, 0xbc, 0x21, 0xc9, 0x62, 0x6b, 0x21, 0xc5, 0xf2, 0xd2, 0x84, 0x4d, 0x58, 0x86,
+	0xb3, 0xd3, 0x95, 0xa4, 0x58, 0x36, 0x17, 0xd7, 0x8b, 0x30, 0xc7, 0xa1, 0x90, 0x7b, 0xcc, 0x6f,
+	0x1a, 0x34, 0x1d, 0x12, 0xe2, 0x80, 0x0a, 0xf4, 0x01, 0x9a, 0xd8, 0xf3, 0x58, 0x42, 0x63, 0x43,
+	0xeb, 0x69, 0x7d, 0x7d, 0x30, 0xb4, 0x4a, 0x34, 0x61, 0xbd, 0x96, 0xd8, 0x51, 0xfd, 0xe4, 0x6c,
+	0xa5, 0xe2, 0xe4, 0x54, 0xe8, 0x00, 0xee, 0x4e, 0xc9, 0x5e, 0xcc, 0x8e, 0x08, 0x1f, 0x7b, 0x2c,
+	0xa0, 0x46, 0xb5, 0xa7, 0xf5, 0x5b, 0xa3, 0xad, 0x74, 0xd7, 0xaf, 0xb3, 0x95, 0x47, 0x93, 0x20,
+	0xde, 0x4f, 0x5c, 0xcb, 0x63, 0xa1, 0xed, 0x31, 0x11, 0x32, 0xa1, 0x7e, 0xd6, 0x84, 0x7f, 0x68,
+	0xc7, 0xb3, 0x88, 0x08, 0x6b, 0x93, 0x78, 0x7f, 0xce, 0x56, 0x1e, 0xcc, 0x70, 0x38, 0xdd, 0x30,
+	0x73, 0xb2, 0x37, 0x2c, 0xa0, 0xa6, 0x73, 0x67, 0x2e, 0xfc, 0x51, 0x03, 0xe4, 0xc8, 0xce, 0x36,
+	0xaf, 0x3a, 0x43, 0x07, 0xd0, 0xb9, 0x66, 0xb2, 0xa1, 0xf5, 0x6a, 0x7d, 0x7d, 0xf0, 0xbc, 0x94,
+	0xc0, 0xf7, 0x89, 0x5b, 0x60, 0x55, 0x3a, 0xdb, 0x62, 0x2e, 0x8b, 0x1e, 0x43, 0x27, 0x64, 0x7e,
+	0x32, 0x25, 0x63, 0x65, 0x80, 0x30, 0xaa, 0xbd, 0x5a, 0xbf, 0xe5, 0xb4, 0x65, 0x5a, 0xb9, 0x24,
+	0xd0, 0x0b, 0x78, 0xc8, 0xa5, 0xf1, 0x99, 0x2d, 0xe3, 0x79, 0x94, 0x51, 0x4b, 0x5d, 0x72, 0x0c,
+	0xb5, 0x25, 0x55, 0xb7, 0x5d, 0xc4, 0xa3, 0x23, 0xd0, 0x73, 0x78, 0x88, 0x23, 0xa3, 0x9e, 0xe9,
+	0xd9, 0x29, 0xa5, 0xe7, 0x5f, 0xa7, 0x2c, 0x35, 0x0a, 0xdb, 0x38, 0xda, 0xa2, 0x31, 0x9f, 0x29,
+	0x8d, 0xc0, 0x2f, 0xd3, 0xcb, 0x02, 0x3a, 0xd7, 0x36, 0xa1, 0x7b, 0x50, 0x3b, 0x24, 0xb3, 0x6c,
+	0x66, 0x5a, 0x4e, 0xba, 0x44, 0x6f, 0xa1, 0x71, 0x84, 0xa7, 0x09, 0xc9, 0xce, 0xba, 0xec, 0x1c,
+	0x29, 0x7a, 0x47, 0x52, 0x6c, 0x54, 0xd7, 0x35, 0xf3, 0xab, 0x06, 0xed, 0x79, 0xf7, 0x11, 0x82,
+	0x3a, 0xc5, 0x21, 0x51, 0x55, 0xb3, 0x35, 0x32, 0xa0, 0x29, 0x58, 0xc2, 0x3d, 0x92, 0x7b, 0x9e,
+	0x87, 0xe8, 0x33, 0xe8, 0x3e, 0x11, 0x71, 0x40, 0x71, 0x1c, 0x30, 0x9a, 0x99, 0xab, 0x0f, 0xd6,
+	0x4b, 0xb5, 0xb5, 0x79, 0x85, 0x57, 0xb6, 0x14, 0x29, 0xd1, 0x12, 0x34, 0x18, 0xf7, 0x09, 0x37,
+	0xea, 0x3d, 0xad, 0xdf, 0x70, 0x64, 0x60, 0x1e, 0x57, 0x41, 0x2f, 0x00, 0xff, 0xd3, 0x27, 0xf6,
+	0x0e, 0x1a, 0x62, 0x1f, 0x73, 0x92, 0xa9, 0xd6, 0x07, 0x83, 0x72, 0x53, 0x9d, 0x22, 0x15, 0xa3,
+	0xa4, 0x41, 0x9f, 0x00, 0xdc, 0x84, 0xd3, 0xb1, 0x24, 0x95, 0x66, 0x3d, 0x2b, 0x45, 0x3a, 0x4a,
+	0x38, 0x2d, 0x12, 0xb7, 0xdc, 0x3c, 0x61, 0x4e, 0xa0, 0x75, 0xf9, 0x2f, 0xda, 0x85, 0x66, 0x44,
+	0xb8, 0x47, 0x94, 0x1f, 0xad, 0xd1, 0xab, 0xd2, 0xd7, 0x42, 0x5b, 0x5e, 0x0b, 0x8a, 0xc6, 0x74,
+	0x72, 0x42, 0xf3, 0xbb, 0x06, 0x0d, 0x59, 0x65, 0xd1, 0xac, 0x14, 0x2a, 0x57, 0x6f, 0xb8, 0x72,
+	0xf1, 0x94, 0x6b, 0x37, 0x76, 0xca, 0xe6, 0x0e, 0x34, 0xf3, 0x8f, 0xdf, 0x80, 0x26, 0xf6, 0x7d,
+	0x4e, 0x84, 0x50, 0x9a, 0xf2, 0x10, 0x3d, 0x81, 0xfb, 0x81, 0xb8, 0x7e, 0x97, 0xa4, 0x02, 0x6f,
+	0x3b, 0x9d, 0x40, 0xcc, 0x5d, 0x21, 0xa3, 0x8f, 0x27, 0xe7, 0x5d, 0xed, 0xf4, 0xbc, 0xab, 0xfd,
+	0x3e, 0xef, 0x6a, 0xc7, 0x17, 0xdd, 0xca, 0xe9, 0x45, 0xb7, 0xf2, 0xf3, 0xa2, 0x5b, 0xd9, 0x7d,
+	0x59, 0xf4, 0xa0, 0xd0, 0xb9, 0xed, 0x0d, 0xc9, 0x5a, 0x96, 0xb0, 0xbf, 0xd8, 0x8b, 0x5f, 0x97,
+	0xcc, 0x20, 0xf7, 0x56, 0xf6, 0xba, 0x3c, 0xfd, 0x1b, 0x00, 0x00, 0xff, 0xff, 0x3b, 0x1c, 0xd8,
+	0x59, 0xf3, 0x06, 0x00, 0x00,
+}
+
+func (m *Remains) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Remains) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Remains) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.LeftoverCoin.Size()
+		i -= size
+		if _, err := m.LeftoverCoin.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintSubDistributor(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	{
+		size, err := m.Account.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintSubDistributor(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
 }
 
 func (m *RoutingDistributor) Marshal() (dAtA []byte, err error) {
@@ -387,6 +535,37 @@ func (m *RoutingDistributor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.RemainsMap) > 0 {
+		for k := range m.RemainsMap {
+			v := m.RemainsMap[k]
+			baseI := i
+			{
+				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintSubDistributor(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintSubDistributor(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintSubDistributor(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x22
+		}
+	}
+	if len(m.RemainsCoinModuleAccount) > 0 {
+		i -= len(m.RemainsCoinModuleAccount)
+		copy(dAtA[i:], m.RemainsCoinModuleAccount)
+		i = encodeVarintSubDistributor(dAtA, i, uint64(len(m.RemainsCoinModuleAccount)))
+		i--
+		dAtA[i] = 0x1a
+	}
 	if len(m.ModuleAccounts) > 0 {
 		for iNdEx := len(m.ModuleAccounts) - 1; iNdEx >= 0; iNdEx-- {
 			i -= len(m.ModuleAccounts[iNdEx])
@@ -487,11 +666,16 @@ func (m *Destination) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.BurnShare != 0 {
-		i = encodeVarintSubDistributor(dAtA, i, uint64(m.BurnShare))
-		i--
-		dAtA[i] = 0x18
+	{
+		size, err := m.BurnShare.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintSubDistributor(dAtA, i, uint64(size))
 	}
+	i--
+	dAtA[i] = 0x1a
 	if len(m.Share) > 0 {
 		for iNdEx := len(m.Share) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -506,18 +690,49 @@ func (m *Destination) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if m.DefaultShareAccount != nil {
-		{
-			size, err := m.DefaultShareAccount.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintSubDistributor(dAtA, i, uint64(size))
+	{
+		size, err := m.Account.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
 		}
-		i--
-		dAtA[i] = 0xa
+		i -= size
+		i = encodeVarintSubDistributor(dAtA, i, uint64(size))
 	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *BurnShare) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BurnShare) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BurnShare) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.Percent.Size()
+		i -= size
+		if _, err := m.Percent.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintSubDistributor(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -551,11 +766,16 @@ func (m *Share) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x1a
-	if m.Percent != 0 {
-		i = encodeVarintSubDistributor(dAtA, i, uint64(m.Percent))
-		i--
-		dAtA[i] = 0x10
+	{
+		size := m.Percent.Size()
+		i -= size
+		if _, err := m.Percent.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintSubDistributor(dAtA, i, uint64(size))
 	}
+	i--
+	dAtA[i] = 0x12
 	if len(m.Name) > 0 {
 		i -= len(m.Name)
 		copy(dAtA[i:], m.Name)
@@ -617,6 +837,19 @@ func encodeVarintSubDistributor(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *Remains) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Account.Size()
+	n += 1 + l + sovSubDistributor(uint64(l))
+	l = m.LeftoverCoin.Size()
+	n += 1 + l + sovSubDistributor(uint64(l))
+	return n
+}
+
 func (m *RoutingDistributor) Size() (n int) {
 	if m == nil {
 		return 0
@@ -633,6 +866,19 @@ func (m *RoutingDistributor) Size() (n int) {
 		for _, s := range m.ModuleAccounts {
 			l = len(s)
 			n += 1 + l + sovSubDistributor(uint64(l))
+		}
+	}
+	l = len(m.RemainsCoinModuleAccount)
+	if l > 0 {
+		n += 1 + l + sovSubDistributor(uint64(l))
+	}
+	if len(m.RemainsMap) > 0 {
+		for k, v := range m.RemainsMap {
+			_ = k
+			_ = v
+			l = v.Size()
+			mapEntrySize := 1 + len(k) + sovSubDistributor(uint64(len(k))) + 1 + l + sovSubDistributor(uint64(l))
+			n += mapEntrySize + 1 + sovSubDistributor(uint64(mapEntrySize))
 		}
 	}
 	return n
@@ -668,19 +914,27 @@ func (m *Destination) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.DefaultShareAccount != nil {
-		l = m.DefaultShareAccount.Size()
-		n += 1 + l + sovSubDistributor(uint64(l))
-	}
+	l = m.Account.Size()
+	n += 1 + l + sovSubDistributor(uint64(l))
 	if len(m.Share) > 0 {
 		for _, e := range m.Share {
 			l = e.Size()
 			n += 1 + l + sovSubDistributor(uint64(l))
 		}
 	}
-	if m.BurnShare != 0 {
-		n += 1 + sovSubDistributor(uint64(m.BurnShare))
+	l = m.BurnShare.Size()
+	n += 1 + l + sovSubDistributor(uint64(l))
+	return n
+}
+
+func (m *BurnShare) Size() (n int) {
+	if m == nil {
+		return 0
 	}
+	var l int
+	_ = l
+	l = m.Percent.Size()
+	n += 1 + l + sovSubDistributor(uint64(l))
 	return n
 }
 
@@ -694,9 +948,8 @@ func (m *Share) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovSubDistributor(uint64(l))
 	}
-	if m.Percent != 0 {
-		n += 1 + sovSubDistributor(uint64(m.Percent))
-	}
+	l = m.Percent.Size()
+	n += 1 + l + sovSubDistributor(uint64(l))
 	l = m.Account.Size()
 	n += 1 + l + sovSubDistributor(uint64(l))
 	return n
@@ -723,6 +976,123 @@ func sovSubDistributor(x uint64) (n int) {
 }
 func sozSubDistributor(x uint64) (n int) {
 	return sovSubDistributor(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *Remains) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowSubDistributor
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Remains: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Remains: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubDistributor
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Account.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LeftoverCoin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubDistributor
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.LeftoverCoin.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipSubDistributor(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *RoutingDistributor) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -818,6 +1188,167 @@ func (m *RoutingDistributor) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ModuleAccounts = append(m.ModuleAccounts, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemainsCoinModuleAccount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubDistributor
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RemainsCoinModuleAccount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemainsMap", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubDistributor
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.RemainsMap == nil {
+				m.RemainsMap = make(map[string]Remains)
+			}
+			var mapkey string
+			mapvalue := &Remains{}
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowSubDistributor
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowSubDistributor
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthSubDistributor
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthSubDistributor
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowSubDistributor
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthSubDistributor
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthSubDistributor
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &Remains{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipSubDistributor(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthSubDistributor
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.RemainsMap[mapkey] = *mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1037,7 +1568,7 @@ func (m *Destination) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DefaultShareAccount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1064,10 +1595,7 @@ func (m *Destination) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.DefaultShareAccount == nil {
-				m.DefaultShareAccount = &Account{}
-			}
-			if err := m.DefaultShareAccount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Account.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1106,10 +1634,10 @@ func (m *Destination) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 3:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BurnShare", wireType)
 			}
-			m.BurnShare = 0
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowSubDistributor
@@ -1119,11 +1647,109 @@ func (m *Destination) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.BurnShare |= int32(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			if msglen < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.BurnShare.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipSubDistributor(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BurnShare) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowSubDistributor
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BurnShare: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BurnShare: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Percent", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubDistributor
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Percent.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipSubDistributor(dAtA[iNdEx:])
@@ -1207,10 +1833,10 @@ func (m *Share) Unmarshal(dAtA []byte) error {
 			m.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Percent", wireType)
 			}
-			m.Percent = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowSubDistributor
@@ -1220,11 +1846,26 @@ func (m *Share) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Percent |= int64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubDistributor
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Percent.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
@@ -1302,10 +1943,10 @@ func (m *Account) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: account: wiretype end group for non-group")
+			return fmt.Errorf("proto: Account: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: account: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Account: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -1,6 +1,7 @@
 package types
 
 var RoutingDistributorKey = []byte{0x02}
+var RemainsMapKey = []byte{0x03}
 
 const (
 	// ModuleName defines the module name
