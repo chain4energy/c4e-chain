@@ -235,11 +235,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/chain4energy/c4echain/cferoutingdistributor/params
+   * @request GET:/c4e/distributor/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CferoutingdistributorQueryParamsResponse, RpcStatus>({
-      path: `/chain4energy/c4echain/cferoutingdistributor/params`,
+      path: `/c4e/distributor/params`,
       method: "GET",
       format: "json",
       ...params,
