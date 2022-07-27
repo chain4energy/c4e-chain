@@ -24,9 +24,16 @@ faucet:
   coins: ["100000uc4e"]
 init:
   home: "./.data"
+  app:
+    telemetry:
+      enabled: true
+#      enable-hostname-label: true
+#      enable-hostname: true
   config:
-    log_level: "debug"
+    log_level: "error"
     log_format: "plain"
+    instrumentation:
+      prometheus: true
 genesis:
   app_state:
     auth:
