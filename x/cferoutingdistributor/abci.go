@@ -80,7 +80,7 @@ func calculateAndBurnCoin(ctx sdk.Context, k keeper.Keeper, coinsToDistributeDec
 	coinsLeftNoBurned := dividedCoins.Sub(sdk.NewDecFromInt(coinsToBurn))
 	createBurnRemainsIfNotExist(ctx, k)
 	saveRemainsToMap(ctx, k, "burn", coinsLeftNoBurned)
-	burnCoinForModuleAccount(ctx, k, coinsToBurn, source)
+	//burnCoinForModuleAccount(ctx, k, coinsToBurn, source)
 }
 
 func burnCoinForModuleAccount(ctx sdk.Context, k keeper.Keeper, coinsToBurn sdk.Int, sourceModule string) {
