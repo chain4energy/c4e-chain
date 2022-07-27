@@ -25,9 +25,9 @@ func sendCoinToProperAccount(ctx sdk.Context, k keeper.Keeper, destinationAddres
 }
 
 func saveRemainsToMap(ctx sdk.Context, k keeper.Keeper, destinationAddress string, remainsCount sdk.Dec, routingDistributor *types.RoutingDistributor) {
-	remains := routingDistributor.GetRemainsMap()[destinationAddress]
-	remains.LeftoverCoin = remains.LeftoverCoin.Add(remainsCount)
-	routingDistributor.GetRemainsMap()[destinationAddress] = remains
+	//remains := routingDistributor.GetRemainsMap()[destinationAddress]
+	//remains.LeftoverCoin = remains.LeftoverCoin.Add(remainsCount)
+	//routingDistributor.GetRemainsMap()[destinationAddress] = remains
 }
 
 func createBurnRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper, routingDistributor *types.RoutingDistributor) {
@@ -95,8 +95,11 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	})
 
 	for _, subDistributor := range routingDistributor.SubDistributor {
-
+		sort.Slice(subDistributor.Sources, func(i, j int) bool {
+			return subDistributor.Sources[i] < subDistributor.Sources[j]
+		})
 		for _, source := range subDistributor.Sources {
+
 			percentShareSum := sdk.MustNewDecFromStr("0")
 
 			coinsToDistribute := k.GetAccountCoinsForModuleAccount(ctx, source)
@@ -106,7 +109,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			}
 
 			k.Logger(ctx).Info("Coin to distribute: " + coinsToDistribute.String() + " from source distributor name: " + subDistributor.Name)
-
 			for _, share := range subDistributor.Destination.Share {
 				percentShareSum = percentShareSum.Add(share.Percent)
 				calculateAndSendCoin(ctx, k, share.Account, share.Percent, coinsToDistributeDec,
