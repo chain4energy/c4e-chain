@@ -23,24 +23,21 @@ func sendCoinToProperAccount(ctx sdk.Context, k keeper.Keeper, destinationAddres
 
 }
 
-func saveRemainsToMap(ctx sdk.Context, k keeper.Keeper, destinationAddress string, remainsCount sdk.Dec) {
-	routingDistributor := k.GetRoutingDistributorr(ctx)
+func saveRemainsToMap(ctx sdk.Context, k keeper.Keeper, destinationAddress string, remainsCount sdk.Dec, routingDistributor *types.RoutingDistributor) {
 	remains := routingDistributor.GetRemainsMap()[destinationAddress]
 	remains.LeftoverCoin = remains.LeftoverCoin.Add(remainsCount)
 	routingDistributor.GetRemainsMap()[destinationAddress] = remains
-	//k.SetRoutingDistributor(ctx, routingDistributor)
 }
 
-func createBurnRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper) {
+func createBurnRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper, routingDistributor *types.RoutingDistributor) {
 	account := types.Account{
 		Address:         "burn",
 		IsModuleAccount: false,
 	}
-	createRemainsIfNotExist(ctx, k, account)
+	createRemainsIfNotExist(ctx, k, account, routingDistributor)
 }
 
-func createRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper, account types.Account) {
-	routingDistributor := k.GetRoutingDistributorr(ctx)
+func createRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper, account types.Account, routingDistributor *types.RoutingDistributor) {
 	if routingDistributor.RemainsMap == nil {
 		routingDistributor.RemainsMap = make(map[string]types.Remains, 10)
 	}
@@ -51,12 +48,11 @@ func createRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper, account types.Acc
 			LeftoverCoin: sdk.MustNewDecFromStr("0"),
 		}
 		routingDistributor.GetRemainsMap()[account.Address] = remains
-		//k.SetRoutingDistributor(ctx, routingDistributor)
 	}
 }
 
 func calculateAndSendCoin(ctx sdk.Context, k keeper.Keeper, account types.Account, sharePercent sdk.Dec, coinsToDistributeDec sdk.Dec,
-	distributorName string, sourceModuleAccount string) {
+	distributorName string, sourceModuleAccount string, routingDistributor *types.RoutingDistributor) {
 	if !coinsToDistributeDec.IsPositive() {
 		return
 	}
@@ -64,23 +60,23 @@ func calculateAndSendCoin(ctx sdk.Context, k keeper.Keeper, account types.Accoun
 	dividedCoins := coinsToDistributeDec.Mul(sharePercent).QuoTruncate(sdk.MustNewDecFromStr("100"))
 	coinsToTransfer := dividedCoins.TruncateInt()
 	coinsLeftNoTransferred := dividedCoins.Sub(sdk.NewDecFromInt(coinsToTransfer))
-	createRemainsIfNotExist(ctx, k, account)
-	saveRemainsToMap(ctx, k, account.Address, coinsLeftNoTransferred)
+	createRemainsIfNotExist(ctx, k, account, routingDistributor)
+	saveRemainsToMap(ctx, k, account.Address, coinsLeftNoTransferred, routingDistributor)
 	sendCoinToProperAccount(ctx, k, account.Address, account.IsModuleAccount, coinsToTransfer, sourceModuleAccount)
 	k.Logger(ctx).Debug("Coin left no transferred: " + coinsLeftNoTransferred.String())
 	k.Logger(ctx).Debug(distributorName + " amount of coins transferred : " + coinsToTransfer.String() + " to " + account.Address)
 }
 
-func calculateAndBurnCoin(ctx sdk.Context, k keeper.Keeper, coinsToDistributeDec sdk.Dec, share types.BurnShare, source string) {
+func calculateAndBurnCoin(ctx sdk.Context, k keeper.Keeper, coinsToDistributeDec sdk.Dec, share types.BurnShare, source string, routingDistributor *types.RoutingDistributor) {
 	if !coinsToDistributeDec.IsPositive() {
 		return
 	}
 	dividedCoins := coinsToDistributeDec.Mul(share.Percent).QuoTruncate(sdk.MustNewDecFromStr("100"))
 	coinsToBurn := dividedCoins.TruncateInt()
 	coinsLeftNoBurned := dividedCoins.Sub(sdk.NewDecFromInt(coinsToBurn))
-	createBurnRemainsIfNotExist(ctx, k)
-	saveRemainsToMap(ctx, k, "burn", coinsLeftNoBurned)
-	//burnCoinForModuleAccount(ctx, k, coinsToBurn, source)
+	createBurnRemainsIfNotExist(ctx, k, routingDistributor)
+	saveRemainsToMap(ctx, k, "burn", coinsLeftNoBurned, routingDistributor)
+	burnCoinForModuleAccount(ctx, k, coinsToBurn, source)
 }
 
 func burnCoinForModuleAccount(ctx sdk.Context, k keeper.Keeper, coinsToBurn sdk.Int, sourceModule string) {
@@ -113,17 +109,17 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			for _, share := range subDistributor.Destination.Share {
 				percentShareSum = percentShareSum.Add(share.Percent)
 				calculateAndSendCoin(ctx, k, share.Account, share.Percent, coinsToDistributeDec,
-					subDistributor.Name, source)
+					subDistributor.Name, source, &routingDistributor)
 			}
 
 			if subDistributor.Destination.BurnShare.Percent != sdk.MustNewDecFromStr("0") {
 				percentShareSum = percentShareSum.Add(subDistributor.Destination.BurnShare.Percent)
-				calculateAndBurnCoin(ctx, k, coinsToDistributeDec, subDistributor.Destination.BurnShare, source)
+				calculateAndBurnCoin(ctx, k, coinsToDistributeDec, subDistributor.Destination.BurnShare, source, &routingDistributor)
 			}
 
 			defaultSharePercent := sdk.MustNewDecFromStr("100").Sub(percentShareSum)
 			accountDefault := subDistributor.Destination.GetAccount()
-			calculateAndSendCoin(ctx, k, accountDefault, defaultSharePercent, coinsToDistributeDec, subDistributor.Name, source)
+			calculateAndSendCoin(ctx, k, accountDefault, defaultSharePercent, coinsToDistributeDec, subDistributor.Name, source, &routingDistributor)
 
 			coinsLeftToTransferToRemainsAccount := k.GetAccountCoinsForModuleAccount(ctx, source)
 			k.Logger(ctx).Debug("Send coin to remains account name: " + routingDistributor.RemainsCoinModuleAccount + " count " + coinsLeftToTransferToRemainsAccount.String())
@@ -131,11 +127,12 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		}
 	}
 
-	sendRemains(ctx, k)
+	sendRemains(ctx, k, &routingDistributor)
+	k.SetRoutingDistributor(ctx, routingDistributor)
+
 }
 
-func sendRemains(ctx sdk.Context, k keeper.Keeper) {
-	routingDistributor := k.GetRoutingDistributorr(ctx)
+func sendRemains(ctx sdk.Context, k keeper.Keeper, routingDistributor *types.RoutingDistributor) {
 	remainsMap := routingDistributor.RemainsMap
 	source := k.GetRoutingDistributorr(ctx).RemainsCoinModuleAccount
 
@@ -156,5 +153,4 @@ func sendRemains(ctx sdk.Context, k keeper.Keeper) {
 		}
 	}
 	routingDistributor.RemainsMap = remainsMap
-	//k.SetRoutingDistributor(ctx, routingDistributor)
 }
