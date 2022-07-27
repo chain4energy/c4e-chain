@@ -31,11 +31,11 @@ func saveRemainsToMap(ctx sdk.Context, k keeper.Keeper, destinationAddress strin
 }
 
 func createBurnRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper, routingDistributor *types.RoutingDistributor) {
-	account := types.Account{
-		Address:         "burn",
-		IsModuleAccount: false,
-	}
-	createRemainsIfNotExist(ctx, k, account, routingDistributor)
+	//account := types.Account{
+	//	Address:         "burn",
+	//	IsModuleAccount: false,
+	//}
+	//createRemainsIfNotExist(ctx, k, account, routingDistributor)
 }
 
 func createRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper, account types.Account, routingDistributor *types.RoutingDistributor) {
@@ -61,7 +61,7 @@ func calculateAndSendCoin(ctx sdk.Context, k keeper.Keeper, account types.Accoun
 	dividedCoins := coinsToDistributeDec.Mul(sharePercent).QuoTruncate(sdk.MustNewDecFromStr("100"))
 	coinsToTransfer := dividedCoins.TruncateInt()
 	coinsLeftNoTransferred := dividedCoins.Sub(sdk.NewDecFromInt(coinsToTransfer))
-	createRemainsIfNotExist(ctx, k, account, routingDistributor)
+	//createRemainsIfNotExist(ctx, k, account, routingDistributor)
 	saveRemainsToMap(ctx, k, account.Address, coinsLeftNoTransferred, routingDistributor)
 	sendCoinToProperAccount(ctx, k, account.Address, account.IsModuleAccount, coinsToTransfer, sourceModuleAccount)
 	k.Logger(ctx).Debug("Coin left no transferred: " + coinsLeftNoTransferred.String())
@@ -75,7 +75,7 @@ func calculateAndBurnCoin(ctx sdk.Context, k keeper.Keeper, coinsToDistributeDec
 	dividedCoins := coinsToDistributeDec.Mul(share.Percent).QuoTruncate(sdk.MustNewDecFromStr("100"))
 	coinsToBurn := dividedCoins.TruncateInt()
 	coinsLeftNoBurned := dividedCoins.Sub(sdk.NewDecFromInt(coinsToBurn))
-	createBurnRemainsIfNotExist(ctx, k, routingDistributor)
+	//createBurnRemainsIfNotExist(ctx, k, routingDistributor)
 	saveRemainsToMap(ctx, k, "burn", coinsLeftNoBurned, routingDistributor)
 	burnCoinForModuleAccount(ctx, k, coinsToBurn, source)
 }
