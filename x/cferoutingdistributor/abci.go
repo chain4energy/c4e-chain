@@ -5,7 +5,6 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"sort"
 	"time"
 )
 
@@ -58,6 +57,9 @@ func createRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper, account types.Acc
 
 func calculateAndSendCoin(ctx sdk.Context, k keeper.Keeper, account types.Account, sharePercent sdk.Dec, coinsToDistributeDec sdk.Dec,
 	distributorName string, sourceModuleAccount string) {
+	if !coinsToDistributeDec.IsPositive() {
+		return
+	}
 
 	dividedCoins := coinsToDistributeDec.Mul(sharePercent).QuoTruncate(sdk.MustNewDecFromStr("100"))
 	coinsToTransfer := dividedCoins.TruncateInt()
@@ -70,6 +72,9 @@ func calculateAndSendCoin(ctx sdk.Context, k keeper.Keeper, account types.Accoun
 }
 
 func calculateAndBurnCoin(ctx sdk.Context, k keeper.Keeper, coinsToDistributeDec sdk.Dec, share types.BurnShare, source string) {
+	if !coinsToDistributeDec.IsPositive() {
+		return
+	}
 	dividedCoins := coinsToDistributeDec.Mul(share.Percent).QuoTruncate(sdk.MustNewDecFromStr("100"))
 	coinsToBurn := dividedCoins.TruncateInt()
 	coinsLeftNoBurned := dividedCoins.Sub(sdk.NewDecFromInt(coinsToBurn))
@@ -88,9 +93,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	routingDistributor := k.GetRoutingDistributorr(ctx)
 
-	sort.SliceStable(routingDistributor.SubDistributor, func(i, j int) bool {
-		return routingDistributor.SubDistributor[i].Order < routingDistributor.SubDistributor[j].Order
-	})
+	//sort.SliceStable(routingDistributor.SubDistributor, func(i, j int) bool {
+	//	return routingDistributor.SubDistributor[i].Order < routingDistributor.SubDistributor[j].Order
+	//})
 
 	for _, subDistributor := range routingDistributor.SubDistributor {
 		percentShareSum := sdk.MustNewDecFromStr("0")
