@@ -98,11 +98,16 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	//})
 
 	for _, subDistributor := range routingDistributor.SubDistributor {
-		percentShareSum := sdk.MustNewDecFromStr("0")
 
 		for _, source := range subDistributor.Sources {
+			percentShareSum := sdk.MustNewDecFromStr("0")
+
 			coinsToDistribute := k.GetAccountCoinsForModuleAccount(ctx, source)
 			coinsToDistributeDec := sdk.NewDecFromInt(coinsToDistribute.AmountOf("uc4e"))
+			if !coinsToDistributeDec.IsPositive() {
+				return
+			}
+
 			k.Logger(ctx).Info("Coin to distribute: " + coinsToDistribute.String() + " from source distributor name: " + subDistributor.Name)
 
 			for _, share := range subDistributor.Destination.Share {
