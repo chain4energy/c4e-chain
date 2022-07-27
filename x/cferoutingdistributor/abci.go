@@ -105,7 +105,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			coinsToDistribute := k.GetAccountCoinsForModuleAccount(ctx, source)
 			coinsToDistributeDec := sdk.NewDecFromInt(coinsToDistribute.AmountOf("uc4e"))
 			if !coinsToDistributeDec.IsPositive() {
-				return
+				break
 			}
 
 			k.Logger(ctx).Info("Coin to distribute: " + coinsToDistribute.String() + " from source distributor name: " + subDistributor.Name)
