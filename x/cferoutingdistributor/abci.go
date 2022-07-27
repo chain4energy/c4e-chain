@@ -5,6 +5,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"sort"
 	"time"
 )
 
@@ -60,8 +61,8 @@ func calculateAndSendCoin(ctx sdk.Context, k keeper.Keeper, account types.Accoun
 	dividedCoins := coinsToDistributeDec.Mul(sharePercent).QuoTruncate(sdk.MustNewDecFromStr("100"))
 	coinsToTransfer := dividedCoins.TruncateInt()
 	coinsLeftNoTransferred := dividedCoins.Sub(sdk.NewDecFromInt(coinsToTransfer))
-	//createRemainsIfNotExist(ctx, k, account, routingDistributor)
-	//saveRemainsToMap(ctx, k, account.Address, coinsLeftNoTransferred, routingDistributor)
+	createRemainsIfNotExist(ctx, k, account, routingDistributor)
+	saveRemainsToMap(ctx, k, account.Address, coinsLeftNoTransferred, routingDistributor)
 	sendCoinToProperAccount(ctx, k, account.Address, account.IsModuleAccount, coinsToTransfer, sourceModuleAccount)
 	k.Logger(ctx).Debug("Coin left no transferred: " + coinsLeftNoTransferred.String())
 	k.Logger(ctx).Debug(distributorName + " amount of coins transferred : " + coinsToTransfer.String() + " to " + account.Address)
@@ -73,9 +74,9 @@ func calculateAndBurnCoin(ctx sdk.Context, k keeper.Keeper, coinsToDistributeDec
 	}
 	dividedCoins := coinsToDistributeDec.Mul(share.Percent).QuoTruncate(sdk.MustNewDecFromStr("100"))
 	coinsToBurn := dividedCoins.TruncateInt()
-	//coinsLeftNoBurned := dividedCoins.Sub(sdk.NewDecFromInt(coinsToBurn))
+	coinsLeftNoBurned := dividedCoins.Sub(sdk.NewDecFromInt(coinsToBurn))
 	createBurnRemainsIfNotExist(ctx, k, routingDistributor)
-	//saveRemainsToMap(ctx, k, "burn", coinsLeftNoBurned, routingDistributor)
+	saveRemainsToMap(ctx, k, "burn", coinsLeftNoBurned, routingDistributor)
 	burnCoinForModuleAccount(ctx, k, coinsToBurn, source)
 }
 
@@ -89,9 +90,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	routingDistributor := k.GetRoutingDistributorr(ctx)
 
-	//sort.SliceStable(routingDistributor.SubDistributor, func(i, j int) bool {
-	//	return routingDistributor.SubDistributor[i].Order < routingDistributor.SubDistributor[j].Order
-	//})
+	sort.SliceStable(routingDistributor.SubDistributor, func(i, j int) bool {
+		return routingDistributor.SubDistributor[i].Order < routingDistributor.SubDistributor[j].Order
+	})
 
 	for _, subDistributor := range routingDistributor.SubDistributor {
 
@@ -127,7 +128,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		}
 	}
 
-	//sendRemains(ctx, k, &routingDistributor)
+	sendRemains(ctx, k, &routingDistributor)
 	k.SetRoutingDistributor(ctx, routingDistributor)
 
 }
