@@ -28,7 +28,7 @@ func saveRemainsToMap(ctx sdk.Context, k keeper.Keeper, destinationAddress strin
 	remains := routingDistributor.GetRemainsMap()[destinationAddress]
 	remains.LeftoverCoin = remains.LeftoverCoin.Add(remainsCount)
 	routingDistributor.GetRemainsMap()[destinationAddress] = remains
-	k.SetRoutingDistributor(ctx, routingDistributor)
+	//k.SetRoutingDistributor(ctx, routingDistributor)
 }
 
 func createBurnRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper) {
@@ -51,7 +51,7 @@ func createRemainsIfNotExist(ctx sdk.Context, k keeper.Keeper, account types.Acc
 			LeftoverCoin: sdk.MustNewDecFromStr("0"),
 		}
 		routingDistributor.GetRemainsMap()[account.Address] = remains
-		k.SetRoutingDistributor(ctx, routingDistributor)
+		//k.SetRoutingDistributor(ctx, routingDistributor)
 	}
 }
 
@@ -156,5 +156,5 @@ func sendRemains(ctx sdk.Context, k keeper.Keeper) {
 		}
 	}
 	routingDistributor.RemainsMap = remainsMap
-	k.SetRoutingDistributor(ctx, routingDistributor)
+	//k.SetRoutingDistributor(ctx, routingDistributor)
 }
