@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -74,6 +75,43 @@ func (k Keeper) SetRoutingDistributor(ctx sdk.Context, routingDistributor types.
 //	k.cdc.MustUnmarshal(b, &remainsMap)
 //	return
 //}
+
+// get the vesting types
+func (k Keeper) GetRemains(ctx sdk.Context, accountAddress string) (remains types.Remains, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RemainsKeyPrefix)
+
+	b := store.Get([]byte(accountAddress))
+	if b == nil {
+		found = false
+		return
+	}
+	found = true
+	k.cdc.MustUnmarshal(b, &remains)
+	return
+}
+
+// GetAllAccountVestings returns all AccountVestings
+func (k Keeper) GetAllRemains(ctx sdk.Context) (list []types.Remains) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RemainsKeyPrefix)
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Remains
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, val)
+	}
+
+	return
+}
+
+// set the vesting types
+func (k Keeper) SetRemains(ctx sdk.Context, remains types.Remains) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RemainsKeyPrefix)
+	av := k.cdc.MustMarshal(&remains)
+	store.Set([]byte(remains.Account.Address), av)
+}
 
 // GetRoutingDistributorr get the routing distributor
 func (k Keeper) GetRoutingDistributorr(ctx sdk.Context) (routingDistributor types.RoutingDistributor) {
