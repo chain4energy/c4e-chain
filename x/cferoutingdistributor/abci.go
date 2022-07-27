@@ -80,7 +80,7 @@ func calculateAndBurnCoin(ctx sdk.Context, k keeper.Keeper, coinsToDistributeDec
 }
 
 func burnCoinForModuleAccount(ctx sdk.Context, k keeper.Keeper, coinsToBurn sdk.Int, sourceModule string) {
-	k.BurnCoinsForSpecifiedModuleAccount(ctx, sdk.NewCoins(sdk.NewCoin("uc4e", coinsToBurn)), sourceModule)
+	//k.BurnCoinsForSpecifiedModuleAccount(ctx, sdk.NewCoins(sdk.NewCoin("uc4e", coinsToBurn)), sourceModule)
 	telemetry.IncrCounter(float32(coinsToBurn.Int64()), "burn-counter")
 }
 
