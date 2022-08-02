@@ -167,6 +167,65 @@ paths:
               params:
                 description: params holds all the parameters of this module.
                 type: object
+                properties:
+                  routing_distributor:
+                    type: object
+                    properties:
+                      sub_distributor:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            sources:
+                              type: array
+                              items:
+                                type: string
+                              title: represent list of module account from which
+                            destination:
+                              title: represent destinations
+                              type: object
+                              properties:
+                                account:
+                                  type: object
+                                  properties:
+                                    address:
+                                      type: string
+                                    is_module_account:
+                                      type: boolean
+                                share:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      name:
+                                        type: string
+                                      percent:
+                                        type: string
+                                      account:
+                                        type: object
+                                        properties:
+                                          address:
+                                            type: string
+                                          is_module_account:
+                                            type: boolean
+                                burn_share:
+                                  type: object
+                                  properties:
+                                    percent:
+                                      type: string
+                            order:
+                              type: integer
+                              format: int32
+                        title: List contains distributors
+                      module_accounts:
+                        type: array
+                        items:
+                          type: string
+                        title: module account to load on start genesis
+                      remains_coin_module_account:
+                        type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -31287,8 +31346,110 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
+  chain4energy.c4echain.cferoutingdistributor.Account:
+    type: object
+    properties:
+      address:
+        type: string
+      is_module_account:
+        type: boolean
+  chain4energy.c4echain.cferoutingdistributor.BurnShare:
+    type: object
+    properties:
+      percent:
+        type: string
+  chain4energy.c4echain.cferoutingdistributor.Destination:
+    type: object
+    properties:
+      account:
+        type: object
+        properties:
+          address:
+            type: string
+          is_module_account:
+            type: boolean
+      share:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            percent:
+              type: string
+            account:
+              type: object
+              properties:
+                address:
+                  type: string
+                is_module_account:
+                  type: boolean
+      burn_share:
+        type: object
+        properties:
+          percent:
+            type: string
   chain4energy.c4echain.cferoutingdistributor.Params:
     type: object
+    properties:
+      routing_distributor:
+        type: object
+        properties:
+          sub_distributor:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                sources:
+                  type: array
+                  items:
+                    type: string
+                  title: represent list of module account from which
+                destination:
+                  title: represent destinations
+                  type: object
+                  properties:
+                    account:
+                      type: object
+                      properties:
+                        address:
+                          type: string
+                        is_module_account:
+                          type: boolean
+                    share:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          percent:
+                            type: string
+                          account:
+                            type: object
+                            properties:
+                              address:
+                                type: string
+                              is_module_account:
+                                type: boolean
+                    burn_share:
+                      type: object
+                      properties:
+                        percent:
+                          type: string
+                order:
+                  type: integer
+                  format: int32
+            title: List contains distributors
+          module_accounts:
+            type: array
+            items:
+              type: string
+            title: module account to load on start genesis
+          remains_coin_module_account:
+            type: string
     description: Params defines the parameters for the module.
   chain4energy.c4echain.cferoutingdistributor.QueryParamsResponse:
     type: object
@@ -31296,7 +31457,183 @@ definitions:
       params:
         description: params holds all the parameters of this module.
         type: object
+        properties:
+          routing_distributor:
+            type: object
+            properties:
+              sub_distributor:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    sources:
+                      type: array
+                      items:
+                        type: string
+                      title: represent list of module account from which
+                    destination:
+                      title: represent destinations
+                      type: object
+                      properties:
+                        account:
+                          type: object
+                          properties:
+                            address:
+                              type: string
+                            is_module_account:
+                              type: boolean
+                        share:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              percent:
+                                type: string
+                              account:
+                                type: object
+                                properties:
+                                  address:
+                                    type: string
+                                  is_module_account:
+                                    type: boolean
+                        burn_share:
+                          type: object
+                          properties:
+                            percent:
+                              type: string
+                    order:
+                      type: integer
+                      format: int32
+                title: List contains distributors
+              module_accounts:
+                type: array
+                items:
+                  type: string
+                title: module account to load on start genesis
+              remains_coin_module_account:
+                type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cferoutingdistributor.RoutingDistributor:
+    type: object
+    properties:
+      sub_distributor:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            sources:
+              type: array
+              items:
+                type: string
+              title: represent list of module account from which
+            destination:
+              title: represent destinations
+              type: object
+              properties:
+                account:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    is_module_account:
+                      type: boolean
+                share:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      percent:
+                        type: string
+                      account:
+                        type: object
+                        properties:
+                          address:
+                            type: string
+                          is_module_account:
+                            type: boolean
+                burn_share:
+                  type: object
+                  properties:
+                    percent:
+                      type: string
+            order:
+              type: integer
+              format: int32
+        title: List contains distributors
+      module_accounts:
+        type: array
+        items:
+          type: string
+        title: module account to load on start genesis
+      remains_coin_module_account:
+        type: string
+  chain4energy.c4echain.cferoutingdistributor.Share:
+    type: object
+    properties:
+      name:
+        type: string
+      percent:
+        type: string
+      account:
+        type: object
+        properties:
+          address:
+            type: string
+          is_module_account:
+            type: boolean
+  chain4energy.c4echain.cferoutingdistributor.SubDistributor:
+    type: object
+    properties:
+      name:
+        type: string
+      sources:
+        type: array
+        items:
+          type: string
+        title: represent list of module account from which
+      destination:
+        title: represent destinations
+        type: object
+        properties:
+          account:
+            type: object
+            properties:
+              address:
+                type: string
+              is_module_account:
+                type: boolean
+          share:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                percent:
+                  type: string
+                account:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    is_module_account:
+                      type: boolean
+          burn_share:
+            type: object
+            properties:
+              percent:
+                type: string
+      order:
+        type: integer
+        format: int32
   chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
     type: object
     properties:

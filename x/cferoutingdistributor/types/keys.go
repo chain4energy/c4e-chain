@@ -1,6 +1,5 @@
 package types
 
-var RoutingDistributorKey = []byte{0x02}
 var RemainsMapKey = []byte{0x03}
 var RemainsKeyPrefix = []byte{0x04}
 

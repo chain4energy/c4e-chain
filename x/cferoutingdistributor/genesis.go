@@ -10,12 +10,16 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, ak types.AccountKeeper) {
 	k.SetParams(ctx, genState.Params)
 
-	k.SetRoutingDistributor(ctx, genState.RoutingDistributor)
-
 	k.Logger(ctx).Info("Init Genesis module: " + types.ModuleName)
-	for _, account := range genState.RoutingDistributor.ModuleAccounts {
+	for _, account := range genState.Params.RoutingDistributor.ModuleAccounts {
 		k.Logger(ctx).Info("Load module account name: " + account)
 		ak.GetModuleAccount(ctx, account)
+	}
+
+	allRemains := genState.RemainsList.Remains
+
+	for _, av := range allRemains {
+		k.SetRemains(ctx, *av)
 	}
 }
 
@@ -23,6 +27,12 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
-	genesis.RoutingDistributor = k.GetRoutingDistributorr(ctx)
+
+	allRemains := k.GetAllRemains(ctx)
+
+	for i := 0; i < len(allRemains); i++ {
+		genesis.RemainsList.Remains = append(genesis.RemainsList.Remains, &allRemains[i])
+	}
+
 	return genesis
 }

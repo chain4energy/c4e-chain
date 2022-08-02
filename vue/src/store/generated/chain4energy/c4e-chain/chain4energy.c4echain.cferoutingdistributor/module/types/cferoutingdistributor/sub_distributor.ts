@@ -8,18 +8,16 @@ export interface Remains {
   leftover_coin: string;
 }
 
+export interface RemainsList {
+  remains: Remains[];
+}
+
 export interface RoutingDistributor {
   /** List contains distributors */
   sub_distributor: SubDistributor[];
   /** module account to load on start genesis */
   module_accounts: string[];
   remains_coin_module_account: string;
-  remains_map: { [key: string]: Remains };
-}
-
-export interface RoutingDistributor_RemainsMapEntry {
-  key: string;
-  value: Remains | undefined;
 }
 
 export interface SubDistributor {
@@ -128,6 +126,70 @@ export const Remains = {
   },
 };
 
+const baseRemainsList: object = {};
+
+export const RemainsList = {
+  encode(message: RemainsList, writer: Writer = Writer.create()): Writer {
+    for (const v of message.remains) {
+      Remains.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): RemainsList {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseRemainsList } as RemainsList;
+    message.remains = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.remains.push(Remains.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RemainsList {
+    const message = { ...baseRemainsList } as RemainsList;
+    message.remains = [];
+    if (object.remains !== undefined && object.remains !== null) {
+      for (const e of object.remains) {
+        message.remains.push(Remains.fromJSON(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: RemainsList): unknown {
+    const obj: any = {};
+    if (message.remains) {
+      obj.remains = message.remains.map((e) =>
+        e ? Remains.toJSON(e) : undefined
+      );
+    } else {
+      obj.remains = [];
+    }
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<RemainsList>): RemainsList {
+    const message = { ...baseRemainsList } as RemainsList;
+    message.remains = [];
+    if (object.remains !== undefined && object.remains !== null) {
+      for (const e of object.remains) {
+        message.remains.push(Remains.fromPartial(e));
+      }
+    }
+    return message;
+  },
+};
+
 const baseRoutingDistributor: object = {
   module_accounts: "",
   remains_coin_module_account: "",
@@ -147,12 +209,6 @@ export const RoutingDistributor = {
     if (message.remains_coin_module_account !== "") {
       writer.uint32(26).string(message.remains_coin_module_account);
     }
-    Object.entries(message.remains_map).forEach(([key, value]) => {
-      RoutingDistributor_RemainsMapEntry.encode(
-        { key: key as any, value },
-        writer.uint32(34).fork()
-      ).ldelim();
-    });
     return writer;
   },
 
@@ -162,7 +218,6 @@ export const RoutingDistributor = {
     const message = { ...baseRoutingDistributor } as RoutingDistributor;
     message.sub_distributor = [];
     message.module_accounts = [];
-    message.remains_map = {};
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -177,15 +232,6 @@ export const RoutingDistributor = {
         case 3:
           message.remains_coin_module_account = reader.string();
           break;
-        case 4:
-          const entry4 = RoutingDistributor_RemainsMapEntry.decode(
-            reader,
-            reader.uint32()
-          );
-          if (entry4.value !== undefined) {
-            message.remains_map[entry4.key] = entry4.value;
-          }
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -198,7 +244,6 @@ export const RoutingDistributor = {
     const message = { ...baseRoutingDistributor } as RoutingDistributor;
     message.sub_distributor = [];
     message.module_accounts = [];
-    message.remains_map = {};
     if (
       object.sub_distributor !== undefined &&
       object.sub_distributor !== null
@@ -225,11 +270,6 @@ export const RoutingDistributor = {
     } else {
       message.remains_coin_module_account = "";
     }
-    if (object.remains_map !== undefined && object.remains_map !== null) {
-      Object.entries(object.remains_map).forEach(([key, value]) => {
-        message.remains_map[key] = Remains.fromJSON(value);
-      });
-    }
     return message;
   },
 
@@ -249,12 +289,6 @@ export const RoutingDistributor = {
     }
     message.remains_coin_module_account !== undefined &&
       (obj.remains_coin_module_account = message.remains_coin_module_account);
-    obj.remains_map = {};
-    if (message.remains_map) {
-      Object.entries(message.remains_map).forEach(([k, v]) => {
-        obj.remains_map[k] = Remains.toJSON(v);
-      });
-    }
     return obj;
   },
 
@@ -262,7 +296,6 @@ export const RoutingDistributor = {
     const message = { ...baseRoutingDistributor } as RoutingDistributor;
     message.sub_distributor = [];
     message.module_accounts = [];
-    message.remains_map = {};
     if (
       object.sub_distributor !== undefined &&
       object.sub_distributor !== null
@@ -286,100 +319,6 @@ export const RoutingDistributor = {
       message.remains_coin_module_account = object.remains_coin_module_account;
     } else {
       message.remains_coin_module_account = "";
-    }
-    if (object.remains_map !== undefined && object.remains_map !== null) {
-      Object.entries(object.remains_map).forEach(([key, value]) => {
-        if (value !== undefined) {
-          message.remains_map[key] = Remains.fromPartial(value);
-        }
-      });
-    }
-    return message;
-  },
-};
-
-const baseRoutingDistributor_RemainsMapEntry: object = { key: "" };
-
-export const RoutingDistributor_RemainsMapEntry = {
-  encode(
-    message: RoutingDistributor_RemainsMapEntry,
-    writer: Writer = Writer.create()
-  ): Writer {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
-    }
-    if (message.value !== undefined) {
-      Remains.encode(message.value, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): RoutingDistributor_RemainsMapEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseRoutingDistributor_RemainsMapEntry,
-    } as RoutingDistributor_RemainsMapEntry;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.key = reader.string();
-          break;
-        case 2:
-          message.value = Remains.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): RoutingDistributor_RemainsMapEntry {
-    const message = {
-      ...baseRoutingDistributor_RemainsMapEntry,
-    } as RoutingDistributor_RemainsMapEntry;
-    if (object.key !== undefined && object.key !== null) {
-      message.key = String(object.key);
-    } else {
-      message.key = "";
-    }
-    if (object.value !== undefined && object.value !== null) {
-      message.value = Remains.fromJSON(object.value);
-    } else {
-      message.value = undefined;
-    }
-    return message;
-  },
-
-  toJSON(message: RoutingDistributor_RemainsMapEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined &&
-      (obj.value = message.value ? Remains.toJSON(message.value) : undefined);
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<RoutingDistributor_RemainsMapEntry>
-  ): RoutingDistributor_RemainsMapEntry {
-    const message = {
-      ...baseRoutingDistributor_RemainsMapEntry,
-    } as RoutingDistributor_RemainsMapEntry;
-    if (object.key !== undefined && object.key !== null) {
-      message.key = object.key;
-    } else {
-      message.key = "";
-    }
-    if (object.value !== undefined && object.value !== null) {
-      message.value = Remains.fromPartial(object.value);
-    } else {
-      message.value = undefined;
     }
     return message;
   },

@@ -2,7 +2,6 @@ syntax = "proto3";
 package chain4energy.c4echain.cferoutingdistributor;
 
 import "gogoproto/gogo.proto";
-import "cferoutingdistributor/params.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types";
@@ -16,6 +15,9 @@ message Remains {
   ];
 }
 
+message RemainsList {
+  repeated Remains remains = 1;
+}
 
 message RoutingDistributor {
 
@@ -25,7 +27,6 @@ message RoutingDistributor {
   //module account to load on start genesis
   repeated string module_accounts = 2;
   string remains_coin_module_account = 3;
-  map<string,Remains> remains_map = 4         [(gogoproto.nullable) = false];
 
 }
 

@@ -9,10 +9,27 @@
  * ---------------------------------------------------------------
  */
 
+export interface CferoutingdistributorAccount {
+  address?: string;
+  is_module_account?: boolean;
+}
+
+export interface CferoutingdistributorBurnShare {
+  percent?: string;
+}
+
+export interface CferoutingdistributorDestination {
+  account?: CferoutingdistributorAccount;
+  share?: CferoutingdistributorShare[];
+  burn_share?: CferoutingdistributorBurnShare;
+}
+
 /**
  * Params defines the parameters for the module.
  */
-export type CferoutingdistributorParams = object;
+export interface CferoutingdistributorParams {
+  routing_distributor?: CferoutingdistributorRoutingDistributor;
+}
 
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
@@ -20,6 +37,27 @@ export type CferoutingdistributorParams = object;
 export interface CferoutingdistributorQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: CferoutingdistributorParams;
+}
+
+export interface CferoutingdistributorRoutingDistributor {
+  sub_distributor?: CferoutingdistributorSubDistributor[];
+  module_accounts?: string[];
+  remains_coin_module_account?: string;
+}
+
+export interface CferoutingdistributorShare {
+  name?: string;
+  percent?: string;
+  account?: CferoutingdistributorAccount;
+}
+
+export interface CferoutingdistributorSubDistributor {
+  name?: string;
+  sources?: string[];
+  destination?: CferoutingdistributorDestination;
+
+  /** @format int32 */
+  order?: number;
 }
 
 export interface ProtobufAny {

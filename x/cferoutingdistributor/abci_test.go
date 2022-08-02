@@ -93,12 +93,13 @@ func TestBurningDistributor(t *testing.T) {
 	cointToMint := sdk.NewCoin(denom, sdk.NewInt(1017))
 	app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
 
-	app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx, prepareBurningDistributor())
+	app.CferoutingdistributorKeeper.SetParams(ctx, types.NewParams(prepareBurningDistributor()))
 	ctx = ctx.WithBlockHeight(int64(2))
 	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 
 	//coin on "c4e_distributor" should be equal 498, remains: 1 and 0.33 on remains
-	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e_distributor"].LeftoverCoin
+	c4e_distributor, _ := app.CferoutingdistributorKeeper.GetRemains(ctx, "c4e_distributor")
+	coinRemains := c4e_distributor.LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains)
 
 	coinOnRemainAccount := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "remains")
@@ -133,7 +134,7 @@ func TestBurningWithInflationDistributor(t *testing.T) {
 	subDistributors := append(routingDistibutor.SubDistributor, prepareInflationSubDistributor())
 	routingDistibutor.SubDistributor = subDistributors
 
-	app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx, routingDistibutor)
+	app.CferoutingdistributorKeeper.SetParams(ctx, types.NewParams(routingDistibutor))
 	ctx = ctx.WithBlockHeight(int64(2))
 	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 
@@ -143,7 +144,8 @@ func TestBurningWithInflationDistributor(t *testing.T) {
 	require.EqualValues(t, sdk.MustNewDecFromStr("0"), coinOnDistributorAccount.AmountOf(denom).ToDec())
 
 	//coin on tx_fee_distributor distributor should have 0.33 remains left
-	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e_distributor"].LeftoverCoin
+	remains, _ := app.CferoutingdistributorKeeper.GetRemains(ctx, "c4e_distributor")
+	coinRemains := remains.LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains)
 
 	//development_fund account should have 573
@@ -152,7 +154,8 @@ func TestBurningWithInflationDistributor(t *testing.T) {
 	require.EqualValues(t, sdk.MustNewDecFromStr("573"), developmentFundAccount.AmountOf(denom).ToDec())
 
 	//development_fund account  remains should have 0.00955
-	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag"].LeftoverCoin
+	remains, _ = app.CferoutingdistributorKeeper.GetRemains(ctx, "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
+	coinRemainsDevelopmentFund := remains.LeftoverCoin
 
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.3199"), coinRemainsDevelopmentFund)
 
@@ -160,7 +163,8 @@ func TestBurningWithInflationDistributor(t *testing.T) {
 	validatorRewardCollectorAccountCoin := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "validators_rewards_collector")
 	require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(denom).ToDec())
 
-	coinRemainsValidatorsReward := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["validators_rewards_collector"].LeftoverCoin
+	remains, _ = app.CferoutingdistributorKeeper.GetRemains(ctx, "validators_rewards_collector")
+	coinRemainsValidatorsReward := remains.LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.6801"), coinRemainsValidatorsReward)
 
 	//coins on remains module account should be equal 2
@@ -182,8 +186,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	routingDistibutor := prepareBurningDistributor()
 	subDistributors := append(routingDistibutor.SubDistributor, prepareInflationSubDistributor())
 	routingDistibutor.SubDistributor = subDistributors
-
-	app.CferoutingdistributorKeeper.SetRoutingDistributor(ctx, routingDistibutor)
+	app.CferoutingdistributorKeeper.SetParams(ctx, types.NewParams(routingDistibutor))
 
 	//coin from fee 1017 * 3000
 	for i := 1; i <= 3001; i++ {
@@ -204,24 +207,29 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 	app.EndBlocker(ctx, abci.RequestEndBlock{})
 
-	coinRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["c4e_distributor"].LeftoverCoin
+	remains, _ := app.CferoutingdistributorKeeper.GetRemains(ctx, "c4e_distributor")
+
+	coinRemains := remains.LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains)
 
-	burnRemains := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["burn"].LeftoverCoin
+	remains, _ = app.CferoutingdistributorKeeper.GetRemains(ctx, "burn")
+	burnRemains := remains.LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.670000000000000000"), burnRemains)
 
 	acc, _ := sdk.AccAddressFromBech32("cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
 	developmentFundAccount := app.CferoutingdistributorKeeper.GetAccountCoins(ctx, acc)
 	require.EqualValues(t, sdk.MustNewDecFromStr("1720635"), developmentFundAccount.AmountOf(denom).ToDec())
 
-	coinRemainsDevelopmentFund := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag"].LeftoverCoin
+	remains, _ = app.CferoutingdistributorKeeper.GetRemains(ctx, "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
+	coinRemainsDevelopmentFund := remains.LeftoverCoin
 
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.4354"), coinRemainsDevelopmentFund)
 
 	validatorRewardCollectorAccountCoin := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "validators_rewards_collector")
 	require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(denom).ToDec())
 
-	coinRemainsValidatorsReward := app.CferoutingdistributorKeeper.GetRoutingDistributorr(ctx).RemainsMap["validators_rewards_collector"].LeftoverCoin
+	remains, _ = app.CferoutingdistributorKeeper.GetRemains(ctx, "validators_rewards_collector")
+	coinRemainsValidatorsReward := remains.LeftoverCoin
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.5646"), coinRemainsValidatorsReward)
 
 	coinOnRemainAccount := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "remains")

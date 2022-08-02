@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Params } from "../cferoutingdistributor/params";
-import { RoutingDistributor } from "../cferoutingdistributor/sub_distributor";
+import { RemainsList } from "../cferoutingdistributor/sub_distributor";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
@@ -9,7 +9,7 @@ export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
 export interface GenesisState {
   params: Params | undefined;
   /** this line is used by starport scaffolding # genesis/proto/state */
-  routing_distributor: RoutingDistributor | undefined;
+  remains_list: RemainsList | undefined;
 }
 
 const baseGenesisState: object = {};
@@ -19,9 +19,9 @@ export const GenesisState = {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
-    if (message.routing_distributor !== undefined) {
-      RoutingDistributor.encode(
-        message.routing_distributor,
+    if (message.remains_list !== undefined) {
+      RemainsList.encode(
+        message.remains_list,
         writer.uint32(18).fork()
       ).ldelim();
     }
@@ -39,10 +39,7 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
-          message.routing_distributor = RoutingDistributor.decode(
-            reader,
-            reader.uint32()
-          );
+          message.remains_list = RemainsList.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -59,15 +56,10 @@ export const GenesisState = {
     } else {
       message.params = undefined;
     }
-    if (
-      object.routing_distributor !== undefined &&
-      object.routing_distributor !== null
-    ) {
-      message.routing_distributor = RoutingDistributor.fromJSON(
-        object.routing_distributor
-      );
+    if (object.remains_list !== undefined && object.remains_list !== null) {
+      message.remains_list = RemainsList.fromJSON(object.remains_list);
     } else {
-      message.routing_distributor = undefined;
+      message.remains_list = undefined;
     }
     return message;
   },
@@ -76,9 +68,9 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    message.routing_distributor !== undefined &&
-      (obj.routing_distributor = message.routing_distributor
-        ? RoutingDistributor.toJSON(message.routing_distributor)
+    message.remains_list !== undefined &&
+      (obj.remains_list = message.remains_list
+        ? RemainsList.toJSON(message.remains_list)
         : undefined);
     return obj;
   },
@@ -90,15 +82,10 @@ export const GenesisState = {
     } else {
       message.params = undefined;
     }
-    if (
-      object.routing_distributor !== undefined &&
-      object.routing_distributor !== null
-    ) {
-      message.routing_distributor = RoutingDistributor.fromPartial(
-        object.routing_distributor
-      );
+    if (object.remains_list !== undefined && object.remains_list !== null) {
+      message.remains_list = RemainsList.fromPartial(object.remains_list);
     } else {
-      message.routing_distributor = undefined;
+      message.remains_list = undefined;
     }
     return message;
   },

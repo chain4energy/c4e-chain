@@ -1,15 +1,24 @@
 /* eslint-disable */
+import { RoutingDistributor } from "../cferoutingdistributor/sub_distributor";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
 
 /** Params defines the parameters for the module. */
-export interface Params {}
+export interface Params {
+  routing_distributor: RoutingDistributor | undefined;
+}
 
 const baseParams: object = {};
 
 export const Params = {
-  encode(_: Params, writer: Writer = Writer.create()): Writer {
+  encode(message: Params, writer: Writer = Writer.create()): Writer {
+    if (message.routing_distributor !== undefined) {
+      RoutingDistributor.encode(
+        message.routing_distributor,
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
     return writer;
   },
 
@@ -20,6 +29,12 @@ export const Params = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 2:
+          message.routing_distributor = RoutingDistributor.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -28,18 +43,42 @@ export const Params = {
     return message;
   },
 
-  fromJSON(_: any): Params {
+  fromJSON(object: any): Params {
     const message = { ...baseParams } as Params;
+    if (
+      object.routing_distributor !== undefined &&
+      object.routing_distributor !== null
+    ) {
+      message.routing_distributor = RoutingDistributor.fromJSON(
+        object.routing_distributor
+      );
+    } else {
+      message.routing_distributor = undefined;
+    }
     return message;
   },
 
-  toJSON(_: Params): unknown {
+  toJSON(message: Params): unknown {
     const obj: any = {};
+    message.routing_distributor !== undefined &&
+      (obj.routing_distributor = message.routing_distributor
+        ? RoutingDistributor.toJSON(message.routing_distributor)
+        : undefined);
     return obj;
   },
 
-  fromPartial(_: DeepPartial<Params>): Params {
+  fromPartial(object: DeepPartial<Params>): Params {
     const message = { ...baseParams } as Params;
+    if (
+      object.routing_distributor !== undefined &&
+      object.routing_distributor !== null
+    ) {
+      message.routing_distributor = RoutingDistributor.fromPartial(
+        object.routing_distributor
+      );
+    } else {
+      message.routing_distributor = undefined;
+    }
     return message;
   },
 };
