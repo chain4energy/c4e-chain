@@ -70,9 +70,9 @@ func (m *Remains) GetAccount() Account {
 }
 
 type RoutingDistributor struct {
-	// List contains distributors
+	//List contains distributors
 	SubDistributor []SubDistributor `protobuf:"bytes,1,rep,name=sub_distributor,json=subDistributor,proto3" json:"sub_distributor"`
-	// module account to load on start genesis
+	//module account to load on start genesis
 	ModuleAccounts           []string           `protobuf:"bytes,2,rep,name=module_accounts,json=moduleAccounts,proto3" json:"module_accounts,omitempty"`
 	RemainsCoinModuleAccount string             `protobuf:"bytes,3,opt,name=remains_coin_module_account,json=remainsCoinModuleAccount,proto3" json:"remains_coin_module_account,omitempty"`
 	RemainsMap               map[string]Remains `protobuf:"bytes,4,rep,name=remains_map,json=remainsMap,proto3" json:"remains_map" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -141,9 +141,9 @@ func (m *RoutingDistributor) GetRemainsMap() map[string]Remains {
 
 type SubDistributor struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// represent list of module account from which
+	//represent list of module account from which
 	Sources []string `protobuf:"bytes,2,rep,name=sources,proto3" json:"sources,omitempty"`
-	// represent destinations
+	//represent destinations
 	Destination Destination `protobuf:"bytes,3,opt,name=destination,proto3" json:"destination"`
 	Order       int32       `protobuf:"varint,4,opt,name=order,proto3" json:"order,omitempty"`
 }

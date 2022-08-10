@@ -1,0 +1,15 @@
+syntax = "proto3";
+package chain4energy.c4echain.energybank;
+
+option go_package = "github.com/chain4energy/c4e-chain/x/energybank/types";
+
+message TokenParams {
+  string index = 1; 
+  string name = 2; 
+  string tradingCompany = 3; 
+  uint64 burningTime = 4; 
+  string burningType = 5; 
+  uint64 sendPrice = 6; 
+  
+}
+

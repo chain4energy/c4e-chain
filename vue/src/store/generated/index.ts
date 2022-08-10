@@ -4,6 +4,7 @@ import Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter from './chain4energy/c4
 import Chain4EnergyC4EChainChain4EnergyC4EchainCferoutingdistributor from './chain4energy/c4e-chain/chain4energy.c4echain.cferoutingdistributor'
 import Chain4EnergyC4EChainChain4EnergyC4EchainCfesignature from './chain4energy/c4e-chain/chain4energy.c4echain.cfesignature'
 import Chain4EnergyC4EChainChain4EnergyC4EchainCfevesting from './chain4energy/c4e-chain/chain4energy.c4echain.cfevesting'
+import Chain4EnergyC4EChainChain4EnergyC4EchainEnergybank from './chain4energy/c4e-chain/chain4energy.c4echain.energybank'
 import CosmosCosmosSdkCosmosAuthV1Beta1 from './cosmos/cosmos-sdk/cosmos.auth.v1beta1'
 import CosmosCosmosSdkCosmosAuthzV1Beta1 from './cosmos/cosmos-sdk/cosmos.authz.v1beta1'
 import CosmosCosmosSdkCosmosBankV1Beta1 from './cosmos/cosmos-sdk/cosmos.bank.v1beta1'
@@ -31,6 +32,7 @@ export default {
   Chain4EnergyC4EChainChain4EnergyC4EchainCferoutingdistributor: load(Chain4EnergyC4EChainChain4EnergyC4EchainCferoutingdistributor, 'chain4energy.c4echain.cferoutingdistributor'),
   Chain4EnergyC4EChainChain4EnergyC4EchainCfesignature: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfesignature, 'chain4energy.c4echain.cfesignature'),
   Chain4EnergyC4EChainChain4EnergyC4EchainCfevesting: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfevesting, 'chain4energy.c4echain.cfevesting'),
+  Chain4EnergyC4EChainChain4EnergyC4EchainEnergybank: load(Chain4EnergyC4EChainChain4EnergyC4EchainEnergybank, 'chain4energy.c4echain.energybank'),
   CosmosCosmosSdkCosmosAuthV1Beta1: load(CosmosCosmosSdkCosmosAuthV1Beta1, 'cosmos.auth.v1beta1'),
   CosmosCosmosSdkCosmosAuthzV1Beta1: load(CosmosCosmosSdkCosmosAuthzV1Beta1, 'cosmos.authz.v1beta1'),
   CosmosCosmosSdkCosmosBankV1Beta1: load(CosmosCosmosSdkCosmosBankV1Beta1, 'cosmos.bank.v1beta1'),
