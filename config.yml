@@ -21,7 +21,7 @@ client:
     path: "vue/src/store"
 faucet:
   name: bob
-  coins: ["100000uc4e"]
+  coins: ["100000000uc4e"]
 init:
   home: "./.data"
   config:
