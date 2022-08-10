@@ -9,7 +9,7 @@ import {
 import { EnergyToken } from "../energybank/energy_token";
 import { TokenParams } from "../energybank/token_params";
 
-export const protobufPackage = "chain4energy.c4echain.energybank";
+export const protobufPackage = "chain4energy.c4echain.cfeenergybank";
 
 /** QueryParamsRequest is request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
@@ -1192,7 +1192,7 @@ export class QueryClientImpl implements Query {
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.energybank.Query",
+      "chain4energy.c4echain.cfeenergybank.Query",
       "Params",
       data
     );
@@ -1204,7 +1204,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryEnergyTokenUserAddressResponse> {
     const data = QueryEnergyTokenUserAddressRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.energybank.Query",
+      "chain4energy.c4echain.cfeenergybank.Query",
       "EnergyTokenUserAddress",
       data
     );
@@ -1218,7 +1218,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryCurrentBalanceResponse> {
     const data = QueryCurrentBalanceRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.energybank.Query",
+      "chain4energy.c4echain.cfeenergybank.Query",
       "CurrentBalance",
       data
     );
@@ -1232,7 +1232,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryGetEnergyTokenResponse> {
     const data = QueryGetEnergyTokenRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.energybank.Query",
+      "chain4energy.c4echain.cfeenergybank.Query",
       "EnergyToken",
       data
     );
@@ -1246,7 +1246,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryAllEnergyTokenResponse> {
     const data = QueryAllEnergyTokenRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.energybank.Query",
+      "chain4energy.c4echain.cfeenergybank.Query",
       "EnergyTokenAll",
       data
     );
@@ -1260,7 +1260,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryGetTokenParamsResponse> {
     const data = QueryGetTokenParamsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.energybank.Query",
+      "chain4energy.c4echain.cfeenergybank.Query",
       "TokenParams",
       data
     );
@@ -1274,7 +1274,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryAllTokenParamsResponse> {
     const data = QueryAllTokenParamsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.energybank.Query",
+      "chain4energy.c4echain.cfeenergybank.Query",
       "TokenParamsAll",
       data
     );

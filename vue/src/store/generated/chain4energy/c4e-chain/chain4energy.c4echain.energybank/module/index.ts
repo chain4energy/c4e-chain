@@ -4,8 +4,8 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgMintToken } from "./types/energybank/tx";
-import { MsgCreateTokenParams } from "./types/energybank/tx";
+import { MsgMintToken } from "./types/cfeenergybank/tx";
+import { MsgCreateTokenParams } from "./types/cfeenergybank/tx";
 
 
 const types = [

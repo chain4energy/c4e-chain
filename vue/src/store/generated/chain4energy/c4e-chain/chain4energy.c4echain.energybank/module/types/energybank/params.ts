@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Writer, Reader } from "protobufjs/minimal";
 
-export const protobufPackage = "chain4energy.c4echain.energybank";
+export const protobufPackage = "chain4energy.c4echain.cfeenergybank";
 
 /** Params defines the parameters for the module. */
 export interface Params {}

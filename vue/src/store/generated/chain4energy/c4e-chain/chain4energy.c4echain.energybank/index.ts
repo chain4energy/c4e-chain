@@ -1,8 +1,8 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
-import { EnergyToken } from "./module/types/energybank/energy_token"
-import { Params } from "./module/types/energybank/params"
-import { TokenParams } from "./module/types/energybank/token_params"
+import { EnergyToken } from "./module/types/cfeenergybank/energy_token"
+import { Params } from "./module/types/cfeenergybank/params"
+import { TokenParams } from "./module/types/cfeenergybank/token_params"
 
 
 export { EnergyToken, Params, TokenParams };

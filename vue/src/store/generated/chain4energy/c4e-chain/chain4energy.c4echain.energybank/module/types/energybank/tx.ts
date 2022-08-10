@@ -2,7 +2,7 @@
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
 
-export const protobufPackage = "chain4energy.c4echain.energybank";
+export const protobufPackage = "chain4energy.c4echain.cfeenergybank";
 
 export interface MsgCreateTokenParams {
   creator: string;
@@ -398,7 +398,7 @@ export class MsgClientImpl implements Msg {
   ): Promise<MsgCreateTokenParamsResponse> {
     const data = MsgCreateTokenParams.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.energybank.Msg",
+      "chain4energy.c4echain.cfeenergybank.Msg",
       "CreateTokenParams",
       data
     );
@@ -410,7 +410,7 @@ export class MsgClientImpl implements Msg {
   MintToken(request: MsgMintToken): Promise<MsgMintTokenResponse> {
     const data = MsgMintToken.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.energybank.Msg",
+      "chain4energy.c4echain.cfeenergybank.Msg",
       "MintToken",
       data
     );

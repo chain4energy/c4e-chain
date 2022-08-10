@@ -2,7 +2,7 @@
 import * as Long from "long";
 import { util, configure, Writer, Reader } from "protobufjs/minimal";
 
-export const protobufPackage = "chain4energy.c4echain.energybank";
+export const protobufPackage = "chain4energy.c4echain.cfeenergybank";
 
 export interface TokenParams {
   index: string;

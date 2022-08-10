@@ -100,6 +100,9 @@ import (
 	monitoringptypes "github.com/tendermint/spn/x/monitoringp/types"
 
 	"github.com/chain4energy/c4e-chain/docs"
+	energybankmodule "github.com/chain4energy/c4e-chain/x/cfeenergybank"
+	energybankmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeenergybank/keeper"
+	energybankmoduletypes "github.com/chain4energy/c4e-chain/x/cfeenergybank/types"
 	cfemintermodule "github.com/chain4energy/c4e-chain/x/cfeminter"
 	cfemintermodulekeeper "github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
@@ -112,9 +115,6 @@ import (
 	cfevestingmodule "github.com/chain4energy/c4e-chain/x/cfevesting"
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	energybankmodule "github.com/chain4energy/c4e-chain/x/energybank"
-	energybankmodulekeeper "github.com/chain4energy/c4e-chain/x/energybank/keeper"
-	energybankmoduletypes "github.com/chain4energy/c4e-chain/x/energybank/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 

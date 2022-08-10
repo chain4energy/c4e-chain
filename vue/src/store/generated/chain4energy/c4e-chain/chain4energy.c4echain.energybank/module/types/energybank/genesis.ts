@@ -5,9 +5,9 @@ import { Params } from "../energybank/params";
 import { EnergyToken } from "../energybank/energy_token";
 import { TokenParams } from "../energybank/token_params";
 
-export const protobufPackage = "chain4energy.c4echain.energybank";
+export const protobufPackage = "chain4energy.c4echain.cfeenergybank";
 
-/** GenesisState defines the energybank module's genesis state. */
+/** GenesisState defines the cfeenergybank module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
   energyTokenList: EnergyToken[];

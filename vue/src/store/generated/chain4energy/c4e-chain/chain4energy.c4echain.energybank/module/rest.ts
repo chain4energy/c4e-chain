@@ -377,7 +377,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title energybank/energy_token.proto
+ * @title cfeenergybank/energy_token.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -387,11 +387,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCurrentBalance
    * @summary Queries a list of CurrentBalance items.
-   * @request GET:/chain4energy/c4e-chain/energybank/current_balance/{userAddress}/{tokenName}
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/current_balance/{userAddress}/{tokenName}
    */
   queryCurrentBalance = (userAddress: string, tokenName: string, params: RequestParams = {}) =>
     this.request<EnergybankQueryCurrentBalanceResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/energybank/current_balance/${userAddress}/${tokenName}`,
+      path: `/chain4energy/c4e-chain/cfeenergybank/current_balance/${userAddress}/${tokenName}`,
       method: "GET",
       format: "json",
       ...params,
@@ -403,7 +403,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryEnergyTokenAll
    * @summary Queries a list of EnergyToken items.
-   * @request GET:/chain4energy/c4e-chain/energybank/energy_token
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/energy_token
    */
   queryEnergyTokenAll = (
     query?: {
@@ -416,7 +416,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<EnergybankQueryAllEnergyTokenResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/energybank/energy_token`,
+      path: `/chain4energy/c4e-chain/cfeenergybank/energy_token`,
       method: "GET",
       query: query,
       format: "json",
@@ -429,11 +429,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryEnergyToken
    * @summary Queries a EnergyToken by id.
-   * @request GET:/chain4energy/c4e-chain/energybank/energy_token/{id}
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/energy_token/{id}
    */
   queryEnergyToken = (id: string, params: RequestParams = {}) =>
     this.request<EnergybankQueryGetEnergyTokenResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/energybank/energy_token/${id}`,
+      path: `/chain4energy/c4e-chain/cfeenergybank/energy_token/${id}`,
       method: "GET",
       format: "json",
       ...params,
@@ -445,7 +445,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryEnergyTokenUserAddress
    * @summary Queries a list of EnergyTokenUserAddress items.
-   * @request GET:/chain4energy/c4e-chain/energybank/energy_token_user_address/{userAddress}
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/energy_token_user_address/{userAddress}
    */
   queryEnergyTokenUserAddress = (
     userAddress: string,
@@ -459,7 +459,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<EnergybankQueryEnergyTokenUserAddressResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/energybank/energy_token_user_address/${userAddress}`,
+      path: `/chain4energy/c4e-chain/cfeenergybank/energy_token_user_address/${userAddress}`,
       method: "GET",
       query: query,
       format: "json",
@@ -472,11 +472,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/chain4energy/c4e-chain/energybank/params
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<EnergybankQueryParamsResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/energybank/params`,
+      path: `/chain4energy/c4e-chain/cfeenergybank/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -488,7 +488,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryTokenParamsAll
    * @summary Queries a list of TokenParams items.
-   * @request GET:/chain4energy/c4e-chain/energybank/token_params
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/token_params
    */
   queryTokenParamsAll = (
     query?: {
@@ -501,7 +501,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<EnergybankQueryAllTokenParamsResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/energybank/token_params`,
+      path: `/chain4energy/c4e-chain/cfeenergybank/token_params`,
       method: "GET",
       query: query,
       format: "json",
@@ -514,11 +514,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryTokenParams
    * @summary Queries a TokenParams by index.
-   * @request GET:/chain4energy/c4e-chain/energybank/token_params/{index}
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/token_params/{index}
    */
   queryTokenParams = (index: string, params: RequestParams = {}) =>
     this.request<EnergybankQueryGetTokenParamsResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/energybank/token_params/${index}`,
+      path: `/chain4energy/c4e-chain/cfeenergybank/token_params/${index}`,
       method: "GET",
       format: "json",
       ...params,
