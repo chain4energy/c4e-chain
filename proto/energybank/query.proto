@@ -61,9 +61,12 @@ message QueryParamsResponse {
 
 message QueryEnergyTokenUserAddressRequest {
   string userAddress = 1;
+	cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryEnergyTokenUserAddressResponse {
+	repeated EnergyToken EnergyToken = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryCurrentBalanceRequest {
@@ -72,6 +75,7 @@ message QueryCurrentBalanceRequest {
 }
 
 message QueryCurrentBalanceResponse {
+	uint64 balance = 1;
 }
 
 message QueryGetEnergyTokenRequest {

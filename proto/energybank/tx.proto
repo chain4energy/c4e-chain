@@ -7,9 +7,9 @@ option go_package = "github.com/chain4energy/c4e-chain/x/energybank/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc CreateTokenParams(MsgCreateTokenParams) returns (MsgCreateTokenParamsResponse);
+  rpc CreateTokenParams(MsgCreateTokenParams) returns (MsgCreateTokenParamsResponse);
   rpc MintToken(MsgMintToken) returns (MsgMintTokenResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
+  // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgCreateTokenParams {
@@ -33,5 +33,6 @@ message MsgMintToken {
 
 message MsgMintTokenResponse {
 }
+
 
 // this line is used by starport scaffolding # proto/tx/message

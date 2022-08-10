@@ -17,6 +17,9 @@ export interface EnergybankEnergyToken {
   /** @format uint64 */
   amount?: string;
   userAddress?: string;
+
+  /** @format uint64 */
+  createdAt?: string;
 }
 
 export type EnergybankMsgCreateTokenParamsResponse = object;
@@ -58,9 +61,25 @@ export interface EnergybankQueryAllTokenParamsResponse {
   pagination?: V1Beta1PageResponse;
 }
 
-export type EnergybankQueryCurrentBalanceResponse = object;
+export interface EnergybankQueryCurrentBalanceResponse {
+  /** @format uint64 */
+  balance?: string;
+}
 
-export type EnergybankQueryEnergyTokenUserAddressResponse = object;
+export interface EnergybankQueryEnergyTokenUserAddressResponse {
+  EnergyToken?: EnergybankEnergyToken[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
 
 export interface EnergybankQueryGetEnergyTokenResponse {
   EnergyToken?: EnergybankEnergyToken;
@@ -89,6 +108,7 @@ export interface EnergybankTokenParams {
 
   /** @format uint64 */
   sendPrice?: string;
+  mintAccount?: string;
 }
 
 export interface ProtobufAny {
@@ -427,10 +447,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @summary Queries a list of EnergyTokenUserAddress items.
    * @request GET:/chain4energy/c4e-chain/energybank/energy_token_user_address/{userAddress}
    */
-  queryEnergyTokenUserAddress = (userAddress: string, params: RequestParams = {}) =>
+  queryEnergyTokenUserAddress = (
+    userAddress: string,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
     this.request<EnergybankQueryEnergyTokenUserAddressResponse, RpcStatus>({
       path: `/chain4energy/c4e-chain/energybank/energy_token_user_address/${userAddress}`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });

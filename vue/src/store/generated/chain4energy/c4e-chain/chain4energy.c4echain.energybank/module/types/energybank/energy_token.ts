@@ -9,9 +9,16 @@ export interface EnergyToken {
   name: string;
   amount: number;
   userAddress: string;
+  createdAt: number;
 }
 
-const baseEnergyToken: object = { id: 0, name: "", amount: 0, userAddress: "" };
+const baseEnergyToken: object = {
+  id: 0,
+  name: "",
+  amount: 0,
+  userAddress: "",
+  createdAt: 0,
+};
 
 export const EnergyToken = {
   encode(message: EnergyToken, writer: Writer = Writer.create()): Writer {
@@ -26,6 +33,9 @@ export const EnergyToken = {
     }
     if (message.userAddress !== "") {
       writer.uint32(34).string(message.userAddress);
+    }
+    if (message.createdAt !== 0) {
+      writer.uint32(40).uint64(message.createdAt);
     }
     return writer;
   },
@@ -48,6 +58,9 @@ export const EnergyToken = {
           break;
         case 4:
           message.userAddress = reader.string();
+          break;
+        case 5:
+          message.createdAt = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -79,6 +92,11 @@ export const EnergyToken = {
     } else {
       message.userAddress = "";
     }
+    if (object.createdAt !== undefined && object.createdAt !== null) {
+      message.createdAt = Number(object.createdAt);
+    } else {
+      message.createdAt = 0;
+    }
     return message;
   },
 
@@ -89,6 +107,7 @@ export const EnergyToken = {
     message.amount !== undefined && (obj.amount = message.amount);
     message.userAddress !== undefined &&
       (obj.userAddress = message.userAddress);
+    message.createdAt !== undefined && (obj.createdAt = message.createdAt);
     return obj;
   },
 
@@ -113,6 +132,11 @@ export const EnergyToken = {
       message.userAddress = object.userAddress;
     } else {
       message.userAddress = "";
+    }
+    if (object.createdAt !== undefined && object.createdAt !== null) {
+      message.createdAt = object.createdAt;
+    } else {
+      message.createdAt = 0;
     }
     return message;
   },

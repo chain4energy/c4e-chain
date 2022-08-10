@@ -5,8 +5,9 @@ option go_package = "github.com/chain4energy/c4e-chain/x/energybank/types";
 
 message EnergyToken {
   uint64 id = 1;
-  string name = 2; 
-  uint64 amount = 3; 
-  string userAddress = 4; 
-  
+  string name = 2;
+  uint64 amount = 3;
+  string userAddress = 4;
+  uint64 createdAt = 5;
+
 }

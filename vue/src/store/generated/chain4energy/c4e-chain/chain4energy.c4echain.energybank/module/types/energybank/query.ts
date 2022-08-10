@@ -2,11 +2,11 @@
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
 import { Params } from "../energybank/params";
-import { EnergyToken } from "../energybank/energy_token";
 import {
   PageRequest,
   PageResponse,
 } from "../cosmos/base/query/v1beta1/pagination";
+import { EnergyToken } from "../energybank/energy_token";
 import { TokenParams } from "../energybank/token_params";
 
 export const protobufPackage = "chain4energy.c4echain.energybank";
@@ -22,16 +22,22 @@ export interface QueryParamsResponse {
 
 export interface QueryEnergyTokenUserAddressRequest {
   userAddress: string;
+  pagination: PageRequest | undefined;
 }
 
-export interface QueryEnergyTokenUserAddressResponse {}
+export interface QueryEnergyTokenUserAddressResponse {
+  EnergyToken: EnergyToken[];
+  pagination: PageResponse | undefined;
+}
 
 export interface QueryCurrentBalanceRequest {
   userAddress: string;
   tokenName: string;
 }
 
-export interface QueryCurrentBalanceResponse {}
+export interface QueryCurrentBalanceResponse {
+  balance: number;
+}
 
 export interface QueryGetEnergyTokenRequest {
   id: number;
@@ -174,6 +180,9 @@ export const QueryEnergyTokenUserAddressRequest = {
     if (message.userAddress !== "") {
       writer.uint32(10).string(message.userAddress);
     }
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -192,6 +201,9 @@ export const QueryEnergyTokenUserAddressRequest = {
         case 1:
           message.userAddress = reader.string();
           break;
+        case 2:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -209,6 +221,11 @@ export const QueryEnergyTokenUserAddressRequest = {
     } else {
       message.userAddress = "";
     }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
     return message;
   },
 
@@ -216,6 +233,10 @@ export const QueryEnergyTokenUserAddressRequest = {
     const obj: any = {};
     message.userAddress !== undefined &&
       (obj.userAddress = message.userAddress);
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
     return obj;
   },
 
@@ -230,6 +251,11 @@ export const QueryEnergyTokenUserAddressRequest = {
     } else {
       message.userAddress = "";
     }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
     return message;
   },
 };
@@ -238,9 +264,18 @@ const baseQueryEnergyTokenUserAddressResponse: object = {};
 
 export const QueryEnergyTokenUserAddressResponse = {
   encode(
-    _: QueryEnergyTokenUserAddressResponse,
+    message: QueryEnergyTokenUserAddressResponse,
     writer: Writer = Writer.create()
   ): Writer {
+    for (const v of message.EnergyToken) {
+      EnergyToken.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(
+        message.pagination,
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
     return writer;
   },
 
@@ -253,9 +288,16 @@ export const QueryEnergyTokenUserAddressResponse = {
     const message = {
       ...baseQueryEnergyTokenUserAddressResponse,
     } as QueryEnergyTokenUserAddressResponse;
+    message.EnergyToken = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.EnergyToken.push(EnergyToken.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -264,24 +306,57 @@ export const QueryEnergyTokenUserAddressResponse = {
     return message;
   },
 
-  fromJSON(_: any): QueryEnergyTokenUserAddressResponse {
+  fromJSON(object: any): QueryEnergyTokenUserAddressResponse {
     const message = {
       ...baseQueryEnergyTokenUserAddressResponse,
     } as QueryEnergyTokenUserAddressResponse;
+    message.EnergyToken = [];
+    if (object.EnergyToken !== undefined && object.EnergyToken !== null) {
+      for (const e of object.EnergyToken) {
+        message.EnergyToken.push(EnergyToken.fromJSON(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
     return message;
   },
 
-  toJSON(_: QueryEnergyTokenUserAddressResponse): unknown {
+  toJSON(message: QueryEnergyTokenUserAddressResponse): unknown {
     const obj: any = {};
+    if (message.EnergyToken) {
+      obj.EnergyToken = message.EnergyToken.map((e) =>
+        e ? EnergyToken.toJSON(e) : undefined
+      );
+    } else {
+      obj.EnergyToken = [];
+    }
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageResponse.toJSON(message.pagination)
+        : undefined);
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<QueryEnergyTokenUserAddressResponse>
+    object: DeepPartial<QueryEnergyTokenUserAddressResponse>
   ): QueryEnergyTokenUserAddressResponse {
     const message = {
       ...baseQueryEnergyTokenUserAddressResponse,
     } as QueryEnergyTokenUserAddressResponse;
+    message.EnergyToken = [];
+    if (object.EnergyToken !== undefined && object.EnergyToken !== null) {
+      for (const e of object.EnergyToken) {
+        message.EnergyToken.push(EnergyToken.fromPartial(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
     return message;
   },
 };
@@ -376,13 +451,16 @@ export const QueryCurrentBalanceRequest = {
   },
 };
 
-const baseQueryCurrentBalanceResponse: object = {};
+const baseQueryCurrentBalanceResponse: object = { balance: 0 };
 
 export const QueryCurrentBalanceResponse = {
   encode(
-    _: QueryCurrentBalanceResponse,
+    message: QueryCurrentBalanceResponse,
     writer: Writer = Writer.create()
   ): Writer {
+    if (message.balance !== 0) {
+      writer.uint32(8).uint64(message.balance);
+    }
     return writer;
   },
 
@@ -398,6 +476,9 @@ export const QueryCurrentBalanceResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.balance = longToNumber(reader.uint64() as Long);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -406,24 +487,35 @@ export const QueryCurrentBalanceResponse = {
     return message;
   },
 
-  fromJSON(_: any): QueryCurrentBalanceResponse {
+  fromJSON(object: any): QueryCurrentBalanceResponse {
     const message = {
       ...baseQueryCurrentBalanceResponse,
     } as QueryCurrentBalanceResponse;
+    if (object.balance !== undefined && object.balance !== null) {
+      message.balance = Number(object.balance);
+    } else {
+      message.balance = 0;
+    }
     return message;
   },
 
-  toJSON(_: QueryCurrentBalanceResponse): unknown {
+  toJSON(message: QueryCurrentBalanceResponse): unknown {
     const obj: any = {};
+    message.balance !== undefined && (obj.balance = message.balance);
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<QueryCurrentBalanceResponse>
+    object: DeepPartial<QueryCurrentBalanceResponse>
   ): QueryCurrentBalanceResponse {
     const message = {
       ...baseQueryCurrentBalanceResponse,
     } as QueryCurrentBalanceResponse;
+    if (object.balance !== undefined && object.balance !== null) {
+      message.balance = object.balance;
+    } else {
+      message.balance = 0;
+    }
     return message;
   },
 };

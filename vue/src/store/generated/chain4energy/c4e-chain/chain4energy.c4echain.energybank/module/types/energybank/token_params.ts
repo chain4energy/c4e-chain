@@ -11,6 +11,7 @@ export interface TokenParams {
   burningTime: number;
   burningType: string;
   sendPrice: number;
+  mintAccount: string;
 }
 
 const baseTokenParams: object = {
@@ -20,6 +21,7 @@ const baseTokenParams: object = {
   burningTime: 0,
   burningType: "",
   sendPrice: 0,
+  mintAccount: "",
 };
 
 export const TokenParams = {
@@ -41,6 +43,9 @@ export const TokenParams = {
     }
     if (message.sendPrice !== 0) {
       writer.uint32(48).uint64(message.sendPrice);
+    }
+    if (message.mintAccount !== "") {
+      writer.uint32(58).string(message.mintAccount);
     }
     return writer;
   },
@@ -69,6 +74,9 @@ export const TokenParams = {
           break;
         case 6:
           message.sendPrice = longToNumber(reader.uint64() as Long);
+          break;
+        case 7:
+          message.mintAccount = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -110,6 +118,11 @@ export const TokenParams = {
     } else {
       message.sendPrice = 0;
     }
+    if (object.mintAccount !== undefined && object.mintAccount !== null) {
+      message.mintAccount = String(object.mintAccount);
+    } else {
+      message.mintAccount = "";
+    }
     return message;
   },
 
@@ -124,6 +137,8 @@ export const TokenParams = {
     message.burningType !== undefined &&
       (obj.burningType = message.burningType);
     message.sendPrice !== undefined && (obj.sendPrice = message.sendPrice);
+    message.mintAccount !== undefined &&
+      (obj.mintAccount = message.mintAccount);
     return obj;
   },
 
@@ -158,6 +173,11 @@ export const TokenParams = {
       message.sendPrice = object.sendPrice;
     } else {
       message.sendPrice = 0;
+    }
+    if (object.mintAccount !== undefined && object.mintAccount !== null) {
+      message.mintAccount = object.mintAccount;
+    } else {
+      message.mintAccount = "";
     }
     return message;
   },
