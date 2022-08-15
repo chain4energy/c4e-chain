@@ -18,6 +18,8 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_cferoutingdistributor"
+
+	CollectorName = ModuleName
 )
 
 func KeyPrefix(p string) []byte {

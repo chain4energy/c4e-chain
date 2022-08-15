@@ -20,7 +20,6 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_cfeminter"
 
-	MinterCollectorName = "c4e_distributor"
 )
 
 func KeyPrefix(p string) []byte {

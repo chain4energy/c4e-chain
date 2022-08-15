@@ -17,6 +17,8 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
+
 )
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
@@ -75,11 +77,11 @@ func TestOneYearLinear(t *testing.T) {
 
 	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 	require.NoError(t, err)
-	require.EqualValues(t, sdk.NewDec(1), inflation) // TODO check - simetes not passed becouse probably Dec calclulation limited precision
+	require.EqualValues(t, sdk.NewDec(1), inflation) 
 	state := app.CfeminterKeeper.GetMinterState(ctx)
 	require.EqualValues(t, int32(1), state.CurrentPosition)
 	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
-	commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.ZeroInt())
+	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, sdk.ZeroInt())
 
 	numOfHours := 365 * 24
 	for i := 1; i <= numOfHours; i++ {
@@ -90,7 +92,7 @@ func TestOneYearLinear(t *testing.T) {
 		expectedMinted := totalSupply * int64(i) / int64(numOfHours)
 		expectedInflation := sdk.NewDec(totalSupply).QuoInt64(totalSupply + expectedMinted)
 
-		commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.NewInt(expectedMinted))
+		commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, sdk.NewInt(expectedMinted))
 
 		inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 		require.NoError(t, err)
@@ -108,7 +110,7 @@ func TestOneYearLinear(t *testing.T) {
 
 	}
 
-	commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.NewInt(totalSupply))
+	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, sdk.NewInt(totalSupply))
 	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
 	require.EqualValues(t, sdk.NewInt(2*totalSupply), supp.Amount)
 
@@ -144,11 +146,11 @@ func TestFewYearsPeridocicReduction(t *testing.T) {
 
 	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 	require.NoError(t, err)
-	require.EqualValues(t, sdk.MustNewDecFromStr("0.1"), inflation) // TODO check - simetes not passed becouse probably Dec calclulation limited precision
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.1"), inflation)
 	state := app.CfeminterKeeper.GetMinterState(ctx)
 	require.EqualValues(t, int32(1), state.CurrentPosition)
 	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
-	commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.ZeroInt())
+	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, sdk.ZeroInt())
 
 	year := 365 //* 24
 	numOfHours := 4 * year
@@ -164,7 +166,7 @@ func TestFewYearsPeridocicReduction(t *testing.T) {
 			expectedMinted := amountYearly * int64(i) / int64(year)
 			expectedInflation := sdk.NewDec(amountYearly).QuoInt64(totalSupply + prevPeriodMinted + expectedMinted)
 
-			commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.NewInt(prevPeriodMinted+expectedMinted))
+			commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, sdk.NewInt(prevPeriodMinted+expectedMinted))
 
 			inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 			require.NoError(t, err)
@@ -185,7 +187,7 @@ func TestFewYearsPeridocicReduction(t *testing.T) {
 		amountYearly = amountYearly / 2
 	}
 	expectedMinted := int64(310000000000000)
-	commontestutils.VerifyModuleAccountBalanceByName(types.MinterCollectorName, ctx, app, t, sdk.NewInt(expectedMinted))
+	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, sdk.NewInt(expectedMinted))
 	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
 	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
 

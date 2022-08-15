@@ -2,17 +2,14 @@ syntax = "proto3";
 package chain4energy.c4echain.cferoutingdistributor;
 
 import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types";
 
 message Remains {
   Account account = 1         [(gogoproto.nullable) = false];
-  string leftover_coin      = 2 [
-    (gogoproto.moretags)   = "yaml:\"leftoverCoin\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false
-  ];
+  cosmos.base.v1beta1.DecCoin leftover_coin    = 2 [(gogoproto.nullable) = false];
 }
 
 message RemainsList {
@@ -26,14 +23,14 @@ message RoutingDistributor {
 
   //module account to load on start genesis
   repeated string module_accounts = 2;
-  string remains_coin_module_account = 3;
+  // string remains_coin_module_account = 3;
 
 }
 
 message SubDistributor {
   string name = 1;
   //represent list of module account from which
-  repeated string sources = 2;
+  repeated Account sources = 2;
 
   //represent destinations
   Destination destination = 3         [(gogoproto.nullable) = false];
@@ -71,4 +68,6 @@ message Share {
 message Account {
   string address = 1;
   bool is_module_account = 2;
+  bool is_internal_account = 3;
+  bool is_main_collector = 4;
 }

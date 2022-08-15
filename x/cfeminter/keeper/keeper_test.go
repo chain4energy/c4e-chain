@@ -9,6 +9,8 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
+
 )
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
@@ -28,7 +30,7 @@ func TestMintFirstPeriod(t *testing.T) {
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(0), amount)
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.ZeroInt())
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.ZeroInt())
 
 	ctx = ctx.WithBlockTime(startTime.Add(PeriodDuration / 4))
 	amount, err = k.Mint(ctx)
@@ -36,7 +38,7 @@ func TestMintFirstPeriod(t *testing.T) {
 	require.EqualValues(t, sdk.NewInt(250000), amount)
 	minterState.AmountMinted = sdk.NewInt(250000)
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.NewInt(250000))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.NewInt(250000))
 
 	ctx = ctx.WithBlockTime(startTime.Add(PeriodDuration * 3 / 4))
 	amount, err = k.Mint(ctx)
@@ -44,7 +46,7 @@ func TestMintFirstPeriod(t *testing.T) {
 	require.EqualValues(t, sdk.NewInt(500000), amount)
 	minterState.AmountMinted = sdk.NewInt(750000)
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.NewInt(750000))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.NewInt(750000))
 
 	ctx = ctx.WithBlockTime(startTime.Add(PeriodDuration))
 	amount, err = k.Mint(ctx)
@@ -53,7 +55,7 @@ func TestMintFirstPeriod(t *testing.T) {
 	minterState.AmountMinted = sdk.NewInt(0)
 	minterState.CurrentPosition = 2
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.NewInt(1000000))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.NewInt(1000000))
 
 }
 
@@ -72,7 +74,7 @@ func TestMintSecondPeriod(t *testing.T) {
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(0), amount)
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.NewInt(0))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.NewInt(0))
 
 	ctx = ctx.WithBlockTime(periodStart.Add(PeriodDuration / 4))
 	amount, err = k.Mint(ctx)
@@ -80,7 +82,7 @@ func TestMintSecondPeriod(t *testing.T) {
 	require.EqualValues(t, sdk.NewInt(25000), amount)
 	minterState.AmountMinted = sdk.NewInt(25000)
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.NewInt(25000))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.NewInt(25000))
 
 	ctx = ctx.WithBlockTime(periodStart.Add(PeriodDuration * 3 / 4))
 	amount, err = k.Mint(ctx)
@@ -88,7 +90,7 @@ func TestMintSecondPeriod(t *testing.T) {
 	require.EqualValues(t, sdk.NewInt(50000), amount)
 	minterState.AmountMinted = sdk.NewInt(75000)
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.NewInt(75000))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.NewInt(75000))
 
 	ctx = ctx.WithBlockTime(periodStart.Add(PeriodDuration))
 	amount, err = k.Mint(ctx)
@@ -97,7 +99,7 @@ func TestMintSecondPeriod(t *testing.T) {
 	minterState.AmountMinted = sdk.NewInt(0)
 	minterState.CurrentPosition = 3
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.NewInt(100000))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.NewInt(100000))
 
 }
 
@@ -117,7 +119,7 @@ func TestMintBetweenFirstAndSecondPeriods(t *testing.T) {
 	minterState.AmountMinted = sdk.NewInt(25000)
 	minterState.CurrentPosition = 2
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.NewInt(275000))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.NewInt(275000))
 
 }
 
@@ -137,7 +139,7 @@ func TestMintBetweenSecondAndThirdPeriods(t *testing.T) {
 	minterState.AmountMinted = sdk.NewInt(0)
 	minterState.CurrentPosition = 3
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(types.MinterCollectorName, ctx, app, t, MyDenom, sdk.NewInt(25000))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.CollectorName, ctx, app, t, MyDenom, sdk.NewInt(25000))
 
 }
 

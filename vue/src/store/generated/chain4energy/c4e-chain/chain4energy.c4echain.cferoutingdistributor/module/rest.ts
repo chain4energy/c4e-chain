@@ -12,6 +12,8 @@
 export interface CferoutingdistributorAccount {
   address?: string;
   is_module_account?: boolean;
+  is_internal_account?: boolean;
+  is_main_collector?: boolean;
 }
 
 export interface CferoutingdistributorBurnShare {
@@ -42,7 +44,6 @@ export interface CferoutingdistributorQueryParamsResponse {
 export interface CferoutingdistributorRoutingDistributor {
   sub_distributor?: CferoutingdistributorSubDistributor[];
   module_accounts?: string[];
-  remains_coin_module_account?: string;
 }
 
 export interface CferoutingdistributorShare {
@@ -53,7 +54,7 @@ export interface CferoutingdistributorShare {
 
 export interface CferoutingdistributorSubDistributor {
   name?: string;
-  sources?: string[];
+  sources?: CferoutingdistributorAccount[];
   destination?: CferoutingdistributorDestination;
 
   /** @format int32 */

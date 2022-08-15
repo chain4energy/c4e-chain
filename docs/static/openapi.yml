@@ -181,7 +181,16 @@ paths:
                             sources:
                               type: array
                               items:
-                                type: string
+                                type: object
+                                properties:
+                                  address:
+                                    type: string
+                                  is_module_account:
+                                    type: boolean
+                                  is_internal_account:
+                                    type: boolean
+                                  is_main_collector:
+                                    type: boolean
                               title: represent list of module account from which
                             destination:
                               title: represent destinations
@@ -193,6 +202,10 @@ paths:
                                     address:
                                       type: string
                                     is_module_account:
+                                      type: boolean
+                                    is_internal_account:
+                                      type: boolean
+                                    is_main_collector:
                                       type: boolean
                                 share:
                                   type: array
@@ -210,6 +223,10 @@ paths:
                                             type: string
                                           is_module_account:
                                             type: boolean
+                                          is_internal_account:
+                                            type: boolean
+                                          is_main_collector:
+                                            type: boolean
                                 burn_share:
                                   type: object
                                   properties:
@@ -224,8 +241,6 @@ paths:
                         items:
                           type: string
                         title: module account to load on start genesis
-                      remains_coin_module_account:
-                        type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -18461,6 +18476,9 @@ paths:
                         }
       parameters:
         - name: body
+          description: |-
+            SimulateRequest is the request type for the Service.Simulate
+            RPC method.
           in: body
           required: true
           schema:
@@ -19260,6 +19278,11 @@ paths:
                         }
       parameters:
         - name: body
+          description: >-
+            BroadcastTxRequest is the request type for the
+            Service.BroadcastTxRequest
+
+            RPC method.
           in: body
           required: true
           schema:
@@ -31353,6 +31376,10 @@ definitions:
         type: string
       is_module_account:
         type: boolean
+      is_internal_account:
+        type: boolean
+      is_main_collector:
+        type: boolean
   chain4energy.c4echain.cferoutingdistributor.BurnShare:
     type: object
     properties:
@@ -31367,6 +31394,10 @@ definitions:
           address:
             type: string
           is_module_account:
+            type: boolean
+          is_internal_account:
+            type: boolean
+          is_main_collector:
             type: boolean
       share:
         type: array
@@ -31383,6 +31414,10 @@ definitions:
                 address:
                   type: string
                 is_module_account:
+                  type: boolean
+                is_internal_account:
+                  type: boolean
+                is_main_collector:
                   type: boolean
       burn_share:
         type: object
@@ -31405,7 +31440,16 @@ definitions:
                 sources:
                   type: array
                   items:
-                    type: string
+                    type: object
+                    properties:
+                      address:
+                        type: string
+                      is_module_account:
+                        type: boolean
+                      is_internal_account:
+                        type: boolean
+                      is_main_collector:
+                        type: boolean
                   title: represent list of module account from which
                 destination:
                   title: represent destinations
@@ -31417,6 +31461,10 @@ definitions:
                         address:
                           type: string
                         is_module_account:
+                          type: boolean
+                        is_internal_account:
+                          type: boolean
+                        is_main_collector:
                           type: boolean
                     share:
                       type: array
@@ -31434,6 +31482,10 @@ definitions:
                                 type: string
                               is_module_account:
                                 type: boolean
+                              is_internal_account:
+                                type: boolean
+                              is_main_collector:
+                                type: boolean
                     burn_share:
                       type: object
                       properties:
@@ -31448,8 +31500,6 @@ definitions:
             items:
               type: string
             title: module account to load on start genesis
-          remains_coin_module_account:
-            type: string
     description: Params defines the parameters for the module.
   chain4energy.c4echain.cferoutingdistributor.QueryParamsResponse:
     type: object
@@ -31471,7 +31521,16 @@ definitions:
                     sources:
                       type: array
                       items:
-                        type: string
+                        type: object
+                        properties:
+                          address:
+                            type: string
+                          is_module_account:
+                            type: boolean
+                          is_internal_account:
+                            type: boolean
+                          is_main_collector:
+                            type: boolean
                       title: represent list of module account from which
                     destination:
                       title: represent destinations
@@ -31483,6 +31542,10 @@ definitions:
                             address:
                               type: string
                             is_module_account:
+                              type: boolean
+                            is_internal_account:
+                              type: boolean
+                            is_main_collector:
                               type: boolean
                         share:
                           type: array
@@ -31500,6 +31563,10 @@ definitions:
                                     type: string
                                   is_module_account:
                                     type: boolean
+                                  is_internal_account:
+                                    type: boolean
+                                  is_main_collector:
+                                    type: boolean
                         burn_share:
                           type: object
                           properties:
@@ -31514,8 +31581,6 @@ definitions:
                 items:
                   type: string
                 title: module account to load on start genesis
-              remains_coin_module_account:
-                type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cferoutingdistributor.RoutingDistributor:
     type: object
@@ -31530,7 +31595,16 @@ definitions:
             sources:
               type: array
               items:
-                type: string
+                type: object
+                properties:
+                  address:
+                    type: string
+                  is_module_account:
+                    type: boolean
+                  is_internal_account:
+                    type: boolean
+                  is_main_collector:
+                    type: boolean
               title: represent list of module account from which
             destination:
               title: represent destinations
@@ -31542,6 +31616,10 @@ definitions:
                     address:
                       type: string
                     is_module_account:
+                      type: boolean
+                    is_internal_account:
+                      type: boolean
+                    is_main_collector:
                       type: boolean
                 share:
                   type: array
@@ -31559,6 +31637,10 @@ definitions:
                             type: string
                           is_module_account:
                             type: boolean
+                          is_internal_account:
+                            type: boolean
+                          is_main_collector:
+                            type: boolean
                 burn_share:
                   type: object
                   properties:
@@ -31573,8 +31655,6 @@ definitions:
         items:
           type: string
         title: module account to load on start genesis
-      remains_coin_module_account:
-        type: string
   chain4energy.c4echain.cferoutingdistributor.Share:
     type: object
     properties:
@@ -31589,6 +31669,10 @@ definitions:
             type: string
           is_module_account:
             type: boolean
+          is_internal_account:
+            type: boolean
+          is_main_collector:
+            type: boolean
   chain4energy.c4echain.cferoutingdistributor.SubDistributor:
     type: object
     properties:
@@ -31597,7 +31681,16 @@ definitions:
       sources:
         type: array
         items:
-          type: string
+          type: object
+          properties:
+            address:
+              type: string
+            is_module_account:
+              type: boolean
+            is_internal_account:
+              type: boolean
+            is_main_collector:
+              type: boolean
         title: represent list of module account from which
       destination:
         title: represent destinations
@@ -31609,6 +31702,10 @@ definitions:
               address:
                 type: string
               is_module_account:
+                type: boolean
+              is_internal_account:
+                type: boolean
+              is_main_collector:
                 type: boolean
           share:
             type: array
@@ -31625,6 +31722,10 @@ definitions:
                     address:
                       type: string
                     is_module_account:
+                      type: boolean
+                    is_internal_account:
+                      type: boolean
+                    is_main_collector:
                       type: boolean
           burn_share:
             type: object

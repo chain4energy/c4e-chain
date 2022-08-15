@@ -13,7 +13,6 @@ func TestParamsQuery(t *testing.T) {
 	keeper, ctx := testkeeper.CferoutingdistributorKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
-	params.RoutingDistributor.RemainsCoinModuleAccount = "name"
 	keeper.SetParams(ctx, params)
 
 	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})

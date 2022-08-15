@@ -1,11 +1,12 @@
 /* eslint-disable */
+import { DecCoin } from "../cosmos/base/v1beta1/coin";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
 
 export interface Remains {
   account: Account | undefined;
-  leftover_coin: string;
+  leftover_coin: DecCoin | undefined;
 }
 
 export interface RemainsList {
@@ -17,13 +18,12 @@ export interface RoutingDistributor {
   sub_distributor: SubDistributor[];
   /** module account to load on start genesis */
   module_accounts: string[];
-  remains_coin_module_account: string;
 }
 
 export interface SubDistributor {
   name: string;
   /** represent list of module account from which */
-  sources: string[];
+  sources: Account[];
   /** represent destinations */
   destination: Destination | undefined;
   order: number;
@@ -48,17 +48,19 @@ export interface Share {
 export interface Account {
   address: string;
   is_module_account: boolean;
+  is_internal_account: boolean;
+  is_main_collector: boolean;
 }
 
-const baseRemains: object = { leftover_coin: "" };
+const baseRemains: object = {};
 
 export const Remains = {
   encode(message: Remains, writer: Writer = Writer.create()): Writer {
     if (message.account !== undefined) {
       Account.encode(message.account, writer.uint32(10).fork()).ldelim();
     }
-    if (message.leftover_coin !== "") {
-      writer.uint32(18).string(message.leftover_coin);
+    if (message.leftover_coin !== undefined) {
+      DecCoin.encode(message.leftover_coin, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -74,7 +76,7 @@ export const Remains = {
           message.account = Account.decode(reader, reader.uint32());
           break;
         case 2:
-          message.leftover_coin = reader.string();
+          message.leftover_coin = DecCoin.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -92,9 +94,9 @@ export const Remains = {
       message.account = undefined;
     }
     if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
-      message.leftover_coin = String(object.leftover_coin);
+      message.leftover_coin = DecCoin.fromJSON(object.leftover_coin);
     } else {
-      message.leftover_coin = "";
+      message.leftover_coin = undefined;
     }
     return message;
   },
@@ -106,7 +108,9 @@ export const Remains = {
         ? Account.toJSON(message.account)
         : undefined);
     message.leftover_coin !== undefined &&
-      (obj.leftover_coin = message.leftover_coin);
+      (obj.leftover_coin = message.leftover_coin
+        ? DecCoin.toJSON(message.leftover_coin)
+        : undefined);
     return obj;
   },
 
@@ -118,9 +122,9 @@ export const Remains = {
       message.account = undefined;
     }
     if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
-      message.leftover_coin = object.leftover_coin;
+      message.leftover_coin = DecCoin.fromPartial(object.leftover_coin);
     } else {
-      message.leftover_coin = "";
+      message.leftover_coin = undefined;
     }
     return message;
   },
@@ -190,10 +194,7 @@ export const RemainsList = {
   },
 };
 
-const baseRoutingDistributor: object = {
-  module_accounts: "",
-  remains_coin_module_account: "",
-};
+const baseRoutingDistributor: object = { module_accounts: "" };
 
 export const RoutingDistributor = {
   encode(
@@ -205,9 +206,6 @@ export const RoutingDistributor = {
     }
     for (const v of message.module_accounts) {
       writer.uint32(18).string(v!);
-    }
-    if (message.remains_coin_module_account !== "") {
-      writer.uint32(26).string(message.remains_coin_module_account);
     }
     return writer;
   },
@@ -228,9 +226,6 @@ export const RoutingDistributor = {
           break;
         case 2:
           message.module_accounts.push(reader.string());
-          break;
-        case 3:
-          message.remains_coin_module_account = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -260,16 +255,6 @@ export const RoutingDistributor = {
         message.module_accounts.push(String(e));
       }
     }
-    if (
-      object.remains_coin_module_account !== undefined &&
-      object.remains_coin_module_account !== null
-    ) {
-      message.remains_coin_module_account = String(
-        object.remains_coin_module_account
-      );
-    } else {
-      message.remains_coin_module_account = "";
-    }
     return message;
   },
 
@@ -287,8 +272,6 @@ export const RoutingDistributor = {
     } else {
       obj.module_accounts = [];
     }
-    message.remains_coin_module_account !== undefined &&
-      (obj.remains_coin_module_account = message.remains_coin_module_account);
     return obj;
   },
 
@@ -312,19 +295,11 @@ export const RoutingDistributor = {
         message.module_accounts.push(e);
       }
     }
-    if (
-      object.remains_coin_module_account !== undefined &&
-      object.remains_coin_module_account !== null
-    ) {
-      message.remains_coin_module_account = object.remains_coin_module_account;
-    } else {
-      message.remains_coin_module_account = "";
-    }
     return message;
   },
 };
 
-const baseSubDistributor: object = { name: "", sources: "", order: 0 };
+const baseSubDistributor: object = { name: "", order: 0 };
 
 export const SubDistributor = {
   encode(message: SubDistributor, writer: Writer = Writer.create()): Writer {
@@ -332,7 +307,7 @@ export const SubDistributor = {
       writer.uint32(10).string(message.name);
     }
     for (const v of message.sources) {
-      writer.uint32(18).string(v!);
+      Account.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     if (message.destination !== undefined) {
       Destination.encode(
@@ -358,7 +333,7 @@ export const SubDistributor = {
           message.name = reader.string();
           break;
         case 2:
-          message.sources.push(reader.string());
+          message.sources.push(Account.decode(reader, reader.uint32()));
           break;
         case 3:
           message.destination = Destination.decode(reader, reader.uint32());
@@ -384,7 +359,7 @@ export const SubDistributor = {
     }
     if (object.sources !== undefined && object.sources !== null) {
       for (const e of object.sources) {
-        message.sources.push(String(e));
+        message.sources.push(Account.fromJSON(e));
       }
     }
     if (object.destination !== undefined && object.destination !== null) {
@@ -404,7 +379,9 @@ export const SubDistributor = {
     const obj: any = {};
     message.name !== undefined && (obj.name = message.name);
     if (message.sources) {
-      obj.sources = message.sources.map((e) => e);
+      obj.sources = message.sources.map((e) =>
+        e ? Account.toJSON(e) : undefined
+      );
     } else {
       obj.sources = [];
     }
@@ -426,7 +403,7 @@ export const SubDistributor = {
     }
     if (object.sources !== undefined && object.sources !== null) {
       for (const e of object.sources) {
-        message.sources.push(e);
+        message.sources.push(Account.fromPartial(e));
       }
     }
     if (object.destination !== undefined && object.destination !== null) {
@@ -692,7 +669,12 @@ export const Share = {
   },
 };
 
-const baseAccount: object = { address: "", is_module_account: false };
+const baseAccount: object = {
+  address: "",
+  is_module_account: false,
+  is_internal_account: false,
+  is_main_collector: false,
+};
 
 export const Account = {
   encode(message: Account, writer: Writer = Writer.create()): Writer {
@@ -701,6 +683,12 @@ export const Account = {
     }
     if (message.is_module_account === true) {
       writer.uint32(16).bool(message.is_module_account);
+    }
+    if (message.is_internal_account === true) {
+      writer.uint32(24).bool(message.is_internal_account);
+    }
+    if (message.is_main_collector === true) {
+      writer.uint32(32).bool(message.is_main_collector);
     }
     return writer;
   },
@@ -717,6 +705,12 @@ export const Account = {
           break;
         case 2:
           message.is_module_account = reader.bool();
+          break;
+        case 3:
+          message.is_internal_account = reader.bool();
+          break;
+        case 4:
+          message.is_main_collector = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -741,6 +735,22 @@ export const Account = {
     } else {
       message.is_module_account = false;
     }
+    if (
+      object.is_internal_account !== undefined &&
+      object.is_internal_account !== null
+    ) {
+      message.is_internal_account = Boolean(object.is_internal_account);
+    } else {
+      message.is_internal_account = false;
+    }
+    if (
+      object.is_main_collector !== undefined &&
+      object.is_main_collector !== null
+    ) {
+      message.is_main_collector = Boolean(object.is_main_collector);
+    } else {
+      message.is_main_collector = false;
+    }
     return message;
   },
 
@@ -749,6 +759,10 @@ export const Account = {
     message.address !== undefined && (obj.address = message.address);
     message.is_module_account !== undefined &&
       (obj.is_module_account = message.is_module_account);
+    message.is_internal_account !== undefined &&
+      (obj.is_internal_account = message.is_internal_account);
+    message.is_main_collector !== undefined &&
+      (obj.is_main_collector = message.is_main_collector);
     return obj;
   },
 
@@ -766,6 +780,22 @@ export const Account = {
       message.is_module_account = object.is_module_account;
     } else {
       message.is_module_account = false;
+    }
+    if (
+      object.is_internal_account !== undefined &&
+      object.is_internal_account !== null
+    ) {
+      message.is_internal_account = object.is_internal_account;
+    } else {
+      message.is_internal_account = false;
+    }
+    if (
+      object.is_main_collector !== undefined &&
+      object.is_main_collector !== null
+    ) {
+      message.is_main_collector = object.is_main_collector;
+    } else {
+      message.is_main_collector = false;
     }
     return message;
   },
