@@ -61,14 +61,18 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	routingDistributor := k.GetParams(ctx).RoutingDistributor
 	states := k.GetAllRemains(ctx)
 	println("BeginBlocker")
-
+	k.Logger(ctx).Info("BeginBlock - cfedistr")
 	for _, subDistributor := range routingDistributor.SubDistributor {
+		k.Logger(ctx).Info("BeginBlock - cfedistr: " + subDistributor.Name)
 		allCoinsToDistribute := sdk.NewDecCoins()
 		for _, source := range subDistributor.Sources {
+			k.Logger(ctx).Debug("Sources: " +  source.Address)
+
 			var coinsToDistribute = sdk.NewDecCoins()
 			if source.IsMainCollector {
 				coinsToDistribute = sdk.NewDecCoinsFromCoins(k.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)...)
 				println("IsMainCollector: " + coinsToDistribute.String())
+				k.Logger(ctx).Debug("IsMainCollector: " + coinsToDistribute.String())
 				if len(coinsToDistribute) > 0 {
 					sum := getRamainsSum(&states)
 					coinsToDistribute = coinsToDistribute.Sub(sum)
@@ -78,6 +82,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 					coinsToSend := k.GetAccountCoinsForModuleAccount(ctx, source.Address)
 					coinsToDistribute = sdk.NewDecCoinsFromCoins(coinsToSend...)
 					println("IsModuleAccount: " + coinsToDistribute.String())
+					k.Logger(ctx).Debug("IsModuleAccount: " + source.Address + " - " + coinsToDistribute.String())
 
 					if len(coinsToDistribute) > 0 {
 						k.SendCoinsFromModuleToModule(ctx, coinsToSend, source.Address, types.CollectorName)
@@ -87,6 +92,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 					coinsToSend := k.GetAccountCoins(ctx, srcAccount)
 					coinsToDistribute = sdk.NewDecCoinsFromCoins(coinsToSend...)
 					println("BaseAccount: " + coinsToDistribute.String())
+					k.Logger(ctx).Debug("BaseAccount: " + source.Address + " - " + coinsToDistribute.String())
 
 					if len(coinsToDistribute) > 0 {
 						k.SendCoinsToModuleAccount(ctx, coinsToSend, srcAccount, types.CollectorName)
@@ -112,7 +118,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		coinsToDistributeDec := allCoinsToDistribute.AmountOf("uc4e")
 		println("coinsToDistributeDec: " + allCoinsToDistribute.String())
 		if coinsToDistributeDec.IsZero() {
-			break
+			continue
 		}
 		states = *StartDistributionProcess(&states, coinsToDistributeDec, subDistributor)
 
@@ -127,10 +133,15 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			state.LeftoverCoin = change
 
 			if state.Account.Address == "burn" {
+				k.Logger(ctx).Debug("Burn: " + toSend.String())
+
 				k.BurnCoinsForSpecifiedModuleAccount(ctx, sdk.NewCoins(toSend), types.CollectorName)
 			} else if state.Account.IsModuleAccount {
+				k.Logger(ctx).Debug("Send to : " + state.Account.Address + " - " + toSend.String())
+
 				k.SendCoinsFromModuleToModule(ctx, sdk.NewCoins(toSend), types.CollectorName, state.Account.Address)
 			} else {
+				k.Logger(ctx).Debug("Send to : " + state.Account.Address + " - " + toSend.String())
 				dstAccount, _ := sdk.AccAddressFromBech32(state.Account.Address)
 				k.SendCoinsFromModuleAccount(ctx, sdk.NewCoins(toSend), types.CollectorName, dstAccount)
 			}

@@ -4,12 +4,17 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/keeper"
 	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strconv"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, ak types.AccountKeeper) {
 	k.SetParams(ctx, genState.Params)
+	for _, sb := range k.GetParams(ctx).RoutingDistributor.SubDistributor {
+		k.Logger(ctx).Info("SubDistributor: " + sb.Name)
+		k.Logger(ctx).Info("SubDistributor: " + strconv.Itoa(int(sb.Order)))
 
+	}
 	k.Logger(ctx).Info("Init Genesis module: " + types.ModuleName)
 	for _, account := range genState.Params.RoutingDistributor.ModuleAccounts {
 		k.Logger(ctx).Info("Load module account name: " + account)

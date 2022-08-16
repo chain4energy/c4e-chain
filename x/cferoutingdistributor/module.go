@@ -3,7 +3,6 @@ package cferoutingdistributor
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	// this line is used by starport scaffolding # 1
 
@@ -169,11 +168,7 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	startTime := time.Now()
 	BeginBlocker(ctx, am.keeper)
-	endTime := time.Now()
-	ctx.Logger().Error(endTime.Sub(startTime).String())
-
 }
 
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It
