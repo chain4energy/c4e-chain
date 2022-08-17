@@ -9,5 +9,6 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/t
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-  RoutingDistributor routing_distributor = 2        [(gogoproto.nullable) = false];
+  repeated SubDistributor sub_distributors = 1         [(gogoproto.nullable) = false];
+
 }

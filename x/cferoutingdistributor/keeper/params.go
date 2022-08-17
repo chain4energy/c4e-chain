@@ -15,7 +15,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramstore.SetParamSet(ctx, &params)
 }
 
-func (k Keeper) RoutingDistributor(ctx sdk.Context) (routingDistributor types.RoutingDistributor) {
+func (k Keeper) RoutingDistributor(ctx sdk.Context) (routingDistributor []types.SubDistributor) {
 	k.paramstore.Get(ctx, types.KeyRoutingDistributor, &routingDistributor)
 	return
 }

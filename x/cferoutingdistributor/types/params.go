@@ -8,8 +8,8 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 var (
-	KeyRoutingDistributor                        = []byte("RoutingDistributor")
-	DefaultRoutingDistributor RoutingDistributor = RoutingDistributor{}
+	KeyRoutingDistributor                      = []byte("RoutingDistributor")
+	DefaultRoutingDistributor []SubDistributor = []SubDistributor{}
 )
 
 // ParamKeyTable the param key table for launch module
@@ -18,8 +18,8 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params instance
-func NewParams(distributor RoutingDistributor) Params {
-	return Params{RoutingDistributor: distributor}
+func NewParams(distributor []SubDistributor) Params {
+	return Params{distributor}
 }
 
 // DefaultParams returns a default set of parameters
@@ -30,7 +30,7 @@ func DefaultParams() Params {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyRoutingDistributor, &p.RoutingDistributor, validateRoutingDistributor),
+		paramtypes.NewParamSetPair(KeyRoutingDistributor, &p.SubDistributors, validateRoutingDistributor),
 	}
 }
 

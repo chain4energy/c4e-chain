@@ -11,9 +11,9 @@
 
 export interface CferoutingdistributorAccount {
   address?: string;
-  is_module_account?: boolean;
-  is_internal_account?: boolean;
-  is_main_collector?: boolean;
+  module_name?: string;
+  internal_name?: string;
+  main_collector?: boolean;
 }
 
 export interface CferoutingdistributorBurnShare {
@@ -30,7 +30,7 @@ export interface CferoutingdistributorDestination {
  * Params defines the parameters for the module.
  */
 export interface CferoutingdistributorParams {
-  routing_distributor?: CferoutingdistributorRoutingDistributor;
+  sub_distributors?: CferoutingdistributorSubDistributor[];
 }
 
 /**
@@ -39,11 +39,6 @@ export interface CferoutingdistributorParams {
 export interface CferoutingdistributorQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: CferoutingdistributorParams;
-}
-
-export interface CferoutingdistributorRoutingDistributor {
-  sub_distributor?: CferoutingdistributorSubDistributor[];
-  module_accounts?: string[];
 }
 
 export interface CferoutingdistributorShare {
@@ -56,9 +51,6 @@ export interface CferoutingdistributorSubDistributor {
   name?: string;
   sources?: CferoutingdistributorAccount[];
   destination?: CferoutingdistributorDestination;
-
-  /** @format int32 */
-  order?: number;
 }
 
 export interface ProtobufAny {

@@ -1,23 +1,20 @@
 /* eslint-disable */
-import { RoutingDistributor } from "../cferoutingdistributor/sub_distributor";
+import { SubDistributor } from "../cferoutingdistributor/sub_distributor";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
 
 /** Params defines the parameters for the module. */
 export interface Params {
-  routing_distributor: RoutingDistributor | undefined;
+  sub_distributors: SubDistributor[];
 }
 
 const baseParams: object = {};
 
 export const Params = {
   encode(message: Params, writer: Writer = Writer.create()): Writer {
-    if (message.routing_distributor !== undefined) {
-      RoutingDistributor.encode(
-        message.routing_distributor,
-        writer.uint32(18).fork()
-      ).ldelim();
+    for (const v of message.sub_distributors) {
+      SubDistributor.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -26,13 +23,13 @@ export const Params = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseParams } as Params;
+    message.sub_distributors = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 2:
-          message.routing_distributor = RoutingDistributor.decode(
-            reader,
-            reader.uint32()
+        case 1:
+          message.sub_distributors.push(
+            SubDistributor.decode(reader, reader.uint32())
           );
           break;
         default:
@@ -45,39 +42,40 @@ export const Params = {
 
   fromJSON(object: any): Params {
     const message = { ...baseParams } as Params;
+    message.sub_distributors = [];
     if (
-      object.routing_distributor !== undefined &&
-      object.routing_distributor !== null
+      object.sub_distributors !== undefined &&
+      object.sub_distributors !== null
     ) {
-      message.routing_distributor = RoutingDistributor.fromJSON(
-        object.routing_distributor
-      );
-    } else {
-      message.routing_distributor = undefined;
+      for (const e of object.sub_distributors) {
+        message.sub_distributors.push(SubDistributor.fromJSON(e));
+      }
     }
     return message;
   },
 
   toJSON(message: Params): unknown {
     const obj: any = {};
-    message.routing_distributor !== undefined &&
-      (obj.routing_distributor = message.routing_distributor
-        ? RoutingDistributor.toJSON(message.routing_distributor)
-        : undefined);
+    if (message.sub_distributors) {
+      obj.sub_distributors = message.sub_distributors.map((e) =>
+        e ? SubDistributor.toJSON(e) : undefined
+      );
+    } else {
+      obj.sub_distributors = [];
+    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<Params>): Params {
     const message = { ...baseParams } as Params;
+    message.sub_distributors = [];
     if (
-      object.routing_distributor !== undefined &&
-      object.routing_distributor !== null
+      object.sub_distributors !== undefined &&
+      object.sub_distributors !== null
     ) {
-      message.routing_distributor = RoutingDistributor.fromPartial(
-        object.routing_distributor
-      );
-    } else {
-      message.routing_distributor = undefined;
+      for (const e of object.sub_distributors) {
+        message.sub_distributors.push(SubDistributor.fromPartial(e));
+      }
     }
     return message;
   },

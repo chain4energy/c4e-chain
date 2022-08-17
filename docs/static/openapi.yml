@@ -168,79 +168,67 @@ paths:
                 description: params holds all the parameters of this module.
                 type: object
                 properties:
-                  routing_distributor:
-                    type: object
-                    properties:
-                      sub_distributor:
-                        type: array
-                        items:
+                  sub_distributors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        sources:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              address:
+                                type: string
+                              module_name:
+                                type: string
+                              internal_name:
+                                type: string
+                              main_collector:
+                                type: boolean
+                        destination:
                           type: object
                           properties:
-                            name:
-                              type: string
-                            sources:
+                            account:
+                              type: object
+                              properties:
+                                address:
+                                  type: string
+                                module_name:
+                                  type: string
+                                internal_name:
+                                  type: string
+                                main_collector:
+                                  type: boolean
+                            share:
                               type: array
                               items:
                                 type: object
                                 properties:
-                                  address:
+                                  name:
                                     type: string
-                                  is_module_account:
-                                    type: boolean
-                                  is_internal_account:
-                                    type: boolean
-                                  is_main_collector:
-                                    type: boolean
-                              title: represent list of module account from which
-                            destination:
-                              title: represent destinations
-                              type: object
-                              properties:
-                                account:
-                                  type: object
-                                  properties:
-                                    address:
-                                      type: string
-                                    is_module_account:
-                                      type: boolean
-                                    is_internal_account:
-                                      type: boolean
-                                    is_main_collector:
-                                      type: boolean
-                                share:
-                                  type: array
-                                  items:
+                                  percent:
+                                    type: string
+                                    title: float percent = 2;
+                                  account:
                                     type: object
                                     properties:
-                                      name:
+                                      address:
                                         type: string
-                                      percent:
+                                      module_name:
                                         type: string
-                                      account:
-                                        type: object
-                                        properties:
-                                          address:
-                                            type: string
-                                          is_module_account:
-                                            type: boolean
-                                          is_internal_account:
-                                            type: boolean
-                                          is_main_collector:
-                                            type: boolean
-                                burn_share:
-                                  type: object
-                                  properties:
-                                    percent:
-                                      type: string
-                            order:
-                              type: integer
-                              format: int32
-                        title: List contains distributors
-                      module_accounts:
-                        type: array
-                        items:
-                          type: string
-                        title: module account to load on start genesis
+                                      internal_name:
+                                        type: string
+                                      main_collector:
+                                        type: boolean
+                            burn_share:
+                              type: object
+                              properties:
+                                percent:
+                                  type: string
+                                  title: float percent =1;
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -31374,17 +31362,18 @@ definitions:
     properties:
       address:
         type: string
-      is_module_account:
-        type: boolean
-      is_internal_account:
-        type: boolean
-      is_main_collector:
+      module_name:
+        type: string
+      internal_name:
+        type: string
+      main_collector:
         type: boolean
   chain4energy.c4echain.cferoutingdistributor.BurnShare:
     type: object
     properties:
       percent:
         type: string
+        title: float percent =1;
   chain4energy.c4echain.cferoutingdistributor.Destination:
     type: object
     properties:
@@ -31393,11 +31382,11 @@ definitions:
         properties:
           address:
             type: string
-          is_module_account:
-            type: boolean
-          is_internal_account:
-            type: boolean
-          is_main_collector:
+          module_name:
+            type: string
+          internal_name:
+            type: string
+          main_collector:
             type: boolean
       share:
         type: array
@@ -31408,184 +31397,28 @@ definitions:
               type: string
             percent:
               type: string
+              title: float percent = 2;
             account:
               type: object
               properties:
                 address:
                   type: string
-                is_module_account:
-                  type: boolean
-                is_internal_account:
-                  type: boolean
-                is_main_collector:
+                module_name:
+                  type: string
+                internal_name:
+                  type: string
+                main_collector:
                   type: boolean
       burn_share:
         type: object
         properties:
           percent:
             type: string
+            title: float percent =1;
   chain4energy.c4echain.cferoutingdistributor.Params:
     type: object
     properties:
-      routing_distributor:
-        type: object
-        properties:
-          sub_distributor:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                sources:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      address:
-                        type: string
-                      is_module_account:
-                        type: boolean
-                      is_internal_account:
-                        type: boolean
-                      is_main_collector:
-                        type: boolean
-                  title: represent list of module account from which
-                destination:
-                  title: represent destinations
-                  type: object
-                  properties:
-                    account:
-                      type: object
-                      properties:
-                        address:
-                          type: string
-                        is_module_account:
-                          type: boolean
-                        is_internal_account:
-                          type: boolean
-                        is_main_collector:
-                          type: boolean
-                    share:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                          percent:
-                            type: string
-                          account:
-                            type: object
-                            properties:
-                              address:
-                                type: string
-                              is_module_account:
-                                type: boolean
-                              is_internal_account:
-                                type: boolean
-                              is_main_collector:
-                                type: boolean
-                    burn_share:
-                      type: object
-                      properties:
-                        percent:
-                          type: string
-                order:
-                  type: integer
-                  format: int32
-            title: List contains distributors
-          module_accounts:
-            type: array
-            items:
-              type: string
-            title: module account to load on start genesis
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cferoutingdistributor.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params holds all the parameters of this module.
-        type: object
-        properties:
-          routing_distributor:
-            type: object
-            properties:
-              sub_distributor:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    sources:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          address:
-                            type: string
-                          is_module_account:
-                            type: boolean
-                          is_internal_account:
-                            type: boolean
-                          is_main_collector:
-                            type: boolean
-                      title: represent list of module account from which
-                    destination:
-                      title: represent destinations
-                      type: object
-                      properties:
-                        account:
-                          type: object
-                          properties:
-                            address:
-                              type: string
-                            is_module_account:
-                              type: boolean
-                            is_internal_account:
-                              type: boolean
-                            is_main_collector:
-                              type: boolean
-                        share:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              name:
-                                type: string
-                              percent:
-                                type: string
-                              account:
-                                type: object
-                                properties:
-                                  address:
-                                    type: string
-                                  is_module_account:
-                                    type: boolean
-                                  is_internal_account:
-                                    type: boolean
-                                  is_main_collector:
-                                    type: boolean
-                        burn_share:
-                          type: object
-                          properties:
-                            percent:
-                              type: string
-                    order:
-                      type: integer
-                      format: int32
-                title: List contains distributors
-              module_accounts:
-                type: array
-                items:
-                  type: string
-                title: module account to load on start genesis
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cferoutingdistributor.RoutingDistributor:
-    type: object
-    properties:
-      sub_distributor:
+      sub_distributors:
         type: array
         items:
           type: object
@@ -31599,15 +31432,13 @@ definitions:
                 properties:
                   address:
                     type: string
-                  is_module_account:
+                  module_name:
+                    type: string
+                  internal_name:
+                    type: string
+                  main_collector:
                     type: boolean
-                  is_internal_account:
-                    type: boolean
-                  is_main_collector:
-                    type: boolean
-              title: represent list of module account from which
             destination:
-              title: represent destinations
               type: object
               properties:
                 account:
@@ -31615,11 +31446,11 @@ definitions:
                   properties:
                     address:
                       type: string
-                    is_module_account:
-                      type: boolean
-                    is_internal_account:
-                      type: boolean
-                    is_main_collector:
+                    module_name:
+                      type: string
+                    internal_name:
+                      type: string
+                    main_collector:
                       type: boolean
                 share:
                   type: array
@@ -31630,31 +31461,94 @@ definitions:
                         type: string
                       percent:
                         type: string
+                        title: float percent = 2;
                       account:
                         type: object
                         properties:
                           address:
                             type: string
-                          is_module_account:
-                            type: boolean
-                          is_internal_account:
-                            type: boolean
-                          is_main_collector:
+                          module_name:
+                            type: string
+                          internal_name:
+                            type: string
+                          main_collector:
                             type: boolean
                 burn_share:
                   type: object
                   properties:
                     percent:
                       type: string
-            order:
-              type: integer
-              format: int32
-        title: List contains distributors
-      module_accounts:
-        type: array
-        items:
-          type: string
-        title: module account to load on start genesis
+                      title: float percent =1;
+    description: Params defines the parameters for the module.
+  chain4energy.c4echain.cferoutingdistributor.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of this module.
+        type: object
+        properties:
+          sub_distributors:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                sources:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      address:
+                        type: string
+                      module_name:
+                        type: string
+                      internal_name:
+                        type: string
+                      main_collector:
+                        type: boolean
+                destination:
+                  type: object
+                  properties:
+                    account:
+                      type: object
+                      properties:
+                        address:
+                          type: string
+                        module_name:
+                          type: string
+                        internal_name:
+                          type: string
+                        main_collector:
+                          type: boolean
+                    share:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          percent:
+                            type: string
+                            title: float percent = 2;
+                          account:
+                            type: object
+                            properties:
+                              address:
+                                type: string
+                              module_name:
+                                type: string
+                              internal_name:
+                                type: string
+                              main_collector:
+                                type: boolean
+                    burn_share:
+                      type: object
+                      properties:
+                        percent:
+                          type: string
+                          title: float percent =1;
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cferoutingdistributor.Share:
     type: object
     properties:
@@ -31662,16 +31556,17 @@ definitions:
         type: string
       percent:
         type: string
+        title: float percent = 2;
       account:
         type: object
         properties:
           address:
             type: string
-          is_module_account:
-            type: boolean
-          is_internal_account:
-            type: boolean
-          is_main_collector:
+          module_name:
+            type: string
+          internal_name:
+            type: string
+          main_collector:
             type: boolean
   chain4energy.c4echain.cferoutingdistributor.SubDistributor:
     type: object
@@ -31685,15 +31580,13 @@ definitions:
           properties:
             address:
               type: string
-            is_module_account:
+            module_name:
+              type: string
+            internal_name:
+              type: string
+            main_collector:
               type: boolean
-            is_internal_account:
-              type: boolean
-            is_main_collector:
-              type: boolean
-        title: represent list of module account from which
       destination:
-        title: represent destinations
         type: object
         properties:
           account:
@@ -31701,11 +31594,11 @@ definitions:
             properties:
               address:
                 type: string
-              is_module_account:
-                type: boolean
-              is_internal_account:
-                type: boolean
-              is_main_collector:
+              module_name:
+                type: string
+              internal_name:
+                type: string
+              main_collector:
                 type: boolean
           share:
             type: array
@@ -31716,25 +31609,24 @@ definitions:
                   type: string
                 percent:
                   type: string
+                  title: float percent = 2;
                 account:
                   type: object
                   properties:
                     address:
                       type: string
-                    is_module_account:
-                      type: boolean
-                    is_internal_account:
-                      type: boolean
-                    is_main_collector:
+                    module_name:
+                      type: string
+                    internal_name:
+                      type: string
+                    main_collector:
                       type: boolean
           burn_share:
             type: object
             properties:
               percent:
                 type: string
-      order:
-        type: integer
-        format: int32
+                title: float percent =1;
   chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
     type: object
     properties:

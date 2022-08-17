@@ -20,6 +20,8 @@ const (
 	MemStoreKey = "mem_cferoutingdistributor"
 
 	CollectorName = ModuleName
+
+	BurnStateKey = "burn_state_key"
 )
 
 func KeyPrefix(p string) []byte {

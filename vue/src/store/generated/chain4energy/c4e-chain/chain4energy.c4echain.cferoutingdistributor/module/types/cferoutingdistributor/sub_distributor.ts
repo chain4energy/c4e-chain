@@ -4,29 +4,16 @@ import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
 
-export interface Remains {
+export interface State {
   account: Account | undefined;
-  leftover_coin: DecCoin | undefined;
-}
-
-export interface RemainsList {
-  remains: Remains[];
-}
-
-export interface RoutingDistributor {
-  /** List contains distributors */
-  sub_distributor: SubDistributor[];
-  /** module account to load on start genesis */
-  module_accounts: string[];
+  burn: boolean;
+  coins_states: DecCoin | undefined;
 }
 
 export interface SubDistributor {
   name: string;
-  /** represent list of module account from which */
   sources: Account[];
-  /** represent destinations */
   destination: Destination | undefined;
-  order: number;
 }
 
 export interface Destination {
@@ -36,39 +23,44 @@ export interface Destination {
 }
 
 export interface BurnShare {
+  /** float percent =1; */
   percent: string;
 }
 
 export interface Share {
   name: string;
+  /** float percent = 2; */
   percent: string;
   account: Account | undefined;
 }
 
 export interface Account {
   address: string;
-  is_module_account: boolean;
-  is_internal_account: boolean;
-  is_main_collector: boolean;
+  module_name: string;
+  internal_name: string;
+  main_collector: boolean;
 }
 
-const baseRemains: object = {};
+const baseState: object = { burn: false };
 
-export const Remains = {
-  encode(message: Remains, writer: Writer = Writer.create()): Writer {
+export const State = {
+  encode(message: State, writer: Writer = Writer.create()): Writer {
     if (message.account !== undefined) {
       Account.encode(message.account, writer.uint32(10).fork()).ldelim();
     }
-    if (message.leftover_coin !== undefined) {
-      DecCoin.encode(message.leftover_coin, writer.uint32(18).fork()).ldelim();
+    if (message.burn === true) {
+      writer.uint32(16).bool(message.burn);
+    }
+    if (message.coins_states !== undefined) {
+      DecCoin.encode(message.coins_states, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): Remains {
+  decode(input: Reader | Uint8Array, length?: number): State {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseRemains } as Remains;
+    const message = { ...baseState } as State;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -76,7 +68,10 @@ export const Remains = {
           message.account = Account.decode(reader, reader.uint32());
           break;
         case 2:
-          message.leftover_coin = DecCoin.decode(reader, reader.uint32());
+          message.burn = reader.bool();
+          break;
+        case 3:
+          message.coins_states = DecCoin.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -86,220 +81,62 @@ export const Remains = {
     return message;
   },
 
-  fromJSON(object: any): Remains {
-    const message = { ...baseRemains } as Remains;
+  fromJSON(object: any): State {
+    const message = { ...baseState } as State;
     if (object.account !== undefined && object.account !== null) {
       message.account = Account.fromJSON(object.account);
     } else {
       message.account = undefined;
     }
-    if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
-      message.leftover_coin = DecCoin.fromJSON(object.leftover_coin);
+    if (object.burn !== undefined && object.burn !== null) {
+      message.burn = Boolean(object.burn);
     } else {
-      message.leftover_coin = undefined;
+      message.burn = false;
+    }
+    if (object.coins_states !== undefined && object.coins_states !== null) {
+      message.coins_states = DecCoin.fromJSON(object.coins_states);
+    } else {
+      message.coins_states = undefined;
     }
     return message;
   },
 
-  toJSON(message: Remains): unknown {
+  toJSON(message: State): unknown {
     const obj: any = {};
     message.account !== undefined &&
       (obj.account = message.account
         ? Account.toJSON(message.account)
         : undefined);
-    message.leftover_coin !== undefined &&
-      (obj.leftover_coin = message.leftover_coin
-        ? DecCoin.toJSON(message.leftover_coin)
+    message.burn !== undefined && (obj.burn = message.burn);
+    message.coins_states !== undefined &&
+      (obj.coins_states = message.coins_states
+        ? DecCoin.toJSON(message.coins_states)
         : undefined);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Remains>): Remains {
-    const message = { ...baseRemains } as Remains;
+  fromPartial(object: DeepPartial<State>): State {
+    const message = { ...baseState } as State;
     if (object.account !== undefined && object.account !== null) {
       message.account = Account.fromPartial(object.account);
     } else {
       message.account = undefined;
     }
-    if (object.leftover_coin !== undefined && object.leftover_coin !== null) {
-      message.leftover_coin = DecCoin.fromPartial(object.leftover_coin);
+    if (object.burn !== undefined && object.burn !== null) {
+      message.burn = object.burn;
     } else {
-      message.leftover_coin = undefined;
+      message.burn = false;
+    }
+    if (object.coins_states !== undefined && object.coins_states !== null) {
+      message.coins_states = DecCoin.fromPartial(object.coins_states);
+    } else {
+      message.coins_states = undefined;
     }
     return message;
   },
 };
 
-const baseRemainsList: object = {};
-
-export const RemainsList = {
-  encode(message: RemainsList, writer: Writer = Writer.create()): Writer {
-    for (const v of message.remains) {
-      Remains.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): RemainsList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseRemainsList } as RemainsList;
-    message.remains = [];
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.remains.push(Remains.decode(reader, reader.uint32()));
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): RemainsList {
-    const message = { ...baseRemainsList } as RemainsList;
-    message.remains = [];
-    if (object.remains !== undefined && object.remains !== null) {
-      for (const e of object.remains) {
-        message.remains.push(Remains.fromJSON(e));
-      }
-    }
-    return message;
-  },
-
-  toJSON(message: RemainsList): unknown {
-    const obj: any = {};
-    if (message.remains) {
-      obj.remains = message.remains.map((e) =>
-        e ? Remains.toJSON(e) : undefined
-      );
-    } else {
-      obj.remains = [];
-    }
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<RemainsList>): RemainsList {
-    const message = { ...baseRemainsList } as RemainsList;
-    message.remains = [];
-    if (object.remains !== undefined && object.remains !== null) {
-      for (const e of object.remains) {
-        message.remains.push(Remains.fromPartial(e));
-      }
-    }
-    return message;
-  },
-};
-
-const baseRoutingDistributor: object = { module_accounts: "" };
-
-export const RoutingDistributor = {
-  encode(
-    message: RoutingDistributor,
-    writer: Writer = Writer.create()
-  ): Writer {
-    for (const v of message.sub_distributor) {
-      SubDistributor.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    for (const v of message.module_accounts) {
-      writer.uint32(18).string(v!);
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): RoutingDistributor {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseRoutingDistributor } as RoutingDistributor;
-    message.sub_distributor = [];
-    message.module_accounts = [];
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.sub_distributor.push(
-            SubDistributor.decode(reader, reader.uint32())
-          );
-          break;
-        case 2:
-          message.module_accounts.push(reader.string());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): RoutingDistributor {
-    const message = { ...baseRoutingDistributor } as RoutingDistributor;
-    message.sub_distributor = [];
-    message.module_accounts = [];
-    if (
-      object.sub_distributor !== undefined &&
-      object.sub_distributor !== null
-    ) {
-      for (const e of object.sub_distributor) {
-        message.sub_distributor.push(SubDistributor.fromJSON(e));
-      }
-    }
-    if (
-      object.module_accounts !== undefined &&
-      object.module_accounts !== null
-    ) {
-      for (const e of object.module_accounts) {
-        message.module_accounts.push(String(e));
-      }
-    }
-    return message;
-  },
-
-  toJSON(message: RoutingDistributor): unknown {
-    const obj: any = {};
-    if (message.sub_distributor) {
-      obj.sub_distributor = message.sub_distributor.map((e) =>
-        e ? SubDistributor.toJSON(e) : undefined
-      );
-    } else {
-      obj.sub_distributor = [];
-    }
-    if (message.module_accounts) {
-      obj.module_accounts = message.module_accounts.map((e) => e);
-    } else {
-      obj.module_accounts = [];
-    }
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<RoutingDistributor>): RoutingDistributor {
-    const message = { ...baseRoutingDistributor } as RoutingDistributor;
-    message.sub_distributor = [];
-    message.module_accounts = [];
-    if (
-      object.sub_distributor !== undefined &&
-      object.sub_distributor !== null
-    ) {
-      for (const e of object.sub_distributor) {
-        message.sub_distributor.push(SubDistributor.fromPartial(e));
-      }
-    }
-    if (
-      object.module_accounts !== undefined &&
-      object.module_accounts !== null
-    ) {
-      for (const e of object.module_accounts) {
-        message.module_accounts.push(e);
-      }
-    }
-    return message;
-  },
-};
-
-const baseSubDistributor: object = { name: "", order: 0 };
+const baseSubDistributor: object = { name: "" };
 
 export const SubDistributor = {
   encode(message: SubDistributor, writer: Writer = Writer.create()): Writer {
@@ -314,9 +151,6 @@ export const SubDistributor = {
         message.destination,
         writer.uint32(26).fork()
       ).ldelim();
-    }
-    if (message.order !== 0) {
-      writer.uint32(32).int32(message.order);
     }
     return writer;
   },
@@ -337,9 +171,6 @@ export const SubDistributor = {
           break;
         case 3:
           message.destination = Destination.decode(reader, reader.uint32());
-          break;
-        case 4:
-          message.order = reader.int32();
           break;
         default:
           reader.skipType(tag & 7);
@@ -367,11 +198,6 @@ export const SubDistributor = {
     } else {
       message.destination = undefined;
     }
-    if (object.order !== undefined && object.order !== null) {
-      message.order = Number(object.order);
-    } else {
-      message.order = 0;
-    }
     return message;
   },
 
@@ -389,7 +215,6 @@ export const SubDistributor = {
       (obj.destination = message.destination
         ? Destination.toJSON(message.destination)
         : undefined);
-    message.order !== undefined && (obj.order = message.order);
     return obj;
   },
 
@@ -410,11 +235,6 @@ export const SubDistributor = {
       message.destination = Destination.fromPartial(object.destination);
     } else {
       message.destination = undefined;
-    }
-    if (object.order !== undefined && object.order !== null) {
-      message.order = object.order;
-    } else {
-      message.order = 0;
     }
     return message;
   },
@@ -671,9 +491,9 @@ export const Share = {
 
 const baseAccount: object = {
   address: "",
-  is_module_account: false,
-  is_internal_account: false,
-  is_main_collector: false,
+  module_name: "",
+  internal_name: "",
+  main_collector: false,
 };
 
 export const Account = {
@@ -681,14 +501,14 @@ export const Account = {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
-    if (message.is_module_account === true) {
-      writer.uint32(16).bool(message.is_module_account);
+    if (message.module_name !== "") {
+      writer.uint32(18).string(message.module_name);
     }
-    if (message.is_internal_account === true) {
-      writer.uint32(24).bool(message.is_internal_account);
+    if (message.internal_name !== "") {
+      writer.uint32(26).string(message.internal_name);
     }
-    if (message.is_main_collector === true) {
-      writer.uint32(32).bool(message.is_main_collector);
+    if (message.main_collector === true) {
+      writer.uint32(32).bool(message.main_collector);
     }
     return writer;
   },
@@ -704,13 +524,13 @@ export const Account = {
           message.address = reader.string();
           break;
         case 2:
-          message.is_module_account = reader.bool();
+          message.module_name = reader.string();
           break;
         case 3:
-          message.is_internal_account = reader.bool();
+          message.internal_name = reader.string();
           break;
         case 4:
-          message.is_main_collector = reader.bool();
+          message.main_collector = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -727,29 +547,20 @@ export const Account = {
     } else {
       message.address = "";
     }
-    if (
-      object.is_module_account !== undefined &&
-      object.is_module_account !== null
-    ) {
-      message.is_module_account = Boolean(object.is_module_account);
+    if (object.module_name !== undefined && object.module_name !== null) {
+      message.module_name = String(object.module_name);
     } else {
-      message.is_module_account = false;
+      message.module_name = "";
     }
-    if (
-      object.is_internal_account !== undefined &&
-      object.is_internal_account !== null
-    ) {
-      message.is_internal_account = Boolean(object.is_internal_account);
+    if (object.internal_name !== undefined && object.internal_name !== null) {
+      message.internal_name = String(object.internal_name);
     } else {
-      message.is_internal_account = false;
+      message.internal_name = "";
     }
-    if (
-      object.is_main_collector !== undefined &&
-      object.is_main_collector !== null
-    ) {
-      message.is_main_collector = Boolean(object.is_main_collector);
+    if (object.main_collector !== undefined && object.main_collector !== null) {
+      message.main_collector = Boolean(object.main_collector);
     } else {
-      message.is_main_collector = false;
+      message.main_collector = false;
     }
     return message;
   },
@@ -757,12 +568,12 @@ export const Account = {
   toJSON(message: Account): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
-    message.is_module_account !== undefined &&
-      (obj.is_module_account = message.is_module_account);
-    message.is_internal_account !== undefined &&
-      (obj.is_internal_account = message.is_internal_account);
-    message.is_main_collector !== undefined &&
-      (obj.is_main_collector = message.is_main_collector);
+    message.module_name !== undefined &&
+      (obj.module_name = message.module_name);
+    message.internal_name !== undefined &&
+      (obj.internal_name = message.internal_name);
+    message.main_collector !== undefined &&
+      (obj.main_collector = message.main_collector);
     return obj;
   },
 
@@ -773,29 +584,20 @@ export const Account = {
     } else {
       message.address = "";
     }
-    if (
-      object.is_module_account !== undefined &&
-      object.is_module_account !== null
-    ) {
-      message.is_module_account = object.is_module_account;
+    if (object.module_name !== undefined && object.module_name !== null) {
+      message.module_name = object.module_name;
     } else {
-      message.is_module_account = false;
+      message.module_name = "";
     }
-    if (
-      object.is_internal_account !== undefined &&
-      object.is_internal_account !== null
-    ) {
-      message.is_internal_account = object.is_internal_account;
+    if (object.internal_name !== undefined && object.internal_name !== null) {
+      message.internal_name = object.internal_name;
     } else {
-      message.is_internal_account = false;
+      message.internal_name = "";
     }
-    if (
-      object.is_main_collector !== undefined &&
-      object.is_main_collector !== null
-    ) {
-      message.is_main_collector = object.is_main_collector;
+    if (object.main_collector !== undefined && object.main_collector !== null) {
+      message.main_collector = object.main_collector;
     } else {
-      message.is_main_collector = false;
+      message.main_collector = false;
     }
     return message;
   },

@@ -13,5 +13,5 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/t
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
-  RemainsList remains_list = 2 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"remains_list\""];
+  repeated State states =  2;
 }

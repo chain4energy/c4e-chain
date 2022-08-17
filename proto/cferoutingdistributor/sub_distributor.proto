@@ -7,67 +7,56 @@ import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types";
 
-message Remains {
-  Account account = 1         [(gogoproto.nullable) = false];
-  cosmos.base.v1beta1.DecCoin leftover_coin    = 2 [(gogoproto.nullable) = false];
+message State {
+  Account account = 1         [(gogoproto.nullable) = true];
+  bool burn = 2;
+
+  cosmos.base.v1beta1.DecCoin coins_states    = 3 [(gogoproto.nullable) = false];
+
+  //  repeated cosmos.base.v1beta1.DecCoin coins_state = 3 [
+//    (gogoproto.moretags) = "yaml:\"coin_state\"",
+//    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
+//    (gogoproto.nullable) = false];
 }
 
-message RemainsList {
-  repeated Remains remains = 1;
-}
-
-message RoutingDistributor {
-
-  //List contains distributors
-  repeated SubDistributor sub_distributor = 1         [(gogoproto.nullable) = false];
-
-  //module account to load on start genesis
-  repeated string module_accounts = 2;
-  // string remains_coin_module_account = 3;
-
-}
 
 message SubDistributor {
   string name = 1;
-  //represent list of module account from which
   repeated Account sources = 2;
-
-  //represent destinations
   Destination destination = 3         [(gogoproto.nullable) = false];
-
-  int32 order = 4;
 
 }
 
 message Destination {
   Account account = 1         [(gogoproto.nullable) = false];
-  repeated Share share = 2         [(gogoproto.nullable) = false];
-  BurnShare burn_share = 3         [(gogoproto.nullable) = false];
+  repeated Share share = 2         [(gogoproto.nullable) = true];
+  BurnShare burn_share = 3         [(gogoproto.nullable) = true];
 }
 
 message BurnShare {
+//  float percent =1;
   string percent                = 1 [
     (gogoproto.moretags)   = "yaml:\"percent\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
+
 }
 
 message Share {
   string name = 1;
+//  float percent = 2;
   string percent                = 2 [
     (gogoproto.moretags)   = "yaml:\"percent\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
   Account account = 3          [(gogoproto.nullable) = false];
-
-
 }
 
 message Account {
-  string address = 1;
-  bool is_module_account = 2;
-  bool is_internal_account = 3;
-  bool is_main_collector = 4;
+  string address = 1         [(gogoproto.nullable) = true];
+  string module_name = 2         [(gogoproto.nullable) = true];
+  string internal_name = 3         [(gogoproto.nullable) = true];
+  bool main_collector = 4         [(gogoproto.nullable) = true];
 }

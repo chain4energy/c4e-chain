@@ -186,16 +186,16 @@ var (
 		cfemintermoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 		cferoutingdistributormoduletypes.CollectorName: {authtypes.Burner},
-		"validators_rewards_collector":           {authtypes.Burner},
-		"payment_collector":                      {authtypes.Minter, authtypes.Burner},
-		"liquididty_rewards_collector":           {authtypes.Burner},
-		"governance_locking_rewards_collector":   {authtypes.Burner},
-		"users_incentive_collector":              {authtypes.Burner},
-		"community_pool_rewards_collector":       {authtypes.Burner},
+		"validators_rewards_collector":                 {authtypes.Burner},
+		"payment_collector":                            {authtypes.Minter, authtypes.Burner},
+		"liquididty_rewards_collector":                 {authtypes.Burner},
+		"governance_locking_rewards_collector":         {authtypes.Burner},
+		"users_incentive_collector":                    {authtypes.Burner},
+		"community_pool_rewards_collector":             {authtypes.Burner},
 		// "remains":                                {authtypes.Minter, authtypes.Burner},
-		"usage_incentives_collector":             {authtypes.Minter, authtypes.Burner},
-		"green_energy_booster_collector":         {authtypes.Minter, authtypes.Burner},
-		"governance_booster_collector":           {authtypes.Minter, authtypes.Burner},
+		"usage_incentives_collector":     {authtypes.Minter, authtypes.Burner},
+		"green_energy_booster_collector": {authtypes.Minter, authtypes.Burner},
+		"governance_booster_collector":   {authtypes.Minter, authtypes.Burner},
 	}
 )
 
@@ -516,6 +516,7 @@ func New(
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
 		/*minttypes.ModuleName, (TODO clean this,)*/
+		cfemintermoduletypes.ModuleName,
 		cferoutingdistributormoduletypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
@@ -535,7 +536,7 @@ func New(
 		monitoringptypes.ModuleName,
 		cfevestingmoduletypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
-		cfemintermoduletypes.ModuleName,
+
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
