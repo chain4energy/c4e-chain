@@ -24,7 +24,7 @@ func (k msgServer) MintToken(goCtx context.Context, msg *types.MsgMintToken) (*t
 
 	var energyToken = types.EnergyToken{
 		Name:        msg.Name,
-		Amount:      msg.Amount * 1000000,
+		Amount:      msg.Amount,
 		UserAddress: msg.UserAddress,
 		CreatedAt:   uint64(time.Now().Unix()),
 	}
