@@ -252,6 +252,89 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
+  /chain4energy/c4e-chain/cferoutingdistributor/states:
+    get:
+      summary: Queries a list of States items.
+      operationId: Chain4EnergyC4EchainCferoutingdistributorStates
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              states:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    account:
+                      type: object
+                      properties:
+                        address:
+                          type: string
+                        module_name:
+                          type: string
+                        internal_name:
+                          type: string
+                        main_collector:
+                          type: boolean
+                    burn:
+                      type: boolean
+                    coins_states:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          denom:
+                            type: string
+                          amount:
+                            type: string
+                        description: >-
+                          DecCoin defines a token with a denomination and a
+                          decimal amount.
+
+
+                          NOTE: The amount field is an Dec which implements the
+                          custom method
+
+                          signatures required by gogoproto.
+              coins_on_distributor_account:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   '/c4e/signature/create_reference_id/{creator}':
     get:
       summary: Queries a list of CreateReferenceId items.
@@ -32216,6 +32299,59 @@ definitions:
                           type: string
                           title: float percent =1;
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cferoutingdistributor.QueryStatesResponse:
+    type: object
+    properties:
+      states:
+        type: array
+        items:
+          type: object
+          properties:
+            account:
+              type: object
+              properties:
+                address:
+                  type: string
+                module_name:
+                  type: string
+                internal_name:
+                  type: string
+                main_collector:
+                  type: boolean
+            burn:
+              type: boolean
+            coins_states:
+              type: array
+              items:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  DecCoin defines a token with a denomination and a decimal
+                  amount.
+
+
+                  NOTE: The amount field is an Dec which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+      coins_on_distributor_account:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cferoutingdistributor.Share:
     type: object
     properties:
@@ -32235,6 +32371,36 @@ definitions:
             type: string
           main_collector:
             type: boolean
+  chain4energy.c4echain.cferoutingdistributor.State:
+    type: object
+    properties:
+      account:
+        type: object
+        properties:
+          address:
+            type: string
+          module_name:
+            type: string
+          internal_name:
+            type: string
+          main_collector:
+            type: boolean
+      burn:
+        type: boolean
+      coins_states:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            DecCoin defines a token with a denomination and a decimal amount.
+
+            NOTE: The amount field is an Dec which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cferoutingdistributor.SubDistributor:
     type: object
     properties:
@@ -32294,6 +32460,30 @@ definitions:
               percent:
                 type: string
                 title: float percent =1;
+  cosmos.base.v1beta1.Coin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      Coin defines a token with a denomination and an amount.
+
+      NOTE: The amount field is an Int which implements the custom method
+      signatures required by gogoproto.
+  cosmos.base.v1beta1.DecCoin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      DecCoin defines a token with a denomination and a decimal amount.
+
+      NOTE: The amount field is an Dec which implements the custom method
+      signatures required by gogoproto.
   chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
     type: object
     properties:
@@ -32519,18 +32709,6 @@ definitions:
         type: string
       sent_amount:
         type: string
-  cosmos.base.v1beta1.Coin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      Coin defines a token with a denomination and an amount.
-
-      NOTE: The amount field is an Int which implements the custom method
-      signatures required by gogoproto.
   cosmos.auth.v1beta1.Params:
     type: object
     properties:
@@ -38717,18 +38895,6 @@ definitions:
   cosmos.crisis.v1beta1.MsgVerifyInvariantResponse:
     type: object
     description: MsgVerifyInvariantResponse defines the Msg/VerifyInvariant response type.
-  cosmos.base.v1beta1.DecCoin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      DecCoin defines a token with a denomination and a decimal amount.
-
-      NOTE: The amount field is an Dec which implements the custom method
-      signatures required by gogoproto.
   cosmos.distribution.v1beta1.DelegationDelegatorReward:
     type: object
     properties:

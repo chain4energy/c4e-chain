@@ -1,5 +1,8 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
+import { EventDistributionFinished } from "./module/types/cferoutingdistributor/events"
+import { SubDistributionFinished } from "./module/types/cferoutingdistributor/events"
+import { ProcessedDestination } from "./module/types/cferoutingdistributor/events"
 import { Params } from "./module/types/cferoutingdistributor/params"
 import { State } from "./module/types/cferoutingdistributor/sub_distributor"
 import { SubDistributor } from "./module/types/cferoutingdistributor/sub_distributor"
@@ -9,7 +12,7 @@ import { Share } from "./module/types/cferoutingdistributor/sub_distributor"
 import { Account } from "./module/types/cferoutingdistributor/sub_distributor"
 
 
-export { Params, State, SubDistributor, Destination, BurnShare, Share, Account };
+export { EventDistributionFinished, SubDistributionFinished, ProcessedDestination, Params, State, SubDistributor, Destination, BurnShare, Share, Account };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -48,8 +51,12 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				States: {},
 				
 				_Structure: {
+						EventDistributionFinished: getStructure(EventDistributionFinished.fromPartial({})),
+						SubDistributionFinished: getStructure(SubDistributionFinished.fromPartial({})),
+						ProcessedDestination: getStructure(ProcessedDestination.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						State: getStructure(State.fromPartial({})),
 						SubDistributor: getStructure(SubDistributor.fromPartial({})),
@@ -90,6 +97,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getStates: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.States[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -142,6 +155,28 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryStates({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryStates()).data
+				
+					
+				commit('QUERY', { query: 'States', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryStates', payload: { options: { all }, params: {...key},query }})
+				return getters['getStates']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryStates API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

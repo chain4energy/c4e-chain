@@ -41,10 +41,21 @@ export interface CferoutingdistributorQueryParamsResponse {
   params?: CferoutingdistributorParams;
 }
 
+export interface CferoutingdistributorQueryStatesResponse {
+  states?: CferoutingdistributorState[];
+  coins_on_distributor_account?: V1Beta1Coin[];
+}
+
 export interface CferoutingdistributorShare {
   name?: string;
   percent?: string;
   account?: CferoutingdistributorAccount;
+}
+
+export interface CferoutingdistributorState {
+  account?: CferoutingdistributorAccount;
+  burn?: boolean;
+  coins_states?: V1Beta1DecCoin[];
 }
 
 export interface CferoutingdistributorSubDistributor {
@@ -62,6 +73,28 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
+}
+
+/**
+* Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+*/
+export interface V1Beta1Coin {
+  denom?: string;
+  amount?: string;
+}
+
+/**
+* DecCoin defines a token with a denomination and a decimal amount.
+
+NOTE: The amount field is an Dec which implements the custom method
+signatures required by gogoproto.
+*/
+export interface V1Beta1DecCoin {
+  denom?: string;
+  amount?: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -256,7 +289,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title cferoutingdistributor/genesis.proto
+ * @title cferoutingdistributor/events.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -271,6 +304,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<CferoutingdistributorQueryParamsResponse, RpcStatus>({
       path: `/c4e/distributor/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryStates
+   * @summary Queries a list of States items.
+   * @request GET:/chain4energy/c4e-chain/cferoutingdistributor/states
+   */
+  queryStates = (params: RequestParams = {}) =>
+    this.request<CferoutingdistributorQueryStatesResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cferoutingdistributor/states`,
       method: "GET",
       format: "json",
       ...params,
