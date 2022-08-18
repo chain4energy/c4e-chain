@@ -414,11 +414,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/chain4energy/vesting/params
+   * @request GET:/c4e/vesting/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfevestingQueryParamsResponse, RpcStatus>({
-      path: `/chain4energy/vesting/params`,
+      path: `/c4e/vesting/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -430,11 +430,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVestingPools
    * @summary Queries a list of Vesting items.
-   * @request GET:/chain4energy/vesting/vesting_pools/{address}
+   * @request GET:/c4e/vesting/vesting_pools/{address}
    */
   queryVestingPools = (address: string, params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingPoolsResponse, RpcStatus>({
-      path: `/chain4energy/vesting/vesting_pools/${address}`,
+      path: `/c4e/vesting/vesting_pools/${address}`,
       method: "GET",
       format: "json",
       ...params,
@@ -446,11 +446,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVestingType
    * @summary Queries a list of VestingType items.
-   * @request GET:/chain4energy/vesting/vesting_type
+   * @request GET:/c4e/vesting/vesting_type
    */
   queryVestingType = (params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingTypeResponse, RpcStatus>({
-      path: `/chain4energy/vesting/vesting_type`,
+      path: `/c4e/vesting/vesting_type`,
       method: "GET",
       format: "json",
       ...params,

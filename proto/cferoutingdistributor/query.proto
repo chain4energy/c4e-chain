@@ -13,7 +13,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/t
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/chain4energy/c4echain/cferoutingdistributor/params";
+    option (google.api.http).get = "/c4e/distributor/params";
   }
   // this line is used by starport scaffolding # 2
 }
