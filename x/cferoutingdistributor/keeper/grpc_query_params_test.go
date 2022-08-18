@@ -17,5 +17,5 @@ func TestParamsQuery(t *testing.T) {
 
 	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})
 	require.NoError(t, err)
-	require.EqualValues(t, params.SubDistributors, response.Params.SubDistributors)
+	require.Equal(t, &types.QueryParamsResponse{Params: params}, response)
 }

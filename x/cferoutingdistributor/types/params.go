@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
@@ -8,8 +9,8 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 var (
-	KeyRoutingDistributor                      = []byte("RoutingDistributor")
-	DefaultRoutingDistributor []SubDistributor = []SubDistributor{}
+	KeySubDistributors     = []byte("SubDistributors")
+	DefaultSubDistributors []SubDistributor
 )
 
 // ParamKeyTable the param key table for launch module
@@ -18,25 +19,28 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params instance
-func NewParams(distributor []SubDistributor) Params {
-	return Params{distributor}
+func NewParams(subDistributors []SubDistributor) Params {
+	return Params{SubDistributors: subDistributors}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-
-	return NewParams(DefaultRoutingDistributor)
+	return NewParams(DefaultSubDistributors)
 }
 
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyRoutingDistributor, &p.SubDistributors, validateRoutingDistributor),
+		paramtypes.NewParamSetPair(KeySubDistributors, &p.SubDistributors, validateSubDistributors),
 	}
 }
 
 // Validate validates the set of params
 func (p Params) Validate() error {
+	if err := validateSubDistributors(p.SubDistributors); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -46,11 +50,17 @@ func (p Params) String() string {
 	return string(out)
 }
 
-// validateDenom validates the Denom param
-func validateRoutingDistributor(v interface{}) error {
-	//routingDistributor, ok := v.(RoutingDistributor)
-	//if !ok {
-	//	return fmt.Errorf("invalid parameter type: %T", v)
-	//} //
+// validateSubDistributors validates the SubDistributors param
+func validateSubDistributors(v interface{}) error {
+	subDistributors, ok := v.([]SubDistributor)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", v)
+	}
+
+	for _, subDistributor := range subDistributors {
+		if error := subDistributor.Validate(); error != nil {
+			return error
+		}
+	}
 	return nil
 }

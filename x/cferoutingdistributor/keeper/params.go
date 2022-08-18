@@ -5,9 +5,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// GetParams gets the auth module's parameters.
-func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
-	return types.NewParams(k.RoutingDistributor(ctx))
+// GetParams get all parameters as types.Params
+func (k Keeper) GetParams(ctx sdk.Context) types.Params {
+	return types.NewParams(
+		k.SubDistributors(ctx),
+	)
 }
 
 // SetParams set the params
@@ -15,7 +17,8 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramstore.SetParamSet(ctx, &params)
 }
 
-func (k Keeper) RoutingDistributor(ctx sdk.Context) (routingDistributor []types.SubDistributor) {
-	k.paramstore.Get(ctx, types.KeyRoutingDistributor, &routingDistributor)
+// SubDistributors returns the SubDistributors param
+func (k Keeper) SubDistributors(ctx sdk.Context) (res []types.SubDistributor) {
+	k.paramstore.Get(ctx, types.KeySubDistributors, &res)
 	return
 }
