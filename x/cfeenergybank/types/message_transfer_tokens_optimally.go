@@ -9,7 +9,7 @@ const TypeMsgTransferTokensOptimally = "transfer_tokens_optimally"
 
 var _ sdk.Msg = &MsgTransferTokensOptimally{}
 
-func NewMsgTransferTokensOptimally(creator string, addressFrom string, addressTo string, amount string, tokenName string) *MsgTransferTokensOptimally {
+func NewMsgTransferTokensOptimally(creator string, addressFrom string, addressTo string, amount uint64, tokenName string) *MsgTransferTokensOptimally {
 	return &MsgTransferTokensOptimally{
 		Creator:     creator,
 		AddressFrom: addressFrom,

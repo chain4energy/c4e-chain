@@ -104,3 +104,20 @@ func GetEnergyTokenIDBytes(id uint64) []byte {
 func GetEnergyTokenIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
+
+func (k Keeper) GetAllUserEnergyTokens(ctx sdk.Context, userAddress string, tokenName string) (list []types.EnergyToken) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.EnergyTokenKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.EnergyToken
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		if val.UserAddress == userAddress && val.Name == tokenName {
+			list = append(list, val)
+		}
+	}
+
+	return
+}

@@ -38,7 +38,7 @@ export interface MsgTransferTokensOptimally {
   creator: string;
   addressFrom: string;
   addressTo: string;
-  amount: string;
+  amount: number;
   tokenName: string;
 }
 
@@ -585,7 +585,7 @@ const baseMsgTransferTokensOptimally: object = {
   creator: "",
   addressFrom: "",
   addressTo: "",
-  amount: "",
+  amount: 0,
   tokenName: "",
 };
 
@@ -603,8 +603,8 @@ export const MsgTransferTokensOptimally = {
     if (message.addressTo !== "") {
       writer.uint32(26).string(message.addressTo);
     }
-    if (message.amount !== "") {
-      writer.uint32(34).string(message.amount);
+    if (message.amount !== 0) {
+      writer.uint32(32).uint64(message.amount);
     }
     if (message.tokenName !== "") {
       writer.uint32(42).string(message.tokenName);
@@ -634,7 +634,7 @@ export const MsgTransferTokensOptimally = {
           message.addressTo = reader.string();
           break;
         case 4:
-          message.amount = reader.string();
+          message.amount = longToNumber(reader.uint64() as Long);
           break;
         case 5:
           message.tokenName = reader.string();
@@ -667,9 +667,9 @@ export const MsgTransferTokensOptimally = {
       message.addressTo = "";
     }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = String(object.amount);
+      message.amount = Number(object.amount);
     } else {
-      message.amount = "";
+      message.amount = 0;
     }
     if (object.tokenName !== undefined && object.tokenName !== null) {
       message.tokenName = String(object.tokenName);
@@ -714,7 +714,7 @@ export const MsgTransferTokensOptimally = {
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = object.amount;
     } else {
-      message.amount = "";
+      message.amount = 0;
     }
     if (object.tokenName !== undefined && object.tokenName !== null) {
       message.tokenName = object.tokenName;

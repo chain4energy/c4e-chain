@@ -2,6 +2,12 @@ accounts:
   - name: alice
     coins: ["120000000000uc4e"]
     mnemonic: "cabin gun luggage green fever either engage nest arrow sure record physical palace dutch clap vocal north snack birth exhibit either ancient sniff settle"
+  - name: user
+    coins: ["120000000000uc4e"]
+    mnemonic: "legal crush select tattoo crack addict rent update someone outdoor sugar awake frost glass session review convince brisk provide replace tackle purse shuffle violin"
+  - name: user2
+    coins: [ "120000000000uc4e" ]
+    mnemonic: "write where output fossil spell borrow mercy olive never humble task print item nephew slab sock toddler document deer area hotel rely stem ritual"
   - name: bob
     coins: ["4000000000uc4e"]
     mnemonic: "genuine author egg good melt obey omit antique flight fade midnight funny security budget inquiry animal unfold film soft midnight company rack kitchen monitor"

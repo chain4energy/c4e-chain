@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"github.com/spf13/cast"
 	"strconv"
 
 	"github.com/chain4energy/c4e-chain/x/cfeenergybank/types"
@@ -20,7 +21,7 @@ func CmdTransferTokensOptimally() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argAddressFrom := args[0]
 			argAddressTo := args[1]
-			argAmount := args[2]
+			argAmount, err := cast.ToUint64E(args[2])
 			argTokenName := args[3]
 
 			clientCtx, err := client.GetClientTxContext(cmd)

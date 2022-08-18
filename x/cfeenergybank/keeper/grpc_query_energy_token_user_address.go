@@ -21,6 +21,7 @@ func (k Keeper) EnergyTokenUserAddress(goCtx context.Context, req *types.QueryEn
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(k.storeKey)
+
 	energyTokenStore := prefix.NewStore(store, []byte(types.EnergyTokenKey))
 
 	pageRes, err := query.Paginate(energyTokenStore, req.Pagination, func(key []byte, value []byte) error {

@@ -28,8 +28,9 @@ func (k msgServer) TransferTokens(goCtx context.Context, msg *types.MsgTransferT
 			UserAddress: msg.AddressTo,
 			CreatedAt:   eneryToken.CreatedAt,
 		}
-
 		k.AppendEnergyToken(ctx, newEnergyToken)
+		eneryToken.Amount -= msg.Amount
+		k.SetEnergyToken(ctx, eneryToken)
 	} else {
 		eneryToken.UserAddress = msg.AddressTo
 		k.SetEnergyToken(ctx, eneryToken)

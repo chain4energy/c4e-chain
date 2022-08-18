@@ -52,7 +52,7 @@ message MsgTransferTokensOptimally {
   string creator = 1;
   string addressFrom = 2;
   string addressTo = 3;
-  string amount = 4;
+  uint64 amount = 4;
   string tokenName = 5;
 }
 
