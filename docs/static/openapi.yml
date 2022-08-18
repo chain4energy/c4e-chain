@@ -1346,16 +1346,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   '/chain4energy/c4e-chain/cfeenergybank/energy_token/{id}':
@@ -1534,16 +1524,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /chain4energy/c4e-chain/cfeenergybank/params:
@@ -1702,16 +1682,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -32815,6 +32785,10 @@ definitions:
   chain4energy.c4echain.energybank.MsgCreateTokenParamsResponse:
     type: object
   chain4energy.c4echain.energybank.MsgMintTokenResponse:
+    type: object
+  chain4energy.c4echain.energybank.MsgTransferTokensOptimallyResponse:
+    type: object
+  chain4energy.c4echain.energybank.MsgTransferTokensResponse:
     type: object
   chain4energy.c4echain.energybank.Params:
     type: object

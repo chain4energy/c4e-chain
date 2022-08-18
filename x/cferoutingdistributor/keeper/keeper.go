@@ -50,7 +50,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-//SetRoutingDistributor set the routing distributor
+// SetRoutingDistributor set the routing distributor
 func (k Keeper) SetRoutingDistributor(ctx sdk.Context, routingDistributor types.RoutingDistributor) {
 	store := ctx.KVStore(k.storeKey)
 	b := k.cdc.MustMarshal(&routingDistributor)

@@ -9,7 +9,9 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeenergybank/types";
 service Msg {
   rpc CreateTokenParams(MsgCreateTokenParams) returns (MsgCreateTokenParamsResponse);
   rpc MintToken(MsgMintToken) returns (MsgMintTokenResponse);
-  // this line is used by starport scaffolding # proto/tx/rpc
+    rpc TransferTokens(MsgTransferTokens) returns (MsgTransferTokensResponse);
+  rpc TransferTokensOptimally(MsgTransferTokensOptimally) returns (MsgTransferTokensOptimallyResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgCreateTokenParams {
@@ -34,5 +36,27 @@ message MsgMintToken {
 message MsgMintTokenResponse {
 }
 
+
+message MsgTransferTokens {
+  string creator = 1;
+  string addressFrom = 2;
+  string addressTo = 3;
+  uint64 amount = 4;
+  uint64 tokenId = 5;
+}
+
+message MsgTransferTokensResponse {
+}
+
+message MsgTransferTokensOptimally {
+  string creator = 1;
+  string addressFrom = 2;
+  string addressTo = 3;
+  string amount = 4;
+  string tokenName = 5;
+}
+
+message MsgTransferTokensOptimallyResponse {
+}
 
 // this line is used by starport scaffolding # proto/tx/message

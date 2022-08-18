@@ -26,6 +26,10 @@ export type EnergybankMsgCreateTokenParamsResponse = object;
 
 export type EnergybankMsgMintTokenResponse = object;
 
+export type EnergybankMsgTransferTokensOptimallyResponse = object;
+
+export type EnergybankMsgTransferTokensResponse = object;
+
 /**
  * Params defines the parameters for the module.
  */

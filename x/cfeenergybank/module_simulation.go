@@ -4,7 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	energybanksimulation "github.com/chain4energy/c4e-chain/x/cfeenergybank/simulation"
+	cfeenergybanksimulation "github.com/chain4energy/c4e-chain/x/cfeenergybank/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfeenergybank/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -17,7 +17,7 @@ import (
 // avoid unused import issue
 var (
 	_ = sample.AccAddress
-	_ = energybanksimulation.FindAccount
+	_ = cfeenergybanksimulation.FindAccount
 	_ = simappparams.StakePerAccount
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
@@ -31,6 +31,14 @@ const (
 	opWeightMsgMintToken = "op_weight_msg_mint_token"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgMintToken int = 100
+
+	opWeightMsgTransferTokens = "op_weight_msg_transfer_tokens"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgTransferTokens int = 100
+
+	opWeightMsgTransferTokensOptimally = "op_weight_msg_transfer_tokens_optimally"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgTransferTokensOptimally int = 100
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
@@ -74,7 +82,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateTokenParams,
-		energybanksimulation.SimulateMsgCreateTokenParams(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfeenergybanksimulation.SimulateMsgCreateTokenParams(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgMintToken int
@@ -85,7 +93,29 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgMintToken,
-		energybanksimulation.SimulateMsgMintToken(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfeenergybanksimulation.SimulateMsgMintToken(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgTransferTokens int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgTransferTokens, &weightMsgTransferTokens, nil,
+		func(_ *rand.Rand) {
+			weightMsgTransferTokens = defaultWeightMsgTransferTokens
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgTransferTokens,
+		cfeenergybanksimulation.SimulateMsgTransferTokens(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgTransferTokensOptimally int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgTransferTokensOptimally, &weightMsgTransferTokensOptimally, nil,
+		func(_ *rand.Rand) {
+			weightMsgTransferTokensOptimally = defaultWeightMsgTransferTokensOptimally
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgTransferTokensOptimally,
+		cfeenergybanksimulation.SimulateMsgTransferTokensOptimally(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

@@ -24,6 +24,26 @@ export interface MsgMintToken {
 
 export interface MsgMintTokenResponse {}
 
+export interface MsgTransferTokens {
+  creator: string;
+  addressFrom: string;
+  addressTo: string;
+  amount: number;
+  tokenId: number;
+}
+
+export interface MsgTransferTokensResponse {}
+
+export interface MsgTransferTokensOptimally {
+  creator: string;
+  addressFrom: string;
+  addressTo: string;
+  amount: string;
+  tokenName: string;
+}
+
+export interface MsgTransferTokensOptimallyResponse {}
+
 const baseMsgCreateTokenParams: object = {
   creator: "",
   name: "",
@@ -379,13 +399,397 @@ export const MsgMintTokenResponse = {
   },
 };
 
+const baseMsgTransferTokens: object = {
+  creator: "",
+  addressFrom: "",
+  addressTo: "",
+  amount: 0,
+  tokenId: 0,
+};
+
+export const MsgTransferTokens = {
+  encode(message: MsgTransferTokens, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.addressFrom !== "") {
+      writer.uint32(18).string(message.addressFrom);
+    }
+    if (message.addressTo !== "") {
+      writer.uint32(26).string(message.addressTo);
+    }
+    if (message.amount !== 0) {
+      writer.uint32(32).uint64(message.amount);
+    }
+    if (message.tokenId !== 0) {
+      writer.uint32(40).uint64(message.tokenId);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgTransferTokens {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgTransferTokens } as MsgTransferTokens;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.addressFrom = reader.string();
+          break;
+        case 3:
+          message.addressTo = reader.string();
+          break;
+        case 4:
+          message.amount = longToNumber(reader.uint64() as Long);
+          break;
+        case 5:
+          message.tokenId = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgTransferTokens {
+    const message = { ...baseMsgTransferTokens } as MsgTransferTokens;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    if (object.addressFrom !== undefined && object.addressFrom !== null) {
+      message.addressFrom = String(object.addressFrom);
+    } else {
+      message.addressFrom = "";
+    }
+    if (object.addressTo !== undefined && object.addressTo !== null) {
+      message.addressTo = String(object.addressTo);
+    } else {
+      message.addressTo = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = Number(object.amount);
+    } else {
+      message.amount = 0;
+    }
+    if (object.tokenId !== undefined && object.tokenId !== null) {
+      message.tokenId = Number(object.tokenId);
+    } else {
+      message.tokenId = 0;
+    }
+    return message;
+  },
+
+  toJSON(message: MsgTransferTokens): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.addressFrom !== undefined &&
+      (obj.addressFrom = message.addressFrom);
+    message.addressTo !== undefined && (obj.addressTo = message.addressTo);
+    message.amount !== undefined && (obj.amount = message.amount);
+    message.tokenId !== undefined && (obj.tokenId = message.tokenId);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgTransferTokens>): MsgTransferTokens {
+    const message = { ...baseMsgTransferTokens } as MsgTransferTokens;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    if (object.addressFrom !== undefined && object.addressFrom !== null) {
+      message.addressFrom = object.addressFrom;
+    } else {
+      message.addressFrom = "";
+    }
+    if (object.addressTo !== undefined && object.addressTo !== null) {
+      message.addressTo = object.addressTo;
+    } else {
+      message.addressTo = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    } else {
+      message.amount = 0;
+    }
+    if (object.tokenId !== undefined && object.tokenId !== null) {
+      message.tokenId = object.tokenId;
+    } else {
+      message.tokenId = 0;
+    }
+    return message;
+  },
+};
+
+const baseMsgTransferTokensResponse: object = {};
+
+export const MsgTransferTokensResponse = {
+  encode(
+    _: MsgTransferTokensResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgTransferTokensResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgTransferTokensResponse,
+    } as MsgTransferTokensResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgTransferTokensResponse {
+    const message = {
+      ...baseMsgTransferTokensResponse,
+    } as MsgTransferTokensResponse;
+    return message;
+  },
+
+  toJSON(_: MsgTransferTokensResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgTransferTokensResponse>
+  ): MsgTransferTokensResponse {
+    const message = {
+      ...baseMsgTransferTokensResponse,
+    } as MsgTransferTokensResponse;
+    return message;
+  },
+};
+
+const baseMsgTransferTokensOptimally: object = {
+  creator: "",
+  addressFrom: "",
+  addressTo: "",
+  amount: "",
+  tokenName: "",
+};
+
+export const MsgTransferTokensOptimally = {
+  encode(
+    message: MsgTransferTokensOptimally,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.addressFrom !== "") {
+      writer.uint32(18).string(message.addressFrom);
+    }
+    if (message.addressTo !== "") {
+      writer.uint32(26).string(message.addressTo);
+    }
+    if (message.amount !== "") {
+      writer.uint32(34).string(message.amount);
+    }
+    if (message.tokenName !== "") {
+      writer.uint32(42).string(message.tokenName);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgTransferTokensOptimally {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgTransferTokensOptimally,
+    } as MsgTransferTokensOptimally;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.addressFrom = reader.string();
+          break;
+        case 3:
+          message.addressTo = reader.string();
+          break;
+        case 4:
+          message.amount = reader.string();
+          break;
+        case 5:
+          message.tokenName = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgTransferTokensOptimally {
+    const message = {
+      ...baseMsgTransferTokensOptimally,
+    } as MsgTransferTokensOptimally;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    if (object.addressFrom !== undefined && object.addressFrom !== null) {
+      message.addressFrom = String(object.addressFrom);
+    } else {
+      message.addressFrom = "";
+    }
+    if (object.addressTo !== undefined && object.addressTo !== null) {
+      message.addressTo = String(object.addressTo);
+    } else {
+      message.addressTo = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = String(object.amount);
+    } else {
+      message.amount = "";
+    }
+    if (object.tokenName !== undefined && object.tokenName !== null) {
+      message.tokenName = String(object.tokenName);
+    } else {
+      message.tokenName = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgTransferTokensOptimally): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.addressFrom !== undefined &&
+      (obj.addressFrom = message.addressFrom);
+    message.addressTo !== undefined && (obj.addressTo = message.addressTo);
+    message.amount !== undefined && (obj.amount = message.amount);
+    message.tokenName !== undefined && (obj.tokenName = message.tokenName);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<MsgTransferTokensOptimally>
+  ): MsgTransferTokensOptimally {
+    const message = {
+      ...baseMsgTransferTokensOptimally,
+    } as MsgTransferTokensOptimally;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    if (object.addressFrom !== undefined && object.addressFrom !== null) {
+      message.addressFrom = object.addressFrom;
+    } else {
+      message.addressFrom = "";
+    }
+    if (object.addressTo !== undefined && object.addressTo !== null) {
+      message.addressTo = object.addressTo;
+    } else {
+      message.addressTo = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    } else {
+      message.amount = "";
+    }
+    if (object.tokenName !== undefined && object.tokenName !== null) {
+      message.tokenName = object.tokenName;
+    } else {
+      message.tokenName = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgTransferTokensOptimallyResponse: object = {};
+
+export const MsgTransferTokensOptimallyResponse = {
+  encode(
+    _: MsgTransferTokensOptimallyResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgTransferTokensOptimallyResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgTransferTokensOptimallyResponse,
+    } as MsgTransferTokensOptimallyResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgTransferTokensOptimallyResponse {
+    const message = {
+      ...baseMsgTransferTokensOptimallyResponse,
+    } as MsgTransferTokensOptimallyResponse;
+    return message;
+  },
+
+  toJSON(_: MsgTransferTokensOptimallyResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgTransferTokensOptimallyResponse>
+  ): MsgTransferTokensOptimallyResponse {
+    const message = {
+      ...baseMsgTransferTokensOptimallyResponse,
+    } as MsgTransferTokensOptimallyResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   CreateTokenParams(
     request: MsgCreateTokenParams
   ): Promise<MsgCreateTokenParamsResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   MintToken(request: MsgMintToken): Promise<MsgMintTokenResponse>;
+  TransferTokens(
+    request: MsgTransferTokens
+  ): Promise<MsgTransferTokensResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  TransferTokensOptimally(
+    request: MsgTransferTokensOptimally
+  ): Promise<MsgTransferTokensOptimallyResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -416,6 +820,34 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgMintTokenResponse.decode(new Reader(data))
+    );
+  }
+
+  TransferTokens(
+    request: MsgTransferTokens
+  ): Promise<MsgTransferTokensResponse> {
+    const data = MsgTransferTokens.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.energybank.Msg",
+      "TransferTokens",
+      data
+    );
+    return promise.then((data) =>
+      MsgTransferTokensResponse.decode(new Reader(data))
+    );
+  }
+
+  TransferTokensOptimally(
+    request: MsgTransferTokensOptimally
+  ): Promise<MsgTransferTokensOptimallyResponse> {
+    const data = MsgTransferTokensOptimally.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.energybank.Msg",
+      "TransferTokensOptimally",
+      data
+    );
+    return promise.then((data) =>
+      MsgTransferTokensOptimallyResponse.decode(new Reader(data))
     );
   }
 }
