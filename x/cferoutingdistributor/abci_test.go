@@ -217,7 +217,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	ctx.Logger().Error(burnState.String())
 	//burnState, _ := app.CferoutingdistributorKeeper.GetALlStates()
 	coinRemains := burnState.CoinsStates
-	require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.67")), coinRemains)
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.67"), coinRemains.AmountOf("uc4e"))
 
 	if destinationType == MainCollector {
 		mainCollectorCoins :=
@@ -234,7 +234,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 		require.EqualValues(t, sdk.NewInt(1), mainCollectorCoins.AmountOf(denom))
 		c4eDistrState, _ := app.CferoutingdistributorKeeper.GetState(ctx, "c4e_distributor")
 		coinRemains := c4eDistrState.CoinsStates
-		require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.33")), coinRemains)
+		require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains.AmountOf("uc4e"))
 
 	} else if destinationType == InternalAccount {
 		mainCollectorCoins :=
@@ -243,7 +243,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 		require.EqualValues(t, sdk.NewInt(499), mainCollectorCoins.AmountOf(denom))
 		c4eDistrState, _ := app.CferoutingdistributorKeeper.GetState(ctx, "c4e_distributor")
 		coinRemains := c4eDistrState.CoinsStates
-		require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("498.33")), coinRemains)
+		require.EqualValues(t, sdk.MustNewDecFromStr("498.33"), coinRemains.AmountOf("uc4e"))
 	} else {
 		address, _ := sdk.AccAddressFromBech32("cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck")
 		mainCollectorCoins :=
@@ -261,7 +261,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 
 		c4eDistrState, _ := app.CferoutingdistributorKeeper.GetState(ctx, "cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck")
 		coinRemains := c4eDistrState.CoinsStates
-		require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.33")), coinRemains)
+		require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains.AmountOf("uc4e"))
 	}
 	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(499)), app.BankKeeper.GetSupply(ctx, denom))
 }
@@ -346,7 +346,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(1017+5044-518)), app.BankKeeper.GetSupply(ctx, denom))
 	burnState, _ := app.CferoutingdistributorKeeper.GetBurnState(ctx)
 	coinRemains := burnState.CoinsStates
-	require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.67")), coinRemains)
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.67"), coinRemains.AmountOf("uc4e"))
 
 	// added 499 to main collector
 	// main collector state = 499 + 5044 = 5543, but 5543 - 0,67 = 5542.33 to distribute
@@ -363,7 +363,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 		//require.EqualValues(t, false, remains.Account.IsMainCollector)
 
 		coinRemainsDevelopmentFund := remains.CoinsStates
-		require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0")), coinRemainsDevelopmentFund)
+		require.EqualValues(t, sdk.MustNewDecFromStr("0"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
 	} else if passThroughAccoutType == BaseAccount {
 		// 5542.33 moved to cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck account
 		// and all is distributed further, and 0 in remains
@@ -378,7 +378,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 		//require.EqualValues(t, false, remains.Account.IsMainCollector)
 
 		coinRemainsDevelopmentFund := remains.CoinsStates
-		require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0")), coinRemainsDevelopmentFund)
+		require.EqualValues(t, sdk.MustNewDecFromStr("0"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
 	}
 
 	// 5542.33*10.345% = 573.3540385 to cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag, so
@@ -390,7 +390,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 
 	remains, _ := app.CferoutingdistributorKeeper.GetState(ctx, "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
 	coinRemainsDevelopmentFund := remains.CoinsStates
-	require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.3540385")), coinRemainsDevelopmentFund)
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.3540385"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
 
 	// 5542.33 - 573.3540385 = 4968.9759615 to validators_rewards_collector, so
 	// 4968 on validators_rewards_collector or no_validators module account and 0.9759615 on its distributor state
@@ -403,7 +403,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 		// still 0.9759615 on its distributor state remains
 		remains, _ = app.CferoutingdistributorKeeper.GetState(ctx, "validators_rewards_collector")
 		coinRemainsValidatorsReward := remains.CoinsStates
-		require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.9759615")), coinRemainsValidatorsReward)
+		require.EqualValues(t, sdk.MustNewDecFromStr("0.9759615"), coinRemainsValidatorsReward.AmountOf("uc4e"))
 		// and 4968 to validators rewards
 		distrCoins := app.CferoutingdistributorKeeper.GetAccountCoins(ctx, app.DistrKeeper.GetDistributionAccount(ctx).GetAddress())
 		require.EqualValues(t, sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(4968))), distrCoins)
@@ -416,7 +416,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 
 		remains, _ = app.CferoutingdistributorKeeper.GetState(ctx, "no_validators")
 		coinRemainsValidatorsReward := remains.CoinsStates
-		require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.9759615")), coinRemainsValidatorsReward)
+		require.EqualValues(t, sdk.MustNewDecFromStr("0.9759615"), coinRemainsValidatorsReward.AmountOf("uc4e"))
 	}
 
 	// 5543 - 573 - 4968 = 2 (its ramains 0,67 + 0.3540385 + 0.9759615 = 2) on main collector
@@ -477,7 +477,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(3001*(1017+5044)-1556528)), app.BankKeeper.GetSupply(ctx, denom))
 	burnState, _ := app.CferoutingdistributorKeeper.GetBurnState(ctx)
 	coinRemains := burnState.CoinsStates
-	require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.67")), coinRemains)
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.67"), coinRemains.AmountOf("uc4e"))
 
 	// added 3001*1017 - 1556528 = 1495489 to main collector
 	// main collector state = 1495489 + 3001*5044 = 16632533, but 16632533 - 0.67 (burning remains) = 16632532.33 to distribute
@@ -491,7 +491,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 
 	remains, _ := app.CferoutingdistributorKeeper.GetState(ctx, "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
 	coinRemainsDevelopmentFund := remains.CoinsStates
-	require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.4695385")), coinRemainsDevelopmentFund)
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.4695385"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
 
 	// 16632532.33- 1720635.4695385 = 14911896.8604615 to validators_rewards_collector, so
 	// 14911896 on validators_rewards_collector or no_validators module account and 0.8604615 on its distributor state
@@ -503,7 +503,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	// still 0.8845 on its distributor state remains
 	remains, _ = app.CferoutingdistributorKeeper.GetState(ctx, "validators_rewards_collector")
 	coinRemainsValidatorsReward := remains.CoinsStates
-	require.EqualValues(t, sdk.NewDecCoinFromDec("uc4e", sdk.MustNewDecFromStr("0.8604615")), coinRemainsValidatorsReward)
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.8604615"), coinRemainsValidatorsReward.AmountOf("uc4e"))
 	// and 14906927 to validators rewards
 	distrCoins := app.CferoutingdistributorKeeper.GetAccountCoins(ctx, app.DistrKeeper.GetDistributionAccount(ctx).GetAddress())
 	require.EqualValues(t, sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(14911896))), distrCoins)

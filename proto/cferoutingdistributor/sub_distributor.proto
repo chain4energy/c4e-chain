@@ -10,13 +10,10 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/t
 message State {
   Account account = 1         [(gogoproto.nullable) = true];
   bool burn = 2;
-
-  cosmos.base.v1beta1.DecCoin coins_states    = 3 [(gogoproto.nullable) = false];
-
-  //  repeated cosmos.base.v1beta1.DecCoin coins_state = 3 [
-//    (gogoproto.moretags) = "yaml:\"coin_state\"",
-//    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
-//    (gogoproto.nullable) = false];
+  repeated cosmos.base.v1beta1.DecCoin coins_states = 3 [
+  (gogoproto.moretags) = "yaml:\"coin_state\"",
+  (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
+  (gogoproto.nullable) = false];
 }
 
 

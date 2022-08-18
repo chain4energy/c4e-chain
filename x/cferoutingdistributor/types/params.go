@@ -24,6 +24,7 @@ func NewParams(distributor []SubDistributor) Params {
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
+
 	return NewParams(DefaultRoutingDistributor)
 }
 

@@ -31,12 +31,13 @@ func findAccountType(account types.Account) accountType {
 	}
 }
 
-func calculatePercentage(sharePercent sdk.Dec, coinsToDistributeDec sdk.Dec) sdk.Dec {
-	if !coinsToDistributeDec.IsPositive() {
-		return sdk.ZeroDec()
+func calculatePercentage(sharePercent sdk.Dec, coinsToDistributeDec sdk.DecCoins) sdk.DecCoins {
+	if !coinsToDistributeDec.IsAllPositive() {
+		return sdk.NewDecCoins()
 	}
 
-	return coinsToDistributeDec.Mul(sharePercent).Quo(sdk.MustNewDecFromStr("100"))
+	percentInDecForm := sharePercent.QuoInt64(100)
+	return coinsToDistributeDec.MulDecTruncate(percentInDecForm)
 }
 
 func findBurnState(states *[]types.State) int {
@@ -64,7 +65,7 @@ func findAccountState(states *[]types.State, account *types.Account) int {
 func getRamainsSum(states *[]types.State) sdk.DecCoins {
 	sum := sdk.NewDecCoins()
 	for _, state := range *states {
-		sum = sum.Add(state.CoinsStates)
+		sum = sum.Add(state.CoinsStates...)
 	}
 	return sum
 }
@@ -115,9 +116,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				pos := findAccountState(&states, source)
 				if pos >= 0 {
 					coin := states[pos].CoinsStates
-					if !coin.Amount.IsZero() {
-						states[pos].CoinsStates.Amount = sdk.ZeroDec()
-						coinsToDistribute = coinsToDistribute.Add(coin)
+					if !coin.IsZero() {
+						states[pos].CoinsStates = sdk.NewDecCoins()
+						coinsToDistribute = coinsToDistribute.Add(coin...)
 					}
 
 				}
@@ -127,16 +128,14 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			}
 			allCoinsToDistribute = allCoinsToDistribute.Add(coinsToDistribute...)
 		}
-		coinsToDistributeDec := allCoinsToDistribute.AmountOf("uc4e")
-		if coinsToDistributeDec.IsZero() {
+		//coinsToDistributeDec := allCoinsToDistribute.AmountOf("uc4e")
+		if allCoinsToDistribute.IsZero() {
 			continue
 		}
-		states = *StartDistributionProcess(&states, coinsToDistributeDec, subDistributor)
+		states = *StartDistributionProcess(&states, allCoinsToDistribute, subDistributor)
 
 	}
 	for _, state := range states {
-		k.Logger(ctx).Error("Ppblo: " + state.String())
-
 		if Internal != findAccountType(*state.Account) {
 			toSend, change := state.CoinsStates.TruncateDecimal()
 			state.CoinsStates = change
@@ -144,15 +143,15 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			if state.Burn {
 				k.Logger(ctx).Debug("Burn: " + toSend.String())
 
-				k.BurnCoinsForSpecifiedModuleAccount(ctx, sdk.NewCoins(toSend), types.CollectorName)
+				k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.CollectorName)
 			} else if Module == findAccountType(*state.Account) {
 				k.Logger(ctx).Debug("Send to : " + state.Account.ModuleName + " - " + toSend.String())
 
-				k.SendCoinsFromModuleToModule(ctx, sdk.NewCoins(toSend), types.CollectorName, state.Account.ModuleName)
+				k.SendCoinsFromModuleToModule(ctx, toSend, types.CollectorName, state.Account.ModuleName)
 			} else {
 				k.Logger(ctx).Debug("Send to : " + state.Account.Address + " - " + toSend.String())
 				dstAccount, _ := sdk.AccAddressFromBech32(state.Account.Address)
-				k.SendCoinsFromModuleAccount(ctx, sdk.NewCoins(toSend), types.CollectorName, dstAccount)
+				k.SendCoinsFromModuleAccount(ctx, toSend, types.CollectorName, dstAccount)
 			}
 		}
 
@@ -161,38 +160,40 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 }
 
-func addSharesToState(localRemains *[]types.State, account types.Account, calculatedShare sdk.Dec, findState func() int) *[]types.State {
+func addSharesToState(localRemains *[]types.State, account types.Account, calculatedShare sdk.DecCoins, findState func() int) *[]types.State {
 	pos := findState()
 	if pos < 0 {
 		state := types.State{}
 		if findAccountType(account) == Unknown {
 
-			state = types.State{Account: &account, CoinsStates: sdk.NewDecCoin("uc4e", sdk.ZeroInt()), Burn: true}
+			state = types.State{Account: &account, CoinsStates: sdk.NewDecCoins(), Burn: true}
 		} else {
-			state = types.State{Account: &account, CoinsStates: sdk.NewDecCoin("uc4e", sdk.ZeroInt()), Burn: false}
+			state = types.State{Account: &account, CoinsStates: sdk.NewDecCoins(), Burn: false}
 		}
 		withAppended := append(*localRemains, state)
 
 		localRemains = &withAppended
 		pos = len(*localRemains) - 1
 	}
-	(*localRemains)[pos].CoinsStates.Amount = (*localRemains)[pos].CoinsStates.Amount.Add(calculatedShare)
+	(*localRemains)[pos].CoinsStates = (*localRemains)[pos].CoinsStates.Add(calculatedShare...)
 	return localRemains
 }
 
-func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.Dec, subDistributor types.SubDistributor) *[]types.State {
-	left := coinsToDistributeDec
+func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.DecCoins, subDistributor types.SubDistributor) *[]types.State {
+	percentShareSum := sdk.MustNewDecFromStr("0")
+	//left := coinsToDistributeDec
 	localRemains := states
 	for _, share := range subDistributor.Destination.Share {
+		percentShareSum = percentShareSum.Add(share.Percent)
 		if share.Account.MainCollector {
 			continue
 		}
 		calculatedShare := calculatePercentage(share.Percent, coinsToDistributeDec)
-		if calculatedShare.GT(coinsToDistributeDec) {
-			calculatedShare = coinsToDistributeDec
-		}
+		//if calculatedShare.GT(coinsToDistributeDec) {
+		//	calculatedShare = coinsToDistributeDec
+		//}
 		if !calculatedShare.IsZero() {
-			left = left.Sub(calculatedShare)
+			//left = left.Sub(calculatedShare)
 			findFunc := func() int {
 				return findAccountState(localRemains, &share.Account)
 			}
@@ -201,13 +202,14 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 	}
 
 	if subDistributor.Destination.BurnShare.Percent != sdk.MustNewDecFromStr("0") {
+		percentShareSum = percentShareSum.Add(subDistributor.Destination.BurnShare.Percent)
 		calculatedShare := calculatePercentage(subDistributor.Destination.BurnShare.Percent, coinsToDistributeDec)
 
-		if calculatedShare.GT(coinsToDistributeDec) {
-			calculatedShare = coinsToDistributeDec
-		}
+		//if calculatedShare.GT(coinsToDistributeDec) {
+		//	calculatedShare = coinsToDistributeDec
+		//}
 		if !calculatedShare.IsZero() {
-			left = left.Sub(calculatedShare)
+			//left = left.Sub(calculatedShare)
 
 			findFunc := func() int {
 				return findBurnState(localRemains)
@@ -223,8 +225,11 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 
 			return findAccountState(localRemains, &accountDefault)
 		}
+		defaultSharePercent := sdk.MustNewDecFromStr("100").Sub(percentShareSum)
 
-		localRemains = addSharesToState(localRemains, accountDefault, left, findFunc)
+		calculatedShare := calculatePercentage(defaultSharePercent, coinsToDistributeDec)
+
+		localRemains = addSharesToState(localRemains, accountDefault, calculatedShare, findFunc)
 	}
 
 	return localRemains
