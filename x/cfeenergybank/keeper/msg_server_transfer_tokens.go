@@ -18,7 +18,7 @@ func (k msgServer) TransferTokens(goCtx context.Context, msg *types.MsgTransferT
 	if eneryToken.UserAddress != msg.Creator {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "This token doesn't belong to you.")
 	}
-	if eneryToken.Amount > msg.Amount || msg.Amount <= 0 {
+	if eneryToken.Amount < msg.Amount || msg.Amount <= 0 {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong amount of tokens.")
 	}
 	if msg.Amount != eneryToken.Amount {
