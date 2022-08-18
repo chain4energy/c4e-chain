@@ -52,8 +52,6 @@ message Share {
 }
 
 message Account {
-  string address = 1         [(gogoproto.nullable) = true];
-  string module_name = 2         [(gogoproto.nullable) = true];
-  string internal_name = 3         [(gogoproto.nullable) = true];
-  bool main_collector = 4         [(gogoproto.nullable) = true];
+  string id = 1;
+  string type = 2;
 }

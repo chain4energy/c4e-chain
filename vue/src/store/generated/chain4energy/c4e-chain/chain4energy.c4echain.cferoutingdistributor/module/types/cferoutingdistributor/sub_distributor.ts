@@ -35,10 +35,8 @@ export interface Share {
 }
 
 export interface Account {
-  address: string;
-  module_name: string;
-  internal_name: string;
-  main_collector: boolean;
+  id: string;
+  type: string;
 }
 
 const baseState: object = { burn: false };
@@ -495,26 +493,15 @@ export const Share = {
   },
 };
 
-const baseAccount: object = {
-  address: "",
-  module_name: "",
-  internal_name: "",
-  main_collector: false,
-};
+const baseAccount: object = { id: "", type: "" };
 
 export const Account = {
   encode(message: Account, writer: Writer = Writer.create()): Writer {
-    if (message.address !== "") {
-      writer.uint32(10).string(message.address);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
-    if (message.module_name !== "") {
-      writer.uint32(18).string(message.module_name);
-    }
-    if (message.internal_name !== "") {
-      writer.uint32(26).string(message.internal_name);
-    }
-    if (message.main_collector === true) {
-      writer.uint32(32).bool(message.main_collector);
+    if (message.type !== "") {
+      writer.uint32(18).string(message.type);
     }
     return writer;
   },
@@ -527,16 +514,10 @@ export const Account = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.address = reader.string();
+          message.id = reader.string();
           break;
         case 2:
-          message.module_name = reader.string();
-          break;
-        case 3:
-          message.internal_name = reader.string();
-          break;
-        case 4:
-          message.main_collector = reader.bool();
+          message.type = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -548,62 +529,37 @@ export const Account = {
 
   fromJSON(object: any): Account {
     const message = { ...baseAccount } as Account;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id);
     } else {
-      message.address = "";
+      message.id = "";
     }
-    if (object.module_name !== undefined && object.module_name !== null) {
-      message.module_name = String(object.module_name);
+    if (object.type !== undefined && object.type !== null) {
+      message.type = String(object.type);
     } else {
-      message.module_name = "";
-    }
-    if (object.internal_name !== undefined && object.internal_name !== null) {
-      message.internal_name = String(object.internal_name);
-    } else {
-      message.internal_name = "";
-    }
-    if (object.main_collector !== undefined && object.main_collector !== null) {
-      message.main_collector = Boolean(object.main_collector);
-    } else {
-      message.main_collector = false;
+      message.type = "";
     }
     return message;
   },
 
   toJSON(message: Account): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address);
-    message.module_name !== undefined &&
-      (obj.module_name = message.module_name);
-    message.internal_name !== undefined &&
-      (obj.internal_name = message.internal_name);
-    message.main_collector !== undefined &&
-      (obj.main_collector = message.main_collector);
+    message.id !== undefined && (obj.id = message.id);
+    message.type !== undefined && (obj.type = message.type);
     return obj;
   },
 
   fromPartial(object: DeepPartial<Account>): Account {
     const message = { ...baseAccount } as Account;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id;
     } else {
-      message.address = "";
+      message.id = "";
     }
-    if (object.module_name !== undefined && object.module_name !== null) {
-      message.module_name = object.module_name;
+    if (object.type !== undefined && object.type !== null) {
+      message.type = object.type;
     } else {
-      message.module_name = "";
-    }
-    if (object.internal_name !== undefined && object.internal_name !== null) {
-      message.internal_name = object.internal_name;
-    } else {
-      message.internal_name = "";
-    }
-    if (object.main_collector !== undefined && object.main_collector !== null) {
-      message.main_collector = object.main_collector;
-    } else {
-      message.main_collector = false;
+      message.type = "";
     }
     return message;
   },

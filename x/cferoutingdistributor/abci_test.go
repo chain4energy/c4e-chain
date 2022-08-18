@@ -29,20 +29,19 @@ func prepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 		address = "c4e_distributor"
 	}
 
-	var destAccount = types.Account{
-		MainCollector: false,
-	}
+	var destAccount = types.Account{}
+	destAccount.Id = address
 
 	if destinationType == ModuleAccount {
-		destAccount.ModuleName = address
+		destAccount.Type = "MODULE_ACCOUNT"
 	} else if destinationType == InternalAccount {
-		destAccount.InternalName = address
+		destAccount.Type = "INTERNAL_ACCOUNT"
 	} else {
-		destAccount.Address = address
+		destAccount.Type = "BASE_ACCOUNT"
 	}
 
 	if destinationType == MainCollector {
-		destAccount.MainCollector = true
+		destAccount.Type = "MAIN"
 	}
 
 	burnShare := types.BurnShare{
@@ -57,7 +56,7 @@ func prepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 
 	distributor1 := types.SubDistributor{
 		Name:        "tx_fee_distributor",
-		Sources:     []*types.Account{{ModuleName: "fee_collector"}},
+		Sources:     []*types.Account{{Id: "fee_collector", Type: "MODULE_ACCOUNT"}},
 		Destination: destination,
 	}
 
@@ -66,8 +65,8 @@ func prepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 
 func prepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) types.SubDistributor {
 	source := types.Account{
-		ModuleName:    "c4e",
-		MainCollector: true,
+		Id:   "c4e",
+		Type: "MAIN",
 	}
 
 	var address string
@@ -78,19 +77,19 @@ func prepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) 
 	}
 
 	var destAccount = types.Account{
-		MainCollector: false,
+		Id: address,
 	}
 
 	if passThroughAccoutType == ModuleAccount {
-		destAccount.ModuleName = address
+		destAccount.Type = "MODULE_ACCOUNT"
 	} else if passThroughAccoutType == InternalAccount {
-		destAccount.InternalName = address
+		destAccount.Type = "INTERNAL_ACCOUNT"
 	} else {
-		destAccount.Address = address
+		destAccount.Type = "BASE_ACCOUNT"
 	}
 
 	if passThroughAccoutType == MainCollector {
-		destAccount.MainCollector = true
+		destAccount.Type = "MAIN"
 	}
 
 	burnShare := types.BurnShare{
@@ -119,19 +118,19 @@ func prepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 	}
 
 	var source = types.Account{
-		MainCollector: false,
+		Id: address,
 	}
 
 	if sourceAccoutType == ModuleAccount {
-		source.ModuleName = address
+		source.Type = "MODULE_ACCOUNT"
 	} else if sourceAccoutType == InternalAccount {
-		source.InternalName = address
+		source.Type = "INTERNAL_ACCOUNT"
 	} else {
-		source.Address = address
+		source.Type = "BASE_ACCOUNT"
 	}
 
 	if sourceAccoutType == MainCollector {
-		source.MainCollector = true
+		source.Type = "MAIN"
 	}
 
 	// source := types.Account{IsMainCollector: true, IsModuleAccount: false, IsInternalAccount: false}
@@ -148,11 +147,13 @@ func prepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 	}
 
 	var destAccount = types.Account{
-		ModuleName: destName,
+		Id:   destName,
+		Type: "MODULE_ACCOUNT",
 	}
 
 	var shareDevelopmentFundAccount = types.Account{
-		Address: "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag",
+		Id:   "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag",
+		Type: "BASE_ACCOUNT",
 	}
 
 	shareDevelopmentFund := types.Share{

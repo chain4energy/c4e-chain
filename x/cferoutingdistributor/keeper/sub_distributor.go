@@ -49,14 +49,8 @@ func (k Keeper) SetState(ctx sdk.Context, state types.State) {
 }
 
 func GetStateKey(state types.State) string {
-	if &state.Account.Address != nil && state.Account.Address != "" {
-		return state.Account.Address
-
-	} else if &state.Account.ModuleName != nil && state.Account.ModuleName != "" {
-		return state.Account.ModuleName
-
-	} else if &state.Account.InternalName != nil && state.Account.InternalName != "" {
-		return state.Account.InternalName
+	if &state.Account.Id != nil && state.Account.Id != "" {
+		return state.Account.Id
 
 	} else {
 		//its state burn

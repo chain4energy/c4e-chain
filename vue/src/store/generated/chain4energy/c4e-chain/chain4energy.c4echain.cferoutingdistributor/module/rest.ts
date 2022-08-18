@@ -10,10 +10,8 @@
  */
 
 export interface CferoutingdistributorAccount {
-  address?: string;
-  module_name?: string;
-  internal_name?: string;
-  main_collector?: boolean;
+  id?: string;
+  type?: string;
 }
 
 export interface CferoutingdistributorBurnShare {

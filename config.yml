@@ -124,23 +124,23 @@ genesis:
         sub_distributors:
         - name: tx_fee_distributor
           sources:
-            - module_name: fee_collector
-              main_collector: false
+            - id: fee_collector
+              type: MODULE_ACCOUNT
           destination:
             account:
-              module_name: "c4e_distributor"
-              main_collector: true
+              id: "c4e_distributor"
+              type: MAIN
             burn_share:
               percent: "33.3"
 
         - name: inflation_and_fee_distributor
           sources:
-            - module_name: c4e_distributor
-              main_collector: true
+            - id: c4e_distributor
+              type: MAIN
           destination:
             account:
-              module_name: "validators_rewards_collector"
-              main_collector: false
+              id: "validators_rewards_collector"
+              type: MODULE_ACCOUNT
             burn_share:
               percent: "0"
             share:
@@ -148,34 +148,35 @@ genesis:
                 percent: "10.345"
                 account:
                   #insert proper address
-                  address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
-                  main_collector: false
+                  id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+                  type: BASE_ACCOUNT
               - name: usage_incentives
                 percent: "30"
                 account:
-                  internal_name: "usage_incentives_collector"
-                  main_collector: false
+                  id: "usage_incentives_collector"
+                  type: INTERNAL_ACCOUNT
         - name: usage_incentives_distributor
           sources:
-            - internal_name: usage_incentives_collector
-              main_collector: false
+            - id: usage_incentives_collector
+              type: INTERNAL_ACCOUNT
           destination:
             burn_share:
               percent: "0"
             account:
               #insert proper address
-              address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+              id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+              type: BASE_ACCOUNT
             share:
               - name: green_energy_booster
                 percent: "34"
                 account:
-                  module_name: "green_energy_booster_collector"
-                  main_collector: false
+                  id: "green_energy_booster_collector"
+                  type: MODULE_ACCOUNT
               - name: governance_booster
                 percent: "30"
                 account:
-                  module_name: "governance_booster_collector"
-                  main_collector: false
+                  id: "governance_booster_collector"
+                  type: MODULE_ACCOUNT
 
 
     cfevesting:

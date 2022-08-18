@@ -180,28 +180,20 @@ paths:
                           items:
                             type: object
                             properties:
-                              address:
+                              id:
                                 type: string
-                              module_name:
+                              type:
                                 type: string
-                              internal_name:
-                                type: string
-                              main_collector:
-                                type: boolean
                         destination:
                           type: object
                           properties:
                             account:
                               type: object
                               properties:
-                                address:
+                                id:
                                   type: string
-                                module_name:
+                                type:
                                   type: string
-                                internal_name:
-                                  type: string
-                                main_collector:
-                                  type: boolean
                             share:
                               type: array
                               items:
@@ -215,14 +207,10 @@ paths:
                                   account:
                                     type: object
                                     properties:
-                                      address:
+                                      id:
                                         type: string
-                                      module_name:
+                                      type:
                                         type: string
-                                      internal_name:
-                                        type: string
-                                      main_collector:
-                                        type: boolean
                             burn_share:
                               type: object
                               properties:
@@ -270,14 +258,10 @@ paths:
                     account:
                       type: object
                       properties:
-                        address:
+                        id:
                           type: string
-                        module_name:
+                        type:
                           type: string
-                        internal_name:
-                          type: string
-                        main_collector:
-                          type: boolean
                     burn:
                       type: boolean
                     coins_states:
@@ -32110,14 +32094,10 @@ definitions:
   chain4energy.c4echain.cferoutingdistributor.Account:
     type: object
     properties:
-      address:
+      id:
         type: string
-      module_name:
+      type:
         type: string
-      internal_name:
-        type: string
-      main_collector:
-        type: boolean
   chain4energy.c4echain.cferoutingdistributor.BurnShare:
     type: object
     properties:
@@ -32130,14 +32110,10 @@ definitions:
       account:
         type: object
         properties:
-          address:
+          id:
             type: string
-          module_name:
+          type:
             type: string
-          internal_name:
-            type: string
-          main_collector:
-            type: boolean
       share:
         type: array
         items:
@@ -32151,14 +32127,10 @@ definitions:
             account:
               type: object
               properties:
-                address:
+                id:
                   type: string
-                module_name:
+                type:
                   type: string
-                internal_name:
-                  type: string
-                main_collector:
-                  type: boolean
       burn_share:
         type: object
         properties:
@@ -32180,28 +32152,20 @@ definitions:
               items:
                 type: object
                 properties:
-                  address:
+                  id:
                     type: string
-                  module_name:
+                  type:
                     type: string
-                  internal_name:
-                    type: string
-                  main_collector:
-                    type: boolean
             destination:
               type: object
               properties:
                 account:
                   type: object
                   properties:
-                    address:
+                    id:
                       type: string
-                    module_name:
+                    type:
                       type: string
-                    internal_name:
-                      type: string
-                    main_collector:
-                      type: boolean
                 share:
                   type: array
                   items:
@@ -32215,14 +32179,10 @@ definitions:
                       account:
                         type: object
                         properties:
-                          address:
+                          id:
                             type: string
-                          module_name:
+                          type:
                             type: string
-                          internal_name:
-                            type: string
-                          main_collector:
-                            type: boolean
                 burn_share:
                   type: object
                   properties:
@@ -32249,28 +32209,20 @@ definitions:
                   items:
                     type: object
                     properties:
-                      address:
+                      id:
                         type: string
-                      module_name:
+                      type:
                         type: string
-                      internal_name:
-                        type: string
-                      main_collector:
-                        type: boolean
                 destination:
                   type: object
                   properties:
                     account:
                       type: object
                       properties:
-                        address:
+                        id:
                           type: string
-                        module_name:
+                        type:
                           type: string
-                        internal_name:
-                          type: string
-                        main_collector:
-                          type: boolean
                     share:
                       type: array
                       items:
@@ -32284,14 +32236,10 @@ definitions:
                           account:
                             type: object
                             properties:
-                              address:
+                              id:
                                 type: string
-                              module_name:
+                              type:
                                 type: string
-                              internal_name:
-                                type: string
-                              main_collector:
-                                type: boolean
                     burn_share:
                       type: object
                       properties:
@@ -32310,14 +32258,10 @@ definitions:
             account:
               type: object
               properties:
-                address:
+                id:
                   type: string
-                module_name:
+                type:
                   type: string
-                internal_name:
-                  type: string
-                main_collector:
-                  type: boolean
             burn:
               type: boolean
             coins_states:
@@ -32363,28 +32307,20 @@ definitions:
       account:
         type: object
         properties:
-          address:
+          id:
             type: string
-          module_name:
+          type:
             type: string
-          internal_name:
-            type: string
-          main_collector:
-            type: boolean
   chain4energy.c4echain.cferoutingdistributor.State:
     type: object
     properties:
       account:
         type: object
         properties:
-          address:
+          id:
             type: string
-          module_name:
+          type:
             type: string
-          internal_name:
-            type: string
-          main_collector:
-            type: boolean
       burn:
         type: boolean
       coins_states:
@@ -32411,28 +32347,20 @@ definitions:
         items:
           type: object
           properties:
-            address:
+            id:
               type: string
-            module_name:
+            type:
               type: string
-            internal_name:
-              type: string
-            main_collector:
-              type: boolean
       destination:
         type: object
         properties:
           account:
             type: object
             properties:
-              address:
+              id:
                 type: string
-              module_name:
+              type:
                 type: string
-              internal_name:
-                type: string
-              main_collector:
-                type: boolean
           share:
             type: array
             items:
@@ -32446,14 +32374,10 @@ definitions:
                 account:
                   type: object
                   properties:
-                    address:
+                    id:
                       type: string
-                    module_name:
+                    type:
                       type: string
-                    internal_name:
-                      type: string
-                    main_collector:
-                      type: boolean
           burn_share:
             type: object
             properties:

@@ -11,17 +11,17 @@ func (s SubDistributor) Validate() error {
 		return fmt.Errorf("share sum is greater or equal 100")
 	}
 
-	for _, source := range s.Sources {
-		if !CheckAccountType(*source) {
-			return fmt.Errorf("source account is undefined: " + source.String())
-		}
-	}
-
-	for _, share := range s.Destination.Share {
-		if !CheckAccountType(share.Account) {
-			return fmt.Errorf("destination account is undefined: " + share.Account.String())
-		}
-	}
+	//for _, source := range s.Sources {
+	//	if !CheckAccountType(*source) {
+	//		return fmt.Errorf("source account is undefined: " + source.String())
+	//	}
+	//}
+	//
+	//for _, share := range s.Destination.Share {
+	//	if !CheckAccountType(share.Account) {
+	//		return fmt.Errorf("destination account is undefined: " + share.Account.String())
+	//	}
+	//}
 
 	return nil
 }
@@ -42,39 +42,39 @@ func CheckPercentShareSumIsLowerThen100(destination Destination) bool {
 	}
 }
 
-func CheckAccountType(account Account) bool {
-	accountExist := false
-	if &account.Address != nil && account.Address != "" {
-		accountExist = true
-		if &account.ModuleName != nil && account.ModuleName != "" {
-			return false
-		}
-
-		if &account.InternalName != nil && account.InternalName != "" {
-			return false
-		}
-	}
-
-	if &account.ModuleName != nil && account.ModuleName != "" {
-		accountExist = true
-		if &account.Address != nil && account.Address != "" {
-			return false
-		}
-
-		if &account.InternalName != nil && account.InternalName != "" {
-			return false
-		}
-	}
-
-	if &account.InternalName != nil && account.InternalName != "" {
-		accountExist = true
-		if &account.ModuleName != nil && account.ModuleName != "" {
-			return false
-		}
-
-		if &account.Address != nil && account.Address != "" {
-			return false
-		}
-	}
-	return accountExist
-}
+//func CheckAccountType(account Account) bool {
+//	accountExist := false
+//	if &account.Address != nil && account.Address != "" {
+//		accountExist = true
+//		if &account.ModuleName != nil && account.ModuleName != "" {
+//			return false
+//		}
+//
+//		if &account.InternalName != nil && account.InternalName != "" {
+//			return false
+//		}
+//	}
+//
+//	if &account.ModuleName != nil && account.ModuleName != "" {
+//		accountExist = true
+//		if &account.Address != nil && account.Address != "" {
+//			return false
+//		}
+//
+//		if &account.InternalName != nil && account.InternalName != "" {
+//			return false
+//		}
+//	}
+//
+//	if &account.InternalName != nil && account.InternalName != "" {
+//		accountExist = true
+//		if &account.ModuleName != nil && account.ModuleName != "" {
+//			return false
+//		}
+//
+//		if &account.Address != nil && account.Address != "" {
+//			return false
+//		}
+//	}
+//	return accountExist
+//}
