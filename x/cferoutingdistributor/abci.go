@@ -128,20 +128,36 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	for _, state := range states {
 		if INTERNAL_ACCOUNT != state.Account.Type {
 			toSend, change := state.CoinsStates.TruncateDecimal()
-			state.CoinsStates = change
 
 			if state.Burn {
-				k.Logger(ctx).Debug("Burn: " + toSend.String())
+				if error := k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.CollectorName); error != nil {
+					ctx.Logger().Error("Can not burn coin" + error.Error())
 
-				k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.CollectorName)
+				} else {
+					k.Logger(ctx).Debug("Successful burn coin: " + toSend.String())
+					state.CoinsStates = change
+				}
+
 			} else if MODULE_ACCOUNT == state.Account.Type {
-				k.Logger(ctx).Debug("Send to : " + state.Account.Id + " - " + toSend.String())
+				if error := k.SendCoinsFromModuleToModule(ctx, toSend, types.CollectorName, state.Account.Id); error != nil {
+					ctx.Logger().Error("Can not send coin" + error.Error())
 
-				k.SendCoinsFromModuleToModule(ctx, toSend, types.CollectorName, state.Account.Id)
+				} else {
+					k.Logger(ctx).Debug("Successful send to : " + state.Account.Id + " - " + toSend.String())
+					state.CoinsStates = change
+				}
+
 			} else {
-				k.Logger(ctx).Debug("Send to : " + state.Account.Id + " - " + toSend.String())
-				dstAccount, _ := sdk.AccAddressFromBech32(state.Account.Id)
-				k.SendCoinsFromModuleAccount(ctx, toSend, types.CollectorName, dstAccount)
+				if dstAccount, error := sdk.AccAddressFromBech32(state.Account.Id); error != nil {
+					ctx.Logger().Error("Can not get addr from bech32" + error.Error())
+
+				} else if error := k.SendCoinsFromModuleAccount(ctx, toSend, types.CollectorName, dstAccount); error != nil {
+					ctx.Logger().Error("Can not send coin" + error.Error())
+
+				} else {
+					k.Logger(ctx).Debug("Successful send to : " + state.Account.Id + " - " + toSend.String())
+					state.CoinsStates = change
+				}
 			}
 		}
 
