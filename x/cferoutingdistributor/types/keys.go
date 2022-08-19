@@ -23,6 +23,10 @@ const (
 
 	ValidatorsRewardsCollector = "validators_rewards_collector"
 
+	GreenEnergyBoosterCollector = "green_energy_booster_collector"
+
+	GovernanceBoosterCollector = "governance_booster_collector"
+
 	BurnStateKey = "burn_state_key"
 )
 
