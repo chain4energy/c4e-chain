@@ -9,14 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-const (
-	INTERNAL_ACCOUNT string = "INTERNAL_ACCOUNT"
-	MODULE_ACCOUNT          = "MODULE_ACCOUNT"
-	MAIN                    = "MAIN"
-	BASE_ACCOUNT            = "BASE_ACCOUNT"
-	UNKNOWN_ACCOUNT         = "Unknown"
-)
-
 func calculatePercentage(sharePercent sdk.Dec, coinsToDistributeDec sdk.DecCoins) sdk.DecCoins {
 	if !coinsToDistributeDec.IsAllPositive() {
 		return sdk.NewDecCoins()
@@ -72,7 +64,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			k.Logger(ctx).Debug("Sources: " + source.String())
 
 			var coinsToDistribute = sdk.NewDecCoins()
-			if source.Type == MAIN {
+			if source.Type == types.MAIN {
 				coinsToDistribute = sdk.NewDecCoinsFromCoins(k.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)...)
 				k.Logger(ctx).Debug("IsMainCollector: " + coinsToDistribute.String())
 				if len(coinsToDistribute) > 0 {
@@ -81,7 +73,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				}
 			} else {
 
-				if MODULE_ACCOUNT == source.Type {
+				if types.MODULE_ACCOUNT == source.Type {
 					k.Logger(ctx).Debug("Module account: " + source.Id)
 					coinsToSend := k.GetAccountCoinsForModuleAccount(ctx, source.Id)
 					coinsToDistribute = sdk.NewDecCoinsFromCoins(coinsToSend...)
@@ -90,7 +82,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 					if len(coinsToDistribute) > 0 {
 						k.SendCoinsFromModuleToModule(ctx, coinsToSend, source.Id, types.CollectorName)
 					}
-				} else if INTERNAL_ACCOUNT != source.Type {
+				} else if types.INTERNAL_ACCOUNT != source.Type {
 					k.Logger(ctx).Debug("Internal account: " + source.Id)
 
 					srcAccount, _ := sdk.AccAddressFromBech32(source.Id)
@@ -126,33 +118,33 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	}
 	for _, state := range states {
-		if INTERNAL_ACCOUNT != state.Account.Type {
+		if types.INTERNAL_ACCOUNT != state.Account.Type {
 			toSend, change := state.CoinsStates.TruncateDecimal()
 
 			if state.Burn {
 				if error := k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.CollectorName); error != nil {
-					ctx.Logger().Error("Can not burn coin" + error.Error())
+					ctx.Logger().Error("Can not burn coin: " + error.Error())
 
 				} else {
 					k.Logger(ctx).Debug("Successful burn coin: " + toSend.String())
 					state.CoinsStates = change
 				}
 
-			} else if MODULE_ACCOUNT == state.Account.Type {
+			} else if types.MODULE_ACCOUNT == state.Account.Type {
 				if error := k.SendCoinsFromModuleToModule(ctx, toSend, types.CollectorName, state.Account.Id); error != nil {
-					ctx.Logger().Error("Can not send coin" + error.Error())
+					ctx.Logger().Error("Can not send coin: " + error.Error())
 
 				} else {
-					k.Logger(ctx).Debug("Successful send to : " + state.Account.Id + " - " + toSend.String())
+					k.Logger(ctx).Debug("Successful send to: " + state.Account.Id + " - " + toSend.String())
 					state.CoinsStates = change
 				}
 
 			} else {
 				if dstAccount, error := sdk.AccAddressFromBech32(state.Account.Id); error != nil {
-					ctx.Logger().Error("Can not get addr from bech32" + error.Error())
+					ctx.Logger().Error("Can not get addr from bech32: " + error.Error())
 
 				} else if error := k.SendCoinsFromModuleAccount(ctx, toSend, types.CollectorName, dstAccount); error != nil {
-					ctx.Logger().Error("Can not send coin" + error.Error())
+					ctx.Logger().Error("Can not send coin: " + error.Error())
 
 				} else {
 					k.Logger(ctx).Debug("Successful send to : " + state.Account.Id + " - " + toSend.String())
@@ -191,7 +183,7 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 	localRemains := states
 	for _, share := range subDistributor.Destination.Share {
 		percentShareSum = percentShareSum.Add(share.Percent)
-		if share.Account.Type == MAIN {
+		if share.Account.Type == types.MAIN {
 			continue
 		}
 		calculatedShare := calculatePercentage(share.Percent, coinsToDistributeDec)
@@ -226,7 +218,7 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 
 	accountDefault := subDistributor.Destination.GetAccount()
 
-	if accountDefault.Type != MAIN {
+	if accountDefault.Type != types.MAIN {
 		findFunc := func() int {
 
 			return findAccountState(localRemains, &accountDefault)
