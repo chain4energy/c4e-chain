@@ -141,7 +141,7 @@ func prepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 
 	var destName string
 	if toValidators {
-		destName = "validators_rewards_collector"
+		destName = types.ValidatorsRewardsCollector
 	} else {
 		destName = "no_validators"
 	}
@@ -222,12 +222,12 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 
 	if destinationType == MainCollector {
 		mainCollectorCoins :=
-			app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)
+			app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 		require.EqualValues(t, 1, len(app.CferoutingdistributorKeeper.GetALlStates(ctx)))
 		require.EqualValues(t, sdk.NewInt(499), mainCollectorCoins.AmountOf(denom))
 	} else if destinationType == ModuleAccount {
 		mainCollectorCoins :=
-			app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)
+			app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 		c4eModulAccountCoins :=
 			app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "c4e_distributor")
 		require.EqualValues(t, 2, len(app.CferoutingdistributorKeeper.GetALlStates(ctx)))
@@ -239,7 +239,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 
 	} else if destinationType == InternalAccount {
 		mainCollectorCoins :=
-			app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)
+			app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 		require.EqualValues(t, 2, len(app.CferoutingdistributorKeeper.GetALlStates(ctx)))
 		require.EqualValues(t, sdk.NewInt(499), mainCollectorCoins.AmountOf(denom))
 		c4eDistrState, _ := app.CferoutingdistributorKeeper.GetState(ctx, "c4e_distributor")
@@ -248,7 +248,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	} else {
 		address, _ := sdk.AccAddressFromBech32("cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck")
 		mainCollectorCoins :=
-			app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)
+			app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 
 		accountCoins :=
 			app.CferoutingdistributorKeeper.GetAccountCoins(ctx, address)
@@ -306,7 +306,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	testapp.AddMaccPerms("no_validators", nil)
 	denom := "uc4e"
 	testapp.AddMaccPerms(collector, perms)
-	testapp.AddMaccPerms(types.CollectorName, perms)
+	testapp.AddMaccPerms(types.DistributorMainAccount, perms)
 	app := testapp.Setup(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
@@ -316,7 +316,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
 
 	cointToMintFromInflation := sdk.NewCoin(denom, sdk.NewInt(5044))
-	app.BankKeeper.MintCoins(ctx, types.CollectorName, sdk.NewCoins(cointToMintFromInflation))
+	app.BankKeeper.MintCoins(ctx, types.DistributorMainAccount, sdk.NewCoins(cointToMintFromInflation))
 	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(1017+5044)), app.BankKeeper.GetSupply(ctx, denom))
 
 	var subDistributors []types.SubDistributor
@@ -399,10 +399,10 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	if toValidators {
 		// validators_rewards_collector coins sent to vaalidator distribition so amount is 0,
 
-		validatorRewardCollectorAccountCoin := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "validators_rewards_collector")
+		validatorRewardCollectorAccountCoin := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.ValidatorsRewardsCollector)
 		require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(denom).ToDec())
 		// still 0.9759615 on its distributor state remains
-		remains, _ = app.CferoutingdistributorKeeper.GetState(ctx, "validators_rewards_collector")
+		remains, _ = app.CferoutingdistributorKeeper.GetState(ctx, types.ValidatorsRewardsCollector)
 		coinRemainsValidatorsReward := remains.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("0.9759615"), coinRemainsValidatorsReward.AmountOf("uc4e"))
 		// and 4968 to validators rewards
@@ -422,7 +422,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 
 	// 5543 - 573 - 4968 = 2 (its ramains 0,67 + 0.3540385 + 0.9759615 = 2) on main collector
 	coinOnDistributorAccount :=
-		app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)
+		app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 	require.EqualValues(t, sdk.MustNewDecFromStr("2"), coinOnDistributorAccount.AmountOf(denom).ToDec())
 
 }
@@ -433,7 +433,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	denom := "uc4e"
 	// inflationCollector := "c4e_distributor"
 	testapp.AddMaccPerms(collector, perms)
-	testapp.AddMaccPerms(types.CollectorName, perms)
+	testapp.AddMaccPerms(types.DistributorMainAccount, perms)
 	app := testapp.Setup(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
@@ -449,7 +449,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 		app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
 
 		cointToMintFromInflation := sdk.NewCoin(denom, sdk.NewInt(5044))
-		app.BankKeeper.MintCoins(ctx, types.CollectorName, sdk.NewCoins(cointToMintFromInflation))
+		app.BankKeeper.MintCoins(ctx, types.DistributorMainAccount, sdk.NewCoins(cointToMintFromInflation))
 		ctx = ctx.WithBlockHeight(int64(i))
 		app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 		app.EndBlocker(ctx, abci.RequestEndBlock{})
@@ -499,10 +499,10 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 
 	// validators_rewards_collector coins sent to vaalidator distribition so amount is 0,
 
-	validatorRewardCollectorAccountCoin := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "validators_rewards_collector")
+	validatorRewardCollectorAccountCoin := app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.ValidatorsRewardsCollector)
 	require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(denom).ToDec())
 	// still 0.8845 on its distributor state remains
-	remains, _ = app.CferoutingdistributorKeeper.GetState(ctx, "validators_rewards_collector")
+	remains, _ = app.CferoutingdistributorKeeper.GetState(ctx, types.ValidatorsRewardsCollector)
 	coinRemainsValidatorsReward := remains.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.8604615"), coinRemainsValidatorsReward.AmountOf("uc4e"))
 	// and 14906927 to validators rewards
@@ -511,7 +511,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 
 	// 16632533 - 1720635 - 14911896 = 1 (its ramains 0.67 + 0.4695385 + 0.8604615 = 2) on main collector
 	coinOnDistributorAccount :=
-		app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)
+		app.CferoutingdistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 	require.EqualValues(t, sdk.MustNewDecFromStr("2"), coinOnDistributorAccount.AmountOf(denom).ToDec())
 
 }

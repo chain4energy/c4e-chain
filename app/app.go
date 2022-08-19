@@ -185,13 +185,13 @@ var (
 		cfevestingmoduletypes.ModuleName: nil,
 		cfemintermoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
-		cferoutingdistributormoduletypes.CollectorName: {authtypes.Burner},
-		"validators_rewards_collector":                 {authtypes.Burner},
-		"payment_collector":                            {authtypes.Minter, authtypes.Burner},
-		"liquididty_rewards_collector":                 {authtypes.Burner},
-		"governance_locking_rewards_collector":         {authtypes.Burner},
-		"users_incentive_collector":                    {authtypes.Burner},
-		"community_pool_rewards_collector":             {authtypes.Burner},
+		cferoutingdistributormoduletypes.DistributorMainAccount:     {authtypes.Burner},
+		cferoutingdistributormoduletypes.ValidatorsRewardsCollector: nil,
+		"payment_collector":                    {authtypes.Minter, authtypes.Burner},
+		"liquididty_rewards_collector":         {authtypes.Burner},
+		"governance_locking_rewards_collector": {authtypes.Burner},
+		"users_incentive_collector":            {authtypes.Burner},
+		"community_pool_rewards_collector":     {authtypes.Burner},
 		// "remains":                                {authtypes.Minter, authtypes.Burner},
 		"usage_incentives_collector":     {authtypes.Minter, authtypes.Burner},
 		"green_energy_booster_collector": {authtypes.Minter, authtypes.Burner},
@@ -344,13 +344,10 @@ func New(
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName),
 	)
-	// app.MintKeeper = mintkeeper.NewKeeper( // TODO clean this
-	// 	appCodec, keys[minttypes.StoreKey], app.GetSubspace(minttypes.ModuleName), &stakingKeeper,
-	// 	app.AccountKeeper, app.BankKeeper, authtypes.FeeCollectorName,
-	// )
+
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec, keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, "validators_rewards_collector", app.ModuleAccountAddrs(),
+		&stakingKeeper, cferoutingdistributormoduletypes.ValidatorsRewardsCollector, app.ModuleAccountAddrs(),
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec, keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
@@ -450,7 +447,7 @@ func New(
 		app.GetSubspace(cfemintermoduletypes.ModuleName),
 
 		app.BankKeeper,
-		cferoutingdistributormoduletypes.CollectorName,
+		cferoutingdistributormoduletypes.DistributorMainAccount,
 	)
 	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper)
 	app.CferoutingdistributorKeeper = *cferoutingdistributormodulekeeper.NewKeeper(

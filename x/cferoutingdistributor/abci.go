@@ -65,7 +65,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 			var coinsToDistribute = sdk.NewDecCoins()
 			if source.Type == types.MAIN {
-				coinsToDistribute = sdk.NewDecCoinsFromCoins(k.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)...)
+				coinsToDistribute = sdk.NewDecCoinsFromCoins(k.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)...)
 				k.Logger(ctx).Debug("IsMainCollector: " + coinsToDistribute.String())
 				if len(coinsToDistribute) > 0 {
 					sum := getRamainsSum(&states)
@@ -80,7 +80,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 					k.Logger(ctx).Debug("IsModuleAccount: " + source.Id + " - " + coinsToDistribute.String())
 
 					if len(coinsToDistribute) > 0 {
-						k.SendCoinsFromModuleToModule(ctx, coinsToSend, source.Id, types.CollectorName)
+						k.SendCoinsFromModuleToModule(ctx, coinsToSend, source.Id, types.DistributorMainAccount)
 					}
 				} else if types.INTERNAL_ACCOUNT != source.Type {
 					k.Logger(ctx).Debug("Internal account: " + source.Id)
@@ -91,7 +91,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 					k.Logger(ctx).Debug("BaseAccount: " + source.Id + " - " + coinsToDistribute.String())
 
 					if len(coinsToDistribute) > 0 {
-						k.SendCoinsToModuleAccount(ctx, coinsToSend, srcAccount, types.CollectorName)
+						k.SendCoinsToModuleAccount(ctx, coinsToSend, srcAccount, types.DistributorMainAccount)
 					}
 				}
 
@@ -122,7 +122,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			toSend, change := state.CoinsStates.TruncateDecimal()
 
 			if state.Burn {
-				if error := k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.CollectorName); error != nil {
+				if error := k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.DistributorMainAccount); error != nil {
 					ctx.Logger().Error("Can not burn coin: " + error.Error())
 
 				} else {
@@ -131,7 +131,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				}
 
 			} else if types.MODULE_ACCOUNT == state.Account.Type {
-				if error := k.SendCoinsFromModuleToModule(ctx, toSend, types.CollectorName, state.Account.Id); error != nil {
+				if error := k.SendCoinsFromModuleToModule(ctx, toSend, types.DistributorMainAccount, state.Account.Id); error != nil {
 					ctx.Logger().Error("Can not send coin: " + error.Error())
 
 				} else {
@@ -143,7 +143,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				if dstAccount, error := sdk.AccAddressFromBech32(state.Account.Id); error != nil {
 					ctx.Logger().Error("Can not get addr from bech32: " + error.Error())
 
-				} else if error := k.SendCoinsFromModuleAccount(ctx, toSend, types.CollectorName, dstAccount); error != nil {
+				} else if error := k.SendCoinsFromModuleAccount(ctx, toSend, types.DistributorMainAccount, dstAccount); error != nil {
 					ctx.Logger().Error("Can not send coin: " + error.Error())
 
 				} else {

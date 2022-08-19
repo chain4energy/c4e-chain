@@ -16,6 +16,6 @@ func (k Keeper) States(goCtx context.Context, req *types.QueryStatesRequest) (*t
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	states := k.GetALlStates(ctx)
-	coinsOnDistriubtorAccount := k.GetAccountCoinsForModuleAccount(ctx, types.CollectorName)
+	coinsOnDistriubtorAccount := k.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 	return &types.QueryStatesResponse{States: states, CoinsOnDistributorAccount: coinsOnDistriubtorAccount}, nil
 }

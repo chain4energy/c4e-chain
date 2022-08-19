@@ -19,7 +19,9 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_cferoutingdistributor"
 
-	CollectorName = ModuleName
+	DistributorMainAccount = "distributor_main_account"
+
+	ValidatorsRewardsCollector = "validators_rewards_collector"
 
 	BurnStateKey = "burn_state_key"
 )
