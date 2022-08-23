@@ -20,7 +20,7 @@ func createNEnergyToken(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.E
 }
 
 func TestEnergyTokenGet(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNEnergyToken(keeper, ctx, 10)
 	for _, item := range items {
 		got, found := keeper.GetEnergyToken(ctx, item.Id)
@@ -33,7 +33,7 @@ func TestEnergyTokenGet(t *testing.T) {
 }
 
 func TestEnergyTokenRemove(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNEnergyToken(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveEnergyToken(ctx, item.Id)
@@ -43,7 +43,7 @@ func TestEnergyTokenRemove(t *testing.T) {
 }
 
 func TestEnergyTokenGetAll(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNEnergyToken(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
@@ -52,7 +52,7 @@ func TestEnergyTokenGetAll(t *testing.T) {
 }
 
 func TestEnergyTokenCount(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNEnergyToken(keeper, ctx, 10)
 	count := uint64(len(items))
 	require.Equal(t, count, keeper.GetEnergyTokenCount(ctx))

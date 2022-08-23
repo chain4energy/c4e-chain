@@ -19,7 +19,7 @@ import (
 var _ = strconv.IntSize
 
 func TestTokenParamsQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNTokenParams(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -70,7 +70,7 @@ func TestTokenParamsQuerySingle(t *testing.T) {
 }
 
 func TestTokenParamsQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNTokenParams(keeper, ctx, 5)
 

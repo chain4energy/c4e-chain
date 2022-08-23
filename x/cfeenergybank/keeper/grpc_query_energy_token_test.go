@@ -16,7 +16,7 @@ import (
 )
 
 func TestEnergyTokenQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNEnergyToken(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -61,7 +61,7 @@ func TestEnergyTokenQuerySingle(t *testing.T) {
 }
 
 func TestEnergyTokenQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNEnergyToken(keeper, ctx, 5)
 

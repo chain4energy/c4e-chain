@@ -26,7 +26,7 @@ func createNTokenParams(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.T
 }
 
 func TestTokenParamsGet(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNTokenParams(keeper, ctx, 10)
 	for _, item := range items {
 		rst, found := keeper.GetTokenParams(ctx,
@@ -40,7 +40,7 @@ func TestTokenParamsGet(t *testing.T) {
 	}
 }
 func TestTokenParamsRemove(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNTokenParams(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveTokenParams(ctx,
@@ -54,7 +54,7 @@ func TestTokenParamsRemove(t *testing.T) {
 }
 
 func TestTokenParamsGetAll(t *testing.T) {
-	keeper, ctx := keepertest.EnergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNTokenParams(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
