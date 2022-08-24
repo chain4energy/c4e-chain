@@ -49,15 +49,26 @@ func (k msgServer) TransferTokensOptimally(goCtx context.Context, msg *types.Msg
 		}
 		i++
 	}
-	var tokenHistory = types.TokensHistory{
+	var tokenHistoryIssuer = types.TokensHistory{
 		IssuerAddress: msg.Creator,
 		UserAddress:   msg.Creator,
 		CreatedAt:     uint64(time.Now().Unix()),
 		Amount:        msg.Amount,
-		TokenName:     eneryTokens[i].Name,
+		TokenName:     eneryTokens[0].Name,
 		TargetAddress: msg.AddressTo,
+		OperationType: "transfer",
 	}
-	k.AppendTokensHistory(ctx, tokenHistory)
+	var tokenHistoryTarget = types.TokensHistory{
+		IssuerAddress: msg.Creator,
+		UserAddress:   msg.AddressTo,
+		CreatedAt:     uint64(time.Now().Unix()),
+		Amount:        msg.Amount,
+		TokenName:     eneryTokens[0].Name,
+		TargetAddress: msg.AddressTo,
+		OperationType: "transfer",
+	}
+	k.AppendTokensHistory(ctx, tokenHistoryIssuer)
+	k.AppendTokensHistory(ctx, tokenHistoryTarget)
 
 	return &types.MsgTransferTokensOptimallyResponse{}, nil
 }

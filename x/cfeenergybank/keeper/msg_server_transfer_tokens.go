@@ -36,15 +36,26 @@ func (k msgServer) TransferTokens(goCtx context.Context, msg *types.MsgTransferT
 		eneryToken.UserAddress = msg.AddressTo
 		k.SetEnergyToken(ctx, eneryToken)
 	}
-	var tokenHistory = types.TokensHistory{
+	var tokenHistoryIssuer = types.TokensHistory{
 		IssuerAddress: msg.Creator,
 		UserAddress:   msg.Creator,
 		CreatedAt:     uint64(time.Now().Unix()),
 		Amount:        msg.Amount,
 		TokenName:     eneryToken.Name,
 		TargetAddress: msg.AddressTo,
+		OperationType: "transfer",
 	}
-	k.AppendTokensHistory(ctx, tokenHistory)
+	var tokenHistoryTarget = types.TokensHistory{
+		IssuerAddress: msg.Creator,
+		UserAddress:   msg.AddressTo,
+		CreatedAt:     uint64(time.Now().Unix()),
+		Amount:        msg.Amount,
+		TokenName:     eneryToken.Name,
+		TargetAddress: msg.AddressTo,
+		OperationType: "transfer",
+	}
+	k.AppendTokensHistory(ctx, tokenHistoryIssuer)
+	k.AppendTokensHistory(ctx, tokenHistoryTarget)
 	_ = ctx
 
 	return &types.MsgTransferTokensResponse{}, nil

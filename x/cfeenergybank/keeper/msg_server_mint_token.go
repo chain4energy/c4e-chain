@@ -37,6 +37,7 @@ func (k msgServer) MintToken(goCtx context.Context, msg *types.MsgMintToken) (*t
 		Amount:        energyToken.Amount,
 		TokenName:     tokenParams.Name,
 		TargetAddress: energyToken.UserAddress,
+		OperationType: "mint",
 	}
 	k.AppendTokensHistory(ctx, tokenHistory)
 

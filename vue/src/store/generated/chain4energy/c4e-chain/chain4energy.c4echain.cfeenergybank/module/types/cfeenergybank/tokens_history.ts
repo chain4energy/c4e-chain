@@ -12,6 +12,7 @@ export interface TokensHistory {
   targetAddress: string;
   amount: number;
   tokenName: string;
+  operationType: string;
 }
 
 const baseTokensHistory: object = {
@@ -22,6 +23,7 @@ const baseTokensHistory: object = {
   targetAddress: "",
   amount: 0,
   tokenName: "",
+  operationType: "",
 };
 
 export const TokensHistory = {
@@ -46,6 +48,9 @@ export const TokensHistory = {
     }
     if (message.tokenName !== "") {
       writer.uint32(58).string(message.tokenName);
+    }
+    if (message.operationType !== "") {
+      writer.uint32(66).string(message.operationType);
     }
     return writer;
   },
@@ -77,6 +82,9 @@ export const TokensHistory = {
           break;
         case 7:
           message.tokenName = reader.string();
+          break;
+        case 8:
+          message.operationType = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -123,6 +131,11 @@ export const TokensHistory = {
     } else {
       message.tokenName = "";
     }
+    if (object.operationType !== undefined && object.operationType !== null) {
+      message.operationType = String(object.operationType);
+    } else {
+      message.operationType = "";
+    }
     return message;
   },
 
@@ -138,6 +151,8 @@ export const TokensHistory = {
       (obj.targetAddress = message.targetAddress);
     message.amount !== undefined && (obj.amount = message.amount);
     message.tokenName !== undefined && (obj.tokenName = message.tokenName);
+    message.operationType !== undefined &&
+      (obj.operationType = message.operationType);
     return obj;
   },
 
@@ -177,6 +192,11 @@ export const TokensHistory = {
       message.tokenName = object.tokenName;
     } else {
       message.tokenName = "";
+    }
+    if (object.operationType !== undefined && object.operationType !== null) {
+      message.operationType = object.operationType;
+    } else {
+      message.operationType = "";
     }
     return message;
   },

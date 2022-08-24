@@ -58,6 +58,11 @@ service Query {
 		option (google.api.http).get = "/chain4energy/c4e-chain/cfeenergybank/tokens_history";
 	}
 
+// Queries a list of TokensHistoryUserAddress items.
+	rpc TokensHistoryUserAddress(QueryTokensHistoryUserAddressRequest) returns (QueryTokensHistoryUserAddressResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfeenergybank/tokens_history_user_address/{userBlockchainAddress}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -108,7 +113,6 @@ message QueryAllEnergyTokenResponse {
 
 message QueryGetTokenParamsRequest {
 	  string index = 1;
-
 }
 
 message QueryGetTokenParamsResponse {
@@ -139,6 +143,14 @@ message QueryAllTokensHistoryRequest {
 message QueryAllTokensHistoryResponse {
 	repeated TokensHistory TokensHistory = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryTokensHistoryUserAddressRequest {
+	string userBlockchainAddress = 1;
+}
+
+message QueryTokensHistoryUserAddressResponse {
+	repeated TokensHistory TokensHistory = 1 [(gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # 3

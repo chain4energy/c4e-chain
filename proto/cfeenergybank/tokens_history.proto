@@ -11,5 +11,5 @@ message TokensHistory {
   string targetAddress = 5; 
   uint64 amount = 6; 
   string tokenName = 7; 
-  
+  string operationType = 8;
 }

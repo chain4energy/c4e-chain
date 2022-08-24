@@ -91,6 +91,14 @@ export interface QueryAllTokensHistoryResponse {
   pagination: PageResponse | undefined;
 }
 
+export interface QueryTokensHistoryUserAddressRequest {
+  userBlockchainAddress: string;
+}
+
+export interface QueryTokensHistoryUserAddressResponse {
+  TokensHistory: TokensHistory[];
+}
+
 const baseQueryParamsRequest: object = {};
 
 export const QueryParamsRequest = {
@@ -1491,6 +1499,164 @@ export const QueryAllTokensHistoryResponse = {
   },
 };
 
+const baseQueryTokensHistoryUserAddressRequest: object = {
+  userBlockchainAddress: "",
+};
+
+export const QueryTokensHistoryUserAddressRequest = {
+  encode(
+    message: QueryTokensHistoryUserAddressRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.userBlockchainAddress !== "") {
+      writer.uint32(10).string(message.userBlockchainAddress);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryTokensHistoryUserAddressRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryTokensHistoryUserAddressRequest,
+    } as QueryTokensHistoryUserAddressRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.userBlockchainAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryTokensHistoryUserAddressRequest {
+    const message = {
+      ...baseQueryTokensHistoryUserAddressRequest,
+    } as QueryTokensHistoryUserAddressRequest;
+    if (
+      object.userBlockchainAddress !== undefined &&
+      object.userBlockchainAddress !== null
+    ) {
+      message.userBlockchainAddress = String(object.userBlockchainAddress);
+    } else {
+      message.userBlockchainAddress = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryTokensHistoryUserAddressRequest): unknown {
+    const obj: any = {};
+    message.userBlockchainAddress !== undefined &&
+      (obj.userBlockchainAddress = message.userBlockchainAddress);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryTokensHistoryUserAddressRequest>
+  ): QueryTokensHistoryUserAddressRequest {
+    const message = {
+      ...baseQueryTokensHistoryUserAddressRequest,
+    } as QueryTokensHistoryUserAddressRequest;
+    if (
+      object.userBlockchainAddress !== undefined &&
+      object.userBlockchainAddress !== null
+    ) {
+      message.userBlockchainAddress = object.userBlockchainAddress;
+    } else {
+      message.userBlockchainAddress = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryTokensHistoryUserAddressResponse: object = {};
+
+export const QueryTokensHistoryUserAddressResponse = {
+  encode(
+    message: QueryTokensHistoryUserAddressResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    for (const v of message.TokensHistory) {
+      TokensHistory.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryTokensHistoryUserAddressResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryTokensHistoryUserAddressResponse,
+    } as QueryTokensHistoryUserAddressResponse;
+    message.TokensHistory = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.TokensHistory.push(
+            TokensHistory.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryTokensHistoryUserAddressResponse {
+    const message = {
+      ...baseQueryTokensHistoryUserAddressResponse,
+    } as QueryTokensHistoryUserAddressResponse;
+    message.TokensHistory = [];
+    if (object.TokensHistory !== undefined && object.TokensHistory !== null) {
+      for (const e of object.TokensHistory) {
+        message.TokensHistory.push(TokensHistory.fromJSON(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: QueryTokensHistoryUserAddressResponse): unknown {
+    const obj: any = {};
+    if (message.TokensHistory) {
+      obj.TokensHistory = message.TokensHistory.map((e) =>
+        e ? TokensHistory.toJSON(e) : undefined
+      );
+    } else {
+      obj.TokensHistory = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryTokensHistoryUserAddressResponse>
+  ): QueryTokensHistoryUserAddressResponse {
+    const message = {
+      ...baseQueryTokensHistoryUserAddressResponse,
+    } as QueryTokensHistoryUserAddressResponse;
+    message.TokensHistory = [];
+    if (object.TokensHistory !== undefined && object.TokensHistory !== null) {
+      for (const e of object.TokensHistory) {
+        message.TokensHistory.push(TokensHistory.fromPartial(e));
+      }
+    }
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -1527,6 +1693,10 @@ export interface Query {
   TokensHistoryAll(
     request: QueryAllTokensHistoryRequest
   ): Promise<QueryAllTokensHistoryResponse>;
+  /** Queries a list of TokensHistoryUserAddress items. */
+  TokensHistoryUserAddress(
+    request: QueryTokensHistoryUserAddressRequest
+  ): Promise<QueryTokensHistoryUserAddressResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1653,6 +1823,20 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryAllTokensHistoryResponse.decode(new Reader(data))
+    );
+  }
+
+  TokensHistoryUserAddress(
+    request: QueryTokensHistoryUserAddressRequest
+  ): Promise<QueryTokensHistoryUserAddressResponse> {
+    const data = QueryTokensHistoryUserAddressRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeenergybank.Query",
+      "TokensHistoryUserAddress",
+      data
+    );
+    return promise.then((data) =>
+      QueryTokensHistoryUserAddressResponse.decode(new Reader(data))
     );
   }
 }

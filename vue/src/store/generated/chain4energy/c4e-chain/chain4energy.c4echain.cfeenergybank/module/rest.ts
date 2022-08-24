@@ -120,6 +120,10 @@ export interface CfeenergybankQueryParamsResponse {
   params?: CfeenergybankParams;
 }
 
+export interface CfeenergybankQueryTokensHistoryUserAddressResponse {
+  TokensHistory?: CfeenergybankTokensHistory[];
+}
+
 export interface CfeenergybankTokenParams {
   index?: string;
   name?: string;
@@ -147,6 +151,7 @@ export interface CfeenergybankTokensHistory {
   /** @format uint64 */
   amount?: string;
   tokenName?: string;
+  operationType?: string;
 }
 
 export interface ProtobufAny {
@@ -197,6 +202,13 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
+
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse?: boolean;
 }
 
 /**
@@ -442,6 +454,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -484,6 +497,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -525,6 +539,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -566,6 +581,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -588,6 +604,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryTokensHistory = (id: string, params: RequestParams = {}) =>
     this.request<CfeenergybankQueryGetTokensHistoryResponse, RpcStatus>({
       path: `/chain4energy/c4e-chain/cfeenergybank/tokens_history/${id}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryTokensHistoryUserAddress
+   * @summary Queries a list of TokensHistoryUserAddress items.
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/tokens_history_user_address/{userBlockchainAddress}
+   */
+  queryTokensHistoryUserAddress = (userBlockchainAddress: string, params: RequestParams = {}) =>
+    this.request<CfeenergybankQueryTokensHistoryUserAddressResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfeenergybank/tokens_history_user_address/${userBlockchainAddress}`,
       method: "GET",
       format: "json",
       ...params,
