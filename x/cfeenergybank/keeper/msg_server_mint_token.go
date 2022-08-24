@@ -28,8 +28,17 @@ func (k msgServer) MintToken(goCtx context.Context, msg *types.MsgMintToken) (*t
 		UserAddress: msg.UserAddress,
 		CreatedAt:   uint64(time.Now().Unix()),
 	}
-
 	k.AppendEnergyToken(ctx, energyToken)
+
+	var tokenHistory = types.TokensHistory{
+		IssuerAddress: msg.Creator,
+		UserAddress:   energyToken.UserAddress,
+		CreatedAt:     energyToken.CreatedAt,
+		Amount:        energyToken.Amount,
+		TokenName:     tokenParams.Name,
+		TargetAddress: energyToken.UserAddress,
+	}
+	k.AppendTokensHistory(ctx, tokenHistory)
 
 	return &types.MsgMintTokenResponse{}, nil
 }

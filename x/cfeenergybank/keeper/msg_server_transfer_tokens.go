@@ -5,6 +5,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeenergybank/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 )
 
 func (k msgServer) TransferTokens(goCtx context.Context, msg *types.MsgTransferTokens) (*types.MsgTransferTokensResponse, error) {
@@ -35,6 +36,15 @@ func (k msgServer) TransferTokens(goCtx context.Context, msg *types.MsgTransferT
 		eneryToken.UserAddress = msg.AddressTo
 		k.SetEnergyToken(ctx, eneryToken)
 	}
+	var tokenHistory = types.TokensHistory{
+		IssuerAddress: msg.Creator,
+		UserAddress:   msg.Creator,
+		CreatedAt:     uint64(time.Now().Unix()),
+		Amount:        msg.Amount,
+		TokenName:     eneryToken.Name,
+		TargetAddress: msg.AddressTo,
+	}
+	k.AppendTokensHistory(ctx, tokenHistory)
 	_ = ctx
 
 	return &types.MsgTransferTokensResponse{}, nil

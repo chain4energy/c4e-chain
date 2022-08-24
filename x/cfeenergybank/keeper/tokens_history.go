@@ -93,6 +93,23 @@ func (k Keeper) GetAllTokensHistory(ctx sdk.Context) (list []types.TokensHistory
 	return
 }
 
+// GetTokenHistoryUserAddress returns all tokenHistoryForUser
+func (k Keeper) GetTokenHistoryUserAddress(ctx sdk.Context, userBlockchainAddress string) (list []types.TokensHistory) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TokensHistoryKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.TokensHistory
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		if val.UserAddress == userBlockchainAddress {
+			list = append(list, val)
+		}
+	}
+	return
+}
+
 // GetTokensHistoryIDBytes returns the byte representation of the ID
 func GetTokensHistoryIDBytes(id uint64) []byte {
 	bz := make([]byte, 8)

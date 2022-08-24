@@ -20,7 +20,7 @@ func createNTokensHistory(keeper *keeper.Keeper, ctx sdk.Context, n int) []types
 }
 
 func TestTokensHistoryGet(t *testing.T) {
-	keeper, ctx := keepertest.CfeenergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNTokensHistory(keeper, ctx, 10)
 	for _, item := range items {
 		got, found := keeper.GetTokensHistory(ctx, item.Id)
@@ -33,7 +33,7 @@ func TestTokensHistoryGet(t *testing.T) {
 }
 
 func TestTokensHistoryRemove(t *testing.T) {
-	keeper, ctx := keepertest.CfeenergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNTokensHistory(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveTokensHistory(ctx, item.Id)
@@ -43,7 +43,7 @@ func TestTokensHistoryRemove(t *testing.T) {
 }
 
 func TestTokensHistoryGetAll(t *testing.T) {
-	keeper, ctx := keepertest.CfeenergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNTokensHistory(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
@@ -52,7 +52,7 @@ func TestTokensHistoryGetAll(t *testing.T) {
 }
 
 func TestTokensHistoryCount(t *testing.T) {
-	keeper, ctx := keepertest.CfeenergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	items := createNTokensHistory(keeper, ctx, 10)
 	count := uint64(len(items))
 	require.Equal(t, count, keeper.GetTokensHistoryCount(ctx))

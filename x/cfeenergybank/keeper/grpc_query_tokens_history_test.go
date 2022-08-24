@@ -16,7 +16,7 @@ import (
 )
 
 func TestTokensHistoryQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.CfeenergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNTokensHistory(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -61,7 +61,7 @@ func TestTokensHistoryQuerySingle(t *testing.T) {
 }
 
 func TestTokensHistoryQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.CfeenergybankKeeper(t)
+	keeper, ctx := keepertest.CfeEnergybankKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNTokensHistory(keeper, ctx, 5)
 

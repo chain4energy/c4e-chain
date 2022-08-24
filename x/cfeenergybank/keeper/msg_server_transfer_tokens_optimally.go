@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfeenergybank/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -48,7 +49,15 @@ func (k msgServer) TransferTokensOptimally(goCtx context.Context, msg *types.Msg
 		}
 		i++
 	}
-	_ = ctx
+	var tokenHistory = types.TokensHistory{
+		IssuerAddress: msg.Creator,
+		UserAddress:   msg.Creator,
+		CreatedAt:     uint64(time.Now().Unix()),
+		Amount:        msg.Amount,
+		TokenName:     eneryTokens[i].Name,
+		TargetAddress: msg.AddressTo,
+	}
+	k.AppendTokensHistory(ctx, tokenHistory)
 
 	return &types.MsgTransferTokensOptimallyResponse{}, nil
 }

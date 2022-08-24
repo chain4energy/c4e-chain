@@ -53,3 +53,21 @@ func (k Keeper) TokensHistory(c context.Context, req *types.QueryGetTokensHistor
 
 	return &types.QueryGetTokensHistoryResponse{TokensHistory: tokensHistory}, nil
 }
+
+func (k Keeper) TokenHistoryUserAddress(c context.Context, userBlockchainAddress string) (list []types.TokensHistory) {
+
+	ctx := sdk.UnwrapSDKContext(c)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TokensHistoryKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.TokensHistory
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		if val.UserAddress == userBlockchainAddress {
+			list = append(list, val)
+		}
+	}
+	return
+}
