@@ -4,6 +4,7 @@ import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import { Params } from "../cfeenergybank/params";
 import { EnergyToken } from "../cfeenergybank/energy_token";
 import { TokenParams } from "../cfeenergybank/token_params";
+import { TokensHistory } from "../cfeenergybank/tokens_history";
 
 export const protobufPackage = "chain4energy.c4echain.cfeenergybank";
 
@@ -12,11 +13,13 @@ export interface GenesisState {
   params: Params | undefined;
   energyTokenList: EnergyToken[];
   energyTokenCount: number;
-  /** this line is used by starport scaffolding # genesis/proto/state */
   tokenParamsList: TokenParams[];
+  tokensHistoryList: TokensHistory[];
+  /** this line is used by starport scaffolding # genesis/proto/state */
+  tokensHistoryCount: number;
 }
 
-const baseGenesisState: object = { energyTokenCount: 0 };
+const baseGenesisState: object = { energyTokenCount: 0, tokensHistoryCount: 0 };
 
 export const GenesisState = {
   encode(message: GenesisState, writer: Writer = Writer.create()): Writer {
@@ -32,6 +35,12 @@ export const GenesisState = {
     for (const v of message.tokenParamsList) {
       TokenParams.encode(v!, writer.uint32(34).fork()).ldelim();
     }
+    for (const v of message.tokensHistoryList) {
+      TokensHistory.encode(v!, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.tokensHistoryCount !== 0) {
+      writer.uint32(48).uint64(message.tokensHistoryCount);
+    }
     return writer;
   },
 
@@ -41,6 +50,7 @@ export const GenesisState = {
     const message = { ...baseGenesisState } as GenesisState;
     message.energyTokenList = [];
     message.tokenParamsList = [];
+    message.tokensHistoryList = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -60,6 +70,14 @@ export const GenesisState = {
             TokenParams.decode(reader, reader.uint32())
           );
           break;
+        case 5:
+          message.tokensHistoryList.push(
+            TokensHistory.decode(reader, reader.uint32())
+          );
+          break;
+        case 6:
+          message.tokensHistoryCount = longToNumber(reader.uint64() as Long);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -72,6 +90,7 @@ export const GenesisState = {
     const message = { ...baseGenesisState } as GenesisState;
     message.energyTokenList = [];
     message.tokenParamsList = [];
+    message.tokensHistoryList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
@@ -101,6 +120,22 @@ export const GenesisState = {
         message.tokenParamsList.push(TokenParams.fromJSON(e));
       }
     }
+    if (
+      object.tokensHistoryList !== undefined &&
+      object.tokensHistoryList !== null
+    ) {
+      for (const e of object.tokensHistoryList) {
+        message.tokensHistoryList.push(TokensHistory.fromJSON(e));
+      }
+    }
+    if (
+      object.tokensHistoryCount !== undefined &&
+      object.tokensHistoryCount !== null
+    ) {
+      message.tokensHistoryCount = Number(object.tokensHistoryCount);
+    } else {
+      message.tokensHistoryCount = 0;
+    }
     return message;
   },
 
@@ -124,6 +159,15 @@ export const GenesisState = {
     } else {
       obj.tokenParamsList = [];
     }
+    if (message.tokensHistoryList) {
+      obj.tokensHistoryList = message.tokensHistoryList.map((e) =>
+        e ? TokensHistory.toJSON(e) : undefined
+      );
+    } else {
+      obj.tokensHistoryList = [];
+    }
+    message.tokensHistoryCount !== undefined &&
+      (obj.tokensHistoryCount = message.tokensHistoryCount);
     return obj;
   },
 
@@ -131,6 +175,7 @@ export const GenesisState = {
     const message = { ...baseGenesisState } as GenesisState;
     message.energyTokenList = [];
     message.tokenParamsList = [];
+    message.tokensHistoryList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
@@ -159,6 +204,22 @@ export const GenesisState = {
       for (const e of object.tokenParamsList) {
         message.tokenParamsList.push(TokenParams.fromPartial(e));
       }
+    }
+    if (
+      object.tokensHistoryList !== undefined &&
+      object.tokensHistoryList !== null
+    ) {
+      for (const e of object.tokensHistoryList) {
+        message.tokensHistoryList.push(TokensHistory.fromPartial(e));
+      }
+    }
+    if (
+      object.tokensHistoryCount !== undefined &&
+      object.tokensHistoryCount !== null
+    ) {
+      message.tokensHistoryCount = object.tokensHistoryCount;
+    } else {
+      message.tokensHistoryCount = 0;
     }
     return message;
   },

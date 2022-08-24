@@ -4,16 +4,16 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgTransferTokens } from "./types/cfeenergybank/tx";
 import { MsgCreateTokenParams } from "./types/cfeenergybank/tx";
 import { MsgTransferTokensOptimally } from "./types/cfeenergybank/tx";
+import { MsgTransferTokens } from "./types/cfeenergybank/tx";
 import { MsgMintToken } from "./types/cfeenergybank/tx";
 
 
 const types = [
-  ["/chain4energy.c4echain.cfeenergybank.MsgTransferTokens", MsgTransferTokens],
   ["/chain4energy.c4echain.cfeenergybank.MsgCreateTokenParams", MsgCreateTokenParams],
   ["/chain4energy.c4echain.cfeenergybank.MsgTransferTokensOptimally", MsgTransferTokensOptimally],
+  ["/chain4energy.c4echain.cfeenergybank.MsgTransferTokens", MsgTransferTokens],
   ["/chain4energy.c4echain.cfeenergybank.MsgMintToken", MsgMintToken],
   
 ];
@@ -47,9 +47,9 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
-    msgTransferTokens: (data: MsgTransferTokens): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeenergybank.MsgTransferTokens", value: MsgTransferTokens.fromPartial( data ) }),
     msgCreateTokenParams: (data: MsgCreateTokenParams): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeenergybank.MsgCreateTokenParams", value: MsgCreateTokenParams.fromPartial( data ) }),
     msgTransferTokensOptimally: (data: MsgTransferTokensOptimally): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeenergybank.MsgTransferTokensOptimally", value: MsgTransferTokensOptimally.fromPartial( data ) }),
+    msgTransferTokens: (data: MsgTransferTokens): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeenergybank.MsgTransferTokens", value: MsgTransferTokens.fromPartial( data ) }),
     msgMintToken: (data: MsgMintToken): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeenergybank.MsgMintToken", value: MsgMintToken.fromPartial( data ) }),
     
   };

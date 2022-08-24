@@ -39,6 +39,15 @@ func TestGenesisState_Validate(t *testing.T) {
 						Index: "1",
 					},
 				},
+				TokensHistoryList: []types.TokensHistory{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				TokensHistoryCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -80,6 +89,32 @@ func TestGenesisState_Validate(t *testing.T) {
 						Index: "0",
 					},
 				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated tokensHistory",
+			genState: &types.GenesisState{
+				TokensHistoryList: []types.TokensHistory{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid tokensHistory count",
+			genState: &types.GenesisState{
+				TokensHistoryList: []types.TokensHistory{
+					{
+						Id: 1,
+					},
+				},
+				TokensHistoryCount: 0,
 			},
 			valid: false,
 		},

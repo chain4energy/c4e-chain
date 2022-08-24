@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "cfeenergybank/params.proto";
 import "cfeenergybank/energy_token.proto";
 import "cfeenergybank/token_params.proto";
+import "cfeenergybank/tokens_history.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeenergybank/types";
@@ -15,5 +16,7 @@ message GenesisState {
   repeated EnergyToken energyTokenList = 2 [(gogoproto.nullable) = false];
   uint64 energyTokenCount = 3;
   repeated TokenParams tokenParamsList = 4 [(gogoproto.nullable) = false];
+  repeated TokensHistory tokensHistoryList = 5 [(gogoproto.nullable) = false];
+  uint64 tokensHistoryCount = 6;
   // this line is used by starport scaffolding # genesis/proto/state
 }

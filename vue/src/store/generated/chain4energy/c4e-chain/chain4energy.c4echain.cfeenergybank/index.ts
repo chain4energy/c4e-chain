@@ -3,9 +3,10 @@ import { txClient, queryClient, MissingWalletError , registry} from './module'
 import { EnergyToken } from "./module/types/cfeenergybank/energy_token"
 import { Params } from "./module/types/cfeenergybank/params"
 import { TokenParams } from "./module/types/cfeenergybank/token_params"
+import { TokensHistory } from "./module/types/cfeenergybank/tokens_history"
 
 
-export { EnergyToken, Params, TokenParams };
+export { EnergyToken, Params, TokenParams, TokensHistory };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -50,11 +51,14 @@ const getDefaultState = () => {
 				EnergyTokenAll: {},
 				TokenParams: {},
 				TokenParamsAll: {},
+				TokensHistory: {},
+				TokensHistoryAll: {},
 				
 				_Structure: {
 						EnergyToken: getStructure(EnergyToken.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						TokenParams: getStructure(TokenParams.fromPartial({})),
+						TokensHistory: getStructure(TokensHistory.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -124,6 +128,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.TokenParamsAll[JSON.stringify(params)] ?? {}
+		},
+				getTokensHistory: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.TokensHistory[JSON.stringify(params)] ?? {}
+		},
+				getTokensHistoryAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.TokensHistoryAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -325,21 +341,54 @@ export default {
 		},
 		
 		
-		async sendMsgTransferTokens({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		
+		 		
+		
+		
+		async QueryTokensHistory({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgTransferTokens(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryTokensHistory( key.id)).data
+				
+					
+				commit('QUERY', { query: 'TokensHistory', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryTokensHistory', payload: { options: { all }, params: {...key},query }})
+				return getters['getTokensHistory']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgTransferTokens:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgTransferTokens:Send Could not broadcast Tx: '+ e.message)
-				}
+				throw new Error('QueryClient:QueryTokensHistory API Node Unavailable. Could not perform query: ' + e.message)
+				
 			}
 		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryTokensHistoryAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryTokensHistoryAll(query)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await queryClient.queryTokensHistoryAll({...query, 'pagination.key':(<any> value).pagination.next_key})).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'TokensHistoryAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryTokensHistoryAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getTokensHistoryAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryTokensHistoryAll API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
 		async sendMsgCreateTokenParams({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -370,6 +419,21 @@ export default {
 				}
 			}
 		},
+		async sendMsgTransferTokens({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgTransferTokens(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgTransferTokens:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgTransferTokens:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		async sendMsgMintToken({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -386,19 +450,6 @@ export default {
 			}
 		},
 		
-		async MsgTransferTokens({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgTransferTokens(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgTransferTokens:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgTransferTokens:Create Could not create message: ' + e.message)
-				}
-			}
-		},
 		async MsgCreateTokenParams({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -422,6 +473,19 @@ export default {
 					throw new Error('TxClient:MsgTransferTokensOptimally:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgTransferTokensOptimally:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgTransferTokens({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgTransferTokens(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgTransferTokens:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgTransferTokens:Create Could not create message: ' + e.message)
 				}
 			}
 		},

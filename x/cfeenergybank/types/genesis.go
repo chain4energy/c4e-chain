@@ -10,8 +10,9 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		EnergyTokenList: []EnergyToken{},
-		TokenParamsList: []TokenParams{},
+		EnergyTokenList:   []EnergyToken{},
+		TokenParamsList:   []TokenParams{},
+		TokensHistoryList: []TokensHistory{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -41,6 +42,18 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for tokenParams")
 		}
 		tokenParamsIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated ID in tokensHistory
+	tokensHistoryIdMap := make(map[uint64]bool)
+	tokensHistoryCount := gs.GetTokensHistoryCount()
+	for _, elem := range gs.TokensHistoryList {
+		if _, ok := tokensHistoryIdMap[elem.Id]; ok {
+			return fmt.Errorf("duplicated id for tokensHistory")
+		}
+		if elem.Id >= tokensHistoryCount {
+			return fmt.Errorf("tokensHistory id should be lower or equal than the last id")
+		}
+		tokensHistoryIdMap[elem.Id] = true
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

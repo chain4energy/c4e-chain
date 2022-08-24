@@ -25,3 +25,8 @@ const (
 	EnergyTokenKey      = "EnergyToken-value-"
 	EnergyTokenCountKey = "EnergyToken-count-"
 )
+
+const (
+	TokensHistoryKey      = "TokensHistory-value-"
+	TokensHistoryCountKey = "TokensHistory-count-"
+)

@@ -1,0 +1,15 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfeenergybank;
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeenergybank/types";
+
+message TokensHistory {
+  uint64 id = 1;
+  string userAddress = 2; 
+  uint64 createdAt = 3; 
+  string issuerAddress = 4; 
+  string targetAddress = 5; 
+  uint64 amount = 6; 
+  string tokenName = 7; 
+  
+}

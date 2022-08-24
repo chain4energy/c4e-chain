@@ -7,6 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "cfeenergybank/params.proto";
 import "cfeenergybank/energy_token.proto";
 import "cfeenergybank/token_params.proto";
+import "cfeenergybank/tokens_history.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeenergybank/types";
@@ -45,6 +46,16 @@ service Query {
 	// Queries a list of TokenParams items.
 	rpc TokenParamsAll(QueryAllTokenParamsRequest) returns (QueryAllTokenParamsResponse) {
 		option (google.api.http).get = "/chain4energy/c4e-chain/cfeenergybank/token_params";
+	}
+
+// Queries a TokensHistory by id.
+	rpc TokensHistory(QueryGetTokensHistoryRequest) returns (QueryGetTokensHistoryResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfeenergybank/tokens_history/{id}";
+	}
+
+	// Queries a list of TokensHistory items.
+	rpc TokensHistoryAll(QueryAllTokensHistoryRequest) returns (QueryAllTokensHistoryResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfeenergybank/tokens_history";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -110,6 +121,23 @@ message QueryAllTokenParamsRequest {
 
 message QueryAllTokenParamsResponse {
 	repeated TokenParams tokenParams = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetTokensHistoryRequest {
+	uint64 id = 1;
+}
+
+message QueryGetTokensHistoryResponse {
+	TokensHistory TokensHistory = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllTokensHistoryRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllTokensHistoryResponse {
+	repeated TokensHistory TokensHistory = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

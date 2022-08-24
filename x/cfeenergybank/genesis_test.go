@@ -31,6 +31,15 @@ func TestGenesis(t *testing.T) {
 				Index: "1",
 			},
 		},
+		TokensHistoryList: []types.TokensHistory{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		TokensHistoryCount: 2,
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -45,5 +54,7 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.EnergyTokenList, got.EnergyTokenList)
 	require.Equal(t, genesisState.EnergyTokenCount, got.EnergyTokenCount)
 	require.ElementsMatch(t, genesisState.TokenParamsList, got.TokenParamsList)
+	require.ElementsMatch(t, genesisState.TokensHistoryList, got.TokensHistoryList)
+	require.Equal(t, genesisState.TokensHistoryCount, got.TokensHistoryCount)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

@@ -8,6 +8,7 @@ import {
 } from "../cosmos/base/query/v1beta1/pagination";
 import { EnergyToken } from "../cfeenergybank/energy_token";
 import { TokenParams } from "../cfeenergybank/token_params";
+import { TokensHistory } from "../cfeenergybank/tokens_history";
 
 export const protobufPackage = "chain4energy.c4echain.cfeenergybank";
 
@@ -70,6 +71,23 @@ export interface QueryAllTokenParamsRequest {
 
 export interface QueryAllTokenParamsResponse {
   tokenParams: TokenParams[];
+  pagination: PageResponse | undefined;
+}
+
+export interface QueryGetTokensHistoryRequest {
+  id: number;
+}
+
+export interface QueryGetTokensHistoryResponse {
+  TokensHistory: TokensHistory | undefined;
+}
+
+export interface QueryAllTokensHistoryRequest {
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryAllTokensHistoryResponse {
+  TokensHistory: TokensHistory[];
   pagination: PageResponse | undefined;
 }
 
@@ -1154,6 +1172,325 @@ export const QueryAllTokenParamsResponse = {
   },
 };
 
+const baseQueryGetTokensHistoryRequest: object = { id: 0 };
+
+export const QueryGetTokensHistoryRequest = {
+  encode(
+    message: QueryGetTokensHistoryRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetTokensHistoryRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetTokensHistoryRequest,
+    } as QueryGetTokensHistoryRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetTokensHistoryRequest {
+    const message = {
+      ...baseQueryGetTokensHistoryRequest,
+    } as QueryGetTokensHistoryRequest;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id);
+    } else {
+      message.id = 0;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetTokensHistoryRequest): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetTokensHistoryRequest>
+  ): QueryGetTokensHistoryRequest {
+    const message = {
+      ...baseQueryGetTokensHistoryRequest,
+    } as QueryGetTokensHistoryRequest;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id;
+    } else {
+      message.id = 0;
+    }
+    return message;
+  },
+};
+
+const baseQueryGetTokensHistoryResponse: object = {};
+
+export const QueryGetTokensHistoryResponse = {
+  encode(
+    message: QueryGetTokensHistoryResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.TokensHistory !== undefined) {
+      TokensHistory.encode(
+        message.TokensHistory,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetTokensHistoryResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetTokensHistoryResponse,
+    } as QueryGetTokensHistoryResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.TokensHistory = TokensHistory.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetTokensHistoryResponse {
+    const message = {
+      ...baseQueryGetTokensHistoryResponse,
+    } as QueryGetTokensHistoryResponse;
+    if (object.TokensHistory !== undefined && object.TokensHistory !== null) {
+      message.TokensHistory = TokensHistory.fromJSON(object.TokensHistory);
+    } else {
+      message.TokensHistory = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetTokensHistoryResponse): unknown {
+    const obj: any = {};
+    message.TokensHistory !== undefined &&
+      (obj.TokensHistory = message.TokensHistory
+        ? TokensHistory.toJSON(message.TokensHistory)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetTokensHistoryResponse>
+  ): QueryGetTokensHistoryResponse {
+    const message = {
+      ...baseQueryGetTokensHistoryResponse,
+    } as QueryGetTokensHistoryResponse;
+    if (object.TokensHistory !== undefined && object.TokensHistory !== null) {
+      message.TokensHistory = TokensHistory.fromPartial(object.TokensHistory);
+    } else {
+      message.TokensHistory = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryAllTokensHistoryRequest: object = {};
+
+export const QueryAllTokensHistoryRequest = {
+  encode(
+    message: QueryAllTokensHistoryRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryAllTokensHistoryRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryAllTokensHistoryRequest,
+    } as QueryAllTokensHistoryRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAllTokensHistoryRequest {
+    const message = {
+      ...baseQueryAllTokensHistoryRequest,
+    } as QueryAllTokensHistoryRequest;
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryAllTokensHistoryRequest): unknown {
+    const obj: any = {};
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryAllTokensHistoryRequest>
+  ): QueryAllTokensHistoryRequest {
+    const message = {
+      ...baseQueryAllTokensHistoryRequest,
+    } as QueryAllTokensHistoryRequest;
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryAllTokensHistoryResponse: object = {};
+
+export const QueryAllTokensHistoryResponse = {
+  encode(
+    message: QueryAllTokensHistoryResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    for (const v of message.TokensHistory) {
+      TokensHistory.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(
+        message.pagination,
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryAllTokensHistoryResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryAllTokensHistoryResponse,
+    } as QueryAllTokensHistoryResponse;
+    message.TokensHistory = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.TokensHistory.push(
+            TokensHistory.decode(reader, reader.uint32())
+          );
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAllTokensHistoryResponse {
+    const message = {
+      ...baseQueryAllTokensHistoryResponse,
+    } as QueryAllTokensHistoryResponse;
+    message.TokensHistory = [];
+    if (object.TokensHistory !== undefined && object.TokensHistory !== null) {
+      for (const e of object.TokensHistory) {
+        message.TokensHistory.push(TokensHistory.fromJSON(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryAllTokensHistoryResponse): unknown {
+    const obj: any = {};
+    if (message.TokensHistory) {
+      obj.TokensHistory = message.TokensHistory.map((e) =>
+        e ? TokensHistory.toJSON(e) : undefined
+      );
+    } else {
+      obj.TokensHistory = [];
+    }
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageResponse.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryAllTokensHistoryResponse>
+  ): QueryAllTokensHistoryResponse {
+    const message = {
+      ...baseQueryAllTokensHistoryResponse,
+    } as QueryAllTokensHistoryResponse;
+    message.TokensHistory = [];
+    if (object.TokensHistory !== undefined && object.TokensHistory !== null) {
+      for (const e of object.TokensHistory) {
+        message.TokensHistory.push(TokensHistory.fromPartial(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -1182,6 +1519,14 @@ export interface Query {
   TokenParamsAll(
     request: QueryAllTokenParamsRequest
   ): Promise<QueryAllTokenParamsResponse>;
+  /** Queries a TokensHistory by id. */
+  TokensHistory(
+    request: QueryGetTokensHistoryRequest
+  ): Promise<QueryGetTokensHistoryResponse>;
+  /** Queries a list of TokensHistory items. */
+  TokensHistoryAll(
+    request: QueryAllTokensHistoryRequest
+  ): Promise<QueryAllTokensHistoryResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1280,6 +1625,34 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryAllTokenParamsResponse.decode(new Reader(data))
+    );
+  }
+
+  TokensHistory(
+    request: QueryGetTokensHistoryRequest
+  ): Promise<QueryGetTokensHistoryResponse> {
+    const data = QueryGetTokensHistoryRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeenergybank.Query",
+      "TokensHistory",
+      data
+    );
+    return promise.then((data) =>
+      QueryGetTokensHistoryResponse.decode(new Reader(data))
+    );
+  }
+
+  TokensHistoryAll(
+    request: QueryAllTokensHistoryRequest
+  ): Promise<QueryAllTokensHistoryResponse> {
+    const data = QueryAllTokensHistoryRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeenergybank.Query",
+      "TokensHistoryAll",
+      data
+    );
+    return promise.then((data) =>
+      QueryAllTokensHistoryResponse.decode(new Reader(data))
     );
   }
 }

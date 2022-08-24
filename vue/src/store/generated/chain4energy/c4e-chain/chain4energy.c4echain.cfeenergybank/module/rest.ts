@@ -65,6 +65,21 @@ export interface CfeenergybankQueryAllTokenParamsResponse {
   pagination?: V1Beta1PageResponse;
 }
 
+export interface CfeenergybankQueryAllTokensHistoryResponse {
+  TokensHistory?: CfeenergybankTokensHistory[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
 export interface CfeenergybankQueryCurrentBalanceResponse {
   /** @format uint64 */
   balance?: string;
@@ -93,6 +108,10 @@ export interface CfeenergybankQueryGetTokenParamsResponse {
   tokenParams?: CfeenergybankTokenParams;
 }
 
+export interface CfeenergybankQueryGetTokensHistoryResponse {
+  TokensHistory?: CfeenergybankTokensHistory;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
@@ -113,6 +132,21 @@ export interface CfeenergybankTokenParams {
   /** @format uint64 */
   sendPrice?: string;
   mintAccount?: string;
+}
+
+export interface CfeenergybankTokensHistory {
+  /** @format uint64 */
+  id?: string;
+  userAddress?: string;
+
+  /** @format uint64 */
+  createdAt?: string;
+  issuerAddress?: string;
+  targetAddress?: string;
+
+  /** @format uint64 */
+  amount?: string;
+  tokenName?: string;
 }
 
 export interface ProtobufAny {
@@ -163,13 +197,6 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
-
-  /**
-   * reverse is set to true if results are to be returned in the descending order.
-   *
-   * Since: cosmos-sdk 0.43
-   */
-  reverse?: boolean;
 }
 
 /**
@@ -415,7 +442,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -458,7 +484,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -500,7 +525,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -523,6 +547,47 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryTokenParams = (index: string, params: RequestParams = {}) =>
     this.request<CfeenergybankQueryGetTokenParamsResponse, RpcStatus>({
       path: `/chain4energy/c4e-chain/cfeenergybank/token_params/${index}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryTokensHistoryAll
+   * @summary Queries a list of TokensHistory items.
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/tokens_history
+   */
+  queryTokensHistoryAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<CfeenergybankQueryAllTokensHistoryResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfeenergybank/tokens_history`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryTokensHistory
+   * @summary Queries a TokensHistory by id.
+   * @request GET:/chain4energy/c4e-chain/cfeenergybank/tokens_history/{id}
+   */
+  queryTokensHistory = (id: string, params: RequestParams = {}) =>
+    this.request<CfeenergybankQueryGetTokensHistoryResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfeenergybank/tokens_history/${id}`,
       method: "GET",
       format: "json",
       ...params,
