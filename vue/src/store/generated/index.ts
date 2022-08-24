@@ -1,5 +1,6 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import Chain4EnergyC4EChainChain4EnergyC4EchainCfeenergybank from './chain4energy/c4e-chain/chain4energy.c4echain.cfeenergybank'
 import Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter from './chain4energy/c4e-chain/chain4energy.c4echain.cfeminter'
 import Chain4EnergyC4EChainChain4EnergyC4EchainCferoutingdistributor from './chain4energy/c4e-chain/chain4energy.c4echain.cferoutingdistributor'
 import Chain4EnergyC4EChainChain4EnergyC4EchainCfesignature from './chain4energy/c4e-chain/chain4energy.c4echain.cfesignature'
@@ -8,6 +9,7 @@ import Chain4EnergyC4EChainChain4EnergyC4EchainEnergybank from './chain4energy/c
 
 
 export default { 
+  Chain4EnergyC4EChainChain4EnergyC4EchainCfeenergybank: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfeenergybank, 'chain4energy.c4echain.cfeenergybank'),
   Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter, 'chain4energy.c4echain.cfeminter'),
   Chain4EnergyC4EChainChain4EnergyC4EchainCferoutingdistributor: load(Chain4EnergyC4EChainChain4EnergyC4EchainCferoutingdistributor, 'chain4energy.c4echain.cferoutingdistributor'),
   Chain4EnergyC4EChainChain4EnergyC4EchainCfesignature: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfesignature, 'chain4energy.c4echain.cfesignature'),

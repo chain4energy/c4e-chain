@@ -4,6 +4,563 @@ info:
   name: ''
   description: ''
 paths:
+  '/chain4energy/c4e-chain/cfeenergybank/current_balance/{userAddress}/{tokenName}':
+    get:
+      summary: Queries a list of CurrentBalance items.
+      operationId: Chain4EnergyC4EchainCfeenergybankCurrentBalance
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              balance:
+                type: string
+                format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: userAddress
+          in: path
+          required: true
+          type: string
+        - name: tokenName
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /chain4energy/c4e-chain/cfeenergybank/energy_token:
+    get:
+      summary: Queries a list of EnergyToken items.
+      operationId: Chain4EnergyC4EchainCfeenergybankEnergyTokenAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              EnergyToken:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    name:
+                      type: string
+                    amount:
+                      type: string
+                      format: uint64
+                    userAddress:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: uint64
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  '/chain4energy/c4e-chain/cfeenergybank/energy_token/{id}':
+    get:
+      summary: Queries a EnergyToken by id.
+      operationId: Chain4EnergyC4EchainCfeenergybankEnergyToken
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              EnergyToken:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  name:
+                    type: string
+                  amount:
+                    type: string
+                    format: uint64
+                  userAddress:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  '/chain4energy/c4e-chain/cfeenergybank/energy_token_user_address/{userAddress}':
+    get:
+      summary: Queries a list of EnergyTokenUserAddress items.
+      operationId: Chain4EnergyC4EchainCfeenergybankEnergyTokenUserAddress
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              EnergyToken:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    name:
+                      type: string
+                    amount:
+                      type: string
+                      format: uint64
+                    userAddress:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: uint64
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: userAddress
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /chain4energy/c4e-chain/cfeenergybank/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: Chain4EnergyC4EchainCfeenergybankParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of this module.
+                type: object
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /chain4energy/c4e-chain/cfeenergybank/token_params:
+    get:
+      summary: Queries a list of TokenParams items.
+      operationId: Chain4EnergyC4EchainCfeenergybankTokenParamsAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              tokenParams:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    index:
+                      type: string
+                    name:
+                      type: string
+                    tradingCompany:
+                      type: string
+                    burningTime:
+                      type: string
+                      format: uint64
+                    burningType:
+                      type: string
+                    sendPrice:
+                      type: string
+                      format: uint64
+                    mintAccount:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  '/chain4energy/c4e-chain/cfeenergybank/token_params/{index}':
+    get:
+      summary: Queries a TokenParams by index.
+      operationId: Chain4EnergyC4EchainCfeenergybankTokenParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              tokenParams:
+                type: object
+                properties:
+                  index:
+                    type: string
+                  name:
+                    type: string
+                  tradingCompany:
+                    type: string
+                  burningTime:
+                    type: string
+                    format: uint64
+                  burningType:
+                    type: string
+                  sendPrice:
+                    type: string
+                    format: uint64
+                  mintAccount:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: index
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /c4e/minter/inflation:
     get:
       summary: Queries a list of Inflation items.
@@ -1182,593 +1739,6 @@ paths:
                           "@type": "type.googleapis.com/google.protobuf.Duration",
                           "value": "1.212s"
                         }
-      tags:
-        - Query
-  '/chain4energy/c4e-chain/cfeenergybank/current_balance/{userAddress}/{tokenName}':
-    get:
-      summary: Queries a list of CurrentBalance items.
-      operationId: Chain4EnergyC4EchainEnergybankCurrentBalance
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              balance:
-                type: string
-                format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: userAddress
-          in: path
-          required: true
-          type: string
-        - name: tokenName
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /chain4energy/c4e-chain/cfeenergybank/energy_token:
-    get:
-      summary: Queries a list of EnergyToken items.
-      operationId: Chain4EnergyC4EchainEnergybankEnergyTokenAll
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              EnergyToken:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uint64
-                    name:
-                      type: string
-                    amount:
-                      type: string
-                      format: uint64
-                    userAddress:
-                      type: string
-                    createdAt:
-                      type: string
-                      format: uint64
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  '/chain4energy/c4e-chain/cfeenergybank/energy_token/{id}':
-    get:
-      summary: Queries a EnergyToken by id.
-      operationId: Chain4EnergyC4EchainEnergybankEnergyToken
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              EnergyToken:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uint64
-                  name:
-                    type: string
-                  amount:
-                    type: string
-                    format: uint64
-                  userAddress:
-                    type: string
-                  createdAt:
-                    type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  '/chain4energy/c4e-chain/cfeenergybank/energy_token_user_address/{userAddress}':
-    get:
-      summary: Queries a list of EnergyTokenUserAddress items.
-      operationId: Chain4EnergyC4EchainEnergybankEnergyTokenUserAddress
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              EnergyToken:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uint64
-                    name:
-                      type: string
-                    amount:
-                      type: string
-                      format: uint64
-                    userAddress:
-                      type: string
-                    createdAt:
-                      type: string
-                      format: uint64
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: userAddress
-          in: path
-          required: true
-          type: string
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /chain4energy/c4e-chain/cfeenergybank/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainEnergybankParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /chain4energy/c4e-chain/cfeenergybank/token_params:
-    get:
-      summary: Queries a list of TokenParams items.
-      operationId: Chain4EnergyC4EchainEnergybankTokenParamsAll
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              tokenParams:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    index:
-                      type: string
-                    name:
-                      type: string
-                    tradingCompany:
-                      type: string
-                    burningTime:
-                      type: string
-                      format: uint64
-                    burningType:
-                      type: string
-                    sendPrice:
-                      type: string
-                      format: uint64
-                    mintAccount:
-                      type: string
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  '/chain4energy/c4e-chain/cfeenergybank/token_params/{index}':
-    get:
-      summary: Queries a TokenParams by index.
-      operationId: Chain4EnergyC4EchainEnergybankTokenParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              tokenParams:
-                type: object
-                properties:
-                  index:
-                    type: string
-                  name:
-                    type: string
-                  tradingCompany:
-                    type: string
-                  burningTime:
-                    type: string
-                    format: uint64
-                  burningType:
-                    type: string
-                  sendPrice:
-                    type: string
-                    format: uint64
-                  mintAccount:
-                    type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: index
-          in: path
-          required: true
-          type: string
       tags:
         - Query
   /cosmos/auth/v1beta1/accounts:
@@ -32006,226 +31976,323 @@ paths:
       tags:
         - Query
 definitions:
-  chain4energy.c4echain.cfeminter.Minter:
+  chain4energy.c4echain.cfeenergybank.EnergyToken:
     type: object
     properties:
-      start:
+      id:
         type: string
-        format: date-time
-      periods:
+        format: uint64
+      name:
+        type: string
+      amount:
+        type: string
+        format: uint64
+      userAddress:
+        type: string
+      createdAt:
+        type: string
+        format: uint64
+  chain4energy.c4echain.cfeenergybank.MsgCreateTokenParamsResponse:
+    type: object
+  chain4energy.c4echain.cfeenergybank.MsgMintTokenResponse:
+    type: object
+  chain4energy.c4echain.cfeenergybank.MsgTransferTokensOptimallyResponse:
+    type: object
+  chain4energy.c4echain.cfeenergybank.MsgTransferTokensResponse:
+    type: object
+  chain4energy.c4echain.cfeenergybank.Params:
+    type: object
+    description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfeenergybank.QueryAllEnergyTokenResponse:
+    type: object
+    properties:
+      EnergyToken:
         type: array
         items:
           type: object
           properties:
-            position:
-              type: integer
-              format: int32
-            period_end:
+            id:
               type: string
-              format: date-time
-            type:
+              format: uint64
+            name:
               type: string
-              enum:
-                - NO_MINTING
-                - TIME_LINEAR_MINTER
-                - PERIODIC_REDUCTION_MINTER
-              default: NO_MINTING
-            time_linear_minter:
-              type: object
-              properties:
-                amount:
-                  type: string
-            periodic_reduction_minter:
-              type: object
-              properties:
-                mint_period:
-                  type: string
-                mint_amount:
-                  type: string
-                reduction_period_length:
-                  type: integer
-                  format: int32
-                reduction_factor:
-                  type: string
-  chain4energy.c4echain.cfeminter.MinterState:
-    type: object
-    properties:
-      current_position:
-        type: integer
-        format: int32
-      amount_minted:
-        type: string
-  chain4energy.c4echain.cfeminter.MintingPeriod:
-    type: object
-    properties:
-      position:
-        type: integer
-        format: int32
-      period_end:
-        type: string
-        format: date-time
-      type:
-        type: string
-        enum:
-          - NO_MINTING
-          - TIME_LINEAR_MINTER
-          - PERIODIC_REDUCTION_MINTER
-        default: NO_MINTING
-      time_linear_minter:
+            amount:
+              type: string
+              format: uint64
+            userAddress:
+              type: string
+            createdAt:
+              type: string
+              format: uint64
+      pagination:
         type: object
         properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  chain4energy.c4echain.cfeenergybank.QueryAllTokenParamsResponse:
+    type: object
+    properties:
+      tokenParams:
+        type: array
+        items:
+          type: object
+          properties:
+            index:
+              type: string
+            name:
+              type: string
+            tradingCompany:
+              type: string
+            burningTime:
+              type: string
+              format: uint64
+            burningType:
+              type: string
+            sendPrice:
+              type: string
+              format: uint64
+            mintAccount:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  chain4energy.c4echain.cfeenergybank.QueryCurrentBalanceResponse:
+    type: object
+    properties:
+      balance:
+        type: string
+        format: uint64
+  chain4energy.c4echain.cfeenergybank.QueryEnergyTokenUserAddressResponse:
+    type: object
+    properties:
+      EnergyToken:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            name:
+              type: string
+            amount:
+              type: string
+              format: uint64
+            userAddress:
+              type: string
+            createdAt:
+              type: string
+              format: uint64
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  chain4energy.c4echain.cfeenergybank.QueryGetEnergyTokenResponse:
+    type: object
+    properties:
+      EnergyToken:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          name:
+            type: string
           amount:
             type: string
-      periodic_reduction_minter:
+            format: uint64
+          userAddress:
+            type: string
+          createdAt:
+            type: string
+            format: uint64
+  chain4energy.c4echain.cfeenergybank.QueryGetTokenParamsResponse:
+    type: object
+    properties:
+      tokenParams:
         type: object
         properties:
-          mint_period:
+          index:
             type: string
-          mint_amount:
+          name:
             type: string
-          reduction_period_length:
-            type: integer
-            format: int32
-          reduction_factor:
+          tradingCompany:
             type: string
-  chain4energy.c4echain.cfeminter.MintingPeriod.MinterType:
-    type: string
-    enum:
-      - NO_MINTING
-      - TIME_LINEAR_MINTER
-      - PERIODIC_REDUCTION_MINTER
-    default: NO_MINTING
-  chain4energy.c4echain.cfeminter.Params:
-    type: object
-    properties:
-      mint_denom:
-        type: string
-      minter:
-        type: object
-        properties:
-          start:
+          burningTime:
             type: string
-            format: date-time
-          periods:
-            type: array
-            items:
-              type: object
-              properties:
-                position:
-                  type: integer
-                  format: int32
-                period_end:
-                  type: string
-                  format: date-time
-                type:
-                  type: string
-                  enum:
-                    - NO_MINTING
-                    - TIME_LINEAR_MINTER
-                    - PERIODIC_REDUCTION_MINTER
-                  default: NO_MINTING
-                time_linear_minter:
-                  type: object
-                  properties:
-                    amount:
-                      type: string
-                periodic_reduction_minter:
-                  type: object
-                  properties:
-                    mint_period:
-                      type: string
-                    mint_amount:
-                      type: string
-                    reduction_period_length:
-                      type: integer
-                      format: int32
-                    reduction_factor:
-                      type: string
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeminter.PeriodicReductionMinter:
-    type: object
-    properties:
-      mint_period:
-        type: string
-      mint_amount:
-        type: string
-      reduction_period_length:
-        type: integer
-        format: int32
-      reduction_factor:
-        type: string
-  chain4energy.c4echain.cfeminter.QueryInflationResponse:
-    type: object
-    properties:
-      inflation:
-        type: string
-  chain4energy.c4echain.cfeminter.QueryParamsResponse:
+            format: uint64
+          burningType:
+            type: string
+          sendPrice:
+            type: string
+            format: uint64
+          mintAccount:
+            type: string
+  chain4energy.c4echain.cfeenergybank.QueryParamsResponse:
     type: object
     properties:
       params:
         description: params holds all the parameters of this module.
         type: object
-        properties:
-          mint_denom:
-            type: string
-          minter:
-            type: object
-            properties:
-              start:
-                type: string
-                format: date-time
-              periods:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    position:
-                      type: integer
-                      format: int32
-                    period_end:
-                      type: string
-                      format: date-time
-                    type:
-                      type: string
-                      enum:
-                        - NO_MINTING
-                        - TIME_LINEAR_MINTER
-                        - PERIODIC_REDUCTION_MINTER
-                      default: NO_MINTING
-                    time_linear_minter:
-                      type: object
-                      properties:
-                        amount:
-                          type: string
-                    periodic_reduction_minter:
-                      type: object
-                      properties:
-                        mint_period:
-                          type: string
-                        mint_amount:
-                          type: string
-                        reduction_period_length:
-                          type: integer
-                          format: int32
-                        reduction_factor:
-                          type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfeminter.QueryStateResponse:
+  chain4energy.c4echain.cfeenergybank.TokenParams:
     type: object
     properties:
-      minter_state:
-        type: object
-        properties:
-          current_position:
-            type: integer
-            format: int32
-          amount_minted:
-            type: string
-  chain4energy.c4echain.cfeminter.TimeLinearMinter:
-    type: object
-    properties:
-      amount:
+      index:
         type: string
+      name:
+        type: string
+      tradingCompany:
+        type: string
+      burningTime:
+        type: string
+        format: uint64
+      burningType:
+        type: string
+      sendPrice:
+        type: string
+        format: uint64
+      mintAccount:
+        type: string
+  cosmos.base.query.v1beta1.PageRequest:
+    type: object
+    properties:
+      key:
+        type: string
+        format: byte
+        description: |-
+          key is a value returned in PageResponse.next_key to begin
+          querying the next page most efficiently. Only one of offset or key
+          should be set.
+      offset:
+        type: string
+        format: uint64
+        description: |-
+          offset is a numeric offset that can be used when key is unavailable.
+          It is less efficient than using key. Only one of offset or key should
+          be set.
+      limit:
+        type: string
+        format: uint64
+        description: >-
+          limit is the total number of results to be returned in the result
+          page.
+
+          If left empty it will default to a value to be set by each app.
+      count_total:
+        type: boolean
+        description: >-
+          count_total is set to true  to indicate that the result set should
+          include
+
+          a count of the total number of items available for pagination in UIs.
+
+          count_total is only respected when offset is used. It is ignored when
+          key
+
+          is set.
+      reverse:
+        type: boolean
+        description: >-
+          reverse is set to true if results are to be returned in the descending
+          order.
+
+
+          Since: cosmos-sdk 0.43
+    description: |-
+      message SomeRequest {
+               Foo some_parameter = 1;
+               PageRequest pagination = 2;
+       }
+    title: |-
+      PageRequest is to be embedded in gRPC request messages for efficient
+      pagination. Ex:
+  cosmos.base.query.v1beta1.PageResponse:
+    type: object
+    properties:
+      next_key:
+        type: string
+        format: byte
+        title: |-
+          next_key is the key to be passed to PageRequest.key to
+          query the next page most efficiently
+      total:
+        type: string
+        format: uint64
+        title: |-
+          total is total number of results available if PageRequest.count_total
+          was set, its value is undefined otherwise
+    description: |-
+      PageResponse is to be embedded in gRPC response messages where the
+      corresponding request message has used PageRequest.
+
+       message SomeResponse {
+               repeated Bar results = 1;
+               PageResponse page = 2;
+       }
   google.protobuf.Any:
     type: object
     properties:
@@ -32549,6 +32616,226 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
+  chain4energy.c4echain.cfeminter.Minter:
+    type: object
+    properties:
+      start:
+        type: string
+        format: date-time
+      periods:
+        type: array
+        items:
+          type: object
+          properties:
+            position:
+              type: integer
+              format: int32
+            period_end:
+              type: string
+              format: date-time
+            type:
+              type: string
+              enum:
+                - NO_MINTING
+                - TIME_LINEAR_MINTER
+                - PERIODIC_REDUCTION_MINTER
+              default: NO_MINTING
+            time_linear_minter:
+              type: object
+              properties:
+                amount:
+                  type: string
+            periodic_reduction_minter:
+              type: object
+              properties:
+                mint_period:
+                  type: string
+                mint_amount:
+                  type: string
+                reduction_period_length:
+                  type: integer
+                  format: int32
+                reduction_factor:
+                  type: string
+  chain4energy.c4echain.cfeminter.MinterState:
+    type: object
+    properties:
+      current_position:
+        type: integer
+        format: int32
+      amount_minted:
+        type: string
+  chain4energy.c4echain.cfeminter.MintingPeriod:
+    type: object
+    properties:
+      position:
+        type: integer
+        format: int32
+      period_end:
+        type: string
+        format: date-time
+      type:
+        type: string
+        enum:
+          - NO_MINTING
+          - TIME_LINEAR_MINTER
+          - PERIODIC_REDUCTION_MINTER
+        default: NO_MINTING
+      time_linear_minter:
+        type: object
+        properties:
+          amount:
+            type: string
+      periodic_reduction_minter:
+        type: object
+        properties:
+          mint_period:
+            type: string
+          mint_amount:
+            type: string
+          reduction_period_length:
+            type: integer
+            format: int32
+          reduction_factor:
+            type: string
+  chain4energy.c4echain.cfeminter.MintingPeriod.MinterType:
+    type: string
+    enum:
+      - NO_MINTING
+      - TIME_LINEAR_MINTER
+      - PERIODIC_REDUCTION_MINTER
+    default: NO_MINTING
+  chain4energy.c4echain.cfeminter.Params:
+    type: object
+    properties:
+      mint_denom:
+        type: string
+      minter:
+        type: object
+        properties:
+          start:
+            type: string
+            format: date-time
+          periods:
+            type: array
+            items:
+              type: object
+              properties:
+                position:
+                  type: integer
+                  format: int32
+                period_end:
+                  type: string
+                  format: date-time
+                type:
+                  type: string
+                  enum:
+                    - NO_MINTING
+                    - TIME_LINEAR_MINTER
+                    - PERIODIC_REDUCTION_MINTER
+                  default: NO_MINTING
+                time_linear_minter:
+                  type: object
+                  properties:
+                    amount:
+                      type: string
+                periodic_reduction_minter:
+                  type: object
+                  properties:
+                    mint_period:
+                      type: string
+                    mint_amount:
+                      type: string
+                    reduction_period_length:
+                      type: integer
+                      format: int32
+                    reduction_factor:
+                      type: string
+    description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfeminter.PeriodicReductionMinter:
+    type: object
+    properties:
+      mint_period:
+        type: string
+      mint_amount:
+        type: string
+      reduction_period_length:
+        type: integer
+        format: int32
+      reduction_factor:
+        type: string
+  chain4energy.c4echain.cfeminter.QueryInflationResponse:
+    type: object
+    properties:
+      inflation:
+        type: string
+  chain4energy.c4echain.cfeminter.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of this module.
+        type: object
+        properties:
+          mint_denom:
+            type: string
+          minter:
+            type: object
+            properties:
+              start:
+                type: string
+                format: date-time
+              periods:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    position:
+                      type: integer
+                      format: int32
+                    period_end:
+                      type: string
+                      format: date-time
+                    type:
+                      type: string
+                      enum:
+                        - NO_MINTING
+                        - TIME_LINEAR_MINTER
+                        - PERIODIC_REDUCTION_MINTER
+                      default: NO_MINTING
+                    time_linear_minter:
+                      type: object
+                      properties:
+                        amount:
+                          type: string
+                    periodic_reduction_minter:
+                      type: object
+                      properties:
+                        mint_period:
+                          type: string
+                        mint_amount:
+                          type: string
+                        reduction_period_length:
+                          type: integer
+                          format: int32
+                        reduction_factor:
+                          type: string
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cfeminter.QueryStateResponse:
+    type: object
+    properties:
+      minter_state:
+        type: object
+        properties:
+          current_position:
+            type: integer
+            format: int32
+          amount_minted:
+            type: string
+  chain4energy.c4echain.cfeminter.TimeLinearMinter:
+    type: object
+    properties:
+      amount:
+        type: string
   chain4energy.c4echain.cferoutingdistributor.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -32796,323 +33083,6 @@ definitions:
 
       NOTE: The amount field is an Int which implements the custom method
       signatures required by gogoproto.
-  chain4energy.c4echain.energybank.EnergyToken:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uint64
-      name:
-        type: string
-      amount:
-        type: string
-        format: uint64
-      userAddress:
-        type: string
-      createdAt:
-        type: string
-        format: uint64
-  chain4energy.c4echain.energybank.MsgCreateTokenParamsResponse:
-    type: object
-  chain4energy.c4echain.energybank.MsgMintTokenResponse:
-    type: object
-  chain4energy.c4echain.energybank.MsgTransferTokensOptimallyResponse:
-    type: object
-  chain4energy.c4echain.energybank.MsgTransferTokensResponse:
-    type: object
-  chain4energy.c4echain.energybank.Params:
-    type: object
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.energybank.QueryAllEnergyTokenResponse:
-    type: object
-    properties:
-      EnergyToken:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uint64
-            name:
-              type: string
-            amount:
-              type: string
-              format: uint64
-            userAddress:
-              type: string
-            createdAt:
-              type: string
-              format: uint64
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-  chain4energy.c4echain.energybank.QueryAllTokenParamsResponse:
-    type: object
-    properties:
-      tokenParams:
-        type: array
-        items:
-          type: object
-          properties:
-            index:
-              type: string
-            name:
-              type: string
-            tradingCompany:
-              type: string
-            burningTime:
-              type: string
-              format: uint64
-            burningType:
-              type: string
-            sendPrice:
-              type: string
-              format: uint64
-            mintAccount:
-              type: string
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-  chain4energy.c4echain.energybank.QueryCurrentBalanceResponse:
-    type: object
-    properties:
-      balance:
-        type: string
-        format: uint64
-  chain4energy.c4echain.energybank.QueryEnergyTokenUserAddressResponse:
-    type: object
-    properties:
-      EnergyToken:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uint64
-            name:
-              type: string
-            amount:
-              type: string
-              format: uint64
-            userAddress:
-              type: string
-            createdAt:
-              type: string
-              format: uint64
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-  chain4energy.c4echain.energybank.QueryGetEnergyTokenResponse:
-    type: object
-    properties:
-      EnergyToken:
-        type: object
-        properties:
-          id:
-            type: string
-            format: uint64
-          name:
-            type: string
-          amount:
-            type: string
-            format: uint64
-          userAddress:
-            type: string
-          createdAt:
-            type: string
-            format: uint64
-  chain4energy.c4echain.energybank.QueryGetTokenParamsResponse:
-    type: object
-    properties:
-      tokenParams:
-        type: object
-        properties:
-          index:
-            type: string
-          name:
-            type: string
-          tradingCompany:
-            type: string
-          burningTime:
-            type: string
-            format: uint64
-          burningType:
-            type: string
-          sendPrice:
-            type: string
-            format: uint64
-          mintAccount:
-            type: string
-  chain4energy.c4echain.energybank.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params holds all the parameters of this module.
-        type: object
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.energybank.TokenParams:
-    type: object
-    properties:
-      index:
-        type: string
-      name:
-        type: string
-      tradingCompany:
-        type: string
-      burningTime:
-        type: string
-        format: uint64
-      burningType:
-        type: string
-      sendPrice:
-        type: string
-        format: uint64
-      mintAccount:
-        type: string
-  cosmos.base.query.v1beta1.PageRequest:
-    type: object
-    properties:
-      key:
-        type: string
-        format: byte
-        description: |-
-          key is a value returned in PageResponse.next_key to begin
-          querying the next page most efficiently. Only one of offset or key
-          should be set.
-      offset:
-        type: string
-        format: uint64
-        description: |-
-          offset is a numeric offset that can be used when key is unavailable.
-          It is less efficient than using key. Only one of offset or key should
-          be set.
-      limit:
-        type: string
-        format: uint64
-        description: >-
-          limit is the total number of results to be returned in the result
-          page.
-
-          If left empty it will default to a value to be set by each app.
-      count_total:
-        type: boolean
-        description: >-
-          count_total is set to true  to indicate that the result set should
-          include
-
-          a count of the total number of items available for pagination in UIs.
-
-          count_total is only respected when offset is used. It is ignored when
-          key
-
-          is set.
-      reverse:
-        type: boolean
-        description: >-
-          reverse is set to true if results are to be returned in the descending
-          order.
-
-
-          Since: cosmos-sdk 0.43
-    description: |-
-      message SomeRequest {
-               Foo some_parameter = 1;
-               PageRequest pagination = 2;
-       }
-    title: |-
-      PageRequest is to be embedded in gRPC request messages for efficient
-      pagination. Ex:
-  cosmos.base.query.v1beta1.PageResponse:
-    type: object
-    properties:
-      next_key:
-        type: string
-        format: byte
-        title: |-
-          next_key is the key to be passed to PageRequest.key to
-          query the next page most efficiently
-      total:
-        type: string
-        format: uint64
-        title: |-
-          total is total number of results available if PageRequest.count_total
-          was set, its value is undefined otherwise
-    description: |-
-      PageResponse is to be embedded in gRPC response messages where the
-      corresponding request message has used PageRequest.
-
-       message SomeResponse {
-               repeated Bar results = 1;
-               PageResponse page = 2;
-       }
   cosmos.auth.v1beta1.Params:
     type: object
     properties:
