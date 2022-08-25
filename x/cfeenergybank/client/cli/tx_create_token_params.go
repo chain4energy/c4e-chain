@@ -26,7 +26,8 @@ func CmdCreateTokenParams() *cobra.Command {
 				return err
 			}
 			argBurningType := args[3]
-			argSendPrice, err := cast.ToUint64E(args[4])
+			argExchangeRate, err := cast.ToUint64E(args[4])
+			argCommissionRate, err := cast.ToUint64E(args[4])
 			if err != nil {
 				return err
 			}
@@ -42,7 +43,8 @@ func CmdCreateTokenParams() *cobra.Command {
 				argTradingCompany,
 				argBurningTime,
 				argBurningType,
-				argSendPrice,
+				argExchangeRate,
+				argCommissionRate,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

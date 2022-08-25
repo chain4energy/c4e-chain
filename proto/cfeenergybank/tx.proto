@@ -20,7 +20,8 @@ message MsgCreateTokenParams {
   string tradingCompany = 3;
   uint64 burningTime = 4;
   string burningType = 5;
-  uint64 sendPrice = 6;
+  uint64 exchangeRate = 6;
+  uint64 commissionRate = 7;
 }
 
 message MsgCreateTokenParamsResponse {

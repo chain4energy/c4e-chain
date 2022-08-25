@@ -10,7 +10,8 @@ export interface MsgCreateTokenParams {
   tradingCompany: string;
   burningTime: number;
   burningType: string;
-  sendPrice: number;
+  exchangeRate: number;
+  commissionRate: number;
 }
 
 export interface MsgCreateTokenParamsResponse {}
@@ -50,7 +51,8 @@ const baseMsgCreateTokenParams: object = {
   tradingCompany: "",
   burningTime: 0,
   burningType: "",
-  sendPrice: 0,
+  exchangeRate: 0,
+  commissionRate: 0,
 };
 
 export const MsgCreateTokenParams = {
@@ -73,8 +75,11 @@ export const MsgCreateTokenParams = {
     if (message.burningType !== "") {
       writer.uint32(42).string(message.burningType);
     }
-    if (message.sendPrice !== 0) {
-      writer.uint32(48).uint64(message.sendPrice);
+    if (message.exchangeRate !== 0) {
+      writer.uint32(48).uint64(message.exchangeRate);
+    }
+    if (message.commissionRate !== 0) {
+      writer.uint32(56).uint64(message.commissionRate);
     }
     return writer;
   },
@@ -102,7 +107,10 @@ export const MsgCreateTokenParams = {
           message.burningType = reader.string();
           break;
         case 6:
-          message.sendPrice = longToNumber(reader.uint64() as Long);
+          message.exchangeRate = longToNumber(reader.uint64() as Long);
+          break;
+        case 7:
+          message.commissionRate = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -139,10 +147,15 @@ export const MsgCreateTokenParams = {
     } else {
       message.burningType = "";
     }
-    if (object.sendPrice !== undefined && object.sendPrice !== null) {
-      message.sendPrice = Number(object.sendPrice);
+    if (object.exchangeRate !== undefined && object.exchangeRate !== null) {
+      message.exchangeRate = Number(object.exchangeRate);
     } else {
-      message.sendPrice = 0;
+      message.exchangeRate = 0;
+    }
+    if (object.commissionRate !== undefined && object.commissionRate !== null) {
+      message.commissionRate = Number(object.commissionRate);
+    } else {
+      message.commissionRate = 0;
     }
     return message;
   },
@@ -157,7 +170,10 @@ export const MsgCreateTokenParams = {
       (obj.burningTime = message.burningTime);
     message.burningType !== undefined &&
       (obj.burningType = message.burningType);
-    message.sendPrice !== undefined && (obj.sendPrice = message.sendPrice);
+    message.exchangeRate !== undefined &&
+      (obj.exchangeRate = message.exchangeRate);
+    message.commissionRate !== undefined &&
+      (obj.commissionRate = message.commissionRate);
     return obj;
   },
 
@@ -188,10 +204,15 @@ export const MsgCreateTokenParams = {
     } else {
       message.burningType = "";
     }
-    if (object.sendPrice !== undefined && object.sendPrice !== null) {
-      message.sendPrice = object.sendPrice;
+    if (object.exchangeRate !== undefined && object.exchangeRate !== null) {
+      message.exchangeRate = object.exchangeRate;
     } else {
-      message.sendPrice = 0;
+      message.exchangeRate = 0;
+    }
+    if (object.commissionRate !== undefined && object.commissionRate !== null) {
+      message.commissionRate = object.commissionRate;
+    } else {
+      message.commissionRate = 0;
     }
     return message;
   },

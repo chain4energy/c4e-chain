@@ -428,11 +428,14 @@ paths:
                       format: uint64
                     burningType:
                       type: string
-                    sendPrice:
-                      type: string
-                      format: uint64
                     mintAccount:
                       type: string
+                    exchangeRate:
+                      type: integer
+                      format: int64
+                    commissionRate:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -561,11 +564,14 @@ paths:
                     format: uint64
                   burningType:
                     type: string
-                  sendPrice:
-                    type: string
-                    format: uint64
                   mintAccount:
                     type: string
+                  exchangeRate:
+                    type: integer
+                    format: int64
+                  commissionRate:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -32353,11 +32359,14 @@ definitions:
               format: uint64
             burningType:
               type: string
-            sendPrice:
-              type: string
-              format: uint64
             mintAccount:
               type: string
+            exchangeRate:
+              type: integer
+              format: int64
+            commissionRate:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -32523,11 +32532,14 @@ definitions:
             format: uint64
           burningType:
             type: string
-          sendPrice:
-            type: string
-            format: uint64
           mintAccount:
             type: string
+          exchangeRate:
+            type: integer
+            format: int64
+          commissionRate:
+            type: string
+            format: uint64
   chain4energy.c4echain.cfeenergybank.QueryGetTokensHistoryResponse:
     type: object
     properties:
@@ -32601,11 +32613,14 @@ definitions:
         format: uint64
       burningType:
         type: string
-      sendPrice:
-        type: string
-        format: uint64
       mintAccount:
         type: string
+      exchangeRate:
+        type: integer
+        format: int64
+      commissionRate:
+        type: string
+        format: uint64
   chain4energy.c4echain.cfeenergybank.TokensHistory:
     type: object
     properties:

@@ -9,14 +9,15 @@ const TypeMsgCreateTokenParams = "create_token_params"
 
 var _ sdk.Msg = &MsgCreateTokenParams{}
 
-func NewMsgCreateTokenParams(creator string, name string, tradingCompany string, burningTime uint64, burningType string, sendPrice uint64) *MsgCreateTokenParams {
+func NewMsgCreateTokenParams(creator string, name string, tradingCompany string, burningTime uint64, burningType string, exchangeRate uint64, commissionRate uint64) *MsgCreateTokenParams {
 	return &MsgCreateTokenParams{
 		Creator:        creator,
 		Name:           name,
 		TradingCompany: tradingCompany,
 		BurningTime:    burningTime,
 		BurningType:    burningType,
-		SendPrice:      sendPrice,
+		ExchangeRate:   exchangeRate,
+		CommissionRate: commissionRate,
 	}
 }
 

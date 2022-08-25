@@ -10,8 +10,9 @@ export interface TokenParams {
   tradingCompany: string;
   burningTime: number;
   burningType: string;
-  sendPrice: number;
   mintAccount: string;
+  exchangeRate: number;
+  commissionRate: number;
 }
 
 const baseTokenParams: object = {
@@ -20,8 +21,9 @@ const baseTokenParams: object = {
   tradingCompany: "",
   burningTime: 0,
   burningType: "",
-  sendPrice: 0,
   mintAccount: "",
+  exchangeRate: 0,
+  commissionRate: 0,
 };
 
 export const TokenParams = {
@@ -41,11 +43,14 @@ export const TokenParams = {
     if (message.burningType !== "") {
       writer.uint32(42).string(message.burningType);
     }
-    if (message.sendPrice !== 0) {
-      writer.uint32(48).uint64(message.sendPrice);
-    }
     if (message.mintAccount !== "") {
-      writer.uint32(58).string(message.mintAccount);
+      writer.uint32(50).string(message.mintAccount);
+    }
+    if (message.exchangeRate !== 0) {
+      writer.uint32(56).uint64(message.exchangeRate);
+    }
+    if (message.commissionRate !== 0) {
+      writer.uint32(64).uint64(message.commissionRate);
     }
     return writer;
   },
@@ -73,10 +78,13 @@ export const TokenParams = {
           message.burningType = reader.string();
           break;
         case 6:
-          message.sendPrice = longToNumber(reader.uint64() as Long);
+          message.mintAccount = reader.string();
           break;
         case 7:
-          message.mintAccount = reader.string();
+          message.exchangeRate = longToNumber(reader.uint64() as Long);
+          break;
+        case 8:
+          message.commissionRate = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -113,15 +121,20 @@ export const TokenParams = {
     } else {
       message.burningType = "";
     }
-    if (object.sendPrice !== undefined && object.sendPrice !== null) {
-      message.sendPrice = Number(object.sendPrice);
-    } else {
-      message.sendPrice = 0;
-    }
     if (object.mintAccount !== undefined && object.mintAccount !== null) {
       message.mintAccount = String(object.mintAccount);
     } else {
       message.mintAccount = "";
+    }
+    if (object.exchangeRate !== undefined && object.exchangeRate !== null) {
+      message.exchangeRate = Number(object.exchangeRate);
+    } else {
+      message.exchangeRate = 0;
+    }
+    if (object.commissionRate !== undefined && object.commissionRate !== null) {
+      message.commissionRate = Number(object.commissionRate);
+    } else {
+      message.commissionRate = 0;
     }
     return message;
   },
@@ -136,9 +149,12 @@ export const TokenParams = {
       (obj.burningTime = message.burningTime);
     message.burningType !== undefined &&
       (obj.burningType = message.burningType);
-    message.sendPrice !== undefined && (obj.sendPrice = message.sendPrice);
     message.mintAccount !== undefined &&
       (obj.mintAccount = message.mintAccount);
+    message.exchangeRate !== undefined &&
+      (obj.exchangeRate = message.exchangeRate);
+    message.commissionRate !== undefined &&
+      (obj.commissionRate = message.commissionRate);
     return obj;
   },
 
@@ -169,15 +185,20 @@ export const TokenParams = {
     } else {
       message.burningType = "";
     }
-    if (object.sendPrice !== undefined && object.sendPrice !== null) {
-      message.sendPrice = object.sendPrice;
-    } else {
-      message.sendPrice = 0;
-    }
     if (object.mintAccount !== undefined && object.mintAccount !== null) {
       message.mintAccount = object.mintAccount;
     } else {
       message.mintAccount = "";
+    }
+    if (object.exchangeRate !== undefined && object.exchangeRate !== null) {
+      message.exchangeRate = object.exchangeRate;
+    } else {
+      message.exchangeRate = 0;
+    }
+    if (object.commissionRate !== undefined && object.commissionRate !== null) {
+      message.commissionRate = object.commissionRate;
+    } else {
+      message.commissionRate = 0;
     }
     return message;
   },

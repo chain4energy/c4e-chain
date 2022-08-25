@@ -17,8 +17,9 @@ func (k msgServer) CreateTokenParams(goCtx context.Context, msg *types.MsgCreate
 		TradingCompany: msg.TradingCompany,
 		BurningTime:    msg.BurningTime,
 		BurningType:    msg.BurningType,
-		SendPrice:      msg.SendPrice,
 		MintAccount:    msg.Creator,
+		ExchangeRate:   msg.ExchangeRate,
+		CommissionRate: msg.CommissionRate,
 	}
 
 	_, isFound := k.GetTokenParams(ctx, token.Name)

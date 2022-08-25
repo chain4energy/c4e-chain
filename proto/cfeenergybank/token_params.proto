@@ -9,8 +9,8 @@ message TokenParams {
   string tradingCompany = 3;
   uint64 burningTime = 4;
   string burningType = 5;
-  uint64 sendPrice = 6;
-  string mintAccount = 7;
-  
+  string mintAccount = 6;
+  uint64 exchangeRate = 7;
+  uint64 commissionRate = 8;
 }
 
