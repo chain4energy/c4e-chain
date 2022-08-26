@@ -114,7 +114,7 @@ export default {
 	},
 	actions: {
 		init({ dispatch, rootGetters }) {
-			console.log('Vuex module: chain4energy.c4echain.cferoutingdistributor initialized!')
+			console.log('Vuex module: chain4energy.c4echain.cfedistributor initialized!')
 			if (rootGetters['common/env/client']) {
 				rootGetters['common/env/client'].on('newblock', () => {
 					dispatch('StoreUpdate')

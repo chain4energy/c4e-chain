@@ -4,7 +4,7 @@ import { Params } from "../cferoutingdistributor/params";
 import { State } from "../cferoutingdistributor/sub_distributor";
 import { Coin } from "../cosmos/base/v1beta1/coin";
 
-export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
+export const protobufPackage = "chain4energy.c4echain.cfedistributor";
 
 /** QueryParamsRequest is request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
@@ -272,7 +272,7 @@ export class QueryClientImpl implements Query {
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cferoutingdistributor.Query",
+      "chain4energy.c4echain.cfedistributor.Query",
       "Params",
       data
     );
@@ -282,7 +282,7 @@ export class QueryClientImpl implements Query {
   States(request: QueryStatesRequest): Promise<QueryStatesResponse> {
     const data = QueryStatesRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cferoutingdistributor.Query",
+      "chain4energy.c4echain.cfedistributor.Query",
       "States",
       data
     );

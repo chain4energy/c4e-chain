@@ -4,6 +4,171 @@ info:
   name: ''
   description: ''
 paths:
+  /c4e/distributor/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: Chain4EnergyC4EchainCfedistributorParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of this module.
+                type: object
+                properties:
+                  sub_distributors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        sources:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              type:
+                                type: string
+                        destination:
+                          type: object
+                          properties:
+                            account:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                type:
+                                  type: string
+                            share:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  percent:
+                                    type: string
+                                    title: float percent = 2;
+                                  account:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                      type:
+                                        type: string
+                            burn_share:
+                              type: object
+                              properties:
+                                percent:
+                                  type: string
+                                  title: float percent =1;
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /chain4energy/c4e-chain/cfedistributor/states:
+    get:
+      summary: Queries a list of States items.
+      operationId: Chain4EnergyC4EchainCfedistributorStates
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              states:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    account:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                    burn:
+                      type: boolean
+                    coins_states:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          denom:
+                            type: string
+                          amount:
+                            type: string
+                        description: >-
+                          DecCoin defines a token with a denomination and a
+                          decimal amount.
+
+
+                          NOTE: The amount field is an Dec which implements the
+                          custom method
+
+                          signatures required by gogoproto.
+              coins_on_distributor_account:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /c4e/minter/inflation:
     get:
       summary: Queries a list of Inflation items.
@@ -134,171 +299,6 @@ paths:
                     format: int32
                   amount_minted:
                     type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/distributor/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCferoutingdistributorParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-                properties:
-                  sub_distributors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                        sources:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              type:
-                                type: string
-                        destination:
-                          type: object
-                          properties:
-                            account:
-                              type: object
-                              properties:
-                                id:
-                                  type: string
-                                type:
-                                  type: string
-                            share:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  name:
-                                    type: string
-                                  percent:
-                                    type: string
-                                    title: float percent = 2;
-                                  account:
-                                    type: object
-                                    properties:
-                                      id:
-                                        type: string
-                                      type:
-                                        type: string
-                            burn_share:
-                              type: object
-                              properties:
-                                percent:
-                                  type: string
-                                  title: float percent =1;
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /chain4energy/c4e-chain/cferoutingdistributor/states:
-    get:
-      summary: Queries a list of States items.
-      operationId: Chain4EnergyC4EchainCferoutingdistributorStates
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              states:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    account:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        type:
-                          type: string
-                    burn:
-                      type: boolean
-                    coins_states:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          denom:
-                            type: string
-                          amount:
-                            type: string
-                        description: >-
-                          DecCoin defines a token with a denomination and a
-                          decimal amount.
-
-
-                          NOTE: The amount field is an Dec which implements the
-                          custom method
-
-                          signatures required by gogoproto.
-              coins_on_distributor_account:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -31548,226 +31548,323 @@ paths:
       tags:
         - Query
 definitions:
-  chain4energy.c4echain.cfeminter.Minter:
+  chain4energy.c4echain.cfedistributor.Account:
     type: object
     properties:
-      start:
+      id:
         type: string
-        format: date-time
-      periods:
+      type:
+        type: string
+  chain4energy.c4echain.cfedistributor.BurnShare:
+    type: object
+    properties:
+      percent:
+        type: string
+        title: float percent =1;
+  chain4energy.c4echain.cfedistributor.Destination:
+    type: object
+    properties:
+      account:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+      share:
         type: array
         items:
           type: object
           properties:
-            position:
-              type: integer
-              format: int32
-            period_end:
+            name:
               type: string
-              format: date-time
-            type:
+            percent:
               type: string
-              enum:
-                - NO_MINTING
-                - TIME_LINEAR_MINTER
-                - PERIODIC_REDUCTION_MINTER
-              default: NO_MINTING
-            time_linear_minter:
+              title: float percent = 2;
+            account:
               type: object
               properties:
-                amount:
+                id:
                   type: string
-            periodic_reduction_minter:
-              type: object
-              properties:
-                mint_period:
-                  type: string
-                mint_amount:
-                  type: string
-                reduction_period_length:
-                  type: integer
-                  format: int32
-                reduction_factor:
-                  type: string
-  chain4energy.c4echain.cfeminter.MinterState:
-    type: object
-    properties:
-      current_position:
-        type: integer
-        format: int32
-      amount_minted:
-        type: string
-  chain4energy.c4echain.cfeminter.MintingPeriod:
-    type: object
-    properties:
-      position:
-        type: integer
-        format: int32
-      period_end:
-        type: string
-        format: date-time
-      type:
-        type: string
-        enum:
-          - NO_MINTING
-          - TIME_LINEAR_MINTER
-          - PERIODIC_REDUCTION_MINTER
-        default: NO_MINTING
-      time_linear_minter:
-        type: object
-        properties:
-          amount:
-            type: string
-      periodic_reduction_minter:
-        type: object
-        properties:
-          mint_period:
-            type: string
-          mint_amount:
-            type: string
-          reduction_period_length:
-            type: integer
-            format: int32
-          reduction_factor:
-            type: string
-  chain4energy.c4echain.cfeminter.MintingPeriod.MinterType:
-    type: string
-    enum:
-      - NO_MINTING
-      - TIME_LINEAR_MINTER
-      - PERIODIC_REDUCTION_MINTER
-    default: NO_MINTING
-  chain4energy.c4echain.cfeminter.Params:
-    type: object
-    properties:
-      mint_denom:
-        type: string
-      minter:
-        type: object
-        properties:
-          start:
-            type: string
-            format: date-time
-          periods:
-            type: array
-            items:
-              type: object
-              properties:
-                position:
-                  type: integer
-                  format: int32
-                period_end:
-                  type: string
-                  format: date-time
                 type:
                   type: string
-                  enum:
-                    - NO_MINTING
-                    - TIME_LINEAR_MINTER
-                    - PERIODIC_REDUCTION_MINTER
-                  default: NO_MINTING
-                time_linear_minter:
+      burn_share:
+        type: object
+        properties:
+          percent:
+            type: string
+            title: float percent =1;
+  chain4energy.c4echain.cfedistributor.Params:
+    type: object
+    properties:
+      sub_distributors:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            sources:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  type:
+                    type: string
+            destination:
+              type: object
+              properties:
+                account:
                   type: object
                   properties:
-                    amount:
+                    id:
                       type: string
-                periodic_reduction_minter:
+                    type:
+                      type: string
+                share:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      percent:
+                        type: string
+                        title: float percent = 2;
+                      account:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          type:
+                            type: string
+                burn_share:
                   type: object
                   properties:
-                    mint_period:
+                    percent:
                       type: string
-                    mint_amount:
-                      type: string
-                    reduction_period_length:
-                      type: integer
-                      format: int32
-                    reduction_factor:
-                      type: string
+                      title: float percent =1;
     description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeminter.PeriodicReductionMinter:
-    type: object
-    properties:
-      mint_period:
-        type: string
-      mint_amount:
-        type: string
-      reduction_period_length:
-        type: integer
-        format: int32
-      reduction_factor:
-        type: string
-  chain4energy.c4echain.cfeminter.QueryInflationResponse:
-    type: object
-    properties:
-      inflation:
-        type: string
-  chain4energy.c4echain.cfeminter.QueryParamsResponse:
+  chain4energy.c4echain.cfedistributor.QueryParamsResponse:
     type: object
     properties:
       params:
         description: params holds all the parameters of this module.
         type: object
         properties:
-          mint_denom:
-            type: string
-          minter:
-            type: object
-            properties:
-              start:
-                type: string
-                format: date-time
-              periods:
-                type: array
-                items:
+          sub_distributors:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                sources:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: string
+                destination:
                   type: object
                   properties:
-                    position:
-                      type: integer
-                      format: int32
-                    period_end:
-                      type: string
-                      format: date-time
-                    type:
-                      type: string
-                      enum:
-                        - NO_MINTING
-                        - TIME_LINEAR_MINTER
-                        - PERIODIC_REDUCTION_MINTER
-                      default: NO_MINTING
-                    time_linear_minter:
+                    account:
                       type: object
                       properties:
-                        amount:
+                        id:
                           type: string
-                    periodic_reduction_minter:
+                        type:
+                          type: string
+                    share:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          percent:
+                            type: string
+                            title: float percent = 2;
+                          account:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              type:
+                                type: string
+                    burn_share:
                       type: object
                       properties:
-                        mint_period:
+                        percent:
                           type: string
-                        mint_amount:
-                          type: string
-                        reduction_period_length:
-                          type: integer
-                          format: int32
-                        reduction_factor:
-                          type: string
+                          title: float percent =1;
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfeminter.QueryStateResponse:
+  chain4energy.c4echain.cfedistributor.QueryStatesResponse:
     type: object
     properties:
-      minter_state:
+      states:
+        type: array
+        items:
+          type: object
+          properties:
+            account:
+              type: object
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+            burn:
+              type: boolean
+            coins_states:
+              type: array
+              items:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  DecCoin defines a token with a denomination and a decimal
+                  amount.
+
+
+                  NOTE: The amount field is an Dec which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+      coins_on_distributor_account:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
+  chain4energy.c4echain.cfedistributor.Share:
+    type: object
+    properties:
+      name:
+        type: string
+      percent:
+        type: string
+        title: float percent = 2;
+      account:
         type: object
         properties:
-          current_position:
-            type: integer
-            format: int32
-          amount_minted:
+          id:
             type: string
-  chain4energy.c4echain.cfeminter.TimeLinearMinter:
+          type:
+            type: string
+  chain4energy.c4echain.cfedistributor.State:
     type: object
     properties:
+      account:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+      burn:
+        type: boolean
+      coins_states:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            DecCoin defines a token with a denomination and a decimal amount.
+
+            NOTE: The amount field is an Dec which implements the custom method
+            signatures required by gogoproto.
+  chain4energy.c4echain.cfedistributor.SubDistributor:
+    type: object
+    properties:
+      name:
+        type: string
+      sources:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+      destination:
+        type: object
+        properties:
+          account:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+          share:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                percent:
+                  type: string
+                  title: float percent = 2;
+                account:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          burn_share:
+            type: object
+            properties:
+              percent:
+                type: string
+                title: float percent =1;
+  cosmos.base.v1beta1.Coin:
+    type: object
+    properties:
+      denom:
+        type: string
       amount:
         type: string
+    description: |-
+      Coin defines a token with a denomination and an amount.
+
+      NOTE: The amount field is an Int which implements the custom method
+      signatures required by gogoproto.
+  cosmos.base.v1beta1.DecCoin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      DecCoin defines a token with a denomination and a decimal amount.
+
+      NOTE: The amount field is an Dec which implements the custom method
+      signatures required by gogoproto.
   google.protobuf.Any:
     type: object
     properties:
@@ -32091,323 +32188,226 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
-  chain4energy.c4echain.cferoutingdistributor.Account:
+  chain4energy.c4echain.cfeminter.Minter:
     type: object
     properties:
-      id:
+      start:
         type: string
+        format: date-time
+      periods:
+        type: array
+        items:
+          type: object
+          properties:
+            position:
+              type: integer
+              format: int32
+            period_end:
+              type: string
+              format: date-time
+            type:
+              type: string
+              enum:
+                - NO_MINTING
+                - TIME_LINEAR_MINTER
+                - PERIODIC_REDUCTION_MINTER
+              default: NO_MINTING
+            time_linear_minter:
+              type: object
+              properties:
+                amount:
+                  type: string
+            periodic_reduction_minter:
+              type: object
+              properties:
+                mint_period:
+                  type: string
+                mint_amount:
+                  type: string
+                reduction_period_length:
+                  type: integer
+                  format: int32
+                reduction_factor:
+                  type: string
+  chain4energy.c4echain.cfeminter.MinterState:
+    type: object
+    properties:
+      current_position:
+        type: integer
+        format: int32
+      amount_minted:
+        type: string
+  chain4energy.c4echain.cfeminter.MintingPeriod:
+    type: object
+    properties:
+      position:
+        type: integer
+        format: int32
+      period_end:
+        type: string
+        format: date-time
       type:
         type: string
-  chain4energy.c4echain.cferoutingdistributor.BurnShare:
-    type: object
-    properties:
-      percent:
-        type: string
-        title: float percent =1;
-  chain4energy.c4echain.cferoutingdistributor.Destination:
-    type: object
-    properties:
-      account:
+        enum:
+          - NO_MINTING
+          - TIME_LINEAR_MINTER
+          - PERIODIC_REDUCTION_MINTER
+        default: NO_MINTING
+      time_linear_minter:
         type: object
         properties:
-          id:
+          amount:
             type: string
-          type:
+      periodic_reduction_minter:
+        type: object
+        properties:
+          mint_period:
             type: string
-      share:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            percent:
-              type: string
-              title: float percent = 2;
-            account:
+          mint_amount:
+            type: string
+          reduction_period_length:
+            type: integer
+            format: int32
+          reduction_factor:
+            type: string
+  chain4energy.c4echain.cfeminter.MintingPeriod.MinterType:
+    type: string
+    enum:
+      - NO_MINTING
+      - TIME_LINEAR_MINTER
+      - PERIODIC_REDUCTION_MINTER
+    default: NO_MINTING
+  chain4energy.c4echain.cfeminter.Params:
+    type: object
+    properties:
+      mint_denom:
+        type: string
+      minter:
+        type: object
+        properties:
+          start:
+            type: string
+            format: date-time
+          periods:
+            type: array
+            items:
               type: object
               properties:
-                id:
+                position:
+                  type: integer
+                  format: int32
+                period_end:
                   type: string
+                  format: date-time
                 type:
                   type: string
-      burn_share:
-        type: object
-        properties:
-          percent:
-            type: string
-            title: float percent =1;
-  chain4energy.c4echain.cferoutingdistributor.Params:
+                  enum:
+                    - NO_MINTING
+                    - TIME_LINEAR_MINTER
+                    - PERIODIC_REDUCTION_MINTER
+                  default: NO_MINTING
+                time_linear_minter:
+                  type: object
+                  properties:
+                    amount:
+                      type: string
+                periodic_reduction_minter:
+                  type: object
+                  properties:
+                    mint_period:
+                      type: string
+                    mint_amount:
+                      type: string
+                    reduction_period_length:
+                      type: integer
+                      format: int32
+                    reduction_factor:
+                      type: string
+    description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfeminter.PeriodicReductionMinter:
     type: object
     properties:
-      sub_distributors:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            sources:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  type:
-                    type: string
-            destination:
-              type: object
-              properties:
-                account:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    type:
-                      type: string
-                share:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                      percent:
-                        type: string
-                        title: float percent = 2;
-                      account:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                          type:
-                            type: string
-                burn_share:
-                  type: object
-                  properties:
-                    percent:
-                      type: string
-                      title: float percent =1;
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cferoutingdistributor.QueryParamsResponse:
+      mint_period:
+        type: string
+      mint_amount:
+        type: string
+      reduction_period_length:
+        type: integer
+        format: int32
+      reduction_factor:
+        type: string
+  chain4energy.c4echain.cfeminter.QueryInflationResponse:
+    type: object
+    properties:
+      inflation:
+        type: string
+  chain4energy.c4echain.cfeminter.QueryParamsResponse:
     type: object
     properties:
       params:
         description: params holds all the parameters of this module.
         type: object
         properties:
-          sub_distributors:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                sources:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      type:
-                        type: string
-                destination:
-                  type: object
-                  properties:
-                    account:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        type:
-                          type: string
-                    share:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                          percent:
-                            type: string
-                            title: float percent = 2;
-                          account:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              type:
-                                type: string
-                    burn_share:
-                      type: object
-                      properties:
-                        percent:
-                          type: string
-                          title: float percent =1;
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cferoutingdistributor.QueryStatesResponse:
-    type: object
-    properties:
-      states:
-        type: array
-        items:
-          type: object
-          properties:
-            account:
-              type: object
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-            burn:
-              type: boolean
-            coins_states:
-              type: array
-              items:
-                type: object
-                properties:
-                  denom:
-                    type: string
-                  amount:
-                    type: string
-                description: >-
-                  DecCoin defines a token with a denomination and a decimal
-                  amount.
-
-
-                  NOTE: The amount field is an Dec which implements the custom
-                  method
-
-                  signatures required by gogoproto.
-      coins_on_distributor_account:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cferoutingdistributor.Share:
-    type: object
-    properties:
-      name:
-        type: string
-      percent:
-        type: string
-        title: float percent = 2;
-      account:
-        type: object
-        properties:
-          id:
+          mint_denom:
             type: string
-          type:
-            type: string
-  chain4energy.c4echain.cferoutingdistributor.State:
-    type: object
-    properties:
-      account:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-      burn:
-        type: boolean
-      coins_states:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cferoutingdistributor.SubDistributor:
-    type: object
-    properties:
-      name:
-        type: string
-      sources:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-            type:
-              type: string
-      destination:
-        type: object
-        properties:
-          account:
+          minter:
             type: object
             properties:
-              id:
+              start:
                 type: string
-              type:
-                type: string
-          share:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                percent:
-                  type: string
-                  title: float percent = 2;
-                account:
+                format: date-time
+              periods:
+                type: array
+                items:
                   type: object
                   properties:
-                    id:
+                    position:
+                      type: integer
+                      format: int32
+                    period_end:
                       type: string
+                      format: date-time
                     type:
                       type: string
-          burn_share:
-            type: object
-            properties:
-              percent:
-                type: string
-                title: float percent =1;
-  cosmos.base.v1beta1.Coin:
+                      enum:
+                        - NO_MINTING
+                        - TIME_LINEAR_MINTER
+                        - PERIODIC_REDUCTION_MINTER
+                      default: NO_MINTING
+                    time_linear_minter:
+                      type: object
+                      properties:
+                        amount:
+                          type: string
+                    periodic_reduction_minter:
+                      type: object
+                      properties:
+                        mint_period:
+                          type: string
+                        mint_amount:
+                          type: string
+                        reduction_period_length:
+                          type: integer
+                          format: int32
+                        reduction_factor:
+                          type: string
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cfeminter.QueryStateResponse:
     type: object
     properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      Coin defines a token with a denomination and an amount.
-
-      NOTE: The amount field is an Int which implements the custom method
-      signatures required by gogoproto.
-  cosmos.base.v1beta1.DecCoin:
+      minter_state:
+        type: object
+        properties:
+          current_position:
+            type: integer
+            format: int32
+          amount_minted:
+            type: string
+  chain4energy.c4echain.cfeminter.TimeLinearMinter:
     type: object
     properties:
-      denom:
-        type: string
       amount:
         type: string
-    description: |-
-      DecCoin defines a token with a denomination and a decimal amount.
-
-      NOTE: The amount field is an Dec which implements the custom method
-      signatures required by gogoproto.
   chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
     type: object
     properties:

@@ -17,7 +17,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
+	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 )
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)

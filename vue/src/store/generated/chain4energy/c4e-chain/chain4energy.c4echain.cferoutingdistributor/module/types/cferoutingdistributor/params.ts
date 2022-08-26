@@ -2,7 +2,7 @@
 import { SubDistributor } from "../cferoutingdistributor/sub_distributor";
 import { Writer, Reader } from "protobufjs/minimal";
 
-export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
+export const protobufPackage = "chain4energy.c4echain.cfedistributor";
 
 /** Params defines the parameters for the module. */
 export interface Params {

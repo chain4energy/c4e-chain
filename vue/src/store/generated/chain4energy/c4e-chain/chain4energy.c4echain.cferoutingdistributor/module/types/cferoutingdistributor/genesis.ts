@@ -3,9 +3,9 @@ import { Params } from "../cferoutingdistributor/params";
 import { State } from "../cferoutingdistributor/sub_distributor";
 import { Writer, Reader } from "protobufjs/minimal";
 
-export const protobufPackage = "chain4energy.c4echain.cferoutingdistributor";
+export const protobufPackage = "chain4energy.c4echain.cfedistributor";
 
-/** GenesisState defines the cferoutingdistributor module's genesis state. */
+/** GenesisState defines the cfedistributor module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
   /** this line is used by starport scaffolding # genesis/proto/state */

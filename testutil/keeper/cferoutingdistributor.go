@@ -3,8 +3,8 @@ package keeper
 import (
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/keeper"
-	"github.com/chain4energy/c4e-chain/x/cferoutingdistributor/types"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -17,7 +17,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 )
 
-func CferoutingdistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -34,7 +34,7 @@ func CferoutingdistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		types.Amino,
 		storeKey,
 		memStoreKey,
-		"CferoutingdistributorParams",
+		"Cfedistributor",
 	)
 	k := keeper.NewKeeper(
 		cdc,
