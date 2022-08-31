@@ -21,7 +21,7 @@ service Query {
   }
   // Queries a list of States items.
 	rpc States(QueryStatesRequest) returns (QueryStatesResponse) {
-		option (google.api.http).get = "/chain4energy/c4e-chain/cfedistributor/states";
+		option (google.api.http).get = "/c4e/distributor/states";
 	}
 
 // this line is used by starport scaffolding # 2

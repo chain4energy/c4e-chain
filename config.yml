@@ -67,6 +67,7 @@ genesis:
               - amount: "5000000000000"
                 denom: "uc4e"
           start_time: "1670429736"
+
     bank:
       denom_metadata:
         - description: "Chain4Energy Token"
@@ -95,6 +96,16 @@ genesis:
       params:
         bond_denom: "uc4e"
         unbonding_time: "100s"
+
+    gov:
+      deposit_params:
+        max_deposit_period: "50s"
+        min_deposit:
+          - denom: "uc4e"
+            amount: "10000000"
+      voting_params:
+        voting_period: "10s"
+
     cfeminter:
       params:
         mint_denom: "uc4e"

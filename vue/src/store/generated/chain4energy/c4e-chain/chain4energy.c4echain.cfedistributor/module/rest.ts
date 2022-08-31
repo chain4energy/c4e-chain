@@ -313,11 +313,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryStates
    * @summary Queries a list of States items.
-   * @request GET:/chain4energy/c4e-chain/cfedistributor/states
+   * @request GET:/c4e/distributor/states
    */
   queryStates = (params: RequestParams = {}) =>
     this.request<CfedistributorQueryStatesResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfedistributor/states`,
+      path: `/c4e/distributor/states`,
       method: "GET",
       format: "json",
       ...params,
