@@ -23,7 +23,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// GenesisState defines the cferoutingdistributor module's genesis state.
+// GenesisState defines the cfedistributor module's genesis state.
 type GenesisState struct {
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 	// this line is used by starport scaffolding # genesis/proto/state

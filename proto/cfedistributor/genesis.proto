@@ -9,7 +9,7 @@ import "cfedistributor/sub_distributor.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 
-// GenesisState defines the cferoutingdistributor module's genesis state.
+// GenesisState defines the cfedistributor module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state

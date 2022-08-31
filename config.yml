@@ -119,7 +119,7 @@ genesis:
       minter_state:
         current_position: 1
         amount_minted: "0"
-    cferoutingdistributor:
+    cfedistributor:
       params:
         sub_distributors:
         - name: tx_fee_distributor
