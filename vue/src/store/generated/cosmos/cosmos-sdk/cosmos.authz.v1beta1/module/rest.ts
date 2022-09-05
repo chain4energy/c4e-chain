@@ -229,6 +229,103 @@ export interface V1Beta1Grant {
 }
 
 /**
+ * Since: cosmos-sdk 0.45.2
+ */
+export interface V1Beta1GrantAuthorization {
+  granter?: string;
+  grantee?: string;
+
+  /**
+   * `Any` contains an arbitrary serialized protocol buffer message along with a
+   * URL that describes the type of the serialized message.
+   *
+   * Protobuf library provides support to pack/unpack Any values in the form
+   * of utility functions or additional generated methods of the Any type.
+   *
+   * Example 1: Pack and unpack a message in C++.
+   *
+   *     Foo foo = ...;
+   *     Any any;
+   *     any.PackFrom(foo);
+   *     ...
+   *     if (any.UnpackTo(&foo)) {
+   *       ...
+   *     }
+   *
+   * Example 2: Pack and unpack a message in Java.
+   *
+   *     Foo foo = ...;
+   *     Any any = Any.pack(foo);
+   *     ...
+   *     if (any.is(Foo.class)) {
+   *       foo = any.unpack(Foo.class);
+   *     }
+   *
+   *  Example 3: Pack and unpack a message in Python.
+   *
+   *     foo = Foo(...)
+   *     any = Any()
+   *     any.Pack(foo)
+   *     ...
+   *     if any.Is(Foo.DESCRIPTOR):
+   *       any.Unpack(foo)
+   *       ...
+   *
+   *  Example 4: Pack and unpack a message in Go
+   *
+   *      foo := &pb.Foo{...}
+   *      any, err := anypb.New(foo)
+   *      if err != nil {
+   *        ...
+   *      }
+   *      ...
+   *      foo := &pb.Foo{}
+   *      if err := any.UnmarshalTo(foo); err != nil {
+   *        ...
+   *      }
+   *
+   * The pack methods provided by protobuf library will by default use
+   * 'type.googleapis.com/full.type.name' as the type URL and the unpack
+   * methods only use the fully qualified type name after the last '/'
+   * in the type URL, for example "foo.bar.com/x/y.z" will yield type
+   * name "y.z".
+   *
+   *
+   * JSON
+   * ====
+   * The JSON representation of an `Any` value uses the regular
+   * representation of the deserialized, embedded message, with an
+   * additional field `@type` which contains the type URL. Example:
+   *
+   *     package google.profile;
+   *     message Person {
+   *       string first_name = 1;
+   *       string last_name = 2;
+   *     }
+   *
+   *     {
+   *       "@type": "type.googleapis.com/google.profile.Person",
+   *       "firstName": <string>,
+   *       "lastName": <string>
+   *     }
+   *
+   * If the embedded message type is well-known and has a custom JSON
+   * representation, that representation will be embedded adding a field
+   * `value` which holds the custom JSON in addition to the `@type`
+   * field. Example (for message [google.protobuf.Duration][]):
+   *
+   *     {
+   *       "@type": "type.googleapis.com/google.protobuf.Duration",
+   *       "value": "1.212s"
+   *     }
+   */
+  authorization?: ProtobufAny;
+
+  /** @format date-time */
+  expiration?: string;
+}
+
+/**
  * MsgExecResponse defines the Msg/MsgExecResponse response type.
  */
 export interface V1Beta1MsgExecResponse {
@@ -281,7 +378,7 @@ export interface V1Beta1PageRequest {
    * count_total is only respected when offset is used. It is ignored when key
    * is set.
    */
-  countTotal?: boolean;
+  count_total?: boolean;
 
   /**
    * reverse is set to true if results are to be returned in the descending order.
@@ -302,10 +399,32 @@ corresponding request message has used PageRequest.
 */
 export interface V1Beta1PageResponse {
   /** @format byte */
-  nextKey?: string;
+  next_key?: string;
 
   /** @format uint64 */
   total?: string;
+}
+
+/**
+ * QueryGranteeGrantsResponse is the response type for the Query/GranteeGrants RPC method.
+ */
+export interface V1Beta1QueryGranteeGrantsResponse {
+  /** grants is a list of grants granted to the grantee. */
+  grants?: V1Beta1GrantAuthorization[];
+
+  /** pagination defines an pagination for the response. */
+  pagination?: V1Beta1PageResponse;
+}
+
+/**
+ * QueryGranterGrantsResponse is the response type for the Query/GranterGrants RPC method.
+ */
+export interface V1Beta1QueryGranterGrantsResponse {
+  /** grants is a list of grants granted by the granter. */
+  grants?: V1Beta1GrantAuthorization[];
+
+  /** pagination defines an pagination for the response. */
+  pagination?: V1Beta1PageResponse;
 }
 
 /**
@@ -527,17 +646,71 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     query?: {
       granter?: string;
       grantee?: string;
-      msgTypeUrl?: string;
+      msg_type_url?: string;
       "pagination.key"?: string;
       "pagination.offset"?: string;
       "pagination.limit"?: string;
-      "pagination.countTotal"?: boolean;
+      "pagination.count_total"?: boolean;
       "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
     this.request<V1Beta1QueryGrantsResponse, RpcStatus>({
       path: `/cosmos/authz/v1beta1/grants`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * @description Since: cosmos-sdk 0.45.2
+   *
+   * @tags Query
+   * @name QueryGranteeGrants
+   * @summary GranteeGrants returns a list of `GrantAuthorization` by grantee.
+   * @request GET:/cosmos/authz/v1beta1/grants/grantee/{grantee}
+   */
+  queryGranteeGrants = (
+    grantee: string,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<V1Beta1QueryGranteeGrantsResponse, RpcStatus>({
+      path: `/cosmos/authz/v1beta1/grants/grantee/${grantee}`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * @description Since: cosmos-sdk 0.45.2
+   *
+   * @tags Query
+   * @name QueryGranterGrants
+   * @summary GranterGrants returns list of `GrantAuthorization`, granted by granter.
+   * @request GET:/cosmos/authz/v1beta1/grants/granter/{granter}
+   */
+  queryGranterGrants = (
+    granter: string,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<V1Beta1QueryGranterGrantsResponse, RpcStatus>({
+      path: `/cosmos/authz/v1beta1/grants/granter/${granter}`,
       method: "GET",
       query: query,
       format: "json",

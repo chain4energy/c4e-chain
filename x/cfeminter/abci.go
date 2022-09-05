@@ -2,9 +2,9 @@ package cfeminter
 
 import (
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/mint/types"
 	"time"
 )
 
