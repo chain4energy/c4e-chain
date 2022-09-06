@@ -27,10 +27,7 @@ message VestingPool {
   string vesting_type = 3;
   google.protobuf.Timestamp lock_start = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   google.protobuf.Timestamp lock_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  // google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string vested = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  // google.protobuf.Duration release_period = 7 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
-  // bool delegation_allowed = 8;
   string withdrawn = 7 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string sent = 8 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   google.protobuf.Timestamp last_modification = 9 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];

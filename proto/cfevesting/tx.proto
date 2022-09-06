@@ -15,13 +15,6 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 service Msg {
   rpc CreateVestingPool (MsgCreateVestingPool) returns (MsgCreateVestingPoolResponse);
   rpc WithdrawAllAvailable(MsgWithdrawAllAvailable) returns (MsgWithdrawAllAvailableResponse);
-  // rpc Delegate(MsgDelegate) returns (MsgDelegateResponse);
-  // rpc Undelegate(MsgUndelegate) returns (MsgUndelegateResponse);
-  // rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
-  // rpc WithdrawDelegatorReward(MsgWithdrawDelegatorReward) returns (MsgWithdrawDelegatorRewardResponse);
-  // rpc SendVesting(MsgSendVesting) returns (MsgSendVestingResponse);
-  // rpc Vote(MsgVote) returns (MsgVoteResponse);
-  // rpc VoteWeighted(MsgVoteWeighted) returns (MsgVoteWeightedResponse);
   rpc CreateVestingAccount(MsgCreateVestingAccount) returns (MsgCreateVestingAccountResponse);
   rpc SendToVestingAccount(MsgSendToVestingAccount) returns (MsgSendToVestingAccountResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
@@ -29,7 +22,6 @@ service Msg {
 
 message MsgCreateVestingPool {
   string creator = 1;
-  // uint64 amount = 2;
   string name = 3;
   string amount = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   google.protobuf.Duration duration = 5 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
@@ -45,73 +37,6 @@ message MsgWithdrawAllAvailable {
 
 message MsgWithdrawAllAvailableResponse {
 }
-
-// message MsgDelegate {
-//   string delegator_address = 1;
-//   string validator_address = 2;
-//   cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
-// }
-
-// message MsgDelegateResponse {
-// }
-
-// message MsgUndelegate {
-//   string delegator_address = 1;
-//   string validator_address = 2;
-//   cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
-// }
-
-// message MsgUndelegateResponse {
-//   google.protobuf.Timestamp completion_time = 1 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-// }
-
-// message MsgBeginRedelegate {
-//   string delegator_address = 1;
-//   string validator_src_address = 2;
-//   string validator_dst_address = 3;
-//   cosmos.base.v1beta1.Coin amount = 4 [(gogoproto.nullable) = false];
-// }
-
-// message MsgBeginRedelegateResponse {
-//   google.protobuf.Timestamp completion_time = 1 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-// }
-
-// message MsgWithdrawDelegatorReward {
-//   string delegator_address = 1;
-//   string validator_address = 2;
-// }
-
-// message MsgWithdrawDelegatorRewardResponse {
-// }
-
-// message MsgSendVesting {
-//   string from_address = 1;
-//   string to_address = 2;
-//   int32 vesting_id = 3;
-//   string amount = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-//   bool restart_vesting = 5;
-// }
-
-// message MsgSendVestingResponse {
-// }
-
-// message MsgVote {
-//   uint64 proposal_id = 1 [(gogoproto.jsontag) = "proposal_id", (gogoproto.moretags) = "yaml:\"proposal_id\""];
-//   string voter = 2;
-//   cosmos.gov.v1beta1.VoteOption option = 3;
-// }
-
-// message MsgVoteResponse {
-// }
-
-// message MsgVoteWeighted {
-//   uint64 proposal_id = 1 [(gogoproto.moretags) = "yaml:\"proposal_id\""];
-//   string voter = 2;
-//   repeated cosmos.gov.v1beta1.WeightedVoteOption options = 3 [(gogoproto.nullable) = false];
-// }
-
-// message MsgVoteWeightedResponse {
-// }
 
 message MsgCreateVestingAccount {
   string   from_address                    = 1 [(gogoproto.moretags) = "yaml:\"from_address\""];

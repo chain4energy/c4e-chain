@@ -14,9 +14,7 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
   repeated GenesisVestingType vesting_types = 2 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vesting_types\""];
-
   AccountVestingsList account_vestings_list = 3 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"account_vestings_list\""];
-
 }
 
 message GenesisVestingType {
@@ -29,12 +27,7 @@ message GenesisVestingType {
   // period of veesting coins from lockup period end
   int64 vesting_period = 4; 
   string vesting_period_unit = 5; 
-  // vested coin periodical releasing 
-  // int64 token_releasing_period = 6; 
-  // string token_releasing_period_unit = 7; 
-  // defines if vesting type allows delegation
-  // bool delegations_allowed = 8; 
-
+  
   // units to select:
   // days
   // hours

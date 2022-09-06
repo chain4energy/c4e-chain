@@ -65,9 +65,7 @@ message VestingPoolInfo {
   string vesting_type = 3;
   google.protobuf.Timestamp lock_start = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   google.protobuf.Timestamp lock_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  // google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string withdrawable = 6;
-  // bool delegation_allowed = 7;
   cosmos.base.v1beta1.Coin vested = 7;
   string current_vested_amount = 8;
   string sent_amount = 9;
