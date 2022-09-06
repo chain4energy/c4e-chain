@@ -70,7 +70,7 @@ func (k Keeper) checkIfPayloadLinkExists(ctx sdk.Context, key string) bool {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.PayloadLinkKey))
 	storedValue := store.Get(getStoreKeyBytes(key))
 
-	return !(storedValue != nil)
+	return storedValue == nil
 }
 
 func getStoreKeyBytes(ID string) []byte {
