@@ -14,16 +14,16 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/c4e/cfeminter/params";
+    option (google.api.http).get = "/c4e/minter/params";
   }
   // Queries a list of Inflation items.
 	rpc Inflation(QueryInflationRequest) returns (QueryInflationResponse) {
-		option (google.api.http).get = "/c4e/cfeminter/inflation";
+		option (google.api.http).get = "/c4e/minter/inflation";
 	}
 
 // Queries a list of State items.
 	rpc State(QueryStateRequest) returns (QueryStateResponse) {
-		option (google.api.http).get = "/c4e/cfeminter/state";
+		option (google.api.http).get = "/c4e/minter/state";
 	}
 
 // this line is used by starport scaffolding # 2
