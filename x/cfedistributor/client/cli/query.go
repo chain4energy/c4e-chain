@@ -3,9 +3,9 @@ package cli
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/spf13/cobra"
 )
 
 // GetQueryCmd returns the cli query commands for this module

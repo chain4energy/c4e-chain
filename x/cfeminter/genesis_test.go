@@ -19,7 +19,7 @@ import (
 	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 )
 
-const iterationText = "iterarion %d";
+const iterationText = "iterarion %d"
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
 const Year = time.Hour * 24 * 365

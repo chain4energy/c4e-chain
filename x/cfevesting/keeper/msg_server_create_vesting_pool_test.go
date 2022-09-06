@@ -89,7 +89,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
 
 	require.EqualError(t, err,
-		"vesting pool name already exists: " + vPool1 + ": invalid request")
+		"vesting pool name already exists: "+vPool1+": invalid request")
 
 }
 

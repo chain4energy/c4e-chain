@@ -120,12 +120,12 @@ func generateAccountVestings(numberOfAccounts int, numberOfVestingsPerAccount in
 func generateRandomVesting(accuntId int, vestingId int) types.VestingPool {
 	rgen := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return types.VestingPool{
-		Id:          int32(vestingId),
-		Name:        "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		VestingType: "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		LockStart:   CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		LockEnd:     CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		Vested: sdk.NewInt(int64(rgen.Intn(10000000))),
+		Id:                        int32(vestingId),
+		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
+		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
+		LockStart:                 CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
+		LockEnd:                   CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
+		Vested:                    sdk.NewInt(int64(rgen.Intn(10000000))),
 		Withdrawn:                 sdk.NewInt(int64(rgen.Intn(10000000))),
 		Sent:                      sdk.NewInt(int64(rgen.Intn(10000000))),
 		LastModification:          CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
@@ -136,12 +136,12 @@ func generateRandomVesting(accuntId int, vestingId int) types.VestingPool {
 
 func generate10BasedVesting(accuntId int, vestingId int) types.VestingPool {
 	return types.VestingPool{
-		Id:          int32(vestingId),
-		Name:        "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		VestingType: "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		LockStart:   CreateTimeFromNumOfHours(1000),
-		LockEnd:     CreateTimeFromNumOfHours(110000),
-		Vested: sdk.NewInt(1000000),
+		Id:                        int32(vestingId),
+		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
+		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
+		LockStart:                 CreateTimeFromNumOfHours(1000),
+		LockEnd:                   CreateTimeFromNumOfHours(110000),
+		Vested:                    sdk.NewInt(1000000),
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
 		LastModification:          CreateTimeFromNumOfHours(1000),

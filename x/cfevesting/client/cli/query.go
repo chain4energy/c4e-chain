@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
 // GetQueryCmd returns the cli query commands for this module

@@ -15,27 +15,27 @@ func (m Minter) Validate() error {
 	if len(m.Periods) < 1 {
 		return fmt.Errorf("no minter periods defined")
 	}
-	return m.validatePeriods();
+	return m.validatePeriods()
 }
 
 func (m Minter) validatePeriods() error {
 	lastPos := len(m.Periods) - 1
 	id := int32(0)
 	for i, period := range m.Periods {
-		periodId, err := m.validatePeriodOrderingId(period, id);
+		periodId, err := m.validatePeriodOrderingId(period, id)
 		if err != nil {
-			return err;
+			return err
 		}
-		id = periodId;
+		id = periodId
 
-		err = m.validatePeriodEndExistance(period, i, lastPos);
+		err = m.validatePeriodEndExistance(period, i, lastPos)
 		if err != nil {
-			return err;
+			return err
 		}
 
-		err = m.validatePeriodEndValue(period, i, lastPos);
+		err = m.validatePeriodEndValue(period, i, lastPos)
 		if err != nil {
-			return err;
+			return err
 		}
 
 		err = period.Validate()

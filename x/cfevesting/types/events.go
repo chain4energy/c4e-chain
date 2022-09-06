@@ -18,8 +18,8 @@ const (
 	AttributeKeyDelegator        = "delegator"
 	AttributeKeyDelegableAddress = "delegable_address"
 	AttributeKeyCompletionTime   = "completion_time"
-	AttributeKeyRecipient  = "recipient"
-	AttributeKeySender     = "sender"
-	AttributeKeyWithdrawn  = "withdrawn"
-	AttributeValueCategory = ModuleName
+	AttributeKeyRecipient        = "recipient"
+	AttributeKeySender           = "sender"
+	AttributeKeyWithdrawn        = "withdrawn"
+	AttributeValueCategory       = ModuleName
 )

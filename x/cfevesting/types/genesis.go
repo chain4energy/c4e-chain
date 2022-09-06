@@ -83,7 +83,7 @@ func (av AccountVestings) Validate() error {
 		return fmt.Errorf("account vestings address: %s: %s", av.Address, err.Error())
 	}
 	for _, v := range vs {
-		err = av.checkDuplications(vs, v);
+		err = av.checkDuplications(vs, v)
 		if err != nil {
 			return err
 		}

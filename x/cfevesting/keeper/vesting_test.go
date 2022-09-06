@@ -80,7 +80,7 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	// current block higher than lock start  but lass than lock end - witdrawable 0
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight.Add(-1), vesting)
 	require.EqualValues(t, sdk.ZeroInt(), withdrawable)
-	
+
 }
 
 func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
@@ -89,11 +89,11 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vesting := types.VestingPool{
-		Id:          1,
-		VestingType: "test",
-		LockStart:   lockEndHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
-		LockEnd:     lockEndHeight,
-		Vested: amount.AddRaw(50000),
+		Id:                        1,
+		VestingType:               "test",
+		LockStart:                 lockEndHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
+		LockEnd:                   lockEndHeight,
+		Vested:                    amount.AddRaw(50000),
 		Withdrawn:                 sdk.NewInt(500000),
 		Sent:                      sdk.NewInt(50000),
 		LastModification:          startHeight,

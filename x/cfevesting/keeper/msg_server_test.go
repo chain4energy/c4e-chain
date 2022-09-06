@@ -22,9 +22,8 @@ import (
 )
 
 const (
-	vPool1 = "v-pool-1";
-	vPool2 = "v-pool-2";
-
+	vPool1 = "v-pool-1"
+	vPool2 = "v-pool-2"
 )
 
 func verifyAccountBalance(t *testing.T, app *app.App, ctx sdk.Context, accAddr sdk.AccAddress, expectedAmount sdk.Int) {
@@ -85,7 +84,7 @@ func verifyUnbondingDelegations(t *testing.T, ctx sdk.Context, app *app.App, del
 }
 
 func setupAccountsVestings(ctx sdk.Context, app *app.App, address string, numberOfVestings int, vestingAmount uint64, withdrawnAmount uint64) types.AccountVestings {
-	return setupAccountsVestingsWithModification(ctx, app, func(*types.VestingPool) {/*do not modify*/}, address, numberOfVestings, vestingAmount, withdrawnAmount)
+	return setupAccountsVestingsWithModification(ctx, app, func(*types.VestingPool) { /*do not modify*/ }, address, numberOfVestings, vestingAmount, withdrawnAmount)
 }
 
 func setupAccountsVestingsWithModification(ctx sdk.Context, app *app.App, modifyVesting func(*types.VestingPool), address string, numberOfVestings int, vestingAmount uint64, withdrawnAmount uint64) types.AccountVestings {
@@ -208,7 +207,7 @@ func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *a
 }
 
 func setupVestingTypes(ctx sdk.Context, app *app.App, numberOfVestingTypes int, amountOf10BasedVestingTypes int, startId int) types.VestingTypes {
-	return setupVestingTypesWithModification(ctx, app, func(*types.VestingType) {/* do not modify */}, numberOfVestingTypes, amountOf10BasedVestingTypes, startId)
+	return setupVestingTypesWithModification(ctx, app, func(*types.VestingType) { /* do not modify */ }, numberOfVestingTypes, amountOf10BasedVestingTypes, startId)
 }
 
 func setupVestingTypesWithModification(ctx sdk.Context, app *app.App, modifyVestingType func(*types.VestingType), numberOfVestingTypes int, amountOf10BasedVestingTypes int, startId int) types.VestingTypes {

@@ -9,9 +9,9 @@ import (
 
 func TestGenesisState_Validate(t *testing.T) {
 	for _, tc := range []struct {
-		desc     string
-		genState *types.GenesisState
-		valid    bool
+		desc         string
+		genState     *types.GenesisState
+		valid        bool
 		errorMassage string
 	}{
 		{
@@ -25,7 +25,7 @@ func TestGenesisState_Validate(t *testing.T) {
 
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
-			valid: false,
+			valid:        false,
 			errorMassage: "denom cannot be empty",
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
