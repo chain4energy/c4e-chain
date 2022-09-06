@@ -29,24 +29,6 @@ func TestVesting(t *testing.T) {
 	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
 }
 
-func TestVestingWithDelegableAddress(t *testing.T) {
-	height := int64(0)
-	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
-	wctx := sdk.WrapSDKContext(ctx)
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
-	addr := acountsAddresses[0].String()
-
-	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
-	accountVestings.Address = addr
-
-	keeper.SetAccountVestings(ctx, accountVestings)
-
-	response, err := keeper.VestingPools(wctx, &types.QueryVestingPoolsRequest{Address: addr})
-	require.NoError(t, err)
-	verifyVestingResponse(t, response, accountVestings, ctx.BlockTime(), true)
-
-}
-
 func TestVestingSomeToWithdraw(t *testing.T) {
 	height := int64(10100)
 	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
