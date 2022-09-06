@@ -57,10 +57,11 @@ func validateDenom(v interface{}) error {
 	denom, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", v)
-	} //
+	}
 
-	// TODO implement validation
-	_ = denom //
+	if len(denom) == 0 {
+		return fmt.Errorf("denom cannot be empty")
+	}
 
 	return nil
 }

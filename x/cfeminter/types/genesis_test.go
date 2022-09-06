@@ -17,6 +17,15 @@ func TestGenesisState_Validate(t *testing.T) {
 		errorMassage string
 	}{
 		{
+			desc: "no params",
+			genState: &types.GenesisState{
+				MinterState: types.MinterState{2, sdk.NewInt(123)},
+				// this line is used by starport scaffolding # types/genesis/validField
+			},
+			valid:        false,
+			errorMassage: "denom cannot be empty",
+		},
+		{
 			desc: "no periods",
 			genState: &types.GenesisState{
 				Params:      types.NewParams("myc4e", types.Minter{}),

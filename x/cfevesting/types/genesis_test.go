@@ -12,6 +12,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		desc     string
 		genState *types.GenesisState
 		valid    bool
+		errorMassage string
 	}{
 		{
 			desc:     "default is valid",
@@ -19,12 +20,13 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
+			desc:     "empty genesis state",
 			genState: &types.GenesisState{
 
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
-			valid: true,
+			valid: false,
+			errorMassage: "denom cannot be empty",
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
@@ -33,7 +35,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			if tc.valid {
 				require.NoError(t, err)
 			} else {
-				require.Error(t, err)
+				require.EqualError(t, err, tc.errorMassage)
 			}
 		})
 	}
