@@ -58,7 +58,6 @@ func TestSendVestingAccount(t *testing.T) {
 
 func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
-	// const vested = 1000
 	app, ctx := commontestutils.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
@@ -68,11 +67,6 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 
 	const accInitBalance = 10000
 	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
-
-	// vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
-	// usedVestingType := vestingTypes.VestingTypes[0]
-
-	// createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *usedVestingType, vested, accInitBalance, 0, /*0,*/ accInitBalance-vested, /*0,*/ vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
@@ -174,19 +168,4 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 
 	require.EqualError(t, err,
 		"vesting available: 900 is smaller than 950: insufficient funds")
-	// account := app.AccountKeeper.GetAccount(ctx, accAddr2)
-
-	// bal := app.BankKeeper.GetBalance(ctx, accAddr2, denom)
-	// require.Equal(t, sdk.NewInt(100), bal.Amount)
-
-	// vacc, ok := account.(vestexported.VestingAccount)
-	// require.Equal(t, true, ok)
-	// locked := vacc.LockedCoins(ctx.BlockTime())
-	// require.Equal(t, denom, locked[0].Denom)
-	// require.Equal(t, sdk.NewInt(100), locked[0].Amount)
-
-	// require.Equal(t, (ctx.BlockTime().UnixNano() + int64(usedVestingType.VestingPeriod + usedVestingType.LockupPeriod))/1000000000, vacc.GetEndTime())
-
-	// require.Equal(t, (ctx.BlockTime().UnixNano() + int64(usedVestingType.LockupPeriod))/1000000000, vacc.GetStartTime())
-
 }

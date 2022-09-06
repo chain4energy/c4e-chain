@@ -183,7 +183,6 @@ func TestValidateMinterLastPeriodWithEndDate(t *testing.T) {
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
 	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter2}
 
-	// period3 := types.MintingPeriod{Position: 4, Type: types.MintingPeriod_NO_MINTING}
 	periods := []*types.MintingPeriod{&period1, &period2}
 	minter := types.Minter{Start: startTime, Periods: periods}
 	require.EqualError(t, minter.Validate(), "last period cannot have PeriodEnd set, but is set to 2043-12-30 00:00:00 +0000 UTC")
@@ -193,15 +192,11 @@ func TestValidateMinterLastPeriodWithEndDate(t *testing.T) {
 func TestValidateMinterLastPeriodWithEndDateOnePeriod(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(time.Duration(PeriodDuration))
-	// endTime2 := endTime1.Add(time.Duration(PeriodDuration))
 
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
-	// linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
-	// period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter2}
 
-	// period3 := types.MintingPeriod{Position: 4, Type: types.MintingPeriod_NO_MINTING}
 	periods := []*types.MintingPeriod{&period1}
 	minter := types.Minter{Start: startTime, Periods: periods}
 	require.EqualError(t, minter.Validate(), "last period cannot have PeriodEnd set, but is set to 2033-01-16 00:00:00 +0000 UTC")
@@ -268,7 +263,6 @@ func TestValidateMinterTimeLineraMinterTypeWithNoTimeLinearMinterDefinition(t *t
 	endTime2 := endTime1.Add(time.Duration(PeriodDuration))
 
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
-	// linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
 	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.MintingPeriod_TIME_LINEAR_MINTER}
@@ -285,7 +279,6 @@ func TestValidateMinterTimeLineraMinterTypeWithNoPeriodEndInNotLastPeriod(t *tes
 	endTime1 := startTime.Add(time.Duration(PeriodDuration))
 
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
-	// linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
 	period2 := types.MintingPeriod{Position: 2, PeriodEnd: nil, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
@@ -302,7 +295,6 @@ func TestValidateMinterTimeLineraMinterTypeWithNoPeriodEnd(t *testing.T) {
 	endTime1 := startTime.Add(time.Duration(PeriodDuration))
 
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
-	// linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
 	period2 := types.MintingPeriod{Position: 2, PeriodEnd: nil, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
@@ -319,7 +311,6 @@ func TestValidateMinterUnknownType(t *testing.T) {
 	endTime2 := endTime1.Add(time.Duration(PeriodDuration))
 
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
-	// linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
 	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: 6}
@@ -619,7 +610,6 @@ func TestValidatePeriodicReductionMinterMinterNotSet(t *testing.T) {
 	endTime2 := endTime1.Add(time.Duration(PeriodDuration))
 
 	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(40000000000000), MintPeriod: Year, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
-	// linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &pminter}
 	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.MintingPeriod_PERIODIC_REDUCTION_MINTER}
@@ -634,10 +624,8 @@ func TestValidatePeriodicReductionMinterMinterNotSet(t *testing.T) {
 func TestValidatePeriodicReductionMinterAmountBelowZero(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(time.Duration(PeriodDuration))
-	// endTime2 := endTime1.Add(time.Duration(PeriodDuration))
 
 	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(-40000000000000), MintPeriod: Year, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
-	// linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &pminter}
 
@@ -651,10 +639,8 @@ func TestValidatePeriodicReductionMinterAmountBelowZero(t *testing.T) {
 func TestValidatePeriodicReductionMinterPeriodLessThanZeror(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(time.Duration(PeriodDuration))
-	// endTime2 := endTime1.Add(time.Duration(PeriodDuration))
 
 	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(40000000000000), MintPeriod: -Year, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
-	// linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &pminter}
 
@@ -668,10 +654,8 @@ func TestValidatePeriodicReductionMinterPeriodLessThanZeror(t *testing.T) {
 func TestValidatePeriodicReductionMinterLengthLessThanZeror(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(time.Duration(PeriodDuration))
-	// endTime2 := endTime1.Add(time.Duration(PeriodDuration))
 
 	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(40000000000000), MintPeriod: Year, ReductionPeriodLength: -4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
-	// linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &pminter}
 

@@ -190,12 +190,6 @@ func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart ti
 
 	periodDuration := periodEnd.Sub(periodStart)
 	mintedYearly := sdk.NewDecFromInt(amount).MulInt64(int64(year)).QuoInt64(int64(periodDuration))
-	// fmt.Println("amount: " + amount.String())
-	// fmt.Println("mintedYearly: " + mintedYearly.String())
-	// fmt.Println("year: " + year.String())
-	// fmt.Println("periodDuration: " + periodDuration.String())
-	// fmt.Println("totalSupply: " + totalSupply.String())
-
 	return mintedYearly.QuoInt(totalSupply)
 
 }
@@ -231,17 +225,7 @@ func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart t
 	}
 
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
-	// fmt.Println("currentEpochAmount: " + currentEpochAmount.String())
-	// fmt.Printf("currentEpochPassedTime: %d", currentEpochPassedTime)
-	// fmt.Printf("hour: %d", time.Hour)
-
-	// fmt.Printf("epoch: %d", epoch)
-	// fmt.Println("currentEpochAmountToMint: " + currentEpochAmountToMint.String())
-
 	amountToMint = amountToMint.Add(currentEpochAmountToMint)
-	// fmt.Println("amountToMint:" + amountToMint.String())
-	// fmt.Println("amountToMint diff" + amountToMint.TruncateInt().Sub(state.AmountMinted).String())
-
 	return amountToMint.TruncateInt().Sub(state.AmountMinted)
 }
 
@@ -282,14 +266,7 @@ func (m *PeriodicReductionMinter) calculateInfation(totalSupply sdk.Int, periodS
 		epochAmount = epochAmount.Mul(m.ReductionFactor)
 	}
 	mintedYearly := epochAmount.MulInt64(int64(year)).QuoInt64(epoch)
-	// fmt.Println("amount: " + amount.String())
-	// fmt.Println("mintedYearly: " + mintedYearly.String())
-	// fmt.Println("year: " + year.String())
-	// fmt.Println("periodDuration: " + periodDuration.String())
-	// fmt.Println("totalSupply: " + totalSupply.String())
-
 	return mintedYearly.QuoInt(totalSupply)
-
 }
 
 func (m MinterState) Validate() error {

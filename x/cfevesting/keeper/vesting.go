@@ -110,7 +110,6 @@ func (k Keeper) addVestingPool(
 	err = k.bank.SendCoinsFromAccountToModule(ctx, srcAccAddress, types.ModuleName, coinsToSend)
 	k.Logger(ctx).Info("after SendCoinsFromAccountToModule: " + coinToSend.Amount.String())
 
-	// }
 	if err != nil {
 		k.Logger(ctx).Error(err.Error())
 		return err

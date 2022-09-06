@@ -5,7 +5,6 @@ import (
 	"time"
 
 	testapp "github.com/chain4energy/c4e-chain/app"
-	// "github.com/chain4energy/c4e-chain/testutil/nullify"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
@@ -38,8 +37,6 @@ func TestGenesis(t *testing.T) {
 	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
 	got := cfeminter.ExportGenesis(ctx, app.CfeminterKeeper)
 	require.NotNil(t, got)
-	// nullify.Fill(&genesisState)
-	// nullify.Fill(got)
 
 	require.EqualValues(t, genesisState.Params.MintDenom, got.Params.MintDenom)
 	testminter.CompareMinters(t, genesisState.Params.Minter, got.Params.Minter)
@@ -115,12 +112,11 @@ func TestOneYearLinear(t *testing.T) {
 
 }
 
-func TestFewYearsPeridocicReduction(t *testing.T) {
+func TestFewYearsPeriodicReduction(t *testing.T) {
 	totalSupply := int64(400000000000000)
 	startAmountYearly := int64(40000000000000)
 	commontestutils.AddHelperModuleAccountPerms()
 	now := time.Now()
-	// yearFromNow := now.Add(time.Hour * 24 * 365)
 	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(startAmountYearly), MintPeriod: Year, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
 
 	minter := types.Minter{

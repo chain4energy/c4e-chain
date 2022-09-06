@@ -159,8 +159,6 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 		return nil
 	}
 	return k.bankKeeper.MintCoins(ctx, types.ModuleName, newCoins)
-
-	//k.bankKeeper.
 }
 
 // AddCollectedFees implements an alias call to the underlying supply keeper's
@@ -168,14 +166,3 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 func (k Keeper) AddCollectedFees(ctx sdk.Context, fees sdk.Coins) error {
 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.collectorName, fees)
 }
-
-// func (k Keeper) SendCoinsToCommonAccount(ctx sdk.Context, coins sdk.Coins) error {
-// 	k.Logger(ctx).Info("SendCoinsToCommonAccount")
-// 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, types.InflationCollectorName, coins)
-
-// }
-
-// func (k Keeper) MintSomeCoinEndSendToTest(ctx sdk.Context) {
-// 	k.bankKeeper.MintCoins(ctx, "fee_collector", sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(50))))
-// 	k.bankKeeper.MintCoins(ctx, "payment_collector", sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(30))))
-// }

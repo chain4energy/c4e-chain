@@ -21,7 +21,6 @@ func TestVesting(t *testing.T) {
 
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(1, 1, 1)
 	accountVestings.Address = addr
-	// accountVestings.VestingPools[0].TransferAllowed = true
 
 	keeper.SetAccountVestings(ctx, accountVestings)
 

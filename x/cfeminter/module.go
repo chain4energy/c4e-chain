@@ -175,8 +175,6 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 	am.keeper.Logger(ctx).Info("BeginBlock - cfeminter")
 	BeginBlocker(ctx, am.keeper)
-
-	// am.keeper.MintSomeCoinEndSendToTest(ctx)
 }
 
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It

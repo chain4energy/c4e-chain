@@ -28,11 +28,6 @@ func (gs GenesisState) Validate() error {
 	if err != nil {
 		return err
 	}
-	// minter := gs.Minter
-	// err = minter.Validate()
-	// if err != nil {
-	// 	return err
-	// }
 
 	minterState := gs.MinterState
 	err = minterState.Validate()

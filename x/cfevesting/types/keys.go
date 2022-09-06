@@ -4,11 +4,6 @@ var (
 	VestingTypesKey = []byte{0x01}
 
 	AccountVestingsKeyPrefix = []byte{0x02}
-
-	// AccountVestingsListKey = []byte{0x03}
-
-	// // KeyIndexSeparator defines key for merging bytes
-	// KeyIndexSeparator = []byte{0x04}
 )
 
 const (

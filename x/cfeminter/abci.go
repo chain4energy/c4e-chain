@@ -12,26 +12,6 @@ import (
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
-	// halvingMinter := k.GetHalvingMinter(ctx)
-
-	// halvingMinter.NewCoinsMint = halvingMinter.NextCointCount(ctx.BlockHeight())
-	// mintedCoin := sdk.NewCoin(halvingMinter.MintDenom, sdk.NewInt(halvingMinter.NewCoinsMint))
-	// mintedCoins := sdk.NewCoins(mintedCoin)
-
-	// k.SetHalvingMinter(ctx, halvingMinter)
-
-	// // mint coin from bank
-	// err := k.MintCoins(ctx, mintedCoins)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// // send coint to
-	// err = k.SendCoinsToCommonAccount(ctx, mintedCoins)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 	amount, err := k.Mint(ctx)
 	if err != nil {
 		panic(err)

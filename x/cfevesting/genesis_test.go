@@ -197,77 +197,6 @@ func TestGenesisValidationVestingAccountVestingPoolsMoreThanOneAddressError(t *t
 
 }
 
-// func TestGenesisValidationVestingAccountVestingsMoreThanOneDelegableAddressError(t *testing.T) {
-// 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
-// 	accountVestingsListArray[3].DelegableAddress = accountVestingsListArray[7].DelegableAddress
-// 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
-
-// 	genesisState := types.GenesisState{
-// 		Params: types.NewParams("test_denom"),
-
-// 		VestingTypes:        vestingTypes,
-// 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
-// 	}
-
-// 	err := genesisState.Validate()
-// 	require.EqualError(t, err,
-// 		"account vestings with delegable address: "+accountVestingsListArray[3].DelegableAddress+" defined more than once")
-
-// }
-
-// func TestGenesisValidationVestingAccountVestingsMoreThanOneEmptyDelegableAddress(t *testing.T) {
-// 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
-// 	accountVestingsListArray[3].DelegableAddress = ""
-// 	accountVestingsListArray[7].DelegableAddress = ""
-// 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
-
-// 	genesisState := types.GenesisState{
-// 		Params: types.NewParams("test_denom"),
-
-// 		VestingTypes:        vestingTypes,
-// 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
-// 	}
-
-// 	err := genesisState.Validate()
-// 	require.Nil(t, err)
-// }
-
-// func TestGenesisValidationVestingAccountVestingsDelegableAddressEqualsAddressError1(t *testing.T) {
-// 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
-// 	accountVestingsListArray[3].Address = accountVestingsListArray[3].DelegableAddress
-// 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
-
-// 	genesisState := types.GenesisState{
-// 		Params: types.NewParams("test_denom"),
-
-// 		VestingTypes:        vestingTypes,
-// 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
-// 	}
-
-// 	err := genesisState.Validate()
-// 	require.EqualError(t, err,
-// 		"account vestings address: "+accountVestingsListArray[3].Address+" defined also as delegable address")
-
-// }
-
-// func TestGenesisValidationVestingAccountVestingsDelegableAddressEqualsAddressError2(t *testing.T) {
-// 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
-// 	accountVestingsListArray[3].Address = accountVestingsListArray[7].DelegableAddress
-// 	vestingTypes := generateGenesisVestingTypesForAccounVestings(accountVestingsListArray)
-
-// 	genesisState := types.GenesisState{
-// 		Params: types.NewParams("test_denom"),
-
-// 		VestingTypes:        vestingTypes,
-// 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
-// 	}
-
-// 	err := genesisState.Validate()
-// 	require.EqualError(t, err,
-// 		"account vestings address: "+accountVestingsListArray[3].Address+" defined also as delegable address")
-
-// }
-
 func TestGenesisVestingTypesUnitsSecondsToDays(t *testing.T) {
 	genesisVestingTypesUnitsTest(t, 60*60*24, keeper.Second, keeper.Day)
 }
@@ -316,9 +245,6 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	vestingTypesArray[0].VestingPeriod = 345 * multiplier
 	vestingTypesArray[0].VestingPeriodUnit = srcUnits
 
-	// vestingTypesArray[0].TokenReleasingPeriod = 23 * multiplier
-	// vestingTypesArray[0].TokenReleasingPeriodUnit = srcUnits
-
 	genesisState := types.GenesisState{
 		Params:       types.NewParams("uc4e"),
 		VestingTypes: vestingTypesArray,
@@ -338,9 +264,6 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	vestingTypesArray[0].VestingPeriod = 345
 	vestingTypesArray[0].VestingPeriodUnit = dstUnits
 
-	// vestingTypesArray[0].TokenReleasingPeriod = 23
-	// vestingTypesArray[0].TokenReleasingPeriodUnit = dstUnits
-
 	got := cfevesting.ExportGenesis(ctx, k)
 
 	require.NotNil(t, got)
@@ -354,9 +277,7 @@ func getUndelegableAmount(accvestings []*types.AccountVestings) sdk.Int {
 	result := sdk.ZeroInt()
 	for _, accV := range accvestings {
 		for _, v := range accV.VestingPools {
-			// if !v.DelegationAllowed {
 			result = result.Add(v.LastModificationVested)
-			// }
 		}
 	}
 	return result
@@ -385,7 +306,6 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 	ak := app.AccountKeeper
 
 	mintUndelegableCoinsToModule(ctx, app, genesisState, getUndelegableAmount(accountVestingsListArray))
-	// mintDelegableAccordingToVestings(ctx, app, genesisState, accountVestingsListArray)
 	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
 	got := cfevesting.ExportGenesis(ctx, k)
 	require.NotNil(t, got)
@@ -426,117 +346,6 @@ func TestGenesisAccountVestingsListWrongAmountInModuleAccount(t *testing.T) {
 
 }
 
-// func TestGenesisAccountVestingsListNoDelegableAddressForDelegableVesting(t *testing.T) {
-// 	addModuleAccountPerms()
-// 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
-// 	accountVestingsListArray[5].Vestings[4].DelegationAllowed = true
-// 	accountVestingsListArray[5].DelegableAddress = ""
-// 	genesisState := types.GenesisState{
-// 		Params: types.NewParams("uc4e"),
-
-// 		VestingTypes:        []types.GenesisVestingType{},
-// 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
-// 	}
-
-// 	app := app.Setup(false)
-// 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-
-// 	k := app.CfevestingKeeper
-// 	ak := app.AccountKeeper
-
-// 	undelegableAmount := getUndelegableAmount(accountVestingsListArray)
-// 	mintUndelegableCoinsToModule(ctx, app, genesisState, undelegableAmount)
-
-// 	require.PanicsWithError(t, fmt.Sprintf("acount vesting for: %s delegable address not exists, but delegable vesting exists", accountVestingsListArray[5].Address),
-// 		func() { cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper) }, "")
-
-// }
-
-// func TestGenesisAccountVestingsListWrongDelegableAccountAmount(t *testing.T) {
-// 	addModuleAccountPerms()
-// 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
-// 	accountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
-// 	accountVestingsListArray[5].DelegableAddress = accountsAddresses[0].String()
-// 	accountVestingsListArray[5].Vestings[7].DelegationAllowed = true
-// 	accountVestingsListArray[5].Vestings[7].LastModificationVested = sdk.NewInt(322134)
-
-// 	genesisState := types.GenesisState{
-// 		Params: types.NewParams("uc4e"),
-
-// 		VestingTypes:        []types.GenesisVestingType{},
-// 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
-// 	}
-
-// 	app := app.Setup(false)
-// 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-
-// 	k := app.CfevestingKeeper
-// 	ak := app.AccountKeeper
-
-// 	undelegableAmount := getUndelegableAmount(accountVestingsListArray)
-// 	mintUndelegableCoinsToModule(ctx, app, genesisState, undelegableAmount)
-// 	mintDelegableAccordingToVestings(ctx, app, genesisState, accountVestingsListArray)
-// 	amount := app.BankKeeper.GetBalance(ctx, accountsAddresses[0], genesisState.Params.Denom).Amount
-// 	wrongAdditionalAmount := sdk.NewInt(10)
-// 	wrongAmount := amount.Add(wrongAdditionalAmount)
-// 	mintDelegableCoinsToAccount(ctx, app, genesisState, wrongAdditionalAmount, accountVestingsListArray[5].DelegableAddress)
-
-// 	require.PanicsWithError(t, fmt.Sprintf("module: cfevesting - delegable account: %s balance of denom uc4e is bigger than sum of delegable vestings: %s > %s", accountVestingsListArray[5].DelegableAddress, wrongAmount, amount),
-// 		func() { cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper) }, "")
-
-// }
-
-// func TestGenesisAccountVestingsListDelegated(t *testing.T) {
-// 	addModuleAccountPerms()
-// 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
-// 	accountsAddresses, validatorsAddresses := commontestutils.CreateAccounts(1, 1)
-
-// 	accountVestingsListArray[5].DelegableAddress = accountsAddresses[0].String()
-// 	accountVestingsListArray[5].Vestings[7].DelegationAllowed = true
-// 	accountVestingsListArray[5].Vestings[7].LastModificationVested = sdk.NewInt(1000000)
-
-// 	genesisState := types.GenesisState{
-// 		Params: types.NewParams("uc4e"),
-
-// 		VestingTypes:        []types.GenesisVestingType{},
-// 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
-// 	}
-
-// 	app := app.Setup(false)
-// 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-
-// 	setupStakingBondDenom(ctx, app, genesisState)
-
-// 	setupValidators(t, ctx, app, genesisState, validatorsAddresses, 10)
-
-// 	k := app.CfevestingKeeper
-// 	ak := app.AccountKeeper
-
-// 	mintUndelegableCoinsToModule(ctx, app, genesisState, getUndelegableAmount(accountVestingsListArray))
-// 	mintDelegableAccordingToVestings(ctx, app, genesisState, accountVestingsListArray)
-
-// 	stMsgServer, msgServerCtx := stakingkeeper.NewMsgServerImpl(app.StakingKeeper), sdk.WrapSDKContext(ctx)
-
-// 	delegationCoin := sdk.NewCoin(genesisState.Params.Denom, sdk.NewInt(1000))
-
-// 	delagateMsg := stakingtypes.MsgDelegate{DelegatorAddress: accountsAddresses[0].String(),
-// 		ValidatorAddress: validatorsAddresses[0].String(), Amount: delegationCoin}
-// 	stMsgServer.Delegate(msgServerCtx, &delagateMsg)
-
-// 	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
-// 	got := cfevesting.ExportGenesis(ctx, k)
-// 	require.NotNil(t, got)
-// 	require.EqualValues(t, genesisState.Params, got.GetParams())
-// 	require.EqualValues(t, genesisState.VestingTypes, (*got).VestingTypes)
-// 	require.EqualValues(t, len(accountVestingsListArray), len((*got).AccountVestingsList.Vestings))
-
-// 	testutils.AssertAccountVestingsArrays(t, accountVestingsListArray, (*got).AccountVestingsList.Vestings)
-
-// 	nullify.Fill(&genesisState)
-// 	nullify.Fill(got)
-
-// }
-
 func mintUndelegableCoinsToModule(ctx sdk.Context, app *app.App, genesisState types.GenesisState, amount sdk.Int) {
 	if amount.IsZero() {
 		return
@@ -546,29 +355,6 @@ func mintUndelegableCoinsToModule(ctx sdk.Context, app *app.App, genesisState ty
 
 	app.BankKeeper.MintCoins(ctx, types.ModuleName, mintedCoins)
 }
-
-// func mintDelegableCoinsToAccount(ctx sdk.Context, app *app.App, genesisState types.GenesisState, amount sdk.Int, account string) {
-// 	if amount.IsZero() {
-// 		return
-// 	}
-// 	mintedCoin := sdk.NewCoin(genesisState.Params.Denom, amount)
-// 	mintedCoins := sdk.NewCoins(mintedCoin)
-// 	acc, _ := sdk.AccAddressFromBech32(account)
-// 	app.BankKeeper.MintCoins(ctx, types.ModuleName, mintedCoins)
-// 	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, acc, mintedCoins)
-// }
-
-// func mintDelegableAccordingToVestings(ctx sdk.Context, app *app.App, genesisState types.GenesisState, accsVestings []*types.AccountVestings) {
-// 	for _, accVest := range accsVestings {
-// 		amount := sdk.ZeroInt()
-// 		for _, vesting := range accVest.Vestings {
-// 			if vesting.DelegationAllowed {
-// 				amount = amount.Add(vesting.LastModificationVested)
-// 			}
-// 		}
-// 		mintDelegableCoinsToAccount(ctx, app, genesisState, amount, accVest.DelegableAddress)
-// 	}
-// }
 
 func TestDurationFromUnits(t *testing.T) {
 	amount := int64(456)
@@ -613,9 +399,6 @@ func generateGenesisVestingTypes(numberOfVestingTypes int, startId int) []types.
 			LockupPeriodUnit:  keeper.Day,
 			VestingPeriod:     vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
 			VestingPeriodUnit: keeper.Day,
-			// TokenReleasingPeriod:     vt.TokenReleasingPeriod.Nanoseconds() / int64(time.Hour),
-			// TokenReleasingPeriodUnit: keeper.Day,
-			// DelegationsAllowed:       vt.DelegationsAllowed,
 		}
 		result = append(result, gvt)
 	}
@@ -634,9 +417,6 @@ func generateGenesisVestingTypesForAccounVestings(vestings []*types.AccountVesti
 				LockupPeriodUnit:  keeper.Day,
 				VestingPeriod:     vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
 				VestingPeriodUnit: keeper.Day,
-				// TokenReleasingPeriod:     vt.TokenReleasingPeriod.Nanoseconds() / int64(time.Hour),
-				// TokenReleasingPeriodUnit: keeper.Day,
-				// DelegationsAllowed:       vt.DelegationsAllowed,
 			}
 			m[v.VestingType] = gvt
 
