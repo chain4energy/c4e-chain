@@ -54,5 +54,5 @@ go.sum: go.mod
 		GO111MODULE=on go mod verify
 
 test:
-	@go test -cover -mod=readonly $(PACKAGES)
+	@go test -coverprofile=coverage.out -mod=readonly $(PACKAGES)
 
