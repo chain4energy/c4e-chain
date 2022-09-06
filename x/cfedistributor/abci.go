@@ -44,57 +44,84 @@ func getRamainsSum(states *[]types.State) sdk.DecCoins {
 	return sum
 }
 
+func prepareCoinToDistributeForMainAccount(ctx sdk.Context, k keeper.Keeper, coinsToDistribute sdk.DecCoins, states []types.State) sdk.DecCoins {
+	coinsToDistribute = sdk.NewDecCoinsFromCoins(k.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)...)
+	k.Logger(ctx).Debug("IsMainCollector: " + coinsToDistribute.String())
+	if len(coinsToDistribute) > 0 {
+		sum := getRamainsSum(&states)
+		coinsToDistribute = coinsToDistribute.Sub(sum)
+	}
+
+	return coinsToDistribute
+}
+
+func prepareCoinToDistributeForModuleAccount(ctx sdk.Context, k keeper.Keeper, coinsToDistribute sdk.DecCoins, source types.Account) sdk.DecCoins {
+	k.Logger(ctx).Debug("Module account: " + source.Id)
+	coinsToSend := k.GetAccountCoinsForModuleAccount(ctx, source.Id)
+	coinsToDistribute = sdk.NewDecCoinsFromCoins(coinsToSend...)
+	k.Logger(ctx).Debug("IsModuleAccount: " + source.Id + " - " + coinsToDistribute.String())
+
+	if len(coinsToDistribute) > 0 {
+		k.SendCoinsFromModuleToModule(ctx, coinsToSend, source.Id, types.DistributorMainAccount)
+	}
+
+	return coinsToDistribute
+}
+
+func prepareCoinToDistributeForInternalAccount(ctx sdk.Context, k keeper.Keeper, coinsToDistribute sdk.DecCoins, source types.Account) sdk.DecCoins {
+	k.Logger(ctx).Debug("Internal account: " + source.Id)
+
+	srcAccount, _ := sdk.AccAddressFromBech32(source.Id)
+	coinsToSend := k.GetAccountCoins(ctx, srcAccount)
+	coinsToDistribute = sdk.NewDecCoinsFromCoins(coinsToSend...)
+	k.Logger(ctx).Debug("BaseAccount: " + source.Id + " - " + coinsToDistribute.String())
+
+	if len(coinsToDistribute) > 0 {
+		k.SendCoinsToModuleAccount(ctx, coinsToSend, srcAccount, types.DistributorMainAccount)
+	}
+
+	return coinsToDistribute
+}
+
+func prepareLeftedCoinToDistribute(coinsToDistribute sdk.DecCoins, source types.Account, states []types.State) sdk.DecCoins {
+	pos := findAccountState(&states, &source)
+	if pos >= 0 {
+		coin := states[pos].CoinsStates
+		if !coin.IsZero() {
+			states[pos].CoinsStates = sdk.NewDecCoins()
+			coinsToDistribute = coinsToDistribute.Add(coin...)
+		}
+	}
+
+	return coinsToDistribute
+}
+
+func prepareCoinToDistributeForNotMainAccount(ctx sdk.Context, k keeper.Keeper, coinsToDistribute sdk.DecCoins, source types.Account, states []types.State) sdk.DecCoins {
+	if types.MODULE_ACCOUNT == source.Type {
+		coinsToDistribute = prepareCoinToDistributeForModuleAccount(ctx, k, coinsToDistribute, source)
+
+	} else if types.INTERNAL_ACCOUNT != source.Type {
+		coinsToDistribute = prepareCoinToDistributeForInternalAccount(ctx, k, coinsToDistribute, source)
+	}
+
+	return prepareLeftedCoinToDistribute(coinsToDistribute, source, states)
+}
+
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	subDistributors := k.GetParams(ctx).SubDistributors
 	states := k.GetAllStates(ctx)
-	k.Logger(ctx).Info("BeginBlock - cfedistr")
 	for _, subDistributor := range subDistributors {
-		k.Logger(ctx).Info("BeginBlock - cfedistr: " + subDistributor.Name)
+		k.Logger(ctx).Debug("BeginBlock - cfedistr: " + subDistributor.Name)
 		allCoinsToDistribute := sdk.NewDecCoins()
 		for _, source := range subDistributor.Sources {
 			k.Logger(ctx).Debug("Sources: " + source.String())
 
 			var coinsToDistribute = sdk.NewDecCoins()
 			if source.Type == types.MAIN {
-				coinsToDistribute = sdk.NewDecCoinsFromCoins(k.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)...)
-				k.Logger(ctx).Debug("IsMainCollector: " + coinsToDistribute.String())
-				if len(coinsToDistribute) > 0 {
-					sum := getRamainsSum(&states)
-					coinsToDistribute = coinsToDistribute.Sub(sum)
-				}
+				coinsToDistribute = prepareCoinToDistributeForMainAccount(ctx, k, coinsToDistribute, states)
 			} else {
-
-				if types.MODULE_ACCOUNT == source.Type {
-					k.Logger(ctx).Debug("Module account: " + source.Id)
-					coinsToSend := k.GetAccountCoinsForModuleAccount(ctx, source.Id)
-					coinsToDistribute = sdk.NewDecCoinsFromCoins(coinsToSend...)
-					k.Logger(ctx).Debug("IsModuleAccount: " + source.Id + " - " + coinsToDistribute.String())
-
-					if len(coinsToDistribute) > 0 {
-						k.SendCoinsFromModuleToModule(ctx, coinsToSend, source.Id, types.DistributorMainAccount)
-					}
-				} else if types.INTERNAL_ACCOUNT != source.Type {
-					k.Logger(ctx).Debug("Internal account: " + source.Id)
-
-					srcAccount, _ := sdk.AccAddressFromBech32(source.Id)
-					coinsToSend := k.GetAccountCoins(ctx, srcAccount)
-					coinsToDistribute = sdk.NewDecCoinsFromCoins(coinsToSend...)
-					k.Logger(ctx).Debug("BaseAccount: " + source.Id + " - " + coinsToDistribute.String())
-
-					if len(coinsToDistribute) > 0 {
-						k.SendCoinsToModuleAccount(ctx, coinsToSend, srcAccount, types.DistributorMainAccount)
-					}
-				}
-
-				pos := findAccountState(&states, source)
-				if pos >= 0 {
-					coin := states[pos].CoinsStates
-					if !coin.IsZero() {
-						states[pos].CoinsStates = sdk.NewDecCoins()
-						coinsToDistribute = coinsToDistribute.Add(coin...)
-					}
-				}
+				coinsToDistribute = prepareCoinToDistributeForNotMainAccount(ctx, k, coinsToDistribute, *source, states)
 			}
 
 			if len(coinsToDistribute) == 0 {
@@ -107,41 +134,60 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			continue
 		}
 		states = *StartDistributionProcess(&states, allCoinsToDistribute, subDistributor)
-
 	}
+	sendCoinsFromStates(ctx, k, states)
+}
+
+func burnCoins(ctx sdk.Context, k keeper.Keeper, state *types.State) {
+	toSend, change := state.CoinsStates.TruncateDecimal()
+
+	if error := k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.DistributorMainAccount); error != nil {
+		ctx.Logger().Error("Can not burn coin: " + error.Error())
+
+	} else {
+		k.Logger(ctx).Debug("Successful burn coin: " + toSend.String())
+		state.CoinsStates = change
+	}
+}
+
+func sendCoinsToModuleAccount(ctx sdk.Context, k keeper.Keeper, state *types.State) {
+	toSend, change := state.CoinsStates.TruncateDecimal()
+
+	if error := k.SendCoinsFromModuleToModule(ctx, toSend, types.DistributorMainAccount, state.Account.Id); error != nil {
+		ctx.Logger().Error("Can not send coin: " + error.Error())
+
+	} else {
+		k.Logger(ctx).Debug("Successful send to: " + state.Account.Id + " - " + toSend.String())
+		state.CoinsStates = change
+	}
+}
+
+func sendCoinsToBaseAccount(ctx sdk.Context, k keeper.Keeper, state *types.State) {
+	toSend, change := state.CoinsStates.TruncateDecimal()
+
+	if dstAccount, error := sdk.AccAddressFromBech32(state.Account.Id); error != nil {
+		ctx.Logger().Error("Can not get addr from bech32: " + error.Error())
+
+	} else if error := k.SendCoinsFromModuleAccount(ctx, toSend, types.DistributorMainAccount, dstAccount); error != nil {
+		ctx.Logger().Error("Can not send coin: " + error.Error())
+
+	} else {
+		k.Logger(ctx).Debug("Successful send to : " + state.Account.Id + " - " + toSend.String())
+		state.CoinsStates = change
+	}
+}
+
+func sendCoinsFromStates(ctx sdk.Context, k keeper.Keeper, states []types.State) {
 	for _, state := range states {
 		if types.INTERNAL_ACCOUNT != state.Account.Type {
-			toSend, change := state.CoinsStates.TruncateDecimal()
 
 			if state.Burn {
-				if error := k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.DistributorMainAccount); error != nil {
-					ctx.Logger().Error("Can not burn coin: " + error.Error())
-
-				} else {
-					k.Logger(ctx).Debug("Successful burn coin: " + toSend.String())
-					state.CoinsStates = change
-				}
+				burnCoins(ctx, k, &state)
 
 			} else if types.MODULE_ACCOUNT == state.Account.Type {
-				if error := k.SendCoinsFromModuleToModule(ctx, toSend, types.DistributorMainAccount, state.Account.Id); error != nil {
-					ctx.Logger().Error("Can not send coin: " + error.Error())
-
-				} else {
-					k.Logger(ctx).Debug("Successful send to: " + state.Account.Id + " - " + toSend.String())
-					state.CoinsStates = change
-				}
-
+				sendCoinsToModuleAccount(ctx, k, &state)
 			} else {
-				if dstAccount, error := sdk.AccAddressFromBech32(state.Account.Id); error != nil {
-					ctx.Logger().Error("Can not get addr from bech32: " + error.Error())
-
-				} else if error := k.SendCoinsFromModuleAccount(ctx, toSend, types.DistributorMainAccount, dstAccount); error != nil {
-					ctx.Logger().Error("Can not send coin: " + error.Error())
-
-				} else {
-					k.Logger(ctx).Debug("Successful send to : " + state.Account.Id + " - " + toSend.String())
-					state.CoinsStates = change
-				}
+				sendCoinsToBaseAccount(ctx, k, &state)
 			}
 		}
 		k.SetState(ctx, state)
