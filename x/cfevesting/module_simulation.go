@@ -95,7 +95,9 @@ func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
 }
 
 // RegisterStoreDecoder registers a decoder
-func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
+func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
+	// No decoder
+}
 
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
@@ -122,83 +124,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		weightMsgWithdrawAllAvailable,
 		cfevestingsimulation.SimulateMsgWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
-
-	// var weightMsgDelegate int
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDelegate, &weightMsgDelegate, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgDelegate = defaultWeightMsgDelegate
-	// 	},
-	// )
-	// operations = append(operations, simulation.NewWeightedOperation(
-	// 	weightMsgDelegate,
-	// 	cfevestingsimulation.SimulateMsgDelegate(am.accountKeeper, am.bankKeeper, am.keeper),
-	// ))
-
-	// var weightMsgUndelegate int
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUndelegate, &weightMsgUndelegate, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgUndelegate = defaultWeightMsgUndelegate
-	// 	},
-	// )
-	// operations = append(operations, simulation.NewWeightedOperation(
-	// 	weightMsgUndelegate,
-	// 	cfevestingsimulation.SimulateMsgUndelegate(am.accountKeeper, am.bankKeeper, am.keeper),
-	// ))
-
-	// var weightMsgBeginRedelegate int
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgBeginRedelegate, &weightMsgBeginRedelegate, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgBeginRedelegate = defaultWeightMsgBeginRedelegate
-	// 	},
-	// )
-	// operations = append(operations, simulation.NewWeightedOperation(
-	// 	weightMsgBeginRedelegate,
-	// 	cfevestingsimulation.SimulateMsgBeginRedelegate(am.accountKeeper, am.bankKeeper, am.keeper),
-	// ))
-
-	// var weightMsgWithdrawDelegatorReward int
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgWithdrawDelegatorReward, &weightMsgWithdrawDelegatorReward, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgWithdrawDelegatorReward = defaultWeightMsgWithdrawDelegatorReward
-	// 	},
-	// )
-	// operations = append(operations, simulation.NewWeightedOperation(
-	// 	weightMsgWithdrawDelegatorReward,
-	// 	cfevestingsimulation.SimulateMsgWithdrawDelegatorReward(am.accountKeeper, am.bankKeeper, am.keeper),
-	// ))
-
-	// var weightMsgSendVesting int
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSendVesting, &weightMsgSendVesting, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgSendVesting = defaultWeightMsgSendVesting
-	// 	},
-	// )
-	// operations = append(operations, simulation.NewWeightedOperation(
-	// 	weightMsgSendVesting,
-	// 	cfevestingsimulation.SimulateMsgSendVesting(am.accountKeeper, am.bankKeeper, am.keeper),
-	// ))
-
-	// var weightMsgVote int
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgVote, &weightMsgVote, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgVote = defaultWeightMsgVote
-	// 	},
-	// )
-	// operations = append(operations, simulation.NewWeightedOperation(
-	// 	weightMsgVote,
-	// 	cfevestingsimulation.SimulateMsgVote(am.accountKeeper, am.bankKeeper, am.keeper),
-	// ))
-
-	// var weightMsgVoteWeighted int
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgVoteWeighted, &weightMsgVoteWeighted, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgVoteWeighted = defaultWeightMsgVoteWeighted
-	// 	},
-	// )
-	// operations = append(operations, simulation.NewWeightedOperation(
-	// 	weightMsgVoteWeighted,
-	// 	cfevestingsimulation.SimulateMsgVoteWeighted(am.accountKeeper, am.bankKeeper, am.keeper),
-	// ))
 
 	var weightMsgCreateVestingAccount int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateVestingAccount, &weightMsgCreateVestingAccount, nil,

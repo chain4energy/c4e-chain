@@ -12,44 +12,76 @@ const year = time.Hour * 24 * 365
 
 func (m Minter) Validate() error {
 	sort.Sort(ByPosition(m.Periods))
-	id := int32(0)
-	lastPos := len(m.Periods) - 1
 	if len(m.Periods) < 1 {
 		return fmt.Errorf("no minter periods defined")
 	}
+	return m.validatePeriods();
+}
+
+func (m Minter) validatePeriods() error {
+	lastPos := len(m.Periods) - 1
+	id := int32(0)
 	for i, period := range m.Periods {
-		if id == 0 {
-			if period.Position <= id {
-				return fmt.Errorf("first period ordering id must be bigger than 0, but is %d", period.Position)
-			}
-			id = period.Position
-		} else {
-			if period.Position != id+1 {
-				return fmt.Errorf("missing period with ordering id %d", id+1)
-			}
-			id = period.Position
+		periodId, err := m.validatePeriodOrderingId(period, id);
+		if err != nil {
+			return err;
 		}
-		if i == lastPos && period.PeriodEnd != nil {
-			return fmt.Errorf("last period cannot have PeriodEnd set, but is set to %s", period.PeriodEnd)
+		id = periodId;
+
+		err = m.validatePeriodEndExistance(period, i, lastPos);
+		if err != nil {
+			return err;
 		}
-		if i < lastPos && period.PeriodEnd == nil {
-			return fmt.Errorf("only last period can have PeriodEnd empty")
+
+		err = m.validatePeriodEndValue(period, i, lastPos);
+		if err != nil {
+			return err;
 		}
-		if lastPos > 0 {
-			if i == 0 {
-				if period.PeriodEnd.Before(m.Start) || period.PeriodEnd.Equal(m.Start) {
-					return fmt.Errorf("first period end must be bigger than minter start")
-				}
-			} else if i < lastPos {
-				prev := i - 1
-				if period.PeriodEnd.Before(*m.Periods[prev].PeriodEnd) || period.PeriodEnd.Equal(*m.Periods[prev].PeriodEnd) {
-					return fmt.Errorf("period with Id %d mast have PeriodEnd bigger than period with id %d", period.Position, m.Periods[prev].Position)
-				}
-			}
-		}
-		err := period.Validate()
+
+		err = period.Validate()
 		if err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+func (m Minter) validatePeriodOrderingId(period *MintingPeriod, id int32) (int32, error) {
+	if id == 0 {
+		if period.Position <= id {
+			return 0, fmt.Errorf("first period ordering id must be bigger than 0, but is %d", period.Position)
+		}
+		id = period.Position
+	} else {
+		if period.Position != id+1 {
+			return 0, fmt.Errorf("missing period with ordering id %d", id+1)
+		}
+		id = period.Position
+	}
+	return id, nil
+}
+
+func (m Minter) validatePeriodEndExistance(period *MintingPeriod, position int, lastPos int) error {
+	if position == lastPos && period.PeriodEnd != nil {
+		return fmt.Errorf("last period cannot have PeriodEnd set, but is set to %s", period.PeriodEnd)
+	}
+	if position < lastPos && period.PeriodEnd == nil {
+		return fmt.Errorf("only last period can have PeriodEnd empty")
+	}
+	return nil
+}
+
+func (m Minter) validatePeriodEndValue(period *MintingPeriod, position int, lastPos int) error {
+	if lastPos > 0 {
+		if position == 0 {
+			if period.PeriodEnd.Before(m.Start) || period.PeriodEnd.Equal(m.Start) {
+				return fmt.Errorf("first period end must be bigger than minter start")
+			}
+		} else if position < lastPos {
+			prev := position - 1
+			if period.PeriodEnd.Before(*m.Periods[prev].PeriodEnd) || period.PeriodEnd.Equal(*m.Periods[prev].PeriodEnd) {
+				return fmt.Errorf("period with Id %d mast have PeriodEnd bigger than period with id %d", period.Position, m.Periods[prev].Position)
+			}
 		}
 	}
 	return nil

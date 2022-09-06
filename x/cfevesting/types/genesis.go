@@ -23,17 +23,6 @@ func DefaultGenesis() *GenesisState {
 func (gs GenesisState) Validate() error {
 	// this line is used by starport scaffolding # genesis/types/validate
 
-	// TODO validate accouns vestings
-	// testmapIndexMap := make(map[string]struct{})
-
-	// for _, elem := range gs.TestmapList {
-	// 	index := string(TestmapKey(elem.Index))
-	// 	if _, ok := testmapIndexMap[index]; ok {
-	// 		return fmt.Errorf("duplicated index for testmap")
-	// 	}
-	// 	testmapIndexMap[index] = struct{}{}
-	// }
-
 	err := gs.validateVestingTypes()
 	if err != nil {
 		return err
@@ -94,24 +83,33 @@ func (av AccountVestings) Validate() error {
 		return fmt.Errorf("account vestings address: %s: %s", av.Address, err.Error())
 	}
 	for _, v := range vs {
-		numOfIds := 0
-		numOfNames := 0
-		for _, vCheck := range vs {
-			if v.Id == vCheck.Id {
-				numOfIds++
-			}
-			if numOfIds > 1 {
-				return fmt.Errorf("vesting with id: %d defined more than once for account: %s", v.Id, av.Address)
-			}
-
-			if v.Name == vCheck.Name {
-				numOfNames++
-			}
-			if numOfNames > 1 {
-				return fmt.Errorf("vesting with name: %s defined more than once for account: %s", v.Name, av.Address)
-			}
+		err = av.checkDuplications(vs, v);
+		if err != nil {
+			return err
 		}
 	}
+	return nil
+}
+
+func (av AccountVestings) checkDuplications(vs []*VestingPool, v *VestingPool) error {
+	numOfIds := 0
+	numOfNames := 0
+	for _, vCheck := range vs {
+		if v.Id == vCheck.Id {
+			numOfIds++
+		}
+		if numOfIds > 1 {
+			return fmt.Errorf("vesting with id: %d defined more than once for account: %s", v.Id, av.Address)
+		}
+
+		if v.Name == vCheck.Name {
+			numOfNames++
+		}
+		if numOfNames > 1 {
+			return fmt.Errorf("vesting with name: %s defined more than once for account: %s", v.Name, av.Address)
+		}
+	}
+
 	return nil
 }
 

@@ -25,7 +25,6 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t testing.TB, blockHeight in
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
-	// stateStore := store.NewCommitMultiStore(db)
 	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
 
@@ -81,18 +80,10 @@ func CfevestingKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, commontestutils.TestEnvTime, db, stateStore)
 }
 
-func CfevestingKeeperWithStore(t testing.TB) (*keeper.Keeper, sdk.Context) {
-	db := tmdb.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db)
-	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, commontestutils.TestEnvTime, db, stateStore)
-}
-
 func AccountKeeperWithBlockHeight(t testing.TB, ctx sdk.Context, stateStore storetypes.CommitMultiStore, db *tmdb.MemDB) (*authkeeper.AccountKeeper, sdk.Context) {
 	storeKey := sdk.NewKVStoreKey(authtypes.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey + "mem")
 
-	// db := tmdb.NewMemDB()
-	// stateStore := store.NewCommitMultiStore(db)
 	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
 
