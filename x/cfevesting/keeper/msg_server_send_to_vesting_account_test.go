@@ -30,7 +30,7 @@ func TestSendVestingAccount(t *testing.T) {
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
@@ -95,7 +95,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
@@ -124,7 +124,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
@@ -153,7 +153,7 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 

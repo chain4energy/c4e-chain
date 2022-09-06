@@ -142,11 +142,11 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	}
 	vestingTypes := setupVestingTypesWithModification(ctx, app, modifyVestingType, 1, 1, 1)
 
-	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *vestingTypes.VestingTypes[0], vested, vested /*0,*/, 0, 0 /*0,*/, vested)
+	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *vestingTypes.VestingTypes[0], vested, vested /*0,*/, 0, 0 /*0,*/, vested)
 
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, 0, vested)
 
-	verifyAccountVestingPools(t, ctx, app, accAddr, []string{"v-pool-1"}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{0})
+	verifyAccountVestingPools(t, ctx, app, accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{0})
 
 	oldCtx := ctx
 	ctx = ctx.WithBlockHeight(int64(110000)).WithBlockTime(testutils.CreateTimeFromNumOfHours(110000))
@@ -154,7 +154,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	const withdrawn = vested
 	withdrawAllAvailable(t, ctx, app, accAddr, 0, vested, withdrawn, vested-withdrawn)
 
-	verifyAccountVestingPools(t, oldCtx, app, accAddr, []string{"v-pool-1"}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{withdrawn})
+	verifyAccountVestingPools(t, oldCtx, app, accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []int64{vested}, []int64{withdrawn})
 
 }
 

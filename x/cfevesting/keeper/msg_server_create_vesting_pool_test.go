@@ -28,13 +28,13 @@ func TestCreateVestingPool(t *testing.T) {
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
 
-	verifyAccountVestingPools(t, ctx, app, accAddr, []string{"v-pool-1"}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
+	verifyAccountVestingPools(t, ctx, app, accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
 
-	createVestingPool(t, ctx, app, accAddr, true, true, "v-pool-2", 1200, *usedVestingType, vested, accInitBalance-vested /*0,*/, vested, accInitBalance-2*vested /*0,*/, 2*vested)
+	createVestingPool(t, ctx, app, accAddr, true, true, vPool2, 1200, *usedVestingType, vested, accInitBalance-vested /*0,*/, vested, accInitBalance-2*vested /*0,*/, 2*vested)
 
-	verifyAccountVestingPools(t, ctx, app, accAddr, []string{"v-pool-1", "v-pool-2"}, []time.Duration{1000, 1200}, []types.VestingType{*usedVestingType, *usedVestingType}, []int64{vested, vested}, []int64{0, 0})
+	verifyAccountVestingPools(t, ctx, app, accAddr, []string{vPool1, vPool2}, []time.Duration{1000, 1200}, []types.VestingType{*usedVestingType, *usedVestingType}, []int64{vested, vested}, []int64{0, 0})
 
 }
 
@@ -78,18 +78,18 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, "v-pool-1", 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
 
-	verifyAccountVestingPools(t, ctx, app, accAddr, []string{"v-pool-1"}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
+	verifyAccountVestingPools(t, ctx, app, accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []int64{vested}, []int64{0})
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgCreateVestingPool{Creator: accAddr.String(), Name: "v-pool-1",
+	msg := types.MsgCreateVestingPool{Creator: accAddr.String(), Name: vPool1,
 		Amount: sdk.NewInt(vested), Duration: 1000, VestingType: usedVestingType.Name}
 	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
 
 	require.EqualError(t, err,
-		"vesting pool name already exists: v-pool-1: invalid request")
+		"vesting pool name already exists: " + vPool1 + ": invalid request")
 
 }
 
@@ -115,7 +115,7 @@ func TestVestingId(t *testing.T) {
 	k.SetVestingTypes(ctx, vestingTypes)
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 
-	msg := types.MsgCreateVestingPool{Creator: addr, Name: "v-pool-1", Amount: sdk.NewInt(vested), Duration: 1000, VestingType: usedVestingType.Name}
+	msg := types.MsgCreateVestingPool{Creator: addr, Name: vPool1, Amount: sdk.NewInt(vested), Duration: 1000, VestingType: usedVestingType.Name}
 	_, error := msgServer.CreateVestingPool(msgServerCtx, &msg)
 	require.EqualValues(t, nil, error)
 
@@ -127,7 +127,7 @@ func TestVestingId(t *testing.T) {
 	vesting := accVesting.VestingPools[0]
 	require.EqualValues(t, 1, vesting.Id)
 
-	msg.Name = "v-pool-2"
+	msg.Name = vPool2
 	_, error = msgServer.CreateVestingPool(msgServerCtx, &msg)
 
 	require.EqualValues(t, nil, error)

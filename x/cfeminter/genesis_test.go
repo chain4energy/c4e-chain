@@ -19,6 +19,8 @@ import (
 	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 )
 
+const iterationText = "iterarion %d";
+
 const PeriodDuration = time.Duration(345600000000 * 1000000)
 const Year = time.Hour * 24 * 365
 
@@ -93,12 +95,12 @@ func TestOneYearLinear(t *testing.T) {
 		inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 		require.NoError(t, err)
 		if i < numOfHours {
-			require.EqualValuesf(t, expectedInflation, inflation, "iterarion %d", i)
+			require.EqualValuesf(t, expectedInflation, inflation, iterationText, i)
 			state := app.CfeminterKeeper.GetMinterState(ctx)
 			require.EqualValues(t, int32(1), state.CurrentPosition)
 			require.EqualValues(t, sdk.NewInt(expectedMinted), state.AmountMinted)
 		} else {
-			require.EqualValuesf(t, sdk.ZeroDec(), inflation, "iterarion %d", i)
+			require.EqualValuesf(t, sdk.ZeroDec(), inflation, iterationText, i)
 			state := app.CfeminterKeeper.GetMinterState(ctx)
 			require.EqualValues(t, int32(2), state.CurrentPosition)
 			require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
@@ -166,12 +168,12 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 			inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 			require.NoError(t, err)
 			if i < numOfHours {
-				require.EqualValuesf(t, expectedInflation, inflation, "iterarion %d", i)
+				require.EqualValuesf(t, expectedInflation, inflation, iterationText, i)
 				state := app.CfeminterKeeper.GetMinterState(ctx)
 				require.EqualValues(t, int32(1), state.CurrentPosition)
 				require.EqualValues(t, sdk.NewInt(prevPeriodMinted+expectedMinted), state.AmountMinted)
 			} else {
-				require.EqualValuesf(t, expectedInflation.QuoInt64(2), inflation, "iterarion %d", i)
+				require.EqualValuesf(t, expectedInflation.QuoInt64(2), inflation, iterationText, i)
 				state := app.CfeminterKeeper.GetMinterState(ctx)
 				require.EqualValues(t, int32(1), state.CurrentPosition)
 				require.EqualValues(t, sdk.NewInt(prevPeriodMinted+expectedMinted), state.AmountMinted)
