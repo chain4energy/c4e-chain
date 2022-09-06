@@ -24,9 +24,20 @@ faucet:
   coins: ["100000uc4e"]
 init:
   home: "./.data"
+  app:
+    telemetry:
+      enabled: true
+      prometheus-retention-time: 60
+
+  #      enable-hostname-label: true
+#      enable-hostname: true
   config:
     log_level: "debug"
     log_format: "plain"
+    metrics:
+      prometheusEnabledz
+    instrumentation:
+      prometheus: true
 genesis:
   app_state:
     auth:
@@ -56,6 +67,7 @@ genesis:
               - amount: "5000000000000"
                 denom: "uc4e"
           start_time: "1670429736"
+
     bank:
       denom_metadata:
         - description: "Chain4Energy Token"
@@ -84,6 +96,16 @@ genesis:
       params:
         bond_denom: "uc4e"
         unbonding_time: "100s"
+
+    gov:
+      deposit_params:
+        max_deposit_period: "50s"
+        min_deposit:
+          - denom: "uc4e"
+            amount: "10000000"
+      voting_params:
+        voting_period: "10s"
+
     cfeminter:
       params:
         mint_denom: "uc4e"
@@ -108,102 +130,66 @@ genesis:
       minter_state:
         current_position: 1
         amount_minted: "0"
-    cferoutingdistributor:
-      routing_distributor:
-        remains_map:
-        remains_coin_module_account: "remains"
-        module_accounts:
-          - c4e_distributor
-          - inflation_collector
-          - validators_rewards_collector
-          - usage_incentives_collector
-          - green_energy_booster_collector
-          - governance_booster_collector
+    cfedistributor:
+      params:
+        sub_distributors:
+        - name: tx_fee_distributor
+          sources:
+            - id: fee_collector
+              type: MODULE_ACCOUNT
+          destination:
+            account:
+              id: "c4e_distributor"
+              type: MAIN
+            burn_share:
+              percent: "33.3"
 
-        sub_distributor:
-            - order: 1
-              name: tx_fee_distributor
-              sources:
-                  - fee_collector
-              destination:
-                account:
-                  address: "c4e_distributor"
-                  is_module_account: true
-                burn_share:
-                  percent: "33.3"
-            - order: 2
-              name: inflation_and_fee_distributor
-              sources:
-                - c4e_distributor
-              destination:
-                burn_share:
-                  percent: "0"
-                account:
-                  address: "validators_rewards_collector"
-                  is_module_account: true
-
-                share:
-                  - name: development_fund
-                    percent: "10.345"
-                    account:
-                      #insert proper address
-                      address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
-                      is_module_account: false
-
-                  - name: usage_incentives
-                    percent: "30"
-                    account:
-                      #insert proper address
-                      address: "usage_incentives_collector"
-                      is_module_account: true
-
-            - order: 3
-              name: usage_incentives_distributor
-              sources:
-                - usage_incentives_collector
-              destination:
-                burn_share:
-                  percent: "0"
+        - name: inflation_and_fee_distributor
+          sources:
+            - id: c4e_distributor
+              type: MAIN
+          destination:
+            account:
+              id: "validators_rewards_collector"
+              type: MODULE_ACCOUNT
+            burn_share:
+              percent: "0"
+            share:
+              - name: development_fund
+                percent: "10.345"
                 account:
                   #insert proper address
-                  address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
-                  is_module_account: false
-                share:
-                  - name: green_energy_booster
-                    percent: "34"
-                    account:
-                      address: "green_energy_booster_collector"
-                      is_module_account: true
+                  id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+                  type: BASE_ACCOUNT
+              - name: usage_incentives
+                percent: "30"
+                account:
+                  id: "usage_incentives_collector"
+                  type: INTERNAL_ACCOUNT
+        - name: usage_incentives_distributor
+          sources:
+            - id: usage_incentives_collector
+              type: INTERNAL_ACCOUNT
+          destination:
+            burn_share:
+              percent: "0"
+            account:
+              #insert proper address
+              id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+              type: BASE_ACCOUNT
+            share:
+              - name: green_energy_booster
+                percent: "34"
+                account:
+                  id: "green_energy_booster_collector"
+                  type: MODULE_ACCOUNT
+              - name: governance_booster
+                percent: "30"
+                account:
+                  id: "governance_booster_collector"
+                  type: MODULE_ACCOUNT
 
-                  - name: governance_booster
-                    percent: "30"
-                    account:
-                      #insert proper address
-                      address: "governance_booster_collector"
-                      is_module_account: true
 
-    #            - order: 3
-#              name: community_pool_rewards_distributor
-#              sources:
-#                - community_pool_rewards_collector
-#              destination:
-#                account:
-#                  address: "c4e1wejevyydp409tz0necwfg4mzj8md4vfy9n95xu"
-#                  is_module_account: false
-#                  leftover_coin: "0"
-#                share:
-#                  - name: liquidity_and_gov_rewards_share
-#                    percent: "11.345"
-#                    account:
-#                      address: "c4e132g4u3qzf890cqaz9yhaegc6v45ew7qzmzlywg"
-#                      is_module_account: false
-#                      leftover_coin: "0"
-#                  - name: strategic_reserve_share
-#                    percent: "18.345"
-#                    account:
-#                      address: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
-#                      is_module_account: false
-#                      leftover_coin: "0"
     cfevesting:
       params:
         denom: "uc4e"

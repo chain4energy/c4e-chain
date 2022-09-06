@@ -1,4 +1,5 @@
 DIR="$(pwd)/$(dirname $0)"
+pkill -f tail && pkill -f sed
 echo "Running in $DIR"
 mkdir -p $DIR/.log
 echo "Storing logs in $DIR/.log/log.txt"
