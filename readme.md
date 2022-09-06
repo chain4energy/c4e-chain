@@ -4,6 +4,9 @@ state and is being actively
 developed.](https://img.shields.io/badge/repo%20status-Active-green.svg?style=flat-square)](https://www.repostatus.org/#active)
 [![Go Report
 Card](https://goreportcard.com/badge/github.com/chain4energy/c4e-chain?style=flat-square)](https://goreportcard.com/report/github.com/chain4energy/c4e-chain)
+[![License:
+Apache-2.0](https://img.shields.io/github/license/chain4energy/c4e-chain?.svg?style=flat-square)](https://github.com/chain4energy/c4e-chain/blob/master/LICENCE)
+
 
 ![Banner!](https://i.ibb.co/xSf0KDj/c4e-logo-light.png)
 
