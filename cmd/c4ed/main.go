@@ -5,7 +5,7 @@ import (
 
 	"github.com/chain4energy/c4e-chain/app"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
-	"github.com/ignite-hq/cli/ignite/pkg/cosmoscmd"
+	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 )
 
 func main() {

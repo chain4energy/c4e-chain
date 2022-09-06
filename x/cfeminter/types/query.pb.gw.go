@@ -267,11 +267,11 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "cfeminter", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "minter", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Inflation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "cfeminter", "inflation"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Inflation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "minter", "inflation"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_State_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "cfeminter", "state"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_State_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "minter", "state"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

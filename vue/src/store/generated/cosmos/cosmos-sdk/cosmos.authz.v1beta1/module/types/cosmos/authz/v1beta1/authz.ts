@@ -25,6 +25,19 @@ export interface Grant {
   expiration: Date | undefined;
 }
 
+/**
+ * GrantAuthorization extends a grant with both the addresses of the grantee and granter.
+ * It is used in genesis.proto and query.proto
+ *
+ * Since: cosmos-sdk 0.45.2
+ */
+export interface GrantAuthorization {
+  granter: string;
+  grantee: string;
+  authorization: Any | undefined;
+  expiration: Date | undefined;
+}
+
 const baseGenericAuthorization: object = { msg: "" };
 
 export const GenericAuthorization = {
@@ -153,6 +166,127 @@ export const Grant = {
 
   fromPartial(object: DeepPartial<Grant>): Grant {
     const message = { ...baseGrant } as Grant;
+    if (object.authorization !== undefined && object.authorization !== null) {
+      message.authorization = Any.fromPartial(object.authorization);
+    } else {
+      message.authorization = undefined;
+    }
+    if (object.expiration !== undefined && object.expiration !== null) {
+      message.expiration = object.expiration;
+    } else {
+      message.expiration = undefined;
+    }
+    return message;
+  },
+};
+
+const baseGrantAuthorization: object = { granter: "", grantee: "" };
+
+export const GrantAuthorization = {
+  encode(
+    message: GrantAuthorization,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.granter !== "") {
+      writer.uint32(10).string(message.granter);
+    }
+    if (message.grantee !== "") {
+      writer.uint32(18).string(message.grantee);
+    }
+    if (message.authorization !== undefined) {
+      Any.encode(message.authorization, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.expiration !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.expiration),
+        writer.uint32(34).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): GrantAuthorization {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseGrantAuthorization } as GrantAuthorization;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.granter = reader.string();
+          break;
+        case 2:
+          message.grantee = reader.string();
+          break;
+        case 3:
+          message.authorization = Any.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.expiration = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GrantAuthorization {
+    const message = { ...baseGrantAuthorization } as GrantAuthorization;
+    if (object.granter !== undefined && object.granter !== null) {
+      message.granter = String(object.granter);
+    } else {
+      message.granter = "";
+    }
+    if (object.grantee !== undefined && object.grantee !== null) {
+      message.grantee = String(object.grantee);
+    } else {
+      message.grantee = "";
+    }
+    if (object.authorization !== undefined && object.authorization !== null) {
+      message.authorization = Any.fromJSON(object.authorization);
+    } else {
+      message.authorization = undefined;
+    }
+    if (object.expiration !== undefined && object.expiration !== null) {
+      message.expiration = fromJsonTimestamp(object.expiration);
+    } else {
+      message.expiration = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: GrantAuthorization): unknown {
+    const obj: any = {};
+    message.granter !== undefined && (obj.granter = message.granter);
+    message.grantee !== undefined && (obj.grantee = message.grantee);
+    message.authorization !== undefined &&
+      (obj.authorization = message.authorization
+        ? Any.toJSON(message.authorization)
+        : undefined);
+    message.expiration !== undefined &&
+      (obj.expiration =
+        message.expiration !== undefined
+          ? message.expiration.toISOString()
+          : null);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<GrantAuthorization>): GrantAuthorization {
+    const message = { ...baseGrantAuthorization } as GrantAuthorization;
+    if (object.granter !== undefined && object.granter !== null) {
+      message.granter = object.granter;
+    } else {
+      message.granter = "";
+    }
+    if (object.grantee !== undefined && object.grantee !== null) {
+      message.grantee = object.grantee;
+    } else {
+      message.grantee = "";
+    }
     if (object.authorization !== undefined && object.authorization !== null) {
       message.authorization = Any.fromPartial(object.authorization);
     } else {

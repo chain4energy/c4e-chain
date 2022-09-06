@@ -912,21 +912,21 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"chain4energy", "c4e-chain", "cfesignature", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "signature", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CreateReferenceId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"chain4energy", "c4e-chain", "cfesignature", "create_reference_id", "creator"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CreateReferenceId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4e", "signature", "create_reference_id", "creator"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CreateStorageKey_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"chain4energy", "c4e-chain", "cfesignature", "create_storage_key", "targetAccAddress", "referenceId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CreateStorageKey_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "signature", "create_storage_key", "targetAccAddress", "referenceId"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CreateReferencePayloadLink_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"chain4energy", "c4e-chain", "cfesignature", "create_reference_payload_link", "referenceId", "payloadHash"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CreateReferencePayloadLink_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "signature", "create_reference_payload_link", "referenceId", "payloadHash"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_VerifySignature_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"chain4energy", "c4e-chain", "cfesignature", "verify_signature", "referenceId", "targetAccAddress"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_VerifySignature_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "signature", "verify_signature", "referenceId", "targetAccAddress"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetAccountInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"chain4energy", "c4e-chain", "cfesignature", "get_account_info", "accAddressString"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetAccountInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4e", "signature", "get_account_info", "accAddressString"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_VerifyReferencePayloadLink_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"chain4energy", "c4e-chain", "cfesignature", "verify_reference_payload_link", "referenceId", "payloadHash"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_VerifyReferencePayloadLink_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "signature", "verify_reference_payload_link", "referenceId", "payloadHash"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetReferencePayloadLink_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"chain4energy", "c4e-chain", "cfesignature", "get_reference_payload_link", "referenceId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetReferencePayloadLink_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4e", "signature", "get_reference_payload_link", "referenceId"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
