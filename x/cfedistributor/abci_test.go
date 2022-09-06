@@ -216,21 +216,21 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	//coin on "burnState" should be equal 498, remains: 1 and 0.33 on remains
 	burnState, _ := app.CfedistributorKeeper.GetState(ctx, "burn_state_key")
 	ctx.Logger().Error(burnState.String())
-	//burnState, _ := app.CfedistributorKeeper.GetALlStates()
+	//burnState, _ := app.CfedistributorKeeper.GetAllStates()
 	coinRemains := burnState.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.67"), coinRemains.AmountOf("uc4e"))
 
 	if destinationType == MainCollector {
 		mainCollectorCoins :=
 			app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
-		require.EqualValues(t, 1, len(app.CfedistributorKeeper.GetALlStates(ctx)))
+		require.EqualValues(t, 1, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 		require.EqualValues(t, sdk.NewInt(499), mainCollectorCoins.AmountOf(denom))
 	} else if destinationType == ModuleAccount {
 		mainCollectorCoins :=
 			app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 		c4eModulAccountCoins :=
 			app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "c4e_distributor")
-		require.EqualValues(t, 2, len(app.CfedistributorKeeper.GetALlStates(ctx)))
+		require.EqualValues(t, 2, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 		require.EqualValues(t, sdk.NewInt(498), c4eModulAccountCoins.AmountOf(denom))
 		require.EqualValues(t, sdk.NewInt(1), mainCollectorCoins.AmountOf(denom))
 		c4eDistrState, _ := app.CfedistributorKeeper.GetState(ctx, "c4e_distributor")
@@ -240,7 +240,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	} else if destinationType == InternalAccount {
 		mainCollectorCoins :=
 			app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
-		require.EqualValues(t, 2, len(app.CfedistributorKeeper.GetALlStates(ctx)))
+		require.EqualValues(t, 2, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 		require.EqualValues(t, sdk.NewInt(499), mainCollectorCoins.AmountOf(denom))
 		c4eDistrState, _ := app.CfedistributorKeeper.GetState(ctx, "c4e_distributor")
 		coinRemains := c4eDistrState.CoinsStates
@@ -253,7 +253,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 		accountCoins :=
 			app.CfedistributorKeeper.GetAccountCoins(ctx, address)
 
-		require.EqualValues(t, 2, len(app.CfedistributorKeeper.GetALlStates(ctx)))
+		require.EqualValues(t, 2, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 		ctx.Logger().Error(accountCoins.AmountOf(denom).String())
 		println("Amount: " + accountCoins.AmountOf(denom).String())
 
@@ -332,13 +332,13 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 
 	if passThroughAccoutType == MainCollector {
-		require.EqualValues(t, 3, len(app.CfedistributorKeeper.GetALlStates(ctx)))
+		require.EqualValues(t, 3, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 	} else if passThroughAccoutType == ModuleAccount {
-		require.EqualValues(t, 4, len(app.CfedistributorKeeper.GetALlStates(ctx)))
+		require.EqualValues(t, 4, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 	} else if passThroughAccoutType == InternalAccount {
-		require.EqualValues(t, 4, len(app.CfedistributorKeeper.GetALlStates(ctx)))
+		require.EqualValues(t, 4, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 	} else {
-		require.EqualValues(t, 4, len(app.CfedistributorKeeper.GetALlStates(ctx)))
+		require.EqualValues(t, 4, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 	}
 
 	// coins flow:

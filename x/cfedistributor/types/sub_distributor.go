@@ -38,11 +38,7 @@ func CheckPercentShareSumIsGTEThen100(destination Destination) bool {
 		percentShareSum = percentShareSum.Add(destination.BurnShare.Percent)
 	}
 
-	if percentShareSum.GTE(sdk.MustNewDecFromStr("100")) {
-		return true
-	} else {
-		return false
-	}
+	return percentShareSum.GTE(sdk.MustNewDecFromStr("100"))
 }
 
 const (
@@ -54,15 +50,10 @@ const (
 )
 
 func CheckAccountType(account Account) bool {
-	if account.Type == MAIN {
+	switch account.Type {
+	case INTERNAL_ACCOUNT, MODULE_ACCOUNT, MAIN, BASE_ACCOUNT:
 		return true
-	} else if account.Type == MODULE_ACCOUNT {
-		return true
-	} else if account.Type == INTERNAL_ACCOUNT {
-		return true
-	} else if account.Type == BASE_ACCOUNT {
-		return true
-	} else {
+	default:
 		return false
 	}
 }

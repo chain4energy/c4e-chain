@@ -8,8 +8,8 @@ import (
 
 const BurnStateKey = "burn_state_key"
 
-// GetALlStates returns all States
-func (k Keeper) GetALlStates(ctx sdk.Context) (list []types.State) {
+// GetAllStates returns all States
+func (k Keeper) GetAllStates(ctx sdk.Context) (list []types.State) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RemainsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 

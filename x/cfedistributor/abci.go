@@ -1,19 +1,17 @@
 package cfedistributor
 
 import (
-	"time"
-
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"time"
 )
 
 func calculatePercentage(sharePercent sdk.Dec, coinsToDistributeDec sdk.DecCoins) sdk.DecCoins {
 	if !coinsToDistributeDec.IsAllPositive() {
 		return sdk.NewDecCoins()
 	}
-
 	percentInDecForm := sharePercent.QuoInt64(100)
 	return coinsToDistributeDec.MulDecTruncate(percentInDecForm)
 }
@@ -34,12 +32,6 @@ func findAccountState(states *[]types.State, account *types.Account) int {
 		} else if state.Account.Id == account.Id && state.Account.Id == "" {
 			return pos
 		}
-
-		//if Internal == findAccountType(*account) && state.Account.InternalName == account.InternalName {
-		//	return pos
-		//} else if Module == findAccountType(*account) && state.Account.ModuleName == account.ModuleName {
-		//	return pos
-		//}
 	}
 	return -1
 }
@@ -55,7 +47,7 @@ func getRamainsSum(states *[]types.State) sdk.DecCoins {
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	subDistributors := k.GetParams(ctx).SubDistributors
-	states := k.GetALlStates(ctx)
+	states := k.GetAllStates(ctx)
 	k.Logger(ctx).Info("BeginBlock - cfedistr")
 	for _, subDistributor := range subDistributors {
 		k.Logger(ctx).Info("BeginBlock - cfedistr: " + subDistributor.Name)
@@ -102,15 +94,15 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 						states[pos].CoinsStates = sdk.NewDecCoins()
 						coinsToDistribute = coinsToDistribute.Add(coin...)
 					}
-
 				}
 			}
+
 			if len(coinsToDistribute) == 0 {
 				continue
 			}
 			allCoinsToDistribute = allCoinsToDistribute.Add(coinsToDistribute...)
 		}
-		//coinsToDistributeDec := allCoinsToDistribute.AmountOf("uc4e")
+
 		if allCoinsToDistribute.IsZero() {
 			continue
 		}
@@ -152,10 +144,8 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				}
 			}
 		}
-
 		k.SetState(ctx, state)
 	}
-
 }
 
 func addSharesToState(localRemains *[]types.State, account types.Account, calculatedShare sdk.DecCoins, findState func() int) *[]types.State {
@@ -179,7 +169,6 @@ func addSharesToState(localRemains *[]types.State, account types.Account, calcul
 
 func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.DecCoins, subDistributor types.SubDistributor) *[]types.State {
 	percentShareSum := sdk.MustNewDecFromStr("0")
-	//left := coinsToDistributeDec
 	localRemains := states
 	for _, share := range subDistributor.Destination.Share {
 		percentShareSum = percentShareSum.Add(share.Percent)
@@ -187,11 +176,8 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 			continue
 		}
 		calculatedShare := calculatePercentage(share.Percent, coinsToDistributeDec)
-		//if calculatedShare.GT(coinsToDistributeDec) {
-		//	calculatedShare = coinsToDistributeDec
-		//}
+
 		if !calculatedShare.IsZero() {
-			//left = left.Sub(calculatedShare)
 			findFunc := func() int {
 				return findAccountState(localRemains, &share.Account)
 			}
@@ -203,12 +189,7 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 		percentShareSum = percentShareSum.Add(subDistributor.Destination.BurnShare.Percent)
 		calculatedShare := calculatePercentage(subDistributor.Destination.BurnShare.Percent, coinsToDistributeDec)
 
-		//if calculatedShare.GT(coinsToDistributeDec) {
-		//	calculatedShare = coinsToDistributeDec
-		//}
 		if !calculatedShare.IsZero() {
-			//left = left.Sub(calculatedShare)
-
 			findFunc := func() int {
 				return findBurnState(localRemains)
 			}
@@ -223,10 +204,9 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 
 			return findAccountState(localRemains, &accountDefault)
 		}
+
 		defaultSharePercent := sdk.MustNewDecFromStr("100").Sub(percentShareSum)
-
 		calculatedShare := calculatePercentage(defaultSharePercent, coinsToDistributeDec)
-
 		localRemains = addSharesToState(localRemains, accountDefault, calculatedShare, findFunc)
 	}
 
