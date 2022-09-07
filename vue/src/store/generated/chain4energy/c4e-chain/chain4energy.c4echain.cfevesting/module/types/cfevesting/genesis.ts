@@ -22,13 +22,6 @@ export interface GenesisVestingType {
   lockup_period_unit: string;
   /** period of veesting coins from lockup period end */
   vesting_period: number;
-  /**
-   * vested coin periodical releasing
-   * int64 token_releasing_period = 6;
-   * string token_releasing_period_unit = 7;
-   * defines if vesting type allows delegation
-   * bool delegations_allowed = 8;
-   */
   vesting_period_unit: string;
 }
 

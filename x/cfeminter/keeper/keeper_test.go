@@ -175,10 +175,10 @@ func createMinter(startTime time.Time) types.Minter {
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
 	linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
-	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
-	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter2}
+	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
+	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter2}
 
-	period3 := types.MintingPeriod{Position: 3, Type: types.MintingPeriod_NO_MINTING}
+	period3 := types.MintingPeriod{Position: 3, Type: types.NO_MINTING}
 	periods := []*types.MintingPeriod{&period1, &period2, &period3}
 	minter := types.Minter{Start: startTime, Periods: periods}
 	return minter

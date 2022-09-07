@@ -115,7 +115,7 @@ genesis:
             - position: 1
               type: "PERIODIC_REDUCTION_MINTER"
               periodic_reduction_minter:
-                mint_period: "8760h" # year - 365*24
+                mint_period: 31536000 # year - 365*24*3600
                 mint_amount: "40000000000000"
                 reduction_period_length: 4
                 reduction_factor: "0.5"
@@ -199,57 +199,36 @@ genesis:
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "minute"
-          # token_releasing_period: 30
-          # token_releasing_period_unit: "second"
-          # delegations_allowed: false
         - name: "Mid vesting with lockup"
           lockup_period: 150
           lockup_period_unit: "minute"
           vesting_period: 150
           vesting_period_unit: "hour"
-          # token_releasing_period: 5
-          # token_releasing_period_unit: "minute"
-          # delegations_allowed: false
         - name: "Long vesting with lockup"
           lockup_period: 600
           lockup_period_unit: "hour"
           vesting_period: 70
           vesting_period_unit: "day"
-          # token_releasing_period: 10
-          # token_releasing_period_unit: "minute"
-          # delegations_allowed: false
         - name: "Mid vesting delegable"
           lockup_period: 0
           lockup_period_unit: "minute"
           vesting_period: 200
           vesting_period_unit: "hour"
-          # token_releasing_period: 5
-          # token_releasing_period_unit: "minute"
-          # delegations_allowed: true
         - name: "Long vesting delegable"
           lockup_period: 0
           lockup_period_unit: "minute"
           vesting_period: 100
           vesting_period_unit: "day"
-          # token_releasing_period: 10
-          # token_releasing_period_unit: "minute"
-          # delegations_allowed: true
         - name: "Advisors pool"
           lockup_period: 5
           lockup_period_unit: "minute"
           vesting_period: 5
           vesting_period_unit: "day"
-          # token_releasing_period: 10
-          # token_releasing_period_unit: "minute"
-          # delegations_allowed: false
         - name: "Validators pool"
           lockup_period: 10
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "day"
-          # token_releasing_period: 10
-          # token_releasing_period_unit: "minute"
-          # delegations_allowed: false
       account_vestings_list:
         vestings:
           - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
@@ -257,37 +236,26 @@ genesis:
             vesting_pools:
               - id: 1
                 name: "Advisors pool"
-                # delegation_allowed: false
                 last_modification: "2022-03-30T00:00:00.00000000Z"
                 last_modification_vested: "15000000000000"
                 last_modification_withdrawn: "0"
-                # lock_end: "2025-03-30T00:00:00.00000000Z"
-                # release_period: "300s"
                 sent: "0"
                 vested: "15000000000000"
                 lock_end: "2025-03-30T00:00:00.00000000Z"
                 lock_start: "2022-03-30T00:00:00.00000000Z"
                 vesting_type: "Advisors pool"
                 withdrawn: "0"
-                # transfer_allowed: true
-          # - address: "c4e14z9cdze48aygze82e42a29h5gg5z3vda0qx5wc"
-          #   delegable_address: ""
-          #   vestings:
               - id: 2
                 name: "Validators pool"
-                # delegation_allowed: false
                 last_modification: "2022-03-30T00:00:00.00000000Z"
                 last_modification_vested: "17500000000000"
                 last_modification_withdrawn: "0"
-                # lock_end: "2024-03-30T00:00:00.00000000Z"
-                # release_period: "300s"
                 sent: "0"
                 vested: "17500000000000"
                 lock_end: "2024-03-30T00:00:00.00000000Z"
                 lock_start: "2022-03-30T00:00:00.00000000Z"
                 vesting_type: "Validators pool"
                 withdrawn: "0"
-                # transfer_allowed: true
 
     # genutil:
     #   gen_txs:

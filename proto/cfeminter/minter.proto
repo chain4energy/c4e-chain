@@ -3,7 +3,6 @@ package chain4energy.c4echain.cfeminter;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/duration.proto";
 
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
@@ -19,12 +18,11 @@ message MintingPeriod {
 
   int32 position = 1;
   google.protobuf.Timestamp period_end = 2 [(gogoproto.stdtime) = true];
-  enum MinterType {
-    NO_MINTING = 0;
-    TIME_LINEAR_MINTER = 1;
-    PERIODIC_REDUCTION_MINTER = 2;
-  }
-  MinterType type = 3;
+  // types:
+  //   NO_MINTING;
+  //   TIME_LINEAR_MINTER;
+  //   PERIODIC_REDUCTION_MINTER;
+  string type = 3;
   TimeLinearMinter time_linear_minter = 4;
   PeriodicReductionMinter periodic_reduction_minter = 5;
 
@@ -35,7 +33,8 @@ message TimeLinearMinter {
 }
 
 message PeriodicReductionMinter {
-  google.protobuf.Duration mint_period = 1 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
+  // mint_period in seconds
+  int32 mint_period = 1; 
   string mint_amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   int32 reduction_period_length = 3;
   string reduction_factor = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];

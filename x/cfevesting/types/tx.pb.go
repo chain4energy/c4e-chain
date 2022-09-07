@@ -37,8 +37,7 @@ var _ = time.Kitchen
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type MsgCreateVestingPool struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	// uint64 amount = 2;
+	Creator     string                                 `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Name        string                                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Amount      github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount"`
 	Duration    time.Duration                          `protobuf:"bytes,5,opt,name=duration,proto3,stdduration" json:"duration"`
@@ -515,13 +514,6 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	CreateVestingPool(ctx context.Context, in *MsgCreateVestingPool, opts ...grpc.CallOption) (*MsgCreateVestingPoolResponse, error)
 	WithdrawAllAvailable(ctx context.Context, in *MsgWithdrawAllAvailable, opts ...grpc.CallOption) (*MsgWithdrawAllAvailableResponse, error)
-	// rpc Delegate(MsgDelegate) returns (MsgDelegateResponse);
-	// rpc Undelegate(MsgUndelegate) returns (MsgUndelegateResponse);
-	// rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
-	// rpc WithdrawDelegatorReward(MsgWithdrawDelegatorReward) returns (MsgWithdrawDelegatorRewardResponse);
-	// rpc SendVesting(MsgSendVesting) returns (MsgSendVestingResponse);
-	// rpc Vote(MsgVote) returns (MsgVoteResponse);
-	// rpc VoteWeighted(MsgVoteWeighted) returns (MsgVoteWeightedResponse);
 	CreateVestingAccount(ctx context.Context, in *MsgCreateVestingAccount, opts ...grpc.CallOption) (*MsgCreateVestingAccountResponse, error)
 	SendToVestingAccount(ctx context.Context, in *MsgSendToVestingAccount, opts ...grpc.CallOption) (*MsgSendToVestingAccountResponse, error)
 }
@@ -574,13 +566,6 @@ func (c *msgClient) SendToVestingAccount(ctx context.Context, in *MsgSendToVesti
 type MsgServer interface {
 	CreateVestingPool(context.Context, *MsgCreateVestingPool) (*MsgCreateVestingPoolResponse, error)
 	WithdrawAllAvailable(context.Context, *MsgWithdrawAllAvailable) (*MsgWithdrawAllAvailableResponse, error)
-	// rpc Delegate(MsgDelegate) returns (MsgDelegateResponse);
-	// rpc Undelegate(MsgUndelegate) returns (MsgUndelegateResponse);
-	// rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
-	// rpc WithdrawDelegatorReward(MsgWithdrawDelegatorReward) returns (MsgWithdrawDelegatorRewardResponse);
-	// rpc SendVesting(MsgSendVesting) returns (MsgSendVestingResponse);
-	// rpc Vote(MsgVote) returns (MsgVoteResponse);
-	// rpc VoteWeighted(MsgVoteWeighted) returns (MsgVoteWeightedResponse);
 	CreateVestingAccount(context.Context, *MsgCreateVestingAccount) (*MsgCreateVestingAccountResponse, error)
 	SendToVestingAccount(context.Context, *MsgSendToVestingAccount) (*MsgSendToVestingAccountResponse, error)
 }

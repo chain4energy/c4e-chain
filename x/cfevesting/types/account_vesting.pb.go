@@ -126,15 +126,12 @@ func (m *AccountVestings) GetVestingPools() []*VestingPool {
 }
 
 type VestingPool struct {
-	Id          int32     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name        string    `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	VestingType string    `protobuf:"bytes,3,opt,name=vesting_type,json=vestingType,proto3" json:"vesting_type,omitempty"`
-	LockStart   time.Time `protobuf:"bytes,4,opt,name=lock_start,json=lockStart,proto3,stdtime" json:"lock_start"`
-	LockEnd     time.Time `protobuf:"bytes,5,opt,name=lock_end,json=lockEnd,proto3,stdtime" json:"lock_end"`
-	// google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-	Vested github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,6,opt,name=vested,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"vested"`
-	// google.protobuf.Duration release_period = 7 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
-	// bool delegation_allowed = 8;
+	Id                        int32                                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                      string                                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	VestingType               string                                 `protobuf:"bytes,3,opt,name=vesting_type,json=vestingType,proto3" json:"vesting_type,omitempty"`
+	LockStart                 time.Time                              `protobuf:"bytes,4,opt,name=lock_start,json=lockStart,proto3,stdtime" json:"lock_start"`
+	LockEnd                   time.Time                              `protobuf:"bytes,5,opt,name=lock_end,json=lockEnd,proto3,stdtime" json:"lock_end"`
+	Vested                    github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,6,opt,name=vested,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"vested"`
 	Withdrawn                 github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,7,opt,name=withdrawn,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"withdrawn"`
 	Sent                      github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,8,opt,name=sent,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"sent"`
 	LastModification          time.Time                              `protobuf:"bytes,9,opt,name=last_modification,json=lastModification,proto3,stdtime" json:"last_modification"`

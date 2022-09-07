@@ -295,14 +295,12 @@ func (m *QueryVestingPoolsResponse) GetVestingPools() []*VestingPoolInfo {
 }
 
 type VestingPoolInfo struct {
-	Id          int32     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name        string    `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	VestingType string    `protobuf:"bytes,3,opt,name=vesting_type,json=vestingType,proto3" json:"vesting_type,omitempty"`
-	LockStart   time.Time `protobuf:"bytes,4,opt,name=lock_start,json=lockStart,proto3,stdtime" json:"lock_start"`
-	LockEnd     time.Time `protobuf:"bytes,5,opt,name=lock_end,json=lockEnd,proto3,stdtime" json:"lock_end"`
-	// google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-	Withdrawable string `protobuf:"bytes,6,opt,name=withdrawable,proto3" json:"withdrawable,omitempty"`
-	// bool delegation_allowed = 7;
+	Id                  int32       `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                string      `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	VestingType         string      `protobuf:"bytes,3,opt,name=vesting_type,json=vestingType,proto3" json:"vesting_type,omitempty"`
+	LockStart           time.Time   `protobuf:"bytes,4,opt,name=lock_start,json=lockStart,proto3,stdtime" json:"lock_start"`
+	LockEnd             time.Time   `protobuf:"bytes,5,opt,name=lock_end,json=lockEnd,proto3,stdtime" json:"lock_end"`
+	Withdrawable        string      `protobuf:"bytes,6,opt,name=withdrawable,proto3" json:"withdrawable,omitempty"`
 	Vested              *types.Coin `protobuf:"bytes,7,opt,name=vested,proto3" json:"vested,omitempty"`
 	CurrentVestedAmount string      `protobuf:"bytes,8,opt,name=current_vested_amount,json=currentVestedAmount,proto3" json:"current_vested_amount,omitempty"`
 	SentAmount          string      `protobuf:"bytes,9,opt,name=sent_amount,json=sentAmount,proto3" json:"sent_amount,omitempty"`

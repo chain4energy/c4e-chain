@@ -23,6 +23,7 @@ const iterationText = "iterarion %d"
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
 const Year = time.Hour * 24 * 365
+const SecondsInYear = int32(3600 * 24 * 365)
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
@@ -55,9 +56,9 @@ func TestOneYearLinear(t *testing.T) {
 	minter := types.Minter{
 		Start: now,
 		Periods: []*types.MintingPeriod{
-			{Position: 1, PeriodEnd: &yearFromNow, Type: types.MintingPeriod_TIME_LINEAR_MINTER,
+			{Position: 1, PeriodEnd: &yearFromNow, Type: types.TIME_LINEAR_MINTER,
 				TimeLinearMinter: &types.TimeLinearMinter{Amount: sdk.NewInt(totalSupply)}},
-			{Position: 2, Type: types.MintingPeriod_NO_MINTING},
+			{Position: 2, Type: types.NO_MINTING},
 		}}
 
 	genesisState := types.GenesisState{
@@ -119,12 +120,12 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 	startAmountYearly := int64(40000000000000)
 	commontestutils.AddHelperModuleAccountPerms()
 	now := time.Now()
-	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(startAmountYearly), MintPeriod: Year, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
+	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(startAmountYearly), MintPeriod: SecondsInYear, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
 
 	minter := types.Minter{
 		Start: now,
 		Periods: []*types.MintingPeriod{
-			{Position: 1, Type: types.MintingPeriod_PERIODIC_REDUCTION_MINTER,
+			{Position: 1, Type: types.PERIODIC_REDUCTION_MINTER,
 				PeriodicReductionMinter: &pminter},
 		}}
 
@@ -197,10 +198,10 @@ func createMinter(startTime time.Time) types.Minter {
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
 	linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000)}
 
-	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
-	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.MintingPeriod_TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter2}
+	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
+	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter2}
 
-	period3 := types.MintingPeriod{Position: 3, Type: types.MintingPeriod_NO_MINTING}
+	period3 := types.MintingPeriod{Position: 3, Type: types.NO_MINTING}
 	periods := []*types.MintingPeriod{&period1, &period2, &period3}
 	minter := types.Minter{Start: startTime, Periods: periods}
 	return minter

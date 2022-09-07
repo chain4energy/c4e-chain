@@ -37,9 +37,7 @@ export interface VestingPoolInfo {
   vesting_type: string;
   lock_start: Date | undefined;
   lock_end: Date | undefined;
-  /** google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true]; */
   withdrawable: string;
-  /** bool delegation_allowed = 7; */
   vested: Coin | undefined;
   current_vested_amount: string;
   sent_amount: string;
