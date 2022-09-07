@@ -38,6 +38,10 @@ endif
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
+release = GOOS=$(1) GOARCH=$(2) go build -o ./build/c4ed -mod=readonly $(BUILD_FLAGS)  ./cmd/c4ed
+tar = cd build && tar -cvzf c4ed_$(tag)_$(1)_$(2).tar.gz c4ed && rm c4ed
+
+
 # include Makefile.ledger
 all: install
 
@@ -56,3 +60,13 @@ go.sum: go.mod
 test:
 	@go test -coverprofile=coverage.out -mod=readonly $(PACKAGES)
 
+release:
+	@echo "--> Prepare release linux amd64"
+	$(call release,linux,amd64)
+	$(call tar,linux,amd64)
+	@echo "--> Prepare release linux arm64"
+	$(call release,linux,arm64)
+	$(call tar,linux,arm64)
+	@echo "--> Prepare release darwin amd64"
+	$(call release,darwin,amd64)
+	$(call tar,darwin,amd64)
