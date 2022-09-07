@@ -7,3 +7,5 @@ release/
 build/
 .data
 .log
+.scannerwork/
+coverage.out
