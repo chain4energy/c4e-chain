@@ -16,13 +16,16 @@ const PeriodDuration = time.Duration(345600000000 * 1000000)
 const MyDenom = "myc4e"
 
 func TestMintFirstPeriod(t *testing.T) {
-	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
+	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
 	app, ctx := prepareApp(startTime, createMinter(startTime))
 	k := app.CfeminterKeeper
 
-	minterState := types.MinterState{CurrentPosition: 1, AmountMinted: sdk.NewInt(0)}
+	minterState := types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)}
 	k.SetMinterState(ctx, minterState)
+	minterState.LastMintBlockTime = startTime
+	minterState.RemainderToMint = sdk.ZeroDec()
+	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
 
 	ctx = ctx.WithBlockTime(startTime)
 	amount, err := k.Mint(ctx)
@@ -31,43 +34,55 @@ func TestMintFirstPeriod(t *testing.T) {
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.ZeroInt())
 
-	ctx = ctx.WithBlockTime(startTime.Add(PeriodDuration / 4))
+	newTime := startTime.Add(PeriodDuration / 4)
+	ctx = ctx.WithBlockTime(newTime)
 	amount, err = k.Mint(ctx)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(250000), amount)
 	minterState.AmountMinted = sdk.NewInt(250000)
+	minterState.LastMintBlockTime = newTime
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(250000))
 
-	ctx = ctx.WithBlockTime(startTime.Add(PeriodDuration * 3 / 4))
+	newTime = startTime.Add(PeriodDuration * 3 / 4)
+	ctx = ctx.WithBlockTime(newTime)
 	amount, err = k.Mint(ctx)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(500000), amount)
 	minterState.AmountMinted = sdk.NewInt(750000)
+	minterState.LastMintBlockTime = newTime
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(750000))
 
-	ctx = ctx.WithBlockTime(startTime.Add(PeriodDuration))
+	newTime = startTime.Add(PeriodDuration)
+	ctx = ctx.WithBlockTime(newTime)
 	amount, err = k.Mint(ctx)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(250000), amount)
 	minterState.AmountMinted = sdk.NewInt(0)
-	minterState.CurrentPosition = 2
+	minterState.LastMintBlockTime = newTime
+	minterState.Position = 2
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(1000000))
 
 }
 
 func TestMintSecondPeriod(t *testing.T) {
-	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
+	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
 	app, ctx := prepareApp(startTime, createMinter(startTime))
 	k := app.CfeminterKeeper
 
-	minterState := types.MinterState{CurrentPosition: 2, AmountMinted: sdk.NewInt(0)}
+	minterState := types.MinterState{Position: 2, AmountMinted: sdk.NewInt(0)}
 	k.SetMinterState(ctx, minterState)
 
+
 	periodStart := startTime.Add(PeriodDuration)
+
+	minterState.LastMintBlockTime = periodStart
+	minterState.RemainderToMint = sdk.ZeroDec()
+	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
+
 	ctx = ctx.WithBlockTime(periodStart)
 	amount, err := k.Mint(ctx)
 	require.NoError(t, err)
@@ -75,68 +90,84 @@ func TestMintSecondPeriod(t *testing.T) {
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(0))
 
-	ctx = ctx.WithBlockTime(periodStart.Add(PeriodDuration / 4))
+	newTime := periodStart.Add(PeriodDuration / 4)
+	ctx = ctx.WithBlockTime(newTime)
 	amount, err = k.Mint(ctx)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(25000), amount)
 	minterState.AmountMinted = sdk.NewInt(25000)
+	minterState.LastMintBlockTime = newTime
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(25000))
 
-	ctx = ctx.WithBlockTime(periodStart.Add(PeriodDuration * 3 / 4))
+	newTime = periodStart.Add(PeriodDuration * 3 / 4)
+	ctx = ctx.WithBlockTime(newTime)
 	amount, err = k.Mint(ctx)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(50000), amount)
 	minterState.AmountMinted = sdk.NewInt(75000)
+	minterState.LastMintBlockTime = newTime
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(75000))
 
-	ctx = ctx.WithBlockTime(periodStart.Add(PeriodDuration))
+	newTime = periodStart.Add(PeriodDuration)
+	ctx = ctx.WithBlockTime(newTime)
 	amount, err = k.Mint(ctx)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(25000), amount)
 	minterState.AmountMinted = sdk.NewInt(0)
-	minterState.CurrentPosition = 3
+	minterState.LastMintBlockTime = newTime
+	minterState.Position = 3
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(100000))
 
 }
 
 func TestMintBetweenFirstAndSecondPeriods(t *testing.T) {
-	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
+	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
 	app, ctx := prepareApp(startTime, createMinter(startTime))
 	k := app.CfeminterKeeper
 
-	minterState := types.MinterState{CurrentPosition: 1, AmountMinted: sdk.NewInt(750000)}
+	minterState := types.MinterState{Position: 1, AmountMinted: sdk.NewInt(750000)}
 	k.SetMinterState(ctx, minterState)
 
-	ctx = ctx.WithBlockTime(startTime.Add(PeriodDuration + PeriodDuration/4))
+	newTime := startTime.Add(PeriodDuration + PeriodDuration/4)
+	minterState.LastMintBlockTime = newTime
+	minterState.RemainderToMint = sdk.ZeroDec()
+	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
+
+	ctx = ctx.WithBlockTime(newTime)
 	amount, err := k.Mint(ctx)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(275000), amount)
 	minterState.AmountMinted = sdk.NewInt(25000)
-	minterState.CurrentPosition = 2
+	minterState.Position = 2
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(275000))
 
 }
 
 func TestMintBetweenSecondAndThirdPeriods(t *testing.T) {
-	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
+	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
 	app, ctx := prepareApp(startTime, createMinter(startTime))
 	k := app.CfeminterKeeper
 
-	minterState := types.MinterState{CurrentPosition: 2, AmountMinted: sdk.NewInt(75000)}
+	minterState := types.MinterState{Position: 2, AmountMinted: sdk.NewInt(75000)}
 	k.SetMinterState(ctx, minterState)
 
-	ctx = ctx.WithBlockTime(startTime.Add(2*PeriodDuration + PeriodDuration/4))
+	newTime := startTime.Add(2*PeriodDuration + PeriodDuration/4)
+	minterState.LastMintBlockTime = newTime
+	minterState.RemainderToMint = sdk.ZeroDec()
+	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
+
+	ctx = ctx.WithBlockTime(newTime)
 	amount, err := k.Mint(ctx)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(25000), amount)
 	minterState.AmountMinted = sdk.NewInt(0)
-	minterState.CurrentPosition = 3
+	minterState.Position = 3
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(25000))
 
@@ -148,7 +179,7 @@ func TestMintPeriodNotFound(t *testing.T) {
 	app, ctx := prepareApp(startTime, createMinter(startTime))
 	k := app.CfeminterKeeper
 
-	minterState := types.MinterState{CurrentPosition: 9, AmountMinted: sdk.NewInt(0)}
+	minterState := types.MinterState{Position: 9, AmountMinted: sdk.NewInt(0)}
 	k.SetMinterState(ctx, minterState)
 
 	ctx = ctx.WithBlockTime(startTime)

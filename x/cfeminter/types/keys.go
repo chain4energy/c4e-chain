@@ -3,7 +3,7 @@ package types
 // MinterKey is the key to use for the keeper store.
 
 var MinterStateKey = []byte{0x02}
-
+var MinterStateHistoryKeyPrefix = []byte{0x03}
 const (
 	// ModuleName defines the module name
 	ModuleName = "cfeminter"

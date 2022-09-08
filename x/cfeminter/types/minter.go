@@ -102,16 +102,16 @@ func (m Minter) ContainsId(id int32) bool {
 	return false
 }
 
-func (m *MintingPeriod) AmountToMint(state *MinterState, periodStart time.Time, blockTime time.Time) sdk.Int {
+func (m *MintingPeriod) AmountToMint(state *MinterState, periodStart time.Time, blockTime time.Time) ( toMint sdk.Int, remainder sdk.Dec) {
 	switch m.Type {
 	case NO_MINTING:
-		return sdk.ZeroInt()
+		return sdk.ZeroInt(), sdk.ZeroDec()
 	case TIME_LINEAR_MINTER:
 		return m.TimeLinearMinter.amountToMint(state, periodStart, *m.PeriodEnd, blockTime)
 	case PERIODIC_REDUCTION_MINTER:
 		return m.PeriodicReductionMinter.amountToMint(state, periodStart, m.PeriodEnd, blockTime)
 	default:
-		return sdk.ZeroInt()
+		return sdk.ZeroInt(), sdk.ZeroDec()
 	}
 }
 
@@ -166,17 +166,22 @@ func (a ByPosition) Len() int           { return len(a) }
 func (a ByPosition) Less(i, j int) bool { return a[i].Position < a[j].Position }
 func (a ByPosition) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
-func (m *TimeLinearMinter) amountToMint(state *MinterState, periodStart time.Time, periodEnd time.Time, blockTime time.Time) sdk.Int {
-	amount := m.Amount
+func (m *TimeLinearMinter) amountToMint(state *MinterState, periodStart time.Time, periodEnd time.Time, blockTime time.Time) ( toMint sdk.Int, remainder sdk.Dec) {
 	if blockTime.After(periodEnd) {
-		return amount.Sub(state.AmountMinted)
+		return m.Amount.Sub(state.AmountMinted), sdk.ZeroDec()
 	}
 	if blockTime.Before(periodStart) {
-		return sdk.ZeroInt()
+		return sdk.ZeroInt(), sdk.ZeroDec()
 	}
+	amount := sdk.NewDecFromInt(m.Amount)
+
 	passedTime := blockTime.UnixMilli() - periodStart.UnixMilli()
 	period := periodEnd.UnixMilli() - periodStart.UnixMilli()
-	return amount.MulRaw(passedTime).QuoRaw(period).Sub(state.AmountMinted)
+
+	toMintDec := amount.MulInt64(passedTime).QuoInt64(period).Sub(sdk.NewDecFromInt(state.AmountMinted))
+	toMint = toMintDec.TruncateInt()
+	remainder = toMintDec.Sub(toMintDec.TruncateDec())
+	return
 }
 
 func (m TimeLinearMinter) validate(id int32) error {
@@ -200,7 +205,7 @@ func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart ti
 
 }
 
-func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart time.Time, periodEnd *time.Time, blockTime time.Time) sdk.Int {
+func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart time.Time, periodEnd *time.Time, blockTime time.Time) ( toMint sdk.Int, remainder sdk.Dec) {
 	now := blockTime
 	if periodEnd != nil && blockTime.After(*periodEnd) {
 		now = *periodEnd
@@ -232,7 +237,10 @@ func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart t
 
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
 	amountToMint = amountToMint.Add(currentEpochAmountToMint)
-	return amountToMint.TruncateInt().Sub(state.AmountMinted)
+
+	toMint = amountToMint.TruncateInt().Sub(state.AmountMinted)
+	remainder = amountToMint.Sub(amountToMint.TruncateDec())
+	return 
 }
 
 func (m PeriodicReductionMinter) validate(id int32) error {
@@ -278,6 +286,14 @@ func (m *PeriodicReductionMinter) calculateInfation(totalSupply sdk.Int, periodS
 func (m MinterState) Validate() error {
 	if m.AmountMinted.IsNegative() {
 		return fmt.Errorf("minter state amount cannot be less than 0")
+
+	}
+	if m.RemainderFromPreviousPeriod.IsNegative() {
+		return fmt.Errorf("minter remainder from previous period amount cannot be less than 0")
+
+	}
+	if m.RemainderToMint.IsNegative() {
+		return fmt.Errorf("minter remainder to mint amount cannot be less than 0")
 
 	}
 	return nil

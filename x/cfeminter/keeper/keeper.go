@@ -66,7 +66,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
 
 	if currentPeriod == nil {
-		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentPosition)
+		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.Position)
 
 	}
 
@@ -77,7 +77,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		periodStart = *previousPeriod.PeriodEnd
 	}
 
-	amount := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
+	amount, remainder := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
 
 	coin := sdk.NewCoin(params.MintDenom, amount)
 	coins := sdk.NewCoins(coin)
@@ -92,13 +92,24 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		return sdk.ZeroInt(), err
 	}
 
+	minterState.AmountMinted = minterState.AmountMinted.Add(amount)
+	minterState.LastMintBlockTime = ctx.BlockTime()
+	minterState.RemainderToMint = remainder
+
 	if currentPeriod.PeriodEnd == nil || ctx.BlockTime().Before(*currentPeriod.PeriodEnd) {
-		minterState.AmountMinted = minterState.AmountMinted.Add(amount)
+
 		k.SetMinterState(ctx, minterState)
 		return amount, nil
 	} else {
-		minterState.CurrentPosition++
-		minterState.AmountMinted = sdk.ZeroInt()
+		k.SetMinterStateHistory(ctx, minterState)
+		minterState = types.MinterState {
+			Position: minterState.Position+1,
+			AmountMinted: sdk.ZeroInt(),
+			RemainderToMint: sdk.ZeroDec(),
+			RemainderFromPreviousPeriod: remainder,
+			LastMintBlockTime: ctx.BlockTime(),
+		}
+
 		k.SetMinterState(ctx, minterState)
 		minted, err := k.Mint(ctx)
 		if err != nil {
@@ -116,7 +127,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
 
 	if currentPeriod == nil {
-		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentPosition)
+		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.Position)
 
 	}
 
@@ -133,7 +144,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
 }
 
 func getCurrentAndPreviousPeriod(minter types.Minter, state *types.MinterState) (currentPeriod *types.MintingPeriod, previousPeriod *types.MintingPeriod) {
-	currentId := state.CurrentPosition
+	currentId := state.Position
 	for _, period := range minter.Periods {
 		if period.Position == currentId {
 			currentPeriod = period
