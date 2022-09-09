@@ -21,7 +21,7 @@ type (
 		paramstore paramtypes.Subspace
 
 		bankKeeper    types.BankKeeper
-		stakingKeeper    types.StakingKeeper
+		stakingKeeper types.StakingKeeper
 		collectorName string
 	}
 )
