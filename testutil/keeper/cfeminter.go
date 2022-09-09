@@ -42,6 +42,7 @@ func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		memStoreKey,
 		paramsSubspace,
 		nil,
+		nil,
 		"test",
 	)
 

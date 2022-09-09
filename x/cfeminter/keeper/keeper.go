@@ -21,6 +21,7 @@ type (
 		paramstore paramtypes.Subspace
 
 		bankKeeper    types.BankKeeper
+		stakingKeeper    types.StakingKeeper
 		collectorName string
 	}
 )
@@ -32,6 +33,7 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 
 	bankKeeper types.BankKeeper,
+	stakingKeeper types.StakingKeeper,
 	collectorName string,
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -46,6 +48,7 @@ func NewKeeper(
 		memKey:        memKey,
 		paramstore:    ps,
 		bankKeeper:    bankKeeper,
+		stakingKeeper: stakingKeeper,
 		collectorName: collectorName,
 	}
 }
@@ -180,4 +183,10 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 // AddCollectedFees to be used in BeginBlocker.
 func (k Keeper) AddCollectedFees(ctx sdk.Context, fees sdk.Coins) error {
 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.collectorName, fees)
+}
+
+// BondedRatio implements an alias call to the underlying staking keeper's
+// BondedRatio to be used in BeginBlocker.
+func (k Keeper) BondedRatio(ctx sdk.Context) sdk.Dec {
+	return k.stakingKeeper.BondedRatio(ctx)
 }
