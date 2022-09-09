@@ -77,7 +77,11 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		periodStart = *previousPeriod.PeriodEnd
 	}
 
-	amount, remainder := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
+	expectedAmountToMint := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
+	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousPeriod)
+
+	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
+	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
 
 	coin := sdk.NewCoin(params.MintDenom, amount)
 	coins := sdk.NewCoins(coin)

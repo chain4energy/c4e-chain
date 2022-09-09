@@ -24,6 +24,7 @@ export interface QueryStateRequest {}
 
 export interface QueryStateResponse {
   minter_state: MinterState | undefined;
+  state_history: MinterState[];
 }
 
 const baseQueryParamsRequest: object = {};
@@ -272,6 +273,9 @@ export const QueryStateResponse = {
         writer.uint32(10).fork()
       ).ldelim();
     }
+    for (const v of message.state_history) {
+      MinterState.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -279,11 +283,17 @@ export const QueryStateResponse = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseQueryStateResponse } as QueryStateResponse;
+    message.state_history = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
           message.minter_state = MinterState.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.state_history.push(
+            MinterState.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -295,10 +305,16 @@ export const QueryStateResponse = {
 
   fromJSON(object: any): QueryStateResponse {
     const message = { ...baseQueryStateResponse } as QueryStateResponse;
+    message.state_history = [];
     if (object.minter_state !== undefined && object.minter_state !== null) {
       message.minter_state = MinterState.fromJSON(object.minter_state);
     } else {
       message.minter_state = undefined;
+    }
+    if (object.state_history !== undefined && object.state_history !== null) {
+      for (const e of object.state_history) {
+        message.state_history.push(MinterState.fromJSON(e));
+      }
     }
     return message;
   },
@@ -309,15 +325,28 @@ export const QueryStateResponse = {
       (obj.minter_state = message.minter_state
         ? MinterState.toJSON(message.minter_state)
         : undefined);
+    if (message.state_history) {
+      obj.state_history = message.state_history.map((e) =>
+        e ? MinterState.toJSON(e) : undefined
+      );
+    } else {
+      obj.state_history = [];
+    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<QueryStateResponse>): QueryStateResponse {
     const message = { ...baseQueryStateResponse } as QueryStateResponse;
+    message.state_history = [];
     if (object.minter_state !== undefined && object.minter_state !== null) {
       message.minter_state = MinterState.fromPartial(object.minter_state);
     } else {
       message.minter_state = undefined;
+    }
+    if (object.state_history !== undefined && object.state_history !== null) {
+      for (const e of object.state_history) {
+        message.state_history.push(MinterState.fromPartial(e));
+      }
     }
     return message;
   },

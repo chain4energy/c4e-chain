@@ -263,6 +263,157 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 
 }
 
+
+
+func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
+	totalSupply := int64(400000000000000)
+	startAmountYearly := int64(40000000000000)
+	commontestutils.AddHelperModuleAccountPerms()
+	now := time.Now()
+	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(startAmountYearly), MintPeriod: SecondsInYear, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
+
+	minter := types.Minter{
+		Start: now,
+		Periods: []*types.MintingPeriod{
+			{Position: 1, Type: types.PERIODIC_REDUCTION_MINTER,
+				PeriodicReductionMinter: &pminter},
+		}}
+
+	genesisState := types.GenesisState{
+		Params:      types.NewParams(commontestutils.Denom, minter),
+		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
+	}
+
+	app := testapp.Setup(false)
+
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: now})
+	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	commontestutils.AddCoinsToAccount(uint64(totalSupply), ctx, app, acountsAddresses[0])
+
+	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
+	require.NoError(t, err)
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.1"), inflation)
+	state := app.CfeminterKeeper.GetMinterState(ctx)
+	require.EqualValues(t, int32(1), state.Position)
+	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
+	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.ZeroInt())
+
+	year := 365 //* 24
+	numOfHours := 301 * year
+
+	for i := 1; i <= numOfHours; i++ {
+		ctx = ctx.WithBlockHeight(int64(i)).WithBlockTime(ctx.BlockTime().Add(24 * time.Hour))
+	}
+
+	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
+	app.EndBlocker(ctx, abci.RequestEndBlock{})
+
+	expectedMinted := int64(320000000000000)
+	state = app.CfeminterKeeper.GetMinterState(ctx)
+	require.EqualValues(t, int32(1), state.Position)
+	require.EqualValues(t, sdk.NewInt(expectedMinted), state.AmountMinted)
+	
+	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.NewInt(expectedMinted))
+	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
+	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
+
+}
+
+func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
+	totalSupply := int64(400000000000000)
+	startAmountYearly := int64(40000000000000)
+	commontestutils.AddHelperModuleAccountPerms()
+	now := time.Now()
+
+	tenYears := time.Duration(int64(time.Second) * int64(SecondsInYear) * 10)
+	endTime1 := now.Add(tenYears)
+	endTime2 := endTime1.Add(tenYears)
+
+	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(200000000000000)}
+	linearMinter2 := types.TimeLinearMinter{Amount: sdk.NewInt(100000000000000)}
+
+	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime1, Type: types.TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
+	period2 := types.MintingPeriod{Position: 2, PeriodEnd: &endTime2, Type: types.TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter2}
+
+	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(startAmountYearly), MintPeriod: SecondsInYear, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
+
+	minter := types.Minter{
+		Start: now,
+		Periods: []*types.MintingPeriod{
+			&period1,
+			&period2,
+			{Position: 3, Type: types.PERIODIC_REDUCTION_MINTER,
+				PeriodicReductionMinter: &pminter},
+		}}
+
+	genesisState := types.GenesisState{
+		Params:      types.NewParams(commontestutils.Denom, minter),
+		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
+	}
+
+	app := testapp.Setup(false)
+
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: now})
+	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	commontestutils.AddCoinsToAccount(uint64(totalSupply), ctx, app, acountsAddresses[0])
+
+	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
+	require.NoError(t, err)
+	require.EqualValues(t, sdk.MustNewDecFromStr("0.05"), inflation)
+	state := app.CfeminterKeeper.GetMinterState(ctx)
+	require.EqualValues(t, int32(1), state.Position)
+	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
+	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.ZeroInt())
+
+	year := 365 //* 24
+	numOfHours := 321 * year
+
+	for i := 1; i <= numOfHours; i++ {
+		ctx = ctx.WithBlockHeight(int64(i)).WithBlockTime(ctx.BlockTime().Add(24 * time.Hour))
+	}
+
+	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
+	app.EndBlocker(ctx, abci.RequestEndBlock{})
+
+	expectedMintedPosition3 := int64(320000000000000)
+	expectedMinted := int64(620000000000000)
+	state = app.CfeminterKeeper.GetMinterState(ctx)
+	require.EqualValues(t, int32(3), state.Position)
+	require.EqualValues(t, sdk.NewInt(expectedMintedPosition3), state.AmountMinted)
+	
+	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.NewInt(expectedMinted))
+	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
+	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
+
+
+	history := app.CfeminterKeeper.GetAllMinterStateHistory(ctx)
+	require.EqualValues(t, 2, len(history))
+
+	expectedHist1 := types.MinterState{
+		Position:                    1,
+		AmountMinted:                sdk.NewInt(200000000000000),
+		RemainderToMint:             sdk.ZeroDec(),
+		LastMintBlockTime:           ctx.BlockTime(),
+		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+	}
+
+	expectedHist2 := types.MinterState{
+		Position:                    2,
+		AmountMinted:                sdk.NewInt(100000000000000),
+		RemainderToMint:             sdk.ZeroDec(),
+		LastMintBlockTime:           ctx.BlockTime(),
+		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+	}
+
+	require.EqualValues(t, expectedHist1, history[0])
+	require.EqualValues(t, expectedHist2, history[1])
+
+}
+
 func createMinter(startTime time.Time) types.Minter {
 	endTime1 := startTime.Add(time.Duration(PeriodDuration))
 	endTime2 := endTime1.Add(time.Duration(PeriodDuration))

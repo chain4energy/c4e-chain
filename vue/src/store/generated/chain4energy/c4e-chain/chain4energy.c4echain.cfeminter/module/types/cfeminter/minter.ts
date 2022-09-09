@@ -36,8 +36,11 @@ export interface PeriodicReductionMinter {
 }
 
 export interface MinterState {
-  current_position: number;
+  position: number;
   amount_minted: string;
+  remainder_to_mint: string;
+  last_mint_block_time: Date | undefined;
+  remainder_from_previous_period: string;
 }
 
 const baseMinter: object = {};
@@ -491,15 +494,32 @@ export const PeriodicReductionMinter = {
   },
 };
 
-const baseMinterState: object = { current_position: 0, amount_minted: "" };
+const baseMinterState: object = {
+  position: 0,
+  amount_minted: "",
+  remainder_to_mint: "",
+  remainder_from_previous_period: "",
+};
 
 export const MinterState = {
   encode(message: MinterState, writer: Writer = Writer.create()): Writer {
-    if (message.current_position !== 0) {
-      writer.uint32(8).int32(message.current_position);
+    if (message.position !== 0) {
+      writer.uint32(8).int32(message.position);
     }
     if (message.amount_minted !== "") {
       writer.uint32(18).string(message.amount_minted);
+    }
+    if (message.remainder_to_mint !== "") {
+      writer.uint32(26).string(message.remainder_to_mint);
+    }
+    if (message.last_mint_block_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.last_mint_block_time),
+        writer.uint32(34).fork()
+      ).ldelim();
+    }
+    if (message.remainder_from_previous_period !== "") {
+      writer.uint32(42).string(message.remainder_from_previous_period);
     }
     return writer;
   },
@@ -512,10 +532,21 @@ export const MinterState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.current_position = reader.int32();
+          message.position = reader.int32();
           break;
         case 2:
           message.amount_minted = reader.string();
+          break;
+        case 3:
+          message.remainder_to_mint = reader.string();
+          break;
+        case 4:
+          message.last_mint_block_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 5:
+          message.remainder_from_previous_period = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -527,45 +558,101 @@ export const MinterState = {
 
   fromJSON(object: any): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (
-      object.current_position !== undefined &&
-      object.current_position !== null
-    ) {
-      message.current_position = Number(object.current_position);
+    if (object.position !== undefined && object.position !== null) {
+      message.position = Number(object.position);
     } else {
-      message.current_position = 0;
+      message.position = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = String(object.amount_minted);
     } else {
       message.amount_minted = "";
     }
+    if (
+      object.remainder_to_mint !== undefined &&
+      object.remainder_to_mint !== null
+    ) {
+      message.remainder_to_mint = String(object.remainder_to_mint);
+    } else {
+      message.remainder_to_mint = "";
+    }
+    if (
+      object.last_mint_block_time !== undefined &&
+      object.last_mint_block_time !== null
+    ) {
+      message.last_mint_block_time = fromJsonTimestamp(
+        object.last_mint_block_time
+      );
+    } else {
+      message.last_mint_block_time = undefined;
+    }
+    if (
+      object.remainder_from_previous_period !== undefined &&
+      object.remainder_from_previous_period !== null
+    ) {
+      message.remainder_from_previous_period = String(
+        object.remainder_from_previous_period
+      );
+    } else {
+      message.remainder_from_previous_period = "";
+    }
     return message;
   },
 
   toJSON(message: MinterState): unknown {
     const obj: any = {};
-    message.current_position !== undefined &&
-      (obj.current_position = message.current_position);
+    message.position !== undefined && (obj.position = message.position);
     message.amount_minted !== undefined &&
       (obj.amount_minted = message.amount_minted);
+    message.remainder_to_mint !== undefined &&
+      (obj.remainder_to_mint = message.remainder_to_mint);
+    message.last_mint_block_time !== undefined &&
+      (obj.last_mint_block_time =
+        message.last_mint_block_time !== undefined
+          ? message.last_mint_block_time.toISOString()
+          : null);
+    message.remainder_from_previous_period !== undefined &&
+      (obj.remainder_from_previous_period =
+        message.remainder_from_previous_period);
     return obj;
   },
 
   fromPartial(object: DeepPartial<MinterState>): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (
-      object.current_position !== undefined &&
-      object.current_position !== null
-    ) {
-      message.current_position = object.current_position;
+    if (object.position !== undefined && object.position !== null) {
+      message.position = object.position;
     } else {
-      message.current_position = 0;
+      message.position = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = object.amount_minted;
     } else {
       message.amount_minted = "";
+    }
+    if (
+      object.remainder_to_mint !== undefined &&
+      object.remainder_to_mint !== null
+    ) {
+      message.remainder_to_mint = object.remainder_to_mint;
+    } else {
+      message.remainder_to_mint = "";
+    }
+    if (
+      object.last_mint_block_time !== undefined &&
+      object.last_mint_block_time !== null
+    ) {
+      message.last_mint_block_time = object.last_mint_block_time;
+    } else {
+      message.last_mint_block_time = undefined;
+    }
+    if (
+      object.remainder_from_previous_period !== undefined &&
+      object.remainder_from_previous_period !== null
+    ) {
+      message.remainder_from_previous_period =
+        object.remainder_from_previous_period;
+    } else {
+      message.remainder_from_previous_period = "";
     }
     return message;
   },

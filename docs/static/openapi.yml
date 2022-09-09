@@ -296,11 +296,35 @@ paths:
               minter_state:
                 type: object
                 properties:
-                  current_position:
+                  position:
                     type: integer
                     format: int32
                   amount_minted:
                     type: string
+                  remainder_to_mint:
+                    type: string
+                  last_mint_block_time:
+                    type: string
+                    format: date-time
+                  remainder_from_previous_period:
+                    type: string
+              state_history:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    position:
+                      type: integer
+                      format: int32
+                    amount_minted:
+                      type: string
+                    remainder_to_mint:
+                      type: string
+                    last_mint_block_time:
+                      type: string
+                      format: date-time
+                    remainder_from_previous_period:
+                      type: string
         default:
           description: An unexpected error response.
           schema:
@@ -32365,10 +32389,17 @@ definitions:
   chain4energy.c4echain.cfeminter.MinterState:
     type: object
     properties:
-      current_position:
+      position:
         type: integer
         format: int32
       amount_minted:
+        type: string
+      remainder_to_mint:
+        type: string
+      last_mint_block_time:
+        type: string
+        format: date-time
+      remainder_from_previous_period:
         type: string
   chain4energy.c4echain.cfeminter.MintingPeriod:
     type: object
@@ -32532,11 +32563,35 @@ definitions:
       minter_state:
         type: object
         properties:
-          current_position:
+          position:
             type: integer
             format: int32
           amount_minted:
             type: string
+          remainder_to_mint:
+            type: string
+          last_mint_block_time:
+            type: string
+            format: date-time
+          remainder_from_previous_period:
+            type: string
+      state_history:
+        type: array
+        items:
+          type: object
+          properties:
+            position:
+              type: integer
+              format: int32
+            amount_minted:
+              type: string
+            remainder_to_mint:
+              type: string
+            last_mint_block_time:
+              type: string
+              format: date-time
+            remainder_from_previous_period:
+              type: string
   chain4energy.c4echain.cfeminter.TimeLinearMinter:
     type: object
     properties:

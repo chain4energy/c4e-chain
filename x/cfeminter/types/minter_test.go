@@ -23,33 +23,26 @@ func TestTimeLinearMinter(t *testing.T) {
 	blockTime := startTime.Add(time.Duration(345600000000 * 1000000 / 2))
 
 	period := types.MintingPeriod{Position: 1, PeriodEnd: &endTime, Type: types.TIME_LINEAR_MINTER, TimeLinearMinter: &minter}
-	amount, remainder := period.AmountToMint(&minterState, startTime, blockTime)
-	require.EqualValues(t, sdk.NewInt(500000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount := period.AmountToMint(&minterState, startTime, blockTime)
+	require.EqualValues(t, sdk.NewDec(500000), amount)
 
-	amount, remainder = period.AmountToMint(&minterState, startTime, endTime)
-	require.EqualValues(t, sdk.NewInt(1000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, endTime)
+	require.EqualValues(t, sdk.NewDec(1000000), amount)
 
-	amount, remainder = period.AmountToMint(&minterState, startTime, endTime.Add(time.Duration(10*1000000)))
-	require.EqualValues(t, sdk.NewInt(1000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, endTime.Add(time.Duration(10*1000000)))
+	require.EqualValues(t, sdk.NewDec(1000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
-	require.EqualValues(t, sdk.NewInt(750000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
+	require.EqualValues(t, sdk.NewDec(750000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
-	require.EqualValues(t, sdk.NewInt(250000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
+	require.EqualValues(t, sdk.NewDec(250000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime)
-	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime)
+	require.EqualValues(t, sdk.NewDec(0), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
-	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
+	require.EqualValues(t, sdk.NewDec(0), amount)
 	
 }
 
@@ -61,33 +54,26 @@ func TestNoMinting(t *testing.T) {
 	blockTime := startTime.Add(time.Duration(345600000000 * 1000000 / 2))
 
 	period := types.MintingPeriod{Position: 1, PeriodEnd: &endTime, Type: types.NO_MINTING}
-	amount, remainder := period.AmountToMint(&minterState, startTime, blockTime)
-	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount := period.AmountToMint(&minterState, startTime, blockTime)
+	require.EqualValues(t, sdk.NewDec(0), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, endTime)
-	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, endTime)
+	require.EqualValues(t, sdk.NewDec(0), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, endTime.Add(time.Duration(10*1000000)))
-	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, endTime.Add(time.Duration(10*1000000)))
+	require.EqualValues(t, sdk.NewDec(0), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
-	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
+	require.EqualValues(t, sdk.NewDec(0), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
-	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
+	require.EqualValues(t, sdk.NewDec(0), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime)
-	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime)
+	require.EqualValues(t, sdk.NewDec(0), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
-	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
+	require.EqualValues(t, sdk.NewDec(0), amount)
 }
 
 func TestValidateMinterPariodsOrder(t *testing.T) {
@@ -479,167 +465,138 @@ func TestUnlimitedPeriodicReductionMinter(t *testing.T) {
 
 	period := types.MintingPeriod{Position: 1, PeriodEnd: nil, Type: types.PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &minter}
 
-	amount, remainder := period.AmountToMint(&minterState, startTime, startTime.Add(Year/2))
-	require.EqualValues(t, sdk.NewInt(20000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount := period.AmountToMint(&minterState, startTime, startTime.Add(Year/2))
+	require.EqualValues(t, sdk.NewDec(20000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(Year))
-	require.EqualValues(t, sdk.NewInt(40000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(Year))
+	require.EqualValues(t, sdk.NewDec(40000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(2*Year))
-	require.EqualValues(t, sdk.NewInt(80000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(2*Year))
+	require.EqualValues(t, sdk.NewDec(80000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(3*Year))
-	require.EqualValues(t, sdk.NewInt(120000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(3*Year))
+	require.EqualValues(t, sdk.NewDec(120000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(4*Year))
-	require.EqualValues(t, sdk.NewInt(160000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(4*Year))
+	require.EqualValues(t, sdk.NewDec(160000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(5*Year))
-	require.EqualValues(t, sdk.NewInt(180000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(5*Year))
+	require.EqualValues(t, sdk.NewDec(180000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(6*Year))
-	require.EqualValues(t, sdk.NewInt(200000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(6*Year))
+	require.EqualValues(t, sdk.NewDec(200000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(7*Year))
-	require.EqualValues(t, sdk.NewInt(220000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(7*Year))
+	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(8*Year))
-	require.EqualValues(t, sdk.NewInt(240000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(8*Year))
+	require.EqualValues(t, sdk.NewDec(240000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(9*Year))
-	require.EqualValues(t, sdk.NewInt(250000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(9*Year))
+	require.EqualValues(t, sdk.NewDec(250000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(10*Year))
-	require.EqualValues(t, sdk.NewInt(260000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(11*Year))
-	require.EqualValues(t, sdk.NewInt(270000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(12*Year))
-	require.EqualValues(t, sdk.NewInt(280000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(10*Year))
+	require.EqualValues(t, sdk.NewDec(260000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(11*Year))
+	require.EqualValues(t, sdk.NewDec(270000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(12*Year))
+	require.EqualValues(t, sdk.NewDec(280000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(13*Year))
-	require.EqualValues(t, sdk.NewInt(285000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(14*Year))
-	require.EqualValues(t, sdk.NewInt(290000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(15*Year))
-	require.EqualValues(t, sdk.NewInt(295000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(16*Year))
-	require.EqualValues(t, sdk.NewInt(300000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(13*Year))
+	require.EqualValues(t, sdk.NewDec(285000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(14*Year))
+	require.EqualValues(t, sdk.NewDec(290000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(15*Year))
+	require.EqualValues(t, sdk.NewDec(295000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(16*Year))
+	require.EqualValues(t, sdk.NewDec(300000000000000), amount)
 	
-	beforeAmount := sdk.NewInt(300000000000000)
-	amountToAdd := sdk.NewInt(10000000000000)
+	beforeAmount := sdk.NewDec(300000000000000)
+	amountToAdd := sdk.NewDec(10000000000000)
 	expected := beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(20*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(20*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(24*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(24*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(28*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(28*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(32*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(32*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(36*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(36*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(40*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(40*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(44*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(44*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(48*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(48*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(52*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(52*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(56*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(56*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
 	beforeAmount = expected
-	amountToAdd = amountToAdd.QuoRaw(2)
+	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(60*Year))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(60*Year))
 	require.EqualValues(t, expected, amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(64*Year))
-	require.EqualValues(t, sdk.NewInt(319995117187500), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(64*Year))
+	require.EqualValues(t, sdk.NewDec(319995117187500), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year))
-	require.EqualValues(t, sdk.NewInt(319999999999999), amount)
-	// require.EqualValues(t, sdk.ZeroDec().String(), remainder.String())
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year))
+	require.EqualValues(t, sdk.MustNewDecFromStr("319999999999999.999947958295720691"), amount)
 
-	require.True(t, sdk.MustNewDecFromStr("0.999947958295720691").Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(50*Year))
+	require.EqualValues(t, sdk.MustNewDecFromStr("319999999999999.999999999999999996"), amount)
 
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(250*Year))
-	require.EqualValues(t, sdk.NewInt(320000000000000), amount)
-	require.True(t, sdk.MustNewDecFromStr("0.000000847032947246").Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(51*Year))
+	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000000004235164732"), amount)
+
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(250*Year))
+	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000000847032947246"), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year))
-	require.EqualValues(t, sdk.NewInt(320000000000000), amount)
-	require.True(t, sdk.MustNewDecFromStr("0.000001204782431465").Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year))
+	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000001204782431465"), amount)
 
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year))
-	require.EqualValues(t, sdk.NewInt(320000000000000), amount)
-	require.True(t, sdk.MustNewDecFromStr("0.000001204782431465").Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year))
+	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000001204782431465"), amount)
 	
 }
 
@@ -651,45 +608,34 @@ func TestLimitedPeriodicReductionMinter(t *testing.T) {
 	endTime := startTime.Add(7 * Year)
 	period := types.MintingPeriod{Position: 1, PeriodEnd: &endTime, Type: types.PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &minter}
 
-	amount, remainder := period.AmountToMint(&minterState, startTime, startTime.Add(Year/2))
-	require.EqualValues(t, sdk.NewInt(20000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount := period.AmountToMint(&minterState, startTime, startTime.Add(Year/2))
+	require.EqualValues(t, sdk.NewDec(20000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(time.Hour))
-	require.EqualValues(t, sdk.NewInt(4566210045), amount)
-	require.True(t, sdk.MustNewDecFromStr("0.662100456621004566").Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Hour))
+	require.EqualValues(t, sdk.MustNewDecFromStr("4566210045.662100456621004566"), amount)
 
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(Year))
-	require.EqualValues(t, sdk.NewInt(40000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(Year))
+	require.EqualValues(t, sdk.NewDec(40000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(2*Year))
-	require.EqualValues(t, sdk.NewInt(80000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(3*Year))
-	require.EqualValues(t, sdk.NewInt(120000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(4*Year))
-	require.EqualValues(t, sdk.NewInt(160000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(2*Year))
+	require.EqualValues(t, sdk.NewDec(80000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(3*Year))
+	require.EqualValues(t, sdk.NewDec(120000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(4*Year))
+	require.EqualValues(t, sdk.NewDec(160000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(5*Year))
-	require.EqualValues(t, sdk.NewInt(180000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(6*Year))
-	require.EqualValues(t, sdk.NewInt(200000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(7*Year))
-	require.EqualValues(t, sdk.NewInt(220000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(8*Year))
-	require.EqualValues(t, sdk.NewInt(220000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(5*Year))
+	require.EqualValues(t, sdk.NewDec(180000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(6*Year))
+	require.EqualValues(t, sdk.NewDec(200000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(7*Year))
+	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(8*Year))
+	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
 	
-	amount, remainder = period.AmountToMint(&minterState, startTime, startTime.Add(16*Year))
-	require.EqualValues(t, sdk.NewInt(220000000000000), amount)
-	require.True(t, sdk.ZeroDec().Equal(remainder))
+	amount = period.AmountToMint(&minterState, startTime, startTime.Add(16*Year))
+	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
 	
 }
 

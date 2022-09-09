@@ -17,8 +17,13 @@ export interface CfeminterMinter {
 
 export interface CfeminterMinterState {
   /** @format int32 */
-  current_position?: number;
+  position?: number;
   amount_minted?: string;
+  remainder_to_mint?: string;
+
+  /** @format date-time */
+  last_mint_block_time?: string;
+  remainder_from_previous_period?: string;
 }
 
 export interface CfeminterMintingPeriod {
@@ -64,6 +69,7 @@ export interface CfeminterQueryParamsResponse {
 
 export interface CfeminterQueryStateResponse {
   minter_state?: CfeminterMinterState;
+  state_history?: CfeminterMinterState[];
 }
 
 export interface CfeminterTimeLinearMinter {
