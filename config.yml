@@ -142,7 +142,7 @@ genesis:
               id: "c4e_distributor"
               type: MAIN
             burn_share:
-              percent: "33.3"
+              percent: "0"
 
         - name: inflation_and_fee_distributor
           sources:
@@ -156,13 +156,13 @@ genesis:
               percent: "0"
             share:
               - name: development_fund
-                percent: "10.345"
+                percent: "5"
                 account:
-                  #insert proper address
-                  id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+                  #Proper development fund account
+                  id: "c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl"
                   type: BASE_ACCOUNT
               - name: usage_incentives
-                percent: "30"
+                percent: "35"
                 account:
                   id: "usage_incentives_collector"
                   type: INTERNAL_ACCOUNT
@@ -174,8 +174,8 @@ genesis:
             burn_share:
               percent: "0"
             account:
-              #insert proper address
-              id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n"
+              #LP Providers proper address
+              id: "c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph"
               type: BASE_ACCOUNT
             share:
               - name: green_energy_booster
@@ -184,7 +184,7 @@ genesis:
                   id: "green_energy_booster_collector"
                   type: MODULE_ACCOUNT
               - name: governance_booster
-                percent: "30"
+                percent: "33"
                 account:
                   id: "governance_booster_collector"
                   type: MODULE_ACCOUNT
