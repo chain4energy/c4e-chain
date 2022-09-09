@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"testing"
+	"time"
 
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
@@ -12,7 +13,13 @@ import (
 func TestGetMinterState(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 
-	minterState := types.MinterState{CurrentPosition: 7, AmountMinted: sdk.NewInt(123412)}
+	minterState := types.MinterState{
+		Position:                    7,
+		AmountMinted:                sdk.NewInt(123412),
+		RemainderToMint:             sdk.ZeroDec(),
+		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+		LastMintBlockTime:           time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC),
+	}
 
 	k.SetMinterState(ctx, minterState)
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))

@@ -10,6 +10,7 @@ export interface GenesisState {
   /** this line is used by starport scaffolding # genesis/proto/state */
   params: Params | undefined;
   minter_state: MinterState | undefined;
+  state_history: MinterState[];
 }
 
 const baseGenesisState: object = {};
@@ -25,6 +26,9 @@ export const GenesisState = {
         writer.uint32(18).fork()
       ).ldelim();
     }
+    for (const v of message.state_history) {
+      MinterState.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -32,6 +36,7 @@ export const GenesisState = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
+    message.state_history = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -40,6 +45,11 @@ export const GenesisState = {
           break;
         case 2:
           message.minter_state = MinterState.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.state_history.push(
+            MinterState.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -51,6 +61,7 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
+    message.state_history = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
@@ -60,6 +71,11 @@ export const GenesisState = {
       message.minter_state = MinterState.fromJSON(object.minter_state);
     } else {
       message.minter_state = undefined;
+    }
+    if (object.state_history !== undefined && object.state_history !== null) {
+      for (const e of object.state_history) {
+        message.state_history.push(MinterState.fromJSON(e));
+      }
     }
     return message;
   },
@@ -72,11 +88,19 @@ export const GenesisState = {
       (obj.minter_state = message.minter_state
         ? MinterState.toJSON(message.minter_state)
         : undefined);
+    if (message.state_history) {
+      obj.state_history = message.state_history.map((e) =>
+        e ? MinterState.toJSON(e) : undefined
+      );
+    } else {
+      obj.state_history = [];
+    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
+    message.state_history = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
@@ -86,6 +110,11 @@ export const GenesisState = {
       message.minter_state = MinterState.fromPartial(object.minter_state);
     } else {
       message.minter_state = undefined;
+    }
+    if (object.state_history !== undefined && object.state_history !== null) {
+      for (const e of object.state_history) {
+        message.state_history.push(MinterState.fromPartial(e));
+      }
     }
     return message;
   },

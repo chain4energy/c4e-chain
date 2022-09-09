@@ -20,12 +20,7 @@ export interface VestingPool {
   vesting_type: string;
   lock_start: Date | undefined;
   lock_end: Date | undefined;
-  /** google.protobuf.Timestamp vesting_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true]; */
   vested: string;
-  /**
-   * google.protobuf.Duration release_period = 7 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
-   * bool delegation_allowed = 8;
-   */
   withdrawn: string;
   sent: string;
   last_modification: Date | undefined;

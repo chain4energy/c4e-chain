@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { Timestamp } from "../google/protobuf/timestamp";
-import { Duration } from "../google/protobuf/duration";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
@@ -13,51 +12,15 @@ export interface Minter {
 export interface MintingPeriod {
   position: number;
   period_end: Date | undefined;
-  type: MintingPeriod_MinterType;
+  /**
+   * types:
+   *   NO_MINTING;
+   *   TIME_LINEAR_MINTER;
+   *   PERIODIC_REDUCTION_MINTER;
+   */
+  type: string;
   time_linear_minter: TimeLinearMinter | undefined;
   periodic_reduction_minter: PeriodicReductionMinter | undefined;
-}
-
-export enum MintingPeriod_MinterType {
-  NO_MINTING = 0,
-  TIME_LINEAR_MINTER = 1,
-  PERIODIC_REDUCTION_MINTER = 2,
-  UNRECOGNIZED = -1,
-}
-
-export function mintingPeriod_MinterTypeFromJSON(
-  object: any
-): MintingPeriod_MinterType {
-  switch (object) {
-    case 0:
-    case "NO_MINTING":
-      return MintingPeriod_MinterType.NO_MINTING;
-    case 1:
-    case "TIME_LINEAR_MINTER":
-      return MintingPeriod_MinterType.TIME_LINEAR_MINTER;
-    case 2:
-    case "PERIODIC_REDUCTION_MINTER":
-      return MintingPeriod_MinterType.PERIODIC_REDUCTION_MINTER;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return MintingPeriod_MinterType.UNRECOGNIZED;
-  }
-}
-
-export function mintingPeriod_MinterTypeToJSON(
-  object: MintingPeriod_MinterType
-): string {
-  switch (object) {
-    case MintingPeriod_MinterType.NO_MINTING:
-      return "NO_MINTING";
-    case MintingPeriod_MinterType.TIME_LINEAR_MINTER:
-      return "TIME_LINEAR_MINTER";
-    case MintingPeriod_MinterType.PERIODIC_REDUCTION_MINTER:
-      return "PERIODIC_REDUCTION_MINTER";
-    default:
-      return "UNKNOWN";
-  }
 }
 
 export interface TimeLinearMinter {
@@ -65,15 +28,19 @@ export interface TimeLinearMinter {
 }
 
 export interface PeriodicReductionMinter {
-  mint_period: Duration | undefined;
+  /** mint_period in seconds */
+  mint_period: number;
   mint_amount: string;
   reduction_period_length: number;
   reduction_factor: string;
 }
 
 export interface MinterState {
-  current_position: number;
+  position: number;
   amount_minted: string;
+  remainder_to_mint: string;
+  last_mint_block_time: Date | undefined;
+  remainder_from_previous_period: string;
 }
 
 const baseMinter: object = {};
@@ -164,7 +131,7 @@ export const Minter = {
   },
 };
 
-const baseMintingPeriod: object = { position: 0, type: 0 };
+const baseMintingPeriod: object = { position: 0, type: "" };
 
 export const MintingPeriod = {
   encode(message: MintingPeriod, writer: Writer = Writer.create()): Writer {
@@ -177,8 +144,8 @@ export const MintingPeriod = {
         writer.uint32(18).fork()
       ).ldelim();
     }
-    if (message.type !== 0) {
-      writer.uint32(24).int32(message.type);
+    if (message.type !== "") {
+      writer.uint32(26).string(message.type);
     }
     if (message.time_linear_minter !== undefined) {
       TimeLinearMinter.encode(
@@ -211,7 +178,7 @@ export const MintingPeriod = {
           );
           break;
         case 3:
-          message.type = reader.int32() as any;
+          message.type = reader.string();
           break;
         case 4:
           message.time_linear_minter = TimeLinearMinter.decode(
@@ -246,9 +213,9 @@ export const MintingPeriod = {
       message.period_end = undefined;
     }
     if (object.type !== undefined && object.type !== null) {
-      message.type = mintingPeriod_MinterTypeFromJSON(object.type);
+      message.type = String(object.type);
     } else {
-      message.type = 0;
+      message.type = "";
     }
     if (
       object.time_linear_minter !== undefined &&
@@ -281,8 +248,7 @@ export const MintingPeriod = {
         message.period_end !== undefined
           ? message.period_end.toISOString()
           : null);
-    message.type !== undefined &&
-      (obj.type = mintingPeriod_MinterTypeToJSON(message.type));
+    message.type !== undefined && (obj.type = message.type);
     message.time_linear_minter !== undefined &&
       (obj.time_linear_minter = message.time_linear_minter
         ? TimeLinearMinter.toJSON(message.time_linear_minter)
@@ -309,7 +275,7 @@ export const MintingPeriod = {
     if (object.type !== undefined && object.type !== null) {
       message.type = object.type;
     } else {
-      message.type = 0;
+      message.type = "";
     }
     if (
       object.time_linear_minter !== undefined &&
@@ -391,6 +357,7 @@ export const TimeLinearMinter = {
 };
 
 const basePeriodicReductionMinter: object = {
+  mint_period: 0,
   mint_amount: "",
   reduction_period_length: 0,
   reduction_factor: "",
@@ -401,8 +368,8 @@ export const PeriodicReductionMinter = {
     message: PeriodicReductionMinter,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.mint_period !== undefined) {
-      Duration.encode(message.mint_period, writer.uint32(10).fork()).ldelim();
+    if (message.mint_period !== 0) {
+      writer.uint32(8).int32(message.mint_period);
     }
     if (message.mint_amount !== "") {
       writer.uint32(18).string(message.mint_amount);
@@ -426,7 +393,7 @@ export const PeriodicReductionMinter = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.mint_period = Duration.decode(reader, reader.uint32());
+          message.mint_period = reader.int32();
           break;
         case 2:
           message.mint_amount = reader.string();
@@ -450,9 +417,9 @@ export const PeriodicReductionMinter = {
       ...basePeriodicReductionMinter,
     } as PeriodicReductionMinter;
     if (object.mint_period !== undefined && object.mint_period !== null) {
-      message.mint_period = Duration.fromJSON(object.mint_period);
+      message.mint_period = Number(object.mint_period);
     } else {
-      message.mint_period = undefined;
+      message.mint_period = 0;
     }
     if (object.mint_amount !== undefined && object.mint_amount !== null) {
       message.mint_amount = String(object.mint_amount);
@@ -481,9 +448,7 @@ export const PeriodicReductionMinter = {
   toJSON(message: PeriodicReductionMinter): unknown {
     const obj: any = {};
     message.mint_period !== undefined &&
-      (obj.mint_period = message.mint_period
-        ? Duration.toJSON(message.mint_period)
-        : undefined);
+      (obj.mint_period = message.mint_period);
     message.mint_amount !== undefined &&
       (obj.mint_amount = message.mint_amount);
     message.reduction_period_length !== undefined &&
@@ -500,9 +465,9 @@ export const PeriodicReductionMinter = {
       ...basePeriodicReductionMinter,
     } as PeriodicReductionMinter;
     if (object.mint_period !== undefined && object.mint_period !== null) {
-      message.mint_period = Duration.fromPartial(object.mint_period);
+      message.mint_period = object.mint_period;
     } else {
-      message.mint_period = undefined;
+      message.mint_period = 0;
     }
     if (object.mint_amount !== undefined && object.mint_amount !== null) {
       message.mint_amount = object.mint_amount;
@@ -529,15 +494,32 @@ export const PeriodicReductionMinter = {
   },
 };
 
-const baseMinterState: object = { current_position: 0, amount_minted: "" };
+const baseMinterState: object = {
+  position: 0,
+  amount_minted: "",
+  remainder_to_mint: "",
+  remainder_from_previous_period: "",
+};
 
 export const MinterState = {
   encode(message: MinterState, writer: Writer = Writer.create()): Writer {
-    if (message.current_position !== 0) {
-      writer.uint32(8).int32(message.current_position);
+    if (message.position !== 0) {
+      writer.uint32(8).int32(message.position);
     }
     if (message.amount_minted !== "") {
       writer.uint32(18).string(message.amount_minted);
+    }
+    if (message.remainder_to_mint !== "") {
+      writer.uint32(26).string(message.remainder_to_mint);
+    }
+    if (message.last_mint_block_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.last_mint_block_time),
+        writer.uint32(34).fork()
+      ).ldelim();
+    }
+    if (message.remainder_from_previous_period !== "") {
+      writer.uint32(42).string(message.remainder_from_previous_period);
     }
     return writer;
   },
@@ -550,10 +532,21 @@ export const MinterState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.current_position = reader.int32();
+          message.position = reader.int32();
           break;
         case 2:
           message.amount_minted = reader.string();
+          break;
+        case 3:
+          message.remainder_to_mint = reader.string();
+          break;
+        case 4:
+          message.last_mint_block_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 5:
+          message.remainder_from_previous_period = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -565,45 +558,101 @@ export const MinterState = {
 
   fromJSON(object: any): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (
-      object.current_position !== undefined &&
-      object.current_position !== null
-    ) {
-      message.current_position = Number(object.current_position);
+    if (object.position !== undefined && object.position !== null) {
+      message.position = Number(object.position);
     } else {
-      message.current_position = 0;
+      message.position = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = String(object.amount_minted);
     } else {
       message.amount_minted = "";
     }
+    if (
+      object.remainder_to_mint !== undefined &&
+      object.remainder_to_mint !== null
+    ) {
+      message.remainder_to_mint = String(object.remainder_to_mint);
+    } else {
+      message.remainder_to_mint = "";
+    }
+    if (
+      object.last_mint_block_time !== undefined &&
+      object.last_mint_block_time !== null
+    ) {
+      message.last_mint_block_time = fromJsonTimestamp(
+        object.last_mint_block_time
+      );
+    } else {
+      message.last_mint_block_time = undefined;
+    }
+    if (
+      object.remainder_from_previous_period !== undefined &&
+      object.remainder_from_previous_period !== null
+    ) {
+      message.remainder_from_previous_period = String(
+        object.remainder_from_previous_period
+      );
+    } else {
+      message.remainder_from_previous_period = "";
+    }
     return message;
   },
 
   toJSON(message: MinterState): unknown {
     const obj: any = {};
-    message.current_position !== undefined &&
-      (obj.current_position = message.current_position);
+    message.position !== undefined && (obj.position = message.position);
     message.amount_minted !== undefined &&
       (obj.amount_minted = message.amount_minted);
+    message.remainder_to_mint !== undefined &&
+      (obj.remainder_to_mint = message.remainder_to_mint);
+    message.last_mint_block_time !== undefined &&
+      (obj.last_mint_block_time =
+        message.last_mint_block_time !== undefined
+          ? message.last_mint_block_time.toISOString()
+          : null);
+    message.remainder_from_previous_period !== undefined &&
+      (obj.remainder_from_previous_period =
+        message.remainder_from_previous_period);
     return obj;
   },
 
   fromPartial(object: DeepPartial<MinterState>): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (
-      object.current_position !== undefined &&
-      object.current_position !== null
-    ) {
-      message.current_position = object.current_position;
+    if (object.position !== undefined && object.position !== null) {
+      message.position = object.position;
     } else {
-      message.current_position = 0;
+      message.position = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = object.amount_minted;
     } else {
       message.amount_minted = "";
+    }
+    if (
+      object.remainder_to_mint !== undefined &&
+      object.remainder_to_mint !== null
+    ) {
+      message.remainder_to_mint = object.remainder_to_mint;
+    } else {
+      message.remainder_to_mint = "";
+    }
+    if (
+      object.last_mint_block_time !== undefined &&
+      object.last_mint_block_time !== null
+    ) {
+      message.last_mint_block_time = object.last_mint_block_time;
+    } else {
+      message.last_mint_block_time = undefined;
+    }
+    if (
+      object.remainder_from_previous_period !== undefined &&
+      object.remainder_from_previous_period !== null
+    ) {
+      message.remainder_from_previous_period =
+        object.remainder_from_previous_period;
+    } else {
+      message.remainder_from_previous_period = "";
     }
     return message;
   },

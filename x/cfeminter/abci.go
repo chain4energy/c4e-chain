@@ -20,4 +20,20 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if amount.IsInt64() {
 		defer telemetry.ModuleSetGauge(types.ModuleName, float32(amount.Int64()), "minted_tokens")
 	}
+
+	inflation, err := k.GetCurrentInflation(ctx)
+	var inflationStr string
+	if err != nil {
+		inflationStr = types.UndefinedInflation
+	} else {
+		inflationStr = inflation.String()
+	}
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeMint,
+			sdk.NewAttribute(types.AttributeKeyBondedRatio, k.BondedRatio(ctx).String()),
+			sdk.NewAttribute(types.AttributeKeyInflation, inflationStr),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, amount.String()),
+		),
+	)
 }

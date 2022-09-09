@@ -9,12 +9,6 @@
  * ---------------------------------------------------------------
  */
 
-export enum MintingPeriodMinterType {
-  NO_MINTING = "NO_MINTING",
-  TIME_LINEAR_MINTER = "TIME_LINEAR_MINTER",
-  PERIODIC_REDUCTION_MINTER = "PERIODIC_REDUCTION_MINTER",
-}
-
 export interface CfeminterMinter {
   /** @format date-time */
   start?: string;
@@ -23,8 +17,13 @@ export interface CfeminterMinter {
 
 export interface CfeminterMinterState {
   /** @format int32 */
-  current_position?: number;
+  position?: number;
   amount_minted?: string;
+  remainder_to_mint?: string;
+
+  /** @format date-time */
+  last_mint_block_time?: string;
+  remainder_from_previous_period?: string;
 }
 
 export interface CfeminterMintingPeriod {
@@ -33,7 +32,7 @@ export interface CfeminterMintingPeriod {
 
   /** @format date-time */
   period_end?: string;
-  type?: MintingPeriodMinterType;
+  type?: string;
   time_linear_minter?: CfeminterTimeLinearMinter;
   periodic_reduction_minter?: CfeminterPeriodicReductionMinter;
 }
@@ -47,7 +46,8 @@ export interface CfeminterParams {
 }
 
 export interface CfeminterPeriodicReductionMinter {
-  mint_period?: string;
+  /** @format int32 */
+  mint_period?: number;
   mint_amount?: string;
 
   /** @format int32 */
@@ -69,6 +69,7 @@ export interface CfeminterQueryParamsResponse {
 
 export interface CfeminterQueryStateResponse {
   minter_state?: CfeminterMinterState;
+  state_history?: CfeminterMinterState[];
 }
 
 export interface CfeminterTimeLinearMinter {

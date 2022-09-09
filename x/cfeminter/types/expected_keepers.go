@@ -23,3 +23,8 @@ type BankKeeper interface {
 	MintCoins(ctx sdk.Context, name string, amt sdk.Coins) error
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 }
+
+// BankKeeper defines the expected interface needed to retrieve account balances.
+type StakingKeeper interface {
+	BondedRatio(ctx sdk.Context) sdk.Dec
+}

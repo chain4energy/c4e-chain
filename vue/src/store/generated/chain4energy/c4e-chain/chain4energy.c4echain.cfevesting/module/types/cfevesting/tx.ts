@@ -8,7 +8,6 @@ export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
 export interface MsgCreateVestingPool {
   creator: string;
-  /** uint64 amount = 2; */
   name: string;
   amount: string;
   duration: Duration | undefined;
@@ -755,15 +754,6 @@ export interface Msg {
   WithdrawAllAvailable(
     request: MsgWithdrawAllAvailable
   ): Promise<MsgWithdrawAllAvailableResponse>;
-  /**
-   * rpc Delegate(MsgDelegate) returns (MsgDelegateResponse);
-   * rpc Undelegate(MsgUndelegate) returns (MsgUndelegateResponse);
-   * rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
-   * rpc WithdrawDelegatorReward(MsgWithdrawDelegatorReward) returns (MsgWithdrawDelegatorRewardResponse);
-   * rpc SendVesting(MsgSendVesting) returns (MsgSendVestingResponse);
-   * rpc Vote(MsgVote) returns (MsgVoteResponse);
-   * rpc VoteWeighted(MsgVoteWeighted) returns (MsgVoteWeightedResponse);
-   */
   CreateVestingAccount(
     request: MsgCreateVestingAccount
   ): Promise<MsgCreateVestingAccountResponse>;

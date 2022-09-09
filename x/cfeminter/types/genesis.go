@@ -2,6 +2,7 @@ package types
 
 import (
 	fmt "fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -15,8 +16,14 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		// this line is used by starport scaffolding # genesis/types/default
-		Params:      DefaultParams(),
-		MinterState: MinterState{1, sdk.ZeroInt()},
+		Params: DefaultParams(),
+		MinterState: MinterState{
+			Position:                    1,
+			AmountMinted:                sdk.ZeroInt(),
+			RemainderToMint:             sdk.ZeroDec(),
+			LastMintBlockTime:           time.Now(),
+			RemainderFromPreviousPeriod: sdk.ZeroDec(),
+		},
 	}
 }
 
@@ -35,7 +42,7 @@ func (gs GenesisState) Validate() error {
 		return err
 	}
 
-	if !gs.Params.Minter.ContainsId(minterState.CurrentPosition) {
+	if !gs.Params.Minter.ContainsId(minterState.Position) {
 		return fmt.Errorf("minter state Current Ordering Id not found in minter periods")
 	}
 	return nil

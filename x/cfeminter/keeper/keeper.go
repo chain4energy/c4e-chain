@@ -21,6 +21,7 @@ type (
 		paramstore paramtypes.Subspace
 
 		bankKeeper    types.BankKeeper
+		stakingKeeper types.StakingKeeper
 		collectorName string
 	}
 )
@@ -32,6 +33,7 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 
 	bankKeeper types.BankKeeper,
+	stakingKeeper types.StakingKeeper,
 	collectorName string,
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -46,6 +48,7 @@ func NewKeeper(
 		memKey:        memKey,
 		paramstore:    ps,
 		bankKeeper:    bankKeeper,
+		stakingKeeper: stakingKeeper,
 		collectorName: collectorName,
 	}
 }
@@ -66,7 +69,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
 
 	if currentPeriod == nil {
-		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentPosition)
+		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.Position)
 
 	}
 
@@ -77,7 +80,11 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		periodStart = *previousPeriod.PeriodEnd
 	}
 
-	amount := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
+	expectedAmountToMint := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
+	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousPeriod)
+
+	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
+	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
 
 	coin := sdk.NewCoin(params.MintDenom, amount)
 	coins := sdk.NewCoins(coin)
@@ -92,13 +99,24 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		return sdk.ZeroInt(), err
 	}
 
+	minterState.AmountMinted = minterState.AmountMinted.Add(amount)
+	minterState.LastMintBlockTime = ctx.BlockTime()
+	minterState.RemainderToMint = remainder
+
 	if currentPeriod.PeriodEnd == nil || ctx.BlockTime().Before(*currentPeriod.PeriodEnd) {
-		minterState.AmountMinted = minterState.AmountMinted.Add(amount)
+
 		k.SetMinterState(ctx, minterState)
 		return amount, nil
 	} else {
-		minterState.CurrentPosition++
-		minterState.AmountMinted = sdk.ZeroInt()
+		k.SetMinterStateHistory(ctx, minterState)
+		minterState = types.MinterState{
+			Position:                    minterState.Position + 1,
+			AmountMinted:                sdk.ZeroInt(),
+			RemainderToMint:             sdk.ZeroDec(),
+			RemainderFromPreviousPeriod: remainder,
+			LastMintBlockTime:           ctx.BlockTime(),
+		}
+
 		k.SetMinterState(ctx, minterState)
 		minted, err := k.Mint(ctx)
 		if err != nil {
@@ -116,7 +134,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
 
 	if currentPeriod == nil {
-		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.CurrentPosition)
+		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for position %d not found", minterState.Position)
 
 	}
 
@@ -133,7 +151,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
 }
 
 func getCurrentAndPreviousPeriod(minter types.Minter, state *types.MinterState) (currentPeriod *types.MintingPeriod, previousPeriod *types.MintingPeriod) {
-	currentId := state.CurrentPosition
+	currentId := state.Position
 	for _, period := range minter.Periods {
 		if period.Position == currentId {
 			currentPeriod = period
@@ -165,4 +183,10 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 // AddCollectedFees to be used in BeginBlocker.
 func (k Keeper) AddCollectedFees(ctx sdk.Context, fees sdk.Coins) error {
 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.collectorName, fees)
+}
+
+// BondedRatio implements an alias call to the underlying staking keeper's
+// BondedRatio to be used in BeginBlocker.
+func (k Keeper) BondedRatio(ctx sdk.Context) sdk.Dec {
+	return k.stakingKeeper.BondedRatio(ctx)
 }

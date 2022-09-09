@@ -51,6 +51,7 @@ message QueryStateRequest {
 
 message QueryStateResponse {
   MinterState minter_state = 1 [(gogoproto.nullable) = false];
+  repeated MinterState state_history = 2;
 }
 
 // this line is used by starport scaffolding # 3
