@@ -31,19 +31,19 @@ func TestTimeLinearMinter(t *testing.T) {
 
 	amount = period.AmountToMint(&minterState, startTime, endTime.Add(time.Duration(10*1000000)))
 	require.EqualValues(t, sdk.NewDec(1000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
 	require.EqualValues(t, sdk.NewDec(750000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
 	require.EqualValues(t, sdk.NewDec(250000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime)
 	require.EqualValues(t, sdk.NewDec(0), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
-	
+
 }
 
 func TestNoMinting(t *testing.T) {
@@ -56,22 +56,22 @@ func TestNoMinting(t *testing.T) {
 	period := types.MintingPeriod{Position: 1, PeriodEnd: &endTime, Type: types.NO_MINTING}
 	amount := period.AmountToMint(&minterState, startTime, blockTime)
 	require.EqualValues(t, sdk.NewDec(0), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, endTime)
 	require.EqualValues(t, sdk.NewDec(0), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, endTime.Add(time.Duration(10*1000000)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime)
 	require.EqualValues(t, sdk.NewDec(0), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
 }
@@ -395,7 +395,6 @@ func TestValidateMinterState(t *testing.T) {
 	minterState = types.MinterState{Position: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.MustNewDecFromStr("-231321.1234"), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.EqualError(t, minterState.Validate(), "minter remainder to mint amount cannot be less than 0")
 
-
 	minterState = types.MinterState{Position: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("231321.1234"), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.NoError(t, minterState.Validate())
 
@@ -467,41 +466,41 @@ func TestUnlimitedPeriodicReductionMinter(t *testing.T) {
 
 	amount := period.AmountToMint(&minterState, startTime, startTime.Add(Year/2))
 	require.EqualValues(t, sdk.NewDec(20000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(Year))
 	require.EqualValues(t, sdk.NewDec(40000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(2*Year))
 	require.EqualValues(t, sdk.NewDec(80000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(3*Year))
 	require.EqualValues(t, sdk.NewDec(120000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(4*Year))
 	require.EqualValues(t, sdk.NewDec(160000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(5*Year))
 	require.EqualValues(t, sdk.NewDec(180000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(6*Year))
 	require.EqualValues(t, sdk.NewDec(200000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(7*Year))
 	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(8*Year))
 	require.EqualValues(t, sdk.NewDec(240000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(9*Year))
 	require.EqualValues(t, sdk.NewDec(250000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(10*Year))
 	require.EqualValues(t, sdk.NewDec(260000000000000), amount)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(11*Year))
 	require.EqualValues(t, sdk.NewDec(270000000000000), amount)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(12*Year))
 	require.EqualValues(t, sdk.NewDec(280000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(13*Year))
 	require.EqualValues(t, sdk.NewDec(285000000000000), amount)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(14*Year))
@@ -510,76 +509,76 @@ func TestUnlimitedPeriodicReductionMinter(t *testing.T) {
 	require.EqualValues(t, sdk.NewDec(295000000000000), amount)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(16*Year))
 	require.EqualValues(t, sdk.NewDec(300000000000000), amount)
-	
+
 	beforeAmount := sdk.NewDec(300000000000000)
 	amountToAdd := sdk.NewDec(10000000000000)
 	expected := beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(20*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(24*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(28*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(32*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(36*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(40*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(44*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(48*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(52*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(56*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(60*Year))
 	require.EqualValues(t, expected, amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(64*Year))
 	require.EqualValues(t, sdk.NewDec(319995117187500), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("319999999999999.999947958295720691"), amount)
 
@@ -591,13 +590,13 @@ func TestUnlimitedPeriodicReductionMinter(t *testing.T) {
 
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(250*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000000847032947246"), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000001204782431465"), amount)
 
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000001204782431465"), amount)
-	
+
 }
 
 func TestLimitedPeriodicReductionMinter(t *testing.T) {
@@ -610,21 +609,20 @@ func TestLimitedPeriodicReductionMinter(t *testing.T) {
 
 	amount := period.AmountToMint(&minterState, startTime, startTime.Add(Year/2))
 	require.EqualValues(t, sdk.NewDec(20000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(time.Hour))
 	require.EqualValues(t, sdk.MustNewDecFromStr("4566210045.662100456621004566"), amount)
 
-	
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(Year))
 	require.EqualValues(t, sdk.NewDec(40000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(2*Year))
 	require.EqualValues(t, sdk.NewDec(80000000000000), amount)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(3*Year))
 	require.EqualValues(t, sdk.NewDec(120000000000000), amount)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(4*Year))
 	require.EqualValues(t, sdk.NewDec(160000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(5*Year))
 	require.EqualValues(t, sdk.NewDec(180000000000000), amount)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(6*Year))
@@ -633,10 +631,10 @@ func TestLimitedPeriodicReductionMinter(t *testing.T) {
 	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(8*Year))
 	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
-	
+
 	amount = period.AmountToMint(&minterState, startTime, startTime.Add(16*Year))
 	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
-	
+
 }
 
 func TestValidatePeriodicReductionMinterMinterNotSet(t *testing.T) {

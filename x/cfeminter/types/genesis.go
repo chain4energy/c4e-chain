@@ -16,12 +16,12 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		// this line is used by starport scaffolding # genesis/types/default
-		Params:      DefaultParams(),
+		Params: DefaultParams(),
 		MinterState: MinterState{
-			Position: 1, 
-			AmountMinted: sdk.ZeroInt(),
-			RemainderToMint: sdk.ZeroDec(),
-			LastMintBlockTime: time.Now(),
+			Position:                    1,
+			AmountMinted:                sdk.ZeroInt(),
+			RemainderToMint:             sdk.ZeroDec(),
+			LastMintBlockTime:           time.Now(),
 			RemainderFromPreviousPeriod: sdk.ZeroDec(),
 		},
 	}

@@ -48,7 +48,6 @@ func (k Keeper) SetMinterStateHistory(ctx sdk.Context, state types.MinterState) 
 	store.Set([]byte(strconv.FormatInt(int64(state.Position), 10)), av)
 }
 
-
 // GetAllMinterStateHistory returns all AccountVestings
 func (k Keeper) GetAllMinterStateHistory(ctx sdk.Context) (list []types.MinterState) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
@@ -69,7 +68,7 @@ func (k Keeper) ConvertMinterStateHistory(ctx sdk.Context) (list []*types.Minter
 	history := make([]*types.MinterState, 0)
 	stateHistory := k.GetAllMinterStateHistory(ctx)
 	if len(stateHistory) > 0 {
-		
+
 		for i := 0; i < len(stateHistory); i++ {
 			history = append(history, &stateHistory[i])
 
@@ -77,11 +76,3 @@ func (k Keeper) ConvertMinterStateHistory(ctx sdk.Context) (list []*types.Minter
 	}
 	return history
 }
-
-
-
-
-
-
-
-

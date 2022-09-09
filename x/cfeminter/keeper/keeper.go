@@ -106,12 +106,12 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		return amount, nil
 	} else {
 		k.SetMinterStateHistory(ctx, minterState)
-		minterState = types.MinterState {
-			Position: minterState.Position+1,
-			AmountMinted: sdk.ZeroInt(),
-			RemainderToMint: sdk.ZeroDec(),
+		minterState = types.MinterState{
+			Position:                    minterState.Position + 1,
+			AmountMinted:                sdk.ZeroInt(),
+			RemainderToMint:             sdk.ZeroDec(),
 			RemainderFromPreviousPeriod: remainder,
-			LastMintBlockTime: ctx.BlockTime(),
+			LastMintBlockTime:           ctx.BlockTime(),
 		}
 
 		k.SetMinterState(ctx, minterState)

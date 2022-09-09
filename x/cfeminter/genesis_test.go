@@ -30,13 +30,13 @@ func TestGenesis(t *testing.T) {
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
 	genesisState := types.GenesisState{
-		Params:      types.NewParams("myc4e", createMinter(time.Now())),
+		Params: types.NewParams("myc4e", createMinter(time.Now())),
 		MinterState: types.MinterState{
-			Position: 9, 
-			AmountMinted: sdk.NewInt(12312),
-			RemainderToMint: sdk.MustNewDecFromStr("1233.546"),
+			Position:                    9,
+			AmountMinted:                sdk.NewInt(12312),
+			RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
 			RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("7654.423"),
-			LastMintBlockTime: mintTime,
+			LastMintBlockTime:           mintTime,
 		},
 
 		// this line is used by starport scaffolding # genesis/test/state
@@ -62,13 +62,13 @@ func TestGenesisWithHistory(t *testing.T) {
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
 	genesisState := types.GenesisState{
-		Params:      types.NewParams("myc4e", createMinter(time.Now())),
+		Params: types.NewParams("myc4e", createMinter(time.Now())),
 		MinterState: types.MinterState{
-			Position: 9, 
-			AmountMinted: sdk.NewInt(12312),
-			RemainderToMint: sdk.MustNewDecFromStr("1233.546"),
+			Position:                    9,
+			AmountMinted:                sdk.NewInt(12312),
+			RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
 			RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("7654.423"),
-			LastMintBlockTime: mintTime,
+			LastMintBlockTime:           mintTime,
 		},
 		StateHistory: createHistory(),
 		// this line is used by starport scaffolding # genesis/test/state
@@ -263,8 +263,6 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 
 }
 
-
-
 func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 	totalSupply := int64(400000000000000)
 	startAmountYearly := int64(40000000000000)
@@ -314,7 +312,7 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 	state = app.CfeminterKeeper.GetMinterState(ctx)
 	require.EqualValues(t, int32(1), state.Position)
 	require.EqualValues(t, sdk.NewInt(expectedMinted), state.AmountMinted)
-	
+
 	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.NewInt(expectedMinted))
 	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
 	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
@@ -384,11 +382,10 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 	state = app.CfeminterKeeper.GetMinterState(ctx)
 	require.EqualValues(t, int32(3), state.Position)
 	require.EqualValues(t, sdk.NewInt(expectedMintedPosition3), state.AmountMinted)
-	
+
 	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.NewInt(expectedMinted))
 	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
 	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
-
 
 	history := app.CfeminterKeeper.GetAllMinterStateHistory(ctx)
 	require.EqualValues(t, 2, len(history))

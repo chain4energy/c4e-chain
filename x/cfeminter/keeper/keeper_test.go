@@ -253,8 +253,6 @@ func TestMintPeriodNotFound(t *testing.T) {
 
 }
 
-
-
 func TestMintSecondPeriodWithRemaining(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
@@ -302,7 +300,6 @@ func TestMintSecondPeriodWithRemaining(t *testing.T) {
 	minterState.AmountMinted = sdk.NewInt(66667)
 	minterState.LastMintBlockTime = newTime
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.166666666666666666")
-
 
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
 	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(66667))
@@ -383,7 +380,7 @@ func TestMintFirstPeriodWithRemaining(t *testing.T) {
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.520547945205479452")
 
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(2739726 + 3315068))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(2739726+3315068))
 
 	history = k.GetAllMinterStateHistory(ctx)
 	require.EqualValues(t, 0, len(history))
@@ -400,7 +397,7 @@ func TestMintFirstPeriodWithRemaining(t *testing.T) {
 	minterState.RemainderFromPreviousPeriod = sdk.MustNewDecFromStr("0.027397260273972602")
 
 	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(2739726 + 3315068 + 684932))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.NewInt(2739726+3315068+684932))
 
 	history = k.GetAllMinterStateHistory(ctx)
 	require.EqualValues(t, 1, len(history))
@@ -447,7 +444,7 @@ func TestMintBetweenFirstAndSecondPeriodsWithRemaining(t *testing.T) {
 
 	expectedHist := types.MinterState{
 		Position:                    1,
-		AmountMinted:                sdk.NewInt(6014726 - 25000 + 750000 ),
+		AmountMinted:                sdk.NewInt(6014726 - 25000 + 750000),
 		RemainderToMint:             sdk.MustNewDecFromStr("0.027397260273972602"),
 		LastMintBlockTime:           newTime,
 		RemainderFromPreviousPeriod: sdk.ZeroDec(),
@@ -482,6 +479,7 @@ func createLinearMinters(startTime time.Time) types.Minter {
 	minter := types.Minter{Start: startTime, Periods: periods}
 	return minter
 }
+
 const SecondsInYear = int32(3600 * 24 * 365)
 
 func createReductionMinterWithRemainingPassing(startTime time.Time) types.Minter {

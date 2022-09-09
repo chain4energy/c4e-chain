@@ -4,6 +4,7 @@ package types
 
 var MinterStateKey = []byte{0x02}
 var MinterStateHistoryKeyPrefix = []byte{0x03}
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "cfeminter"

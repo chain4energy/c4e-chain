@@ -14,11 +14,11 @@ func TestGetMinterState(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 
 	minterState := types.MinterState{
-		Position: 7,
-		AmountMinted: sdk.NewInt(123412),
-		RemainderToMint: sdk.ZeroDec(),
+		Position:                    7,
+		AmountMinted:                sdk.NewInt(123412),
+		RemainderToMint:             sdk.ZeroDec(),
 		RemainderFromPreviousPeriod: sdk.ZeroDec(),
-		LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC),
+		LastMintBlockTime:           time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC),
 	}
 
 	k.SetMinterState(ctx, minterState)
