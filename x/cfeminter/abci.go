@@ -28,12 +28,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	} else {
 		inflationStr = inflation.String()
 	}
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeMint,
-			sdk.NewAttribute(types.AttributeKeyBondedRatio, k.BondedRatio(ctx).String()),
-			sdk.NewAttribute(types.AttributeKeyInflation, inflationStr),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, amount.String()),
-		),
-	)
+	ctx.EventManager().EmitTypedEvent(&types.Mint{
+		BondedRatio: k.BondedRatio(ctx).String(),
+		Inflation:   inflationStr,
+		Amount:      amount.String(),
+	})
 }
