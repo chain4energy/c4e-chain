@@ -1,5 +1,6 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
+import { Mint } from "./module/types/cfeminter/event"
 import { Minter } from "./module/types/cfeminter/minter"
 import { MintingPeriod } from "./module/types/cfeminter/minter"
 import { TimeLinearMinter } from "./module/types/cfeminter/minter"
@@ -8,7 +9,7 @@ import { MinterState } from "./module/types/cfeminter/minter"
 import { Params } from "./module/types/cfeminter/params"
 
 
-export { Minter, MintingPeriod, TimeLinearMinter, PeriodicReductionMinter, MinterState, Params };
+export { Mint, Minter, MintingPeriod, TimeLinearMinter, PeriodicReductionMinter, MinterState, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -51,6 +52,7 @@ const getDefaultState = () => {
 				State: {},
 				
 				_Structure: {
+						Mint: getStructure(Mint.fromPartial({})),
 						Minter: getStructure(Minter.fromPartial({})),
 						MintingPeriod: getStructure(MintingPeriod.fromPartial({})),
 						TimeLinearMinter: getStructure(TimeLinearMinter.fromPartial({})),

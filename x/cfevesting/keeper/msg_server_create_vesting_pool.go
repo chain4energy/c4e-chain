@@ -21,7 +21,7 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 	denom := keeper.Denom(ctx)
 	if msg.Amount.IsInt64() {
 		defer func() {
-			telemetry.IncrCounter(1, types.ModuleName, "vest")
+			telemetry.IncrCounter(1, types.ModuleName, "vesting_pools")
 			telemetry.SetGaugeWithLabels(
 				[]string{"tx", "msg", types.ModuleName, msg.Type()},
 				float32(msg.Amount.Int64()),
@@ -30,18 +30,12 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 		}()
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeVest,
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()+denom),
-			sdk.NewAttribute(types.AttributeKeyVestingType, msg.VestingType),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
-		),
+	ctx.EventManager().EmitTypedEvent(&types.NewVestingPool{
+		Creator:     msg.Creator,
+		Name:        msg.Name,
+		Amount:      msg.Amount.String() + denom,
+		Duration:    msg.Duration.String(),
+		VestingType: msg.VestingType,
 	})
 
 	return &types.MsgCreateVestingPoolResponse{}, nil

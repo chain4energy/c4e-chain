@@ -5,7 +5,9 @@ import (
 	"strconv"
 	"time"
 
+	metrics "github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -138,14 +140,24 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 
 	current := ctx.BlockTime()
 	toWithdraw := sdk.ZeroInt()
+	events := make([]types.WithdrawAvailable, 0)
+	denom := k.GetParams(ctx).Denom
 	for _, vesting := range accVestings.VestingPools {
 		withdrawable := CalculateWithdrawable(current, *vesting)
 		vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
 		vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(withdrawable)
 		toWithdraw = toWithdraw.Add(withdrawable)
+		if (toWithdraw.IsPositive()) {
+			events = append(events, types.WithdrawAvailable{
+				OwnerAddress: addr,
+				VestingPoolId: strconv.FormatInt(int64(vesting.Id), 10),
+				VestingPoolName: vesting.Name,
+				Amount: toWithdraw.String() + denom,
+			})
+		}
 	}
 
-	denom := k.GetParams(ctx).Denom
+
 	if toWithdraw.GT(sdk.ZeroInt()) {
 		coinToSend := sdk.NewCoin(denom, toWithdraw)
 		coinsToSend := sdk.NewCoins(coinToSend)
@@ -156,6 +168,21 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 	}
 
 	k.SetAccountVestings(ctx, accVestings)
+
+	if toWithdraw.IsPositive() && toWithdraw.IsInt64() {
+		defer func() {
+			telemetry.IncrCounter(1, types.ModuleName, "withdraw_available")
+			telemetry.SetGaugeWithLabels(
+				[]string{"tx", "msg", types.ModuleName, "withdraw_available"},
+				float32(withdrawn.Amount.Int64()),
+				[]metrics.Label{telemetry.NewLabel("denom", withdrawn.Denom)},
+			)
+		}()
+	}
+	
+	for _, event := range events {
+		ctx.EventManager().EmitTypedEvent(&event)
+	}
 
 	return sdk.NewCoin(denom, toWithdraw), nil
 }
@@ -209,6 +236,14 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 	if err == nil {
 		k.SetAccountVestings(ctx, accVestings)
 	}
+	ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
+		OwnerAddress: fromAddr,
+		Address:  toAddr,
+		VestingPoolId: strconv.FormatInt(int64(vesting.Id), 10),
+		VestingPoolName: vesting.Name,
+		Amount: amount.String() + k.Denom(ctx),
+		RestartVesting: strconv.FormatBool(restartVesting),
+	})
 	return w, err
 }
 
@@ -248,7 +283,9 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 	acc := vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime)
 
 	ak.SetAccount(ctx, acc)
-
+	ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
+		Address: acc.Address,
+	})
 	err = bk.SendCoins(ctx, from, to, amount)
 	if err != nil {
 		return err
@@ -309,7 +346,9 @@ func (k Keeper) createVestingAccount(ctx sdk.Context, toAddress string, amount s
 	acc = vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime.Unix())
 
 	ak.SetAccount(ctx, acc)
-
+	ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
+		Address: acc.GetAddress().String(),
+	})
 	err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, to, coinsToSend)
 	k.Logger(ctx).Info("after SendCoinsFromModuleToAccount: " + coinToSend.Amount.String())
 
