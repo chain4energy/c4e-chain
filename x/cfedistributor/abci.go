@@ -111,6 +111,8 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	subDistributors := k.GetParams(ctx).SubDistributors
 	states := k.GetAllStates(ctx)
+	distributionsResult := types.DistributionsResult{}
+
 	for _, subDistributor := range subDistributors {
 		k.Logger(ctx).Debug("BeginBlock - cfedistr: " + subDistributor.Name)
 		allCoinsToDistribute := sdk.NewDecCoins()
@@ -133,8 +135,10 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		if allCoinsToDistribute.IsZero() {
 			continue
 		}
-		states = *StartDistributionProcess(&states, allCoinsToDistribute, subDistributor)
+		states = *StartDistributionProcess(&states, allCoinsToDistribute, subDistributor, &distributionsResult)
 	}
+
+	ctx.EventManager().EmitTypedEvent(&distributionsResult)
 	sendCoinsFromStates(ctx, k, states)
 }
 
@@ -213,7 +217,7 @@ func addSharesToState(localRemains *[]types.State, account types.Account, calcul
 	return localRemains
 }
 
-func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.DecCoins, subDistributor types.SubDistributor) *[]types.State {
+func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.DecCoins, subDistributor types.SubDistributor, list *types.DistributionsResult) *[]types.State {
 	percentShareSum := sdk.MustNewDecFromStr("0")
 	localRemains := states
 	for _, share := range subDistributor.Destination.Share {
@@ -228,6 +232,11 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 				return findAccountState(localRemains, &share.Account)
 			}
 			localRemains = addSharesToState(localRemains, share.Account, calculatedShare, findFunc)
+			list.DistributionResult = append(list.DistributionResult, &types.DistributionResult{
+				Source:      subDistributor.Sources,
+				Destination: &share.Account,
+				CoinSend:    calculatedShare,
+			})
 		}
 	}
 
@@ -240,6 +249,14 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 				return findBurnState(localRemains)
 			}
 			localRemains = addSharesToState(localRemains, types.Account{}, calculatedShare, findFunc)
+			list.DistributionResult = append(list.DistributionResult, &types.DistributionResult{
+				Source: subDistributor.Sources,
+				Destination: &types.Account{
+					Id:   types.BurnDestination,
+					Type: "",
+				},
+				CoinSend: calculatedShare,
+			})
 		}
 	}
 
@@ -254,6 +271,11 @@ func StartDistributionProcess(states *[]types.State, coinsToDistributeDec sdk.De
 		defaultSharePercent := sdk.MustNewDecFromStr("100").Sub(percentShareSum)
 		calculatedShare := calculatePercentage(defaultSharePercent, coinsToDistributeDec)
 		localRemains = addSharesToState(localRemains, accountDefault, calculatedShare, findFunc)
+		list.DistributionResult = append(list.DistributionResult, &types.DistributionResult{
+			Source:      subDistributor.Sources,
+			Destination: &subDistributor.Destination.Account,
+			CoinSend:    calculatedShare,
+		})
 	}
 
 	return localRemains

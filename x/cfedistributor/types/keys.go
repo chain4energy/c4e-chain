@@ -28,6 +28,8 @@ const (
 	GovernanceBoosterCollector = "governance_booster_collector"
 
 	BurnStateKey = "burn_state_key"
+
+	BurnDestination = "burn_destination"
 )
 
 func KeyPrefix(p string) []byte {
