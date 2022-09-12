@@ -30,7 +30,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 	ctx.EventManager().EmitTypedEvent(&types.Mint{
 		BondedRatio: k.BondedRatio(ctx).String(),
-		Inflation: inflationStr,
-		Amount: amount.String(),	
+		Inflation:   inflationStr,
+		Amount:      amount.String(),
 	})
 }

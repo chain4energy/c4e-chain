@@ -147,16 +147,15 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 		vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
 		vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(withdrawable)
 		toWithdraw = toWithdraw.Add(withdrawable)
-		if (toWithdraw.IsPositive()) {
+		if toWithdraw.IsPositive() {
 			events = append(events, types.WithdrawAvailable{
-				OwnerAddress: addr,
-				VestingPoolId: strconv.FormatInt(int64(vesting.Id), 10),
+				OwnerAddress:    addr,
+				VestingPoolId:   strconv.FormatInt(int64(vesting.Id), 10),
 				VestingPoolName: vesting.Name,
-				Amount: toWithdraw.String() + denom,
+				Amount:          toWithdraw.String() + denom,
 			})
 		}
 	}
-
 
 	if toWithdraw.GT(sdk.ZeroInt()) {
 		coinToSend := sdk.NewCoin(denom, toWithdraw)
@@ -179,7 +178,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 			)
 		}()
 	}
-	
+
 	for _, event := range events {
 		ctx.EventManager().EmitTypedEvent(&event)
 	}
@@ -237,12 +236,12 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 		k.SetAccountVestings(ctx, accVestings)
 	}
 	ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
-		OwnerAddress: fromAddr,
-		Address:  toAddr,
-		VestingPoolId: strconv.FormatInt(int64(vesting.Id), 10),
+		OwnerAddress:    fromAddr,
+		Address:         toAddr,
+		VestingPoolId:   strconv.FormatInt(int64(vesting.Id), 10),
 		VestingPoolName: vesting.Name,
-		Amount: amount.String() + k.Denom(ctx),
-		RestartVesting: strconv.FormatBool(restartVesting),
+		Amount:          amount.String() + k.Denom(ctx),
+		RestartVesting:  strconv.FormatBool(restartVesting),
 	})
 	return w, err
 }
