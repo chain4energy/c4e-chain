@@ -1,0 +1,18 @@
+{
+  "mint_denom": "uc4e",
+  "minter": {
+    "periods": [
+      {
+        "periodic_reduction_minter": {
+          "mint_amount": "40000000000000",
+          "mint_period": 31536000,
+          "reduction_factor": "0.5",
+          "reduction_period_length": 4
+        },
+        "position": 1,
+        "type": "PERIODIC_REDUCTION_MINTER"
+      }
+    ],
+    "start": "2022-07-05T00:00:00.00000000Z"
+  }
+}
