@@ -3,26 +3,20 @@ package chain4energy.c4echain.cfedistributor;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "cfedistributor/sub_distributor.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 
-
-message EventDistributionFinished {
-  repeated SubDistributionFinished subDistributionFinished = 1;
-
-}
-
-message SubDistributionFinished {
-  repeated string sources = 1;
-  repeated ProcessedDestination processedDestination = 2;
-
-}
-
-message ProcessedDestination {
-  string name = 1;
-  repeated cosmos.base.v1beta1.DecCoin coin_sended = 2 [
-    (gogoproto.moretags) = "yaml:\"coin_state\"",
+message DistributionResult {
+  repeated Account source = 1;
+  Account destination = 2;
+  repeated cosmos.base.v1beta1.DecCoin coinSend = 3 [
+    (gogoproto.moretags) = "yaml:\"coin_send\"",
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
     (gogoproto.nullable) = false];
+}
+
+message DistributionsResult {
+  repeated DistributionResult distributionResult = 1;
 }

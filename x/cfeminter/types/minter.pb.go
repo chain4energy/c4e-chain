@@ -84,10 +84,9 @@ type MintingPeriod struct {
 	Position  int32      `protobuf:"varint,1,opt,name=position,proto3" json:"position,omitempty"`
 	PeriodEnd *time.Time `protobuf:"bytes,2,opt,name=period_end,json=periodEnd,proto3,stdtime" json:"period_end,omitempty"`
 	// types:
-	//
-	//	NO_MINTING;
-	//	TIME_LINEAR_MINTER;
-	//	PERIODIC_REDUCTION_MINTER;
+	//   NO_MINTING;
+	//   TIME_LINEAR_MINTER;
+	//   PERIODIC_REDUCTION_MINTER;
 	Type                    string                   `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
 	TimeLinearMinter        *TimeLinearMinter        `protobuf:"bytes,4,opt,name=time_linear_minter,json=timeLinearMinter,proto3" json:"time_linear_minter,omitempty"`
 	PeriodicReductionMinter *PeriodicReductionMinter `protobuf:"bytes,5,opt,name=periodic_reduction_minter,json=periodicReductionMinter,proto3" json:"periodic_reduction_minter,omitempty"`

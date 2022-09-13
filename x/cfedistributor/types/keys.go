@@ -28,6 +28,10 @@ const (
 	GovernanceBoosterCollector = "governance_booster_collector"
 
 	BurnStateKey = "burn_state_key"
+
+	BurnDestination = "burn_destination"
+
+	DenomToTrace = "uc4e"
 )
 
 func KeyPrefix(p string) []byte {

@@ -279,7 +279,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title cfeminter/genesis.proto
+ * @title cfeminter/event.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
