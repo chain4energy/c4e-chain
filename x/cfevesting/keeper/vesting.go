@@ -171,7 +171,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, addr string) (withdrawn sd
 	if toWithdraw.IsPositive() && toWithdraw.IsInt64() {
 		defer func() {
 			telemetry.IncrCounter(1, types.ModuleName, "withdraw_available")
-			telemetry.SetGaugeWithLabels(
+			telemetry.IncrCounterWithLabels(
 				[]string{"tx", "msg", types.ModuleName, "withdraw_available"},
 				float32(withdrawn.Amount.Int64()),
 				[]metrics.Label{telemetry.NewLabel("denom", withdrawn.Denom)},

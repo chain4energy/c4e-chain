@@ -19,7 +19,7 @@ func (k msgServer) WithdrawAllAvailable(goCtx context.Context, msg *types.MsgWit
 
 	if withdrawn.Amount.IsInt64() {
 		defer func() {
-			telemetry.SetGaugeWithLabels(
+			telemetry.IncrCounterWithLabels(
 				[]string{"tx", "msg", types.ModuleName, msg.Type()},
 				float32(withdrawn.Amount.Int64()),
 				[]metrics.Label{telemetry.NewLabel("denom", withdrawn.Denom)},

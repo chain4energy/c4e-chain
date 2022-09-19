@@ -1,6 +1,7 @@
 package cfedistributor
 
 import (
+	"github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -150,8 +151,11 @@ func burnCoins(ctx sdk.Context, k keeper.Keeper, state *types.State) {
 
 	} else {
 		k.Logger(ctx).Debug("Successful burn coin: " + toSend.String())
-		defer telemetry.ModuleSetGauge(types.ModuleName, float32(toSend.AmountOf(types.DenomToTrace).Int64()),
-			"coins_sent_to_"+types.BurnDestination)
+		defer telemetry.IncrCounterWithLabels(
+			[]string{"coin_send", types.BurnDestination},
+			float32(toSend.AmountOf(types.DenomToTrace).Int64()),
+			[]metrics.Label{telemetry.NewLabel("denom", types.DenomToTrace)},
+		)
 		state.CoinsStates = change
 	}
 }
@@ -164,8 +168,11 @@ func sendCoinsToModuleAccount(ctx sdk.Context, k keeper.Keeper, state *types.Sta
 
 	} else {
 		k.Logger(ctx).Debug("Successful send to: " + state.Account.Id + " - " + toSend.String())
-		defer telemetry.ModuleSetGauge(types.ModuleName, float32(toSend.AmountOf(types.DenomToTrace).Int64()),
-			"coins_sent_to_"+state.Account.Id)
+		defer telemetry.IncrCounterWithLabels(
+			[]string{"coin_send", state.Account.Id},
+			float32(toSend.AmountOf(types.DenomToTrace).Int64()),
+			[]metrics.Label{telemetry.NewLabel("denom", types.DenomToTrace)},
+		)
 		state.CoinsStates = change
 	}
 }
@@ -181,15 +188,18 @@ func sendCoinsToBaseAccount(ctx sdk.Context, k keeper.Keeper, state *types.State
 
 	} else {
 		k.Logger(ctx).Debug("Successful send to : " + state.Account.Id + " - " + toSend.String())
-		defer telemetry.ModuleSetGauge(types.ModuleName, float32(toSend.AmountOf(types.DenomToTrace).Int64()),
-			"coins_sent_to_"+state.Account.Id)
+		defer telemetry.IncrCounterWithLabels(
+			[]string{"coin_send", state.Account.Id},
+			float32(toSend.AmountOf(types.DenomToTrace).Int64()),
+			[]metrics.Label{telemetry.NewLabel("denom", types.DenomToTrace)},
+		)
 		state.CoinsStates = change
 	}
 }
 
 func sendCoinsFromStates(ctx sdk.Context, k keeper.Keeper, states []types.State) {
 	for _, state := range states {
-		if types.INTERNAL_ACCOUNT != state.Account.Type {
+		if types.INTERNAL_ACCOUNT != state.Account.Type && checkIfAnyCoinIsGTE1(state.CoinsStates) {
 
 			if state.Burn {
 				burnCoins(ctx, k, &state)
@@ -202,6 +212,19 @@ func sendCoinsFromStates(ctx sdk.Context, k keeper.Keeper, states []types.State)
 		}
 		k.SetState(ctx, state)
 	}
+}
+
+func checkIfAnyCoinIsGTE1(coins sdk.DecCoins) bool {
+	if len(coins) == 0 {
+		return false
+	}
+	for _, coin := range coins {
+		if coin.Amount.GTE(sdk.MustNewDecFromStr("1")) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func addSharesToState(localRemains *[]types.State, account types.Account, calculatedShare sdk.DecCoins, findState func() int) *[]types.State {
