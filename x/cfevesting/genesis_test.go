@@ -26,7 +26,8 @@ func TestGenesisWholeApp(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams("uc4e"),
-
+		VestingAccountList: []types.VestingAccount{},
+		VestingAccountCount: 0,
 		// this line is used by starport scaffolding # genesis/test/state
 		VestingTypes: []types.GenesisVestingType{},
 	}
@@ -37,18 +38,58 @@ func TestGenesisWholeApp(t *testing.T) {
 	cfevesting.InitGenesis(ctx, app.CfevestingKeeper, genesisState, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 	got := cfevesting.ExportGenesis(ctx, app.CfevestingKeeper)
 	require.NotNil(t, got)
+
 	require.EqualValues(t, genesisState, *got)
 
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
+	require.ElementsMatch(t, genesisState.VestingAccountList, got.VestingAccountList)
+	require.Equal(t, genesisState.VestingAccountCount, got.VestingAccountCount)
 	// this line is used by starport scaffolding # genesis/test/assert
+}
+
+func TestGenesisVestingTypesAndAccounts(t *testing.T) {
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	vestingTypesArray := generateGenesisVestingTypes(10, 1)
+	genesisState := types.GenesisState{
+		Params:       types.NewParams("uc4e"),
+		VestingAccountList: []types.VestingAccount{
+			{
+				Id: 0,
+				Address: acountsAddresses[0].String(),
+			},
+			{
+				Id: 1,
+				Address: acountsAddresses[1].String(),
+			},
+		},
+		VestingAccountCount: 2,
+		VestingTypes: vestingTypesArray,
+	}
+
+	app := app.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	k := app.CfevestingKeeper
+	ak := app.AccountKeeper
+
+	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
+	got := cfevesting.ExportGenesis(ctx, k)
+
+	require.NotNil(t, got)
+	require.EqualValues(t, genesisState, *got)
+
+	nullify.Fill(&genesisState)
+	nullify.Fill(got)
 }
 
 func TestGenesisVestingTypes(t *testing.T) {
 	vestingTypesArray := generateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
 		Params:       types.NewParams("uc4e"),
+		VestingAccountList: []types.VestingAccount{},
+		VestingAccountCount: 0,
 		VestingTypes: vestingTypesArray,
 	}
 
@@ -79,6 +120,29 @@ func TestGenesisValidationVestingTypes(t *testing.T) {
 	require.Nil(t, err)
 }
 
+func TestGenesisValidationVestingAccounts(t *testing.T) {
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	vestingTypesArray := generateGenesisVestingTypes(10, 1)
+	genesisState := types.GenesisState{
+		Params:       types.NewParams("test_denom"),
+		VestingAccountList: []types.VestingAccount{
+			{
+				Id: 0,
+				Address: acountsAddresses[0].String(),
+			},
+			{
+				Id: 1,
+				Address: acountsAddresses[1].String(),
+			},
+		},
+		VestingAccountCount: 2,
+		VestingTypes: vestingTypesArray,
+	}
+
+	err := genesisState.Validate()
+	require.Nil(t, err)
+}
+
 func TestGenesisValidationVestingTypesNameMoreThanOnceError(t *testing.T) {
 	vestingTypesArray := generateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
@@ -91,6 +155,30 @@ func TestGenesisValidationVestingTypesNameMoreThanOnceError(t *testing.T) {
 	err := genesisState.Validate()
 	require.EqualError(t, err,
 		"vesting type with name: test-vesting-type-7 defined more than once")
+}
+
+func TestGenesisValidationVestingAccountsError(t *testing.T) {
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	vestingTypesArray := generateGenesisVestingTypes(10, 1)
+	genesisState := types.GenesisState{
+		Params:       types.NewParams("test_denom"),
+		VestingAccountList: []types.VestingAccount{
+			{
+				Id: 0,
+				Address: acountsAddresses[0].String(),
+			},
+			{
+				Id: 1,
+				Address: acountsAddresses[1].String(),
+			},
+		},
+		VestingAccountCount: 1,
+		VestingTypes: vestingTypesArray,
+	}
+
+	err := genesisState.Validate()
+	require.EqualError(t, err,
+		"vestingAccount id should be lower or equal than the last id")
 }
 
 func TestGenesisValidationVestingAccountVestingPools(t *testing.T) {
@@ -247,6 +335,8 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 
 	genesisState := types.GenesisState{
 		Params:       types.NewParams("uc4e"),
+		VestingAccountList: []types.VestingAccount{},
+		VestingAccountCount: 0,
 		VestingTypes: vestingTypesArray,
 	}
 
