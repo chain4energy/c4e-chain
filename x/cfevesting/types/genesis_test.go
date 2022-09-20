@@ -3,10 +3,9 @@ package types_test
 import (
 	"testing"
 
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 func TestGenesisState_Validate(t *testing.T) {
@@ -28,19 +27,19 @@ func TestGenesisState_Validate(t *testing.T) {
 
 				VestingAccountList: []types.VestingAccount{
 					{
-						Id: 0,
+						Id:      0,
 						Address: acountsAddresses[0].String(),
 					},
 					{
-						Id: 1,
+						Id:      1,
 						Address: acountsAddresses[1].String(),
 					},
 				},
 				VestingAccountCount: 2,
-				Params: types.Params{Denom: "uc4e"},
+				Params:              types.Params{Denom: "uc4e"},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
-			valid:        true,
+			valid: true,
 		},
 		{
 			desc: "empty genesis state",
@@ -48,11 +47,11 @@ func TestGenesisState_Validate(t *testing.T) {
 
 				VestingAccountList: []types.VestingAccount{
 					{
-						Id: 0,
+						Id:      0,
 						Address: acountsAddresses[0].String(),
 					},
 					{
-						Id: 1,
+						Id:      1,
 						Address: acountsAddresses[1].String(),
 					},
 				},
@@ -67,17 +66,17 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				VestingAccountList: []types.VestingAccount{
 					{
-						Id: 0,
+						Id:      0,
 						Address: acountsAddresses[0].String(),
 					},
 					{
-						Id: 0,
+						Id:      0,
 						Address: acountsAddresses[0].String(),
 					},
 				},
 				VestingAccountCount: 2,
 			},
-			valid: false,
+			valid:        false,
 			errorMassage: "duplicated id for vestingAccount",
 		},
 		{
@@ -85,13 +84,13 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				VestingAccountList: []types.VestingAccount{
 					{
-						Id: 1,
+						Id:      1,
 						Address: acountsAddresses[0].String(),
 					},
 				},
 				VestingAccountCount: 0,
 			},
-			valid: false,
+			valid:        false,
 			errorMassage: "vestingAccount id should be lower or equal than the last id",
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase

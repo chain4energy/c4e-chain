@@ -215,7 +215,7 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	_, err = msgServer.SendToVestingAccount(msgServerCtx, &msg)
 
 	require.EqualError(t, err,
-		"account " + accAddr2.String() + " already exists: invalid request")
+		"account "+accAddr2.String()+" already exists: invalid request")
 
 	require.Equal(t, uint64(1), app.CfevestingKeeper.GetVestingAccountCount(ctx))
 	vaccFromList, found := app.CfevestingKeeper.GetVestingAccount(ctx, uint64(0))

@@ -3,7 +3,6 @@
 
 package types
 
-
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -12,5 +11,3 @@ func (v VestingAccount) Validate() error {
 	_, err := sdk.AccAddressFromBech32(v.Address)
 	return err
 }
-
-

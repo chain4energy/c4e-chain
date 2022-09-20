@@ -43,6 +43,15 @@ export interface VestingPoolInfo {
   sent_amount: string;
 }
 
+export interface QueryVestingsRequest {}
+
+export interface QueryVestingsResponse {
+  vesting_all_amount: string;
+  vesting_in_pools_amount: string;
+  vesting_in_accounts_amount: string;
+  delegated_vesting_amount: string;
+}
+
 const baseQueryParamsRequest: object = {};
 
 export const QueryParamsRequest = {
@@ -664,6 +673,192 @@ export const VestingPoolInfo = {
   },
 };
 
+const baseQueryVestingsRequest: object = {};
+
+export const QueryVestingsRequest = {
+  encode(_: QueryVestingsRequest, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryVestingsRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryVestingsRequest } as QueryVestingsRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryVestingsRequest {
+    const message = { ...baseQueryVestingsRequest } as QueryVestingsRequest;
+    return message;
+  },
+
+  toJSON(_: QueryVestingsRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<QueryVestingsRequest>): QueryVestingsRequest {
+    const message = { ...baseQueryVestingsRequest } as QueryVestingsRequest;
+    return message;
+  },
+};
+
+const baseQueryVestingsResponse: object = {
+  vesting_all_amount: "",
+  vesting_in_pools_amount: "",
+  vesting_in_accounts_amount: "",
+  delegated_vesting_amount: "",
+};
+
+export const QueryVestingsResponse = {
+  encode(
+    message: QueryVestingsResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.vesting_all_amount !== "") {
+      writer.uint32(10).string(message.vesting_all_amount);
+    }
+    if (message.vesting_in_pools_amount !== "") {
+      writer.uint32(18).string(message.vesting_in_pools_amount);
+    }
+    if (message.vesting_in_accounts_amount !== "") {
+      writer.uint32(26).string(message.vesting_in_accounts_amount);
+    }
+    if (message.delegated_vesting_amount !== "") {
+      writer.uint32(34).string(message.delegated_vesting_amount);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryVestingsResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryVestingsResponse } as QueryVestingsResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.vesting_all_amount = reader.string();
+          break;
+        case 2:
+          message.vesting_in_pools_amount = reader.string();
+          break;
+        case 3:
+          message.vesting_in_accounts_amount = reader.string();
+          break;
+        case 4:
+          message.delegated_vesting_amount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryVestingsResponse {
+    const message = { ...baseQueryVestingsResponse } as QueryVestingsResponse;
+    if (
+      object.vesting_all_amount !== undefined &&
+      object.vesting_all_amount !== null
+    ) {
+      message.vesting_all_amount = String(object.vesting_all_amount);
+    } else {
+      message.vesting_all_amount = "";
+    }
+    if (
+      object.vesting_in_pools_amount !== undefined &&
+      object.vesting_in_pools_amount !== null
+    ) {
+      message.vesting_in_pools_amount = String(object.vesting_in_pools_amount);
+    } else {
+      message.vesting_in_pools_amount = "";
+    }
+    if (
+      object.vesting_in_accounts_amount !== undefined &&
+      object.vesting_in_accounts_amount !== null
+    ) {
+      message.vesting_in_accounts_amount = String(
+        object.vesting_in_accounts_amount
+      );
+    } else {
+      message.vesting_in_accounts_amount = "";
+    }
+    if (
+      object.delegated_vesting_amount !== undefined &&
+      object.delegated_vesting_amount !== null
+    ) {
+      message.delegated_vesting_amount = String(
+        object.delegated_vesting_amount
+      );
+    } else {
+      message.delegated_vesting_amount = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryVestingsResponse): unknown {
+    const obj: any = {};
+    message.vesting_all_amount !== undefined &&
+      (obj.vesting_all_amount = message.vesting_all_amount);
+    message.vesting_in_pools_amount !== undefined &&
+      (obj.vesting_in_pools_amount = message.vesting_in_pools_amount);
+    message.vesting_in_accounts_amount !== undefined &&
+      (obj.vesting_in_accounts_amount = message.vesting_in_accounts_amount);
+    message.delegated_vesting_amount !== undefined &&
+      (obj.delegated_vesting_amount = message.delegated_vesting_amount);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryVestingsResponse>
+  ): QueryVestingsResponse {
+    const message = { ...baseQueryVestingsResponse } as QueryVestingsResponse;
+    if (
+      object.vesting_all_amount !== undefined &&
+      object.vesting_all_amount !== null
+    ) {
+      message.vesting_all_amount = object.vesting_all_amount;
+    } else {
+      message.vesting_all_amount = "";
+    }
+    if (
+      object.vesting_in_pools_amount !== undefined &&
+      object.vesting_in_pools_amount !== null
+    ) {
+      message.vesting_in_pools_amount = object.vesting_in_pools_amount;
+    } else {
+      message.vesting_in_pools_amount = "";
+    }
+    if (
+      object.vesting_in_accounts_amount !== undefined &&
+      object.vesting_in_accounts_amount !== null
+    ) {
+      message.vesting_in_accounts_amount = object.vesting_in_accounts_amount;
+    } else {
+      message.vesting_in_accounts_amount = "";
+    }
+    if (
+      object.delegated_vesting_amount !== undefined &&
+      object.delegated_vesting_amount !== null
+    ) {
+      message.delegated_vesting_amount = object.delegated_vesting_amount;
+    } else {
+      message.delegated_vesting_amount = "";
+    }
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -676,6 +871,8 @@ export interface Query {
   VestingPools(
     request: QueryVestingPoolsRequest
   ): Promise<QueryVestingPoolsResponse>;
+  /** Queries a list of Vestings items. */
+  Vestings(request: QueryVestingsRequest): Promise<QueryVestingsResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -718,6 +915,18 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryVestingPoolsResponse.decode(new Reader(data))
+    );
+  }
+
+  Vestings(request: QueryVestingsRequest): Promise<QueryVestingsResponse> {
+    const data = QueryVestingsRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfevesting.Query",
+      "Vestings",
+      data
+    );
+    return promise.then((data) =>
+      QueryVestingsResponse.decode(new Reader(data))
     );
   }
 }

@@ -53,6 +53,13 @@ export interface CfevestingQueryVestingTypeResponse {
   vesting_types?: CfevestingGenesisVestingType[];
 }
 
+export interface CfevestingQueryVestingsResponse {
+  vesting_all_amount?: string;
+  vesting_in_pools_amount?: string;
+  vesting_in_accounts_amount?: string;
+  delegated_vesting_amount?: string;
+}
+
 export interface CfevestingVestingPoolInfo {
   /** @format int32 */
   id?: number;
@@ -451,6 +458,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryVestingType = (params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingTypeResponse, RpcStatus>({
       path: `/c4e/vesting/vesting_type`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryVestings
+   * @summary Queries a list of Vestings items.
+   * @request GET:/c4e/vesting/vestings
+   */
+  queryVestings = (params: RequestParams = {}) =>
+    this.request<CfevestingQueryVestingsResponse, RpcStatus>({
+      path: `/c4e/vesting/vestings`,
       method: "GET",
       format: "json",
       ...params,

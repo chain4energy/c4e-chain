@@ -25,8 +25,8 @@ import (
 func TestGenesisWholeApp(t *testing.T) {
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams("uc4e"),
-		VestingAccountList: []types.VestingAccount{},
+		Params:              types.NewParams("uc4e"),
+		VestingAccountList:  []types.VestingAccount{},
 		VestingAccountCount: 0,
 		// this line is used by starport scaffolding # genesis/test/state
 		VestingTypes: []types.GenesisVestingType{},
@@ -53,19 +53,19 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 	vestingTypesArray := generateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
-		Params:       types.NewParams("uc4e"),
+		Params: types.NewParams("uc4e"),
 		VestingAccountList: []types.VestingAccount{
 			{
-				Id: 0,
+				Id:      0,
 				Address: acountsAddresses[0].String(),
 			},
 			{
-				Id: 1,
+				Id:      1,
 				Address: acountsAddresses[1].String(),
 			},
 		},
 		VestingAccountCount: 2,
-		VestingTypes: vestingTypesArray,
+		VestingTypes:        vestingTypesArray,
 	}
 
 	app := app.Setup(false)
@@ -87,10 +87,10 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 func TestGenesisVestingTypes(t *testing.T) {
 	vestingTypesArray := generateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
-		Params:       types.NewParams("uc4e"),
-		VestingAccountList: []types.VestingAccount{},
+		Params:              types.NewParams("uc4e"),
+		VestingAccountList:  []types.VestingAccount{},
 		VestingAccountCount: 0,
-		VestingTypes: vestingTypesArray,
+		VestingTypes:        vestingTypesArray,
 	}
 
 	app := app.Setup(false)
@@ -124,19 +124,19 @@ func TestGenesisValidationVestingAccounts(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 	vestingTypesArray := generateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
-		Params:       types.NewParams("test_denom"),
+		Params: types.NewParams("test_denom"),
 		VestingAccountList: []types.VestingAccount{
 			{
-				Id: 0,
+				Id:      0,
 				Address: acountsAddresses[0].String(),
 			},
 			{
-				Id: 1,
+				Id:      1,
 				Address: acountsAddresses[1].String(),
 			},
 		},
 		VestingAccountCount: 2,
-		VestingTypes: vestingTypesArray,
+		VestingTypes:        vestingTypesArray,
 	}
 
 	err := genesisState.Validate()
@@ -161,19 +161,19 @@ func TestGenesisValidationVestingAccountsError(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 	vestingTypesArray := generateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
-		Params:       types.NewParams("test_denom"),
+		Params: types.NewParams("test_denom"),
 		VestingAccountList: []types.VestingAccount{
 			{
-				Id: 0,
+				Id:      0,
 				Address: acountsAddresses[0].String(),
 			},
 			{
-				Id: 1,
+				Id:      1,
 				Address: acountsAddresses[1].String(),
 			},
 		},
 		VestingAccountCount: 1,
-		VestingTypes: vestingTypesArray,
+		VestingTypes:        vestingTypesArray,
 	}
 
 	err := genesisState.Validate()
@@ -334,10 +334,10 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	vestingTypesArray[0].VestingPeriodUnit = srcUnits
 
 	genesisState := types.GenesisState{
-		Params:       types.NewParams("uc4e"),
-		VestingAccountList: []types.VestingAccount{},
+		Params:              types.NewParams("uc4e"),
+		VestingAccountList:  []types.VestingAccount{},
 		VestingAccountCount: 0,
-		VestingTypes: vestingTypesArray,
+		VestingTypes:        vestingTypesArray,
 	}
 
 	app := app.Setup(false)
