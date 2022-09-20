@@ -44,6 +44,6 @@ func (k Keeper) Vestings(goCtx context.Context, req *types.QueryVestingsRequest)
 		VestingAllAmount:        allVestingInAccounts.Add(vestingInPoolsAmount),
 		VestingInPoolsAmount:    vestingInPoolsAmount,
 		VestingInAccountsAmount: allVestingInAccounts,
-		DelegatedVestingAmount: allVestingInAccounts.Sub(allLockedNotDelegated),
+		DelegatedVestingAmount:  allVestingInAccounts.Sub(allLockedNotDelegated),
 	}, nil
 }

@@ -22,7 +22,7 @@ func CreateVestingAccount(ctx sdk.Context, app *app.App, address string, amount 
 	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
 	}
-	
+
 	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(sdk.NewCoin(Denom, amount)).Sort(), end.Unix())
 
 	acc := vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, start.Unix())
