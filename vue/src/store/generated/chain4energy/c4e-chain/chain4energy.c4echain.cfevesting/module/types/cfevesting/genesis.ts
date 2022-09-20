@@ -10,8 +10,8 @@ export const protobufPackage = "chain4energy.c4echain.cfevesting";
 /** GenesisState defines the cfevesting module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
-  vestingAccountList: VestingAccount[];
-  vestingAccountCount: number;
+  vesting_account_list: VestingAccount[];
+  vesting_account_count: number;
   /** this line is used by starport scaffolding # genesis/proto/state */
   vesting_types: GenesisVestingType[];
   account_vestings_list: AccountVestingsList | undefined;
@@ -28,18 +28,18 @@ export interface GenesisVestingType {
   vesting_period_unit: string;
 }
 
-const baseGenesisState: object = { vestingAccountCount: 0 };
+const baseGenesisState: object = { vesting_account_count: 0 };
 
 export const GenesisState = {
   encode(message: GenesisState, writer: Writer = Writer.create()): Writer {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
-    for (const v of message.vestingAccountList) {
+    for (const v of message.vesting_account_list) {
       VestingAccount.encode(v!, writer.uint32(34).fork()).ldelim();
     }
-    if (message.vestingAccountCount !== 0) {
-      writer.uint32(40).uint64(message.vestingAccountCount);
+    if (message.vesting_account_count !== 0) {
+      writer.uint32(40).uint64(message.vesting_account_count);
     }
     for (const v of message.vesting_types) {
       GenesisVestingType.encode(v!, writer.uint32(18).fork()).ldelim();
@@ -57,7 +57,7 @@ export const GenesisState = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
-    message.vestingAccountList = [];
+    message.vesting_account_list = [];
     message.vesting_types = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -66,12 +66,12 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 4:
-          message.vestingAccountList.push(
+          message.vesting_account_list.push(
             VestingAccount.decode(reader, reader.uint32())
           );
           break;
         case 5:
-          message.vestingAccountCount = longToNumber(reader.uint64() as Long);
+          message.vesting_account_count = longToNumber(reader.uint64() as Long);
           break;
         case 2:
           message.vesting_types.push(
@@ -94,7 +94,7 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.vestingAccountList = [];
+    message.vesting_account_list = [];
     message.vesting_types = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
@@ -102,20 +102,20 @@ export const GenesisState = {
       message.params = undefined;
     }
     if (
-      object.vestingAccountList !== undefined &&
-      object.vestingAccountList !== null
+      object.vesting_account_list !== undefined &&
+      object.vesting_account_list !== null
     ) {
-      for (const e of object.vestingAccountList) {
-        message.vestingAccountList.push(VestingAccount.fromJSON(e));
+      for (const e of object.vesting_account_list) {
+        message.vesting_account_list.push(VestingAccount.fromJSON(e));
       }
     }
     if (
-      object.vestingAccountCount !== undefined &&
-      object.vestingAccountCount !== null
+      object.vesting_account_count !== undefined &&
+      object.vesting_account_count !== null
     ) {
-      message.vestingAccountCount = Number(object.vestingAccountCount);
+      message.vesting_account_count = Number(object.vesting_account_count);
     } else {
-      message.vestingAccountCount = 0;
+      message.vesting_account_count = 0;
     }
     if (object.vesting_types !== undefined && object.vesting_types !== null) {
       for (const e of object.vesting_types) {
@@ -139,15 +139,15 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    if (message.vestingAccountList) {
-      obj.vestingAccountList = message.vestingAccountList.map((e) =>
+    if (message.vesting_account_list) {
+      obj.vesting_account_list = message.vesting_account_list.map((e) =>
         e ? VestingAccount.toJSON(e) : undefined
       );
     } else {
-      obj.vestingAccountList = [];
+      obj.vesting_account_list = [];
     }
-    message.vestingAccountCount !== undefined &&
-      (obj.vestingAccountCount = message.vestingAccountCount);
+    message.vesting_account_count !== undefined &&
+      (obj.vesting_account_count = message.vesting_account_count);
     if (message.vesting_types) {
       obj.vesting_types = message.vesting_types.map((e) =>
         e ? GenesisVestingType.toJSON(e) : undefined
@@ -164,7 +164,7 @@ export const GenesisState = {
 
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.vestingAccountList = [];
+    message.vesting_account_list = [];
     message.vesting_types = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
@@ -172,20 +172,20 @@ export const GenesisState = {
       message.params = undefined;
     }
     if (
-      object.vestingAccountList !== undefined &&
-      object.vestingAccountList !== null
+      object.vesting_account_list !== undefined &&
+      object.vesting_account_list !== null
     ) {
-      for (const e of object.vestingAccountList) {
-        message.vestingAccountList.push(VestingAccount.fromPartial(e));
+      for (const e of object.vesting_account_list) {
+        message.vesting_account_list.push(VestingAccount.fromPartial(e));
       }
     }
     if (
-      object.vestingAccountCount !== undefined &&
-      object.vestingAccountCount !== null
+      object.vesting_account_count !== undefined &&
+      object.vesting_account_count !== null
     ) {
-      message.vestingAccountCount = object.vestingAccountCount;
+      message.vesting_account_count = object.vesting_account_count;
     } else {
-      message.vestingAccountCount = 0;
+      message.vesting_account_count = 0;
     }
     if (object.vesting_types !== undefined && object.vesting_types !== null) {
       for (const e of object.vesting_types) {
