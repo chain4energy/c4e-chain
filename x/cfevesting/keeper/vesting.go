@@ -234,15 +234,16 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 	}
 	if err == nil {
 		k.SetAccountVestings(ctx, accVestings)
+		k.AppendVestingAccount(ctx, types.VestingAccount{Address: toAddr})
+		ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
+			OwnerAddress:    fromAddr,
+			Address:         toAddr,
+			VestingPoolId:   strconv.FormatInt(int64(vesting.Id), 10),
+			VestingPoolName: vesting.Name,
+			Amount:          amount.String() + k.Denom(ctx),
+			RestartVesting:  strconv.FormatBool(restartVesting),
+		})
 	}
-	ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
-		OwnerAddress:    fromAddr,
-		Address:         toAddr,
-		VestingPoolId:   strconv.FormatInt(int64(vesting.Id), 10),
-		VestingPoolName: vesting.Name,
-		Amount:          amount.String() + k.Denom(ctx),
-		RestartVesting:  strconv.FormatBool(restartVesting),
-	})
 	return w, err
 }
 
@@ -289,7 +290,7 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 	if err != nil {
 		return err
 	}
-
+	k.AppendVestingAccount(ctx, types.VestingAccount{Address: acc.Address})
 	return nil
 }
 

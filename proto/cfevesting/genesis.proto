@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "cfevesting/params.proto";
 import "cfevesting/account_vesting.proto";
 
+import "cfevesting/vesting_account.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
@@ -12,6 +13,8 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 // GenesisState defines the cfevesting module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
+  repeated VestingAccount vesting_account_list = 4 [(gogoproto.nullable) = false];
+  uint64 vesting_account_count = 5;
   // this line is used by starport scaffolding # genesis/proto/state
   repeated GenesisVestingType vesting_types = 2 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vesting_types\""];
   AccountVestingsList account_vestings_list = 3 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"account_vestings_list\""];

@@ -30,6 +30,11 @@ service Query {
 		option (google.api.http).get = "/c4e/vesting/vesting_pools/{address}";
 	}
 
+// Queries a list of Vestings items.
+	rpc Vestings(QueryVestingsRequest) returns (QueryVestingsResponse) {
+		option (google.api.http).get = "/c4e/vesting/vestings";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -69,6 +74,16 @@ message VestingPoolInfo {
   cosmos.base.v1beta1.Coin vested = 7;
   string current_vested_amount = 8;
   string sent_amount = 9;
+}
+
+message QueryVestingsRequest {
+}
+
+message QueryVestingsResponse {
+  string vesting_all_amount = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string vesting_in_pools_amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string vesting_in_accounts_amount = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string delegated_vesting_amount = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # 3
