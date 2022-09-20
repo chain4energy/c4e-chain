@@ -19,7 +19,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 
 	if amount.IsInt64() {
-		defer telemetry.IncrCounterWithLabels(
+		defer telemetry.SetGaugeWithLabels(
 			[]string{types.ModuleName, "minted_tokens"},
 			float32(amount.Int64()),
 			[]metrics.Label{telemetry.NewLabel("denom", k.MintDenom(ctx))},

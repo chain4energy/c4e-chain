@@ -151,7 +151,7 @@ func burnCoins(ctx sdk.Context, k keeper.Keeper, state *types.State) {
 
 	} else {
 		k.Logger(ctx).Debug("Successful burn coin: " + toSend.String())
-		defer telemetry.IncrCounterWithLabels(
+		defer telemetry.SetGaugeWithLabels(
 			[]string{"coin_send", types.BurnDestination},
 			float32(toSend.AmountOf(types.DenomToTrace).Int64()),
 			[]metrics.Label{telemetry.NewLabel("denom", types.DenomToTrace)},
@@ -168,7 +168,7 @@ func sendCoinsToModuleAccount(ctx sdk.Context, k keeper.Keeper, state *types.Sta
 
 	} else {
 		k.Logger(ctx).Debug("Successful send to: " + state.Account.Id + " - " + toSend.String())
-		defer telemetry.IncrCounterWithLabels(
+		defer telemetry.SetGaugeWithLabels(
 			[]string{"coin_send", state.Account.Id},
 			float32(toSend.AmountOf(types.DenomToTrace).Int64()),
 			[]metrics.Label{telemetry.NewLabel("denom", types.DenomToTrace)},
@@ -188,7 +188,7 @@ func sendCoinsToBaseAccount(ctx sdk.Context, k keeper.Keeper, state *types.State
 
 	} else {
 		k.Logger(ctx).Debug("Successful send to : " + state.Account.Id + " - " + toSend.String())
-		defer telemetry.IncrCounterWithLabels(
+		defer telemetry.SetGaugeWithLabels(
 			[]string{"coin_send", state.Account.Id},
 			float32(toSend.AmountOf(types.DenomToTrace).Int64()),
 			[]metrics.Label{telemetry.NewLabel("denom", types.DenomToTrace)},

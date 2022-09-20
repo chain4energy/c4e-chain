@@ -22,7 +22,7 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 	if msg.Amount.IsInt64() {
 		defer func() {
 			telemetry.IncrCounter(1, types.ModuleName, "vesting_pools")
-			telemetry.IncrCounterWithLabels(
+			telemetry.SetGaugeWithLabels(
 				[]string{"tx", "msg", types.ModuleName, msg.Type()},
 				float32(msg.Amount.Int64()),
 				[]metrics.Label{telemetry.NewLabel("denom", denom)},

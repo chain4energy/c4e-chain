@@ -17,7 +17,7 @@ func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCre
 
 		for _, a := range msg.Amount {
 			if a.Amount.IsInt64() {
-				telemetry.IncrCounterWithLabels(
+				telemetry.SetGaugeWithLabels(
 					[]string{"tx", "msg", types.ModuleName, msg.Type()},
 					float32(a.Amount.Int64()),
 					[]metrics.Label{telemetry.NewLabel("denom", a.Denom)},
