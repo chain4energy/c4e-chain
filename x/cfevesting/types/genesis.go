@@ -13,6 +13,7 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
+		VestingAccountList: []VestingAccount{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -21,6 +22,22 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
+	// Check for duplicated ID in vestingAccount
+	vestingAccountIdMap := make(map[uint64]bool)
+	vestingAccountCount := gs.GetVestingAccountCount()
+	for _, elem := range gs.VestingAccountList {
+		if _, ok := vestingAccountIdMap[elem.Id]; ok {
+			return fmt.Errorf("duplicated id for vestingAccount")
+		}
+		if elem.Id >= vestingAccountCount {
+			return fmt.Errorf("vestingAccount id should be lower or equal than the last id")
+		}
+		vestingAccountIdMap[elem.Id] = true
+		err := elem.Validate()
+		if err != nil {
+			return err
+		}
+	}
 	// this line is used by starport scaffolding # genesis/types/validate
 
 	err := gs.validateVestingTypes()

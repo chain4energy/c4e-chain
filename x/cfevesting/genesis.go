@@ -16,6 +16,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 		panic(err)
 	}
 	k.Logger(ctx).Info("Init genesis")
+	// Set all the vestingAccount
+	for _, elem := range genState.VestingAccountList {
+		k.SetVestingAccount(ctx, elem)
+	}
+
+	// Set vestingAccount count
+	k.SetVestingAccountCount(ctx, genState.VestingAccountCount)
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 	k.Logger(ctx).Info("Init genesis params: ")
@@ -84,6 +91,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		genesis.AccountVestingsList.Vestings = append(genesis.AccountVestingsList.Vestings, &allVestings[i])
 	}
 
+	genesis.VestingAccountList = k.GetAllVestingAccount(ctx)
+	genesis.VestingAccountCount = k.GetVestingAccountCount(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

@@ -28,8 +28,12 @@ func VerifyModuleAccountDenomBalanceByName(accName string, ctx sdk.Context, app 
 }
 
 func AddCoinsToAccount(vested uint64, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
+	return AddCoinsToAccountInt(sdk.NewIntFromUint64(vested), ctx, app, toAddr)
+}
 
-	mintedCoin := sdk.NewCoin(Denom, sdk.NewIntFromUint64(vested))
+func AddCoinsToAccountInt(amount sdk.Int, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
+
+	mintedCoin := sdk.NewCoin(Denom, amount)
 	mintedCoins := sdk.NewCoins(mintedCoin)
 	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
 	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, mintedCoins)

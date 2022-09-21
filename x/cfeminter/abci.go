@@ -1,6 +1,7 @@
 package cfeminter
 
 import (
+	"github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -18,7 +19,11 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 
 	if amount.IsInt64() {
-		defer telemetry.ModuleSetGauge(types.ModuleName, float32(amount.Int64()), "minted_tokens")
+		defer telemetry.SetGaugeWithLabels(
+			[]string{types.ModuleName, "minted_tokens"},
+			float32(amount.Int64()),
+			[]metrics.Label{telemetry.NewLabel("denom", k.MintDenom(ctx))},
+		)
 	}
 
 	inflation, err := k.GetCurrentInflation(ctx)
