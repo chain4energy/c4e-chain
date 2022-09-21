@@ -70,6 +70,3 @@ release:
 	@echo "--> Prepare release darwin amd64"
 	$(call release,darwin,amd64)
 	$(call tar,darwin,amd64)
-	@echo "--> Prepare windows amd64"
-	$(call release,windows,amd64)
-	$(call tar,windows,amd64)
