@@ -53,7 +53,7 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 
 	for _, accVestings := range accsVestings {
 		for _, v := range accVestings.VestingPools {
-			undelegableAmount = undelegableAmount.Add(v.LastModificationVested)
+			undelegableAmount = undelegableAmount.Add(v.LastModificationVested).Sub(v.LastModificationWithdrawn)
 		}
 	}
 

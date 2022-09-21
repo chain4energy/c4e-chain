@@ -80,8 +80,21 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 		periodStart = *previousPeriod.PeriodEnd
 	}
 
+	k.Logger(ctx).Info("minterState.AmountMinted: " + minterState.AmountMinted.String())
+	k.Logger(ctx).Info(fmt.Sprintf("minterState.Position: %d", minterState.Position))
+	k.Logger(ctx).Info("minterState.RemainderFromPreviousPeriod: " + minterState.RemainderFromPreviousPeriod.String())
+	k.Logger(ctx).Info("minterState.RemainderToMint: " + minterState.RemainderToMint.String())
+	k.Logger(ctx).Info("minterState.LastMintBlockTime: " + minterState.LastMintBlockTime.String())
+
+	k.Logger(ctx).Info("periodStart: " + periodStart.String())
+	k.Logger(ctx).Info("periodEnd: " + currentPeriod.PeriodEnd.String())
+	k.Logger(ctx).Info("currentPeriod.Type: " + currentPeriod.Type)
+
 	expectedAmountToMint := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
 	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousPeriod)
+
+	k.Logger(ctx).Info("expectedAmountToMint: " + expectedAmountToMint.String())
+	k.Logger(ctx).Info("minterState.AmountMinted: " + minterState.AmountMinted.String())
 
 	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
