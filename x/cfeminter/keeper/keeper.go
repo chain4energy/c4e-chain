@@ -87,7 +87,11 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	k.Logger(ctx).Info("minterState.LastMintBlockTime: " + minterState.LastMintBlockTime.String())
 
 	k.Logger(ctx).Info("periodStart: " + periodStart.String())
-	k.Logger(ctx).Info("periodEnd: " + currentPeriod.PeriodEnd.String())
+	if (currentPeriod.PeriodEnd != nil) {
+		k.Logger(ctx).Info("periodEnd: " + currentPeriod.PeriodEnd.String())
+	} else {
+		k.Logger(ctx).Info("periodEnd: nil")
+	}
 	k.Logger(ctx).Info("currentPeriod.Type: " + currentPeriod.Type)
 
 	expectedAmountToMint := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
