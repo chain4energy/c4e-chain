@@ -119,6 +119,8 @@ func generateAccountVestings(numberOfAccounts int, numberOfVestingsPerAccount in
 
 func generateRandomVesting(accuntId int, vestingId int) types.VestingPool {
 	rgen := rand.New(rand.NewSource(time.Now().UnixNano()))
+	lastModificationVested := rgen.Intn(10000000)
+	lastModificationWithdrawn := rgen.Intn(lastModificationVested)
 	return types.VestingPool{
 		Id:                        int32(vestingId),
 		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
@@ -129,8 +131,8 @@ func generateRandomVesting(accuntId int, vestingId int) types.VestingPool {
 		Withdrawn:                 sdk.NewInt(int64(rgen.Intn(10000000))),
 		Sent:                      sdk.NewInt(int64(rgen.Intn(10000000))),
 		LastModification:          CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		LastModificationVested:    sdk.NewInt(int64(rgen.Intn(10000000))),
-		LastModificationWithdrawn: sdk.NewInt(int64(rgen.Intn(10000000))),
+		LastModificationVested:    sdk.NewInt(int64(lastModificationVested)),
+		LastModificationWithdrawn: sdk.NewInt(int64(lastModificationWithdrawn)),
 	}
 }
 

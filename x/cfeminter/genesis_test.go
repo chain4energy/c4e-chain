@@ -80,7 +80,6 @@ func TestGenesisWithHistory(t *testing.T) {
 
 	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
 	got := cfeminter.ExportGenesis(ctx, app.CfeminterKeeper)
-	// got.StateHistory[0].LastMintBlockTime = time.Now()
 	require.NotNil(t, got)
 
 	require.EqualValues(t, genesisState.Params.MintDenom, got.Params.MintDenom)

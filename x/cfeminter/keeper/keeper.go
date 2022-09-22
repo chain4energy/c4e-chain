@@ -87,7 +87,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	k.Logger(ctx).Info("minterState.LastMintBlockTime: " + minterState.LastMintBlockTime.String())
 
 	k.Logger(ctx).Info("periodStart: " + periodStart.String())
-	if (currentPeriod.PeriodEnd != nil) {
+	if currentPeriod.PeriodEnd != nil {
 		k.Logger(ctx).Info("periodEnd: " + currentPeriod.PeriodEnd.String())
 	} else {
 		k.Logger(ctx).Info("periodEnd: nil")
@@ -102,6 +102,10 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 
 	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
+	if amount.IsNegative() {
+		k.Logger(ctx).Info("Mint negative amount - possible for first block after genesis init: " + amount.String())
+		return sdk.ZeroInt(), nil
+	}
 
 	coin := sdk.NewCoin(params.MintDenom, amount)
 	coins := sdk.NewCoins(coin)
