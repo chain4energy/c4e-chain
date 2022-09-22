@@ -94,7 +94,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	}
 	k.Logger(ctx).Info("currentPeriod.Type: " + currentPeriod.Type)
 
-	expectedAmountToMint := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
+	expectedAmountToMint := currentPeriod.AmountToMint(k.Logger(ctx), &minterState, periodStart, ctx.BlockTime())
 	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousPeriod)
 
 	k.Logger(ctx).Info("expectedAmountToMint: " + expectedAmountToMint.String())

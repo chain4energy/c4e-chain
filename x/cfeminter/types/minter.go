@@ -6,6 +6,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 const year = time.Hour * 24 * 365
@@ -102,14 +103,14 @@ func (m Minter) ContainsId(id int32) bool {
 	return false
 }
 
-func (m *MintingPeriod) AmountToMint(state *MinterState, periodStart time.Time, blockTime time.Time) sdk.Dec {
+func (m *MintingPeriod) AmountToMint(logger log.Logger, state *MinterState, periodStart time.Time, blockTime time.Time) sdk.Dec {
 	switch m.Type {
 	case NO_MINTING:
 		return sdk.ZeroDec()
 	case TIME_LINEAR_MINTER:
 		return m.TimeLinearMinter.amountToMint(state, periodStart, *m.PeriodEnd, blockTime)
 	case PERIODIC_REDUCTION_MINTER:
-		return m.PeriodicReductionMinter.amountToMint(state, periodStart, m.PeriodEnd, blockTime)
+		return m.PeriodicReductionMinter.amountToMint(logger, state, periodStart, m.PeriodEnd, blockTime)
 	default:
 		return sdk.ZeroDec()
 	}
@@ -202,18 +203,26 @@ func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart ti
 
 }
 
-func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart time.Time, periodEnd *time.Time, blockTime time.Time) sdk.Dec {
+func (m *PeriodicReductionMinter) amountToMint(logger log.Logger, state *MinterState, periodStart time.Time, periodEnd *time.Time, blockTime time.Time) sdk.Dec {
 	now := blockTime
+	logger.Info("PeriodicReductionMinter: amountToMint: blockTime" + blockTime.String())
 	if periodEnd != nil && blockTime.After(*periodEnd) {
 		now = *periodEnd
 	}
+	logger.Info("PeriodicReductionMinter: amountToMint: now" + now.String())
+	logger.Info(fmt.Sprintf("PeriodicReductionMinter: amountToMint: now secs: %d", now.Unix()))
+	logger.Info(fmt.Sprintf("PeriodicReductionMinter: amountToMint: periodStart secs: %d", periodStart.Unix()))
+
 	passedTime := int64(now.Sub(periodStart))
+	logger.Info(fmt.Sprintf("PeriodicReductionMinter: amountToMint: passedTime: %d", passedTime))
 
 	epoch := int64(m.MintPeriod) * int64(m.ReductionPeriodLength) * int64(time.Second)
+	logger.Info(fmt.Sprintf("PeriodicReductionMinter: amountToMint: epoch: %d", epoch))
 
 	numOfPassedEpochs := passedTime / epoch
 
 	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
+	logger.Info(fmt.Sprintf("PeriodicReductionMinter: amountToMint: initialEpochAmount: %s", initialEpochAmount.String()))
 
 	amountToMint := sdk.ZeroDec()
 	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
@@ -223,9 +232,14 @@ func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart t
 		}
 		amountToMint = amountToMint.Add(epochAmount)
 	}
+	logger.Info(fmt.Sprintf("PeriodicReductionMinter: amountToMint: amountToMint: %s", amountToMint.String()))
 
 	currentEpochStart := periodStart.Add(time.Duration(numOfPassedEpochs * epoch))
+	logger.Info(fmt.Sprintf("PeriodicReductionMinter: amountToMint: currentEpochStart: %s", currentEpochStart.String()))
+
 	currentEpochPassedTime := now.Sub(currentEpochStart)
+	logger.Info(fmt.Sprintf("PeriodicReductionMinter: amountToMint: currentEpochPassedTime: %s", currentEpochPassedTime.String()))
+
 	currentEpochAmount := epochAmount
 
 	if numOfPassedEpochs > 0 {
