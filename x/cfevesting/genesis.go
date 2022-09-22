@@ -15,7 +15,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 	if err != nil {
 		panic(err)
 	}
-	k.Logger(ctx).Info("Init genesis")
 	// Set all the vestingAccount
 	for _, elem := range genState.VestingAccountList {
 		k.SetVestingAccount(ctx, elem)
@@ -25,7 +24,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 	k.SetVestingAccountCount(ctx, genState.VestingAccountCount)
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
-	k.Logger(ctx).Info("Init genesis params: ")
 	vestingTypes := types.VestingTypes{}
 	for _, gVestingType := range genState.VestingTypes {
 		vt := types.VestingType{
