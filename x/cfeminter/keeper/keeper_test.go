@@ -453,6 +453,30 @@ func TestMintBetweenFirstAndSecondPeriodsWithRemaining(t *testing.T) {
 
 }
 
+func TestMintWithReductionMinterOnGenesisWIthNegativeToMint(t *testing.T) {
+	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
+
+	app, ctx := prepareApp(startTime, createReductionMinter(startTime))
+	k := app.CfeminterKeeper
+
+	minterState := types.MinterState{Position: 1, AmountMinted: sdk.NewInt(1000000)}
+	minterState.LastMintBlockTime = startTime
+	minterState.RemainderToMint = sdk.ZeroDec()
+	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
+	k.SetMinterState(ctx, minterState)
+
+	ctx = ctx.WithBlockTime(startTime)
+	amount, err := k.Mint(ctx)
+	require.NoError(t, err)
+	require.EqualValues(t, sdk.NewInt(0), amount)
+	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	commontestutils.VerifyModuleAccountDenomBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, MyDenom, sdk.ZeroInt())
+
+	history := k.GetAllMinterStateHistory(ctx)
+	require.EqualValues(t, 0, len(history))
+
+}
+
 func prepareApp(startTime time.Time, minter types.Minter) (*app.App, sdk.Context) {
 	app, ctx := commontestutils.SetupAppWithTime(1000, startTime)
 	params := types.DefaultParams()
@@ -497,6 +521,13 @@ func createReductionMinterWithRemainingPassing(startTime time.Time) types.Minter
 
 	period3 := types.MintingPeriod{Position: 3, Type: types.NO_MINTING}
 	periods := []*types.MintingPeriod{&period1, &period2, &period3}
-	minter := types.Minter{Start: startTime, Periods: periods}
-	return minter
+	return types.Minter{Start: startTime, Periods: periods}
+}
+
+func createReductionMinter(startTime time.Time) types.Minter {
+	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(1000000), MintPeriod: SecondsInYear, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
+	period1 := types.MintingPeriod{Position: 1, Type: types.PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &pminter}
+	periods := []*types.MintingPeriod{&period1}
+	return types.Minter{Start: startTime, Periods: periods}
+
 }

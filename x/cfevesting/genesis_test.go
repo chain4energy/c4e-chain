@@ -367,7 +367,7 @@ func getUndelegableAmount(accvestings []*types.AccountVestings) sdk.Int {
 	result := sdk.ZeroInt()
 	for _, accV := range accvestings {
 		for _, v := range accV.VestingPools {
-			result = result.Add(v.LastModificationVested)
+			result = result.Add(v.LastModificationVested).Sub(v.LastModificationWithdrawn)
 		}
 	}
 	return result

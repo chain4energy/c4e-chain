@@ -79,12 +79,25 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	} else {
 		periodStart = *previousPeriod.PeriodEnd
 	}
+	k.Logger(ctx).Debug("Mint minterState start",
+		"AmountMinted", minterState.AmountMinted.String(),
+		"Position", minterState.Position,
+		"RemainderFromPreviousPeriod", minterState.RemainderFromPreviousPeriod,
+		"RemainderToMint", minterState.RemainderToMint,
+		"LastMintBlockTime", minterState.LastMintBlockTime,
+	)
 
-	expectedAmountToMint := currentPeriod.AmountToMint(&minterState, periodStart, ctx.BlockTime())
+	expectedAmountToMint := currentPeriod.AmountToMint(k.Logger(ctx), &minterState, periodStart, ctx.BlockTime())
 	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousPeriod)
 
 	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
+	k.Logger(ctx).Debug("Mint", "periodStart", periodStart, "periodEnd", currentPeriod.PeriodEnd, "currentPeriodType", currentPeriod.Type, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
+
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
+	if amount.IsNegative() {
+		k.Logger(ctx).Info("Mint negative amount - possible for first block after genesis init", "amount", amount)
+		return sdk.ZeroInt(), nil
+	}
 
 	coin := sdk.NewCoin(params.MintDenom, amount)
 	coins := sdk.NewCoins(coin)
@@ -103,10 +116,10 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	minterState.LastMintBlockTime = ctx.BlockTime()
 	minterState.RemainderToMint = remainder
 
+	var result sdk.Int
 	if currentPeriod.PeriodEnd == nil || ctx.BlockTime().Before(*currentPeriod.PeriodEnd) {
-
 		k.SetMinterState(ctx, minterState)
-		return amount, nil
+		result = amount
 	} else {
 		k.SetMinterStateHistory(ctx, minterState)
 		minterState = types.MinterState{
@@ -116,14 +129,22 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 			RemainderFromPreviousPeriod: remainder,
 			LastMintBlockTime:           ctx.BlockTime(),
 		}
-
 		k.SetMinterState(ctx, minterState)
 		minted, err := k.Mint(ctx)
 		if err != nil {
 			return minted, err
 		}
-		return minted.Add(amount), nil
+		result = minted.Add(amount)
 	}
+
+	k.Logger(ctx).Debug("Mint minterState end",
+		"AmountMinted", minterState.AmountMinted.String(),
+		"Position", minterState.Position,
+		"RemainderFromPreviousPeriod", minterState.RemainderFromPreviousPeriod,
+		"RemainderToMint", minterState.RemainderToMint,
+		"LastMintBlockTime", minterState.LastMintBlockTime,
+	)
+	return result, nil
 }
 
 func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {

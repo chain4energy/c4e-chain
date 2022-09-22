@@ -19,7 +19,7 @@ func CmdVest() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-vesting-pool [name] [amount] [duration] [vesting-type]",
 		Short: "Broadcast message createVestingPool",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argAmount := args[1]

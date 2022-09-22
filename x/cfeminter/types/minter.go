@@ -6,6 +6,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 const year = time.Hour * 24 * 365
@@ -102,14 +103,14 @@ func (m Minter) ContainsId(id int32) bool {
 	return false
 }
 
-func (m *MintingPeriod) AmountToMint(state *MinterState, periodStart time.Time, blockTime time.Time) sdk.Dec {
+func (m *MintingPeriod) AmountToMint(logger log.Logger, state *MinterState, periodStart time.Time, blockTime time.Time) sdk.Dec {
 	switch m.Type {
 	case NO_MINTING:
 		return sdk.ZeroDec()
 	case TIME_LINEAR_MINTER:
 		return m.TimeLinearMinter.amountToMint(state, periodStart, *m.PeriodEnd, blockTime)
 	case PERIODIC_REDUCTION_MINTER:
-		return m.PeriodicReductionMinter.amountToMint(state, periodStart, m.PeriodEnd, blockTime)
+		return m.PeriodicReductionMinter.amountToMint(logger, state, periodStart, m.PeriodEnd, blockTime)
 	default:
 		return sdk.ZeroDec()
 	}
@@ -202,17 +203,14 @@ func (m *TimeLinearMinter) calculateInfation(totalSupply sdk.Int, periodStart ti
 
 }
 
-func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart time.Time, periodEnd *time.Time, blockTime time.Time) sdk.Dec {
+func (m *PeriodicReductionMinter) amountToMint(logger log.Logger, state *MinterState, periodStart time.Time, periodEnd *time.Time, blockTime time.Time) sdk.Dec {
 	now := blockTime
 	if periodEnd != nil && blockTime.After(*periodEnd) {
 		now = *periodEnd
 	}
 	passedTime := int64(now.Sub(periodStart))
-
 	epoch := int64(m.MintPeriod) * int64(m.ReductionPeriodLength) * int64(time.Second)
-
 	numOfPassedEpochs := passedTime / epoch
-
 	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
 
 	amountToMint := sdk.ZeroDec()
@@ -223,16 +221,18 @@ func (m *PeriodicReductionMinter) amountToMint(state *MinterState, periodStart t
 		}
 		amountToMint = amountToMint.Add(epochAmount)
 	}
-
 	currentEpochStart := periodStart.Add(time.Duration(numOfPassedEpochs * epoch))
 	currentEpochPassedTime := now.Sub(currentEpochStart)
 	currentEpochAmount := epochAmount
 
+	logger.Debug("PRMinterMint", "blockTime", blockTime, "now", now, "passedTime", passedTime, "epoch", epoch, "numOfPassedEpochs", numOfPassedEpochs,
+		"initialEpochAmount", initialEpochAmount, "epochAmount", epochAmount, "amountToMint", amountToMint, "currentEpochStart", currentEpochStart,
+		"currentEpochPassedTime", currentEpochPassedTime, "currentEpochAmount", currentEpochAmount)
 	if numOfPassedEpochs > 0 {
 		currentEpochAmount = currentEpochAmount.Mul(m.ReductionFactor)
 	}
-
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
+	logger.Debug("PRMinterMintCon", "ReductionFactor", m.ReductionFactor, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
 	return amountToMint.Add(currentEpochAmountToMint)
 
 }
