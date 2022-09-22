@@ -465,7 +465,6 @@ func TestMintWithReductionMinterOnGenesisWIthNegativeToMint(t *testing.T) {
 	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
 	k.SetMinterState(ctx, minterState)
 
-
 	ctx = ctx.WithBlockTime(startTime)
 	amount, err := k.Mint(ctx)
 	require.NoError(t, err)

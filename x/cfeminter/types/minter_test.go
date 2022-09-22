@@ -9,7 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
-
 )
 
 const PeriodDuration = time.Duration(345600000000 * 1000000)
@@ -25,25 +24,25 @@ func TestTimeLinearMinter(t *testing.T) {
 	blockTime := startTime.Add(time.Duration(345600000000 * 1000000 / 2))
 
 	period := types.MintingPeriod{Position: 1, PeriodEnd: &endTime, Type: types.TIME_LINEAR_MINTER, TimeLinearMinter: &minter}
-	amount := period.AmountToMint(log.TestingLogger(),  &minterState, startTime, blockTime)
+	amount := period.AmountToMint(log.TestingLogger(), &minterState, startTime, blockTime)
 	require.EqualValues(t, sdk.NewDec(500000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, endTime)
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, endTime)
 	require.EqualValues(t, sdk.NewDec(1000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, endTime.Add(time.Duration(10*1000000)))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, endTime.Add(time.Duration(10*1000000)))
 	require.EqualValues(t, sdk.NewDec(1000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
 	require.EqualValues(t, sdk.NewDec(750000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
 	require.EqualValues(t, sdk.NewDec(250000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime)
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime)
 	require.EqualValues(t, sdk.NewDec(0), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
 
 }
@@ -56,25 +55,25 @@ func TestNoMinting(t *testing.T) {
 	blockTime := startTime.Add(time.Duration(345600000000 * 1000000 / 2))
 
 	period := types.MintingPeriod{Position: 1, PeriodEnd: &endTime, Type: types.NO_MINTING}
-	amount := period.AmountToMint(log.TestingLogger(),  &minterState, startTime, blockTime)
+	amount := period.AmountToMint(log.TestingLogger(), &minterState, startTime, blockTime)
 	require.EqualValues(t, sdk.NewDec(0), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, endTime)
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, endTime)
 	require.EqualValues(t, sdk.NewDec(0), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, endTime.Add(time.Duration(10*1000000)))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, endTime.Add(time.Duration(10*1000000)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(time.Duration(345600000000*1000000*3/4)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(time.Duration(345600000000*1000000/4)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime)
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime)
 	require.EqualValues(t, sdk.NewDec(0), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(time.Duration(-10*1000000)))
 	require.EqualValues(t, sdk.NewDec(0), amount)
 }
 
@@ -466,137 +465,137 @@ func TestUnlimitedPeriodicReductionMinter(t *testing.T) {
 
 	period := types.MintingPeriod{Position: 1, PeriodEnd: nil, Type: types.PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &minter}
 
-	amount := period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(Year/2))
+	amount := period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(Year/2))
 	require.EqualValues(t, sdk.NewDec(20000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(Year))
 	require.EqualValues(t, sdk.NewDec(40000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(2*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(2*Year))
 	require.EqualValues(t, sdk.NewDec(80000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(3*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(3*Year))
 	require.EqualValues(t, sdk.NewDec(120000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(4*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(4*Year))
 	require.EqualValues(t, sdk.NewDec(160000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(5*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(5*Year))
 	require.EqualValues(t, sdk.NewDec(180000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(6*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(6*Year))
 	require.EqualValues(t, sdk.NewDec(200000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(7*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(7*Year))
 	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(8*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(8*Year))
 	require.EqualValues(t, sdk.NewDec(240000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(9*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(9*Year))
 	require.EqualValues(t, sdk.NewDec(250000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(10*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(10*Year))
 	require.EqualValues(t, sdk.NewDec(260000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(11*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(11*Year))
 	require.EqualValues(t, sdk.NewDec(270000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(12*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(12*Year))
 	require.EqualValues(t, sdk.NewDec(280000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(13*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(13*Year))
 	require.EqualValues(t, sdk.NewDec(285000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(14*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(14*Year))
 	require.EqualValues(t, sdk.NewDec(290000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(15*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(15*Year))
 	require.EqualValues(t, sdk.NewDec(295000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(16*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(16*Year))
 	require.EqualValues(t, sdk.NewDec(300000000000000), amount)
 
 	beforeAmount := sdk.NewDec(300000000000000)
 	amountToAdd := sdk.NewDec(10000000000000)
 	expected := beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(20*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(20*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(24*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(24*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(28*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(28*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(32*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(32*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(36*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(36*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(40*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(40*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(44*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(44*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(48*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(48*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(52*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(52*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(56*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(56*Year))
 	require.EqualValues(t, expected, amount)
 
 	beforeAmount = expected
 	amountToAdd = amountToAdd.QuoInt64(2)
 	expected = beforeAmount.Add(amountToAdd)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(60*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(60*Year))
 	require.EqualValues(t, expected, amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(64*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(64*Year))
 	require.EqualValues(t, sdk.NewDec(319995117187500), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(250*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(250*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("319999999999999.999947958295720691"), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(250*Year).Add(50*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(250*Year).Add(50*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("319999999999999.999999999999999996"), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(250*Year).Add(51*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(250*Year).Add(51*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000000004235164732"), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(250*Year).Add(250*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(250*Year).Add(250*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000000847032947246"), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000001204782431465"), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000001204782431465"), amount)
 
 }
@@ -609,32 +608,32 @@ func TestLimitedPeriodicReductionMinter(t *testing.T) {
 	endTime := startTime.Add(7 * Year)
 	period := types.MintingPeriod{Position: 1, PeriodEnd: &endTime, Type: types.PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &minter}
 
-	amount := period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(Year/2))
+	amount := period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(Year/2))
 	require.EqualValues(t, sdk.NewDec(20000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(time.Hour))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(time.Hour))
 	require.EqualValues(t, sdk.MustNewDecFromStr("4566210045.662100456621004566"), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(Year))
 	require.EqualValues(t, sdk.NewDec(40000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(2*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(2*Year))
 	require.EqualValues(t, sdk.NewDec(80000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(3*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(3*Year))
 	require.EqualValues(t, sdk.NewDec(120000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(4*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(4*Year))
 	require.EqualValues(t, sdk.NewDec(160000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(5*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(5*Year))
 	require.EqualValues(t, sdk.NewDec(180000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(6*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(6*Year))
 	require.EqualValues(t, sdk.NewDec(200000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(7*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(7*Year))
 	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(8*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(8*Year))
 	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
 
-	amount = period.AmountToMint(log.TestingLogger(),  &minterState, startTime, startTime.Add(16*Year))
+	amount = period.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(16*Year))
 	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
 
 }
