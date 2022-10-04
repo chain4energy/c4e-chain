@@ -3,19 +3,23 @@ module github.com/chain4energy/c4e-chain
 go 1.18
 
 require (
+	github.com/armon/go-metrics v0.4.0
 	github.com/cosmos/cosmos-sdk v0.46.1
 	github.com/cosmos/ibc-go/v5 v5.0.0-rc1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
+	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ignite/cli v0.24.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
+	github.com/tendermint/spn v0.2.1-0.20220907161743-aab4d3df1f2b
 	github.com/tendermint/tendermint v0.34.21
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20220822174746-9e6da59bd2fc
 	google.golang.org/grpc v1.49.0
+	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -34,7 +38,6 @@ require (
 	github.com/Microsoft/hcsshim v0.9.3 // indirect
 	github.com/Workiva/go-datastructures v1.0.53 // indirect
 	github.com/andrew-d/go-termutil v0.0.0-20150726205930-009166a695a2 // indirect
-	github.com/armon/go-metrics v0.4.0 // indirect
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 // indirect
 	github.com/aws/aws-sdk-go v1.40.45 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -97,10 +100,8 @@ require (
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
 	github.com/gookit/color v1.5.1 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
-	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/gtank/ristretto255 v0.1.2 // indirect
@@ -113,6 +114,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hdevalence/ed25519consensus v0.0.0-20220222234857-c00d1f31bab3 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
+	github.com/ignite/modules v0.0.0-20220830145312-d006783a7a21 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
@@ -172,8 +174,8 @@ require (
 	github.com/takuoki/gocase v1.0.0 // indirect
 	github.com/tendermint/btcd v0.1.1 // indirect
 	github.com/tendermint/crypto v0.0.0-20191022145703-50d29ede1e15 // indirect
+	github.com/tendermint/fundraising v0.3.1 // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
-	github.com/tendermint/spn v0.2.1-0.20220907161743-aab4d3df1f2b // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/xanzy/ssh-agent v0.2.1 // indirect
@@ -193,7 +195,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/api v0.84.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -201,7 +202,4 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace (
-	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-	google.golang.org/grpc => google.golang.org/grpc v1.33.2
-)
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
