@@ -25,8 +25,8 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t testing.TB, blockHeight in
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
-	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
 
 	require.NoError(t, stateStore.LoadLatestVersion())
 
@@ -84,8 +84,8 @@ func AccountKeeperWithBlockHeight(t testing.TB, ctx sdk.Context, stateStore stor
 	storeKey := sdk.NewKVStoreKey(authtypes.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey + "mem")
 
-	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
 
 	require.NoError(t, stateStore.LoadLatestVersion())
 
@@ -105,7 +105,7 @@ func AccountKeeperWithBlockHeight(t testing.TB, ctx sdk.Context, stateStore stor
 	}
 
 	k := authkeeper.NewAccountKeeper(
-		cdc, sdk.NewKVStoreKey(authtypes.StoreKey), paramsSubspace, authtypes.ProtoBaseAccount, maccPerms,
+		cdc, sdk.NewKVStoreKey(authtypes.StoreKey), paramsSubspace, authtypes.ProtoBaseAccount, maccPerms, "c4e",
 	)
 
 	// Initialize params
