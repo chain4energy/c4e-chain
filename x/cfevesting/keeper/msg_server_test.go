@@ -53,7 +53,7 @@ func setupValidators(t *testing.T, ctx sdk.Context, app *app.App, validators []s
 		commontestutils.AddCoinsToAccount(delegatePerValidator, ctx, app, valAddr.Bytes())
 		createValidator(t, ctx, app.StakingKeeper, valAddr, PKs[i], delCoin, commission)
 	}
-	require.EqualValues(t, len(validators), len(app.StakingKeeper.GetAllValidators(ctx)))
+	require.EqualValues(t, len(validators)+1, len(app.StakingKeeper.GetAllValidators(ctx)))
 }
 
 func setupStakingBondDenom(ctx sdk.Context, app *app.App) {

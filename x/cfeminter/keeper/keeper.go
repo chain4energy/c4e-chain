@@ -92,7 +92,6 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousPeriod)
 
 	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
-	k.Logger(ctx).Debug("Mint", "periodStart", periodStart, "periodEnd", currentPeriod.PeriodEnd, "currentPeriodType", currentPeriod.Type, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
 
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
 	if amount.IsNegative() {
