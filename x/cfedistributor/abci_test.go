@@ -3,7 +3,9 @@ package cfedistributor_test
 import (
 	"testing"
 
-	testapp "github.com/chain4energy/c4e-chain/app"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/app"
+
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -196,8 +198,8 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	perms := []string{authtypes.Minter, authtypes.Burner}
 	collector := "fee_collector"
 	denom := "uc4e"
-	testapp.AddMaccPerms(collector, perms)
-	testapp.AddMaccPerms("c4e_distributor", nil)
+	app.AddMaccPerms(collector, perms)
+	app.AddMaccPerms("c4e_distributor", nil)
 	app := testapp.Setup(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
@@ -302,11 +304,11 @@ func TestBurningWithInflationDistributorPassBaseAccountAccountNoValidators(t *te
 func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType DestinationType, toValidators bool) {
 	perms := []string{authtypes.Minter, authtypes.Burner}
 	collector := "fee_collector"
-	testapp.AddMaccPerms("c4e_distributor", nil)
-	testapp.AddMaccPerms("no_validators", nil)
+	app.AddMaccPerms("c4e_distributor", nil)
+	app.AddMaccPerms("no_validators", nil)
 	denom := "uc4e"
-	testapp.AddMaccPerms(collector, perms)
-	testapp.AddMaccPerms(types.DistributorMainAccount, perms)
+	app.AddMaccPerms(collector, perms)
+	app.AddMaccPerms(types.DistributorMainAccount, perms)
 	app := testapp.Setup(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
@@ -432,8 +434,8 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	collector := "fee_collector"
 	denom := "uc4e"
 	// inflationCollector := "c4e_distributor"
-	testapp.AddMaccPerms(collector, perms)
-	testapp.AddMaccPerms(types.DistributorMainAccount, perms)
+	app.AddMaccPerms(collector, perms)
+	app.AddMaccPerms(types.DistributorMainAccount, perms)
 	app := testapp.Setup(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})

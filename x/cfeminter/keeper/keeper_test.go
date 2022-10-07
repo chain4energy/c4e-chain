@@ -6,6 +6,8 @@ import (
 
 	"github.com/chain4energy/c4e-chain/app"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+
 	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -478,7 +480,7 @@ func TestMintWithReductionMinterOnGenesisWIthNegativeToMint(t *testing.T) {
 }
 
 func prepareApp(startTime time.Time, minter types.Minter) (*app.App, sdk.Context) {
-	app, ctx := commontestutils.SetupAppWithTime(1000, startTime)
+	app, ctx := testapp.SetupAppWithTime(1000, startTime)
 	params := types.DefaultParams()
 	params.MintDenom = MyDenom
 	params.Minter = minter

@@ -1,7 +1,7 @@
 package cfedistributor_test
 
 import (
-	testapp "github.com/chain4energy/c4e-chain/app"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"

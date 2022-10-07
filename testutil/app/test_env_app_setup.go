@@ -1,24 +1,21 @@
-package common
+package app
 
 import (
 	"time"
 
 	"github.com/chain4energy/c4e-chain/app"
+	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
-var TestEnvTime = time.Now()
-
-const Denom = "uc4e"
-
 func SetupApp(initBlock int64) (*app.App, sdk.Context) {
-	return SetupAppWithTime(initBlock, TestEnvTime)
+	return SetupAppWithTime(initBlock, testcommon.TestEnvTime)
 }
 
 func SetupAppWithTime(initBlock int64, initTime time.Time) (*app.App, sdk.Context) {
-	app := app.Setup(false)
+	app := Setup(false)
 	header := tmproto.Header{}
 	header.Height = initBlock
 	header.Time = initTime

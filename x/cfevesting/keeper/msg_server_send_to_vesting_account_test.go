@@ -12,12 +12,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+
 )
 
 func TestSendVestingAccount(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -63,7 +65,7 @@ func TestSendVestingAccount(t *testing.T) {
 
 func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -89,7 +91,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -120,7 +122,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -150,7 +152,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -188,7 +190,7 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 

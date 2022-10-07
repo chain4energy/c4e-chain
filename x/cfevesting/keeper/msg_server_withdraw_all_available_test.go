@@ -8,6 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/stretchr/testify/require"
@@ -16,7 +18,7 @@ import (
 func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := commontestutils.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
+	app, ctx := testapp.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -32,7 +34,7 @@ func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
 func TestWithdrawAllAvailableManyVestingsOnLockStart(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := commontestutils.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
+	app, ctx := testapp.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addCoinsToCfevestingModule(3*vested, ctx, app)
@@ -48,7 +50,7 @@ func TestWithdrawAllAvailableDuringLock(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = 0
-	app, ctx := commontestutils.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+	app, ctx := testapp.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -67,7 +69,7 @@ func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
 	const withdrawable = 0
-	app, ctx := commontestutils.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+	app, ctx := testapp.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addCoinsToCfevestingModule(3*vested, ctx, app)
@@ -89,7 +91,7 @@ func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 	const withdrawable = vested
 	const withdrawn = 300
 
-	app, ctx := commontestutils.SetupAppWithTime(110000, testutils.CreateTimeFromNumOfHours(110000))
+	app, ctx := testapp.SetupAppWithTime(110000, testutils.CreateTimeFromNumOfHours(110000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -111,7 +113,7 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 	const withdrawable = vested
 	const withdrawn = 300
 
-	app, ctx := commontestutils.SetupAppWithTime(110000, testutils.CreateTimeFromNumOfHours(110000))
+	app, ctx := testapp.SetupAppWithTime(110000, testutils.CreateTimeFromNumOfHours(110000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addCoinsToCfevestingModule(3*vested, ctx, app)
@@ -130,7 +132,7 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000000
-	app, ctx := commontestutils.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
+	app, ctx := testapp.SetupAppWithTime(1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	accAddr := acountsAddresses[0]
@@ -160,7 +162,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 
 func TestWithdrawAllAvailableBadAddress(t *testing.T) {
 
-	app, ctx := commontestutils.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
+	app, ctx := testapp.SetupAppWithTime(10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 

@@ -12,7 +12,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	"github.com/chain4energy/c4e-chain/app"
+
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -32,7 +34,7 @@ func TestGenesisWholeApp(t *testing.T) {
 		VestingTypes: []types.GenesisVestingType{},
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	cfevesting.InitGenesis(ctx, app.CfevestingKeeper, genesisState, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
@@ -68,7 +70,7 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 		VestingTypes:        vestingTypesArray,
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	k := app.CfevestingKeeper
@@ -93,7 +95,7 @@ func TestGenesisVestingTypes(t *testing.T) {
 		VestingTypes:        vestingTypesArray,
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	k := app.CfevestingKeeper
@@ -340,7 +342,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 		VestingTypes:        vestingTypesArray,
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	k := app.CfevestingKeeper
@@ -389,7 +391,7 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	k := app.CfevestingKeeper
@@ -421,7 +423,7 @@ func TestGenesisAccountVestingsListWrongAmountInModuleAccount(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	k := app.CfevestingKeeper

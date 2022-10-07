@@ -2,7 +2,7 @@ package e2e
 
 import (
 	"encoding/json"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	typesDistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	typesMinter "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -84,7 +84,7 @@ func runDistributionAndMinting(timeInYear int) testResult {
 	startTime := time.Now()
 	minterParams.Minter.Start = startTime
 
-	app, ctx := commontestutils.SetupAppWithTime(1, startTime)
+	app, ctx := testapp.SetupAppWithTime(1, startTime)
 	app.CfeminterKeeper.SetParams(ctx, minterParams)
 	app.CfedistributorKeeper.SetParams(ctx, distributorParams)
 

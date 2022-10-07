@@ -11,12 +11,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+
 )
 
 func TestCreateVestingPool(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -41,7 +43,7 @@ func TestCreateVestingPool(t *testing.T) {
 func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -66,7 +68,7 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
@@ -97,7 +99,7 @@ func TestVestingId(t *testing.T) {
 	commontestutils.AddHelperModuleAccountPerms()
 	const vested = 1000
 	const accInitBalance = 10000
-	app, ctx := commontestutils.SetupApp(1000)
+	app, ctx := testapp.SetupApp(1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 

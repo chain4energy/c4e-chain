@@ -4,7 +4,8 @@ import (
 	// "fmt"
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/app"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
@@ -54,7 +55,7 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 0, Time: commontestutils.TestEnvTime})
 	wctx := sdk.WrapSDKContext(ctx)
 
@@ -121,7 +122,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 0, Time: commontestutils.TestEnvTime})
 	wctx := sdk.WrapSDKContext(ctx)
 
@@ -218,7 +219,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 0, Time: commontestutils.TestEnvTime})
 	stakingParams := stakingtypes.DefaultParams()
 	stakingParams.BondDenom = commontestutils.Denom
@@ -342,7 +343,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 0, Time: commontestutils.TestEnvTime})
 	stakingParams := stakingtypes.DefaultParams()
 	stakingParams.BondDenom = commontestutils.Denom
@@ -478,7 +479,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	app := app.Setup(false)
+	app := testapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 0, Time: commontestutils.TestEnvTime})
 	stakingParams := stakingtypes.DefaultParams()
 	stakingParams.BondDenom = commontestutils.Denom
