@@ -480,7 +480,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	}
 
 	app := testapp.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 0, Time: commontestutils.TestEnvTime})
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{Height: 1, Time: commontestutils.TestEnvTime})
 	stakingParams := stakingtypes.DefaultParams()
 	stakingParams.BondDenom = commontestutils.Denom
 	app.StakingKeeper.SetParams(ctx, stakingParams)

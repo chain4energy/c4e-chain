@@ -200,14 +200,14 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	denom := "uc4e"
 	app.AddMaccPerms(collector, perms)
 	app.AddMaccPerms("c4e_distributor", nil)
-	app := testapp.Setup(false)
+	app, valCoin := testapp.SetupAndGetValidatorsRelatedCoins(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	// app.AccountKeeper.GetModuleAccount(ctx, "c4e_distributor");
 	//prepare module account with coin to distribute fee_collector 1017
 	cointToMint := sdk.NewCoin(denom, sdk.NewInt(1017))
 	app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
-	require.EqualValues(t, cointToMint, app.BankKeeper.GetSupply(ctx, denom))
+	require.EqualValues(t, cointToMint.Add(valCoin), app.BankKeeper.GetSupply(ctx, denom))
 	var subdistributors []types.SubDistributor
 	subdistributors = append(subdistributors, prepareBurningDistributor(destinationType))
 
@@ -266,7 +266,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 		coinRemains := c4eDistrState.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains.AmountOf("uc4e"))
 	}
-	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(499)), app.BankKeeper.GetSupply(ctx, denom))
+	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(499)).Add(valCoin), app.BankKeeper.GetSupply(ctx, denom))
 }
 
 func TestBurningWithInflationDistributorPassThroughMainCollector(t *testing.T) {
@@ -309,7 +309,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	denom := "uc4e"
 	app.AddMaccPerms(collector, perms)
 	app.AddMaccPerms(types.DistributorMainAccount, perms)
-	app := testapp.Setup(false)
+	app, valCoin := testapp.SetupAndGetValidatorsRelatedCoins(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
@@ -319,7 +319,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 
 	cointToMintFromInflation := sdk.NewCoin(denom, sdk.NewInt(5044))
 	app.BankKeeper.MintCoins(ctx, types.DistributorMainAccount, sdk.NewCoins(cointToMintFromInflation))
-	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(1017+5044)), app.BankKeeper.GetSupply(ctx, denom))
+	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(1017+5044)).Add(valCoin), app.BankKeeper.GetSupply(ctx, denom))
 
 	var subDistributors []types.SubDistributor
 
@@ -346,7 +346,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	// coins flow:
 	// fee 1017*51% = 518.67 to burn, so 518 burned - and burn remains 0.67
 
-	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(1017+5044-518)), app.BankKeeper.GetSupply(ctx, denom))
+	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(1017+5044-518)).Add(valCoin), app.BankKeeper.GetSupply(ctx, denom))
 	burnState, _ := app.CfedistributorKeeper.GetBurnState(ctx)
 	coinRemains := burnState.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.67"), coinRemains.AmountOf("uc4e"))
@@ -436,7 +436,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	// inflationCollector := "c4e_distributor"
 	app.AddMaccPerms(collector, perms)
 	app.AddMaccPerms(types.DistributorMainAccount, perms)
-	app := testapp.Setup(false)
+	app, valCoin := testapp.SetupAndGetValidatorsRelatedCoins(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
@@ -465,7 +465,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 		if burn.GT(burn.TruncateDec()) {
 			totalExpectedTruncated = totalExpectedTruncated.AddRaw(1)
 		}
-		require.EqualValues(t, sdk.NewCoin(denom, totalExpectedTruncated).String(), app.BankKeeper.GetSupply(ctx, denom).String())
+		require.EqualValues(t, sdk.NewCoin(denom, totalExpectedTruncated).Add(valCoin).String(), app.BankKeeper.GetSupply(ctx, denom).String())
 
 	}
 
@@ -477,7 +477,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	// fee 3001*1017*51% = 1556528.67 to burn, so 1556528 burned - and burn remains 0.67
 	// fee 3001*(1017*51%) = 3001*518.67 = 1556528.67 to burn, so 1556528 burned - and burn remains 0.67
 
-	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(3001*(1017+5044)-1556528)), app.BankKeeper.GetSupply(ctx, denom))
+	require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(3001*(1017+5044)-1556528)).Add(valCoin), app.BankKeeper.GetSupply(ctx, denom))
 	burnState, _ := app.CfedistributorKeeper.GetBurnState(ctx)
 	coinRemains := burnState.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.67"), coinRemains.AmountOf("uc4e"))

@@ -11,6 +11,7 @@ import (
 
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/tendermint/tendermint/libs/log"
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 
@@ -71,12 +72,17 @@ import (
 
 
 // Setup initializes a new chainforenergyApp
-func Setup(isCheckTx bool) *c4eapp.App {
+func SetupWithBondDenom(isCheckTx bool, bondDenom string) (*c4eapp.App, sdk.Coin) {
+	return SetupWithValidatorsAmount(isCheckTx,bondDenom, 1)
+}
+
+func SetupWithValidatorsAmount(isCheckTx bool, bondDenom string, validatorsAmount int) (*c4eapp.App, sdk.Coin) {
 	app, genesisState := BaseSetup()
 	if !isCheckTx {
-		AddValidatorToAppGenesis(app, genesisState)
+		coin := AddValidatorsToAppGenesis(app, genesisState, bondDenom, createValidatorSet(validatorsAmount))
+		return app, coin
 	}
-	return app
+	return app, sdk.NewCoin(bondDenom, sdk.ZeroInt())
 }
 
 func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
@@ -98,25 +104,44 @@ func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
 	return app.(*c4eapp.App), genesisState
 }
 
-func AddValidatorToAppGenesis(app *c4eapp.App, genesisState c4eapp.GenesisState) {
-	valPrivKey := secp256k1.GenPrivKey()  // TODO to PV after migration to cosmos sdk 0.46
-	pubKey, _ := cryptocodec.ToTmPubKeyInterface(valPrivKey.PubKey())
-	validator := &tmtypes.Validator{
-		Address:          pubKey.Address(),
-		PubKey:           pubKey,
-		VotingPower:      1,
-		ProposerPriority: 0,
+func createValidatorSet(validatorsAmount int) *tmtypes.ValidatorSet {
+	var vals []*tmtypes.Validator
+	
+	for i := 0; i < validatorsAmount; i++ {
+		valPrivKey := secp256k1.GenPrivKey()  // TODO to PV after migration to cosmos sdk 0.46
+		pubKey, _ := cryptocodec.ToTmPubKeyInterface(valPrivKey.PubKey())
+		validator := &tmtypes.Validator{
+			Address:          pubKey.Address(),
+			PubKey:           pubKey,
+			VotingPower:      1,
+			ProposerPriority: 0,
+		}
+		vals = append(vals, validator)
 	}
+	
+	return tmtypes.NewValidatorSet(vals)
+}
 
-	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+func AddValidatorsToAppGenesis(app *c4eapp.App, genesisState c4eapp.GenesisState, bondDenom string, valSet *tmtypes.ValidatorSet, balances ...banktypes.Balance) sdk.Coin {
+	// valPrivKey := secp256k1.GenPrivKey()  // TODO to PV after migration to cosmos sdk 0.46
+	// pubKey, _ := cryptocodec.ToTmPubKeyInterface(valPrivKey.PubKey())
+	// validator := &tmtypes.Validator{
+	// 	Address:          pubKey.Address(),
+	// 	PubKey:           pubKey,
+	// 	VotingPower:      1,
+	// 	ProposerPriority: 0,
+	// }
+
+	// valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
 	senderPrivKey := secp256k1.GenPrivKey()
 	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
+	senderCoin := sdk.NewCoin(bondDenom, sdk.NewInt(1000000))
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
+		Coins:   sdk.NewCoins(senderCoin),
 	}
 
-	genesisState = genesisStateWithValSet(app, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
+	genesisState, delegated := genesisStateWithValSet(app, genesisState, bondDenom, valSet, []authtypes.GenesisAccount{acc}, balance)
 	stateBytes, _ := json.MarshalIndent(genesisState, "", " ")
 	app.InitChain(
 		abci.RequestInitChain{
@@ -125,13 +150,62 @@ func AddValidatorToAppGenesis(app *c4eapp.App, genesisState c4eapp.GenesisState)
 			AppStateBytes:   stateBytes,
 		},
 	)
+
+	app.Commit()
+	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
+		Height:             app.LastBlockHeight() + 1,
+		AppHash:            app.LastCommitID().Hash,
+		ValidatorsHash:     valSet.Hash(),
+		NextValidatorsHash: valSet.Hash(),
+	}})
+
+	return delegated.Add(senderCoin)
 }
 
+
+
+// func AddValidatorToAppGenesis(app *c4eapp.App, genesisState c4eapp.GenesisState) {
+// 	valPrivKey := secp256k1.GenPrivKey()  // TODO to PV after migration to cosmos sdk 0.46
+// 	pubKey, _ := cryptocodec.ToTmPubKeyInterface(valPrivKey.PubKey())
+// 	validator := &tmtypes.Validator{
+// 		Address:          pubKey.Address(),
+// 		PubKey:           pubKey,
+// 		VotingPower:      1,
+// 		ProposerPriority: 0,
+// 	}
+
+// 	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+// 	senderPrivKey := secp256k1.GenPrivKey()
+// 	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
+// 	balance := banktypes.Balance{
+// 		Address: acc.GetAddress().String(),
+// 		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
+// 	}
+
+// 	genesisState = genesisStateWithValSet(app, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
+// 	stateBytes, _ := json.MarshalIndent(genesisState, "", " ")
+// 	app.InitChain(
+// 		abci.RequestInitChain{
+// 			Validators:      []abci.ValidatorUpdate{},
+// 			ConsensusParams: simapp.DefaultConsensusParams,
+// 			AppStateBytes:   stateBytes,
+// 		},
+// 	)
+
+// 	app.Commit()
+// 	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
+// 		Height:             app.LastBlockHeight() + 1,
+// 		AppHash:            app.LastCommitID().Hash,
+// 		ValidatorsHash:     valSet.Hash(),
+// 		NextValidatorsHash: valSet.Hash(),
+// 	}})
+// }
+
 func genesisStateWithValSet(
-	app *c4eapp.App, genesisState c4eapp.GenesisState,
+	app *c4eapp.App, genesisState c4eapp.GenesisState, bondDenom string, 
 	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
 	balances ...banktypes.Balance,
-) c4eapp.GenesisState {
+) (c4eapp.GenesisState, sdk.Coin) {
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
 	genesisState[authtypes.ModuleName] = app.AppCodec().MustMarshalJSON(authGenesis)
 
@@ -161,8 +235,9 @@ func genesisStateWithValSet(
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), sdk.OneDec()))
 	}
-
-	stakingGenesis := stakingtypes.NewGenesisState(stakingtypes.DefaultParams(), validators, delegations)
+	stakingParams := stakingtypes.DefaultParams()
+	stakingParams.BondDenom = bondDenom
+	stakingGenesis := stakingtypes.NewGenesisState(stakingParams, validators, delegations)
 	genesisState[stakingtypes.ModuleName] = app.AppCodec().MustMarshalJSON(stakingGenesis)
 
 	totalSupply := sdk.NewCoins()
@@ -170,17 +245,20 @@ func genesisStateWithValSet(
 		totalSupply = totalSupply.Add(b.Coins...)
 	}
 
+	delegationsSum := sdk.NewCoin(bondDenom, sdk.ZeroInt())
 	for range delegations {
-		totalSupply = totalSupply.Add(sdk.NewCoin(sdk.DefaultBondDenom, bondAmt))
+		totalSupply = totalSupply.Add(sdk.NewCoin(bondDenom, bondAmt))
+		delegationsSum = delegationsSum.Add(sdk.NewCoin(bondDenom, bondAmt))
+
 	}
 
 	balances = append(balances, banktypes.Balance{
 		Address: authtypes.NewModuleAddress(stakingtypes.BondedPoolName).String(),
-		Coins:   sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, bondAmt)},
+		Coins:   sdk.Coins{sdk.NewCoin(bondDenom, bondAmt)},
 	})
 
 	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
-	return genesisState
+	return genesisState, delegationsSum
 }

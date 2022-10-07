@@ -480,7 +480,7 @@ func TestMintWithReductionMinterOnGenesisWIthNegativeToMint(t *testing.T) {
 }
 
 func prepareApp(startTime time.Time, minter types.Minter) (*app.App, sdk.Context) {
-	app, ctx := testapp.SetupAppWithTime(1000, startTime)
+	app, ctx, _ := testapp.SetupAppWithTime(1000, startTime)
 	params := types.DefaultParams()
 	params.MintDenom = MyDenom
 	params.Minter = minter

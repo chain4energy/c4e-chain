@@ -84,7 +84,7 @@ func runDistributionAndMinting(timeInYear int) testResult {
 	startTime := time.Now()
 	minterParams.Minter.Start = startTime
 
-	app, ctx := testapp.SetupAppWithTime(1, startTime)
+	app, ctx, validatorCoin := testapp.SetupAppWithTime(1, startTime)
 	app.CfeminterKeeper.SetParams(ctx, minterParams)
 	app.CfedistributorKeeper.SetParams(ctx, distributorParams)
 
@@ -105,6 +105,7 @@ func runDistributionAndMinting(timeInYear int) testResult {
 
 	lpProviders := app.CfedistributorKeeper.GetAccountCoins(ctx, lpAccount).AmountOf(denom)
 	totalSupply := app.BankKeeper.GetSupply(ctx, denom).Amount
+	totalSupply = totalSupply.Sub(validatorCoin.Amount)
 	testResult := testResult{developmentFundCoinsInt: developmentFundCoinInt, governanceBoosterCoinInt: governanceBoosterCoinInt,
 		greenEnergyBoosterCoinInt: greenEnergyBoosterCoinInt, lpProviders: lpProviders, totalSupply: totalSupply}
 

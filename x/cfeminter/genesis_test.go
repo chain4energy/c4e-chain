@@ -137,13 +137,14 @@ func TestOneYearLinear(t *testing.T) {
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
-	app := testapp.Setup(false)
+	app, valCoin := testapp.SetupAndGetValidatorsRelatedCoins(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: now})
 	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
-	commontestutils.AddCoinsToAccount(uint64(totalSupply), ctx, app, acountsAddresses[0])
+	consToAdd := sdk.NewInt(totalSupply).Sub(valCoin.Amount)
+	commontestutils.AddCoinsToAccount(uint64(consToAdd.Int64()), ctx, app, acountsAddresses[0])
 
 	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 	require.NoError(t, err)
@@ -205,13 +206,15 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
-	app := testapp.Setup(false)
+	app, valCoin := testapp.SetupAndGetValidatorsRelatedCoins(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: now})
 	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
-	commontestutils.AddCoinsToAccount(uint64(totalSupply), ctx, app, acountsAddresses[0])
+	consToAdd := sdk.NewInt(totalSupply).Sub(valCoin.Amount)
+
+	commontestutils.AddCoinsToAccount(uint64(consToAdd.Int64()), ctx, app, acountsAddresses[0])
 
 	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 	require.NoError(t, err)
@@ -281,13 +284,14 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
-	app := testapp.Setup(false)
+	app, valCoin := testapp.SetupAndGetValidatorsRelatedCoins(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: now})
 	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
-	commontestutils.AddCoinsToAccount(uint64(totalSupply), ctx, app, acountsAddresses[0])
+	consToAdd := sdk.NewInt(totalSupply).Sub(valCoin.Amount)
+	commontestutils.AddCoinsToAccount(uint64(consToAdd.Int64()), ctx, app, acountsAddresses[0])
 
 	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 	require.NoError(t, err)
@@ -350,13 +354,15 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
-	app := testapp.Setup(false)
+	app, valCoin := testapp.SetupAndGetValidatorsRelatedCoins(false)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: now})
 	cfeminter.InitGenesis(ctx, app.CfeminterKeeper, app.AccountKeeper, genesisState)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
-	commontestutils.AddCoinsToAccount(uint64(totalSupply), ctx, app, acountsAddresses[0])
+	consToAdd := sdk.NewInt(totalSupply).Sub(valCoin.Amount)
+
+	commontestutils.AddCoinsToAccount(uint64(consToAdd.Int64()), ctx, app, acountsAddresses[0])
 
 	inflation, err := app.CfeminterKeeper.GetCurrentInflation(ctx)
 	require.NoError(t, err)
