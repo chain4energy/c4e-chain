@@ -239,12 +239,12 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
 	validator, _ := app.StakingKeeper.GetValidator(ctx, validatorsAddresses[0])
 
-	require.Equal(t, 3, len(app.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(t, 4, len(app.StakingKeeper.GetAllDelegations(ctx)))
 	require.Equal(t, 0, len(app.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
 	app.StakingKeeper.Delegate(ctx, acountsAddresses[1], sdk.NewInt(200000), stakingtypes.Unbonded,
 		validator, true)
 
-	require.Equal(t, 4, len(app.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(t, 5, len(app.StakingKeeper.GetAllDelegations(ctx)))
 	require.Equal(t, 0, len(app.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
 
 	resp, err := k.Vestings(wctx, &request)
@@ -363,12 +363,12 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
 	validator, _ := app.StakingKeeper.GetValidator(ctx, validatorsAddresses[0])
 
-	require.Equal(t, 3, len(app.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(t, 4, len(app.StakingKeeper.GetAllDelegations(ctx)))
 	require.Equal(t, 0, len(app.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
 	app.StakingKeeper.Delegate(ctx, acountsAddresses[1], sdk.NewInt(200000), stakingtypes.Unbonded,
 		validator, true)
 
-	require.Equal(t, 4, len(app.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(t, 5, len(app.StakingKeeper.GetAllDelegations(ctx)))
 	require.Equal(t, 0, len(app.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
 
 	app.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
@@ -377,7 +377,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 
 	app.StakingKeeper.Undelegate(ctx, acountsAddresses[1], validatorsAddresses[0], sdk.NewDec(100000))
 
-	require.Equal(t, 4, len(app.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(t, 5, len(app.StakingKeeper.GetAllDelegations(ctx)))
 	require.Equal(t, 1, len(app.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
 	app.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
 
@@ -499,12 +499,12 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
 	validator, _ := app.StakingKeeper.GetValidator(ctx, validatorsAddresses[0])
 
-	require.Equal(t, 3, len(app.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(t, 4, len(app.StakingKeeper.GetAllDelegations(ctx)))
 	require.Equal(t, 0, len(app.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
 	app.StakingKeeper.Delegate(ctx, acountsAddresses[1], sdk.NewInt(200000), stakingtypes.Unbonded,
 		validator, true)
 
-	require.Equal(t, 4, len(app.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(t, 5, len(app.StakingKeeper.GetAllDelegations(ctx)))
 	require.Equal(t, 0, len(app.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
 
 	app.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
@@ -514,7 +514,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 
 	app.StakingKeeper.Undelegate(ctx, acountsAddresses[1], validatorsAddresses[0], sdk.NewDec(100000))
 
-	require.Equal(t, 4, len(app.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(t, 5, len(app.StakingKeeper.GetAllDelegations(ctx)))
 	require.Equal(t, 1, len(app.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
 	app.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
 
