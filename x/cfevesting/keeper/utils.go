@@ -47,6 +47,7 @@ func DurationFromUnits(unit PeriodUnit, value int64) time.Duration {
 	case Second:
 		return time.Second * time.Duration(value)
 	}
+	// TODO: add log here
 	panic(sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Unknown PeriodUnit: %s", unit))
 }
 
