@@ -47,24 +47,30 @@ func getRamainsSum(states *[]types.State) sdk.DecCoins {
 
 func prepareCoinToDistributeForMainAccount(ctx sdk.Context, k keeper.Keeper, coinsToDistribute sdk.DecCoins, states []types.State) sdk.DecCoins {
 	coinsToDistribute = sdk.NewDecCoinsFromCoins(k.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)...)
-	k.Logger(ctx).Debug("IsMainCollector: " + coinsToDistribute.String())
 	if len(coinsToDistribute) > 0 {
 		sum := getRamainsSum(&states)
 		coinsToDistribute = coinsToDistribute.Sub(sum)
 	}
+	k.Logger(ctx).Debug("prepare coins to distribute for main account", "coinsToDistribute", coinsToDistribute.String())
 
 	return coinsToDistribute
 }
 
 func prepareCoinToDistributeForModuleAccount(ctx sdk.Context, k keeper.Keeper, coinsToDistribute sdk.DecCoins, source types.Account) sdk.DecCoins {
-	k.Logger(ctx).Debug("Module account: " + source.Id)
 	coinsToSend := k.GetAccountCoinsForModuleAccount(ctx, source.Id)
 	coinsToDistribute = sdk.NewDecCoinsFromCoins(coinsToSend...)
-	k.Logger(ctx).Debug("IsModuleAccount: " + source.Id + " - " + coinsToDistribute.String())
 
 	if len(coinsToDistribute) > 0 {
-		k.SendCoinsFromModuleToModule(ctx, coinsToSend, source.Id, types.DistributorMainAccount)
+		err := k.SendCoinsFromModuleToModule(ctx, coinsToSend, source.Id, types.DistributorMainAccount)
+		k.Logger(ctx).Debug("send coins from module to module", "coinsToSend", coinsToSend.String(),
+			"moduleFrom", source.Id, "moduleTo", types.DistributorMainAccount)
+		if err != nil {
+			k.Logger(ctx).Error("send coins from module to module error", "error", err.Error())
+			return nil
+		}
 	}
+	k.Logger(ctx).Debug("prepare coins to distribute for module account", "coinsToDistribute", coinsToDistribute.String(),
+		"coinsToSend", coinsToSend.String(), "isModuleAccount", source.Id)
 
 	return coinsToDistribute
 }
@@ -78,7 +84,14 @@ func prepareCoinToDistributeForInternalAccount(ctx sdk.Context, k keeper.Keeper,
 	k.Logger(ctx).Debug("BaseAccount: " + source.Id + " - " + coinsToDistribute.String())
 
 	if len(coinsToDistribute) > 0 {
-		k.SendCoinsToModuleAccount(ctx, coinsToSend, srcAccount, types.DistributorMainAccount)
+		err := k.SendCoinsToModuleAccount(ctx, coinsToSend, srcAccount, types.DistributorMainAccount)
+		k.Logger(ctx).Debug("send coins to module account", "coinsToSend", coinsToSend, "srcAccount", srcAccount,
+			"mooduleTo", types.DistributorMainAccount)
+
+		if err != nil {
+			k.Logger(ctx).Error("prepare coin to distribute for internal account error", "error", err.Error())
+			return nil
+		}
 	}
 
 	return coinsToDistribute
@@ -115,10 +128,10 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	distributionsResult := types.DistributionsResult{}
 
 	for _, subDistributor := range subDistributors {
-		k.Logger(ctx).Debug("BeginBlock - cfedistr: " + subDistributor.Name)
+		k.Logger(ctx).Debug("beginBlock - cfedistributor ", "subDistributorName", subDistributor.Name)
 		allCoinsToDistribute := sdk.NewDecCoins()
 		for _, source := range subDistributor.Sources {
-			k.Logger(ctx).Debug("Sources: " + source.String())
+			k.Logger(ctx).Debug("sources", "source", source.String())
 
 			var coinsToDistribute = sdk.NewDecCoins()
 			if source.Type == types.MAIN {

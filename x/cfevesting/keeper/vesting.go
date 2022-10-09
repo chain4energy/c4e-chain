@@ -45,7 +45,7 @@ func (k Keeper) addVestingPool(
 
 	if amount.Equal(sdk.ZeroInt()) {
 		k.Logger(ctx).Error("add vesting pool amount equals zero error")
-		return nil //TODO: why nil?
+		return nil
 	}
 
 	_, err := sdk.AccAddressFromBech32(vestingAddr)
@@ -161,6 +161,8 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, address string) (withdrawn
 		vesting.Withdrawn = vesting.Withdrawn.Add(withdrawable)
 		vesting.LastModificationWithdrawn = vesting.LastModificationWithdrawn.Add(withdrawable)
 		toWithdraw = toWithdraw.Add(withdrawable)
+		k.Logger(ctx).Debug("withdrawable data", "withdrawable", withdrawable, "LastModificationWithdrawn", vesting.LastModificationWithdrawn,
+			"toWithdraw", toWithdraw)
 		if toWithdraw.IsPositive() {
 			events = append(events, types.WithdrawAvailable{
 				OwnerAddress:    address,
@@ -354,6 +356,7 @@ func (k Keeper) createVestingAccount(ctx sdk.Context, toAddress string, amount s
 
 	denom := k.GetParams(ctx).Denom
 	coinToSend := sdk.NewCoin(denom, amount)
+	k.Logger(ctx).Debug("create vesting account data", "denom", denom, "coinToSend", coinToSend.String())
 	if err := bk.IsSendEnabledCoins(ctx, coinToSend); err != nil {
 		k.Logger(ctx).Error("create vesting account is send enabled coins error", "error", err.Error())
 		return err
@@ -398,6 +401,7 @@ func (k Keeper) createVestingAccount(ctx sdk.Context, toAddress string, amount s
 	k.Logger(ctx).Debug("create vesting account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
 		baseVestingAccount.OriginalVesting, "delegatedFree", baseVestingAccount.DelegatedFree, "delegatedVesting",
 		baseVestingAccount.DelegatedVesting, "endTime", baseVestingAccount.EndTime, "startTime", startTime.Unix())
+
 	ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
 		Address: acc.GetAddress().String(),
 	})
@@ -406,7 +410,7 @@ func (k Keeper) createVestingAccount(ctx sdk.Context, toAddress string, amount s
 		"coinsToSend", coinsToSend)
 
 	if err != nil {
-		k.Logger(ctx).Debug("create vesting account send coins from module to account error", "error", err.Error())
+		k.Logger(ctx).Error("create vesting account send coins from module to account error", "error", err.Error())
 		return err
 	}
 
