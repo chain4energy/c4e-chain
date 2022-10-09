@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -23,7 +24,7 @@ func (k msgServer) CreateAccount(goCtx context.Context, msg *types.MsgCreateAcco
 
 	newAccount.SetPubKey(pk)
 	k.authKeeper.SetAccount(ctx, newAccount)
-
+	telemetry.IncrCounter(1, types.ModuleName, "create account message")
 	return &types.MsgCreateAccountResponse{AccountNumber: fmt.Sprint(newAccount.GetAccountNumber())}, nil
 
 }

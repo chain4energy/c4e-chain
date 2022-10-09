@@ -27,5 +27,6 @@ func (k msgServer) WithdrawAllAvailable(goCtx context.Context, msg *types.MsgWit
 		}()
 	}
 
+	telemetry.IncrCounter(1, types.ModuleName, "withdraw all available message")
 	return &types.MsgWithdrawAllAvailableResponse{}, nil
 }

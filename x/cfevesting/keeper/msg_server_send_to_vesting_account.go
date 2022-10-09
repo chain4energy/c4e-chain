@@ -31,5 +31,6 @@ func (k msgServer) SendToVestingAccount(goCtx context.Context, msg *types.MsgSen
 		return nil, err
 	}
 
+	telemetry.IncrCounter(1, types.ModuleName, "send to vesting account message")
 	return &types.MsgSendToVestingAccountResponse{}, nil
 }

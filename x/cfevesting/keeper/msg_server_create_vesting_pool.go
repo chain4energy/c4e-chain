@@ -38,5 +38,6 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 		VestingType: msg.VestingType,
 	})
 
+	telemetry.IncrCounter(1, types.ModuleName, "create vesting pool message")
 	return &types.MsgCreateVestingPoolResponse{}, nil
 }
