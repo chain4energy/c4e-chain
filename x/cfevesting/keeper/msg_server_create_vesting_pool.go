@@ -10,6 +10,7 @@ import (
 )
 
 func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreateVestingPool) (*types.MsgCreateVestingPoolResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "create vesting pool message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	keeper := k.Keeper
@@ -21,7 +22,6 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 	denom := keeper.Denom(ctx)
 	if msg.Amount.IsInt64() {
 		defer func() {
-			telemetry.IncrCounter(1, types.ModuleName, "vesting_pools")
 			telemetry.SetGaugeWithLabels(
 				[]string{"tx", "msg", types.ModuleName, msg.Type()},
 				float32(msg.Amount.Int64()),
@@ -38,6 +38,5 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 		VestingType: msg.VestingType,
 	})
 
-	telemetry.IncrCounter(1, types.ModuleName, "create vesting pool message")
 	return &types.MsgCreateVestingPoolResponse{}, nil
 }

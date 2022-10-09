@@ -188,7 +188,6 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, address string) (withdrawn
 	k.Logger(ctx).Debug("set account vestings", "accAddress", accVestings.Address, "newVestingPools", accVestings.VestingPools)
 	if toWithdraw.IsPositive() && toWithdraw.IsInt64() {
 		defer func() {
-			telemetry.IncrCounter(1, types.ModuleName, "withdraw_available")
 			telemetry.SetGaugeWithLabels(
 				[]string{"tx", "msg", types.ModuleName, "withdraw_available"},
 				float32(withdrawn.Amount.Int64()),

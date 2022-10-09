@@ -10,11 +10,10 @@ import (
 )
 
 func (k msgServer) SendToVestingAccount(goCtx context.Context, msg *types.MsgSendToVestingAccount) (*types.MsgSendToVestingAccountResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "send to vesting account message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	defer func() {
-		telemetry.IncrCounter(1, "new", "account")
-
 		if msg.Amount.IsInt64() {
 			telemetry.SetGaugeWithLabels(
 				[]string{"tx", "msg", types.ModuleName, msg.Type()},
@@ -22,7 +21,6 @@ func (k msgServer) SendToVestingAccount(goCtx context.Context, msg *types.MsgSen
 				[]metrics.Label{telemetry.NewLabel("denom", k.Keeper.Denom(ctx))},
 			)
 		}
-
 	}()
 
 	keeper := k.Keeper
@@ -31,6 +29,5 @@ func (k msgServer) SendToVestingAccount(goCtx context.Context, msg *types.MsgSen
 		return nil, err
 	}
 
-	telemetry.IncrCounter(1, types.ModuleName, "send to vesting account message")
 	return &types.MsgSendToVestingAccountResponse{}, nil
 }

@@ -4,16 +4,15 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/cosmos/cosmos-sdk/telemetry"
-
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	"github.com/chain4energy/c4e-chain/x/cfesignature/util"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k msgServer) StoreSignature(goCtx context.Context, msg *types.MsgStoreSignature) (*types.MsgStoreSignatureResponse, error) {
-
+	defer telemetry.IncrCounter(1, types.ModuleName, "store signature message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	var signatureObject types.Signature
@@ -49,6 +48,6 @@ func (k msgServer) StoreSignature(goCtx context.Context, msg *types.MsgStoreSign
 
 	// TODO: extract and verify user cert
 	// TODO: if support for multiple signatures is added then another TODO: check if the certificate was used for signing before
-	telemetry.IncrCounter(1, types.ModuleName, "store signature message")
+
 	return &types.MsgStoreSignatureResponse{TxId: txId, TxTimestamp: timestamp}, nil
 }

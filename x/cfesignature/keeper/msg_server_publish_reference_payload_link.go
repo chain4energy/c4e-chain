@@ -10,7 +10,7 @@ import (
 )
 
 func (k msgServer) PublishReferencePayloadLink(goCtx context.Context, msg *types.MsgPublishReferencePayloadLink) (*types.MsgPublishReferencePayloadLinkResponse, error) {
-
+	defer telemetry.IncrCounter(1, types.ModuleName, "publish reference payload link message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	var err error
@@ -27,6 +27,6 @@ func (k msgServer) PublishReferencePayloadLink(goCtx context.Context, msg *types
 	}
 
 	timestampString := ctx.BlockTime().String()
-	telemetry.IncrCounter(1, types.ModuleName, "publish reference payload link message")
+
 	return &types.MsgPublishReferencePayloadLinkResponse{TxTimestamp: timestampString}, nil
 }

@@ -10,11 +10,10 @@ import (
 )
 
 func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCreateVestingAccount) (*types.MsgCreateVestingAccountResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "create vesting account message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	defer func() {
-		telemetry.IncrCounter(1, "new", "account")
-
 		for _, a := range msg.Amount {
 			if a.Amount.IsInt64() {
 				telemetry.SetGaugeWithLabels(
@@ -25,13 +24,11 @@ func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCre
 			}
 		}
 	}()
-
 	keeper := k.Keeper
 	err := keeper.CreateVestingAccount(ctx, msg.FromAddress, msg.ToAddress, msg.Amount, msg.StartTime, msg.EndTime)
 	if err != nil {
 		return nil, err
 	}
 
-	telemetry.IncrCounter(1, types.ModuleName, "create vesting account message")
 	return &types.MsgCreateVestingAccountResponse{}, nil
 }
