@@ -28,8 +28,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 	for _, gVestingType := range genState.VestingTypes {
 		vt := types.VestingType{
 			Name:          gVestingType.Name,
-			LockupPeriod:  keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.LockupPeriodUnit), gVestingType.LockupPeriod),
-			VestingPeriod: keeper.DurationFromUnits(keeper.PeriodUnit(gVestingType.VestingPeriodUnit), gVestingType.VestingPeriod),
+			LockupPeriod:  keeper.DurationFromUnits(ctx, keeper.PeriodUnit(gVestingType.LockupPeriodUnit), gVestingType.LockupPeriod),
+			VestingPeriod: keeper.DurationFromUnits(ctx, keeper.PeriodUnit(gVestingType.VestingPeriodUnit), gVestingType.VestingPeriod),
 		}
 		vestingTypes.VestingTypes = append(vestingTypes.VestingTypes, &vt)
 	}
