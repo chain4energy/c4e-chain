@@ -197,7 +197,10 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, address string) (withdrawn
 	}
 
 	for _, event := range events {
-		ctx.EventManager().EmitTypedEvent(&event)
+		err := ctx.EventManager().EmitTypedEvent(&event)
+		if err != nil {
+			k.Logger(ctx).Error("withdraw all available emit event error", "error", err.Error())
+		}
 	}
 	k.Logger(ctx).Debug("withdraw all available ret", "denom", denom, "toWithdraw", toWithdraw)
 	return sdk.NewCoin(denom, toWithdraw), nil
@@ -260,7 +263,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 		k.AppendVestingAccount(ctx, types.VestingAccount{Address: toAddr})
 		k.Logger(ctx).Debug("append vesting account", "address", toAddr)
 
-		ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
+		err := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
 			OwnerAddress:    fromAddr,
 			Address:         toAddr,
 			VestingPoolId:   strconv.FormatInt(int64(vesting.Id), 10),
@@ -268,6 +271,9 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 			Amount:          amount.String() + k.Denom(ctx),
 			RestartVesting:  strconv.FormatBool(restartVesting),
 		})
+		if err != nil {
+			k.Logger(ctx).Error("new vesting account from vesting pool emit event error", "error", err.Error())
+		}
 	}
 	k.Logger(ctx).Debug("send to new vesting account ret", "withdrawn", w, "error", err)
 	return w, err
@@ -320,9 +326,12 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 	k.Logger(ctx).Debug("create vesting account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
 		baseVestingAccount.OriginalVesting, "delegatedFree", baseVestingAccount.DelegatedFree, "delegatedVesting",
 		baseVestingAccount.DelegatedVesting, "endTime", baseVestingAccount.EndTime, "startTime", startTime)
-	ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
+	err = ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
 		Address: acc.Address,
 	})
+	if err != nil {
+		k.Logger(ctx).Error("new vestig account emit event error", "error", err.Error())
+	}
 
 	err = bk.SendCoins(ctx, from, to, amount)
 	k.Logger(ctx).Debug("send coins", "addressFrom", from, "addressTo", to, "amount", amount)
@@ -401,9 +410,12 @@ func (k Keeper) createVestingAccount(ctx sdk.Context, toAddress string, amount s
 		baseVestingAccount.OriginalVesting, "delegatedFree", baseVestingAccount.DelegatedFree, "delegatedVesting",
 		baseVestingAccount.DelegatedVesting, "endTime", baseVestingAccount.EndTime, "startTime", startTime.Unix())
 
-	ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
+	err = ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
 		Address: acc.GetAddress().String(),
 	})
+	if err != nil {
+		k.Logger(ctx).Error("create vesting account emit event error", "error", err.Error())
+	}
 	err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, to, coinsToSend)
 	k.Logger(ctx).Debug("send coins from module to account", "moduleName", types.ModuleName, "addressTo", to,
 		"coinsToSend", coinsToSend)

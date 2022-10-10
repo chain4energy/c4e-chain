@@ -36,9 +36,12 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 
 	k.Logger(ctx).Debug("cfeminter beggin block data", "amount", float32(amount.Int64()), "inflationStr", inflationStr)
-	ctx.EventManager().EmitTypedEvent(&types.Mint{ //TODO: obsługa błędów
+	err = ctx.EventManager().EmitTypedEvent(&types.Mint{
 		BondedRatio: k.BondedRatio(ctx).String(),
 		Inflation:   inflationStr,
 		Amount:      amount.String(),
 	})
+	if err != nil {
+		k.Logger(ctx).Error("mint emit event error", "error", err.Error())
+	}
 }

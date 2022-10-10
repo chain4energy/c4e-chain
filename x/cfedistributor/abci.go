@@ -151,7 +151,10 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		states = *StartDistributionProcess(ctx, k, &states, allCoinsToDistribute, subDistributor, &distributionsResult)
 	}
 
-	ctx.EventManager().EmitTypedEvent(&distributionsResult)
+	err := ctx.EventManager().EmitTypedEvent(&distributionsResult)
+	if err != nil {
+		k.Logger(ctx).Error("distributions result emit event error", "error", err.Error())
+	}
 	sendCoinsFromStates(ctx, k, states)
 }
 
