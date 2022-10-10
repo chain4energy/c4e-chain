@@ -133,7 +133,7 @@ func TestOneYearLinear(t *testing.T) {
 		}}
 
 	genesisState := types.GenesisState{
-		Params:      types.NewParams(commontestutils.Denom, minter),
+		Params:      types.NewParams(commontestutils.DefaultTestDenom, minter),
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
@@ -182,7 +182,7 @@ func TestOneYearLinear(t *testing.T) {
 	}
 
 	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.NewInt(totalSupply))
-	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
+	supp := app.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom)
 	require.EqualValues(t, sdk.NewInt(2*totalSupply), supp.Amount)
 
 }
@@ -202,7 +202,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 		}}
 
 	genesisState := types.GenesisState{
-		Params:      types.NewParams(commontestutils.Denom, minter),
+		Params:      types.NewParams(commontestutils.DefaultTestDenom, minter),
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
@@ -260,7 +260,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 	}
 	expectedMinted := int64(310000000000000)
 	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.NewInt(expectedMinted))
-	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
+	supp := app.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom)
 	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
 
 }
@@ -280,7 +280,7 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 		}}
 
 	genesisState := types.GenesisState{
-		Params:      types.NewParams(commontestutils.Denom, minter),
+		Params:      types.NewParams(commontestutils.DefaultTestDenom, minter),
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
@@ -317,7 +317,7 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 	require.EqualValues(t, sdk.NewInt(expectedMinted), state.AmountMinted)
 
 	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.NewInt(expectedMinted))
-	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
+	supp := app.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom)
 	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
 
 }
@@ -350,7 +350,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 		}}
 
 	genesisState := types.GenesisState{
-		Params:      types.NewParams(commontestutils.Denom, minter),
+		Params:      types.NewParams(commontestutils.DefaultTestDenom, minter),
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
@@ -389,7 +389,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 	require.EqualValues(t, sdk.NewInt(expectedMintedPosition3), state.AmountMinted)
 
 	commontestutils.VerifyModuleAccountBalanceByName(routingdistributortypes.DistributorMainAccount, ctx, app, t, sdk.NewInt(expectedMinted))
-	supp := app.BankKeeper.GetSupply(ctx, commontestutils.Denom)
+	supp := app.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom)
 	require.EqualValues(t, sdk.NewInt(totalSupply+expectedMinted), supp.Amount)
 
 	history := app.CfeminterKeeper.GetAllMinterStateHistory(ctx)

@@ -11,50 +11,52 @@ import (
 	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	"github.com/stretchr/testify/require"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 )
 
 func TestSendVestingAccount(t *testing.T) {
-	commontestutils.AddHelperModuleAccountPerms()
-	const vested = 1000
-	app, ctx, _ := testapp.SetupApp(1000)
+	// commontestutils.AddHelperModuleAccountPerms()
+	vested := sdk.NewInt(1000)
+	testHelper, ctx := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
 
-	const accInitBalance = 10000
-	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, accInitBalance, accAddr)
 
-	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
+	// commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
+
+	vestingTypes := setupVestingTypes(ctx, testHelper.App, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, testHelper.App, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := types.MsgSendToVestingAccount{FromAddress: accAddr.String(), ToAddress: accAddr2.String(),
 		VestingId: 1, Amount: sdk.NewInt(100), RestartVesting: true}
 	_, err := msgServer.SendToVestingAccount(msgServerCtx, &msg)
 	require.EqualValues(t, nil, err)
 
-	account := app.AccountKeeper.GetAccount(ctx, accAddr2)
+	account := testHelper.App.AccountKeeper.GetAccount(ctx, accAddr2)
 
-	bal := app.BankKeeper.GetBalance(ctx, accAddr2, commontestutils.Denom)
-	require.Equal(t, sdk.NewInt(100), bal.Amount)
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(ctx, accAddr2, sdk.NewInt(100))
+	// bal := testHelper.App.BankKeeper.GetBalance(ctx, accAddr2, commontestutils.DefaultTestDenom)
+	// require.Equal(t, sdk.NewInt(100), bal.Amount)
 
-	require.Equal(t, uint64(1), app.CfevestingKeeper.GetVestingAccountCount(ctx))
-	vaccFromList, found := app.CfevestingKeeper.GetVestingAccount(ctx, uint64(0))
+	require.Equal(t, uint64(1), testHelper.App.CfevestingKeeper.GetVestingAccountCount(ctx))
+	vaccFromList, found := testHelper.App.CfevestingKeeper.GetVestingAccount(ctx, uint64(0))
 	require.Equal(t, true, found)
 	require.Equal(t, accAddr2.String(), vaccFromList.Address)
 
 	vacc, ok := account.(vestexported.VestingAccount)
 	require.Equal(t, true, ok)
 	locked := vacc.LockedCoins(ctx.BlockTime())
-	require.Equal(t, commontestutils.Denom, locked[0].Denom)
+	require.Equal(t, commontestutils.DefaultTestDenom, locked[0].Denom)
 	require.Equal(t, sdk.NewInt(100), locked[0].Amount)
 
 	require.Equal(t, (ctx.BlockTime().UnixNano()+int64(usedVestingType.VestingPeriod+usedVestingType.LockupPeriod))/1000000000, vacc.GetEndTime())
@@ -64,18 +66,17 @@ func TestSendVestingAccount(t *testing.T) {
 }
 
 func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
-	commontestutils.AddHelperModuleAccountPerms()
-	app, ctx, _ := testapp.SetupApp(1000)
+	testHelper, ctx := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
 
-	const accInitBalance = 10000
-	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, accInitBalance, accAddr)
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := types.MsgSendToVestingAccount{FromAddress: accAddr.String(), ToAddress: accAddr2.String(),
 		VestingId: 2, Amount: sdk.NewInt(100), RestartVesting: true}
@@ -84,29 +85,28 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	require.EqualError(t, err,
 		"rpc error: code = NotFound desc = No vestings")
 
-	require.Equal(t, uint64(0), app.CfevestingKeeper.GetVestingAccountCount(ctx))
+	require.Equal(t, uint64(0), testHelper.App.CfevestingKeeper.GetVestingAccountCount(ctx))
 
 }
 
 func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
-	commontestutils.AddHelperModuleAccountPerms()
-	const vested = 1000
-	app, ctx, _ := testapp.SetupApp(1000)
+	vested := sdk.NewInt(1000)
+	testHelper, ctx := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
 
-	const accInitBalance = 10000
-	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, accInitBalance, accAddr)
 
-	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
+	vestingTypes := setupVestingTypes(ctx, testHelper.App, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, testHelper.App, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := types.MsgSendToVestingAccount{FromAddress: accAddr.String(), ToAddress: accAddr2.String(),
 		VestingId: 2, Amount: sdk.NewInt(100), RestartVesting: true}
@@ -115,29 +115,28 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	require.EqualError(t, err,
 		"vesting pool with id 2 not found: not found")
 
-	require.Equal(t, uint64(0), app.CfevestingKeeper.GetVestingAccountCount(ctx))
+	require.Equal(t, uint64(0), testHelper.App.CfevestingKeeper.GetVestingAccountCount(ctx))
 
 }
 
 func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
-	commontestutils.AddHelperModuleAccountPerms()
-	const vested = 1000
-	app, ctx, _ := testapp.SetupApp(1000)
+	vested := sdk.NewInt(1000)
+	testHelper, ctx := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
 
-	const accInitBalance = 10000
-	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, accInitBalance, accAddr)
 
-	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
+	vestingTypes := setupVestingTypes(ctx, testHelper.App, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, testHelper.App, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := types.MsgSendToVestingAccount{FromAddress: accAddr.String(), ToAddress: accAddr2.String(),
 		VestingId: 1, Amount: sdk.NewInt(1100), RestartVesting: true}
@@ -146,28 +145,27 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	require.EqualError(t, err,
 		"vesting available: 1000 is smaller than 1100: insufficient funds")
 
-	require.Equal(t, uint64(0), app.CfevestingKeeper.GetVestingAccountCount(ctx))
+	require.Equal(t, uint64(0), testHelper.App.CfevestingKeeper.GetVestingAccountCount(ctx))
 }
 
 func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
-	commontestutils.AddHelperModuleAccountPerms()
-	const vested = 1000
-	app, ctx, _ := testapp.SetupApp(1000)
+	vested := sdk.NewInt(1000)
+	testHelper, ctx := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
 
-	const accInitBalance = 10000
-	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, accInitBalance, accAddr)
 
-	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
+	vestingTypes := setupVestingTypes(ctx, testHelper.App, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, testHelper.App, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := types.MsgSendToVestingAccount{FromAddress: accAddr.String(), ToAddress: accAddr2.String(),
 		VestingId: 1, Amount: sdk.NewInt(100), RestartVesting: true}
@@ -181,31 +179,29 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	require.EqualError(t, err,
 		"vesting available: 900 is smaller than 950: insufficient funds")
 
-	require.Equal(t, uint64(1), app.CfevestingKeeper.GetVestingAccountCount(ctx))
-	vaccFromList, found := app.CfevestingKeeper.GetVestingAccount(ctx, uint64(0))
+	require.Equal(t, uint64(1), testHelper.App.CfevestingKeeper.GetVestingAccountCount(ctx))
+	vaccFromList, found := testHelper.App.CfevestingKeeper.GetVestingAccount(ctx, uint64(0))
 	require.Equal(t, true, found)
 	require.Equal(t, accAddr2.String(), vaccFromList.Address)
 }
 
 func TestSendVestingAccountAlreadyExists(t *testing.T) {
-	commontestutils.AddHelperModuleAccountPerms()
-	const vested = 1000
-	app, ctx, _ := testapp.SetupApp(1000)
-
+	vested := sdk.NewInt(1000)
+	testHelper, ctx := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
 
-	const accInitBalance = 10000
-	commontestutils.AddCoinsToAccount(accInitBalance, ctx, app, accAddr)
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, accInitBalance, accAddr)
 
-	vestingTypes := setupVestingTypes(ctx, app, 2, 1, 1)
+	vestingTypes := setupVestingTypes(ctx, testHelper.App, 2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	createVestingPool(t, ctx, app, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, 0 /*0,*/, accInitBalance-vested /*0,*/, vested)
+	createVestingPool(t, ctx, testHelper.App, accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := types.MsgSendToVestingAccount{FromAddress: accAddr.String(), ToAddress: accAddr2.String(),
 		VestingId: 1, Amount: sdk.NewInt(100), RestartVesting: true}
@@ -219,8 +215,8 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	require.EqualError(t, err,
 		"account "+accAddr2.String()+" already exists: invalid request")
 
-	require.Equal(t, uint64(1), app.CfevestingKeeper.GetVestingAccountCount(ctx))
-	vaccFromList, found := app.CfevestingKeeper.GetVestingAccount(ctx, uint64(0))
+	require.Equal(t, uint64(1), testHelper.App.CfevestingKeeper.GetVestingAccountCount(ctx))
+	vaccFromList, found := testHelper.App.CfevestingKeeper.GetVestingAccount(ctx, uint64(0))
 	require.Equal(t, true, found)
 	require.Equal(t, accAddr2.String(), vaccFromList.Address)
 }

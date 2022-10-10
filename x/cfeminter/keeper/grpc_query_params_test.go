@@ -15,7 +15,7 @@ func TestParamsQuery(t *testing.T) {
 	keeper, ctx := testkeeper.CfeminterKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
-	params.MintDenom = "dfda"
+	params.MintDenom = "denom"
 	params.Minter = createLinearMinters(time.Now())
 
 	keeper.SetParams(ctx, params)

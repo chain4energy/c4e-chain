@@ -12,6 +12,9 @@ import (
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+
 )
 
 type DestinationType int64
@@ -194,20 +197,29 @@ func TestBurningDistributorBaseAccountDest(t *testing.T) {
 }
 
 func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
-
-	perms := []string{authtypes.Minter, authtypes.Burner}
-	collector := "fee_collector"
 	denom := "uc4e"
-	app.AddMaccPerms(collector, perms)
+	senderCoin := sdk.NewCoin(denom, sdk.NewInt(1017))
+	accountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+
+	balance := banktypes.Balance{
+		Address: accountsAddresses[0].String(),
+		Coins:   sdk.NewCoins(senderCoin),
+	}
+
+	// perms := []string{authtypes.Minter, authtypes.Burner}
+	collector := "fee_collector"
+
+	// app.AddMaccPerms(collector, perms)
 	app.AddMaccPerms("c4e_distributor", nil)
-	app, valCoin := testapp.SetupAndGetValidatorsRelatedCoins(false)
+	app, valCoin := testapp.SetupAndGetValidatorsRelatedCoins(false, balance)
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	// app.AccountKeeper.GetModuleAccount(ctx, "c4e_distributor");
+	app.AccountKeeper.GetModuleAccount(ctx, "c4e_distributor");
 	//prepare module account with coin to distribute fee_collector 1017
-	cointToMint := sdk.NewCoin(denom, sdk.NewInt(1017))
-	app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
-	require.EqualValues(t, cointToMint.Add(valCoin), app.BankKeeper.GetSupply(ctx, denom))
+	// cointToMint := sdk.NewCoin(denom, sdk.NewInt(1017))
+	// app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
+	app.BankKeeper.SendCoinsFromAccountToModule(ctx, accountsAddresses[0], collector, sdk.NewCoins(senderCoin))
+	require.EqualValues(t, senderCoin.Add(valCoin), app.BankKeeper.GetSupply(ctx, denom))
 	var subdistributors []types.SubDistributor
 	subdistributors = append(subdistributors, prepareBurningDistributor(destinationType))
 

@@ -6,4 +6,4 @@ import (
 
 var TestEnvTime = time.Now()
 
-const Denom = "uc4e"
+const DefaultTestDenom = "uc4e"
