@@ -4,17 +4,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	// cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	// distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	// stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	// stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 
 	"testing"
 
@@ -26,71 +23,20 @@ const (
 	vPool2 = "v-pool-2"
 )
 
-// TODO to replace with test helper
-func verifyAccountBalance(t *testing.T, app *app.App, ctx sdk.Context, accAddr sdk.AccAddress, expectedAmount sdk.Int) {
-	balance := app.BankKeeper.GetBalance(ctx, accAddr, commontestutils.DefaultTestDenom)
-	require.EqualValues(t, expectedAmount, balance.Amount)
-}
-// TODO to replace with test helper
-func verifyModuleAccount(t *testing.T, ctx sdk.Context, app *app.App, expected sdk.Int) {
-	commontestutils.VerifyModuleAccountBalanceByName(types.ModuleName, ctx, app, t, expected)
+type VestingTestHelper struct {
+	t *testing.T
+	testhelper *testapp.TestHelper 
 }
 
-// TODO to remove
-// func createValidator(t *testing.T, ctx sdk.Context, sk stakingkeeper.Keeper, addr sdk.ValAddress, pk cryptotypes.PubKey, coin sdk.Coin, commisions stakingtypes.CommissionRates) {
-// 	msg, err := stakingtypes.NewMsgCreateValidator(addr, pk, coin, stakingtypes.Description{}, commisions, sdk.OneInt())
-// 	msgSrvr := stakingkeeper.NewMsgServerImpl(sk)
-// 	require.NoError(t, err)
-// 	res, err := msgSrvr.CreateValidator(sdk.WrapSDKContext(ctx), msg)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, res)
-
-// }
-
-// TODO to remove
-// func setupValidators(t *testing.T, ctx sdk.Context, app *app.App, validators []sdk.ValAddress, delegatePerValidator uint64) {
-// 	PKs := commontestutils.CreateTestPubKeys(len(validators))
-// 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
-// 	delCoin := sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewIntFromUint64(delegatePerValidator))
-// 	for i, valAddr := range validators {
-// 		commontestutils.AddCoinsToAccount(delegatePerValidator, ctx, app, valAddr.Bytes())
-// 		createValidator(t, ctx, app.StakingKeeper, valAddr, PKs[i], delCoin, commission)
-// 	}
-// 	require.EqualValues(t, len(validators)+1, len(app.StakingKeeper.GetAllValidators(ctx)))
-// }
-
-// func setupStakingBondDenom(ctx sdk.Context, app *app.App) {
-// 	stakeParams := app.StakingKeeper.GetParams(ctx)
-// 	stakeParams.BondDenom = commontestutils.DefaultTestDenom
-// 	app.StakingKeeper.SetParams(ctx, stakeParams)
-// }
-
-// func verifyUnbondingDelegations(t *testing.T, ctx sdk.Context, app *app.App, delegableAddress sdk.AccAddress,
-// 	validators []sdk.ValAddress, unbondingAmount []int64) {
-
-// 	unbondingDelegations := app.StakingKeeper.GetAllUnbondingDelegations(ctx, delegableAddress)
-// 	require.EqualValues(t, len(validators), len(unbondingDelegations))
-
-// 	for i, valAddr := range validators {
-// 		found := false
-// 		for _, delegation := range unbondingDelegations {
-// 			if delegation.ValidatorAddress == valAddr.String() {
-// 				require.EqualValues(t, 1, len(unbondingDelegations[0].Entries))
-// 				require.EqualValues(t, sdk.NewInt(unbondingAmount[i]), unbondingDelegations[0].Entries[0].Balance)
-// 				require.EqualValues(t, sdk.NewInt(unbondingAmount[i]), unbondingDelegations[0].Entries[0].InitialBalance)
-// 				found = true
-// 			}
-// 		}
-// 		require.True(t, found, "delegation not found. Validator Address: "+valAddr.String())
-// 	}
-
-// }
-
-func setupAccountsVestings(ctx sdk.Context, app *app.App, address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) types.AccountVestings {
-	return setupAccountsVestingsWithModification(ctx, app, func(*types.VestingPool) { /*do not modify*/ }, address, numberOfVestings, vestingAmount, withdrawnAmount)
+func NewVestingTestHelper(t *testing.T, testhelper *testapp.TestHelper) *VestingTestHelper{
+	return &VestingTestHelper{t: t, testhelper: testhelper}
 }
 
-func setupAccountsVestingsWithModification(ctx sdk.Context, app *app.App, modifyVesting func(*types.VestingPool), address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) types.AccountVestings {
+func (h *VestingTestHelper) SetupAccountsVestings(ctx sdk.Context, address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) types.AccountVestings {
+	return h.SetupAccountsVestingsWithModification(ctx, func(*types.VestingPool) { /*do not modify*/ }, address, numberOfVestings, vestingAmount, withdrawnAmount)
+}
+
+func (h *VestingTestHelper) SetupAccountsVestingsWithModification(ctx sdk.Context, modifyVesting func(*types.VestingPool), address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) types.AccountVestings {
 	accountVestings := testutils.GenerateOneAccountVestingsWithAddressWith10BasedVestings(numberOfVestings, 1, 1)
 	accountVestings.Address = address
 
@@ -101,52 +47,32 @@ func setupAccountsVestingsWithModification(ctx sdk.Context, app *app.App, modify
 		vesting.LastModificationWithdrawn = withdrawnAmount
 		modifyVesting(vesting)
 	}
-	app.CfevestingKeeper.SetAccountVestings(ctx, accountVestings)
+	h.testhelper.App.CfevestingKeeper.SetAccountVestings(ctx, accountVestings)
 	return accountVestings
 }
 
-// func allocateRewardsToValidator(ctx sdk.Context, app *app.App, validatorRewards uint64, valAddr sdk.ValAddress) {
-// 	valCons := sdk.NewDecCoin(commontestutils.DefaultTestDenom, sdk.NewIntFromUint64(validatorRewards))
-// 	val := app.StakingKeeper.Validator(ctx, valAddr)
-// 	app.DistrKeeper.AllocateTokensToValidator(ctx, val, sdk.NewDecCoins(valCons))
-// }
-
-// func verifyQueryRewards(t *testing.T, ctx sdk.Context, app *app.App, delegableAddr sdk.AccAddress, valAddr sdk.ValAddress, hasRewards bool, rewards uint64) {
-// 	msgServerCtx := sdk.WrapSDKContext(ctx)
-// 	query := distrtypes.QueryDelegationRewardsRequest{DelegatorAddress: delegableAddr.String(), ValidatorAddress: valAddr.String()}
-// 	resp, _ := app.DistrKeeper.DelegationRewards(msgServerCtx, &query)
-// 	if hasRewards {
-// 		require.EqualValues(t, 1, len(resp.Rewards))
-// 		require.EqualValues(t, sdk.NewDecFromInt(sdk.NewIntFromUint64(rewards)), resp.Rewards[0].Amount)
-// 	} else {
-// 		require.EqualValues(t, 0, len(resp.Rewards))
-// 	}
-
-// }
-
-func createVestingPool(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress, accountVestingsExistsBefore bool, accountVestingsExistsAfter bool,
+func (h *VestingTestHelper) CreateVestingPool(ctx sdk.Context, address sdk.AccAddress, accountVestingsExistsBefore bool, accountVestingsExistsAfter bool,
 	vestingPoolName string, lockupDuration time.Duration, vestingType types.VestingType, amountToVest sdk.Int, accAmountBefore sdk.Int, moduleAmountBefore sdk.Int,
 	accAmountAfter sdk.Int, moduleAmountAfter sdk.Int) {
 
-	_, accFound := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
-	require.EqualValues(t, accountVestingsExistsBefore, accFound)
+	_, accFound := h.testhelper.App.CfevestingKeeper.GetAccountVestings(ctx, address.String())
+	require.EqualValues(h.t, accountVestingsExistsBefore, accFound)
 
-	verifyAccountBalance(t, app, ctx, address, accAmountBefore)
-	moduleAccAddr := app.AccountKeeper.GetModuleAccount(ctx, types.ModuleName).GetAddress()
-	verifyAccountBalance(t, app, ctx, moduleAccAddr, moduleAmountBefore)
+	h.testhelper.BankUtils.VerifyAccountDefultDenomBalance(ctx, address, accAmountBefore)
+	h.testhelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.ModuleName, moduleAmountBefore)
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(h.testhelper.App.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := types.MsgCreateVestingPool{Creator: address.String(), Name: vestingPoolName,
 		Amount: amountToVest, Duration: lockupDuration, VestingType: vestingType.Name}
 	_, error := msgServer.CreateVestingPool(msgServerCtx, &msg)
-	require.EqualValues(t, nil, error)
+	require.EqualValues(h.t, nil, error)
 
-	_, accFound = app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
-	require.EqualValues(t, accountVestingsExistsAfter, accFound)
+	_, accFound = h.testhelper.App.CfevestingKeeper.GetAccountVestings(ctx, address.String())
+	require.EqualValues(h.t, accountVestingsExistsAfter, accFound)
 
-	verifyAccountBalance(t, app, ctx, address, accAmountAfter)
-	verifyAccountBalance(t, app, ctx, moduleAccAddr, moduleAmountAfter)
+	h.testhelper.BankUtils.VerifyAccountDefultDenomBalance(ctx, address, accAmountAfter)
+	h.testhelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.ModuleName, moduleAmountAfter)
 }
 
 func newInts64Array(n int, v int64) []int64 {
@@ -165,110 +91,85 @@ func newTimeArray(n int, v time.Time) []time.Time {
 	return s
 }
 
-func verifyAccountVestingPools(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress,
+func (h *VestingTestHelper) VerifyAccountVestingPools(ctx sdk.Context, address sdk.AccAddress,
 	vestingNames []string, durations []time.Duration, vestingTypes []types.VestingType, vestedAmounts []sdk.Int, withdrawnAmounts []sdk.Int) {
 
-	verifyAccountVestingsWithModification(t, ctx, app, address, 1, vestingNames, durations, vestingTypes, newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts,
+	h.VerifyAccountVestingsWithModification(ctx, address, 1, vestingNames, durations, vestingTypes, newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts,
 		newInts64Array(len(vestingTypes), 0), newTimeArray(len(vestingTypes), ctx.BlockTime()), vestedAmounts, withdrawnAmounts)
 }
 
-func verifyAccountVestingsWithModification(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress,
+func (h *VestingTestHelper) VerifyAccountVestingsWithModification(ctx sdk.Context, address sdk.AccAddress,
 	amountOfAllAccVestings int, vestingNames []string, durations []time.Duration, vestingTypes []types.VestingType, startsTimes []time.Time, vestedAmounts []sdk.Int, withdrawnAmounts []sdk.Int,
 	sentAmounts []int64, modificationsTimes []time.Time, modificationsVested []sdk.Int, modificationsWithdrawn []sdk.Int) {
-	allAccVestings := app.CfevestingKeeper.GetAllAccountVestings(ctx)
+	allAccVestings := h.testhelper.App.CfevestingKeeper.GetAllAccountVestings(ctx)
 
-	accVestings, accFound := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
-	require.EqualValues(t, true, accFound)
+	accVestings, accFound := h.testhelper.App.CfevestingKeeper.GetAccountVestings(ctx, address.String())
+	require.EqualValues(h.t, true, accFound)
 
-	require.EqualValues(t, amountOfAllAccVestings, len(allAccVestings))
-	require.EqualValues(t, len(vestingTypes), len(accVestings.VestingPools))
+	require.EqualValues(h.t, amountOfAllAccVestings, len(allAccVestings))
+	require.EqualValues(h.t, len(vestingTypes), len(accVestings.VestingPools))
 
-	require.EqualValues(t, address.String(), accVestings.Address)
+	require.EqualValues(h.t, address.String(), accVestings.Address)
 
 	for i, vesting := range accVestings.VestingPools {
 		found := false
 		if vesting.Id == int32(i+1) {
-			require.EqualValues(t, i+1, vesting.Id)
-			require.EqualValues(t, vestingNames[i], vesting.Name)
-			require.EqualValues(t, vestingTypes[i].Name, vesting.VestingType)
-			require.EqualValues(t, true, startsTimes[i].Equal(vesting.LockStart))
-			require.EqualValues(t, true, ctx.BlockTime().Add(durations[i]).Equal(vesting.LockEnd))
-			require.EqualValues(t, vestedAmounts[i], vesting.Vested)
-			require.EqualValues(t, withdrawnAmounts[i], vesting.Withdrawn)
+			require.EqualValues(h.t, i+1, vesting.Id)
+			require.EqualValues(h.t, vestingNames[i], vesting.Name)
+			require.EqualValues(h.t, vestingTypes[i].Name, vesting.VestingType)
+			require.EqualValues(h.t, true, startsTimes[i].Equal(vesting.LockStart))
+			require.EqualValues(h.t, true, ctx.BlockTime().Add(durations[i]).Equal(vesting.LockEnd))
+			require.EqualValues(h.t, vestedAmounts[i], vesting.Vested)
+			require.EqualValues(h.t, withdrawnAmounts[i], vesting.Withdrawn)
 
-			require.EqualValues(t, sdk.NewInt(sentAmounts[i]), vesting.Sent)
-			require.EqualValues(t, true, modificationsTimes[i].Equal(vesting.LastModification))
-			require.EqualValues(t, modificationsVested[i], vesting.LastModificationVested)
-			require.EqualValues(t, modificationsWithdrawn[i], vesting.LastModificationWithdrawn)
+			require.EqualValues(h.t, sdk.NewInt(sentAmounts[i]), vesting.Sent)
+			require.EqualValues(h.t, true, modificationsTimes[i].Equal(vesting.LastModification))
+			require.EqualValues(h.t, modificationsVested[i], vesting.LastModificationVested)
+			require.EqualValues(h.t, modificationsWithdrawn[i], vesting.LastModificationWithdrawn)
 			found = true
 
 		}
-		require.True(t, found, "not found vesting id: "+strconv.Itoa(i+1))
+		require.True(h.t, found, "not found vesting id: "+strconv.Itoa(i+1))
 
 	}
 
 }
 
-func setupVestingTypes(ctx sdk.Context, app *app.App, numberOfVestingTypes int, amountOf10BasedVestingTypes int, startId int) types.VestingTypes {
-	return setupVestingTypesWithModification(ctx, app, func(*types.VestingType) { /* do not modify */ }, numberOfVestingTypes, amountOf10BasedVestingTypes, startId)
+func (h *VestingTestHelper) SetupVestingTypes(ctx sdk.Context, numberOfVestingTypes int, amountOf10BasedVestingTypes int, startId int) types.VestingTypes {
+	return h.SetupVestingTypesWithModification(ctx, func(*types.VestingType) { /* do not modify */ }, numberOfVestingTypes, amountOf10BasedVestingTypes, startId)
 }
 
-func setupVestingTypesWithModification(ctx sdk.Context, app *app.App, modifyVestingType func(*types.VestingType), numberOfVestingTypes int, amountOf10BasedVestingTypes int, startId int) types.VestingTypes {
+func (h *VestingTestHelper) SetupVestingTypesWithModification(ctx sdk.Context, modifyVestingType func(*types.VestingType), numberOfVestingTypes int, amountOf10BasedVestingTypes int, startId int) types.VestingTypes {
 	vestingTypesArray := testutils.Generate10BasedVestingTypes(numberOfVestingTypes, amountOf10BasedVestingTypes, startId)
 	for _, vestingType := range vestingTypesArray {
 		modifyVestingType(vestingType)
 	}
 	vestingTypes := types.VestingTypes{VestingTypes: vestingTypesArray}
-	app.CfevestingKeeper.SetVestingTypes(ctx, vestingTypes)
+	h.testhelper.App.CfevestingKeeper.SetVestingTypes(ctx, vestingTypes)
 	return vestingTypes
 }
 
-func withdrawAllAvailable(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress, accountBalanceBefore sdk.Int, moduleBalanceBefore sdk.Int,
+func (h *VestingTestHelper) WithdrawAllAvailable(ctx sdk.Context, address sdk.AccAddress, accountBalanceBefore sdk.Int, moduleBalanceBefore sdk.Int,
 	accountBalanceAfter sdk.Int, moduleBalanceAfter sdk.Int) {
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(app.CfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := keeper.NewMsgServerImpl(h.testhelper.App.CfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	verifyAccountBalance(t, app, ctx, address, accountBalanceBefore)
-	verifyModuleAccount(t, ctx, app, moduleBalanceBefore)
+	h.testhelper.BankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceBefore)
+	h.testhelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.ModuleName, moduleBalanceBefore)
+
 	msg := types.MsgWithdrawAllAvailable{Creator: address.String()}
 	_, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
-	require.EqualValues(t, nil, err)
-	verifyAccountBalance(t, app, ctx, address, accountBalanceAfter)
-	verifyModuleAccount(t, ctx, app, moduleBalanceAfter)
+	require.EqualValues(h.t, nil, err)
+	h.testhelper.BankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceAfter)
+	h.testhelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.ModuleName, moduleBalanceAfter)
 }
 
-// func withdrawAllAvailableDelegable(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress, delegableAddress sdk.AccAddress, accountBalanceBefore int64, delegableBalanceBefore int64,
-// 	moduleBalanceBefore int64, accountBalanceAfter int64, delegableBalanceAfter int64, moduleBalanceAfter int64) {
+func (h *VestingTestHelper) CompareStoredAcountVestings(ctx sdk.Context, address sdk.AccAddress, accVestings types.AccountVestings) {
+	storedAccVestings, accFound := h.testhelper.App.CfevestingKeeper.GetAccountVestings(ctx, address.String())
+	require.EqualValues(h.t, true, accFound)
 
-// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableBalanceBefore))
-// 	withdrawAllAvailable(t, ctx, app, address, accountBalanceBefore, moduleBalanceBefore, accountBalanceAfter, moduleBalanceAfter)
-// 	verifyAccountBalance(t, app, ctx, delegableAddress, sdk.NewInt(delegableBalanceAfter))
-// }
-
-func compareStoredAcountVestings(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress, accVestings types.AccountVestings) {
-	storedAccVestings, accFound := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
-	require.EqualValues(t, true, accFound)
-
-	testutils.AssertAccountVestings(t, accVestings, storedAccVestings)
+	testutils.AssertAccountVestings(h.t, accVestings, storedAccVestings)
 }
-
-// TODO to remove
-func addCoinsToCfevestingModule(vested uint64, ctx sdk.Context, app *app.App) string {
-	return commontestutils.AddCoinsToModuleByName(vested, types.ModuleName, ctx, app)
-}
-
-// func getVestings(t *testing.T, ctx sdk.Context, app *app.App, address sdk.AccAddress) *types.QueryVestingPoolsResponse {
-// 	msgServerCtx := sdk.WrapSDKContext(ctx)
-// 	vestingData, error := app.CfevestingKeeper.VestingPools(msgServerCtx, &types.QueryVestingPoolsRequest{Address: address.String()})
-// 	require.EqualValues(t, nil, error)
-// 	return vestingData
-// }
-
-// func verifyVestingResponseWithStoredAccountVestings(t *testing.T, ctx sdk.Context, app *app.App, response *types.QueryVestingPoolsResponse, address sdk.AccAddress, current time.Time, delegationAllowed bool) {
-// 	accVests, found := app.CfevestingKeeper.GetAccountVestings(ctx, address.String())
-// 	require.EqualValues(t, true, found)
-// 	verifyVestingResponse(t, response, accVests, current, delegationAllowed)
-// }
 
 func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsResponse, accVestings types.AccountVestings, current time.Time, delegationAllowed bool) {
 	require.EqualValues(t, len(accVestings.VestingPools), len(response.VestingPools))
@@ -282,7 +183,7 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsRespon
 				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, current).String(), response.VestingPools[0].Withdrawable)
 				require.EqualValues(t, true, vesting.LockStart.Equal(vestingInfo.LockStart))
 				require.EqualValues(t, true, vesting.LockEnd.Equal(vestingInfo.LockEnd))
-				require.EqualValues(t, "uc4e", response.VestingPools[0].Vested.Denom)
+				require.EqualValues(t, commontestutils.DefaultTestDenom, response.VestingPools[0].Vested.Denom)
 				require.EqualValues(t, vesting.Vested, response.VestingPools[0].Vested.Amount)
 				require.EqualValues(t, vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn).String(), response.VestingPools[0].CurrentVestedAmount)
 				require.EqualValues(t, vesting.Sent.String(), response.VestingPools[0].SentAmount)
