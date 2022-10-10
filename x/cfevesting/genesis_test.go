@@ -17,10 +17,7 @@ import (
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
@@ -34,11 +31,10 @@ func TestGenesisWholeApp(t *testing.T) {
 		VestingTypes: []types.GenesisVestingType{},
 	}
 
-	app := testapp.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	testHelper, ctx := testapp.SetupTestApp(t)
 
-	cfevesting.InitGenesis(ctx, app.CfevestingKeeper, genesisState, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
-	got := cfevesting.ExportGenesis(ctx, app.CfevestingKeeper)
+	cfevesting.InitGenesis(ctx, testHelper.App.CfevestingKeeper, genesisState, testHelper.App.AccountKeeper, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
+	got := cfevesting.ExportGenesis(ctx, testHelper.App.CfevestingKeeper)
 	require.NotNil(t, got)
 
 	require.EqualValues(t, genesisState, *got)
@@ -70,13 +66,12 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 		VestingTypes:        vestingTypesArray,
 	}
 
-	app := testapp.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	testHelper, ctx := testapp.SetupTestApp(t)
 
-	k := app.CfevestingKeeper
-	ak := app.AccountKeeper
+	k := testHelper.App.CfevestingKeeper
+	ak := testHelper.App.AccountKeeper
 
-	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
+	cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
 	got := cfevesting.ExportGenesis(ctx, k)
 
 	require.NotNil(t, got)
@@ -95,13 +90,12 @@ func TestGenesisVestingTypes(t *testing.T) {
 		VestingTypes:        vestingTypesArray,
 	}
 
-	app := testapp.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	testHelper, ctx := testapp.SetupTestApp(t)
 
-	k := app.CfevestingKeeper
-	ak := app.AccountKeeper
+	k := testHelper.App.CfevestingKeeper
+	ak := testHelper.App.AccountKeeper
 
-	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
+	cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
 	got := cfevesting.ExportGenesis(ctx, k)
 
 	require.NotNil(t, got)
@@ -342,13 +336,12 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 		VestingTypes:        vestingTypesArray,
 	}
 
-	app := testapp.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	testHelper, ctx := testapp.SetupTestApp(t)
 
-	k := app.CfevestingKeeper
-	ak := app.AccountKeeper
+	k := testHelper.App.CfevestingKeeper
+	ak := testHelper.App.AccountKeeper
 
-	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
+	cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
 
 	vestingTypesArray[0].LockupPeriod = 234
 	vestingTypesArray[0].LockupPeriodUnit = dstUnits
@@ -423,18 +416,17 @@ func TestGenesisAccountVestingsListWrongAmountInModuleAccount(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	app := testapp.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	testHelper, ctx := testapp.SetupTestApp(t)
 
-	k := app.CfevestingKeeper
-	ak := app.AccountKeeper
+	k := testHelper.App.CfevestingKeeper
+	ak := testHelper.App.AccountKeeper
 
 	undelegableAmount := getUndelegableAmount(accountVestingsListArray)
 	wrongAcountAmount := getUndelegableAmount(accountVestingsListArray).SubRaw(10)
-	mintUndelegableCoinsToModule(ctx, app, genesisState, wrongAcountAmount)
+	mintUndelegableCoinsToModule(ctx, testHelper.App, genesisState, wrongAcountAmount)
 
 	require.PanicsWithError(t, fmt.Sprintf("module: cfevesting account balance of denom uc4e not equal of sum of undelegable vestings: %s <> %s", wrongAcountAmount.String(), undelegableAmount.String()),
-		func() { cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper) }, "")
+		func() { cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper) }, "")
 
 }
 
@@ -519,42 +511,4 @@ func generateGenesisVestingTypesForAccounVestings(vestings []*types.AccountVesti
 	}
 
 	return result
-}
-
-func setupValidators(t *testing.T, ctx sdk.Context, app *app.App, genesisState types.GenesisState, validators []sdk.ValAddress, delegatePerValidator uint64) {
-	denom := genesisState.Params.Denom
-	PKs := commontestutils.CreateTestPubKeys(len(validators))
-	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
-	delCoin := sdk.NewCoin(denom, sdk.NewIntFromUint64(delegatePerValidator))
-	for i, valAddr := range validators {
-		mintCoinsToAccount(ctx, app, genesisState, delCoin.Amount, valAddr.Bytes())
-		createValidator(t, ctx, app.StakingKeeper, valAddr, PKs[i], delCoin, commission)
-	}
-	require.EqualValues(t, len(validators), len(app.StakingKeeper.GetAllValidators(ctx)))
-}
-
-func createValidator(t *testing.T, ctx sdk.Context, sk stakingkeeper.Keeper, addr sdk.ValAddress, pk cryptotypes.PubKey, coin sdk.Coin, commisions stakingtypes.CommissionRates) {
-	msg, err := stakingtypes.NewMsgCreateValidator(addr, pk, coin, stakingtypes.Description{}, commisions, sdk.OneInt())
-	msgSrvr := stakingkeeper.NewMsgServerImpl(sk)
-	require.NoError(t, err)
-	res, err := msgSrvr.CreateValidator(sdk.WrapSDKContext(ctx), msg)
-	require.NoError(t, err)
-	require.NotNil(t, res)
-
-}
-
-func setupStakingBondDenom(ctx sdk.Context, app *app.App, genesisState types.GenesisState) {
-	stakeParams := app.StakingKeeper.GetParams(ctx)
-	stakeParams.BondDenom = genesisState.Params.Denom
-	app.StakingKeeper.SetParams(ctx, stakeParams)
-}
-
-func mintCoinsToAccount(ctx sdk.Context, app *app.App, genesisState types.GenesisState, amount sdk.Int, account sdk.AccAddress) {
-	if amount.IsZero() {
-		return
-	}
-	mintedCoin := sdk.NewCoin(genesisState.Params.Denom, amount)
-	mintedCoins := sdk.NewCoins(mintedCoin)
-	app.BankKeeper.MintCoins(ctx, types.ModuleName, mintedCoins)
-	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, account, mintedCoins)
 }
