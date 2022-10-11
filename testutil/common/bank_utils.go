@@ -3,8 +3,6 @@ package common
 import (
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/app"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -22,12 +20,6 @@ func AddHelperModuleAccountPermissions(maccPerms map[string][]string) map[string
 func AddHelperModuleAccountAddr(moduleAccAddrs map[string]bool) map[string]bool {
 	moduleAccAddrs[authtypes.NewModuleAddress(helperModuleAccount).String()] = true
 	return moduleAccAddrs
-}
-
-// TODO to remove
-func AddHelperModuleAccountPerms() {
-	perms := []string{authtypes.Minter}
-	app.AddMaccPerms(helperModuleAccount, perms)
 }
 
 type BankUtils struct {
@@ -90,33 +82,33 @@ func (bu *BankUtils) VerifyAccountDefultDenomBalance(ctx sdk.Context, addr sdk.A
 
 
 
-func VerifyModuleAccountBalanceByName(accName string, ctx sdk.Context, app *app.App, t *testing.T, expectedAmount sdk.Int) {
-	VerifyModuleAccountDenomBalanceByName(accName, ctx, app, t, DefaultTestDenom, expectedAmount)
-}
+// func VerifyModuleAccountBalanceByName(accName string, ctx sdk.Context, app *app.App, t *testing.T, expectedAmount sdk.Int) {
+// 	VerifyModuleAccountDenomBalanceByName(accName, ctx, app, t, DefaultTestDenom, expectedAmount)
+// }
 
-func VerifyModuleAccountDenomBalanceByName(accName string, ctx sdk.Context, app *app.App, t *testing.T, denom string, expectedAmount sdk.Int) {
-	moduleAccAddr := app.AccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
-	moduleBalance := app.BankKeeper.GetBalance(ctx, moduleAccAddr, denom)
-	require.EqualValues(t, expectedAmount.String(), moduleBalance.Amount.String())
-}
+// func VerifyModuleAccountDenomBalanceByName(accName string, ctx sdk.Context, app *app.App, t *testing.T, denom string, expectedAmount sdk.Int) {
+// 	moduleAccAddr := app.AccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
+// 	moduleBalance := app.BankKeeper.GetBalance(ctx, moduleAccAddr, denom)
+// 	require.EqualValues(t, expectedAmount.String(), moduleBalance.Amount.String())
+// }
 
-func AddCoinsToAccount(vested uint64, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
-	return AddCoinsToAccountInt(sdk.NewIntFromUint64(vested), ctx, app, toAddr)
-}
+// func AddCoinsToAccount(vested uint64, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
+// 	return AddCoinsToAccountInt(sdk.NewIntFromUint64(vested), ctx, app, toAddr)
+// }
 
-func AddCoinsToAccountInt(amount sdk.Int, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
+// func AddCoinsToAccountInt(amount sdk.Int, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
 
-	mintedCoin := sdk.NewCoin(DefaultTestDenom, amount)
-	mintedCoins := sdk.NewCoins(mintedCoin)
-	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
-	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, mintedCoins)
-	return DefaultTestDenom
-}
+// 	mintedCoin := sdk.NewCoin(DefaultTestDenom, amount)
+// 	mintedCoins := sdk.NewCoins(mintedCoin)
+// 	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
+// 	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, mintedCoins)
+// 	return DefaultTestDenom
+// }
 
-func AddCoinsToModuleByName(vested uint64, modulaName string, ctx sdk.Context, app *app.App) string {
-	mintedCoin := sdk.NewCoin(DefaultTestDenom, sdk.NewIntFromUint64(vested))
-	mintedCoins := sdk.NewCoins(mintedCoin)
-	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
-	app.BankKeeper.SendCoinsFromModuleToModule(ctx, helperModuleAccount, modulaName, mintedCoins)
-	return DefaultTestDenom
-}
+// func AddCoinsToModuleByName(vested uint64, modulaName string, ctx sdk.Context, app *app.App) string {
+// 	mintedCoin := sdk.NewCoin(DefaultTestDenom, sdk.NewIntFromUint64(vested))
+// 	mintedCoins := sdk.NewCoins(mintedCoin)
+// 	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
+// 	app.BankKeeper.SendCoinsFromModuleToModule(ctx, helperModuleAccount, modulaName, mintedCoins)
+// 	return DefaultTestDenom
+// }

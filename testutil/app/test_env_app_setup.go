@@ -29,8 +29,8 @@ func SetupApp(initBlock int64) (*c4eapp.App, sdk.Context, sdk.Coin) {
 	return SetupAppWithTime(initBlock, testcommon.TestEnvTime)
 }
 
-func SetupAppWithTime(initBlock int64, initTime time.Time) (*c4eapp.App, sdk.Context, sdk.Coin) {
-	app, coins := SetupAndGetValidatorsRelatedCoins(false)
+func SetupAppWithTime(initBlock int64, initTime time.Time, balances ...banktypes.Balance) (*c4eapp.App, sdk.Context, sdk.Coin) {
+	app, coins := SetupAndGetValidatorsRelatedCoins(false, balances...)
 	header := tmproto.Header{}
 	header.Height = initBlock
 	header.Time = initTime
@@ -46,24 +46,22 @@ func SetupTestAppWithHeight(t *testing.T, initBlock int64) (*TestHelper, sdk.Con
 	return SetupTestAppWithHeightAndTime(t, initBlock, testcommon.TestEnvTime)
 }
 
-func SetupTestAppWithHeightAndTime(t *testing.T, initBlock int64, initTime time.Time) (*TestHelper, sdk.Context) {
-	app, ctx, coins := SetupAppWithTime(initBlock, initTime)
-	testHelper := newTestHelper(t, ctx, app, coins)
+func SetupTestAppWithHeightAndTime(t *testing.T, initBlock int64, initTime time.Time, balances ...banktypes.Balance) (*TestHelper, sdk.Context) {
+	app, ctx, coins := SetupAppWithTime(initBlock, initTime, balances...)
+	testHelper := newTestHelper(t, ctx, app, initTime, coins)
 	return testHelper, ctx
 }
 
 type TestHelper struct {
-	// t                     *testing.T
 	App                   *c4eapp.App
 	InitialValidatorsCoin sdk.Coin
+	InitTime              time.Time
 	BankUtils             *testcommon.BankUtils
 	AuthUtils             *testcommon.AuthUtils
 	StakingUtils          *testcommon.StakingUtils
-	// helperAccountKeeper   *authkeeper.AccountKeeper
-	// helperBankKeeper      bankkeeper.Keeper
 }
 
-func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initialValidatorsCoin sdk.Coin) *TestHelper {
+func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time.Time, initialValidatorsCoin sdk.Coin) *TestHelper {
 	maccPerms := testcommon.AddHelperModuleAccountPermissions(c4eapp.GetMaccPerms())
 
 	helperAk := authkeeper.NewAccountKeeper(
@@ -71,19 +69,19 @@ func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initialValida
 	)
 
 	moduleAccAddrs := testcommon.AddHelperModuleAccountAddr(app.ModuleAccountAddrs())
+
 	helperBk := bankkeeper.NewBaseKeeper(
 		app.AppCodec(), app.GetKey(banktypes.StoreKey), helperAk, app.GetSubspace(banktypes.ModuleName), moduleAccAddrs,
 	)
 	bankUtils := testcommon.NewBankUtils(t, ctx, &helperAk, helperBk)
+
 	testHelper := TestHelper{
-		// t:                     t,
 		App:                   app,
 		InitialValidatorsCoin: initialValidatorsCoin,
+		InitTime:              initTime,
 		BankUtils:             bankUtils,
 		AuthUtils:             testcommon.NewAuthUtils(&helperAk, bankUtils),
 		StakingUtils:          testcommon.NewStakingUtils(t, app.StakingKeeper, bankUtils),
-		// helperAccountKeeper:   &helperAk,
-		// helperBankKeeper:      helperBk,
 	}
 	return &testHelper
 }

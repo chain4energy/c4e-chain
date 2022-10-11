@@ -13,12 +13,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	"github.com/chain4energy/c4e-chain/app"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestGenesisWholeApp(t *testing.T) {
@@ -368,30 +365,23 @@ func getUndelegableAmount(accvestings []*types.AccountVestings) sdk.Int {
 	return result
 }
 
-func addModuleAccountPerms() {
-	perms := []string{authtypes.Minter}
-	app.AddMaccPerms(types.ModuleName, perms)
-}
-
 func TestGenesisAccountVestingsList(t *testing.T) {
-	addModuleAccountPerms()
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams("uc4e"),
+		Params: types.NewParams(commontestutils.DefaultTestDenom),
 
 		VestingTypes:        []types.GenesisVestingType{},
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	app := testapp.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	testHelper, ctx := testapp.SetupTestApp(t)
 
-	k := app.CfevestingKeeper
-	ak := app.AccountKeeper
+	k := testHelper.App.CfevestingKeeper
+	ak := testHelper.App.AccountKeeper
 
-	mintUndelegableCoinsToModule(ctx, app, genesisState, getUndelegableAmount(accountVestingsListArray))
-	cfevesting.InitGenesis(ctx, k, genesisState, ak, app.BankKeeper, app.StakingKeeper)
+	mintUndelegableCoinsToModule(ctx, testHelper, genesisState, getUndelegableAmount(accountVestingsListArray))
+	cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
 	got := cfevesting.ExportGenesis(ctx, k)
 	require.NotNil(t, got)
 	require.EqualValues(t, genesisState.Params, got.GetParams())
@@ -406,7 +396,6 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 }
 
 func TestGenesisAccountVestingsListWrongAmountInModuleAccount(t *testing.T) {
-	addModuleAccountPerms()
 	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
 
 	genesisState := types.GenesisState{
@@ -423,21 +412,16 @@ func TestGenesisAccountVestingsListWrongAmountInModuleAccount(t *testing.T) {
 
 	undelegableAmount := getUndelegableAmount(accountVestingsListArray)
 	wrongAcountAmount := getUndelegableAmount(accountVestingsListArray).SubRaw(10)
-	mintUndelegableCoinsToModule(ctx, testHelper.App, genesisState, wrongAcountAmount)
+	mintUndelegableCoinsToModule(ctx, testHelper, genesisState, wrongAcountAmount)
 
 	require.PanicsWithError(t, fmt.Sprintf("module: cfevesting account balance of denom uc4e not equal of sum of undelegable vestings: %s <> %s", wrongAcountAmount.String(), undelegableAmount.String()),
 		func() { cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper) }, "")
 
 }
 
-func mintUndelegableCoinsToModule(ctx sdk.Context, app *app.App, genesisState types.GenesisState, amount sdk.Int) {
-	if amount.IsZero() {
-		return
-	}
+func mintUndelegableCoinsToModule(ctx sdk.Context, testHelper *testapp.TestHelper, genesisState types.GenesisState, amount sdk.Int) {
 	mintedCoin := sdk.NewCoin(genesisState.Params.Denom, amount)
-	mintedCoins := sdk.NewCoins(mintedCoin)
-
-	app.BankKeeper.MintCoins(ctx, types.ModuleName, mintedCoins)
+	testHelper.BankUtils.AddCoinsToModule(ctx, mintedCoin, types.ModuleName)
 }
 
 func TestDurationFromUnits(t *testing.T) {

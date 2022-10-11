@@ -809,8 +809,3 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 func (app *App) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
-
-// For tests only - TODO refactor and remove
-func AddMaccPerms(moduleAccountName string, perms []string) {
-	maccPerms[moduleAccountName] = perms
-}
