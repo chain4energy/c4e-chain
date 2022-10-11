@@ -258,6 +258,8 @@ func addSharesToState(ctx sdk.Context, k keeper.Keeper, localRemains *[]types.St
 }
 
 func StartDistributionProcess(ctx sdk.Context, k keeper.Keeper, states *[]types.State, coinsToDistributeDec sdk.DecCoins, subDistributor types.SubDistributor, list *types.DistributionsResult) *[]types.State {
+	k.Logger(ctx).Debug("cfedistributor start distribution process", "coinsToDistributeDec", coinsToDistributeDec.String(),
+		"subDistributor", subDistributor.String())
 	percentShareSum := sdk.MustNewDecFromStr("0")
 	localRemains := states
 	for _, share := range subDistributor.Destination.Share {

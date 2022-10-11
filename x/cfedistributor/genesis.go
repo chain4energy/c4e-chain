@@ -10,9 +10,8 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, ak types.AccountKeeper) {
 	k.SetParams(ctx, genState.Params)
 	for _, sb := range k.GetParams(ctx).SubDistributors {
-		k.Logger(ctx).Info("SubDistributor: " + sb.Name)
+		k.Logger(ctx).Debug("cfedistributor all sub distributors", "subDistributor", sb.Name)
 	}
-	k.Logger(ctx).Info("Init Genesis module: " + types.ModuleName)
 
 	states := genState.States
 	for _, av := range states {
