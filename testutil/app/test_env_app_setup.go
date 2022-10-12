@@ -6,6 +6,7 @@ import (
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
+	testcfevesting "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -61,6 +62,7 @@ type TestHelper struct {
 	BankUtils             *testcommon.ContextBankUtils
 	AuthUtils             *testcommon.ContextAuthUtils
 	StakingUtils          *testcommon.ContextStakingUtils
+	C4eVestingUtils       *testcfevesting.ContextC4eVestingUtils
 }
 
 func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time.Time, initialValidatorsCoin sdk.Coin) *TestHelper {
@@ -83,11 +85,14 @@ func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time
 		InitTime:              initTime,
 	}
 
+	var testHelperP testcommon.TestContext = &testHelper
+
 	bankUtils := testcommon.NewContextBankUtils(t, testHelper, &helperAk, helperBk)
 
 	testHelper.BankUtils = bankUtils
 	testHelper.AuthUtils = testcommon.NewContextAuthUtils(testHelper, &helperAk, &bankUtils.BankUtils)
 	testHelper.StakingUtils = testcommon.NewContextStakingUtils(t, testHelper, app.StakingKeeper, &bankUtils.BankUtils)
+	testHelper.C4eVestingUtils = testcfevesting.NewContextC4eVestingUtils(t, testHelperP, &app.CfevestingKeeper, &bankUtils.BankUtils)
 	return &testHelper
 }
 

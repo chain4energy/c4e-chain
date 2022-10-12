@@ -18,7 +18,6 @@ import (
 func TestSendVestingAccount(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	vestingTestHelper := NewVestingTestHelper(t, testHelper)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -28,10 +27,10 @@ func TestSendVestingAccount(t *testing.T) {
 	accInitBalance := sdk.NewInt(10000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
-	vestingTypes := vestingTestHelper.SetupVestingTypes(2, 1, 1)
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	vestingTestHelper.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
+	testHelper.C4eVestingUtils.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(testHelper.Context)
 
@@ -88,7 +87,6 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	vestingTestHelper := NewVestingTestHelper(t, testHelper)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -98,10 +96,10 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	accInitBalance := sdk.NewInt(10000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
-	vestingTypes := vestingTestHelper.SetupVestingTypes(2, 1, 1)
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	vestingTestHelper.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
+	testHelper.C4eVestingUtils.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(testHelper.Context)
 
@@ -119,7 +117,6 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	vestingTestHelper := NewVestingTestHelper(t, testHelper)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -129,10 +126,10 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	accInitBalance := sdk.NewInt(10000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
-	vestingTypes := vestingTestHelper.SetupVestingTypes(2, 1, 1)
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	vestingTestHelper.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
+	testHelper.C4eVestingUtils.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(testHelper.Context)
 
@@ -149,7 +146,6 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	vestingTestHelper := NewVestingTestHelper(t, testHelper)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -159,10 +155,10 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	accInitBalance := sdk.NewInt(10000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
-	vestingTypes := vestingTestHelper.SetupVestingTypes(2, 1, 1)
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	vestingTestHelper.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
+	testHelper.C4eVestingUtils.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(testHelper.Context)
 
@@ -187,7 +183,6 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	vestingTestHelper := NewVestingTestHelper(t, testHelper)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
@@ -197,10 +192,10 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	accInitBalance := sdk.NewInt(10000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
-	vestingTypes := vestingTestHelper.SetupVestingTypes(2, 1, 1)
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	vestingTestHelper.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
+	testHelper.C4eVestingUtils.CreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper), sdk.WrapSDKContext(testHelper.Context)
 
