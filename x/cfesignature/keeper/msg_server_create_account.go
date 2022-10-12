@@ -15,14 +15,27 @@ func (k msgServer) CreateAccount(goCtx context.Context, msg *types.MsgCreateAcco
 
 	// TODO: add logic to check that only a user with ADMIN role can add new blockchain users
 
-	accAddress, _ := sdk.AccAddressFromBech32(msg.AccAddressString)
+	accAddress, err := sdk.AccAddressFromBech32(msg.AccAddressString)
+	if err != nil {
+		k.Logger(ctx).Error("create account parsing error", "error", err.Error())
+		return nil, err
+	}
 	newAccount := k.authKeeper.NewAccountWithAddress(ctx, accAddress)
 
 	var pk cryptotypes.PubKey
 	bytes := []byte(msg.PubKeyString)
-	k.proto.UnmarshalInterfaceJSON(bytes, &pk)
+	err = k.proto.UnmarshalInterfaceJSON(bytes, &pk)
+	if err != nil {
+		k.Logger(ctx).Error("unmarshal interface JSON error", "error", err.Error())
+		return nil, err
+	}
 
-	newAccount.SetPubKey(pk)
+	err = newAccount.SetPubKey(pk)
+	if err != nil {
+		k.Logger(ctx).Error("new account set pub key error", "error", err.Error())
+		return nil, err
+	}
+	k.Logger(ctx).Debug("auth keeper set account", "newAccount", newAccount.String())
 	k.authKeeper.SetAccount(ctx, newAccount)
 
 	return &types.MsgCreateAccountResponse{AccountNumber: fmt.Sprint(newAccount.GetAccountNumber())}, nil
