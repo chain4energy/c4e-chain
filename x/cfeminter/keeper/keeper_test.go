@@ -19,67 +19,67 @@ const MyDenom = "myc4e"
 func TestMintFirstPeriod(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper, ctx := prepareApp(t, startTime, createLinearMinters(startTime))
+	testHelper := prepareApp(t, startTime, createLinearMinters(startTime))
 	k := testHelper.App.CfeminterKeeper
 
 	minterState := types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)}
-	k.SetMinterState(ctx, minterState)
+	k.SetMinterState(testHelper.Context, minterState)
 	minterState.LastMintBlockTime = startTime
 	minterState.RemainderToMint = sdk.ZeroDec()
 	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
 
-	ctx = ctx.WithBlockTime(startTime)
-	amount, err := k.Mint(ctx)
+	testHelper.SetContextBlockTime(startTime)
+	amount, err := k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
 
-	history := k.GetAllMinterStateHistory(ctx)
+	history := k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime := startTime.Add(PeriodDuration / 4)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(250000), amount)
 	minterState.AmountMinted = sdk.NewInt(250000)
 	minterState.LastMintBlockTime = newTime
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(250000))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(250000))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime = startTime.Add(PeriodDuration * 3 / 4)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(500000), amount)
 	minterState.AmountMinted = sdk.NewInt(750000)
 	minterState.LastMintBlockTime = newTime
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(750000))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(750000))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime = startTime.Add(PeriodDuration)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(250000), amount)
 	minterState.AmountMinted = sdk.NewInt(0)
 	minterState.LastMintBlockTime = newTime
 	minterState.Position = 2
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(1000000))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(1000000))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 1, len(history))
 
 	expectedHist := types.MinterState{
@@ -95,12 +95,12 @@ func TestMintFirstPeriod(t *testing.T) {
 func TestMintSecondPeriod(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper, ctx := prepareApp(t, startTime, createLinearMinters(startTime))
+	testHelper := prepareApp(t, startTime, createLinearMinters(startTime))
 
 	k := testHelper.App.CfeminterKeeper
 
 	minterState := types.MinterState{Position: 2, AmountMinted: sdk.NewInt(0)}
-	k.SetMinterState(ctx, minterState)
+	k.SetMinterState(testHelper.Context, minterState)
 
 	periodStart := startTime.Add(PeriodDuration)
 
@@ -108,57 +108,57 @@ func TestMintSecondPeriod(t *testing.T) {
 	minterState.RemainderToMint = sdk.ZeroDec()
 	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
 
-	ctx = ctx.WithBlockTime(periodStart)
-	amount, err := k.Mint(ctx)
+	testHelper.SetContextBlockTime(periodStart)
+	amount, err := k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
 
-	history := k.GetAllMinterStateHistory(ctx)
+	history := k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime := periodStart.Add(PeriodDuration / 4)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(25000), amount)
 	minterState.AmountMinted = sdk.NewInt(25000)
 	minterState.LastMintBlockTime = newTime
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(25000))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(25000))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime = periodStart.Add(PeriodDuration * 3 / 4)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(50000), amount)
 	minterState.AmountMinted = sdk.NewInt(75000)
 	minterState.LastMintBlockTime = newTime
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(75000))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(75000))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime = periodStart.Add(PeriodDuration)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(25000), amount)
 	minterState.AmountMinted = sdk.NewInt(0)
 	minterState.LastMintBlockTime = newTime
 	minterState.Position = 3
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(100000))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(100000))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 1, len(history))
 
 	expectedHist := types.MinterState{
@@ -174,29 +174,29 @@ func TestMintSecondPeriod(t *testing.T) {
 func TestMintBetweenFirstAndSecondPeriods(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper, ctx := prepareApp(t, startTime, createLinearMinters(startTime))
+	testHelper := prepareApp(t, startTime, createLinearMinters(startTime))
 
 	k := testHelper.App.CfeminterKeeper
 
 	minterState := types.MinterState{Position: 1, AmountMinted: sdk.NewInt(750000)}
-	k.SetMinterState(ctx, minterState)
+	k.SetMinterState(testHelper.Context, minterState)
 
 	newTime := startTime.Add(PeriodDuration + PeriodDuration/4)
 	minterState.LastMintBlockTime = newTime
 	minterState.RemainderToMint = sdk.ZeroDec()
 	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
 
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err := k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err := k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(275000), amount)
 	minterState.AmountMinted = sdk.NewInt(25000)
 	minterState.Position = 2
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(275000))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(275000))
 
-	history := k.GetAllMinterStateHistory(ctx)
+	history := k.GetAllMinterStateHistory(testHelper.Context)
 
 	require.EqualValues(t, 1, len(history))
 
@@ -214,28 +214,28 @@ func TestMintBetweenFirstAndSecondPeriods(t *testing.T) {
 func TestMintBetweenSecondAndThirdPeriods(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper, ctx := prepareApp(t, startTime, createLinearMinters(startTime))
+	testHelper := prepareApp(t, startTime, createLinearMinters(startTime))
 	k := testHelper.App.CfeminterKeeper
 
 	minterState := types.MinterState{Position: 2, AmountMinted: sdk.NewInt(75000)}
-	k.SetMinterState(ctx, minterState)
+	k.SetMinterState(testHelper.Context, minterState)
 
 	newTime := startTime.Add(2*PeriodDuration + PeriodDuration/4)
 	minterState.LastMintBlockTime = newTime
 	minterState.RemainderToMint = sdk.ZeroDec()
 	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
 
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err := k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err := k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(25000), amount)
 	minterState.AmountMinted = sdk.NewInt(0)
 	minterState.Position = 3
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(25000))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(25000))
 
-	history := k.GetAllMinterStateHistory(ctx)
+	history := k.GetAllMinterStateHistory(testHelper.Context)
 
 	require.EqualValues(t, 1, len(history))
 
@@ -253,14 +253,14 @@ func TestMintBetweenSecondAndThirdPeriods(t *testing.T) {
 func TestMintPeriodNotFound(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 
-	testHelper, ctx := prepareApp(t, startTime, createLinearMinters(startTime))
+	testHelper := prepareApp(t, startTime, createLinearMinters(startTime))
 	k := testHelper.App.CfeminterKeeper
 
 	minterState := types.MinterState{Position: 9, AmountMinted: sdk.NewInt(0)}
-	k.SetMinterState(ctx, minterState)
+	k.SetMinterState(testHelper.Context, minterState)
 
-	ctx = ctx.WithBlockTime(startTime)
-	_, err := k.Mint(ctx)
+	testHelper.SetContextBlockTime(startTime)
+	_, err := k.Mint(testHelper.Context)
 	require.EqualError(t, err, "minter current period for position 9 not found: not found")
 
 }
@@ -268,63 +268,63 @@ func TestMintPeriodNotFound(t *testing.T) {
 func TestMintSecondPeriodWithRemaining(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper, ctx := prepareApp(t, startTime, createLinearMinters(startTime))
+	testHelper := prepareApp(t, startTime, createLinearMinters(startTime))
 	k := testHelper.App.CfeminterKeeper
 
 	minterState := types.MinterState{Position: 2, AmountMinted: sdk.NewInt(0), RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("0.5")}
-	k.SetMinterState(ctx, minterState)
+	k.SetMinterState(testHelper.Context, minterState)
 
 	periodStart := startTime.Add(PeriodDuration)
 
 	minterState.LastMintBlockTime = periodStart
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.5")
 
-	ctx = ctx.WithBlockTime(periodStart)
-	amount, err := k.Mint(ctx)
+	testHelper.SetContextBlockTime(periodStart)
+	amount, err := k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
 
-	history := k.GetAllMinterStateHistory(ctx)
+	history := k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime := periodStart.Add(PeriodDuration / 3)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(33333), amount)
 	minterState.AmountMinted = sdk.NewInt(33333)
 	minterState.LastMintBlockTime = newTime
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.833333333333333333")
 
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(33333))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(33333))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime = periodStart.Add(PeriodDuration * 2 / 3)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(33334), amount)
 	minterState.AmountMinted = sdk.NewInt(66667)
 	minterState.LastMintBlockTime = newTime
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.166666666666666666")
 
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(66667))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(66667))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime = periodStart.Add(PeriodDuration)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(33333), amount)
 	minterState.AmountMinted = sdk.NewInt(0)
@@ -332,11 +332,11 @@ func TestMintSecondPeriodWithRemaining(t *testing.T) {
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.500000000000000000")
 
 	minterState.Position = 3
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(100000))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(100000))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 1, len(history))
 
 	expectedHist := types.MinterState{
@@ -352,62 +352,62 @@ func TestMintSecondPeriodWithRemaining(t *testing.T) {
 func TestMintFirstPeriodWithRemaining(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper, ctx := prepareApp(t, startTime, createReductionMinterWithRemainingPassing(startTime))
+	testHelper := prepareApp(t, startTime, createReductionMinterWithRemainingPassing(startTime))
 
 	k := testHelper.App.CfeminterKeeper
 
 	minterState := types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)}
-	k.SetMinterState(ctx, minterState)
+	k.SetMinterState(testHelper.Context, minterState)
 	minterState.LastMintBlockTime = startTime
 	minterState.RemainderToMint = sdk.ZeroDec()
 	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
 
-	ctx = ctx.WithBlockTime(startTime)
-	amount, err := k.Mint(ctx)
+	testHelper.SetContextBlockTime(startTime)
+	amount, err := k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
 
-	history := k.GetAllMinterStateHistory(ctx)
+	history := k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime := startTime.Add(PeriodDuration / 4)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(2739726), amount)
 	minterState.AmountMinted = sdk.NewInt(2739726)
 	minterState.LastMintBlockTime = newTime
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.027397260273972602")
 
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(2739726))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(2739726))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime = startTime.Add(PeriodDuration * 3 / 4)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(3315068), amount)
 	minterState.AmountMinted = sdk.NewInt(2739726 + 3315068)
 	minterState.LastMintBlockTime = newTime
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.520547945205479452")
 
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(2739726+3315068))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(2739726+3315068))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 	newTime = startTime.Add(PeriodDuration)
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err = k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err = k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(684932), amount)
 	minterState.AmountMinted = sdk.NewInt(0)
@@ -416,11 +416,11 @@ func TestMintFirstPeriodWithRemaining(t *testing.T) {
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.027397260273972602")
 	minterState.RemainderFromPreviousPeriod = sdk.MustNewDecFromStr("0.027397260273972602")
 
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(2739726+3315068+684932))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(2739726+3315068+684932))
 
-	history = k.GetAllMinterStateHistory(ctx)
+	history = k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 1, len(history))
 
 	expectedHist := types.MinterState{
@@ -436,19 +436,19 @@ func TestMintFirstPeriodWithRemaining(t *testing.T) {
 func TestMintBetweenFirstAndSecondPeriodsWithRemaining(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper, ctx := prepareApp(t, startTime, createReductionMinterWithRemainingPassing(startTime))
+	testHelper := prepareApp(t, startTime, createReductionMinterWithRemainingPassing(startTime))
 	k := testHelper.App.CfeminterKeeper
 
 	minterState := types.MinterState{Position: 1, AmountMinted: sdk.NewInt(750000)}
-	k.SetMinterState(ctx, minterState)
+	k.SetMinterState(testHelper.Context, minterState)
 
 	newTime := startTime.Add(PeriodDuration + PeriodDuration/4)
 	minterState.LastMintBlockTime = newTime
 	minterState.RemainderToMint = sdk.ZeroDec()
 	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
 
-	ctx = ctx.WithBlockTime(newTime)
-	amount, err := k.Mint(ctx)
+	testHelper.SetContextBlockTime(newTime)
+	amount, err := k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(6014726), amount)
 	minterState.AmountMinted = sdk.NewInt(25000)
@@ -456,11 +456,11 @@ func TestMintBetweenFirstAndSecondPeriodsWithRemaining(t *testing.T) {
 	minterState.RemainderToMint = sdk.MustNewDecFromStr("0.027397260273972602")
 
 	minterState.Position = 2
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.NewInt(6014726))
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.NewInt(6014726))
 
-	history := k.GetAllMinterStateHistory(ctx)
+	history := k.GetAllMinterStateHistory(testHelper.Context)
 
 	require.EqualValues(t, 1, len(history))
 
@@ -478,37 +478,37 @@ func TestMintBetweenFirstAndSecondPeriodsWithRemaining(t *testing.T) {
 func TestMintWithReductionMinterOnGenesisWIthNegativeToMint(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper, ctx := prepareApp(t, startTime, createReductionMinter(startTime))
+	testHelper := prepareApp(t, startTime, createReductionMinter(startTime))
 	k := testHelper.App.CfeminterKeeper
 
 	minterState := types.MinterState{Position: 1, AmountMinted: sdk.NewInt(1000000)}
 	minterState.LastMintBlockTime = startTime
 	minterState.RemainderToMint = sdk.ZeroDec()
 	minterState.RemainderFromPreviousPeriod = sdk.ZeroDec()
-	k.SetMinterState(ctx, minterState)
+	k.SetMinterState(testHelper.Context, minterState)
 
-	ctx = ctx.WithBlockTime(startTime)
-	amount, err := k.Mint(ctx)
+	testHelper.SetContextBlockTime(startTime)
+	amount, err := k.Mint(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewInt(0), amount)
-	require.EqualValues(t, minterState, k.GetMinterState(ctx))
+	require.EqualValues(t, minterState, k.GetMinterState(testHelper.Context))
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
 
-	history := k.GetAllMinterStateHistory(ctx)
+	history := k.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 0, len(history))
 
 }
 
-func prepareApp(t *testing.T, startTime time.Time, minter types.Minter) (*testapp.TestHelper, sdk.Context) {
-	testHelper, ctx := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
+func prepareApp(t *testing.T, startTime time.Time, minter types.Minter) *testapp.TestHelper{
+	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
 	params := types.DefaultParams()
 	params.MintDenom = commontestutils.DefaultTestDenom
 	params.Minter = minter
 
 	k := testHelper.App.CfeminterKeeper
-	k.SetParams(ctx, params)
-	return testHelper, ctx
+	k.SetParams(testHelper.Context, params)
+	return testHelper
 }
 
 func createLinearMinters(startTime time.Time) types.Minter {

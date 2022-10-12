@@ -26,11 +26,12 @@ type BankUtils struct {
 	t                   *testing.T
 	helperAccountKeeper *authkeeper.AccountKeeper
 	helperBankKeeper    bankkeeper.Keeper
+	
 }
 
-func NewBankUtils(t *testing.T, ctx sdk.Context, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) *BankUtils {
+func NewBankUtils(t *testing.T, ctx sdk.Context, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) BankUtils {
 	helperAccountKeeper.GetModuleAccount(ctx, helperModuleAccount)
-	return &BankUtils{t: t, helperAccountKeeper: helperAccountKeeper, helperBankKeeper: helperBankKeeper}
+	return BankUtils{t: t, helperAccountKeeper: helperAccountKeeper, helperBankKeeper: helperBankKeeper}
 }
 
 func (bu *BankUtils) AddCoinsToAccount(ctx sdk.Context, coinsToMint sdk.Coin, toAddr sdk.AccAddress) {
@@ -83,4 +84,56 @@ func (bu *BankUtils) VerifyTotalSupplyByDenom(ctx sdk.Context, denom string, exp
 
 func (bu *BankUtils) VerifyDefultDenomTotalSupply(ctx sdk.Context, expectedAmount sdk.Int) {
 	bu.VerifyTotalSupplyByDenom(ctx, DefaultTestDenom, expectedAmount)
+}
+
+
+type ContextBankUtils struct {
+	BankUtils
+	testContext         TestContext
+}
+
+func NewContextBankUtils(t *testing.T, testContext TestContext, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) *ContextBankUtils {
+	bankUtils := NewBankUtils(t, testContext.GetContext(), helperAccountKeeper, helperBankKeeper)
+	return &ContextBankUtils{BankUtils: bankUtils, testContext: testContext}
+}
+
+func (bu *ContextBankUtils) AddCoinsToAccount(coinsToMint sdk.Coin, toAddr sdk.AccAddress) {
+	bu.BankUtils.AddCoinsToAccount(bu.testContext.GetContext(), coinsToMint, toAddr)
+}
+
+func (bu *ContextBankUtils) AddDefaultDenomCoinsToAccount(amount sdk.Int, toAddr sdk.AccAddress) (denom string) {
+	return bu.BankUtils.AddDefaultDenomCoinsToAccount(bu.testContext.GetContext(), amount, toAddr)
+}
+
+func (bu *ContextBankUtils) AddCoinsToModule(coinsToMint sdk.Coin, moduleName string) {
+	bu.BankUtils.AddCoinsToModule(bu.testContext.GetContext(), coinsToMint, moduleName)
+
+}
+
+func (bu *ContextBankUtils) AddDefaultDenomCoinsToModule(amount sdk.Int, moduleName string) (denom string) {
+	return bu.BankUtils.AddDefaultDenomCoinsToModule(bu.testContext.GetContext(), amount, moduleName)
+}
+
+func (bu *ContextBankUtils) VerifyModuleAccountBalanceByDenom(accName string, denom string, expectedAmount sdk.Int) {
+	bu.BankUtils.VerifyModuleAccountBalanceByDenom(bu.testContext.GetContext(), accName, denom, expectedAmount)
+}
+
+func (bu *ContextBankUtils) VerifyModuleAccountDefultDenomBalance(accName string, expectedAmount sdk.Int) {
+	bu.BankUtils.VerifyModuleAccountDefultDenomBalance(bu.testContext.GetContext(), accName, expectedAmount)
+}
+
+func (bu *ContextBankUtils) VerifyAccountBalanceByDenom(addr sdk.AccAddress, denom string, expectedAmount sdk.Int) {
+	bu.BankUtils.VerifyAccountBalanceByDenom(bu.testContext.GetContext(), addr, denom, expectedAmount)
+}
+
+func (bu *ContextBankUtils) VerifyAccountDefultDenomBalance(addr sdk.AccAddress, expectedAmount sdk.Int) {
+	bu.BankUtils.VerifyAccountDefultDenomBalance(bu.testContext.GetContext(), addr, expectedAmount)
+}
+
+func (bu *ContextBankUtils) VerifyTotalSupplyByDenom(denom string, expectedAmount sdk.Int) {
+	bu.BankUtils.VerifyTotalSupplyByDenom(bu.testContext.GetContext(), denom, expectedAmount)
+}
+
+func (bu *ContextBankUtils) VerifyDefultDenomTotalSupply(expectedAmount sdk.Int) {
+	bu.BankUtils.VerifyDefultDenomTotalSupply(bu.testContext.GetContext(), expectedAmount)
 }

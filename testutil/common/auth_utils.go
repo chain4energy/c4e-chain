@@ -15,8 +15,8 @@ type AuthUtils struct {
 	bankUtils           *BankUtils
 }
 
-func NewAuthUtils(helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) *AuthUtils {
-	return &AuthUtils{helperAccountKeeper: helperAccountKeeper, bankUtils: bankUtils}
+func NewAuthUtils(helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) AuthUtils {
+	return AuthUtils{helperAccountKeeper: helperAccountKeeper, bankUtils: bankUtils}
 }
 
 func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coin sdk.Coin, start time.Time, end time.Time) error {
@@ -45,4 +45,20 @@ func (au *AuthUtils) CreateDefaultDenomVestingAccount(ctx sdk.Context, address s
 	return au.CreateVestingAccount(ctx, address, sdk.NewCoin(DefaultTestDenom, amount), start, end)
 }
 
+type ContextAuthUtils struct {
+	AuthUtils
+	testContext TestContext
+}
 
+func NewContextAuthUtils(testContext TestContext, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) *ContextAuthUtils {
+	authUtils := NewAuthUtils(helperAccountKeeper, bankUtils)
+	return &ContextAuthUtils{AuthUtils: authUtils, testContext: testContext}
+}
+
+func (au *ContextAuthUtils) CreateVestingAccount(address string, coin sdk.Coin, start time.Time, end time.Time) error {
+	return au.AuthUtils.CreateVestingAccount(au.testContext.GetContext(), address, coin, start, end)
+}
+
+func (au *ContextAuthUtils) CreateDefaultDenomVestingAccount(address string, amount sdk.Int, start time.Time, end time.Time) error {
+	return au.AuthUtils.CreateDefaultDenomVestingAccount(au.testContext.GetContext(), address, amount, start, end)
+}

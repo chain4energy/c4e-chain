@@ -41,10 +41,10 @@ func TestGenesis(t *testing.T) {
 		// this line is used by starport scaffolding # genesis/test/state
 
 	}
-	testHelper, ctx := testapp.SetupTestApp(t)
+	testHelper := testapp.SetupTestApp(t)
 
-	cfeminter.InitGenesis(ctx, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
-	got := cfeminter.ExportGenesis(ctx, testHelper.App.CfeminterKeeper)
+	cfeminter.InitGenesis(testHelper.Context, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
+	got := cfeminter.ExportGenesis(testHelper.Context, testHelper.App.CfeminterKeeper)
 	require.NotNil(t, got)
 
 	require.EqualValues(t, genesisState.Params.MintDenom, got.Params.MintDenom)
@@ -72,10 +72,10 @@ func TestGenesisWithHistory(t *testing.T) {
 
 	}
 
-	testHelper, ctx := testapp.SetupTestApp(t)
+	testHelper := testapp.SetupTestApp(t)
 
-	cfeminter.InitGenesis(ctx, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
-	got := cfeminter.ExportGenesis(ctx, testHelper.App.CfeminterKeeper)
+	cfeminter.InitGenesis(testHelper.Context, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
+	got := cfeminter.ExportGenesis(testHelper.Context, testHelper.App.CfeminterKeeper)
 	require.NotNil(t, got)
 
 	require.EqualValues(t, genesisState.Params.MintDenom, got.Params.MintDenom)
@@ -118,7 +118,7 @@ func createHistory() []*types.MinterState {
 func TestOneYearLinear(t *testing.T) {
 	totalSupply := sdk.NewInt(40000000000000)
 
-	testHelper, ctx := testapp.SetupTestApp(t)
+	testHelper := testapp.SetupTestApp(t)
 
 	yearFromNow := testHelper.InitTime.Add(time.Hour * 24 * 365)
 	minter := types.Minter{
@@ -134,59 +134,57 @@ func TestOneYearLinear(t *testing.T) {
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
-	cfeminter.InitGenesis(ctx, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
+	cfeminter.InitGenesis(testHelper.Context, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	consToAdd := totalSupply.Sub(testHelper.InitialValidatorsCoin.Amount)
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, consToAdd, acountsAddresses[0])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
-	inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(ctx)
+	inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.NewDec(1), inflation)
-	state := testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+	state := testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 	require.EqualValues(t, int32(1), state.Position)
 	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
 
 	numOfHours := 365 * 24
 	for i := 1; i <= numOfHours; i++ {
-		ctx = ctx.WithBlockHeight(int64(i)).WithBlockTime(ctx.BlockTime().Add(time.Hour))
-		testHelper.App.BeginBlocker(ctx, abci.RequestBeginBlock{})
-		testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{})
+		testHelper.SetContextBlockHeightAndAddTime(int64(i), time.Hour)
+		testHelper.BeginBlocker(abci.RequestBeginBlock{})
+		testHelper.EndBlocker(abci.RequestEndBlock{})
 
 		expectedMinted := totalSupply.MulRaw(int64(i)).QuoRaw(int64(numOfHours))
 		expectedInflation := sdk.NewDecFromInt(totalSupply).QuoInt(totalSupply.Add(expectedMinted))
 
-		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, expectedMinted)
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, expectedMinted)
 
-		inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(ctx)
+		inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(testHelper.Context)
 		require.NoError(t, err)
 		if i < numOfHours {
 			require.EqualValuesf(t, expectedInflation, inflation, iterationText, i)
-			state := testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+			state := testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 			require.EqualValues(t, int32(1), state.Position)
 			require.EqualValues(t, expectedMinted, state.AmountMinted)
 		} else {
 			require.EqualValuesf(t, sdk.ZeroDec(), inflation, iterationText, i)
-			state := testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+			state := testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 			require.EqualValues(t, int32(2), state.Position)
 			require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
 		}
 
 	}
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, totalSupply)
-
-	supp := testHelper.App.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom)
-	require.EqualValues(t, totalSupply.MulRaw(2), supp.Amount)
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, totalSupply)
+	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.MulRaw(2))
 
 }
 
 func TestFewYearsPeriodicReduction(t *testing.T) {
 	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(40000000000000)
-	testHelper, ctx := testapp.SetupTestApp(t)
+	testHelper := testapp.SetupTestApp(t)
 	pminter := types.PeriodicReductionMinter{MintAmount: startAmountYearly, MintPeriod: SecondsInYear, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
 
 	minter := types.Minter{
@@ -201,21 +199,21 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
-	cfeminter.InitGenesis(ctx, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
+	cfeminter.InitGenesis(testHelper.Context, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	consToAdd := totalSupply.Sub(testHelper.InitialValidatorsCoin.Amount)
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, consToAdd, acountsAddresses[0])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
-	inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(ctx)
+	inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.1"), inflation)
-	state := testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+	state := testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 	require.EqualValues(t, int32(1), state.Position)
 	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
 
 	year := 365 //* 24
 	numOfHours := 4 * year
@@ -224,25 +222,25 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 
 	for periodsCount := 1; periodsCount <= 5; periodsCount++ {
 		for i := 1; i <= numOfHours; i++ {
-			ctx = ctx.WithBlockHeight(int64(i)).WithBlockTime(ctx.BlockTime().Add(24 * time.Hour))
-			testHelper.App.BeginBlocker(ctx, abci.RequestBeginBlock{})
-			testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{})
+			testHelper.SetContextBlockHeightAndAddTime(int64(i), 24*time.Hour)
+			testHelper.BeginBlocker(abci.RequestBeginBlock{})
+			testHelper.EndBlocker(abci.RequestEndBlock{})
 
 			expectedMinted := amountYearly.MulRaw(int64(i)).QuoRaw(int64(year))
 			expectedInflation := sdk.NewDecFromInt(amountYearly).QuoInt(totalSupply.Add(prevPeriodMinted).Add(expectedMinted))
 
-			testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, prevPeriodMinted.Add(expectedMinted))
+			testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, prevPeriodMinted.Add(expectedMinted))
 
-			inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(ctx)
+			inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(testHelper.Context)
 			require.NoError(t, err)
 			if i < numOfHours {
 				require.EqualValuesf(t, expectedInflation, inflation, iterationText, i)
-				state := testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+				state := testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 				require.EqualValues(t, int32(1), state.Position)
 				require.EqualValues(t, prevPeriodMinted.Add(expectedMinted), state.AmountMinted)
 			} else {
 				require.EqualValuesf(t, expectedInflation.QuoInt64(2), inflation, iterationText, i)
-				state := testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+				state := testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 				require.EqualValues(t, int32(1), state.Position)
 				require.EqualValues(t, prevPeriodMinted.Add(expectedMinted), state.AmountMinted)
 				prevPeriodMinted = prevPeriodMinted.Add(expectedMinted)
@@ -252,16 +250,15 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 		amountYearly = amountYearly.QuoRaw(2)
 	}
 	expectedMinted := sdk.NewInt(310000000000000)
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, expectedMinted)
-	supp := testHelper.App.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom)
-	require.EqualValues(t, totalSupply.Add(expectedMinted), supp.Amount)
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, expectedMinted)
+	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.Add(expectedMinted))
 
 }
 
 func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(40000000000000)
-	testHelper, ctx := testapp.SetupTestApp(t)
+	testHelper := testapp.SetupTestApp(t)
 
 	pminter := types.PeriodicReductionMinter{MintAmount: startAmountYearly, MintPeriod: SecondsInYear, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
 
@@ -277,40 +274,39 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
-	cfeminter.InitGenesis(ctx, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
+	cfeminter.InitGenesis(testHelper.Context, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	consToAdd := totalSupply.Sub(testHelper.InitialValidatorsCoin.Amount)
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, consToAdd, acountsAddresses[0])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
-	inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(ctx)
+	inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.1"), inflation)
-	state := testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+	state := testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 	require.EqualValues(t, int32(1), state.Position)
 	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
 
 	year := 365 //* 24
 	numOfHours := 301 * year
 
 	for i := 1; i <= numOfHours; i++ {
-		ctx = ctx.WithBlockHeight(int64(i)).WithBlockTime(ctx.BlockTime().Add(24 * time.Hour))
+		testHelper.SetContextBlockHeightAndAddTime(int64(i), 24*time.Hour)
 	}
 
-	testHelper.App.BeginBlocker(ctx, abci.RequestBeginBlock{})
-	testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{})
+	testHelper.BeginBlocker(abci.RequestBeginBlock{})
+	testHelper.EndBlocker(abci.RequestEndBlock{})
 
 	expectedMinted := sdk.NewInt(320000000000000)
-	state = testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+	state = testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 	require.EqualValues(t, int32(1), state.Position)
 	require.EqualValues(t, expectedMinted, state.AmountMinted)
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, expectedMinted)
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, expectedMinted)
 
-	supp := testHelper.App.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom)
-	require.EqualValues(t, totalSupply.Add(expectedMinted), supp.Amount)
+	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.Add(expectedMinted))
 
 }
 
@@ -318,7 +314,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(40000000000000)
 
-	testHelper, ctx := testapp.SetupTestApp(t)
+	testHelper := testapp.SetupTestApp(t)
 
 	tenYears := time.Duration(int64(time.Second) * int64(SecondsInYear) * 10)
 	endTime1 := testHelper.InitTime.Add(tenYears)
@@ -346,51 +342,50 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
 	}
 
-	cfeminter.InitGenesis(ctx, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
+	cfeminter.InitGenesis(testHelper.Context, testHelper.App.CfeminterKeeper, testHelper.App.AccountKeeper, genesisState)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	consToAdd := totalSupply.Sub(testHelper.InitialValidatorsCoin.Amount)
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(ctx, consToAdd, acountsAddresses[0])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
-	inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(ctx)
+	inflation, err := testHelper.App.CfeminterKeeper.GetCurrentInflation(testHelper.Context)
 	require.NoError(t, err)
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.05"), inflation)
-	state := testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+	state := testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 	require.EqualValues(t, int32(1), state.Position)
 	require.EqualValues(t, sdk.ZeroInt(), state.AmountMinted)
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, sdk.ZeroInt())
 
 	year := 365 //* 24
 	numOfHours := 321 * year
 
 	for i := 1; i <= numOfHours; i++ {
-		ctx = ctx.WithBlockHeight(int64(i)).WithBlockTime(ctx.BlockTime().Add(24 * time.Hour))
+		testHelper.SetContextBlockHeightAndAddTime(int64(i), 24 * time.Hour)
 	}
 
-	testHelper.App.BeginBlocker(ctx, abci.RequestBeginBlock{})
-	testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{})
+	testHelper.BeginBlocker(abci.RequestBeginBlock{})
+	testHelper.EndBlocker(abci.RequestEndBlock{})
 
 	expectedMintedPosition3 := sdk.NewInt(320000000000000)
 	expectedMinted := sdk.NewInt(620000000000000)
-	state = testHelper.App.CfeminterKeeper.GetMinterState(ctx)
+	state = testHelper.App.CfeminterKeeper.GetMinterState(testHelper.Context)
 	require.EqualValues(t, int32(3), state.Position)
 	require.EqualValues(t, expectedMintedPosition3, state.AmountMinted)
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, expectedMinted)
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, expectedMinted)
 
-	supp := testHelper.App.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom)
-	require.EqualValues(t, totalSupply.Add(expectedMinted), supp.Amount)
+	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.Add(expectedMinted))
 
-	history := testHelper.App.CfeminterKeeper.GetAllMinterStateHistory(ctx)
+	history := testHelper.App.CfeminterKeeper.GetAllMinterStateHistory(testHelper.Context)
 	require.EqualValues(t, 2, len(history))
 
 	expectedHist1 := types.MinterState{
 		Position:                    1,
 		AmountMinted:                sdk.NewInt(200000000000000),
 		RemainderToMint:             sdk.ZeroDec(),
-		LastMintBlockTime:           ctx.BlockTime(),
+		LastMintBlockTime:           testHelper.Context.BlockTime(),
 		RemainderFromPreviousPeriod: sdk.ZeroDec(),
 	}
 
@@ -398,7 +393,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 		Position:                    2,
 		AmountMinted:                sdk.NewInt(100000000000000),
 		RemainderToMint:             sdk.ZeroDec(),
-		LastMintBlockTime:           ctx.BlockTime(),
+		LastMintBlockTime:           testHelper.Context.BlockTime(),
 		RemainderFromPreviousPeriod: sdk.ZeroDec(),
 	}
 

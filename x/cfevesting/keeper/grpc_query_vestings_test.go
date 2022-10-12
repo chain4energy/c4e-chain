@@ -53,17 +53,17 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	testHelper, ctx := testapp.SetupTestApp(t)
+	testHelper := testapp.SetupTestApp(t)
 
-	wctx := sdk.WrapSDKContext(ctx)
+	wctx := sdk.WrapSDKContext(testHelper.Context)
 
 	k := testHelper.App.CfevestingKeeper
 	ak := testHelper.App.AccountKeeper
 
 	request := types.QueryVestingsRequest{}
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(ctx, sdk.NewInt(1000000), types.ModuleName)
-	cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
+	cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
 
 	resp, err := k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -119,19 +119,19 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	testHelper, ctx := testapp.SetupTestApp(t)
+	testHelper := testapp.SetupTestApp(t)
 
-	wctx := sdk.WrapSDKContext(ctx)
+	wctx := sdk.WrapSDKContext(testHelper.Context)
 
 	k := testHelper.App.CfevestingKeeper
 	ak := testHelper.App.AccountKeeper
 
 	request := types.QueryVestingsRequest{}
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(ctx, sdk.NewInt(1000000), types.ModuleName)
-	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(ctx, acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
+	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
 
-	cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
+	cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
 
 	resp, err := k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -144,8 +144,8 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 	}
 	require.Equal(t, expected, *resp)
 
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(5500))
-	wctx = sdk.WrapSDKContext(ctx)
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(5500))
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -157,9 +157,8 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 		DelegatedVestingAmount:  sdk.NewInt(1).SubRaw(1),
 	}
 	require.Equal(t, expected, *resp)
-
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(10000))
-	wctx = sdk.WrapSDKContext(ctx)
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(10000))
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -215,29 +214,29 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	}
 
 
-	testHelper, ctx := testapp.SetupTestApp(t)
-	testHelper.StakingUtils.SetupValidators(ctx, validatorsAddresses, sdk.NewInt(100))
+	testHelper := testapp.SetupTestApp(t)
+	testHelper.StakingUtils.SetupValidators(validatorsAddresses, sdk.NewInt(100))
 
-	wctx := sdk.WrapSDKContext(ctx)
+	wctx := sdk.WrapSDKContext(testHelper.Context)
 
 	k := testHelper.App.CfevestingKeeper
 	ak := testHelper.App.AccountKeeper
 
 	request := types.QueryVestingsRequest{}
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(ctx, sdk.NewInt(1000000), types.ModuleName)
-	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(ctx, acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
+	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
 
-	cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
-	validator, _ := testHelper.App.StakingKeeper.GetValidator(ctx, validatorsAddresses[0])
+	cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
+	validator, _ := testHelper.StakingUtils.GetValidator(validatorsAddresses[0])
 
-	require.Equal(t, 4, len(testHelper.App.StakingKeeper.GetAllDelegations(ctx)))
-	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
-	testHelper.App.StakingKeeper.Delegate(ctx, acountsAddresses[1], sdk.NewInt(200000), stakingtypes.Unbonded,
+	require.Equal(t, 4, len(testHelper.App.StakingKeeper.GetAllDelegations(testHelper.Context)))
+	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
+	testHelper.App.StakingKeeper.Delegate(testHelper.Context, acountsAddresses[1], sdk.NewInt(200000), stakingtypes.Unbonded,
 		validator, true)
 
-	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(ctx)))
-	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
+	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(testHelper.Context)))
+	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
 
 	resp, err := k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -250,8 +249,8 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	}
 	require.Equal(t, expected, *resp)
 
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(5500))
-	wctx = sdk.WrapSDKContext(ctx)
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(5500))
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -264,8 +263,8 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	}
 	require.Equal(t, expected, *resp)
 
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(7750))
-	wctx = sdk.WrapSDKContext(ctx)
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(7750))
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -278,8 +277,8 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	}
 	require.Equal(t, expected, *resp)
 
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(10000))
-	wctx = sdk.WrapSDKContext(ctx)
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(10000))
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -334,39 +333,39 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	testHelper, ctx := testapp.SetupTestApp(t)
-	testHelper.StakingUtils.SetupValidators(ctx, validatorsAddresses, sdk.NewInt(100))
+	testHelper := testapp.SetupTestApp(t)
+	testHelper.StakingUtils.SetupValidators(validatorsAddresses, sdk.NewInt(100))
 
-	wctx := sdk.WrapSDKContext(ctx)
+	wctx := sdk.WrapSDKContext(testHelper.Context)
 
 	k := testHelper.App.CfevestingKeeper
 	ak := testHelper.App.AccountKeeper
 
 	request := types.QueryVestingsRequest{}
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(ctx, sdk.NewInt(1000000), types.ModuleName)
-	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(ctx, acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
+	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
 
-	cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
-	validator, _ := testHelper.App.StakingKeeper.GetValidator(ctx, validatorsAddresses[0])
+	cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
+	validator, _ := testHelper.StakingUtils.GetValidator(validatorsAddresses[0])
 
-	require.Equal(t, 4, len(testHelper.App.StakingKeeper.GetAllDelegations(ctx)))
-	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
-	testHelper.App.StakingKeeper.Delegate(ctx, acountsAddresses[1], sdk.NewInt(200000), stakingtypes.Unbonded,
+	require.Equal(t, 4, len(testHelper.App.StakingKeeper.GetAllDelegations(testHelper.Context)))
+	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
+	testHelper.App.StakingKeeper.Delegate(testHelper.Context, acountsAddresses[1], sdk.NewInt(200000), stakingtypes.Unbonded,
 		validator, true)
 
-	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(ctx)))
-	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
+	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(testHelper.Context)))
+	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
 
-	testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1)
-	testHelper.App.BeginBlocker(ctx, abci.RequestBeginBlock{Header: ctx.BlockHeader()})
+	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
+	testHelper.IncrementContextBlockHeight()
+	testHelper.BeginBlocker(abci.RequestBeginBlock{Header: testHelper.Context.BlockHeader()})
 
-	testHelper.App.StakingKeeper.Undelegate(ctx, acountsAddresses[1], validatorsAddresses[0], sdk.NewDec(100000))
+	testHelper.App.StakingKeeper.Undelegate(testHelper.Context, acountsAddresses[1], validatorsAddresses[0], sdk.NewDec(100000))
 
-	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(ctx)))
-	require.Equal(t, 1, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
-	testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
+	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(testHelper.Context)))
+	require.Equal(t, 1, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
+	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
 
 	resp, err := k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -378,11 +377,11 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 		DelegatedVestingAmount:  sdk.NewInt(200000),
 	}
 	require.Equal(t, expected, *resp)
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(5500))
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(5500))
 
-	testHelper.App.BeginBlocker(ctx, abci.RequestBeginBlock{Header: ctx.BlockHeader()})
+	testHelper.BeginBlocker(abci.RequestBeginBlock{Header: testHelper.Context.BlockHeader()})
 
-	wctx = sdk.WrapSDKContext(ctx)
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -394,9 +393,8 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 		DelegatedVestingAmount:  sdk.NewInt(150000),
 	}
 	require.Equal(t, expected, *resp)
-
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(7750))
-	wctx = sdk.WrapSDKContext(ctx)
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(7750))
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -409,8 +407,8 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 	}
 	require.Equal(t, expected, *resp)
 
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(10000))
-	wctx = sdk.WrapSDKContext(ctx)
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(10000))
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -465,40 +463,40 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
 	}
 
-	testHelper, ctx := testapp.SetupTestApp(t)
-	testHelper.StakingUtils.SetupValidators(ctx, validatorsAddresses, sdk.NewInt(100))
+	testHelper := testapp.SetupTestApp(t)
+	testHelper.StakingUtils.SetupValidators(validatorsAddresses, sdk.NewInt(100))
 
-	wctx := sdk.WrapSDKContext(ctx)
+	wctx := sdk.WrapSDKContext(testHelper.Context)
 
 	k := testHelper.App.CfevestingKeeper
 	ak := testHelper.App.AccountKeeper
 
 	request := types.QueryVestingsRequest{}
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(ctx, sdk.NewInt(1000000), types.ModuleName)
-	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(ctx, acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
+	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
 
-	cfevesting.InitGenesis(ctx, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
-	validator, _ := testHelper.App.StakingKeeper.GetValidator(ctx, validatorsAddresses[0])
+	cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
+	validator, _ := testHelper.StakingUtils.GetValidator(validatorsAddresses[0])
 
-	require.Equal(t, 4, len(testHelper.App.StakingKeeper.GetAllDelegations(ctx)))
-	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
-	testHelper.App.StakingKeeper.Delegate(ctx, acountsAddresses[1], sdk.NewInt(200000), stakingtypes.Unbonded,
+	require.Equal(t, 4, len(testHelper.App.StakingKeeper.GetAllDelegations(testHelper.Context)))
+	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
+	testHelper.App.StakingKeeper.Delegate(testHelper.Context, acountsAddresses[1], sdk.NewInt(200000), stakingtypes.Unbonded,
 		validator, true)
 
-	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(ctx)))
-	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
+	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(testHelper.Context)))
+	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
 
-	testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1)
+	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
+	testHelper.IncrementContextBlockHeight()
 
-	testHelper.App.BeginBlock(abci.RequestBeginBlock{Header: ctx.BlockHeader()})
+	testHelper.App.BeginBlock(abci.RequestBeginBlock{Header: testHelper.Context.BlockHeader()})
 
-	testHelper.App.StakingKeeper.Undelegate(ctx, acountsAddresses[1], validatorsAddresses[0], sdk.NewDec(100000))
+	testHelper.App.StakingKeeper.Undelegate(testHelper.Context, acountsAddresses[1], validatorsAddresses[0], sdk.NewDec(100000))
 
-	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(ctx)))
-	require.Equal(t, 1, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
-	testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
+	require.Equal(t, 5, len(testHelper.App.StakingKeeper.GetAllDelegations(testHelper.Context)))
+	require.Equal(t, 1, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
+	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
 
 	resp, err := k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -510,13 +508,12 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 		DelegatedVestingAmount:  sdk.NewInt(200000),
 	}
 	require.Equal(t, expected, *resp)
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(503))
+	testHelper.BeginBlocker(abci.RequestBeginBlock{Header: testHelper.Context.BlockHeader()})
+	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
+	require.Equal(t, 1, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
 
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(503))
-	testHelper.App.BeginBlocker(ctx, abci.RequestBeginBlock{Header: ctx.BlockHeader()})
-	testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
-	require.Equal(t, 1, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
-
-	wctx = sdk.WrapSDKContext(ctx)
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
@@ -528,13 +525,13 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 		DelegatedVestingAmount:  sdk.NewInt(200000),
 	}
 	require.Equal(t, expected, *resp)
+	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(504))
 
-	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1).WithBlockTime(testutils.CreateTimeFromNumOfHours(504))
-	testHelper.App.BeginBlocker(ctx, abci.RequestBeginBlock{Header: ctx.BlockHeader()})
-	testHelper.App.EndBlocker(ctx, abci.RequestEndBlock{Height: ctx.BlockHeight()})
-	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(ctx, acountsAddresses[1])))
+	testHelper.BeginBlocker(abci.RequestBeginBlock{Header: testHelper.Context.BlockHeader()})
+	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
+	require.Equal(t, 0, len(testHelper.App.StakingKeeper.GetAllUnbondingDelegations(testHelper.Context, acountsAddresses[1])))
 
-	wctx = sdk.WrapSDKContext(ctx)
+	wctx = sdk.WrapSDKContext(testHelper.Context)
 
 	resp, err = k.Vestings(wctx, &request)
 	require.NoError(t, err)
