@@ -8,7 +8,7 @@ import (
 
 // x/cfevesting module sentinel errors
 var (
-	ErrNoVestingPoolsFound               = sdkerrors.Register(ModuleName, 2, "no vesting pools found")
+	ErrInvalidRequest                    = sdkerrors.Register(ModuleName, 2, "invalid request error")
 	ErrWithdrawAllAvailable              = sdkerrors.Register(ModuleName, 3, "failed to withdraw all available")
 	ErrVestingTypeNotFound               = sdkerrors.Register(ModuleName, 4, "vesting type not found")
 	ErrVestingPoolAountEqualsZero        = sdkerrors.Register(ModuleName, 5, "vesting pool amount equals zero")
@@ -26,5 +26,5 @@ var (
 	ErrAccountNotAllowedToReceiveFunds   = sdkerrors.Register(ModuleName, 16, "account is not allowed to receive")
 	ErrVestingAccountExists              = sdkerrors.Register(ModuleName, 17, "account account already exists")
 	ErrInvalidAccountType                = sdkerrors.Register(ModuleName, 18, "invalid account type")
-	ErrInvalidRequest                    = sdkerrors.Register(ModuleName, 19, "invalid request error")
+	ErrNoVestingPoolsFound               = sdkerrors.Register(ModuleName, 19, "no vesting pools found")
 )
