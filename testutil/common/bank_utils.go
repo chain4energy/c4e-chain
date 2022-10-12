@@ -23,7 +23,7 @@ func AddHelperModuleAccountAddr(moduleAccAddrs map[string]bool) map[string]bool 
 }
 
 type BankUtils struct {
-	t *testing.T
+	t                   *testing.T
 	helperAccountKeeper *authkeeper.AccountKeeper
 	helperBankKeeper    bankkeeper.Keeper
 }
@@ -76,39 +76,11 @@ func (bu *BankUtils) VerifyAccountDefultDenomBalance(ctx sdk.Context, addr sdk.A
 	bu.VerifyAccountBalanceByDenom(ctx, addr, DefaultTestDenom, expectedAmount)
 }
 
+func (bu *BankUtils) VerifyTotalSupplyByDenom(ctx sdk.Context, denom string, expectedAmount sdk.Int) {
+	supply := bu.helperBankKeeper.GetSupply(ctx, denom).Amount
+	require.Truef(bu.t, expectedAmount.Equal(supply), "expectedAmount %s <> supply %s", expectedAmount, supply)
+}
 
-
-
-
-
-
-// func VerifyModuleAccountBalanceByName(accName string, ctx sdk.Context, app *app.App, t *testing.T, expectedAmount sdk.Int) {
-// 	VerifyModuleAccountDenomBalanceByName(accName, ctx, app, t, DefaultTestDenom, expectedAmount)
-// }
-
-// func VerifyModuleAccountDenomBalanceByName(accName string, ctx sdk.Context, app *app.App, t *testing.T, denom string, expectedAmount sdk.Int) {
-// 	moduleAccAddr := app.AccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
-// 	moduleBalance := app.BankKeeper.GetBalance(ctx, moduleAccAddr, denom)
-// 	require.EqualValues(t, expectedAmount.String(), moduleBalance.Amount.String())
-// }
-
-// func AddCoinsToAccount(vested uint64, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
-// 	return AddCoinsToAccountInt(sdk.NewIntFromUint64(vested), ctx, app, toAddr)
-// }
-
-// func AddCoinsToAccountInt(amount sdk.Int, ctx sdk.Context, app *app.App, toAddr sdk.AccAddress) string {
-
-// 	mintedCoin := sdk.NewCoin(DefaultTestDenom, amount)
-// 	mintedCoins := sdk.NewCoins(mintedCoin)
-// 	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
-// 	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, mintedCoins)
-// 	return DefaultTestDenom
-// }
-
-// func AddCoinsToModuleByName(vested uint64, modulaName string, ctx sdk.Context, app *app.App) string {
-// 	mintedCoin := sdk.NewCoin(DefaultTestDenom, sdk.NewIntFromUint64(vested))
-// 	mintedCoins := sdk.NewCoins(mintedCoin)
-// 	app.BankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
-// 	app.BankKeeper.SendCoinsFromModuleToModule(ctx, helperModuleAccount, modulaName, mintedCoins)
-// 	return DefaultTestDenom
-// }
+func (bu *BankUtils) VerifyDefultDenomTotalSupply(ctx sdk.Context, expectedAmount sdk.Int) {
+	bu.VerifyTotalSupplyByDenom(ctx, DefaultTestDenom, expectedAmount)
+}

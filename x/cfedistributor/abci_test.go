@@ -4,17 +4,13 @@ import (
 	"testing"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	// "github.com/chain4energy/c4e-chain/app"
 
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
-	// tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	// banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 type DestinationType int64
@@ -29,13 +25,18 @@ const (
 const c4eDistributorCollectorName = types.GreenEnergyBoosterCollector
 const noValidatorsCollectorName = types.GovernanceBoosterCollector
 
-// const c4eDistributorCollectorName = "c4e_distributor"
-// const noValidatorsCollectorName = "no_validators"
+var accAdresses, _ = commontestutils.CreateAccounts(2, 0)
+
+var baseAccountAddress = accAdresses[0]
+var shareDevelopmentFundAccountAddress = accAdresses[1]
+
+var baseAccountAddressString = baseAccountAddress.String()
+var shareDevelopmentFundAccountAddressString = shareDevelopmentFundAccountAddress.String()
 
 func prepareBurningDistributor(destinationType DestinationType) types.SubDistributor {
 	var address string
 	if destinationType == BaseAccount {
-		address = "cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck"
+		address = baseAccountAddressString
 	} else {
 		address = c4eDistributorCollectorName
 	}
@@ -44,15 +45,15 @@ func prepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 	destAccount.Id = address
 
 	if destinationType == ModuleAccount {
-		destAccount.Type = "MODULE_ACCOUNT"
+		destAccount.Type = types.MODULE_ACCOUNT
 	} else if destinationType == InternalAccount {
-		destAccount.Type = "INTERNAL_ACCOUNT"
+		destAccount.Type = types.INTERNAL_ACCOUNT
 	} else {
-		destAccount.Type = "BASE_ACCOUNT"
+		destAccount.Type = types.BASE_ACCOUNT
 	}
 
 	if destinationType == MainCollector {
-		destAccount.Type = "MAIN"
+		destAccount.Type = types.MAIN
 	}
 
 	burnShare := types.BurnShare{
@@ -67,7 +68,7 @@ func prepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 
 	distributor1 := types.SubDistributor{
 		Name:        "tx_fee_distributor",
-		Sources:     []*types.Account{{Id: authtypes.FeeCollectorName, Type: "MODULE_ACCOUNT"}},
+		Sources:     []*types.Account{{Id: authtypes.FeeCollectorName, Type: types.MODULE_ACCOUNT}},
 		Destination: destination,
 	}
 
@@ -77,12 +78,12 @@ func prepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 func prepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) types.SubDistributor {
 	source := types.Account{
 		Id:   "c4e",
-		Type: "MAIN",
+		Type: types.MAIN,
 	}
 
 	var address string
 	if passThroughAccoutType == BaseAccount {
-		address = "cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck"
+		address = baseAccountAddressString
 	} else {
 		address = c4eDistributorCollectorName
 	}
@@ -92,15 +93,15 @@ func prepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) 
 	}
 
 	if passThroughAccoutType == ModuleAccount {
-		destAccount.Type = "MODULE_ACCOUNT"
+		destAccount.Type = types.MODULE_ACCOUNT
 	} else if passThroughAccoutType == InternalAccount {
-		destAccount.Type = "INTERNAL_ACCOUNT"
+		destAccount.Type = types.INTERNAL_ACCOUNT
 	} else {
-		destAccount.Type = "BASE_ACCOUNT"
+		destAccount.Type = types.BASE_ACCOUNT
 	}
 
 	if passThroughAccoutType == MainCollector {
-		destAccount.Type = "MAIN"
+		destAccount.Type = types.MAIN
 	}
 
 	burnShare := types.BurnShare{
@@ -123,7 +124,7 @@ func prepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 
 	var address string
 	if sourceAccoutType == BaseAccount {
-		address = "cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck"
+		address = baseAccountAddressString
 	} else {
 		address = c4eDistributorCollectorName
 	}
@@ -133,18 +134,16 @@ func prepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 	}
 
 	if sourceAccoutType == ModuleAccount {
-		source.Type = "MODULE_ACCOUNT"
+		source.Type = types.MODULE_ACCOUNT
 	} else if sourceAccoutType == InternalAccount {
-		source.Type = "INTERNAL_ACCOUNT"
+		source.Type = types.INTERNAL_ACCOUNT
 	} else {
-		source.Type = "BASE_ACCOUNT"
+		source.Type = types.BASE_ACCOUNT
 	}
 
 	if sourceAccoutType == MainCollector {
-		source.Type = "MAIN"
+		source.Type = types.MAIN
 	}
-
-	// source := types.Account{IsMainCollector: true, IsModuleAccount: false, IsInternalAccount: false}
 
 	burnShare := types.BurnShare{
 		Percent: sdk.MustNewDecFromStr("0"),
@@ -159,12 +158,12 @@ func prepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 
 	var destAccount = types.Account{
 		Id:   destName,
-		Type: "MODULE_ACCOUNT",
+		Type: types.MODULE_ACCOUNT,
 	}
 
 	var shareDevelopmentFundAccount = types.Account{
-		Id:   "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag",
-		Type: "BASE_ACCOUNT",
+		Id:   shareDevelopmentFundAccountAddressString,
+		Type: types.BASE_ACCOUNT,
 	}
 
 	shareDevelopmentFund := types.Share{
@@ -204,12 +203,12 @@ func TestBurningDistributorBaseAccountDest(t *testing.T) {
 
 func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	senderCoin := sdk.NewInt(1017)
-	
+
 	testHelper, ctx := testapp.SetupTestApp(t)
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(ctx, senderCoin, authtypes.FeeCollectorName)
-	
-	require.EqualValues(t, testHelper.InitialValidatorsCoin.AddAmount(senderCoin), testHelper.App.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom))
+	testHelper.BankUtils.VerifyDefultDenomTotalSupply(ctx, testHelper.InitialValidatorsCoin.AddAmount(senderCoin).Amount)
+
 	var subdistributors []types.SubDistributor
 	subdistributors = append(subdistributors, prepareBurningDistributor(destinationType))
 
@@ -219,56 +218,41 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 
 	//coin on "burnState" should be equal 498, remains: 1 and 0.33 on remains
 	burnState, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, "burn_state_key")
-	ctx.Logger().Error(burnState.String())
-	//burnState, _ := app.CfedistributorKeeper.GetAllStates()
+
 	coinRemains := burnState.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.67"), coinRemains.AmountOf(commontestutils.DefaultTestDenom))
 
 	if destinationType == MainCollector {
-		mainCollectorCoins :=
-		testHelper.App.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.DistributorMainAccount, sdk.NewInt(499))
 		require.EqualValues(t, 1, len(testHelper.App.CfedistributorKeeper.GetAllStates(ctx)))
-		require.EqualValues(t, sdk.NewInt(499), mainCollectorCoins.AmountOf(commontestutils.DefaultTestDenom))
 	} else if destinationType == ModuleAccount {
-		mainCollectorCoins :=
-		testHelper.App.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
-		c4eModulAccountCoins :=
-		testHelper.App.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, c4eDistributorCollectorName)
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.DistributorMainAccount, sdk.NewInt(1))
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, c4eDistributorCollectorName, sdk.NewInt(498))
+
 		require.EqualValues(t, 2, len(testHelper.App.CfedistributorKeeper.GetAllStates(ctx)))
-		require.EqualValues(t, sdk.NewInt(498), c4eModulAccountCoins.AmountOf(commontestutils.DefaultTestDenom))
-		require.EqualValues(t, sdk.NewInt(1), mainCollectorCoins.AmountOf(commontestutils.DefaultTestDenom))
 		c4eDistrState, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, c4eDistributorCollectorName)
 		coinRemains := c4eDistrState.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains.AmountOf(commontestutils.DefaultTestDenom))
 
 	} else if destinationType == InternalAccount {
-		mainCollectorCoins :=
-		testHelper.App.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.DistributorMainAccount, sdk.NewInt(499))
+
 		require.EqualValues(t, 2, len(testHelper.App.CfedistributorKeeper.GetAllStates(ctx)))
-		require.EqualValues(t, sdk.NewInt(499), mainCollectorCoins.AmountOf(commontestutils.DefaultTestDenom))
 		c4eDistrState, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, c4eDistributorCollectorName)
 		coinRemains := c4eDistrState.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("498.33"), coinRemains.AmountOf(commontestutils.DefaultTestDenom))
 	} else {
-		address, _ := sdk.AccAddressFromBech32("cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck")
-		mainCollectorCoins :=
-		testHelper.App.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
-
-		accountCoins :=
-		testHelper.App.CfedistributorKeeper.GetAccountCoins(ctx, address)
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.DistributorMainAccount, sdk.NewInt(1))
+		testHelper.BankUtils.VerifyAccountDefultDenomBalance(ctx, baseAccountAddress, sdk.NewInt(498))
 
 		require.EqualValues(t, 2, len(testHelper.App.CfedistributorKeeper.GetAllStates(ctx)))
-		ctx.Logger().Error(accountCoins.AmountOf(commontestutils.DefaultTestDenom).String())
-		println("Amount: " + accountCoins.AmountOf(commontestutils.DefaultTestDenom).String())
 
-		require.EqualValues(t, sdk.NewInt(498), accountCoins.AmountOf(commontestutils.DefaultTestDenom))
-		require.EqualValues(t, sdk.NewInt(1), mainCollectorCoins.AmountOf(commontestutils.DefaultTestDenom))
-
-		c4eDistrState, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, "cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck")
+		c4eDistrState, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, baseAccountAddressString)
 		coinRemains := c4eDistrState.CoinsStates
-		require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains.AmountOf("uc4e"))
+		require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains.AmountOf(commontestutils.DefaultTestDenom))
 	}
-	require.EqualValues(t, sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(499)).Add(testHelper.InitialValidatorsCoin), testHelper.App.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom))
+
+	testHelper.BankUtils.VerifyDefultDenomTotalSupply(ctx, testHelper.InitialValidatorsCoin.AddAmount(sdk.NewInt(499)).Amount)
 }
 
 func TestBurningWithInflationDistributorPassThroughMainCollector(t *testing.T) {
@@ -306,7 +290,6 @@ func TestBurningWithInflationDistributorPassBaseAccountAccountNoValidators(t *te
 func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType DestinationType, toValidators bool) {
 
 	testHelper, ctx := testapp.SetupTestApp(t)
-	
 
 	//prepare module account with coin to distribute fee_collector 1017
 	cointToMint := sdk.NewInt(1017)
@@ -317,9 +300,8 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(ctx, cointToMintFromInflation, types.DistributorMainAccount)
 
 	initialCoinAmount := testHelper.InitialValidatorsCoin.AddAmount(cointToMint).AddAmount(cointToMintFromInflation)
-	require.EqualValues(t, initialCoinAmount, testHelper.App.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom))
 
-	// require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(1017+5044)).Add(valCoin), app.BankKeeper.GetSupply(ctx, denom))
+	testHelper.BankUtils.VerifyDefultDenomTotalSupply(ctx, initialCoinAmount.Amount)
 
 	var subDistributors []types.SubDistributor
 
@@ -345,10 +327,8 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 
 	// coins flow:
 	// fee 1017*51% = 518.67 to burn, so 518 burned - and burn remains 0.67
+	testHelper.BankUtils.VerifyDefultDenomTotalSupply(ctx, initialCoinAmount.SubAmount(sdk.NewInt(518)).Amount)
 
-	require.EqualValues(t, initialCoinAmount.SubAmount(sdk.NewInt(518)), testHelper.App.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom))
-
-	// require.EqualValues(t, sdk.NewCoin(denom, sdk.NewInt(1017+5044-518)).Add(valCoin), app.BankKeeper.GetSupply(ctx, commontestutils.DefaultTestDenom))
 	burnState, _ := testHelper.App.CfedistributorKeeper.GetBurnState(ctx)
 	coinRemains := burnState.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.67"), coinRemains.AmountOf("uc4e"))
@@ -359,28 +339,19 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	if passThroughAccoutType == ModuleAccount || passThroughAccoutType == InternalAccount {
 		// 5542.33 moved to c4e_distributor module or internal account
 		// and all is distributed further, and 0 in remains
-		c4eDIstrCoins := testHelper.App.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, c4eDistributorCollectorName)
-		require.EqualValues(t, sdk.MustNewDecFromStr("0"), c4eDIstrCoins.AmountOf(commontestutils.DefaultTestDenom).ToDec())
+
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, c4eDistributorCollectorName, sdk.NewInt(0))
 
 		remains, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, c4eDistributorCollectorName)
-		//require.EqualValues(t, passThroughAccoutType == ModuleAccount, remains.Account.IsModuleAccount)
-		//require.EqualValues(t, passThroughAccoutType == InternalAccount, remains.Account.IsInternalAccount)
-		//require.EqualValues(t, false, remains.Account.IsMainCollector)
 
 		coinRemainsDevelopmentFund := remains.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("0"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
 	} else if passThroughAccoutType == BaseAccount {
 		// 5542.33 moved to cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck account
 		// and all is distributed further, and 0 in remains
-		address, _ := sdk.AccAddressFromBech32("cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck")
+		testHelper.BankUtils.VerifyAccountDefultDenomBalance(ctx, baseAccountAddress, sdk.NewInt(0))
 
-		c4eDIstrCoins := testHelper.App.CfedistributorKeeper.GetAccountCoins(ctx, address)
-		require.EqualValues(t, sdk.MustNewDecFromStr("0"), c4eDIstrCoins.AmountOf(commontestutils.DefaultTestDenom).ToDec())
-
-		remains, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, "cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck")
-		//require.EqualValues(t, passThroughAccoutType == ModuleAccount, remains.Account.IsModuleAccount)
-		//require.EqualValues(t, passThroughAccoutType == InternalAccount, remains.Account.IsInternalAccount)
-		//require.EqualValues(t, false, remains.Account.IsMainCollector)
+		remains, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, baseAccountAddressString)
 
 		coinRemainsDevelopmentFund := remains.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("0"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
@@ -389,11 +360,9 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	// 5542.33*10.345% = 573.3540385 to cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag, so
 	// 573 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.3540385 on its distributor state
 
-	acc, _ := sdk.AccAddressFromBech32("cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
-	developmentFundAccount := testHelper.App.CfedistributorKeeper.GetAccountCoins(ctx, acc)
-	require.EqualValues(t, sdk.MustNewDecFromStr("573"), developmentFundAccount.AmountOf(commontestutils.DefaultTestDenom).ToDec())
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(ctx, shareDevelopmentFundAccountAddress, sdk.NewInt(573))
 
-	remains, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
+	remains, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, shareDevelopmentFundAccountAddressString)
 	coinRemainsDevelopmentFund := remains.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.3540385"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
 
@@ -403,21 +372,20 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	if toValidators {
 		// validators_rewards_collector coins sent to vaalidator distribition so amount is 0,
 
-		validatorRewardCollectorAccountCoin := testHelper.App.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.ValidatorsRewardsCollector)
-		require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(commontestutils.DefaultTestDenom).ToDec())
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.ValidatorsRewardsCollector, sdk.NewInt(0))
+
 		// still 0.9759615 on its distributor state remains
 		remains, _ = testHelper.App.CfedistributorKeeper.GetState(ctx, types.ValidatorsRewardsCollector)
 		coinRemainsValidatorsReward := remains.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("0.9759615"), coinRemainsValidatorsReward.AmountOf(commontestutils.DefaultTestDenom))
 		// and 4968 to validators rewards
-		distrCoins := testHelper.App.CfedistributorKeeper.GetAccountCoins(ctx, testHelper.App.DistrKeeper.GetDistributionAccount(ctx).GetAddress())
-		require.EqualValues(t, sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(4968))), distrCoins)
+
+		testHelper.BankUtils.VerifyAccountDefultDenomBalance(ctx, testHelper.App.DistrKeeper.GetDistributionAccount(ctx).GetAddress(), sdk.NewInt(4968))
 	} else {
 		// no_validators module account coins amount is 4968,
 		// and remains 0.9759615 on its distributor state
 
-		NoValidatorsCoin := testHelper.App.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, noValidatorsCollectorName)
-		require.EqualValues(t, sdk.MustNewDecFromStr("4968"), NoValidatorsCoin.AmountOf(commontestutils.DefaultTestDenom).ToDec())
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, noValidatorsCollectorName, sdk.NewInt(4968))
 
 		remains, _ = testHelper.App.CfedistributorKeeper.GetState(ctx, noValidatorsCollectorName)
 		coinRemainsValidatorsReward := remains.CoinsStates
@@ -425,9 +393,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	}
 
 	// 5543 - 573 - 4968 = 2 (its ramains 0,67 + 0.3540385 + 0.9759615 = 2) on main collector
-	coinOnDistributorAccount :=
-		testHelper.App.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
-	require.EqualValues(t, sdk.MustNewDecFromStr("2"), coinOnDistributorAccount.AmountOf(commontestutils.DefaultTestDenom).ToDec())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.DistributorMainAccount, sdk.NewInt(2))
 
 }
 
@@ -485,11 +451,11 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	// 16632532.33*10.345% = 1720635.4695385 to cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag, so
 	// 1720635 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.4695385 on its distributor state
 
-	acc, _ := sdk.AccAddressFromBech32("cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
+	acc, _ := sdk.AccAddressFromBech32(shareDevelopmentFundAccountAddressString)
 	developmentFundAccount := testHelper.App.CfedistributorKeeper.GetAccountCoins(ctx, acc)
 	require.EqualValues(t, sdk.MustNewDecFromStr("1720635"), developmentFundAccount.AmountOf(commontestutils.DefaultTestDenom).ToDec())
 
-	remains, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
+	remains, _ := testHelper.App.CfedistributorKeeper.GetState(ctx, shareDevelopmentFundAccountAddressString)
 	coinRemainsDevelopmentFund := remains.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.4695385"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
 
