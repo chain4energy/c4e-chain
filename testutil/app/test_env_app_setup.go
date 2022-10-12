@@ -68,6 +68,7 @@ func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time
 
 	helperAk := authkeeper.NewAccountKeeper(
 		app.AppCodec(), app.GetKey(authtypes.StoreKey), app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
+		c4eapp.AccountAddressPrefix,
 	)
 
 	moduleAccAddrs := testcommon.AddHelperModuleAccountAddr(app.ModuleAccountAddrs())

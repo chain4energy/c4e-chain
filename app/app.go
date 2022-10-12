@@ -344,7 +344,7 @@ func New(
 		app.GetSubspace(authtypes.ModuleName),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
-		sdk.Bech32PrefixAccAddr,
+		AccountAddressPrefix,
 	)
 
 	app.AuthzKeeper = authzkeeper.NewKeeper(
@@ -377,7 +377,7 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		&stakingKeeper,
-		authtypes.FeeCollectorName,
+		cfedistributormoduletypes.ValidatorsRewardsCollector,
 	)
 
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
