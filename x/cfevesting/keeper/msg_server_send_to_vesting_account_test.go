@@ -79,8 +79,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 		VestingId: 2, Amount: sdk.NewInt(100), RestartVesting: true}
 	_, err := msgServer.SendToVestingAccount(msgServerCtx, &msg)
 
-	require.EqualError(t, err,
-		"rpc error: code = NotFound desc = No vestings")
+	require.EqualError(t, err, "no vestings found: failed to withdraw all available")
 
 	require.Equal(t, uint64(0), app.CfevestingKeeper.GetVestingAccountCount(ctx))
 
@@ -110,8 +109,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 		VestingId: 2, Amount: sdk.NewInt(100), RestartVesting: true}
 	_, err := msgServer.SendToVestingAccount(msgServerCtx, &msg)
 
-	require.EqualError(t, err,
-		"vesting pool with id 2 not found: not found")
+	require.EqualError(t, err, "vesting pool with id 2 not found: vesting pool not found")
 
 	require.Equal(t, uint64(0), app.CfevestingKeeper.GetVestingAccountCount(ctx))
 
@@ -142,7 +140,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	_, err := msgServer.SendToVestingAccount(msgServerCtx, &msg)
 
 	require.EqualError(t, err,
-		"vesting available: 1000 is smaller than 1100: insufficient funds")
+		"vesting available: 1000 is smaller than 1100: vesting available is smaller than amount")
 
 	require.Equal(t, uint64(0), app.CfevestingKeeper.GetVestingAccountCount(ctx))
 }
@@ -177,7 +175,7 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	_, err = msgServer.SendToVestingAccount(msgServerCtx, &msg)
 
 	require.EqualError(t, err,
-		"vesting available: 900 is smaller than 950: insufficient funds")
+		"vesting available: 900 is smaller than 950: vesting available is smaller than amount")
 
 	require.Equal(t, uint64(1), app.CfevestingKeeper.GetVestingAccountCount(ctx))
 	vaccFromList, found := app.CfevestingKeeper.GetVestingAccount(ctx, uint64(0))
@@ -215,7 +213,7 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	_, err = msgServer.SendToVestingAccount(msgServerCtx, &msg)
 
 	require.EqualError(t, err,
-		"account "+accAddr2.String()+" already exists: invalid request")
+		"account address: "+accAddr2.String()+": account account already exists")
 
 	require.Equal(t, uint64(1), app.CfevestingKeeper.GetVestingAccountCount(ctx))
 	vaccFromList, found := app.CfevestingKeeper.GetVestingAccount(ctx, uint64(0))

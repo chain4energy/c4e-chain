@@ -59,7 +59,7 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
 
 	require.EqualError(t, err,
-		"vesting type not found: unknown: not found")
+		"vesting type not found: unknown: vesting type not found")
 
 }
 
@@ -88,8 +88,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 		Amount: sdk.NewInt(vested), Duration: 1000, VestingType: usedVestingType.Name}
 	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
 
-	require.EqualError(t, err,
-		"vesting pool name already exists: "+vPool1+": invalid request")
+	require.EqualError(t, err, "vesting pool name: "+vPool1+": vesting pool name already exists")
 
 }
 

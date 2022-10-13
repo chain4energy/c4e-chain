@@ -168,6 +168,6 @@ func TestWithdrawAllAvailableBadAddress(t *testing.T) {
 	_, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 
 	require.EqualError(t, err,
-		"decoding bech32 failed: invalid separator index -1")
+		"decoding bech32 failed: invalid separator index -1: failed to parse address")
 
 }

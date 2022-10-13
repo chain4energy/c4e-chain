@@ -214,7 +214,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 	w, err := k.WithdrawAllAvailable(ctx, fromAddr)
 	if err != nil {
 		k.Logger(ctx).Error("send to new vesting account withdraw all available error", "error", err.Error())
-		return withdrawn, types.ErrWithdrawAllAvailable
+		return withdrawn, sdkerrors.Wrap(types.ErrWithdrawAllAvailable, err.Error())
 	}
 
 	accVestings, vestingsFound := k.GetAccountVestings(ctx, fromAddr)
