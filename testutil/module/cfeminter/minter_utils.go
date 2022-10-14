@@ -21,3 +21,11 @@ func CompareMinters(t *testing.T, m1 types.Minter, m2 types.Minter) {
 		require.EqualValues(t, p1.Type, p2.Type)
 	}
 }
+
+func CompareMinterStates(t *testing.T, expected types.MinterState, state types.MinterState) {
+	require.EqualValues(t, expected.Position, state.Position)
+	require.Truef(t, expected.AmountMinted.Equal(state.AmountMinted), "expected.AmountMinted %s <> state.AmountMinted %s", expected.AmountMinted, state.AmountMinted)
+	require.Truef(t, expected.RemainderToMint.Equal(state.RemainderToMint), "expected.RemainderToMint %s <> state.RemainderToMint %s", expected.RemainderToMint, state.RemainderToMint)
+	require.Truef(t, expected.LastMintBlockTime.Equal(state.LastMintBlockTime), "expected.LastMintBlockTime %s <> state.LastMintBlockTime %s", expected.LastMintBlockTime.Local(), state.LastMintBlockTime.Local())
+	require.Truef(t, expected.RemainderFromPreviousPeriod.Equal(state.RemainderFromPreviousPeriod), "expected.RemainderFromPreviousPeriod %s <> state.RemainderFromPreviousPeriod %s", expected.RemainderFromPreviousPeriod, state.RemainderFromPreviousPeriod)
+}

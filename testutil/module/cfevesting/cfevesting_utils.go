@@ -317,8 +317,8 @@ func NewContextC4eVestingUtils(t *testing.T, testContext commontestutils.TestCon
 	helperBankKeeper *bankkeeper.Keeper,
 	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *commontestutils.BankUtils,
 	authUtils *commontestutils.AuthUtils) *ContextC4eVestingUtils {
-	c4eVestingUtilsUtils := NewC4eVestingUtils(t, helperCfevestingKeeper, helperAccountKeeper, helperBankKeeper, helperStakingKeeper, bankUtils, authUtils)
-	return &ContextC4eVestingUtils{C4eVestingUtils: c4eVestingUtilsUtils, testContext: testContext}
+	c4eVestingUtils := NewC4eVestingUtils(t, helperCfevestingKeeper, helperAccountKeeper, helperBankKeeper, helperStakingKeeper, bankUtils, authUtils)
+	return &ContextC4eVestingUtils{C4eVestingUtils: c4eVestingUtils, testContext: testContext}
 }
 
 func (h *ContextC4eVestingUtils) SetupAccountsVestings(address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestings {
