@@ -58,6 +58,8 @@ func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual 
 }
 
 func AssertAccountVestingsArrays(t *testing.T, expected []*types.AccountVestings, actual []*types.AccountVestings) {
+	require.EqualValues(t, len(expected), len(actual))
+
 	for _, accVest := range expected {
 		found := false
 		for _, accVestExp := range actual {

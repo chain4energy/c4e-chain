@@ -1,6 +1,7 @@
 package common
 
 import (
+	"testing"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -8,15 +9,19 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
+	"github.com/stretchr/testify/require"
+
 )
 
 type AuthUtils struct {
+	t                   *testing.T
 	helperAccountKeeper *authkeeper.AccountKeeper
 	bankUtils           *BankUtils
 }
 
-func NewAuthUtils(helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) AuthUtils {
-	return AuthUtils{helperAccountKeeper: helperAccountKeeper, bankUtils: bankUtils}
+func NewAuthUtils(t *testing.T, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) AuthUtils {
+	return AuthUtils{t: t, helperAccountKeeper: helperAccountKeeper, bankUtils: bankUtils}
 }
 
 func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coin sdk.Coin, start time.Time, end time.Time) error {
@@ -45,13 +50,32 @@ func (au *AuthUtils) CreateDefaultDenomVestingAccount(ctx sdk.Context, address s
 	return au.CreateVestingAccount(ctx, address, sdk.NewCoin(DefaultTestDenom, amount), start, end)
 }
 
+func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedDenom string, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
+	account := au.helperAccountKeeper.GetAccount(ctx, address)
+
+	vacc, ok := account.(vestexported.VestingAccount)
+	require.True(au.t, ok, ok)
+	locked := vacc.LockedCoins(ctx.BlockTime())
+	require.Equal(au.t, 1, len(locked))
+
+	require.Equal(au.t, lockedDenom, locked[0].Denom)
+	require.Equal(au.t, lockedAmount, locked[0].Amount)
+
+	require.Equal(au.t, endTime.Unix(), vacc.GetEndTime())
+	require.Equal(au.t, startTime.Unix(), vacc.GetStartTime())
+}
+
+func (au *AuthUtils) VerifyDefaultDenomVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
+	au.VerifyVestingAccount(ctx, address, DefaultTestDenom, lockedAmount, startTime, endTime)
+}
+
 type ContextAuthUtils struct {
 	AuthUtils
 	testContext TestContext
 }
 
-func NewContextAuthUtils(testContext TestContext, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) *ContextAuthUtils {
-	authUtils := NewAuthUtils(helperAccountKeeper, bankUtils)
+func NewContextAuthUtils(t *testing.T, testContext TestContext, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) *ContextAuthUtils {
+	authUtils := NewAuthUtils(t, helperAccountKeeper, bankUtils)
 	return &ContextAuthUtils{AuthUtils: authUtils, testContext: testContext}
 }
 
@@ -61,4 +85,12 @@ func (au *ContextAuthUtils) CreateVestingAccount(address string, coin sdk.Coin, 
 
 func (au *ContextAuthUtils) CreateDefaultDenomVestingAccount(address string, amount sdk.Int, start time.Time, end time.Time) error {
 	return au.AuthUtils.CreateDefaultDenomVestingAccount(au.testContext.GetContext(), address, amount, start, end)
+}
+
+func (au *ContextAuthUtils) VerifyVestingAccount(address sdk.AccAddress, lockedDenom string, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
+	au.AuthUtils.VerifyVestingAccount(au.testContext.GetContext(), address, lockedDenom, lockedAmount, startTime, endTime)
+}
+
+func (au *ContextAuthUtils) VerifyDefaultDenomVestingAccount(address sdk.AccAddress, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
+	au.AuthUtils.VerifyDefaultDenomVestingAccount(au.testContext.GetContext(), address, lockedAmount, startTime, endTime)
 }
