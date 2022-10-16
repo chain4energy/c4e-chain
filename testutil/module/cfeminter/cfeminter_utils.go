@@ -1,15 +1,8 @@
 package cfeminter
 
 import (
-	// "context"
-	// "strconv"
 	"time"
-
-	// "github.com/chain4energy/c4e-chain/testutil/nullify"
-
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-	// "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"testing"
@@ -21,27 +14,20 @@ import (
 	"github.com/stretchr/testify/require"
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 )
 
 type C4eMinterUtils struct {
 	t                     *testing.T
 	helperCfeminterKeeper *cfemintermodulekeeper.Keeper
 	helperAccountKeeper   *authkeeper.AccountKeeper
-	helperBankKeeper      *bankkeeper.Keeper
-	helperStakingKeeper   *stakingkeeper.Keeper
 	bankUtils             *commontestutils.BankUtils
-	authUtils             *commontestutils.AuthUtils
 }
 
 func NewC4eMinterUtils(t *testing.T, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	helperBankKeeper *bankkeeper.Keeper,
-	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *commontestutils.BankUtils,
-	authUtils *commontestutils.AuthUtils) C4eMinterUtils {
+	bankUtils *commontestutils.BankUtils) C4eMinterUtils {
 	return C4eMinterUtils{t: t, helperCfeminterKeeper: helperCfeminterKeeper, helperAccountKeeper: helperAccountKeeper,
-		helperBankKeeper: helperBankKeeper, helperStakingKeeper: helperStakingKeeper, bankUtils: bankUtils, authUtils: authUtils}
+		bankUtils: bankUtils}
 }
 
 func (m *C4eMinterUtils) SetMinterState(ctx sdk.Context, position int32, amountMinted sdk.Int,
@@ -113,10 +99,15 @@ func (m *C4eMinterUtils) ExportGenesis(ctx sdk.Context, expected cfemintertypes.
 		CompareMinterStates(m.t, *expected.StateHistory[i], *got.StateHistory[i])
 	}
 }
+
 func (m *C4eMinterUtils) VerifyInflation(ctx sdk.Context, expectedInflation sdk.Dec) {
 	inflation, err := m.helperCfeminterKeeper.GetCurrentInflation(ctx)
 	require.NoError(m.t, err)
 	require.EqualValues(m.t, expectedInflation, inflation)
+}
+
+func (m *C4eMinterUtils) SetParams(ctx sdk.Context, params cfemintertypes.Params) {
+	m.helperCfeminterKeeper.SetParams(ctx, params)
 }
 
 type ContextC4eMinterUtils struct {
@@ -126,10 +117,8 @@ type ContextC4eMinterUtils struct {
 
 func NewContextC4eMinterUtils(t *testing.T, testContext commontestutils.TestContext, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	helperBankKeeper *bankkeeper.Keeper,
-	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *commontestutils.BankUtils,
-	authUtils *commontestutils.AuthUtils) *ContextC4eMinterUtils {
-	c4eMinterUtils := NewC4eMinterUtils(t, helperCfeminterKeeper, helperAccountKeeper, helperBankKeeper, helperStakingKeeper, bankUtils, authUtils)
+	bankUtils *commontestutils.BankUtils) *ContextC4eMinterUtils {
+	c4eMinterUtils := NewC4eMinterUtils(t, helperCfeminterKeeper, helperAccountKeeper, bankUtils)
 	return &ContextC4eMinterUtils{C4eMinterUtils: c4eMinterUtils, testContext: testContext}
 }
 
@@ -172,4 +161,8 @@ func (m *ContextC4eMinterUtils) VerifyInflation(expectedInflation sdk.Dec) {
 
 func (m *ContextC4eMinterUtils) VerifyMinterHistory(expectedMinterStateHistory ...cfemintertypes.MinterState) {
 	m.C4eMinterUtils.VerifyMinterHistory(m.testContext.GetContext(), expectedMinterStateHistory...)
+}
+
+func (m *ContextC4eMinterUtils) SetParams(params cfemintertypes.Params) {
+	m.C4eMinterUtils.SetParams(m.testContext.GetContext(), params)
 }
