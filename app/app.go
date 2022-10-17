@@ -391,7 +391,7 @@ func New(
 		app.GetSubspace(crisistypes.ModuleName),
 		invCheckPeriod,
 		app.BankKeeper,
-		authtypes.FeeCollectorName,
+		authtypes.FeeCollectorName, // TODO verify if authtypes.FeeCollectorName  is ok
 	)
 
 	groupConfig := group.DefaultConfig()

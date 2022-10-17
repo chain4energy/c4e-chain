@@ -5,8 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/testutil/nullify"
-	"github.com/chain4energy/c4e-chain/x/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -29,19 +27,9 @@ func TestGenesisWholeApp(t *testing.T) {
 	}
 
 	testHelper := testapp.SetupTestApp(t)
+	testHelper.C4eVestingUtils.InitGenesis(genesisState)
+	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 
-	cfevesting.InitGenesis(testHelper.Context, testHelper.App.CfevestingKeeper, genesisState, testHelper.App.AccountKeeper, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
-	got := cfevesting.ExportGenesis(testHelper.Context, testHelper.App.CfevestingKeeper)
-	require.NotNil(t, got)
-
-	require.EqualValues(t, genesisState, *got)
-
-	nullify.Fill(&genesisState)
-	nullify.Fill(got)
-
-	require.ElementsMatch(t, genesisState.VestingAccountList, got.VestingAccountList)
-	require.Equal(t, genesisState.VestingAccountCount, got.VestingAccountCount)
-	// this line is used by starport scaffolding # genesis/test/assert
 }
 
 func TestGenesisVestingTypesAndAccounts(t *testing.T) {
@@ -65,17 +53,9 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 
 	testHelper := testapp.SetupTestApp(t)
 
-	k := testHelper.App.CfevestingKeeper
-	ak := testHelper.App.AccountKeeper
+	testHelper.C4eVestingUtils.InitGenesis(genesisState)
+	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 
-	cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
-	got := cfevesting.ExportGenesis(testHelper.Context, k)
-
-	require.NotNil(t, got)
-	require.EqualValues(t, genesisState, *got)
-
-	nullify.Fill(&genesisState)
-	nullify.Fill(got)
 }
 
 func TestGenesisVestingTypes(t *testing.T) {
@@ -89,17 +69,9 @@ func TestGenesisVestingTypes(t *testing.T) {
 
 	testHelper := testapp.SetupTestApp(t)
 
-	k := testHelper.App.CfevestingKeeper
-	ak := testHelper.App.AccountKeeper
+	testHelper.C4eVestingUtils.InitGenesis(genesisState)
+	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 
-	cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
-	got := cfevesting.ExportGenesis(testHelper.Context, k)
-
-	require.NotNil(t, got)
-	require.EqualValues(t, genesisState, *got)
-
-	nullify.Fill(&genesisState)
-	nullify.Fill(got)
 }
 
 func TestGenesisValidationVestingTypes(t *testing.T) {
@@ -335,10 +307,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 
 	testHelper := testapp.SetupTestApp(t)
 
-	k := testHelper.App.CfevestingKeeper
-	ak := testHelper.App.AccountKeeper
-
-	cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
+	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
 	vestingTypesArray[0].LockupPeriod = 234
 	vestingTypesArray[0].LockupPeriodUnit = dstUnits
@@ -346,13 +315,8 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	vestingTypesArray[0].VestingPeriod = 345
 	vestingTypesArray[0].VestingPeriodUnit = dstUnits
 
-	got := cfevesting.ExportGenesis(testHelper.Context, k)
+	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 
-	require.NotNil(t, got)
-	require.EqualValues(t, genesisState, *got)
-
-	nullify.Fill(&genesisState)
-	nullify.Fill(got)
 }
 
 func getUndelegableAmount(accvestings []*types.AccountVestings) sdk.Int {
@@ -377,21 +341,9 @@ func TestGenesisAccountVestingsList(t *testing.T) {
 
 	testHelper := testapp.SetupTestApp(t)
 
-	k := testHelper.App.CfevestingKeeper
-	ak := testHelper.App.AccountKeeper
-
 	mintUndelegableCoinsToModule(testHelper, genesisState, getUndelegableAmount(accountVestingsListArray))
-	cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper)
-	got := cfevesting.ExportGenesis(testHelper.Context, k)
-	require.NotNil(t, got)
-	require.EqualValues(t, genesisState.Params, got.GetParams())
-	require.EqualValues(t, genesisState.VestingTypes, (*got).VestingTypes)
-	require.EqualValues(t, len(accountVestingsListArray), len((*got).AccountVestingsList.Vestings))
-
-	testutils.AssertAccountVestingsArrays(t, accountVestingsListArray, (*got).AccountVestingsList.Vestings)
-
-	nullify.Fill(&genesisState)
-	nullify.Fill(got)
+	testHelper.C4eVestingUtils.InitGenesis(genesisState)
+	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 
 }
 
@@ -407,15 +359,10 @@ func TestGenesisAccountVestingsListWrongAmountInModuleAccount(t *testing.T) {
 
 	testHelper := testapp.SetupTestApp(t)
 
-	k := testHelper.App.CfevestingKeeper
-	ak := testHelper.App.AccountKeeper
-
 	undelegableAmount := getUndelegableAmount(accountVestingsListArray)
 	wrongAcountAmount := getUndelegableAmount(accountVestingsListArray).SubRaw(10)
 	mintUndelegableCoinsToModule(testHelper, genesisState, wrongAcountAmount)
-
-	require.PanicsWithError(t, fmt.Sprintf("module: cfevesting account balance of denom uc4e not equal of sum of undelegable vestings: %s <> %s", wrongAcountAmount.String(), undelegableAmount.String()),
-		func() { cfevesting.InitGenesis(testHelper.Context, k, genesisState, ak, testHelper.App.BankKeeper, testHelper.App.StakingKeeper) }, "")
+	testHelper.C4eVestingUtils.InitGenesisError(genesisState, fmt.Sprintf("module: cfevesting account balance of denom uc4e not equal of sum of undelegable vestings: %s <> %s", wrongAcountAmount.String(), undelegableAmount.String()))
 
 }
 

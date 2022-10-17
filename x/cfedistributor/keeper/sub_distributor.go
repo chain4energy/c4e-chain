@@ -6,8 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-const BurnStateKey = "burn_state_key"
-
 // GetAllStates returns all States
 func (k Keeper) GetAllStates(ctx sdk.Context) (list []types.State) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RemainsKeyPrefix)
@@ -38,7 +36,7 @@ func (k Keeper) GetState(ctx sdk.Context, stateKey string) (remains types.State,
 }
 
 func (k Keeper) GetBurnState(ctx sdk.Context) (remains types.State, found bool) {
-	return k.GetState(ctx, BurnStateKey)
+	return k.GetState(ctx, types.BurnStateKey)
 }
 
 // SetState Set the state
@@ -54,7 +52,7 @@ func GetStateKey(state types.State) string {
 
 	} else {
 		//its state burn
-		return BurnStateKey
+		return types.BurnStateKey
 	}
 
 }
