@@ -23,6 +23,7 @@ import IbcGoV3IbcApplicationsInterchainAccountsControllerV1 from './ibc-go/v3/ib
 import IbcGoV3IbcApplicationsInterchainAccountsHostV1 from './ibc-go/v3/ibc.applications.interchain_accounts.host.v1'
 import IbcGoV3IbcApplicationsTransferV1 from './ibc-go/v3/ibc.applications.transfer.v1'
 import IbcGoV3IbcCoreChannelV1 from './ibc-go/v3/ibc.core.channel.v1'
+import IbcGoV3IbcCoreClientV1 from './ibc-go/v3/ibc.core.client.v1'
 import IbcGoV3IbcCoreConnectionV1 from './ibc-go/v3/ibc.core.connection.v1'
 import TendermintSpnTendermintSpnMonitoringp from './tendermint/spn/tendermint.spn.monitoringp'
 
@@ -51,6 +52,7 @@ export default {
   IbcGoV3IbcApplicationsInterchainAccountsHostV1: load(IbcGoV3IbcApplicationsInterchainAccountsHostV1, 'ibc.applications.interchain_accounts.host.v1'),
   IbcGoV3IbcApplicationsTransferV1: load(IbcGoV3IbcApplicationsTransferV1, 'ibc.applications.transfer.v1'),
   IbcGoV3IbcCoreChannelV1: load(IbcGoV3IbcCoreChannelV1, 'ibc.core.channel.v1'),
+  IbcGoV3IbcCoreClientV1: load(IbcGoV3IbcCoreClientV1, 'ibc.core.client.v1'),
   IbcGoV3IbcCoreConnectionV1: load(IbcGoV3IbcCoreConnectionV1, 'ibc.core.connection.v1'),
   TendermintSpnTendermintSpnMonitoringp: load(TendermintSpnTendermintSpnMonitoringp, 'tendermint.spn.monitoringp'),
   
