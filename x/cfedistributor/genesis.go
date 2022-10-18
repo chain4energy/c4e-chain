@@ -8,12 +8,8 @@ import (
 
 // InitGenesis initializes the capability module's state from a provided genesis
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, ak types.AccountKeeper) {
+	k.Logger(ctx).Debug("init genesis", "genState", genState)
 	k.SetParams(ctx, genState.Params)
-	for _, sb := range k.GetParams(ctx).SubDistributors {
-		k.Logger(ctx).Info("SubDistributor: " + sb.Name)
-	}
-	k.Logger(ctx).Info("Init Genesis module: " + types.ModuleName)
-
 	states := genState.States
 	for _, av := range states {
 		k.SetState(ctx, *av)
