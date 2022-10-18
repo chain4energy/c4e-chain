@@ -373,16 +373,24 @@ func mintUndelegableCoinsToModule(testHelper *testapp.TestHelper, genesisState t
 
 func TestDurationFromUnits(t *testing.T) {
 	amount := int64(456)
-	require.EqualValues(t, amount*int64(time.Second), keeper.DurationFromUnits(keeper.Second, amount))
-	require.EqualValues(t, amount*int64(time.Minute), keeper.DurationFromUnits(keeper.Minute, amount))
-	require.EqualValues(t, amount*int64(time.Hour), keeper.DurationFromUnits(keeper.Hour, amount))
-	require.EqualValues(t, amount*int64(time.Hour*24), keeper.DurationFromUnits(keeper.Day, amount))
+	duration, err := keeper.DurationFromUnits(keeper.Second, amount)
+	require.NoError(t, err)
+	require.EqualValues(t, amount*int64(time.Second), duration)
+	duration, err = keeper.DurationFromUnits(keeper.Minute, amount)
+	require.NoError(t, err)
+	require.EqualValues(t, amount*int64(time.Minute), duration)
+	duration, err = keeper.DurationFromUnits(keeper.Hour, amount)
+	require.NoError(t, err)
+	require.EqualValues(t, amount*int64(time.Hour), duration)
+	duration, err = keeper.DurationFromUnits(keeper.Day, amount)
+	require.NoError(t, err)
+	require.EqualValues(t, amount*int64(time.Hour*24), duration)
 
 }
 
 func TestDurationFromUnitsWrongUnit(t *testing.T) {
-	require.PanicsWithError(t, "Unknown PeriodUnit: das: invalid type", func() { keeper.DurationFromUnits("das", 234) }, "")
-
+	_, err := keeper.DurationFromUnits("das", 234)
+	require.EqualError(t, err, "Unknown PeriodUnit: das: invalid type")
 }
 
 func TestUnitsFromDuration(t *testing.T) {

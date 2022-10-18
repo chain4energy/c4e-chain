@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,7 +10,7 @@ import (
 )
 
 func (k msgServer) PublishReferencePayloadLink(goCtx context.Context, msg *types.MsgPublishReferencePayloadLink) (*types.MsgPublishReferencePayloadLinkResponse, error) {
-
+	defer telemetry.IncrCounter(1, types.ModuleName, "publish reference payload link message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	var err error

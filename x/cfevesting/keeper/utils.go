@@ -36,18 +36,18 @@ func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *types.VestingTypes) 
 	return gVestingTypes
 }
 
-func DurationFromUnits(unit PeriodUnit, value int64) time.Duration {
+func DurationFromUnits(unit PeriodUnit, value int64) (time.Duration, error) {
 	switch unit {
 	case Day:
-		return 24 * time.Hour * time.Duration(value)
+		return 24 * time.Hour * time.Duration(value), nil
 	case Hour:
-		return time.Hour * time.Duration(value)
+		return time.Hour * time.Duration(value), nil
 	case Minute:
-		return time.Minute * time.Duration(value)
+		return time.Minute * time.Duration(value), nil
 	case Second:
-		return time.Second * time.Duration(value)
+		return time.Second * time.Duration(value), nil
 	}
-	panic(sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Unknown PeriodUnit: %s", unit))
+	return time.Duration(0), sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Unknown PeriodUnit: %s", unit)
 }
 
 func UnitsFromDuration(duration time.Duration) (unit PeriodUnit, value int64) {
