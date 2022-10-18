@@ -447,20 +447,25 @@ func mintUndelegableCoinsToModule(ctx sdk.Context, app *app.App, genesisState ty
 }
 
 func TestDurationFromUnits(t *testing.T) {
-	app := app.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	amount := int64(456)
-	require.EqualValues(t, amount*int64(time.Second), keeper.DurationFromUnits(ctx, keeper.Second, amount))
-	require.EqualValues(t, amount*int64(time.Minute), keeper.DurationFromUnits(ctx, keeper.Minute, amount))
-	require.EqualValues(t, amount*int64(time.Hour), keeper.DurationFromUnits(ctx, keeper.Hour, amount))
-	require.EqualValues(t, amount*int64(time.Hour*24), keeper.DurationFromUnits(ctx, keeper.Day, amount))
+	duration, err := keeper.DurationFromUnits(keeper.Second, amount)
+	require.NoError(t, err)
+	require.EqualValues(t, amount*int64(time.Second), duration)
+	duration, err = keeper.DurationFromUnits(keeper.Minute, amount)
+	require.NoError(t, err)
+	require.EqualValues(t, amount*int64(time.Minute), duration)
+	duration, err = keeper.DurationFromUnits(keeper.Hour, amount)
+	require.NoError(t, err)
+	require.EqualValues(t, amount*int64(time.Hour), duration)
+	duration, err = keeper.DurationFromUnits(keeper.Day, amount)
+	require.NoError(t, err)
+	require.EqualValues(t, amount*int64(time.Hour*24), duration)
 
 }
 
 func TestDurationFromUnitsWrongUnit(t *testing.T) {
-	app := app.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	require.PanicsWithError(t, "Unknown PeriodUnit: das: invalid type", func() { keeper.DurationFromUnits(ctx, "das", 234) }, "")
+	_, err := keeper.DurationFromUnits("das", 234)
+	require.EqualError(t, err, "Unknown PeriodUnit: das: invalid type")
 }
 
 func TestUnitsFromDuration(t *testing.T) {

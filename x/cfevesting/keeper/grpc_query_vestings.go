@@ -2,16 +2,17 @@ package keeper
 
 import (
 	"context"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (k Keeper) Vestings(goCtx context.Context, req *types.QueryVestingsRequest) (*types.QueryVestingsResponse, error) {
 	if req == nil {
-		return nil, types.ErrInvalidRequest
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -27,7 +28,7 @@ func (k Keeper) Vestings(goCtx context.Context, req *types.QueryVestingsRequest)
 	for _, accFromList := range allAcc {
 		accAddr, err := sdk.AccAddressFromBech32(accFromList.Address)
 		if err != nil {
-			return &types.QueryVestingsResponse{}, sdkerrors.Wrap(types.ErrParsing, err.Error())
+			return &types.QueryVestingsResponse{}, status.Error(codes.Internal, err.Error())
 		}
 
 		vestingAccount := k.account.GetAccount(ctx, accAddr)
