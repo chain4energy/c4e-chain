@@ -1,10 +1,10 @@
 package keeper
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
+
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 type PeriodUnit string
@@ -36,21 +36,18 @@ func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *types.VestingTypes) 
 	return gVestingTypes
 }
 
-func DurationFromUnits(ctx sdk.Context, unit PeriodUnit, value int64) time.Duration {
+func DurationFromUnits(unit PeriodUnit, value int64) (time.Duration, error) {
 	switch unit {
 	case Day:
-		return 24 * time.Hour * time.Duration(value)
+		return 24 * time.Hour * time.Duration(value), nil
 	case Hour:
-		return time.Hour * time.Duration(value)
+		return time.Hour * time.Duration(value), nil
 	case Minute:
-		return time.Minute * time.Duration(value)
+		return time.Minute * time.Duration(value), nil
 	case Second:
-		return time.Second * time.Duration(value)
+		return time.Second * time.Duration(value), nil
 	}
-
-	Keeper{}.Logger(ctx).Debug("set account vestings", "vesting utils duration from units unknown periodunit error",
-		"unit", unit)
-	panic(sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Unknown PeriodUnit: %s", unit))
+	return time.Duration(0), sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Unknown PeriodUnit: %s", unit)
 }
 
 func UnitsFromDuration(duration time.Duration) (unit PeriodUnit, value int64) {
