@@ -62,7 +62,7 @@ const (
 
 	opWeightMsgCreateVestingAccount = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateVestingAccount int = 100
+	defaultWeightMsgCreateVestingAccount int = 50
 
 	opWeightMsgSendToVestingAccount = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value

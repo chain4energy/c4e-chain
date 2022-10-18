@@ -38,18 +38,25 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	for i, acc := range simState.Accounts {
 		accs[i] = acc.Address.String()
 	}
-
 	startAmountYearly := int64(40000000000000)
-	//AddHelperModuleAccountPerms()
 	now := time.Now()
-	pminter := types.PeriodicReductionMinter{MintAmount: sdk.NewInt(startAmountYearly), MintPeriod: SecondsInYear, ReductionPeriodLength: 4, ReductionFactor: sdk.MustNewDecFromStr("0.5")}
+	pminter := types.PeriodicReductionMinter{
+		MintAmount:            sdk.NewInt(startAmountYearly),
+		MintPeriod:            SecondsInYear,
+		ReductionPeriodLength: 4,
+		ReductionFactor:       sdk.MustNewDecFromStr("0.5"),
+	}
 
 	minter := types.Minter{
 		Start: now,
 		Periods: []*types.MintingPeriod{
-			{Position: 1, Type: types.PERIODIC_REDUCTION_MINTER,
-				PeriodicReductionMinter: &pminter},
-		}}
+			{
+				Position:                1,
+				Type:                    types.PERIODIC_REDUCTION_MINTER,
+				PeriodicReductionMinter: &pminter,
+			},
+		},
+	}
 
 	genesisState := types.GenesisState{
 		Params:      types.NewParams("uc4e", minter),
@@ -123,10 +130,3 @@ func TestAddr(addr string, bech string) (sdk.AccAddress, error) {
 
 	return res, nil
 }
-
-const helperModuleAccount = "helperTestAcc"
-
-//func AddHelperModuleAccountPerms() {
-//	perms := []string{"minter"}
-//	app.AddMaccPerms(helperModuleAccount, perms)
-//}
