@@ -19,15 +19,21 @@ func SimulateMsgCreateVestingAccount(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		simAccount2, _ := simtypes.RandomAcc(r, accs)
-		randAmount := sdk.NewInt(helpers.RandomInt(r, 10000000000))
-		coin := sdk.NewCoin("stake", randAmount)
+		randInt := helpers.RandomInt(r, 100000)
+		simAccount2Address := helpers.CreateRandomAccAddressNoBalance(randInt)
+
+		randCoinsAmount := sdk.NewInt(helpers.RandomInt(r, 1000))
+		coin := sdk.NewCoin("stake", randCoinsAmount)
 		coins := sdk.NewCoins(coin)
+
+		randomStartDurationAdd := time.Duration(helpers.RandomInt(r, 1000000))
+		randomStartDurationEnd := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
+
 		msg := &types.MsgCreateVestingAccount{
 			FromAddress: simAccount.Address.String(),
-			ToAddress:   simAccount2.Address.String(),
-			EndTime:     time.Now().Add(1).Unix(),
-			StartTime:   time.Now().Unix(),
+			ToAddress:   simAccount2Address,
+			EndTime:     time.Now().Add(randomStartDurationAdd).Unix(),
+			StartTime:   time.Now().Add(randomStartDurationEnd).Unix(),
 			Amount:      coins,
 		}
 
@@ -37,7 +43,7 @@ func SimulateMsgCreateVestingAccount(
 			k.Logger(ctx).Error("SIMULATION: Create vesting account error", err.Error())
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "invalid transfers"), nil, nil
 		}
-
+		k.Logger(ctx).Info("SIMULATION: Create vesting account - CREATED")
 		return simtypes.NewOperationMsg(msg, true, "Create vesting account simulation completed", nil), nil, nil
 	}
 }

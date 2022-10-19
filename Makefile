@@ -73,7 +73,7 @@ release:
 
 # blockchain simulation tests
 
-SIM_NUM_BLOCKS = 500
+SIM_NUM_BLOCKS = 100
 SIM_BLOCK_SIZE = 50
 SIM_COMMIT = true
 SIMAPP = ./app

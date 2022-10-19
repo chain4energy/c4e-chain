@@ -1,6 +1,7 @@
 package cfevesting
 
 import (
+	"fmt"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 
@@ -78,22 +79,23 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	for i, acc := range simState.Accounts {
 		accs[i] = acc.Address.String()
 	}
+	fmt.Println(len(accs))
 	cfevestingGenesis := types.GenesisState{
 		Params: types.NewParams("stake"),
 		VestingTypes: []types.GenesisVestingType{
 			{
 				Name:              "New vesting0",
 				VestingPeriod:     helpers.RandomInt(simState.Rand, 10000000),
-				VestingPeriodUnit: "day",
+				VestingPeriodUnit: "second",
 				LockupPeriod:      helpers.RandomInt(simState.Rand, 10000000),
-				LockupPeriodUnit:  "day",
+				LockupPeriodUnit:  "second",
 			},
 			{
 				Name:              "New vesting1",
 				VestingPeriod:     helpers.RandomInt(simState.Rand, 1000),
-				VestingPeriodUnit: "day",
+				VestingPeriodUnit: "second",
 				LockupPeriod:      helpers.RandomInt(simState.Rand, 1000),
-				LockupPeriodUnit:  "day",
+				LockupPeriodUnit:  "second",
 			},
 			{
 				Name:              "New vesting2",
@@ -104,9 +106,9 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 			},
 			{
 				Name:              "New vesting3",
-				VestingPeriod:     helpers.RandomInt(simState.Rand, 1),
+				VestingPeriod:     helpers.RandomInt(simState.Rand, 5),
 				VestingPeriodUnit: "second",
-				LockupPeriod:      helpers.RandomInt(simState.Rand, 1),
+				LockupPeriod:      helpers.RandomInt(simState.Rand, 5),
 				LockupPeriodUnit:  "second",
 			},
 		},

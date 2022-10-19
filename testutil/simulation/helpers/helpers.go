@@ -1,7 +1,9 @@
 package helpers
 
 import (
+	"bytes"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -80,4 +82,17 @@ func GenSignedMockTx(r *rand.Rand, gen client.TxConfig, msgs []sdk.Msg, feeAmt s
 	}
 
 	return tx.GetTx(), nil
+}
+func CreateRandomAccAddressNoBalance(i int64) string {
+
+	var buffer bytes.Buffer
+
+	// start at 100 so we can make up to 999 test addresses with valid test addresses
+
+	numString := strconv.Itoa(int(i))
+	buffer.WriteString("A58856F0FD53BF058B4909A21AEC019107BA6") // base address string
+
+	buffer.WriteString(numString) // adding on final two digits to make addresses unique
+	res, _ := sdk.AccAddressFromHex(buffer.String())
+	return res.String()
 }

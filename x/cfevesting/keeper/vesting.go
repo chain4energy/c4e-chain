@@ -264,7 +264,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 
 func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddress string,
 	amount sdk.Coins, startTime int64, endTime int64) error {
-	k.Logger(ctx).Debug("create vesting account", "fromAddress", fromAddress, "fromAddress", fromAddress,
+	k.Logger(ctx).Debug("create vesting account", "fromAddress", fromAddress, "toAddress", toAddress,
 		"amount", amount, "startTime", startTime, "endTime", endTime)
 	ak := k.account
 	bk := k.bank
@@ -281,7 +281,7 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 	}
 	to, err := sdk.AccAddressFromBech32(toAddress)
 	if err != nil {
-		k.Logger(ctx).Error("create vesting account to-address parsing error", "fromAddress", fromAddress, "error", err.Error())
+		k.Logger(ctx).Error("create vesting account to-address parsing error", "toAddress", toAddress, "error", err.Error())
 		return sdkerrors.Wrap(types.ErrParsing, err.Error())
 	}
 
