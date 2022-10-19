@@ -1,7 +1,7 @@
 package cfedistributor
 
 import (
-	sdkrand "github.com/chain4energy/c4e-chain/testutil/simulation"
+	sdkrand "github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"

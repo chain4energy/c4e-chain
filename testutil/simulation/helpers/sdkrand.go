@@ -1,4 +1,4 @@
-package sdkrand
+package helpers
 
 import (
 	"errors"
