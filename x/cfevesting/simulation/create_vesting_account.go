@@ -12,8 +12,8 @@ import (
 )
 
 func SimulateMsgCreateVestingAccount(
-	ak types.AccountKeeper,
-	bk types.BankKeeper,
+	_ types.AccountKeeper,
+	_ types.BankKeeper,
 	k keeper.Keeper,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -41,9 +41,10 @@ func SimulateMsgCreateVestingAccount(
 		_, err := msgServer.CreateVestingAccount(msgServerCtx, msg)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Create vesting account error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "invalid transfers"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), ""), nil, nil
 		}
-		k.Logger(ctx).Info("SIMULATION: Create vesting account - CREATED")
+
+		k.Logger(ctx).Debug("SIMULATION: Create vesting account - CREATED")
 		return simtypes.NewOperationMsg(msg, true, "Create vesting account simulation completed", nil), nil, nil
 	}
 }

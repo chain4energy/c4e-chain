@@ -13,9 +13,9 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
-func SimulateMsgCreateVestingPool(
-	ak types.AccountKeeper,
-	bk types.BankKeeper,
+func SimulateVestingOperations(
+	_ types.AccountKeeper,
+	_ types.BankKeeper,
 	k keeper.Keeper,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -30,7 +30,7 @@ func SimulateMsgCreateVestingPool(
 		randVesingId := helpers.RandomInt(r, 3)
 		randomVestingType := "New vesting" + strconv.Itoa(int(randVesingId))
 
-		msg := &types.MsgCreateVestingPool{
+		msgCreateVestingPool := &types.MsgCreateVestingPool{
 			Creator:     simAccount1.Address.String(),
 			Name:        randVestingName,
 			Amount:      randVestingAmount,
@@ -39,36 +39,36 @@ func SimulateMsgCreateVestingPool(
 		}
 
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		_, err := msgServer.CreateVestingPool(msgServerCtx, msg)
+		_, err := msgServer.CreateVestingPool(msgServerCtx, msgCreateVestingPool)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Create vesting pool error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "invalid transfers"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, msgCreateVestingPool.Type(), ""), nil, nil
 		}
 
-		randMsgSendAmount := sdk.NewInt(helpers.RandomInt(r, 10))
-		msg2 := types.MsgSendToVestingAccount{
+		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10))
+		msgSendToVestingAccount := types.MsgSendToVestingAccount{
 			FromAddress:    simAccount1.Address.String(),
 			ToAddress:      simAccount2Address,
 			VestingId:      1,
-			Amount:         randMsgSendAmount,
+			Amount:         randMsgSendToVestinAccAmount,
 			RestartVesting: true,
 		}
-		_, err = msgServer.SendToVestingAccount(msgServerCtx, &msg2)
+		_, err = msgServer.SendToVestingAccount(msgServerCtx, &msgSendToVestingAccount)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Send to vesting account error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "invalid transfers"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, msgCreateVestingPool.Type(), ""), nil, nil
 		}
 
-		msg3 := types.MsgWithdrawAllAvailable{
+		msgWithdrawAllAvailable := types.MsgWithdrawAllAvailable{
 			Creator: simAccount1.Address.String(),
 		}
-		_, err = msgServer.WithdrawAllAvailable(msgServerCtx, &msg3)
+		_, err = msgServer.WithdrawAllAvailable(msgServerCtx, &msgWithdrawAllAvailable)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Withdraw all available error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "invalid transfers"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, msgCreateVestingPool.Type(), ""), nil, nil
 		}
 
-		k.Logger(ctx).Info("SIMULATION: Vesting operations - FINISHED")
-		return simtypes.NewOperationMsg(msg, true, "Vesting operations simulation completed", nil), nil, nil
+		k.Logger(ctx).Debug("SIMULATION: Vesting operations - FINISHED")
+		return simtypes.NewOperationMsg(msgCreateVestingPool, true, "Vesting operations simulation completed", nil), nil, nil
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	cfedistributorsimulation "github.com/chain4energy/c4e-chain/x/cfedistributor/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -18,7 +17,6 @@ import (
 // avoid unused import issue
 var (
 	_ = sample.AccAddress
-	_ = cfedistributorsimulation.FindAccount
 	_ = simappparams.StakePerAccount
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
@@ -30,23 +28,22 @@ const (
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
-	}
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 	}
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, prepareBurningDistributor(MainCollector))
-	subdistributors = append(subdistributors, prepareInflationSubDistributor(MainCollector, true))
-	subdistributors = append(subdistributors, prepareInflationToPassAcoutSubDistr(MainCollector))
+	randDistinationType := randomCollectorName(simState.Rand)
+	subdistributors = append(subdistributors, prepareBurningDistributor(randDistinationType))
+	subdistributors = append(subdistributors, prepareInflationSubDistributor(randDistinationType, true))
+	subdistributors = append(subdistributors, prepareInflationToPassAcoutSubDistr(randDistinationType))
+
 	genesisState.Params.SubDistributors = subdistributors
 	cfedistributorGenesis := types.GenesisState{
 		Params: types.NewParams(subdistributors),
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
+
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfedistributorGenesis)
 }
 
@@ -83,6 +80,21 @@ const (
 	InternalAccount
 	BaseAccount
 )
+
+func randomCollectorName(r *rand.Rand) DestinationType {
+	randVal := sdkrand.RandIntBetween(r, 0, 3)
+	switch randVal {
+	case 0:
+		return MainCollector
+	case 1:
+		return MainCollector
+	case 2:
+		return MainCollector
+	case 3:
+		return MainCollector
+	}
+	return MainCollector
+}
 
 func prepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) types.SubDistributor {
 	source := types.Account{
@@ -193,21 +205,6 @@ func prepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 		Sources:     []*types.Account{&source},
 		Destination: destination,
 	}
-}
-
-func randomCollectorName(r *rand.Rand) DestinationType {
-	randVal := sdkrand.RandIntBetween(r, 0, 3)
-	switch randVal {
-	case 0:
-		return MainCollector
-	case 1:
-		return MainCollector
-	case 2:
-		return MainCollector
-	case 3:
-		return MainCollector
-	}
-	return MainCollector
 }
 
 func prepareBurningDistributor(destinationType DestinationType) types.SubDistributor {

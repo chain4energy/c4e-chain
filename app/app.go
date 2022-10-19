@@ -605,7 +605,7 @@ func New(
 		transferModule,
 		monitoringModule,
 		cfevestingModule,
-		cfesignatureModule,
+		cfesignatureModule, // - no simulations yey
 		cfeminterModule,
 		cfedistributorModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
