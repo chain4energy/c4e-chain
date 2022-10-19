@@ -11,13 +11,13 @@ import (
 
 func (k Keeper) VestingPools(goCtx context.Context, req *types.QueryVestingPoolsRequest) (*types.QueryVestingPoolsResponse, error) {
 	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
+		return nil, types.ErrInvalidRequest
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	vestings, found := k.GetAccountVestings(ctx, req.Address)
 	if !found {
-		return &types.QueryVestingPoolsResponse{}, nil
+		return nil, status.Error(codes.NotFound, "Vesting pools not found")
 	}
 
 	result := types.QueryVestingPoolsResponse{}
