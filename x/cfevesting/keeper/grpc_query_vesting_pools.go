@@ -5,6 +5,8 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (k Keeper) VestingPools(goCtx context.Context, req *types.QueryVestingPoolsRequest) (*types.QueryVestingPoolsResponse, error) {
@@ -15,7 +17,7 @@ func (k Keeper) VestingPools(goCtx context.Context, req *types.QueryVestingPools
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	vestings, found := k.GetAccountVestings(ctx, req.Address)
 	if !found {
-		return nil, types.ErrNoVestingPoolsFound
+		return nil, status.Error(codes.NotFound, "Vesting pools not found")
 	}
 
 	result := types.QueryVestingPoolsResponse{}
