@@ -3,6 +3,7 @@ package cfedistributor_test
 import (
 	testapp "github.com/chain4energy/c4e-chain/app"
 	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,7 +28,7 @@ func TestGenesis(t *testing.T) {
 	}
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, prepareBurningDistributor(MainCollector))
+	subdistributors = append(subdistributors, testutils.PrepareBurningDistributor(testutils.MainCollector))
 	genesisState.Params.SubDistributors = subdistributors
 	k, ctx := keepertest.CfedistributorKeeper(t)
 	app := testapp.Setup(false)
@@ -60,7 +61,7 @@ func TestGenesisImport(t *testing.T) {
 	}
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, prepareBurningDistributor(MainCollector))
+	subdistributors = append(subdistributors, testutils.PrepareBurningDistributor(testutils.MainCollector))
 	genesisState.Params.SubDistributors = subdistributors
 	k, ctx := keepertest.CfedistributorKeeper(t)
 	app := testapp.Setup(false)

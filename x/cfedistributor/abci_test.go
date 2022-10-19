@@ -1,197 +1,34 @@
 package cfedistributor_test
 
 import (
-	"testing"
-
 	testapp "github.com/chain4energy/c4e-chain/app"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"testing"
 )
-
-type DestinationType int64
-
-const (
-	MainCollector DestinationType = iota
-	ModuleAccount
-	InternalAccount
-	BaseAccount
-)
-
-func prepareBurningDistributor(destinationType DestinationType) types.SubDistributor {
-	var address string
-	if destinationType == BaseAccount {
-		address = "cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck"
-	} else {
-		address = "c4e_distributor"
-	}
-
-	var destAccount = types.Account{}
-	destAccount.Id = address
-
-	if destinationType == ModuleAccount {
-		destAccount.Type = "MODULE_ACCOUNT"
-	} else if destinationType == InternalAccount {
-		destAccount.Type = "INTERNAL_ACCOUNT"
-	} else {
-		destAccount.Type = "BASE_ACCOUNT"
-	}
-
-	if destinationType == MainCollector {
-		destAccount.Type = "MAIN"
-	}
-
-	burnShare := types.BurnShare{
-		Percent: sdk.MustNewDecFromStr("51"),
-	}
-
-	destination := types.Destination{
-		Account:   destAccount,
-		Share:     nil,
-		BurnShare: &burnShare,
-	}
-
-	distributor1 := types.SubDistributor{
-		Name:        "tx_fee_distributor",
-		Sources:     []*types.Account{{Id: "fee_collector", Type: "MODULE_ACCOUNT"}},
-		Destination: destination,
-	}
-
-	return distributor1
-}
-
-func prepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) types.SubDistributor {
-	source := types.Account{
-		Id:   "c4e",
-		Type: "MAIN",
-	}
-
-	var address string
-	if passThroughAccoutType == BaseAccount {
-		address = "cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck"
-	} else {
-		address = "c4e_distributor"
-	}
-
-	var destAccount = types.Account{
-		Id: address,
-	}
-
-	if passThroughAccoutType == ModuleAccount {
-		destAccount.Type = "MODULE_ACCOUNT"
-	} else if passThroughAccoutType == InternalAccount {
-		destAccount.Type = "INTERNAL_ACCOUNT"
-	} else {
-		destAccount.Type = "BASE_ACCOUNT"
-	}
-
-	if passThroughAccoutType == MainCollector {
-		destAccount.Type = "MAIN"
-	}
-
-	burnShare := types.BurnShare{
-		Percent: sdk.MustNewDecFromStr("0"),
-	}
-
-	destination := types.Destination{
-		Account:   destAccount,
-		Share:     nil,
-		BurnShare: &burnShare,
-	}
-	return types.SubDistributor{
-		Name:        "pass_distributor",
-		Sources:     []*types.Account{&source},
-		Destination: destination,
-	}
-}
-
-func prepareInflationSubDistributor(sourceAccoutType DestinationType, toValidators bool) types.SubDistributor {
-
-	var address string
-	if sourceAccoutType == BaseAccount {
-		address = "cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck"
-	} else {
-		address = "c4e_distributor"
-	}
-
-	var source = types.Account{
-		Id: address,
-	}
-
-	if sourceAccoutType == ModuleAccount {
-		source.Type = "MODULE_ACCOUNT"
-	} else if sourceAccoutType == InternalAccount {
-		source.Type = "INTERNAL_ACCOUNT"
-	} else {
-		source.Type = "BASE_ACCOUNT"
-	}
-
-	if sourceAccoutType == MainCollector {
-		source.Type = "MAIN"
-	}
-
-	// source := types.Account{IsMainCollector: true, IsModuleAccount: false, IsInternalAccount: false}
-
-	burnShare := types.BurnShare{
-		Percent: sdk.MustNewDecFromStr("0"),
-	}
-
-	var destName string
-	if toValidators {
-		destName = types.ValidatorsRewardsCollector
-	} else {
-		destName = "no_validators"
-	}
-
-	var destAccount = types.Account{
-		Id:   destName,
-		Type: "MODULE_ACCOUNT",
-	}
-
-	var shareDevelopmentFundAccount = types.Account{
-		Id:   "cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag",
-		Type: "BASE_ACCOUNT",
-	}
-
-	shareDevelopmentFund := types.Share{
-		Name:    "development_fund",
-		Percent: sdk.MustNewDecFromStr("10.345"),
-		Account: shareDevelopmentFundAccount,
-	}
-
-	destination := types.Destination{
-		Account:   destAccount,
-		Share:     []*types.Share{&shareDevelopmentFund},
-		BurnShare: &burnShare,
-	}
-
-	return types.SubDistributor{
-		Name:        "tx_fee_distributor",
-		Sources:     []*types.Account{&source},
-		Destination: destination,
-	}
-}
 
 func TestBurningDistributorMainCollectorDes(t *testing.T) {
-	BurningDistributorTest(t, MainCollector)
+	BurningDistributorTest(t, testutils.MainCollector)
 }
 
 func TestBurningDistributorModuleAccountDest(t *testing.T) {
-	BurningDistributorTest(t, ModuleAccount)
+	BurningDistributorTest(t, testutils.ModuleAccount)
 }
 
 func TestBurningDistributorInternalAccountDest(t *testing.T) {
-	BurningDistributorTest(t, InternalAccount)
+	BurningDistributorTest(t, testutils.InternalAccount)
 }
 
 func TestBurningDistributorBaseAccountDest(t *testing.T) {
-	BurningDistributorTest(t, BaseAccount)
+	BurningDistributorTest(t, testutils.BaseAccount)
 }
 
-func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
+func BurningDistributorTest(t *testing.T, destinationType testutils.DestinationType) {
 
 	perms := []string{authtypes.Minter, authtypes.Burner}
 	collector := "fee_collector"
@@ -207,7 +44,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	app.BankKeeper.MintCoins(ctx, collector, sdk.NewCoins(cointToMint))
 	require.EqualValues(t, cointToMint, app.BankKeeper.GetSupply(ctx, denom))
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, prepareBurningDistributor(destinationType))
+	subdistributors = append(subdistributors, testutils.PrepareBurningDistributor(destinationType))
 
 	app.CfedistributorKeeper.SetParams(ctx, types.NewParams(subdistributors))
 	ctx = ctx.WithBlockHeight(int64(2))
@@ -220,12 +57,12 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	coinRemains := burnState.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.67"), coinRemains.AmountOf("uc4e"))
 
-	if destinationType == MainCollector {
+	if destinationType == testutils.MainCollector {
 		mainCollectorCoins :=
 			app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 		require.EqualValues(t, 1, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 		require.EqualValues(t, sdk.NewInt(499), mainCollectorCoins.AmountOf(denom))
-	} else if destinationType == ModuleAccount {
+	} else if destinationType == testutils.ModuleAccount {
 		mainCollectorCoins :=
 			app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 		c4eModulAccountCoins :=
@@ -237,7 +74,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 		coinRemains := c4eDistrState.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("0.33"), coinRemains.AmountOf("uc4e"))
 
-	} else if destinationType == InternalAccount {
+	} else if destinationType == testutils.InternalAccount {
 		mainCollectorCoins :=
 			app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 		require.EqualValues(t, 2, len(app.CfedistributorKeeper.GetAllStates(ctx)))
@@ -268,38 +105,38 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 }
 
 func TestBurningWithInflationDistributorPassThroughMainCollector(t *testing.T) {
-	BurningWithInflationDistributorTest(t, MainCollector, true)
+	BurningWithInflationDistributorTest(t, testutils.MainCollector, true)
 }
 
 func TestBurningWithInflationDistributorPassThroughModuleAccount(t *testing.T) {
-	BurningWithInflationDistributorTest(t, ModuleAccount, true)
+	BurningWithInflationDistributorTest(t, testutils.ModuleAccount, true)
 }
 
 func TestBurningWithInflationDistributorPassInternalAccountAccount(t *testing.T) {
-	BurningWithInflationDistributorTest(t, InternalAccount, true)
+	BurningWithInflationDistributorTest(t, testutils.InternalAccount, true)
 }
 
 func TestBurningWithInflationDistributorPassBaseAccountAccount(t *testing.T) {
-	BurningWithInflationDistributorTest(t, BaseAccount, true)
+	BurningWithInflationDistributorTest(t, testutils.BaseAccount, true)
 }
 
 func TestBurningWithInflationDistributorPassThroughMainCollectorNoValidators(t *testing.T) {
-	BurningWithInflationDistributorTest(t, MainCollector, false)
+	BurningWithInflationDistributorTest(t, testutils.MainCollector, false)
 }
 
 func TestBurningWithInflationDistributorPassThroughModuleAccountNoValidators(t *testing.T) {
-	BurningWithInflationDistributorTest(t, ModuleAccount, false)
+	BurningWithInflationDistributorTest(t, testutils.ModuleAccount, false)
 }
 
 func TestBurningWithInflationDistributorPassInternalAccountAccountNoValidators(t *testing.T) {
-	BurningWithInflationDistributorTest(t, InternalAccount, false)
+	BurningWithInflationDistributorTest(t, testutils.InternalAccount, false)
 }
 
 func TestBurningWithInflationDistributorPassBaseAccountAccountNoValidators(t *testing.T) {
-	BurningWithInflationDistributorTest(t, BaseAccount, false)
+	BurningWithInflationDistributorTest(t, testutils.BaseAccount, false)
 }
 
-func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType DestinationType, toValidators bool) {
+func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType testutils.DestinationType, toValidators bool) {
 	perms := []string{authtypes.Minter, authtypes.Burner}
 	collector := "fee_collector"
 	testapp.AddMaccPerms("c4e_distributor", nil)
@@ -321,21 +158,21 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 
 	var subDistributors []types.SubDistributor
 
-	subDistributors = append(subDistributors, prepareBurningDistributor(MainCollector))
-	if passThroughAccoutType != MainCollector {
-		subDistributors = append(subDistributors, prepareInflationToPassAcoutSubDistr(passThroughAccoutType))
+	subDistributors = append(subDistributors, testutils.PrepareBurningDistributor(testutils.MainCollector))
+	if passThroughAccoutType != testutils.MainCollector {
+		subDistributors = append(subDistributors, testutils.PrepareInflationToPassAcoutSubDistr(passThroughAccoutType))
 	}
-	subDistributors = append(subDistributors, prepareInflationSubDistributor(passThroughAccoutType, toValidators))
+	subDistributors = append(subDistributors, testutils.PrepareInflationSubDistributor(passThroughAccoutType, toValidators))
 
 	app.CfedistributorKeeper.SetParams(ctx, types.NewParams(subDistributors))
 	ctx = ctx.WithBlockHeight(int64(2))
 	app.BeginBlocker(ctx, abci.RequestBeginBlock{})
 
-	if passThroughAccoutType == MainCollector {
+	if passThroughAccoutType == testutils.MainCollector {
 		require.EqualValues(t, 3, len(app.CfedistributorKeeper.GetAllStates(ctx)))
-	} else if passThroughAccoutType == ModuleAccount {
+	} else if passThroughAccoutType == testutils.ModuleAccount {
 		require.EqualValues(t, 4, len(app.CfedistributorKeeper.GetAllStates(ctx)))
-	} else if passThroughAccoutType == InternalAccount {
+	} else if passThroughAccoutType == testutils.InternalAccount {
 		require.EqualValues(t, 4, len(app.CfedistributorKeeper.GetAllStates(ctx)))
 	} else {
 		require.EqualValues(t, 4, len(app.CfedistributorKeeper.GetAllStates(ctx)))
@@ -352,7 +189,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	// added 499 to main collector
 	// main collector state = 499 + 5044 = 5543, but 5543 - 0,67 = 5542.33 to distribute
 
-	if passThroughAccoutType == ModuleAccount || passThroughAccoutType == InternalAccount {
+	if passThroughAccoutType == testutils.ModuleAccount || passThroughAccoutType == testutils.InternalAccount {
 		// 5542.33 moved to c4e_distributor module or internal account
 		// and all is distributed further, and 0 in remains
 		c4eDIstrCoins := app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "c4e_distributor")
@@ -365,7 +202,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 
 		coinRemainsDevelopmentFund := remains.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("0"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
-	} else if passThroughAccoutType == BaseAccount {
+	} else if passThroughAccoutType == testutils.BaseAccount {
 		// 5542.33 moved to cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck account
 		// and all is distributed further, and 0 in remains
 		address, _ := sdk.AccAddressFromBech32("cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck")
@@ -383,7 +220,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	}
 
 	// 5542.33*10.345% = 573.3540385 to cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag, so
-	// 573 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.3540385 on its distributor state
+	// 573 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.3540385 on its cfedistributor state
 
 	acc, _ := sdk.AccAddressFromBech32("cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
 	developmentFundAccount := app.CfedistributorKeeper.GetAccountCoins(ctx, acc)
@@ -394,14 +231,14 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.3540385"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
 
 	// 5542.33 - 573.3540385 = 4968.9759615 to validators_rewards_collector, so
-	// 4968 on validators_rewards_collector or no_validators module account and 0.9759615 on its distributor state
+	// 4968 on validators_rewards_collector or no_validators module account and 0.9759615 on its cfedistributor state
 
 	if toValidators {
 		// validators_rewards_collector coins sent to vaalidator distribition so amount is 0,
 
 		validatorRewardCollectorAccountCoin := app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.ValidatorsRewardsCollector)
 		require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(denom).ToDec())
-		// still 0.9759615 on its distributor state remains
+		// still 0.9759615 on its cfedistributor state remains
 		remains, _ = app.CfedistributorKeeper.GetState(ctx, types.ValidatorsRewardsCollector)
 		coinRemainsValidatorsReward := remains.CoinsStates
 		require.EqualValues(t, sdk.MustNewDecFromStr("0.9759615"), coinRemainsValidatorsReward.AmountOf("uc4e"))
@@ -410,7 +247,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 		require.EqualValues(t, sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(4968))), distrCoins)
 	} else {
 		// no_validators module account coins amount is 4968,
-		// and remains 0.9759615 on its distributor state
+		// and remains 0.9759615 on its cfedistributor state
 
 		NoValidatorsCoin := app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, "no_validators")
 		require.EqualValues(t, sdk.MustNewDecFromStr("4968"), NoValidatorsCoin.AmountOf(denom).ToDec())
@@ -439,8 +276,8 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, prepareBurningDistributor(MainCollector))
-	subdistributors = append(subdistributors, prepareInflationSubDistributor(MainCollector, true))
+	subdistributors = append(subdistributors, testutils.PrepareBurningDistributor(testutils.MainCollector))
+	subdistributors = append(subdistributors, testutils.PrepareInflationSubDistributor(testutils.MainCollector, true))
 	app.CfedistributorKeeper.SetParams(ctx, types.NewParams(subdistributors))
 
 	for i := int64(1); i <= 3001; i++ {
@@ -484,7 +321,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	// main collector state = 1495489 + 3001*5044 = 16632533, but 16632533 - 0.67 (burning remains) = 16632532.33 to distribute
 
 	// 16632532.33*10.345% = 1720635.4695385 to cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag, so
-	// 1720635 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.4695385 on its distributor state
+	// 1720635 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.4695385 on its cfedistributor state
 
 	acc, _ := sdk.AccAddressFromBech32("cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag")
 	developmentFundAccount := app.CfedistributorKeeper.GetAccountCoins(ctx, acc)
@@ -495,13 +332,13 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.4695385"), coinRemainsDevelopmentFund.AmountOf("uc4e"))
 
 	// 16632532.33- 1720635.4695385 = 14911896.8604615 to validators_rewards_collector, so
-	// 14911896 on validators_rewards_collector or no_validators module account and 0.8604615 on its distributor state
+	// 14911896 on validators_rewards_collector or no_validators module account and 0.8604615 on its cfedistributor state
 
 	// validators_rewards_collector coins sent to vaalidator distribition so amount is 0,
 
 	validatorRewardCollectorAccountCoin := app.CfedistributorKeeper.GetAccountCoinsForModuleAccount(ctx, types.ValidatorsRewardsCollector)
 	require.EqualValues(t, sdk.MustNewDecFromStr("0"), validatorRewardCollectorAccountCoin.AmountOf(denom).ToDec())
-	// still 0.8845 on its distributor state remains
+	// still 0.8845 on its cfedistributor state remains
 	remains, _ = app.CfedistributorKeeper.GetState(ctx, types.ValidatorsRewardsCollector)
 	coinRemainsValidatorsReward := remains.CoinsStates
 	require.EqualValues(t, sdk.MustNewDecFromStr("0.8604615"), coinRemainsValidatorsReward.AmountOf("uc4e"))
