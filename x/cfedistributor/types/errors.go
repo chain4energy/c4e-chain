@@ -8,5 +8,5 @@ import (
 
 // x/cfedistributor module sentinel errors
 var (
-	ErrInvalidRequest = sdkerrors.Register(ModuleName, 2, "invalid request error")
+	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
 )
