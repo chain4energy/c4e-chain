@@ -1,6 +1,7 @@
 package cfevesting
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
@@ -78,8 +79,37 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		accs[i] = acc.Address.String()
 	}
 	cfevestingGenesis := types.GenesisState{
-		Params: types.NewParams("uc4e"),
-
+		Params: types.NewParams("stake"),
+		VestingTypes: []types.GenesisVestingType{
+			{
+				Name:              "New vesting0",
+				VestingPeriod:     helpers.RandomInt(simState.Rand, 10000000),
+				VestingPeriodUnit: "day",
+				LockupPeriod:      helpers.RandomInt(simState.Rand, 10000000),
+				LockupPeriodUnit:  "day",
+			},
+			{
+				Name:              "New vesting1",
+				VestingPeriod:     helpers.RandomInt(simState.Rand, 1000),
+				VestingPeriodUnit: "day",
+				LockupPeriod:      helpers.RandomInt(simState.Rand, 1000),
+				LockupPeriodUnit:  "day",
+			},
+			{
+				Name:              "New vesting2",
+				VestingPeriod:     helpers.RandomInt(simState.Rand, 10),
+				VestingPeriodUnit: "second",
+				LockupPeriod:      helpers.RandomInt(simState.Rand, 10),
+				LockupPeriodUnit:  "second",
+			},
+			{
+				Name:              "New vesting3",
+				VestingPeriod:     helpers.RandomInt(simState.Rand, 1),
+				VestingPeriodUnit: "second",
+				LockupPeriod:      helpers.RandomInt(simState.Rand, 1),
+				LockupPeriodUnit:  "second",
+			},
+		},
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfevestingGenesis)
@@ -122,10 +152,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			weightMsgWithdrawAllAvailable = defaultWeightMsgWithdrawAllAvailable
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgWithdrawAllAvailable,
-		cfevestingsimulation.SimulateMsgWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
 
 	var weightMsgCreateVestingAccount int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateVestingAccount, &weightMsgCreateVestingAccount, nil,
@@ -144,11 +170,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			weightMsgSendToVestingAccount = defaultWeightMsgSendToVestingAccount
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgSendToVestingAccount,
-		cfevestingsimulation.SimulateMsgSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations

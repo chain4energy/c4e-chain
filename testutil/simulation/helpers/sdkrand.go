@@ -17,7 +17,7 @@ const (
 	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
 )
 
-// shamelessly copied from
+// shamelessly copied from cosmos sdk github
 // https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-golang#31832326
 func RandStringOfLength(r *rand.Rand, n int) string {
 	b := make([]byte, n)
@@ -80,6 +80,9 @@ func RandTimestamp(r *rand.Rand) time.Time {
 
 func RandIntBetween(r *rand.Rand, min, max int) int {
 	return r.Intn(max-min) + min
+}
+func RandomInt(r *rand.Rand, max int) int64 {
+	return int64(r.Intn(max))
 }
 
 func RandSubsetCoins(r *rand.Rand, coins sdk.Coins) sdk.Coins {

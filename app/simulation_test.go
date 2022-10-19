@@ -1,11 +1,16 @@
-package app
+package app_test
 
 import (
 	"os"
 	"testing"
 	"time"
 
+	"github.com/chain4energy/c4e-chain/app"
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
@@ -17,6 +22,19 @@ import (
 
 func init() {
 	simapp.GetSimulatorFlags()
+}
+
+type SimApp interface {
+	cosmoscmd.App
+	GetBaseApp() *baseapp.BaseApp
+	AppCodec() codec.Codec
+	SimulationManager() *module.SimulationManager
+	ModuleAccountAddrs() map[string]bool
+	Name() string
+	LegacyAmino() *codec.LegacyAmino
+	BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock
+	EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock
+	InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain
 }
 
 var defaultConsensusParams = &abci.ConsensusParams{
@@ -38,6 +56,7 @@ var defaultConsensusParams = &abci.ConsensusParams{
 
 // BenchmarkSimulation run the chain simulation
 // Running as go benchmark test:
+// `go test -benchmem -run=^$ -bench ^BenchmarkSimulation ./app -NumBlocks=200 -BlockSize 50 -Commit=true -Verbose=true -Enabled=true`
 func BenchmarkSimulation(b *testing.B) {
 	simapp.FlagEnabledValue = true
 	simapp.FlagCommitValue = true
@@ -51,21 +70,22 @@ func BenchmarkSimulation(b *testing.B) {
 		require.NoError(b, err)
 	})
 
-	encoding := cosmoscmd.MakeEncodingConfig(ModuleBasics)
+	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
 
-	app := New(
+	app := app.New(
 		logger,
 		db,
 		nil,
 		true,
 		map[int64]bool{},
-		DefaultNodeHome,
+		app.DefaultNodeHome,
 		0,
 		encoding,
 		simapp.EmptyAppOptions{},
 	)
 
-	simApp := app.(SimApp).GetApp()
+	simApp, ok := app.(SimApp)
+	require.True(b, ok, "can't use simapp")
 
 	// Run randomized simulations
 	_, simParams, simErr := simulation.SimulateFromSeed(
