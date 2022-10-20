@@ -7,9 +7,9 @@ import (
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
-	testcfevesting "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
-	testcfeminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	testcfedistributor "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
+	testcfeminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
+	testcfevesting "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -68,7 +68,7 @@ type TestHelper struct {
 	StakingUtils          *testcommon.ContextStakingUtils
 	C4eVestingUtils       *testcfevesting.ContextC4eVestingUtils
 	C4eMinterUtils        *testcfeminter.ContextC4eMinterUtils
-	C4eDistributorUtils  *testcfedistributor.ContextC4eDistributorUtils
+	C4eDistributorUtils   *testcfedistributor.ContextC4eDistributorUtils
 }
 
 func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time.Time, initialValidatorsCoin sdk.Coin) *TestHelper {

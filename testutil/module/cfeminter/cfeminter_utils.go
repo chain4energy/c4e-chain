@@ -1,9 +1,9 @@
 package cfeminter
 
 import (
-	"time"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"time"
 
 	"testing"
 

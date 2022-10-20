@@ -9,7 +9,6 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 )
 
 const iterationText = "iterarion %d"

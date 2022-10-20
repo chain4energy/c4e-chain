@@ -23,7 +23,7 @@ func UnmarshalJsonFileWithParams(file string, v any, params map[string]string) {
 	byteValueMinter, _ := ioutil.ReadAll(jsonFileMinter)
 	jsonData := string(byteValueMinter)
 	for pKey, pVal := range params {
-		jsonData = strings.ReplaceAll(jsonData, paramIndicator + pKey + paramIndicator, pVal)
+		jsonData = strings.ReplaceAll(jsonData, paramIndicator+pKey+paramIndicator, pVal)
 	}
 	byteValueMinter = []byte(jsonData)
 	json.Unmarshal(byteValueMinter, v)

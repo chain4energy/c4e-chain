@@ -330,8 +330,8 @@ func invalidVestingTypesWrongLockupPeriodUnitTest() TcData {
 			Params:       types.NewParams("test_denom"),
 			VestingTypes: vestingTypes,
 		},
-		valid: false,
-		errorMassage: "Unknown PeriodUnit: "+vestingTypes[7].LockupPeriodUnit+": invalid type",
+		valid:        false,
+		errorMassage: "Unknown PeriodUnit: " + vestingTypes[7].LockupPeriodUnit + ": invalid type",
 	}
 }
 
@@ -344,7 +344,7 @@ func invalidVestingTypesWrongVestingPeriodUnitTest() TcData {
 			Params:       types.NewParams("test_denom"),
 			VestingTypes: vestingTypes,
 		},
-		valid: false,
-		errorMassage: "Unknown PeriodUnit: "+vestingTypes[7].VestingPeriodUnit+": invalid type",
+		valid:        false,
+		errorMassage: "Unknown PeriodUnit: " + vestingTypes[7].VestingPeriodUnit + ": invalid type",
 	}
 }

@@ -26,7 +26,6 @@ type BankUtils struct {
 	t                   *testing.T
 	helperAccountKeeper *authkeeper.AccountKeeper
 	helperBankKeeper    bankkeeper.Keeper
-	
 }
 
 func NewBankUtils(t *testing.T, ctx sdk.Context, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) BankUtils {
@@ -86,10 +85,9 @@ func (bu *BankUtils) VerifyDefultDenomTotalSupply(ctx sdk.Context, expectedAmoun
 	bu.VerifyTotalSupplyByDenom(ctx, DefaultTestDenom, expectedAmount)
 }
 
-
 type ContextBankUtils struct {
 	BankUtils
-	testContext         TestContext
+	testContext TestContext
 }
 
 func NewContextBankUtils(t *testing.T, testContext TestContext, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) *ContextBankUtils {

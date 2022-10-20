@@ -21,7 +21,7 @@ var lpAccountAddr = accountsAddresses[1]
 
 var distributorsJsonParams = map[string]string{
 	developmentFundAddrParamName: developmentFundAddr.String(),
-	lpAccountAddrParamName: lpAccountAddr.String(),
+	lpAccountAddrParamName:       lpAccountAddr.String(),
 }
 
 type testResult struct {

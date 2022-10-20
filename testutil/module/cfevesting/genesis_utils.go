@@ -6,7 +6,6 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 )
 
-
 func GenerateGenesisVestingTypes(numberOfVestingTypes int, startId int) []types.GenesisVestingType {
 	vts := GenerateVestingTypes(numberOfVestingTypes, startId)
 	result := []types.GenesisVestingType{}

@@ -1,10 +1,10 @@
 package types_test
 
 import (
-	"time"
-	"testing"
-	"github.com/stretchr/testify/require"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/stretchr/testify/require"
+	"testing"
+	"time"
 )
 
 func TestDurationFromUnits(t *testing.T) {

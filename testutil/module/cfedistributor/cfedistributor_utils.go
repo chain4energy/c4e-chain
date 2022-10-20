@@ -15,10 +15,10 @@ import (
 )
 
 type C4eDistributorUtils struct {
-	t                     *testing.T
+	t                          *testing.T
 	helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper
-	helperAccountKeeper   *authkeeper.AccountKeeper
-	bankUtils             *commontestutils.BankUtils
+	helperAccountKeeper        *authkeeper.AccountKeeper
+	bankUtils                  *commontestutils.BankUtils
 }
 
 func NewC4eDistributorUtils(t *testing.T, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
@@ -122,7 +122,7 @@ func (m *ContextC4eDistributorUtils) ExportGenesis(expected cfedistributortypes.
 	m.C4eDistributorUtils.ExportGenesis(m.testContext.GetContext(), expected)
 }
 
-func (m *ContextC4eDistributorUtils) SetState( state cfedistributortypes.State) {
+func (m *ContextC4eDistributorUtils) SetState(state cfedistributortypes.State) {
 	m.C4eDistributorUtils.SetState(m.testContext.GetContext(), state)
 }
 

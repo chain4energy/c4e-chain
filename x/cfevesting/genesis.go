@@ -29,13 +29,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 	k.SetParams(ctx, genState.Params)
 	vestingTypes := types.VestingTypes{}
 	for _, gVestingType := range genState.VestingTypes {
-		lockupPeriod, err :=  types.DurationFromUnits(types.PeriodUnit(gVestingType.LockupPeriodUnit), gVestingType.LockupPeriod)
-		if (err != nil) {
+		lockupPeriod, err := types.DurationFromUnits(types.PeriodUnit(gVestingType.LockupPeriodUnit), gVestingType.LockupPeriod)
+		if err != nil {
 			k.Logger(ctx).Error("init genesis lockup period duration error", "unit", gVestingType.LockupPeriodUnit, "period", gVestingType.LockupPeriod)
 			panic(sdkerrors.Wrapf(err, "init genesis lockup period duration error: unit: %s", gVestingType.LockupPeriodUnit))
 		}
 		vestingPeriod, err := types.DurationFromUnits(types.PeriodUnit(gVestingType.VestingPeriodUnit), gVestingType.VestingPeriod)
-		if (err != nil) {
+		if err != nil {
 			k.Logger(ctx).Error("init genesis vesting period duration error", "unit", gVestingType.VestingPeriodUnit, "period", gVestingType.VestingPeriod)
 			panic(sdkerrors.Wrapf(err, "init genesis lockup period duration error: unit: %s", gVestingType.VestingPeriodUnit))
 		}
