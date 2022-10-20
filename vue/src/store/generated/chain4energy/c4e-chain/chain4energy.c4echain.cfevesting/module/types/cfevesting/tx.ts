@@ -20,7 +20,9 @@ export interface MsgWithdrawAllAvailable {
   creator: string;
 }
 
-export interface MsgWithdrawAllAvailableResponse {}
+export interface MsgWithdrawAllAvailableResponse {
+  Withdrawn: string;
+}
 
 export interface MsgCreateVestingAccount {
   from_address: string;
@@ -295,13 +297,16 @@ export const MsgWithdrawAllAvailable = {
   },
 };
 
-const baseMsgWithdrawAllAvailableResponse: object = {};
+const baseMsgWithdrawAllAvailableResponse: object = { Withdrawn: "" };
 
 export const MsgWithdrawAllAvailableResponse = {
   encode(
-    _: MsgWithdrawAllAvailableResponse,
+    message: MsgWithdrawAllAvailableResponse,
     writer: Writer = Writer.create()
   ): Writer {
+    if (message.Withdrawn !== "") {
+      writer.uint32(10).string(message.Withdrawn);
+    }
     return writer;
   },
 
@@ -317,6 +322,9 @@ export const MsgWithdrawAllAvailableResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.Withdrawn = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -325,24 +333,35 @@ export const MsgWithdrawAllAvailableResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgWithdrawAllAvailableResponse {
+  fromJSON(object: any): MsgWithdrawAllAvailableResponse {
     const message = {
       ...baseMsgWithdrawAllAvailableResponse,
     } as MsgWithdrawAllAvailableResponse;
+    if (object.Withdrawn !== undefined && object.Withdrawn !== null) {
+      message.Withdrawn = String(object.Withdrawn);
+    } else {
+      message.Withdrawn = "";
+    }
     return message;
   },
 
-  toJSON(_: MsgWithdrawAllAvailableResponse): unknown {
+  toJSON(message: MsgWithdrawAllAvailableResponse): unknown {
     const obj: any = {};
+    message.Withdrawn !== undefined && (obj.Withdrawn = message.Withdrawn);
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<MsgWithdrawAllAvailableResponse>
+    object: DeepPartial<MsgWithdrawAllAvailableResponse>
   ): MsgWithdrawAllAvailableResponse {
     const message = {
       ...baseMsgWithdrawAllAvailableResponse,
     } as MsgWithdrawAllAvailableResponse;
+    if (object.Withdrawn !== undefined && object.Withdrawn !== null) {
+      message.Withdrawn = object.Withdrawn;
+    } else {
+      message.Withdrawn = "";
+    }
     return message;
   },
 };

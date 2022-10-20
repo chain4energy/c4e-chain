@@ -42,33 +42,33 @@ func SimulateVestingOperations(
 		_, err := msgServer.CreateVestingPool(msgServerCtx, msgCreateVestingPool)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Create vesting pool error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msgCreateVestingPool.Type(), ""), nil, nil
+			return simtypes.NewOperationMsg(msgCreateVestingPool, false, "", nil), nil, nil
 		}
 
-		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10))
-		msgSendToVestingAccount := types.MsgSendToVestingAccount{
+		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10000000))
+		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
 			FromAddress:    simAccount1.Address.String(),
 			ToAddress:      simAccount2Address,
 			VestingId:      1,
 			Amount:         randMsgSendToVestinAccAmount,
 			RestartVesting: true,
 		}
-		_, err = msgServer.SendToVestingAccount(msgServerCtx, &msgSendToVestingAccount)
+		_, err = msgServer.SendToVestingAccount(msgServerCtx, msgSendToVestingAccount)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Send to vesting account error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msgCreateVestingPool.Type(), ""), nil, nil
+			return simtypes.NewOperationMsg(msgSendToVestingAccount, false, "", nil), nil, nil
 		}
 
-		msgWithdrawAllAvailable := types.MsgWithdrawAllAvailable{
+		msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
 			Creator: simAccount1.Address.String(),
 		}
-		_, err = msgServer.WithdrawAllAvailable(msgServerCtx, &msgWithdrawAllAvailable)
+		_, err = msgServer.WithdrawAllAvailable(msgServerCtx, msgWithdrawAllAvailable)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Withdraw all available error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msgCreateVestingPool.Type(), ""), nil, nil
+			return simtypes.NewOperationMsg(msgWithdrawAllAvailable, false, "", nil), nil, nil
 		}
 
 		k.Logger(ctx).Debug("SIMULATION: Vesting operations - FINISHED")
-		return simtypes.NewOperationMsg(msgCreateVestingPool, true, "Vesting operations simulation completed", nil), nil, nil
+		return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting muli operations simulation completed", "123123", true, nil), nil, nil
 	}
 }

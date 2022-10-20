@@ -74,17 +74,24 @@ release:
 # blockchain simulation tests
 
 SIM_NUM_BLOCKS = 100
-SIM_BLOCK_SIZE = 50
+SIM_BLOCK_SIZE = 200
 SIM_COMMIT = true
 SIMAPP = ./app
 
 test-simulation-benchmark:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -v -Seed=589 \
-		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -Seed=589 \
+		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h
 
 test-simulation-benchmark-profile:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -v \
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -v -Seed=589 \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) \
 		-timeout 24h -cpuprofile cpu.out -memprofile mem.out
+
+open-cpu-profiler-result:
+	@go tool pprof cpu.out
+# HOW TO READ - https://github.com/google/pprof/blob/main/doc/README.md#interpreting-the-callgraph
+
+open-memory-profiler-result:
+	@go tool pprof mem.out

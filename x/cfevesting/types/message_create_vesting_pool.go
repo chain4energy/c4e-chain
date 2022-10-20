@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgVest = "vest"
+const TypeMsgCreateVestingPool = "create_vesting_pool"
 
 var _ sdk.Msg = &MsgCreateVestingPool{}
 
@@ -26,7 +26,7 @@ func (msg *MsgCreateVestingPool) Route() string {
 }
 
 func (msg *MsgCreateVestingPool) Type() string {
-	return TypeMsgVest
+	return TypeMsgCreateVestingPool
 }
 
 func (msg *MsgCreateVestingPool) GetSigners() []sdk.AccAddress {
