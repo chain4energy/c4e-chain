@@ -18,7 +18,7 @@ func (k Keeper) Inflation(goCtx context.Context, req *types.QueryInflationReques
 
 	inflation, err := k.GetCurrentInflation(ctx)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryInflationResponse{Inflation: inflation}, nil

@@ -28,7 +28,7 @@ func (k Keeper) Vestings(goCtx context.Context, req *types.QueryVestingsRequest)
 	for _, accFromList := range allAcc {
 		accAddr, err := sdk.AccAddressFromBech32(accFromList.Address)
 		if err != nil {
-			return &types.QueryVestingsResponse{}, err
+			return &types.QueryVestingsResponse{}, status.Error(codes.Internal, err.Error())
 		}
 
 		vestingAccount := k.account.GetAccount(ctx, accAddr)

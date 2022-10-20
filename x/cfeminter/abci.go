@@ -1,12 +1,13 @@
 package cfeminter
 
 import (
+	"time"
+
 	"github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
 )
 
 // BeginBlocker mints new tokens for the previous block.
@@ -15,6 +16,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	amount, err := k.Mint(ctx)
 	if err != nil {
+		k.Logger(ctx).Error("mint error", "error", err.Error())
 		panic(err)
 	}
 
@@ -33,9 +35,15 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	} else {
 		inflationStr = inflation.String()
 	}
-	ctx.EventManager().EmitTypedEvent(&types.Mint{
-		BondedRatio: k.BondedRatio(ctx).String(),
+	bondedRatio := k.BondedRatio(ctx).String()
+	k.Logger(ctx).Debug("minted", "amount", amount, "bondedRatio", bondedRatio, "inflation", inflationStr)
+	event := &types.Mint{
+		BondedRatio: bondedRatio,
 		Inflation:   inflationStr,
 		Amount:      amount.String(),
-	})
+	}
+	err = ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("mint emit event error", "event", event, "error", err.Error())
+	}
 }

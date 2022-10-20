@@ -402,7 +402,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	// coins flow:
 	// fee 3001*1017*51% = 1556528.67 to burn, so 1556528 burned - and burn remains 0.67
 	// fee 3001*(1017*51%) = 3001*518.67 = 1556528.67 to burn, so 1556528 burned - and burn remains 0.67
-	testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(sdk.NewInt(3001*(1017+5044)-1556528)).Amount)
+	testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(sdk.NewInt(3001*(1017+5044) - 1556528)).Amount)
 
 	testHelper.C4eDistributorUtils.VerifyDefaultDenomBurnStateAmount(sdk.MustNewDecFromStr("0.67"))
 

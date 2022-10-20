@@ -1,9 +1,8 @@
-package keeper
+package types
 
 import (
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -16,14 +15,14 @@ const (
 	Second = "second"
 )
 
-func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *types.VestingTypes) []types.GenesisVestingType {
-	gVestingTypes := []types.GenesisVestingType{}
+func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *VestingTypes) []GenesisVestingType {
+	gVestingTypes := []GenesisVestingType{}
 
 	for _, vestingType := range vestingTypes.VestingTypes {
 		lockupPeriodUnit, lockupPeriod := UnitsFromDuration(vestingType.LockupPeriod)
 		vestingPeriodUnit, vestingPeriod := UnitsFromDuration(vestingType.VestingPeriod)
 
-		gvt := types.GenesisVestingType{
+		gvt := GenesisVestingType{
 			Name:              vestingType.Name,
 			LockupPeriod:      lockupPeriod,
 			LockupPeriodUnit:  string(lockupPeriodUnit),
@@ -36,18 +35,18 @@ func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *types.VestingTypes) 
 	return gVestingTypes
 }
 
-func DurationFromUnits(unit PeriodUnit, value int64) time.Duration {
+func DurationFromUnits(unit PeriodUnit, value int64) (time.Duration, error) {
 	switch unit {
 	case Day:
-		return 24 * time.Hour * time.Duration(value)
+		return 24 * time.Hour * time.Duration(value), nil
 	case Hour:
-		return time.Hour * time.Duration(value)
+		return time.Hour * time.Duration(value), nil
 	case Minute:
-		return time.Minute * time.Duration(value)
+		return time.Minute * time.Duration(value), nil
 	case Second:
-		return time.Second * time.Duration(value)
+		return time.Second * time.Duration(value), nil
 	}
-	panic(sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Unknown PeriodUnit: %s", unit))
+	return time.Duration(0), sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Unknown PeriodUnit: %s", unit)
 }
 
 func UnitsFromDuration(duration time.Duration) (unit PeriodUnit, value int64) {

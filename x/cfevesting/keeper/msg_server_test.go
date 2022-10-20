@@ -6,8 +6,8 @@ import (
 
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
 	"testing"
 

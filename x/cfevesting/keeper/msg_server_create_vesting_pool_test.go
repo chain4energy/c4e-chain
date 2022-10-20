@@ -47,7 +47,7 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 
 	testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 
-	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, "pool", 1000, types.VestingType{Name: "unknown"}, vested, "vesting type not found: unknown: not found")
+	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, "pool", 1000, types.VestingType{Name: "unknown"}, vested, "create vesting pool - get vesting type error: vesting type not found: unknown: not found")
 
 }
 
@@ -69,7 +69,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 
 	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []sdk.Int{vested}, []sdk.Int{sdk.ZeroInt()})
 
-	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, vPool1, 1000, *usedVestingType, vested, "vesting pool name already exists: "+vPool1+": invalid request")
+	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, vPool1, 1000, *usedVestingType, vested, "add vesting pool - vesting pool name: "+vPool1+": entity already exists")
 
 }
 

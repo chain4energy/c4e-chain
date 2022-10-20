@@ -17,7 +17,7 @@ func (k Keeper) VestingPools(goCtx context.Context, req *types.QueryVestingPools
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	vestings, found := k.GetAccountVestings(ctx, req.Address)
 	if !found {
-		return &types.QueryVestingPoolsResponse{}, nil
+		return nil, status.Error(codes.NotFound, "vesting pools not found")
 	}
 
 	result := types.QueryVestingPoolsResponse{}

@@ -230,7 +230,9 @@ func (h *C4eVestingUtils) InitGenesis(ctx sdk.Context, genState cfevestingtypes.
 
 func (h *C4eVestingUtils) InitGenesisError(ctx sdk.Context, genState cfevestingtypes.GenesisState, errorMessage string) {
 	require.PanicsWithError(h.t, errorMessage,
-	func() { cfevesting.InitGenesis(ctx, *h.helperCfevestingKeeper, genState, h.helperAccountKeeper, *h.helperBankKeeper, h.helperStakingKeeper) }, "")
+		func() {
+			cfevesting.InitGenesis(ctx, *h.helperCfevestingKeeper, genState, h.helperAccountKeeper, *h.helperBankKeeper, h.helperStakingKeeper)
+		}, "")
 }
 
 func (h *C4eVestingUtils) ExportGenesis(ctx sdk.Context, expected cfevestingtypes.GenesisState) {
