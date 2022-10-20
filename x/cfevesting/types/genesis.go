@@ -63,6 +63,10 @@ func (gs GenesisState) validateVestingTypes() error {
 				return fmt.Errorf("vesting type with name: %s defined more than once", vt.Name)
 			}
 		}
+		err := vt.Validate()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -142,6 +146,19 @@ func (av AccountVestings) ValidateAgainstVestingTypes(vestingTypes []GenesisVest
 		if !found {
 			return fmt.Errorf("vesting with id: %d defined for account: %s - vesting type not found: %s", v.Id, av.Address, v.VestingType)
 		}
+	}
+	return nil
+}
+
+func (gst GenesisVestingType) Validate() error {
+
+	_, err := DurationFromUnits(PeriodUnit(gst.LockupPeriodUnit), gst.LockupPeriod)
+	if err != nil {
+		return err
+	}
+	_, err = DurationFromUnits(PeriodUnit(gst.VestingPeriodUnit), gst.VestingPeriod)
+	if err != nil {
+		return err
 	}
 	return nil
 }
