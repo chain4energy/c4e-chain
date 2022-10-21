@@ -105,14 +105,18 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-
-	var weightSimulateVestingOperations = 100
+	var weightSimulateSendToVestingAccount = 50
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightSimulateSendToVestingAccount,
+		cfevestingsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+	var weightSimulateVestingOperations = 30
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateVestingOperations,
 		cfevestingsimulation.SimulateVestingOperations(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgCreateVestingAccount = 5
+	var weightMsgCreateVestingAccount = 10
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateVestingAccount,
 		cfevestingsimulation.SimulateMsgCreateVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
@@ -127,6 +131,7 @@ func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.Weig
 		weightSimulateWithdrawAllAvailable,
 		cfevestingsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations

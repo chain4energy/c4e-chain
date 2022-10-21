@@ -25,7 +25,6 @@ func SimulateMsgCreateVestingAccount(
 		randCoinsAmount := sdk.NewInt(helpers.RandomInt(r, 1000))
 		coin := sdk.NewCoin("stake", randCoinsAmount)
 		coins := sdk.NewCoins(coin)
-
 		randomStartDurationAdd := time.Duration(helpers.RandomInt(r, 1000000))
 		randomStartDurationEnd := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
 

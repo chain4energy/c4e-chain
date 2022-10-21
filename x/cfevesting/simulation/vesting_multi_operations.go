@@ -42,7 +42,7 @@ func SimulateVestingMultiOperations(
 			_, err := msgServer.CreateVestingPool(msgServerCtx, msgCreateVestingPool)
 			if err != nil {
 				k.Logger(ctx).Error("SIMULATION: Create vesting pool error", err.Error())
-				return simtypes.NewOperationMsg(msgCreateVestingPool, false, "", nil), nil, nil
+				return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations - create vesting pool", "", false, nil), nil, nil
 			}
 		}
 
@@ -60,7 +60,7 @@ func SimulateVestingMultiOperations(
 			_, err := msgServer.SendToVestingAccount(msgServerCtx, msgSendToVestingAccount)
 			if err != nil {
 				k.Logger(ctx).Error("SIMULATION: Send to vesting account error", err.Error())
-				return simtypes.NewOperationMsg(msgSendToVestingAccount, false, "", nil), nil, nil
+				return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations - send to vesting account", "", false, nil), nil, nil
 			}
 		}
 
@@ -70,10 +70,10 @@ func SimulateVestingMultiOperations(
 		_, err := msgServer.WithdrawAllAvailable(msgServerCtx, msgWithdrawAllAvailable)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Withdraw all available error", err.Error())
-			return simtypes.NewOperationMsg(msgWithdrawAllAvailable, false, "", nil), nil, nil
+			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations - withdraw all available", "", false, nil), nil, nil
 		}
 
-		k.Logger(ctx).Debug("SIMULATION: Vesting operations - FINISHED")
-		return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations simulation completed", "123123", true, nil), nil, nil
+		k.Logger(ctx).Debug("SIMULATION: Vesting multi operations - FINISHED")
+		return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi perations simulation completed", "", true, nil), nil, nil
 	}
 }

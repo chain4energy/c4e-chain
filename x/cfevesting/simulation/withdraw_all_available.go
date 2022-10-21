@@ -26,16 +26,16 @@ func SimulateWithdrawAllAvailable(
 
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 		withdraw, err := msgServer.WithdrawAllAvailable(msgServerCtx, msgWithdrawAllAvailable)
-		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Withdraw all available error", err.Error())
+
+		if err != nil || withdraw.Withdrawn.Amount.Int64() == 0 {
+			if err != nil {
+				k.Logger(ctx).Error("SIMULATION: Withdraw all available error", err.Error())
+			}
+
 			return simtypes.NewOperationMsg(msgWithdrawAllAvailable, false, "", nil), nil, nil
-		}
-		if withdraw.Withdrawn.Amount.Int64() > 0 {
-			k.Logger(ctx).Debug("SIMULATION: Withdraw operations - FINISHED")
-			return simtypes.NewOperationMsg(msgWithdrawAllAvailable, true, "", nil), nil, nil
 		}
 
 		k.Logger(ctx).Debug("SIMULATION: Withdraw operations - FINISHED")
-		return simtypes.NewOperationMsgBasic(types.ModuleName, "withdraw_all_available", "", false, nil), nil, nil
+		return simtypes.NewOperationMsg(msgWithdrawAllAvailable, true, "", nil), nil, nil
 	}
 }
