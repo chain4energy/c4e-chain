@@ -37,12 +37,13 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 	bondedRatio := k.BondedRatio(ctx).String()
 	k.Logger(ctx).Debug("minted", "amount", amount, "bondedRatio", bondedRatio, "inflation", inflationStr)
-	err = ctx.EventManager().EmitTypedEvent(&types.Mint{
+	event := &types.Mint{
 		BondedRatio: bondedRatio,
 		Inflation:   inflationStr,
 		Amount:      amount.String(),
-	})
+	}
+	err = ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
-		k.Logger(ctx).Error("mint emit event error", "error", err.Error())
+		k.Logger(ctx).Error("mint emit event error", "event", event, "error", err.Error())
 	}
 }

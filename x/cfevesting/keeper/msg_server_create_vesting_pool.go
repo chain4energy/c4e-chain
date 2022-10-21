@@ -30,15 +30,16 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 		}()
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&types.NewVestingPool{
+	event := &types.NewVestingPool{
 		Creator:     msg.Creator,
 		Name:        msg.Name,
 		Amount:      msg.Amount.String() + denom,
 		Duration:    msg.Duration.String(),
 		VestingType: msg.VestingType,
-	})
+	}
+	err = ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
-		k.Logger(ctx).Error("new vesting pool emit event error", "error", err.Error())
+		k.Logger(ctx).Error("new vesting pool emit event error", "event", event, "error", err.Error())
 	}
 
 	return &types.MsgCreateVestingPoolResponse{}, nil

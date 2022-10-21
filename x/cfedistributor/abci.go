@@ -64,7 +64,7 @@ func prepareCoinToDistributeForModuleAccount(ctx sdk.Context, k keeper.Keeper, s
 	if len(coinsToDistribute) > 0 {
 		err := k.SendCoinsFromModuleToModule(ctx, coinsToSend, source.Id, types.DistributorMainAccount)
 		if err != nil {
-			k.Logger(ctx).Error("send coins from module to module error", "error", err.Error())
+			k.Logger(ctx).Error("prep coins module - send coins to main account", "subDistributorName", subDistributorName, "source", source, "error", err.Error())
 			return nil
 		}
 	}
@@ -146,7 +146,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	err := ctx.EventManager().EmitTypedEvent(&distributionsResult)
 	if err != nil {
-		k.Logger(ctx).Error("distributions result emit event error", "error", err.Error())
+		k.Logger(ctx).Error("distributions result emit event error", "distributionsResult", distributionsResult, "error", err.Error())
 	}
 	sendCoinsFromStates(ctx, k, states)
 }
@@ -155,9 +155,9 @@ func burnCoins(ctx sdk.Context, k keeper.Keeper, state *types.State) {
 	toSend, change := state.CoinsStates.TruncateDecimal()
 
 	if err := k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.DistributorMainAccount); err != nil {
-		ctx.Logger().Error("burn coins error", "error", err.Error())
+		ctx.Logger().Error("burn coins error", "state", state, "error", err.Error())
 	} else {
-		k.Logger(ctx).Debug("Coins burned: " + toSend.String())
+		k.Logger(ctx).Debug("Coins burned", "coins", toSend)
 		defer telemetry.SetGaugeWithLabels(
 			[]string{types.ModuleName, "coin_send", types.BurnDestination},
 			float32(toSend.AmountOf(types.DenomToTrace).Int64()),
@@ -171,7 +171,7 @@ func sendCoinsToModuleAccount(ctx sdk.Context, k keeper.Keeper, state *types.Sta
 	toSend, change := state.CoinsStates.TruncateDecimal()
 
 	if err := k.SendCoinsFromModuleToModule(ctx, toSend, types.DistributorMainAccount, state.Account.Id); err != nil {
-		ctx.Logger().Error("send coins to module account dst error", "error", err.Error())
+		ctx.Logger().Error("send coins to module account dst error", "accountId", state.Account.Id, "error", err.Error())
 	} else {
 		k.Logger(ctx).Debug("coins sent to module account dst", "accountId", state.Account.Id, "toSend", toSend.String())
 		defer telemetry.SetGaugeWithLabels(
@@ -187,11 +187,11 @@ func sendCoinsToBaseAccount(ctx sdk.Context, k keeper.Keeper, state *types.State
 	toSend, change := state.CoinsStates.TruncateDecimal()
 
 	if dstAccount, err := sdk.AccAddressFromBech32(state.Account.Id); err != nil {
-		k.Logger(ctx).Error("destination base account address parsing error", "error", err.Error())
+		k.Logger(ctx).Error("destination base account address parsing error", "accountId", state.Account.Id, "error", err.Error())
 	} else if err := k.SendCoinsFromModuleAccount(ctx, toSend, types.DistributorMainAccount, dstAccount); err != nil {
-		k.Logger(ctx).Error("send coins to base account dst error", "error", err.Error())
+		k.Logger(ctx).Error("send coins to base account dst error", "accountId", state.Account.Id, "toSend", toSend, "error", err.Error())
 	} else {
-		k.Logger(ctx).Debug("coins sent to base account dst", "accountId", state.Account.Id, "toSend", toSend.String())
+		k.Logger(ctx).Debug("coins sent to base account dst", "accountId", state.Account.Id, "toSend", toSend)
 		defer telemetry.SetGaugeWithLabels(
 			[]string{types.ModuleName, "coin_send", state.Account.Id},
 			float32(toSend.AmountOf(types.DenomToTrace).Int64()),

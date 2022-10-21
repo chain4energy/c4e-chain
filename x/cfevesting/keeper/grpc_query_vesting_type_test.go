@@ -5,7 +5,6 @@ import (
 
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -30,6 +29,6 @@ func TestVestingTypesQueryNotEmpty(t *testing.T) {
 	k.SetVestingTypes(ctx, vestingTypes)
 	response, err := k.VestingType(wctx, &types.QueryVestingTypeRequest{})
 	require.NoError(t, err)
-	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: keeper.ConvertVestingTypesToGenesisVestingTypes(&vestingTypes)}, response)
+	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: types.ConvertVestingTypesToGenesisVestingTypes(&vestingTypes)}, response)
 
 }
