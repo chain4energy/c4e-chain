@@ -3,7 +3,7 @@ package types
 var (
 	VestingTypesKey = []byte{0x01}
 
-	AccountVestingsKeyPrefix = []byte{0x02}
+	AccountVestingPoolsKeyPrefix = []byte{0x02}
 )
 
 const (

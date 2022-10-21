@@ -62,7 +62,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				LockupPeriodUnit:  "second",
 			},
 		},
-		AccountVestingsList: types.AccountVestingsList{Vestings: []*types.AccountVestings{
+		Vestings: []*types.AccountVestingPools{
 			{
 				Address: helpers.CreateRandomAccAddressNoBalance(123),
 				VestingPools: []*types.VestingPool{
@@ -80,8 +80,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 						LastModificationWithdrawn: sdk.NewInt(10000000),
 					},
 				},
-			},
-		}},
+			}},
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfevestingGenesis)

@@ -19,10 +19,10 @@ const (
 	vPool2 = "v-pool-2"
 )
 
-func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsResponse, accVestings types.AccountVestings, current time.Time, delegationAllowed bool) {
-	require.EqualValues(t, len(accVestings.VestingPools), len(response.VestingPools))
+func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsResponse, accVestingPools types.AccountVestingPools, current time.Time, delegationAllowed bool) {
+	require.EqualValues(t, len(accVestingPools.VestingPools), len(response.VestingPools))
 
-	for _, vesting := range accVestings.VestingPools {
+	for _, vesting := range accVestingPools.VestingPools {
 		found := false
 		for _, vestingInfo := range response.VestingPools {
 			if vesting.Id == vestingInfo.Id {

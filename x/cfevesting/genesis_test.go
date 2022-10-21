@@ -140,7 +140,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 
 }
 
-func getUndelegableAmount(accvestings []*types.AccountVestings) sdk.Int {
+func getUndelegableAmount(accvestings []*types.AccountVestingPools) sdk.Int {
 	result := sdk.ZeroInt()
 	for _, accV := range accvestings {
 		for _, v := range accV.VestingPools {
@@ -150,38 +150,38 @@ func getUndelegableAmount(accvestings []*types.AccountVestings) sdk.Int {
 	return result
 }
 
-func TestGenesisAccountVestingsList(t *testing.T) {
-	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
+func TestGenesisAccountVestingPools(t *testing.T) {
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
 
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
+		VestingTypes: []types.GenesisVestingType{},
+		Vestings:     accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
 
-	mintUndelegableCoinsToModule(testHelper, genesisState, getUndelegableAmount(accountVestingsListArray))
+	mintUndelegableCoinsToModule(testHelper, genesisState, getUndelegableAmount(accountVestingPoolsArray))
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 
 }
 
-func TestGenesisAccountVestingsListWrongAmountInModuleAccount(t *testing.T) {
-	accountVestingsListArray := testutils.GenerateAccountVestingsWithRandomVestings(10, 10, 1, 1)
+func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams("uc4e"),
 
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
+		VestingTypes: []types.GenesisVestingType{},
+		Vestings:     accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
 
-	undelegableAmount := getUndelegableAmount(accountVestingsListArray)
-	wrongAcountAmount := getUndelegableAmount(accountVestingsListArray).SubRaw(10)
+	undelegableAmount := getUndelegableAmount(accountVestingPoolsArray)
+	wrongAcountAmount := getUndelegableAmount(accountVestingPoolsArray).SubRaw(10)
 	mintUndelegableCoinsToModule(testHelper, genesisState, wrongAcountAmount)
 	testHelper.C4eVestingUtils.InitGenesisError(genesisState, fmt.Sprintf("module: cfevesting account balance of denom uc4e not equal of sum of undelegable vestings: %s <> %s", wrongAcountAmount.String(), undelegableAmount.String()))
 

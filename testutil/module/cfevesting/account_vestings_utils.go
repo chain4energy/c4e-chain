@@ -15,9 +15,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual types.AccountVestings) {
+func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools, actual types.AccountVestingPools) {
 
-	numOfFields := reflect.TypeOf(types.AccountVestings{}).NumField()
+	numOfFields := reflect.TypeOf(types.AccountVestingPools{}).NumField()
 	j := 0
 	require.EqualValues(t, len(expected.VestingPools), len(actual.VestingPools))
 	j++
@@ -57,14 +57,14 @@ func AssertAccountVestings(t *testing.T, expected types.AccountVestings, actual 
 
 }
 
-func AssertAccountVestingsArrays(t *testing.T, expected []*types.AccountVestings, actual []*types.AccountVestings) {
+func AssertAccountVestingPoolsArrays(t *testing.T, expected []*types.AccountVestingPools, actual []*types.AccountVestingPools) {
 	require.EqualValues(t, len(expected), len(actual))
 
 	for _, accVest := range expected {
 		found := false
 		for _, accVestExp := range actual {
 			if accVest.Address == accVestExp.Address {
-				AssertAccountVestings(t, *accVest, *accVestExp)
+				AssertAccountVestingPools(t, *accVest, *accVestExp)
 				found = true
 			}
 		}
@@ -73,50 +73,50 @@ func AssertAccountVestingsArrays(t *testing.T, expected []*types.AccountVestings
 	}
 }
 
-func GenerateOneAccountVestingsWithAddressWithRandomVestings(numberOfVestingsPerAccount int,
-	accountId int, vestingStartId int) types.AccountVestings {
-	return *GenerateAccountVestingsWithRandomVestings(1, numberOfVestingsPerAccount, accountId, vestingStartId)[0]
+func GenerateOneAccountVestingPoolsWithAddressWithRandomVestings(numberOfVestingsPerAccount int,
+	accountId int, vestingStartId int) types.AccountVestingPools {
+	return *GenerateAccountVestingPoolsWithRandomVestings(1, numberOfVestingsPerAccount, accountId, vestingStartId)[0]
 }
 
-func GenerateAccountVestingsWithRandomVestings(numberOfAccounts int, numberOfVestingsPerAccount int,
-	accountStartId int, vestingStartId int) []*types.AccountVestings {
-	return generateAccountVestings(numberOfAccounts, numberOfVestingsPerAccount,
+func GenerateAccountVestingPoolsWithRandomVestings(numberOfAccounts int, numberOfVestingsPerAccount int,
+	accountStartId int, vestingStartId int) []*types.AccountVestingPools {
+	return generateAccountVestingPools(numberOfAccounts, numberOfVestingsPerAccount,
 		accountStartId, vestingStartId, generateRandomVesting)
 }
 
-func GenerateOneAccountVestingsWithAddressWith10BasedVestings(numberOfVestingsPerAccount int,
-	accountId int, vestingStartId int) types.AccountVestings {
-	return *GenerateAccountVestingsWith10BasedVestings(1, numberOfVestingsPerAccount, accountId, vestingStartId)[0]
+func GenerateOneAccountVestingPoolsWithAddressWith10BasedVestings(numberOfVestingsPerAccount int,
+	accountId int, vestingStartId int) types.AccountVestingPools {
+	return *GenerateAccountVestingPoolsWith10BasedVestings(1, numberOfVestingsPerAccount, accountId, vestingStartId)[0]
 }
 
-func GenerateAccountVestingsWith10BasedVestings(numberOfAccounts int, numberOfVestingsPerAccount int,
-	accountStartId int, vestingStartId int) []*types.AccountVestings {
-	return generateAccountVestings(numberOfAccounts, numberOfVestingsPerAccount,
+func GenerateAccountVestingPoolsWith10BasedVestings(numberOfAccounts int, numberOfVestingsPerAccount int,
+	accountStartId int, vestingStartId int) []*types.AccountVestingPools {
+	return generateAccountVestingPools(numberOfAccounts, numberOfVestingsPerAccount,
 		accountStartId, vestingStartId, generate10BasedVesting)
 }
 
-func generateAccountVestings(numberOfAccounts int, numberOfVestingsPerAccount int,
-	accountStartId int, vestingStartId int, generateVesting func(accuntId int, vestingId int) types.VestingPool) []*types.AccountVestings {
-	accountVestingsArr := []*types.AccountVestings{}
+func generateAccountVestingPools(numberOfAccounts int, numberOfVestingsPerAccount int,
+	accountStartId int, vestingStartId int, generateVesting func(accuntId int, vestingId int) types.VestingPool) []*types.AccountVestingPools {
+	accountVestingPoolsArr := []*types.AccountVestingPools{}
 	accountsAddresses, _ := commontestutils.CreateAccounts(2*numberOfAccounts, 0)
 
 	for i := 0; i < numberOfAccounts; i++ {
-		accountVestings := types.AccountVestings{}
-		accountVestings.Address = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
+		accountVestingPools := types.AccountVestingPools{}
+		accountVestingPools.Address = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
 
-		accountVestings.Address = accountsAddresses[i].String()
+		accountVestingPools.Address = accountsAddresses[i].String()
 
 		vestings := []*types.VestingPool{}
 		for j := 0; j < numberOfVestingsPerAccount; j++ {
 			vesting := generateVesting(i+accountStartId, j+vestingStartId)
 			vestings = append(vestings, &vesting)
 		}
-		accountVestings.VestingPools = vestings
+		accountVestingPools.VestingPools = vestings
 
-		accountVestingsArr = append(accountVestingsArr, &accountVestings)
+		accountVestingPoolsArr = append(accountVestingPoolsArr, &accountVestingPools)
 	}
 
-	return accountVestingsArr
+	return accountVestingPoolsArr
 }
 
 func generateRandomVesting(accuntId int, vestingId int) types.VestingPool {
@@ -154,8 +154,8 @@ func generate10BasedVesting(accuntId int, vestingId int) types.VestingPool {
 	}
 }
 
-func ToAccountVestingsPointersArray(src []types.AccountVestings) []*types.AccountVestings {
-	result := []*types.AccountVestings{}
+func ToAccountVestingPoolsPointersArray(src []types.AccountVestingPools) []*types.AccountVestingPools {
+	result := []*types.AccountVestingPools{}
 	for i := 0; i < len(src); i++ {
 		result = append(result, &src[i])
 	}

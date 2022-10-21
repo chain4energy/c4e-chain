@@ -229,33 +229,32 @@ genesis:
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "day"
-      account_vestings_list:
-        vestings:
-          - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
-            # delegable_address: ""
-            vesting_pools:
-              - id: 1
-                name: "Advisors pool"
-                last_modification: "2022-03-30T00:00:00.00000000Z"
-                last_modification_vested: "15000000000000"
-                last_modification_withdrawn: "0"
-                sent: "0"
-                vested: "15000000000000"
-                lock_end: "2025-03-30T00:00:00.00000000Z"
-                lock_start: "2022-03-30T00:00:00.00000000Z"
-                vesting_type: "Advisors pool"
-                withdrawn: "0"
-              - id: 2
-                name: "Validators pool"
-                last_modification: "2022-03-30T00:00:00.00000000Z"
-                last_modification_vested: "17500000000000"
-                last_modification_withdrawn: "0"
-                sent: "0"
-                vested: "17500000000000"
-                lock_end: "2024-03-30T00:00:00.00000000Z"
-                lock_start: "2022-03-30T00:00:00.00000000Z"
-                vesting_type: "Validators pool"
-                withdrawn: "0"
+      vestings:
+        - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
+          # delegable_address: ""
+          vesting_pools:
+            - id: 1
+              name: "Advisors pool"
+              last_modification: "2022-03-30T00:00:00.00000000Z"
+              last_modification_vested: "15000000000000"
+              last_modification_withdrawn: "0"
+              sent: "0"
+              vested: "15000000000000"
+              lock_end: "2025-03-30T00:00:00.00000000Z"
+              lock_start: "2022-03-30T00:00:00.00000000Z"
+              vesting_type: "Advisors pool"
+              withdrawn: "0"
+            - id: 2
+              name: "Validators pool"
+              last_modification: "2022-03-30T00:00:00.00000000Z"
+              last_modification_vested: "17500000000000"
+              last_modification_withdrawn: "0"
+              sent: "0"
+              vested: "17500000000000"
+              lock_end: "2024-03-30T00:00:00.00000000Z"
+              lock_start: "2022-03-30T00:00:00.00000000Z"
+              vesting_type: "Validators pool"
+              withdrawn: "0"
 
     # genutil:
     #   gen_txs:

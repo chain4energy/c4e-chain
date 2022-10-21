@@ -7,8 +7,8 @@ import (
 )
 
 // get the vesting types
-func (k Keeper) GetAccountVestings(ctx sdk.Context, accountAddress string) (accountVestings types.AccountVestings, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingsKeyPrefix)
+func (k Keeper) GetAccountVestingPools(ctx sdk.Context, accountAddress string) (accountVestingPools types.AccountVestingPools, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 
 	b := store.Get([]byte(accountAddress))
 	if b == nil {
@@ -16,40 +16,40 @@ func (k Keeper) GetAccountVestings(ctx sdk.Context, accountAddress string) (acco
 		return
 	}
 	found = true
-	k.cdc.MustUnmarshal(b, &accountVestings)
+	k.cdc.MustUnmarshal(b, &accountVestingPools)
 	return
 }
 
 // set the vesting types
-func (k Keeper) SetAccountVestings(ctx sdk.Context, accountVestings types.AccountVestings) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingsKeyPrefix)
-	av := k.cdc.MustMarshal(&accountVestings)
-	store.Set([]byte(accountVestings.Address), av)
+func (k Keeper) SetAccountVestingPools(ctx sdk.Context, accountVestingPools types.AccountVestingPools) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
+	av := k.cdc.MustMarshal(&accountVestingPools)
+	store.Set([]byte(accountVestingPools.Address), av)
 }
 
 // get the vesting types
-func (k Keeper) DeleteAccountVestings(ctx sdk.Context, accountAddress string) (accountVestings types.AccountVestings) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingsKeyPrefix)
+func (k Keeper) DeleteAccountVestingPools(ctx sdk.Context, accountAddress string) (accountVestingPools types.AccountVestingPools) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 	key := []byte(accountAddress)
 	b := store.Get(key)
 	if b == nil {
 		panic("stored minter should not have been nil")
 	}
 
-	k.cdc.MustUnmarshal(b, &accountVestings)
+	k.cdc.MustUnmarshal(b, &accountVestingPools)
 	store.Delete(key)
 	return
 }
 
-// GetAllAccountVestings returns all AccountVestings
-func (k Keeper) GetAllAccountVestings(ctx sdk.Context) (list []types.AccountVestings) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingsKeyPrefix)
+// GetAllAccountVestingPools returns all AccountVestingPools
+func (k Keeper) GetAllAccountVestingPools(ctx sdk.Context) (list []types.AccountVestingPools) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.AccountVestings
+		var val types.AccountVestingPools
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}

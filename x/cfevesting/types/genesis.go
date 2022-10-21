@@ -72,7 +72,7 @@ func (gs GenesisState) validateVestingTypes() error {
 }
 
 func (gs GenesisState) validateAccountsVestings() error {
-	avts := gs.AccountVestingsList.Vestings
+	avts := gs.Vestings
 	vts := gs.VestingTypes
 	for _, avt := range avts {
 		err := avt.Validate()
@@ -97,7 +97,7 @@ func (gs GenesisState) validateAccountsVestings() error {
 	return nil
 }
 
-func (av AccountVestings) Validate() error {
+func (av AccountVestingPools) Validate() error {
 	vs := av.VestingPools
 	_, err := sdk.AccAddressFromBech32(av.Address)
 	if err != nil {
@@ -112,7 +112,7 @@ func (av AccountVestings) Validate() error {
 	return nil
 }
 
-func (av AccountVestings) checkDuplications(vs []*VestingPool, v *VestingPool) error {
+func (av AccountVestingPools) checkDuplications(vs []*VestingPool, v *VestingPool) error {
 	numOfIds := 0
 	numOfNames := 0
 	for _, vCheck := range vs {
@@ -134,7 +134,7 @@ func (av AccountVestings) checkDuplications(vs []*VestingPool, v *VestingPool) e
 	return nil
 }
 
-func (av AccountVestings) ValidateAgainstVestingTypes(vestingTypes []GenesisVestingType) error {
+func (av AccountVestingPools) ValidateAgainstVestingTypes(vestingTypes []GenesisVestingType) error {
 	vs := av.VestingPools
 	for _, v := range vs {
 		found := false
