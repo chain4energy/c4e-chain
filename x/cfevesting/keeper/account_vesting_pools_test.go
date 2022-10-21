@@ -13,7 +13,7 @@ import (
 func TestGetAccountVestingPools(t *testing.T) {
 	k, ctx := testkeeper.CfevestingKeeper(t)
 
-	accountVestingPools := testutils.GenerateAccountVestingPoolsWithRandomVestings(2, 10, 1, 1)
+	accountVestingPools := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(2, 10, 1, 1)
 
 	k.SetAccountVestingPools(ctx, *accountVestingPools[0])
 
@@ -36,11 +36,11 @@ func TestGetAccountVestingPools(t *testing.T) {
 	accVestSored, _ = k.GetAccountVestingPools(ctx, accountVestingPools[1].Address)
 	testutils.AssertAccountVestingPools(t, *accountVestingPools[1], accVestSored)
 
-	allVestings := k.GetAllAccountVestingPools(ctx)
-	require.EqualValues(t, 2, len(allVestings))
+	allVestingPools := k.GetAllAccountVestingPools(ctx)
+	require.EqualValues(t, 2, len(allVestingPools))
 
 	found := false
-	for i, accVestExp := range allVestings {
+	for i, accVestExp := range allVestingPools {
 		fmt.Println("accVestExp: " + strconv.Itoa(i) + " - " + accVestExp.Address)
 		if accountVestingPools[0].Address == accVestExp.Address {
 			testutils.AssertAccountVestingPools(t, *accountVestingPools[0], accVestExp)
@@ -50,7 +50,7 @@ func TestGetAccountVestingPools(t *testing.T) {
 	require.True(t, found, "not found: "+accountVestingPools[0].Address)
 
 	found = false
-	for i, accVestExp := range allVestings {
+	for i, accVestExp := range allVestingPools {
 		fmt.Println("accVestExp: " + strconv.Itoa(i) + " - " + accVestExp.Address)
 		if accountVestingPools[1].Address == accVestExp.Address {
 			testutils.AssertAccountVestingPools(t, *accountVestingPools[1], accVestExp)
@@ -59,6 +59,6 @@ func TestGetAccountVestingPools(t *testing.T) {
 	}
 	require.True(t, found, "not found: "+accountVestingPools[1].Address)
 
-	testutils.AssertAccountVestingPoolsArrays(t, accountVestingPools, testutils.ToAccountVestingPoolsPointersArray(allVestings))
+	testutils.AssertAccountVestingPoolsArrays(t, accountVestingPools, testutils.ToAccountVestingPoolsPointersArray(allVestingPools))
 
 }

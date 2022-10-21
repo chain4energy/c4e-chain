@@ -3,7 +3,7 @@ import * as Long from "long";
 import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import { Params } from "../cfevesting/params";
 import { VestingAccount } from "../cfevesting/vesting_account";
-import { AccountVestingPools } from "../cfevesting/account_vesting";
+import { AccountVestingPools } from "../cfevesting/account_vesting_pool";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 

@@ -214,7 +214,7 @@ func invalidVestingAccountsWrongIdTest(acountsAddresses []sdk.AccAddress) TcData
 }
 
 func validVestingPoolsTest(acountsAddresses []sdk.AccAddress) TcData {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
 
 	return TcData{
@@ -230,7 +230,7 @@ func validVestingPoolsTest(acountsAddresses []sdk.AccAddress) TcData {
 }
 
 func invalidVestingPoolsNoVestingTypes(acountsAddresses []sdk.AccAddress) TcData {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 
 	return TcData{
 		desc: "invalid VestingPools no vesting types",
@@ -247,7 +247,7 @@ func invalidVestingPoolsNoVestingTypes(acountsAddresses []sdk.AccAddress) TcData
 }
 
 func invalidVestingPoolsVestingTypeNotFound(acountsAddresses []sdk.AccAddress) TcData {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
 	accountVestingPoolsArray[4].VestingPools[7].VestingType = "wrong type"
 
@@ -266,7 +266,7 @@ func invalidVestingPoolsVestingTypeNotFound(acountsAddresses []sdk.AccAddress) T
 }
 
 func invalidVestingPoolsMoreThanOneIdError(acountsAddresses []sdk.AccAddress) TcData {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	accountVestingPoolsArray[4].VestingPools[3].Id = accountVestingPoolsArray[4].VestingPools[6].Id
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
 
@@ -285,7 +285,7 @@ func invalidVestingPoolsMoreThanOneIdError(acountsAddresses []sdk.AccAddress) Tc
 }
 
 func invalidVestingPoolsMoreThanOneNameError(acountsAddresses []sdk.AccAddress) TcData {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	accountVestingPoolsArray[4].VestingPools[3].Name = accountVestingPoolsArray[4].VestingPools[6].Name
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
 
@@ -303,7 +303,7 @@ func invalidVestingPoolsMoreThanOneNameError(acountsAddresses []sdk.AccAddress) 
 }
 
 func invalidVestingPoolsMoreThanOneAddressError(acountsAddresses []sdk.AccAddress) TcData {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	accountVestingPoolsArray[3].Address = accountVestingPoolsArray[7].Address
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
 

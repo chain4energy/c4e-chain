@@ -34,7 +34,6 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
-
 	accVestingPools := types.AccountVestingPools{
 		Address:      acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},

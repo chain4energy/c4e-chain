@@ -49,7 +49,7 @@ func (h *C4eVestingUtils) SetupAccountsVestings(ctx sdk.Context, address string,
 }
 
 func (h *C4eVestingUtils) SetupAccountsVestingsWithModification(ctx sdk.Context, modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
-	accountVestingPools := GenerateOneAccountVestingPoolsWithAddressWith10BasedVestings(numberOfVestings, 1, 1)
+	accountVestingPools := GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(numberOfVestings, 1, 1)
 	accountVestingPools.Address = address
 
 	for _, vesting := range accountVestingPools.VestingPools {
@@ -323,7 +323,7 @@ func NewContextC4eVestingUtils(t *testing.T, testContext commontestutils.TestCon
 	return &ContextC4eVestingUtils{C4eVestingUtils: c4eVestingUtils, testContext: testContext}
 }
 
-func (h *ContextC4eVestingUtils) SetupAccountsVestings(address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
+func (h *ContextC4eVestingUtils) SetupAccountsVestingPools(address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
 	return h.C4eVestingUtils.SetupAccountsVestings(h.testContext.GetContext(), address, numberOfVestings, vestingAmount, withdrawnAmount)
 }
 
@@ -363,7 +363,7 @@ func (h *ContextC4eVestingUtils) MessageWithdrawAllAvailable(address sdk.AccAddr
 	h.C4eVestingUtils.MessageWithdrawAllAvailable(h.testContext.GetContext(), address, accountBalanceBefore, moduleBalanceBefore, accountBalanceAfter, moduleBalanceAfter)
 }
 
-func (h *ContextC4eVestingUtils) CompareStoredAcountVestings(address sdk.AccAddress, accVestingPools cfevestingtypes.AccountVestingPools) {
+func (h *ContextC4eVestingUtils) CompareStoredAcountVestingPools(address sdk.AccAddress, accVestingPools cfevestingtypes.AccountVestingPools) {
 	h.C4eVestingUtils.CompareStoredAcountVestings(h.testContext.GetContext(), address, accVestingPools)
 }
 

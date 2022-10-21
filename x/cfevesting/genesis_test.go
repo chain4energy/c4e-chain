@@ -151,7 +151,7 @@ func getUndelegableAmount(accvestings []*types.AccountVestingPools) sdk.Int {
 }
 
 func TestGenesisAccountVestingPools(t *testing.T) {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
@@ -169,7 +169,7 @@ func TestGenesisAccountVestingPools(t *testing.T) {
 }
 
 func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestings(10, 10, 1, 1)
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams("uc4e"),

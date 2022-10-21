@@ -413,7 +413,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title cfevesting/account_vesting.proto
+ * @title cfevesting/account_vesting_pool.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {

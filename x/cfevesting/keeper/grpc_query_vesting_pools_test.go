@@ -19,7 +19,7 @@ func TestVesting(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
-	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestings(1, 1, 1)
+	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 
 	keeper.SetAccountVestingPools(ctx, accountVestingPools)
@@ -37,7 +37,7 @@ func TestVestingSomeToWithdraw(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
-	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestings(1, 1, 1)
+	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 
 	keeper.SetAccountVestingPools(ctx, accountVestingPools)
@@ -57,7 +57,7 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
-	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestings(1, 1, 1)
+	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 	accountVestingPools.VestingPools[0].Withdrawn = sdk.NewInt(500)
 	accountVestingPools.VestingPools[0].LastModificationWithdrawn = sdk.NewInt(500)
@@ -79,7 +79,7 @@ func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
-	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestings(1, 1, 1)
+	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 	accountVestingPools.VestingPools[0].LockStart = accountVestingPools.VestingPools[0].LockEnd
 	accountVestingPools.VestingPools[0].LastModification = accountVestingPools.VestingPools[0].LockEnd
@@ -104,7 +104,7 @@ func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
-	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestings(1, 1, 1)
+	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 
 	accountVestingPools.VestingPools[0].LastModification = accountVestingPools.VestingPools[0].LockEnd
@@ -131,7 +131,7 @@ func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
-	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestings(1, 1, 1)
+	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 
 	accountVestingPools.VestingPools[0].LastModification = accountVestingPools.VestingPools[0].LockEnd
@@ -157,7 +157,7 @@ func TestVestingManyVestings(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
-	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestings(3, 1, 1)
+	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(3, 1, 1)
 	accountVestingPools.Address = addr
 
 	keeper.SetAccountVestingPools(ctx, accountVestingPools)
