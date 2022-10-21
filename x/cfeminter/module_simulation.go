@@ -1,6 +1,8 @@
 package cfeminter
 
 import (
+	"fmt"
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 	"time"
 
@@ -29,13 +31,19 @@ const SecondsInYear = int32(3600 * 24 * 365)
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	startAmountYearly := int64(40000000000000)
+	randMintAmount := helpers.RandomInt(simState.Rand, 40000000000000)
+	randMintPeriod := helpers.RandomInt(simState.Rand, 31536000)
+	randReductionPeriodLength := helpers.RandomInt(simState.Rand, 8)
+	randomIntBetween := helpers.RandIntBetween(simState.Rand, 1, 100)
+	reductionFloat := float64(randomIntBetween) / float64(100)
+	randReductionFactor := fmt.Sprintf("%f", reductionFloat)
+	fmt.Println(randReductionFactor)
 	now := time.Now()
 	prminter := types.PeriodicReductionMinter{
-		MintAmount:            sdk.NewInt(startAmountYearly),
-		MintPeriod:            SecondsInYear,
-		ReductionPeriodLength: 4,
-		ReductionFactor:       sdk.MustNewDecFromStr("0.5"),
+		MintAmount:            sdk.NewInt(randMintAmount),
+		MintPeriod:            int32(randMintPeriod),
+		ReductionPeriodLength: int32(randReductionPeriodLength),
+		ReductionFactor:       sdk.MustNewDecFromStr(randReductionFactor),
 	}
 
 	minter := types.Minter{
