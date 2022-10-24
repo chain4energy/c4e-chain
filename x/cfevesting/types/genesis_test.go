@@ -215,15 +215,15 @@ func invalidVestingAccountsWrongIdTest(acountsAddresses []sdk.AccAddress) TcData
 
 func validVestingPoolsTest(acountsAddresses []sdk.AccAddress) TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
-	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 
 	return TcData{
 		desc: "valid Vesting Pools",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
 
-			VestingTypes: vestingTypes,
-			Vestings:     accountVestingPoolsArray,
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid: true,
 	}
@@ -237,8 +237,8 @@ func invalidVestingPoolsNoVestingTypes(acountsAddresses []sdk.AccAddress) TcData
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
 
-			VestingTypes: []types.GenesisVestingType{},
-			Vestings:     accountVestingPoolsArray,
+			VestingTypes:        []types.GenesisVestingType{},
+			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
 		errorMassage: "vesting with id: 1 defined for account: " + accountVestingPoolsArray[0].Address + " - vesting type not found: test-vesting-account-1-1",
@@ -248,7 +248,7 @@ func invalidVestingPoolsNoVestingTypes(acountsAddresses []sdk.AccAddress) TcData
 
 func invalidVestingPoolsVestingTypeNotFound(acountsAddresses []sdk.AccAddress) TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
-	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 	accountVestingPoolsArray[4].VestingPools[7].VestingType = "wrong type"
 
 	return TcData{
@@ -256,8 +256,8 @@ func invalidVestingPoolsVestingTypeNotFound(acountsAddresses []sdk.AccAddress) T
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
 
-			VestingTypes: vestingTypes,
-			Vestings:     accountVestingPoolsArray,
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
 		errorMassage: "vesting with id: 8 defined for account: " + accountVestingPoolsArray[4].Address + " - vesting type not found: " + accountVestingPoolsArray[4].VestingPools[7].VestingType,
@@ -268,15 +268,15 @@ func invalidVestingPoolsVestingTypeNotFound(acountsAddresses []sdk.AccAddress) T
 func invalidVestingPoolsMoreThanOneIdError(acountsAddresses []sdk.AccAddress) TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	accountVestingPoolsArray[4].VestingPools[3].Id = accountVestingPoolsArray[4].VestingPools[6].Id
-	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 
 	return TcData{
 		desc: "invalid VestingPools more than one id",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
 
-			VestingTypes: vestingTypes,
-			Vestings:     accountVestingPoolsArray,
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
 		errorMassage: "vesting with id: 7 defined more than once for account: " + accountVestingPoolsArray[4].Address,
@@ -287,15 +287,15 @@ func invalidVestingPoolsMoreThanOneIdError(acountsAddresses []sdk.AccAddress) Tc
 func invalidVestingPoolsMoreThanOneNameError(acountsAddresses []sdk.AccAddress) TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	accountVestingPoolsArray[4].VestingPools[3].Name = accountVestingPoolsArray[4].VestingPools[6].Name
-	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 
 	return TcData{
 		desc: "invalid VestingPools more than one name",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
 
-			VestingTypes: vestingTypes,
-			Vestings:     accountVestingPoolsArray,
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
 		errorMassage: "vesting with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined more than once for account: " + accountVestingPoolsArray[4].Address,
@@ -305,18 +305,18 @@ func invalidVestingPoolsMoreThanOneNameError(acountsAddresses []sdk.AccAddress) 
 func invalidVestingPoolsMoreThanOneAddressError(acountsAddresses []sdk.AccAddress) TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	accountVestingPoolsArray[3].Address = accountVestingPoolsArray[7].Address
-	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestings(accountVestingPoolsArray)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 
 	return TcData{
 		desc: "invalid VestingPools more than one address",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
 
-			VestingTypes: vestingTypes,
-			Vestings:     accountVestingPoolsArray,
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "account vestings with address: " + accountVestingPoolsArray[3].Address + " defined more than once",
+		errorMassage: "account vesting pools with address: " + accountVestingPoolsArray[3].Address + " defined more than once",
 	}
 
 }

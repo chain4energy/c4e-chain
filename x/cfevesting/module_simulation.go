@@ -5,8 +5,9 @@ import (
 	"math/rand"
 	"time"
 
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	cfevestingsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
+	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -14,8 +15,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 // avoid unused import issue
@@ -64,7 +63,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				LockupPeriodUnit:  "second",
 			},
 		},
-		Vestings: []*types.AccountVestingPools{
+		AccountVestingPools: []*types.AccountVestingPools{
 			{
 				Address: commontestutils.CreateRandomAccAddressNoBalance(123),
 				VestingPools: []*types.VestingPool{
@@ -109,28 +108,28 @@ func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.Weig
 	var weightSimulateSendToVestingAccount = 50
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateSendToVestingAccount,
-		cfevestingsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingpoolsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 	var weightSimulateVestingOperations = 30
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateVestingOperations,
-		cfevestingsimulation.SimulateVestingOperations(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingpoolsimulation.SimulateVestingOperations(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgCreateVestingAccount = 10
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateVestingAccount,
-		cfevestingsimulation.SimulateMsgCreateVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingpoolsimulation.SimulateMsgCreateVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 	var weightSimulateVestingMultiOperations = 100
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateVestingMultiOperations,
-		cfevestingsimulation.SimulateVestingMultiOperations(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingpoolsimulation.SimulateVestingMultiOperations(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 	var weightSimulateWithdrawAllAvailable = 50
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateWithdrawAllAvailable,
-		cfevestingsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingpoolsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

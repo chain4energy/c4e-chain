@@ -229,7 +229,7 @@ genesis:
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "day"
-      vestings:
+      account_vesting_pools:
         - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
           # delegable_address: ""
           vesting_pools:

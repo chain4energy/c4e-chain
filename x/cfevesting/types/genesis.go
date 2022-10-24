@@ -72,7 +72,7 @@ func (gs GenesisState) validateVestingTypes() error {
 }
 
 func (gs GenesisState) validateAccountsVestings() error {
-	avts := gs.Vestings
+	avts := gs.AccountVestingPools
 	vts := gs.VestingTypes
 	for _, avt := range avts {
 		err := avt.Validate()
@@ -86,7 +86,7 @@ func (gs GenesisState) validateAccountsVestings() error {
 				numOfAddress++
 			}
 			if numOfAddress > 1 {
-				return fmt.Errorf("account vestings with address: %s defined more than once", avt.Address)
+				return fmt.Errorf("account vesting pools with address: %s defined more than once", avt.Address)
 			}
 		}
 		err = avt.ValidateAgainstVestingTypes(vts)
@@ -101,7 +101,7 @@ func (av AccountVestingPools) Validate() error {
 	vs := av.VestingPools
 	_, err := sdk.AccAddressFromBech32(av.Address)
 	if err != nil {
-		return fmt.Errorf("account vestings address: %s: %s", av.Address, err.Error())
+		return fmt.Errorf("account vesting pools address: %s: %s", av.Address, err.Error())
 	}
 	for _, v := range vs {
 		err = av.checkDuplications(vs, v)

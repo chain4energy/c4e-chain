@@ -205,7 +205,7 @@ func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address s
 	resp, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(h.t, nil, err)
 	require.True(h.t, expectedWithdrawn.Equal(resp.Withdrawn.Amount))
-	require.EqualValues(h.t, h.helperCfevestingKeeper.GetParams(ctx).Denom , resp.Withdrawn.Denom)
+	require.EqualValues(h.t, h.helperCfevestingKeeper.GetParams(ctx).Denom, resp.Withdrawn.Denom)
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceBefore.Add(expectedWithdrawn))
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalanceBefore.Sub(expectedWithdrawn))
 }
@@ -243,8 +243,8 @@ func (h *C4eVestingUtils) ExportGenesis(ctx sdk.Context, expected cfevestingtype
 	// require.EqualValues(h.t, expected, *got)
 	require.EqualValues(h.t, expected.Params, got.GetParams())
 	require.EqualValues(h.t, expected.VestingTypes, (*got).VestingTypes)
-	require.EqualValues(h.t, len(expected.Vestings), len((*got).Vestings))
-	AssertAccountVestingPoolsArrays(h.t, expected.Vestings, (*got).Vestings)
+	require.EqualValues(h.t, len(expected.AccountVestingPools), len((*got).AccountVestingPools))
+	AssertAccountVestingPoolsArrays(h.t, expected.AccountVestingPools, (*got).AccountVestingPools)
 	require.EqualValues(h.t, expected.VestingAccountCount, (*got).VestingAccountCount)
 	require.ElementsMatch(h.t, expected.VestingAccountList, (*got).VestingAccountList)
 

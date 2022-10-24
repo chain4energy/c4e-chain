@@ -44,8 +44,8 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
 
-		VestingTypes: []types.GenesisVestingType{},
-		Vestings:     accountVestingPoolsArray,
+		VestingTypes:        []types.GenesisVestingType{},
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -100,7 +100,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		Vestings:            accountVestingPoolsArray,
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -177,7 +177,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		Vestings:            accountVestingPoolsArray,
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -267,7 +267,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		Vestings:            accountVestingPoolsArray,
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -364,7 +364,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		Vestings:            accountVestingPoolsArray,
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
