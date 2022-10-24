@@ -11,6 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+
 )
 
 func SimulateVestingOperations(
@@ -22,7 +24,7 @@ func SimulateVestingOperations(
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount1, _ := simtypes.RandomAcc(r, accs)
 		randInt := helpers.RandomInt(r, 10000000)
-		simAccount2Address := helpers.CreateRandomAccAddressNoBalance(randInt)
+		simAccount2Address := commontestutils.CreateRandomAccAddressNoBalance(randInt)
 
 		randVestingName := helpers.RandStringOfLength(r, 10)
 		randVestingAmount := sdk.NewInt(helpers.RandomInt(r, 10000000000))
