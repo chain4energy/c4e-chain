@@ -679,11 +679,11 @@ paths:
             type: object
             properties:
               params:
-                description: params holds all the parameters of this module.
                 type: object
                 properties:
                   denom:
                     type: string
+                description: Params defines the parameters for the module.
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -32768,6 +32768,9 @@ definitions:
     type: object
   chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
     type: object
+    properties:
+      Withdrawn:
+        type: string
   chain4energy.c4echain.cfevesting.Params:
     type: object
     properties:
@@ -32778,11 +32781,11 @@ definitions:
     type: object
     properties:
       params:
-        description: params holds all the parameters of this module.
         type: object
         properties:
           denom:
             type: string
+        description: Params defines the parameters for the module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfevesting.QueryVestingPoolsResponse:
     type: object

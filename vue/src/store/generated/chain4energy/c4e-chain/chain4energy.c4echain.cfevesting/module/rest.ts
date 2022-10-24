@@ -27,7 +27,9 @@ export type CfevestingMsgCreateVestingPoolResponse = object;
 
 export type CfevestingMsgSendToVestingAccountResponse = object;
 
-export type CfevestingMsgWithdrawAllAvailableResponse = object;
+export interface CfevestingMsgWithdrawAllAvailableResponse {
+  Withdrawn?: string;
+}
 
 /**
  * Params defines the parameters for the module.
@@ -411,7 +413,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title cfevesting/account_vesting.proto
+ * @title cfevesting/account_vesting_pool.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {

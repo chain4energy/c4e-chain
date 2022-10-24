@@ -9,3 +9,6 @@ build/
 .log
 .scannerwork/
 coverage.out
+cpu.out
+mem.out
+app.test

@@ -51,23 +51,23 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 
 	k.SetVestingTypes(ctx, vestingTypes)
 
-	allVestings := genState.AccountVestingsList.Vestings
+	allVestings := genState.Vestings
 
 	for _, av := range allVestings {
 		k.Logger(ctx).Debug("set account vesting pools", "accountVestingPool", av)
-		k.SetAccountVestings(ctx, *av)
+		k.SetAccountVestingPools(ctx, *av)
 	}
 	ak.GetModuleAccount(ctx, types.ModuleName)
 }
 
 func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState,
 	ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) error {
-	accsVestings := genState.AccountVestingsList.Vestings
+	accsVestings := genState.Vestings
 	undelegableAmount := sdk.ZeroInt()
 	delegableAmounts := make(map[string]sdk.Int)
 
-	for _, accVestings := range accsVestings {
-		for _, v := range accVestings.VestingPools {
+	for _, accVestingPools := range accsVestings {
+		for _, v := range accVestingPools.VestingPools {
 			undelegableAmount = undelegableAmount.Add(v.LastModificationVested).Sub(v.LastModificationWithdrawn)
 		}
 	}
@@ -110,10 +110,10 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 	vestingTypes := k.GetVestingTypes(ctx)
 	genesis.VestingTypes = types.ConvertVestingTypesToGenesisVestingTypes(&vestingTypes)
-	allVestings := k.GetAllAccountVestings(ctx)
+	allVestings := k.GetAllAccountVestingPools(ctx)
 
 	for i := 0; i < len(allVestings); i++ {
-		genesis.AccountVestingsList.Vestings = append(genesis.AccountVestingsList.Vestings, &allVestings[i])
+		genesis.Vestings = append(genesis.Vestings, &allVestings[i])
 	}
 
 	genesis.VestingAccountList = k.GetAllVestingAccount(ctx)

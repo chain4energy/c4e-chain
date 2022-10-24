@@ -1,10 +1,9 @@
 package cfeminter
 
 import (
-	"math/rand"
-
+	"fmt"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	cfemintersimulation "github.com/chain4energy/c4e-chain/x/cfeminter/simulation"
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -12,12 +11,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	"math/rand"
 )
 
 // avoid unused import issue
 var (
 	_ = sample.AccAddress
-	_ = cfemintersimulation.FindAccount
 	_ = simappparams.StakePerAccount
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
@@ -26,17 +25,45 @@ var (
 const (
 // this line is used by starport scaffolding # simapp/module/const
 )
+const SecondsInYear = int32(3600 * 24 * 365)
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
+	randMintAmount := helpers.RandomInt(simState.Rand, 40000000000000)
+	randMintPeriod := helpers.RandomInt(simState.Rand, 31536000)
+	randReductionPeriodLength := helpers.RandomInt(simState.Rand, 8)
+	randomIntBetween := helpers.RandIntBetween(simState.Rand, 1, 100)
+	reductionFloat := float64(randomIntBetween) / float64(100)
+	randReductionFactor := fmt.Sprintf("%f", reductionFloat)
+	now := simState.GenTimestamp
+
+	prminter := types.PeriodicReductionMinter{
+		MintAmount:            sdk.NewInt(randMintAmount),
+		MintPeriod:            int32(randMintPeriod),
+		ReductionPeriodLength: int32(randReductionPeriodLength),
+		ReductionFactor:       sdk.MustNewDecFromStr(randReductionFactor),
 	}
-	cfeminterGenesis := types.GenesisState{
-		// this line is used by starport scaffolding # simapp/module/genesisState
+
+	minter := types.Minter{
+		Start: now,
+		Periods: []*types.MintingPeriod{
+			{
+				Position:                1,
+				Type:                    types.PERIODIC_REDUCTION_MINTER,
+				PeriodicReductionMinter: &prminter,
+			},
+		},
 	}
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfeminterGenesis)
+
+	genesisState := types.GenesisState{
+		Params: types.NewParams("stake", minter),
+		MinterState: types.MinterState{
+			Position:     1,
+			AmountMinted: sdk.NewInt(0),
+		},
+	}
+
+	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&genesisState)
 }
 
 // ProposalContents doesn't return any content functions for governance proposals

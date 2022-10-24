@@ -20,7 +20,7 @@ func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 // NonNegativeCoinStateInvariant checks that any locked coins amount in vesting pools is non negative
 func NonNegativeVestingPoolAmountsInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		allVestingPools := k.GetAllAccountVestings(ctx)
+		allVestingPools := k.GetAllAccountVestingPools(ctx)
 
 		for _, accountVestingPools := range allVestingPools {
 			for _, vestingPool := range accountVestingPools.VestingPools {
@@ -49,7 +49,7 @@ func NonNegativeVestingPoolAmountsInvariant(k Keeper) sdk.Invariant {
 
 func VestingPoolConsistentDataInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		allVestingPools := k.GetAllAccountVestings(ctx)
+		allVestingPools := k.GetAllAccountVestingPools(ctx)
 
 		for _, accountVestingPools := range allVestingPools {
 			for _, vestingPool := range accountVestingPools.VestingPools {
@@ -90,7 +90,7 @@ func ModuleAccountInvariant(k Keeper) sdk.Invariant {
 }
 
 func getLockedSum(k Keeper, ctx sdk.Context) sdk.Int {
-	allVestingPools := k.GetAllAccountVestings(ctx)
+	allVestingPools := k.GetAllAccountVestingPools(ctx)
 	sum := sdk.ZeroInt()
 	for _, accountVestingPools := range allVestingPools {
 		for _, vestingPool := range accountVestingPools.VestingPools {

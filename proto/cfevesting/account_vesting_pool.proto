@@ -7,14 +7,7 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
-message AccountVestingsList {
-  
-  repeated AccountVestings vestings = 1; 
-
-}
-
-message AccountVestings {
-  
+message AccountVestingPools {
   string address = 1;
   // string delegable_address = 2;
   repeated VestingPool vesting_pools = 3; 

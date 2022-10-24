@@ -7,12 +7,10 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
 message VestingTypes {
-  
-  repeated VestingType vesting_types = 1; 
+  repeated VestingType vesting_types = 1;
 }
 
 message VestingType {
-  
   // vesting type name
   string name = 1; 
   // period of locked coins (minutes) from vesting start

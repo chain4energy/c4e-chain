@@ -23,7 +23,7 @@ func GenerateGenesisVestingTypes(numberOfVestingTypes int, startId int) []types.
 	return result
 }
 
-func GenerateGenesisVestingTypesForAccounVestings(vestings []*types.AccountVestings) []types.GenesisVestingType {
+func GenerateGenesisVestingTypesForAccounVestings(vestings []*types.AccountVestingPools) []types.GenesisVestingType {
 	vt := GenerateVestingTypes(1, 1)[0]
 	m := make(map[string]types.GenesisVestingType)
 	result := []types.GenesisVestingType{}

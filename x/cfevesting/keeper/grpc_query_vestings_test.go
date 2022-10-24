@@ -34,19 +34,18 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 		LastModificationVested:    amount,
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
-
-	accVestings := types.AccountVestings{
+	accVestingPools := types.AccountVestingPools{
 		Address:      acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
-	accountVestingsListArray := []*types.AccountVestings{&accVestings}
+	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
 
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
+		VestingTypes: []types.GenesisVestingType{},
+		Vestings:     accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -84,12 +83,12 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
-	accVestings := types.AccountVestings{
+	accVestingPools := types.AccountVestingPools{
 		Address:      acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
-	accountVestingsListArray := []*types.AccountVestings{&accVestings}
+	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
@@ -101,7 +100,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
+		Vestings:            accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -161,12 +160,12 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
-	accVestings := types.AccountVestings{
+	accVestingPools := types.AccountVestingPools{
 		Address:      acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
-	accountVestingsListArray := []*types.AccountVestings{&accVestings}
+	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
@@ -178,7 +177,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
+		Vestings:            accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -251,12 +250,12 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
-	accVestings := types.AccountVestings{
+	accVestingPools := types.AccountVestingPools{
 		Address:      acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
-	accountVestingsListArray := []*types.AccountVestings{&accVestings}
+	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
@@ -268,7 +267,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
+		Vestings:            accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -348,12 +347,12 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
-	accVestings := types.AccountVestings{
+	accVestingPools := types.AccountVestingPools{
 		Address:      acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
-	accountVestingsListArray := []*types.AccountVestings{&accVestings}
+	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
@@ -365,7 +364,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingsList: types.AccountVestingsList{Vestings: accountVestingsListArray},
+		Vestings:            accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
