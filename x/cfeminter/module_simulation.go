@@ -2,11 +2,8 @@ package cfeminter
 
 import (
 	"fmt"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
-	"math/rand"
-	"time"
-
 	"github.com/chain4energy/c4e-chain/testutil/sample"
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -14,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	"math/rand"
 )
 
 // avoid unused import issue
@@ -37,8 +35,8 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	randomIntBetween := helpers.RandIntBetween(simState.Rand, 1, 100)
 	reductionFloat := float64(randomIntBetween) / float64(100)
 	randReductionFactor := fmt.Sprintf("%f", reductionFloat)
-	fmt.Println(randReductionFactor)
-	now := time.Now()
+	now := simState.GenTimestamp
+
 	prminter := types.PeriodicReductionMinter{
 		MintAmount:            sdk.NewInt(randMintAmount),
 		MintPeriod:            int32(randMintPeriod),
@@ -58,8 +56,11 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	}
 
 	genesisState := types.GenesisState{
-		Params:      types.NewParams("uc4e", minter),
-		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0)},
+		Params: types.NewParams("stake", minter),
+		MinterState: types.MinterState{
+			Position:     1,
+			AmountMinted: sdk.NewInt(0),
+		},
 	}
 
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&genesisState)
