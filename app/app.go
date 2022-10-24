@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/chain4energy/c4e-chain/app/upgrades"
 	"io"
 	"net/http"
 	"os"
@@ -110,6 +111,8 @@ import (
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+
+	v2 "github.com/chain4energy/c4e-chain/app/upgrades/v2"
 )
 
 const (
@@ -191,6 +194,8 @@ var (
 	_ cosmoscmd.App           = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
+
+	Upgrades = []upgrades.Upgrade{v2.Upgrade}
 )
 
 func init() {
@@ -248,6 +253,7 @@ type App struct {
 	CfeminterKeeper      cfemintermodulekeeper.Keeper
 	CfedistributorKeeper cfedistributormodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
+	configurator module.Configurator
 
 	// mm is the module manager
 	mm *module.Manager
@@ -587,6 +593,7 @@ func New(
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
+	app.SetupUpgradeHandlers()
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	app.sm = module.NewSimulationManager(
@@ -808,4 +815,17 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 // SimulationManager implements the SimulationApp interface
 func (app *App) SimulationManager() *module.SimulationManager {
 	return app.sm
+}
+
+func (app *App) SetupUpgradeHandlers() {
+	for _, upgrade := range Upgrades {
+		app.UpgradeKeeper.SetUpgradeHandler(
+			upgrade.UpgradeName,
+			upgrade.CreateUpgradeHandler(
+				app.mm,
+				app.configurator,
+				app.BaseApp,
+			),
+		)
+	}
 }
