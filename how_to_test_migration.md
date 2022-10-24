@@ -1,62 +1,95 @@
-All changes must be comitted
+# How to test if migration works
+
+---
+
+1. Stash all changes in the current version
+
 ```bash
 git stash
 ```
 
-```bash
+2. Checkout to older version
+
+```
 git checkout v1.0.0
 ```
+
+3. Create a log folder if it does not exist
+
+```
+mkdir .log/
+```
+
+4. Build and serve chain with reset state option
+
 ```bash
 ignite chain build
+ignite chain serve -f --path <appDir> -v $@ 2>><appDir>/.log/log.txt
 ```
 
-Start chain with force delete data
+5. Wait unit blochain start producing block
+
+---
+
+6. Prepare proposal from alice account
 
 ```bash
-ignite chain serve -f --path  $DIR -v $@ 2>$DIR/.log/log.txt &
+c4ed tx gov submit-proposal software-upgrade <migrationName> --upgrade-height <upgradeHeight> --title <title> --description <description> --from <accName> --chain-id <chainId>
 ```
 
-Wait unit blochain start producing block
-```bash
-ignite chain serve -f --path  $DIR -v $@ 2>$DIR/.log/log.txt &
-```
+7. Deposit to proposal
 
-Prepare proposal from alice account
-```bash
-c4ed tx gov submit-proposal software-upgrade v2 --upgrade-height 75 --from alice --title "Upgrade to v2" --description "ASdA" --chain-id c4echain```
-```
-
-Deposit to proposal
 ```bash
 c4ed tx gov deposit 1 100000000000uc4e --from alice --chain-id c4echain
 ```
 
-Vote for proposal
+8. Vote for proposal
+
 ```bash
 c4ed tx gov vote 1 yes --from alice --chain-id c4echain
 ```
 
-Wait until blochain halt on 75 height
+9. Wait until blochain halt on 75 height and stop the chain
 
-Stash changes
+---
+
+10. Stash changes
+
 ```bash
 git stash
 ```
 
-Switch to newest blochain version
+11. Switch to newest blochain version
+
 ```bash
 git switch -
 ```
+12. Build project once again
 
-Build project once again
 ```bash
 ignite chain build
 ```
 
-Start chain with actual data without force
+13. Copy app state (backup)
 
 ```bash
-ignite chain serve --path  $DIR -v $@ 2>$DIR/.log/log.txt &
+cp -r .data/ .backup_data_block_74/ 
 ```
 
+14. Start chain with actual data without force
+
+```bash
+ignite chain serve --path <appDir> -v $@ 2>><appDir>/.log/log.txt &
+```
 All logs from migration are stored .log/log.txt &
+
+## Troubleshoting 
+
+If, after starting the new version of the application, ignite displays information about resetting the application state, 
+stop the chain and copy the previously saved backup to data
+
+```bash
+rm -rf .data/
+cp -r .backup_data_block_74/ .data/
+```
+

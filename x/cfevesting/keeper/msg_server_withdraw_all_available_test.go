@@ -41,7 +41,7 @@ func TestWithdrawAllAvailableManyVestingPoolsOnLockStart(t *testing.T) {
 	accountVestingPools := testHelper.C4eVestingUtils.SetupAccountsVestingPools(accAddr.String(), 3, vested, sdk.ZeroInt())
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested.MulRaw(3), sdk.ZeroInt())
-	testHelper.C4eVestingUtils.CompareStoredAcountVestings(accAddr, accountVestingPools)
+	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
 }
 
 func TestWithdrawAllAvailableDuringLock(t *testing.T) {
@@ -96,7 +96,7 @@ func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, withdrawable.Sub(withdrawn))
 	accountVestingPools.VestingPools[0].Withdrawn = withdrawable
 	accountVestingPools.VestingPools[0].LastModificationWithdrawn = withdrawable
-	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestings)
+	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
 
 }
 
