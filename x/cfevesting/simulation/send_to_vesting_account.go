@@ -8,6 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"math/rand"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+
 )
 
 func SimulateSendToVestingAccount(
@@ -22,7 +24,7 @@ func SimulateSendToVestingAccount(
 		accAddress := allVestingPools[randVestingPoolId].Address
 		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10))
 		randInt := helpers.RandomInt(r, 1000000000)
-		simAccount2Address := helpers.CreateRandomAccAddressNoBalance(randInt)
+		simAccount2Address := commontestutils.CreateRandomAccAddressNoBalance(randInt)
 		randVestingId := helpers.RandomInt(r, len(allVestingPools[randVestingPoolId].VestingPools))
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
 			FromAddress:    accAddress,

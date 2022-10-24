@@ -14,6 +14,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+
 )
 
 // avoid unused import issue
@@ -64,7 +66,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		},
 		Vestings: []*types.AccountVestingPools{
 			{
-				Address: helpers.CreateRandomAccAddressNoBalance(123),
+				Address: commontestutils.CreateRandomAccAddressNoBalance(123),
 				VestingPools: []*types.VestingPool{
 					{
 						Id:                        int32(1),

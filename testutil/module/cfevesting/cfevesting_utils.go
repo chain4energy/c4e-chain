@@ -195,17 +195,19 @@ func (h *C4eVestingUtils) SetupVestingTypesWithModification(ctx sdk.Context, mod
 }
 
 func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address sdk.AccAddress, accountBalanceBefore sdk.Int, moduleBalanceBefore sdk.Int,
-	accountBalanceAfter sdk.Int, moduleBalanceAfter sdk.Int) {
+	expectedWithdrawn sdk.Int) {
 	msgServer, msgServerCtx := keeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceBefore)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalanceBefore)
 
 	msg := cfevestingtypes.MsgWithdrawAllAvailable{Creator: address.String()}
-	_, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
+	resp, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(h.t, nil, err)
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceAfter)
-	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalanceAfter)
+	require.True(h.t, expectedWithdrawn.Equal(resp.Withdrawn.Amount))
+	require.EqualValues(h.t, h.helperCfevestingKeeper.GetParams(ctx).Denom , resp.Withdrawn.Denom)
+	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceBefore.Add(expectedWithdrawn))
+	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalanceBefore.Sub(expectedWithdrawn))
 }
 
 func (h *C4eVestingUtils) MessageWithdrawAllAvailableError(ctx sdk.Context, address string, errorMessage string) {
@@ -359,8 +361,8 @@ func (h *ContextC4eVestingUtils) SetupVestingTypesWithModification(modifyVesting
 }
 
 func (h *ContextC4eVestingUtils) MessageWithdrawAllAvailable(address sdk.AccAddress, accountBalanceBefore sdk.Int, moduleBalanceBefore sdk.Int,
-	accountBalanceAfter sdk.Int, moduleBalanceAfter sdk.Int) {
-	h.C4eVestingUtils.MessageWithdrawAllAvailable(h.testContext.GetContext(), address, accountBalanceBefore, moduleBalanceBefore, accountBalanceAfter, moduleBalanceAfter)
+	expectedWithdrawn sdk.Int) {
+	h.C4eVestingUtils.MessageWithdrawAllAvailable(h.testContext.GetContext(), address, accountBalanceBefore, moduleBalanceBefore, expectedWithdrawn)
 }
 
 func (h *ContextC4eVestingUtils) CompareStoredAcountVestingPools(address sdk.AccAddress, accVestingPools cfevestingtypes.AccountVestingPools) {
