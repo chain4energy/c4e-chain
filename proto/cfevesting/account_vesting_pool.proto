@@ -14,6 +14,7 @@ message AccountVestingPools {
 }
 
 message VestingPool {
+  // TODO verify if last modification data is still required after removing part of vesting mudule functionality. Check if usfeful for planned new functiolities
   int32 id = 1;
   string name = 2;
   string vesting_type = 3;

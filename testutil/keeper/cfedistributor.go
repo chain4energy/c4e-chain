@@ -15,6 +15,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
+	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
+
 )
 
 func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
@@ -52,3 +54,10 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 
 	return k, ctx
 }
+
+func CfedistributorKeeperTestUtil(t *testing.T) (*cfedistributortestutils.C4eDistributorKeeperUtils, *keeper.Keeper, sdk.Context) {
+	k, ctx := CfedistributorKeeper(t)
+	utils := cfedistributortestutils.NewC4eDistributorKeeperUtils(t, k)
+	return &utils, k, ctx
+}
+

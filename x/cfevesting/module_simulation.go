@@ -3,9 +3,7 @@ package cfevesting
 import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
-	"time"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -15,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 )
 
 // avoid unused import issue
@@ -63,25 +62,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				LockupPeriodUnit:  "second",
 			},
 		},
-		AccountVestingPools: []*types.AccountVestingPools{
-			{
-				Address: commontestutils.CreateRandomAccAddressNoBalance(123),
-				VestingPools: []*types.VestingPool{
-					{
-						Id:                        int32(1),
-						Name:                      "test-vesting-account-name",
-						VestingType:               "New vesting3",
-						LockStart:                 time.Now(),
-						LockEnd:                   time.Now().Add(1),
-						Vested:                    sdk.NewInt(10000000),
-						Withdrawn:                 sdk.NewInt(10000),
-						Sent:                      sdk.NewInt(100),
-						LastModification:          time.Now(),
-						LastModificationVested:    sdk.NewInt(10000000),
-						LastModificationWithdrawn: sdk.NewInt(10000000),
-					},
-				},
-			}},
+		Vestings: []*types.AccountVestingPools{},
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfevestingGenesis)
@@ -108,28 +89,28 @@ func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.Weig
 	var weightSimulateSendToVestingAccount = 50
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateSendToVestingAccount,
-		cfevestingpoolsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 	var weightSimulateVestingOperations = 30
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateVestingOperations,
-		cfevestingpoolsimulation.SimulateVestingOperations(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingsimulation.SimulateVestingOperations(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgCreateVestingAccount = 10
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateVestingAccount,
-		cfevestingpoolsimulation.SimulateMsgCreateVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingsimulation.SimulateMsgCreateVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 	var weightSimulateVestingMultiOperations = 100
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateVestingMultiOperations,
-		cfevestingpoolsimulation.SimulateVestingMultiOperations(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingsimulation.SimulateVestingMultiOperations(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 	var weightSimulateWithdrawAllAvailable = 50
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateWithdrawAllAvailable,
-		cfevestingpoolsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfevestingsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
