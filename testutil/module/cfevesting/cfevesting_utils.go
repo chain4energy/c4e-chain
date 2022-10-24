@@ -54,23 +54,17 @@ func (h *C4eVestingKeeperUtils) SetupAccountsVestingsWithModification(ctx sdk.Co
 
 func (h *C4eVestingKeeperUtils) CheckNonNegativeVestingPoolAmountsInvariant(ctx sdk.Context, failed bool, message string) {
 	invariant := cfevestingmodulekeeper.NonNegativeVestingPoolAmountsInvariant(*h.helperCfevestingKeeper)
-	h.CheckInvariant(ctx, invariant, failed, message)
+	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
 func (h *C4eVestingKeeperUtils) CheckVestingPoolConsistentDataInvariant(ctx sdk.Context, failed bool, message string) {
 	invariant := cfevestingmodulekeeper.VestingPoolConsistentDataInvariant(*h.helperCfevestingKeeper)
-	h.CheckInvariant(ctx, invariant, failed, message)
+	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
 func (h *C4eVestingKeeperUtils) CheckModuleAccountInvariant(ctx sdk.Context, failed bool, message string) {
 	invariant := cfevestingmodulekeeper.ModuleAccountInvariant(*h.helperCfevestingKeeper)
-	h.CheckInvariant(ctx, invariant, failed, message)
-}
-
-func (h *C4eVestingKeeperUtils) CheckInvariant(ctx sdk.Context, invariant sdk.Invariant, failed bool, message string) {
-	msg, wasFailed := invariant(ctx)
-	require.EqualValues(h.t, failed, wasFailed)
-	require.EqualValues(h.t, message, msg)
+	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
 type C4eVestingUtils struct {

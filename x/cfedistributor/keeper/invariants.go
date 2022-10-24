@@ -40,23 +40,23 @@ func StateSumBalanceCheckInvariant(k Keeper) sdk.Invariant {
 		if !change.IsZero() {
 			return sdk.FormatInvariant(types.ModuleName, "state sum balance check",
 				fmt.Sprintf(
-					"\tthe sum of the states should be integer: change: %v\n",
-					change)), true
+					"\tthe sum of the states should be integer: sum: %v",
+					statesSum)), true
 		}
 		var broken bool
-
+		
 		distributorAccountCoins := k.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
 		if coinsStatesSum.IsZero() && distributorAccountCoins.IsZero() {
 			ctx.Logger().Debug("Coin state and distributor account is empty possible start of blockchain")
 			broken = false
 		} else {
-			broken = coinsStatesSum.IsEqual(distributorAccountCoins)
+			broken = !coinsStatesSum.IsEqual(distributorAccountCoins)
 		}
 
 		return sdk.FormatInvariant(types.ModuleName, "state sum balance check",
 			fmt.Sprintf(
 				"\tsum of states coins: %v\n"+
-					"\tdistributor account balance:          %v\n",
+					"\tdistributor account balance: %v",
 				coinsStatesSum, distributorAccountCoins)), broken
 	}
 }
@@ -66,7 +66,7 @@ func getStatesSum(k Keeper, ctx sdk.Context) sdk.DecCoins {
 	statesSum := sdk.NewDecCoins()
 
 	for _, state := range states {
-		statesSum.Add(state.CoinsStates...)
+		statesSum = statesSum.Add(state.CoinsStates...)
 	}
 
 	return statesSum

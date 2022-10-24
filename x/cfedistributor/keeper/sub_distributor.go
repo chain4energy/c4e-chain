@@ -47,9 +47,8 @@ func (k Keeper) SetState(ctx sdk.Context, state types.State) {
 }
 
 func GetStateKey(state types.State) string {
-	if &state.Account.Id != nil && state.Account.Id != "" {
+	if state.Account != nil && state.Account.Id != "" {
 		return state.Account.Id
-
 	} else {
 		//its state burn
 		return types.BurnStateKey

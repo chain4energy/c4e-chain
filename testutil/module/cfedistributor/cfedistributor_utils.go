@@ -14,26 +14,42 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 )
 
-type C4eDistributorUtils struct {
+type C4eDistributorKeeperUtils struct {
 	t                          *testing.T
 	helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper
+}
+
+func NewC4eDistributorKeeperUtils(t *testing.T, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper) C4eDistributorKeeperUtils {
+	return C4eDistributorKeeperUtils{t: t, helperCfedistributorKeeper: helperCfedistributorKeeper}
+}
+
+func (d *C4eDistributorKeeperUtils) SetSubDistributorsParams(ctx sdk.Context, subdistributors []cfedistributortypes.SubDistributor) {
+	d.helperCfedistributorKeeper.SetParams(ctx, cfedistributortypes.NewParams(subdistributors))
+}
+
+func (d *C4eDistributorKeeperUtils) SetState(ctx sdk.Context, state cfedistributortypes.State) {
+	d.helperCfedistributorKeeper.SetState(ctx, state)
+}
+
+func (h *C4eDistributorKeeperUtils) CheckNonNegativeCoinStateInvariant(ctx sdk.Context, failed bool, message string) {
+	invariant := cfedistributormodulekeeper.NonNegativeCoinStateInvariant(*h.helperCfedistributorKeeper)
+	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
+}
+
+func (h *C4eDistributorKeeperUtils) CheckStateSumBalanceCheckInvariant(ctx sdk.Context, failed bool, message string) {
+	invariant := cfedistributormodulekeeper.StateSumBalanceCheckInvariant(*h.helperCfedistributorKeeper)
+	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
+}
+
+type C4eDistributorUtils struct {
+	C4eDistributorKeeperUtils
 	helperAccountKeeper        *authkeeper.AccountKeeper
-	bankUtils                  *commontestutils.BankUtils
 }
 
 func NewC4eDistributorUtils(t *testing.T, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *commontestutils.BankUtils) C4eDistributorUtils {
-	return C4eDistributorUtils{t: t, helperCfedistributorKeeper: helperCfedistributorKeeper, helperAccountKeeper: helperAccountKeeper,
-		bankUtils: bankUtils}
-}
-
-func (d *C4eDistributorUtils) SetSubDistributorsParams(ctx sdk.Context, subdistributors []cfedistributortypes.SubDistributor) {
-	d.helperCfedistributorKeeper.SetParams(ctx, cfedistributortypes.NewParams(subdistributors))
-}
-
-func (d *C4eDistributorUtils) SetState(ctx sdk.Context, state cfedistributortypes.State) {
-	d.helperCfedistributorKeeper.SetState(ctx, state)
+	return C4eDistributorUtils{C4eDistributorKeeperUtils: NewC4eDistributorKeeperUtils(t, helperCfedistributorKeeper), helperAccountKeeper: helperAccountKeeper}
 }
 
 func (d *C4eDistributorUtils) VerifyStateAmount(ctx sdk.Context, stateName string, denom string, expectedRemains sdk.Dec) {
@@ -128,4 +144,9 @@ func (m *ContextC4eDistributorUtils) SetState(state cfedistributortypes.State) {
 
 func (m *ContextC4eDistributorUtils) SetParams(params cfedistributortypes.Params) {
 	m.C4eDistributorUtils.SetParams(m.testContext.GetContext(), params)
+}
+
+func (m *ContextC4eDistributorUtils) CheckStateSumBalanceCheckInvariant(failed bool, message string) {
+	m.C4eDistributorUtils.CheckStateSumBalanceCheckInvariant(m.testContext.GetContext(), failed, message)
+
 }
