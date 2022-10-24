@@ -8,7 +8,6 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/nullify"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -25,30 +24,20 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 )
 
-type C4eVestingUtils struct {
+type C4eVestingKeeperUtils struct {
 	t                      *testing.T
 	helperCfevestingKeeper *cfevestingmodulekeeper.Keeper
-	helperAccountKeeper    *authkeeper.AccountKeeper
-	helperBankKeeper       *bankkeeper.Keeper
-	helperStakingKeeper    *stakingkeeper.Keeper
-	bankUtils              *commontestutils.BankUtils
-	authUtils              *commontestutils.AuthUtils
 }
 
-func NewC4eVestingUtils(t *testing.T, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
-	helperAccountKeeper *authkeeper.AccountKeeper,
-	helperBankKeeper *bankkeeper.Keeper,
-	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *commontestutils.BankUtils,
-	authUtils *commontestutils.AuthUtils) C4eVestingUtils {
-	return C4eVestingUtils{t: t, helperCfevestingKeeper: helperCfevestingKeeper, helperAccountKeeper: helperAccountKeeper,
-		helperBankKeeper: helperBankKeeper, helperStakingKeeper: helperStakingKeeper, bankUtils: bankUtils, authUtils: authUtils}
+func NewC4eVestingKeeperUtils(t *testing.T, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper) C4eVestingKeeperUtils {
+	return C4eVestingKeeperUtils{t: t, helperCfevestingKeeper: helperCfevestingKeeper}
 }
 
-func (h *C4eVestingUtils) SetupAccountsVestings(ctx sdk.Context, address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestings {
+func (h *C4eVestingKeeperUtils) SetupAccountsVestings(ctx sdk.Context, address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestings {
 	return h.SetupAccountsVestingsWithModification(ctx, func(*cfevestingtypes.VestingPool) { /*do not modify*/ }, address, numberOfVestings, vestingAmount, withdrawnAmount)
 }
 
-func (h *C4eVestingUtils) SetupAccountsVestingsWithModification(ctx sdk.Context, modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestings {
+func (h *C4eVestingKeeperUtils) SetupAccountsVestingsWithModification(ctx sdk.Context, modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestings {
 	accountVestings := GenerateOneAccountVestingsWithAddressWith10BasedVestings(numberOfVestings, 1, 1)
 	accountVestings.Address = address
 
@@ -63,6 +52,45 @@ func (h *C4eVestingUtils) SetupAccountsVestingsWithModification(ctx sdk.Context,
 	return accountVestings
 }
 
+func (h *C4eVestingKeeperUtils) CheckNonNegativeVestingPoolAmountsInvariant(ctx sdk.Context, failed bool, message string) {
+	invariant := cfevestingmodulekeeper.NonNegativeVestingPoolAmountsInvariant(*h.helperCfevestingKeeper)
+	h.CheckInvariant(ctx, invariant, failed, message)
+}
+
+func (h *C4eVestingKeeperUtils) CheckVestingPoolConsistentDataInvariant(ctx sdk.Context, failed bool, message string) {
+	invariant := cfevestingmodulekeeper.VestingPoolConsistentDataInvariant(*h.helperCfevestingKeeper)
+	h.CheckInvariant(ctx, invariant, failed, message)
+}
+
+func (h *C4eVestingKeeperUtils) CheckModuleAccountInvariant(ctx sdk.Context, failed bool, message string) {
+	invariant := cfevestingmodulekeeper.ModuleAccountInvariant(*h.helperCfevestingKeeper)
+	h.CheckInvariant(ctx, invariant, failed, message)
+}
+
+func (h *C4eVestingKeeperUtils) CheckInvariant(ctx sdk.Context, invariant sdk.Invariant, failed bool, message string) {
+	msg, wasFailed := invariant(ctx)
+	require.EqualValues(h.t, failed, wasFailed)
+	require.EqualValues(h.t, message, msg)
+}
+
+type C4eVestingUtils struct {
+	C4eVestingKeeperUtils
+	helperAccountKeeper *authkeeper.AccountKeeper
+	helperBankKeeper    *bankkeeper.Keeper
+	helperStakingKeeper *stakingkeeper.Keeper
+	bankUtils           *commontestutils.BankUtils
+	authUtils           *commontestutils.AuthUtils
+}
+
+func NewC4eVestingUtils(t *testing.T, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
+	helperAccountKeeper *authkeeper.AccountKeeper,
+	helperBankKeeper *bankkeeper.Keeper,
+	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *commontestutils.BankUtils,
+	authUtils *commontestutils.AuthUtils) C4eVestingUtils {
+	return C4eVestingUtils{C4eVestingKeeperUtils: NewC4eVestingKeeperUtils(t, helperCfevestingKeeper), helperAccountKeeper: helperAccountKeeper,
+		helperBankKeeper: helperBankKeeper, helperStakingKeeper: helperStakingKeeper, bankUtils: bankUtils, authUtils: authUtils}
+}
+
 func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.AccAddress, accountVestingsExistsBefore bool, accountVestingsExistsAfter bool,
 	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest sdk.Int, accAmountBefore sdk.Int, moduleAmountBefore sdk.Int,
 	accAmountAfter sdk.Int, moduleAmountAfter sdk.Int, vestingPollsIds ...int) {
@@ -72,7 +100,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accAmountBefore)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountBefore)
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := cfevestingtypes.MsgCreateVestingPool{Creator: address.String(), Name: vestingPoolName,
 		Amount: amountToVest, Duration: lockupDuration, VestingType: vestingType.Name}
@@ -99,7 +127,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPoolError(ctx sdk.Context, address
 	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest sdk.Int,
 	errorMessage string) {
 
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := cfevestingtypes.MsgCreateVestingPool{Creator: address.String(), Name: vestingPoolName,
 		Amount: amountToVest, Duration: lockupDuration, VestingType: vestingType.Name}
@@ -196,7 +224,7 @@ func (h *C4eVestingUtils) SetupVestingTypesWithModification(ctx sdk.Context, mod
 
 func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address sdk.AccAddress, accountBalanceBefore sdk.Int, moduleBalanceBefore sdk.Int,
 	accountBalanceAfter sdk.Int, moduleBalanceAfter sdk.Int) {
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceBefore)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalanceBefore)
@@ -209,7 +237,7 @@ func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address s
 }
 
 func (h *C4eVestingUtils) MessageWithdrawAllAvailableError(ctx sdk.Context, address string, errorMessage string) {
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	msg := cfevestingtypes.MsgWithdrawAllAvailable{Creator: address}
 	_, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
@@ -261,7 +289,7 @@ func (h *C4eVestingUtils) SetVestingTypes(ctx sdk.Context, vestingTypes cfevesti
 }
 
 func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolId int32, amount sdk.Int, restartVesting bool) {
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
 
@@ -298,7 +326,7 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 }
 
 func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolId int32, amount sdk.Int, restartVesting bool, errorMessage string) {
-	msgServer, msgServerCtx := keeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
+	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
 
@@ -404,4 +432,8 @@ func (h *ContextC4eVestingUtils) ExportGenesis(expected cfevestingtypes.GenesisS
 
 func (h *ContextC4eVestingUtils) InitGenesisError(genState cfevestingtypes.GenesisState, errorMessage string) {
 	h.C4eVestingUtils.InitGenesisError(h.testContext.GetContext(), genState, errorMessage)
+}
+
+func (h *ContextC4eVestingUtils) CheckModuleAccountInvariant(failed bool, message string) {
+	h.C4eVestingUtils.CheckModuleAccountInvariant(h.testContext.GetContext(), failed, message)
 }

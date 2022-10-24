@@ -515,12 +515,12 @@ func New(
 		authz.ModuleName,
 		banktypes.ModuleName,
 		govtypes.ModuleName,
+		cfevestingmoduletypes.ModuleName,
 		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		monitoringptypes.ModuleName,
-		cfevestingmoduletypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
@@ -537,7 +537,6 @@ func New(
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		vestingtypes.ModuleName,
-		// minttypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
@@ -568,6 +567,8 @@ func New(
 		vestingtypes.ModuleName,
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
+		cfedistributormoduletypes.ModuleName,
+		cfevestingmoduletypes.ModuleName,
 		crisistypes.ModuleName,
 		ibchost.ModuleName,
 		genutiltypes.ModuleName,
@@ -577,10 +578,8 @@ func New(
 		ibctransfertypes.ModuleName,
 		feegrant.ModuleName,
 		monitoringptypes.ModuleName,
-		cfevestingmoduletypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
-		cfedistributormoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 

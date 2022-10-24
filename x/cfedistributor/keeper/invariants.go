@@ -8,19 +8,39 @@ import (
 
 // RegisterInvariants register cfedistribution invariants
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
+	ir.RegisterRoute(types.ModuleName, "nonnegative-coin-state",
+		NonNegativeCoinStateInvariant(k))
 	ir.RegisterRoute(types.ModuleName, "state-sum-balance-check",
 		StateSumBalanceCheckInvariant(k))
+}
+
+// NonNegativeCoinStateInvariant checks that any coin state is negative
+func NonNegativeCoinStateInvariant(k Keeper) sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
+		states := k.GetAllStates(ctx)
+
+		for _, state := range states {
+			for _, coinState := range state.CoinsStates {
+				if (coinState.IsNegative()) {
+					return sdk.FormatInvariant(types.ModuleName, "nonnegative coin state",
+						fmt.Sprintf("\tnegative coin state %s in state %s", coinState, state.StateIdString())), true
+				}
+			}
+		}
+
+		return sdk.FormatInvariant(types.ModuleName, "nonnegative coin state", "\tno negative coin states"), false
+	}
 }
 
 // StateSumBalanceCheckInvariant checks that sum on state equal module account balance
 func StateSumBalanceCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		statesSum := GetStatesSum(k, ctx)
+		statesSum := getStatesSum(k, ctx)
 		coinsStatesSum, change := statesSum.TruncateDecimal()
 		if !change.IsZero() {
 			return sdk.FormatInvariant(types.ModuleName, "state sum balance check",
 				fmt.Sprintf(
-					"\tthe sum of the states should be integer change: %v\n",
+					"\tthe sum of the states should be integer: change: %v\n",
 					change)), true
 		}
 		var broken bool
@@ -41,7 +61,7 @@ func StateSumBalanceCheckInvariant(k Keeper) sdk.Invariant {
 	}
 }
 
-func GetStatesSum(k Keeper, ctx sdk.Context) sdk.DecCoins {
+func getStatesSum(k Keeper, ctx sdk.Context) sdk.DecCoins {
 	states := k.GetAllStates(ctx)
 	statesSum := sdk.NewDecCoins()
 

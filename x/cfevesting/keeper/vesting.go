@@ -224,7 +224,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"send to new vesting account - vesting available: %s is smaller than requested amount: %s", available, amount)
 	}
-	vestingPool.Sent = amount
+	vestingPool.Sent = vestingPool.Sent.Add(amount)
 	vestingPool.LastModification = ctx.BlockTime()
 	vestingPool.LastModificationVested = available.Sub(amount)
 	vestingPool.LastModificationWithdrawn = sdk.ZeroInt()
