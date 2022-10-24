@@ -3,7 +3,6 @@ package cfevesting
 import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
-	"time"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	cfevestingsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
@@ -14,7 +13,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 
 )
 
@@ -64,25 +62,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				LockupPeriodUnit:  "second",
 			},
 		},
-		Vestings: []*types.AccountVestingPools{
-			{
-				Address: commontestutils.CreateRandomAccAddressNoBalance(123),
-				VestingPools: []*types.VestingPool{
-					{
-						Id:                        int32(1),
-						Name:                      "test-vesting-account-name",
-						VestingType:               "New vesting3",
-						LockStart:                 time.Now(),
-						LockEnd:                   time.Now().Add(1),
-						Vested:                    sdk.NewInt(10000000),
-						Withdrawn:                 sdk.NewInt(10000),
-						Sent:                      sdk.NewInt(100),
-						LastModification:          time.Now(),
-						LastModificationVested:    sdk.NewInt(10000000),
-						LastModificationWithdrawn: sdk.NewInt(10000000),
-					},
-				},
-			}},
+		Vestings: []*types.AccountVestingPools{},
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfevestingGenesis)
