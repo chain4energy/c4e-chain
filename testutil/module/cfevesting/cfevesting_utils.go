@@ -33,12 +33,12 @@ func NewC4eVestingKeeperUtils(t *testing.T, helperCfevestingKeeper *cfevestingmo
 	return C4eVestingKeeperUtils{t: t, helperCfevestingKeeper: helperCfevestingKeeper}
 }
 
-func (h *C4eVestingKeeperUtils) SetupAccountsVestingPools(ctx sdk.Context, address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
-	return h.SetupAccountsVestingPoolsWithModification(ctx, func(*cfevestingtypes.VestingPool) { /*do not modify*/ }, address, numberOfVestings, vestingAmount, withdrawnAmount)
+func (h *C4eVestingKeeperUtils) SetupAccountVestingPools(ctx sdk.Context, address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
+	return h.SetupAccountVestingPoolsWithModification(ctx, func(*cfevestingtypes.VestingPool) { /*do not modify*/ }, address, numberOfVestingPools, vestingAmount, withdrawnAmount)
 }
 
-func (h *C4eVestingKeeperUtils) SetupAccountsVestingPoolsWithModification(ctx sdk.Context, modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
-	accountVestingPools := GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(numberOfVestings, 1, 1)
+func (h *C4eVestingKeeperUtils) SetupAccountVestingPoolsWithModification(ctx sdk.Context, modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
+	accountVestingPools := GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(numberOfVestingPools, 1, 1)
 	accountVestingPools.Address = address
 
 	for _, vesting := range accountVestingPools.VestingPools {
@@ -241,7 +241,7 @@ func (h *C4eVestingUtils) MessageWithdrawAllAvailableError(ctx sdk.Context, addr
 	require.EqualError(h.t, err, errorMessage)
 }
 
-func (h *C4eVestingUtils) CompareStoredAcountVestings(ctx sdk.Context, address sdk.AccAddress, accVestingPools cfevestingtypes.AccountVestingPools) {
+func (h *C4eVestingUtils) CompareStoredAcountVestingPools(ctx sdk.Context, address sdk.AccAddress, accVestingPools cfevestingtypes.AccountVestingPools) {
 	storedAccVestingPools, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
 	require.EqualValues(h.t, true, accFound)
 
@@ -274,8 +274,8 @@ func (h *C4eVestingUtils) ExportGenesis(ctx sdk.Context, expected cfevestingtype
 	nullify.Fill(got)
 }
 
-func (h *C4eVestingUtils) QueryVestings(wctx context.Context, expectedResponse cfevestingtypes.QueryVestingsResponse) {
-	resp, err := h.helperCfevestingKeeper.Vestings(wctx, &cfevestingtypes.QueryVestingsRequest{})
+func (h *C4eVestingUtils) QueryVestingsSummary(wctx context.Context, expectedResponse cfevestingtypes.QueryVestingsSummaryResponse) {
+	resp, err := h.helperCfevestingKeeper.VestingsSummary(wctx, &cfevestingtypes.QueryVestingsSummaryRequest{})
 	require.NoError(h.t, err)
 	require.Equal(h.t, expectedResponse, *resp)
 }
@@ -347,12 +347,12 @@ func NewContextC4eVestingUtils(t *testing.T, testContext commontestutils.TestCon
 	return &ContextC4eVestingUtils{C4eVestingUtils: c4eVestingUtils, testContext: testContext}
 }
 
-func (h *ContextC4eVestingUtils) SetupAccountsVestingPools(address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
-	return h.C4eVestingUtils.SetupAccountsVestingPools(h.testContext.GetContext(), address, numberOfVestings, vestingAmount, withdrawnAmount)
+func (h *ContextC4eVestingUtils) SetupAccountVestingPools(address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
+	return h.C4eVestingUtils.SetupAccountVestingPools(h.testContext.GetContext(), address, numberOfVestingPools, vestingAmount, withdrawnAmount)
 }
 
-func (h *ContextC4eVestingUtils) SetupAccountsVestingsWithModification(modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestings int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
-	return h.C4eVestingUtils.SetupAccountsVestingPoolsWithModification(h.testContext.GetContext(), modifyVesting, address, numberOfVestings, vestingAmount, withdrawnAmount)
+func (h *ContextC4eVestingUtils) SetupAccountVestingsPoolsWithModification(modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
+	return h.C4eVestingUtils.SetupAccountVestingPoolsWithModification(h.testContext.GetContext(), modifyVesting, address, numberOfVestingPools, vestingAmount, withdrawnAmount)
 }
 
 func (h *ContextC4eVestingUtils) MessageCreateVestingPool(address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
@@ -388,15 +388,15 @@ func (h *ContextC4eVestingUtils) MessageWithdrawAllAvailable(address sdk.AccAddr
 }
 
 func (h *ContextC4eVestingUtils) CompareStoredAcountVestingPools(address sdk.AccAddress, accVestingPools cfevestingtypes.AccountVestingPools) {
-	h.C4eVestingUtils.CompareStoredAcountVestings(h.testContext.GetContext(), address, accVestingPools)
+	h.C4eVestingUtils.CompareStoredAcountVestingPools(h.testContext.GetContext(), address, accVestingPools)
 }
 
 func (h *ContextC4eVestingUtils) InitGenesis(genState cfevestingtypes.GenesisState) {
 	h.C4eVestingUtils.InitGenesis(h.testContext.GetContext(), genState)
 }
 
-func (h *ContextC4eVestingUtils) QueryVestings(expectedResponse cfevestingtypes.QueryVestingsResponse) {
-	h.C4eVestingUtils.QueryVestings(h.testContext.GetWrappedContext(), expectedResponse)
+func (h *ContextC4eVestingUtils) QueryVestings(expectedResponse cfevestingtypes.QueryVestingsSummaryResponse) {
+	h.C4eVestingUtils.QueryVestingsSummary(h.testContext.GetWrappedContext(), expectedResponse)
 }
 
 func (h *ContextC4eVestingUtils) MessageCreateVestingPoolError(address sdk.AccAddress,

@@ -11,10 +11,10 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdVestings() *cobra.Command {
+func CmdVestingsSummary() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vestings",
-		Short: "Query vestings",
+		Use:   "summary",
+		Short: "Query vestings summary",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
@@ -25,9 +25,9 @@ func CmdVestings() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryVestingsRequest{}
+			params := &types.QueryVestingsSummaryRequest{}
 
-			res, err := queryClient.Vestings(cmd.Context(), params)
+			res, err := queryClient.VestingsSummary(cmd.Context(), params)
 			if err != nil {
 				return err
 			}

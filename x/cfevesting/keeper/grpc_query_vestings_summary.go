@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) Vestings(goCtx context.Context, req *types.QueryVestingsRequest) (*types.QueryVestingsResponse, error) {
+func (k Keeper) VestingsSummary(goCtx context.Context, req *types.QueryVestingsSummaryRequest) (*types.QueryVestingsSummaryResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -28,7 +28,7 @@ func (k Keeper) Vestings(goCtx context.Context, req *types.QueryVestingsRequest)
 	for _, accFromList := range allAcc {
 		accAddr, err := sdk.AccAddressFromBech32(accFromList.Address)
 		if err != nil {
-			return &types.QueryVestingsResponse{}, status.Error(codes.Internal, err.Error())
+			return &types.QueryVestingsSummaryResponse{}, status.Error(codes.Internal, err.Error())
 		}
 
 		vestingAccount := k.account.GetAccount(ctx, accAddr)
@@ -40,7 +40,7 @@ func (k Keeper) Vestings(goCtx context.Context, req *types.QueryVestingsRequest)
 		}
 	}
 
-	return &types.QueryVestingsResponse{
+	return &types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        allVestingInAccounts.Add(vestingInPoolsAmount),
 		VestingInPoolsAmount:    vestingInPoolsAmount,
 		VestingInAccountsAmount: allVestingInAccounts,

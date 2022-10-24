@@ -44,7 +44,7 @@ func (gs GenesisState) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = gs.validateAccountsVestings()
+	err = gs.validateAccountVestingPools()
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (gs GenesisState) validateVestingTypes() error {
 	return nil
 }
 
-func (gs GenesisState) validateAccountsVestings() error {
+func (gs GenesisState) validateAccountVestingPools() error {
 	avts := gs.AccountVestingPools
 	vts := gs.VestingTypes
 	for _, avt := range avts {
