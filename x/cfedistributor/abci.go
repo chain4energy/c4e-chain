@@ -239,8 +239,8 @@ func addSharesToAccountState(ctx sdk.Context, k keeper.Keeper, localRemains *[]t
 
 func addSharesToState(ctx sdk.Context, k keeper.Keeper, localRemains *[]types.State, burn bool, account *types.Account, calculatedShare sdk.DecCoins, findState func() int) *[]types.State {
 	pos := findState()
-	logKeyvals := []interface{}{"localRemains", localRemains, "account", account, "burn", burn,
-		"calculatedShare", calculatedShare.String(), "pos", pos}
+	logger := k.Logger(ctx).With("localRemains", localRemains, "account", account, "burn", burn,
+		"calculatedShare", calculatedShare.String(), "pos", pos)
 	if pos < 0 {
 		var state types.State
 		if burn || account == nil {
@@ -252,9 +252,10 @@ func addSharesToState(ctx sdk.Context, k keeper.Keeper, localRemains *[]types.St
 
 		localRemains = &withAppended
 		pos = len(*localRemains) - 1
-		logKeyvals = append(logKeyvals, "state", state)
+		logger.Debug("add shares to state", "state", state)
+	} else {
+		logger.Debug("add shares to state")
 	}
-	k.Logger(ctx).Debug("add shares to state", logKeyvals)
 	(*localRemains)[pos].CoinsStates = (*localRemains)[pos].CoinsStates.Add(calculatedShare...)
 	return localRemains
 }
