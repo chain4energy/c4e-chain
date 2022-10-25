@@ -44,8 +44,8 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
 
-		VestingTypes: []types.GenesisVestingType{},
-		Vestings:     accountVestingPoolsArray,
+		VestingTypes:        []types.GenesisVestingType{},
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -53,7 +53,7 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
-	expected := types.QueryVestingsResponse{
+	expected := types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1000000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.ZeroInt(),
@@ -100,7 +100,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		Vestings:            accountVestingPoolsArray,
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -110,7 +110,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
-	expected := types.QueryVestingsResponse{
+	expected := types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1300000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(300000),
@@ -120,7 +120,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(5500))
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1150000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(150000),
@@ -130,7 +130,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(10000))
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1000000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(0),
@@ -177,7 +177,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		Vestings:            accountVestingPoolsArray,
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -190,7 +190,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 
 	testHelper.StakingUtils.MessageDelegate(4, 0, validatorsAddresses[0], acountsAddresses[1], sdk.NewInt(200000))
 
-	expected := types.QueryVestingsResponse{
+	expected := types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1300000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(300000),
@@ -200,7 +200,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(5500))
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1150000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(150000),
@@ -210,7 +210,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(7750))
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1075000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(75000),
@@ -220,7 +220,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(10000))
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1000000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(0),
@@ -267,7 +267,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		Vestings:            accountVestingPoolsArray,
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -286,7 +286,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 	testHelper.StakingUtils.MessageUndelegate(5, 0, validatorsAddresses[0], acountsAddresses[1], sdk.NewInt(100000))
 	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
 
-	expected := types.QueryVestingsResponse{
+	expected := types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1300000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(300000),
@@ -298,7 +298,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 
 	testHelper.BeginBlocker(abci.RequestBeginBlock{Header: testHelper.Context.BlockHeader()})
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1150000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(150000),
@@ -308,7 +308,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(7750))
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1075000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(75000),
@@ -318,7 +318,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(10000))
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1000000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(0),
@@ -364,7 +364,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 		},
 		VestingAccountCount: 1,
 		VestingTypes:        []types.GenesisVestingType{},
-		Vestings:            accountVestingPoolsArray,
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -384,7 +384,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	testHelper.StakingUtils.MessageUndelegate(5, 0, validatorsAddresses[0], acountsAddresses[1], sdk.NewInt(100000))
 	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
 
-	expected := types.QueryVestingsResponse{
+	expected := types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1300000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(300000),
@@ -397,7 +397,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
 	testHelper.StakingUtils.VerifyNumberOfUnbondingDelegations(1, acountsAddresses[1])
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1300000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(300000),
@@ -411,7 +411,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	testHelper.EndBlocker(abci.RequestEndBlock{Height: testHelper.Context.BlockHeight()})
 	testHelper.StakingUtils.VerifyNumberOfUnbondingDelegations(0, acountsAddresses[1])
 
-	expected = types.QueryVestingsResponse{
+	expected = types.QueryVestingsSummaryResponse{
 		VestingAllAmount:        sdk.NewInt(1300000),
 		VestingInPoolsAmount:    sdk.NewInt(1000000),
 		VestingInAccountsAmount: sdk.NewInt(300000),

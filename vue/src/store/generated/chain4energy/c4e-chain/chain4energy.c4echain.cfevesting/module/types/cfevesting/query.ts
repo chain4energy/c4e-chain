@@ -43,9 +43,9 @@ export interface VestingPoolInfo {
   sent_amount: string;
 }
 
-export interface QueryVestingsRequest {}
+export interface QueryVestingsSummaryRequest {}
 
-export interface QueryVestingsResponse {
+export interface QueryVestingsSummaryResponse {
   vesting_all_amount: string;
   vesting_in_pools_amount: string;
   vesting_in_accounts_amount: string;
@@ -673,17 +673,25 @@ export const VestingPoolInfo = {
   },
 };
 
-const baseQueryVestingsRequest: object = {};
+const baseQueryVestingsSummaryRequest: object = {};
 
-export const QueryVestingsRequest = {
-  encode(_: QueryVestingsRequest, writer: Writer = Writer.create()): Writer {
+export const QueryVestingsSummaryRequest = {
+  encode(
+    _: QueryVestingsSummaryRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryVestingsRequest {
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVestingsSummaryRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQueryVestingsRequest } as QueryVestingsRequest;
+    const message = {
+      ...baseQueryVestingsSummaryRequest,
+    } as QueryVestingsSummaryRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -695,32 +703,38 @@ export const QueryVestingsRequest = {
     return message;
   },
 
-  fromJSON(_: any): QueryVestingsRequest {
-    const message = { ...baseQueryVestingsRequest } as QueryVestingsRequest;
+  fromJSON(_: any): QueryVestingsSummaryRequest {
+    const message = {
+      ...baseQueryVestingsSummaryRequest,
+    } as QueryVestingsSummaryRequest;
     return message;
   },
 
-  toJSON(_: QueryVestingsRequest): unknown {
+  toJSON(_: QueryVestingsSummaryRequest): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial(_: DeepPartial<QueryVestingsRequest>): QueryVestingsRequest {
-    const message = { ...baseQueryVestingsRequest } as QueryVestingsRequest;
+  fromPartial(
+    _: DeepPartial<QueryVestingsSummaryRequest>
+  ): QueryVestingsSummaryRequest {
+    const message = {
+      ...baseQueryVestingsSummaryRequest,
+    } as QueryVestingsSummaryRequest;
     return message;
   },
 };
 
-const baseQueryVestingsResponse: object = {
+const baseQueryVestingsSummaryResponse: object = {
   vesting_all_amount: "",
   vesting_in_pools_amount: "",
   vesting_in_accounts_amount: "",
   delegated_vesting_amount: "",
 };
 
-export const QueryVestingsResponse = {
+export const QueryVestingsSummaryResponse = {
   encode(
-    message: QueryVestingsResponse,
+    message: QueryVestingsSummaryResponse,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.vesting_all_amount !== "") {
@@ -738,10 +752,15 @@ export const QueryVestingsResponse = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryVestingsResponse {
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVestingsSummaryResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQueryVestingsResponse } as QueryVestingsResponse;
+    const message = {
+      ...baseQueryVestingsSummaryResponse,
+    } as QueryVestingsSummaryResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -765,8 +784,10 @@ export const QueryVestingsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryVestingsResponse {
-    const message = { ...baseQueryVestingsResponse } as QueryVestingsResponse;
+  fromJSON(object: any): QueryVestingsSummaryResponse {
+    const message = {
+      ...baseQueryVestingsSummaryResponse,
+    } as QueryVestingsSummaryResponse;
     if (
       object.vesting_all_amount !== undefined &&
       object.vesting_all_amount !== null
@@ -806,7 +827,7 @@ export const QueryVestingsResponse = {
     return message;
   },
 
-  toJSON(message: QueryVestingsResponse): unknown {
+  toJSON(message: QueryVestingsSummaryResponse): unknown {
     const obj: any = {};
     message.vesting_all_amount !== undefined &&
       (obj.vesting_all_amount = message.vesting_all_amount);
@@ -820,9 +841,11 @@ export const QueryVestingsResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryVestingsResponse>
-  ): QueryVestingsResponse {
-    const message = { ...baseQueryVestingsResponse } as QueryVestingsResponse;
+    object: DeepPartial<QueryVestingsSummaryResponse>
+  ): QueryVestingsSummaryResponse {
+    const message = {
+      ...baseQueryVestingsSummaryResponse,
+    } as QueryVestingsSummaryResponse;
     if (
       object.vesting_all_amount !== undefined &&
       object.vesting_all_amount !== null
@@ -871,8 +894,10 @@ export interface Query {
   VestingPools(
     request: QueryVestingPoolsRequest
   ): Promise<QueryVestingPoolsResponse>;
-  /** Queries a list of Vestings items. */
-  Vestings(request: QueryVestingsRequest): Promise<QueryVestingsResponse>;
+  /** Queries a summary of the entire vesting. */
+  VestingsSummary(
+    request: QueryVestingsSummaryRequest
+  ): Promise<QueryVestingsSummaryResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -918,15 +943,17 @@ export class QueryClientImpl implements Query {
     );
   }
 
-  Vestings(request: QueryVestingsRequest): Promise<QueryVestingsResponse> {
-    const data = QueryVestingsRequest.encode(request).finish();
+  VestingsSummary(
+    request: QueryVestingsSummaryRequest
+  ): Promise<QueryVestingsSummaryResponse> {
+    const data = QueryVestingsSummaryRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfevesting.Query",
-      "Vestings",
+      "VestingsSummary",
       data
     );
     return promise.then((data) =>
-      QueryVestingsResponse.decode(new Reader(data))
+      QueryVestingsSummaryResponse.decode(new Reader(data))
     );
   }
 }

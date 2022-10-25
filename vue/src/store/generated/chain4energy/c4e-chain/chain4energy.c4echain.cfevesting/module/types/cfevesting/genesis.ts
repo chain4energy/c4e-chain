@@ -2,19 +2,19 @@
 import * as Long from "long";
 import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import { Params } from "../cfevesting/params";
-import { VestingAccount } from "../cfevesting/vesting_account";
 import { AccountVestingPools } from "../cfevesting/account_vesting_pool";
+import { VestingAccount } from "../cfevesting/vesting_account";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
 /** GenesisState defines the cfevesting module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
-  vesting_account_list: VestingAccount[];
-  vesting_account_count: number;
-  /** this line is used by starport scaffolding # genesis/proto/state */
   vesting_types: GenesisVestingType[];
-  vestings: AccountVestingPools[];
+  account_vesting_pools: AccountVestingPools[];
+  vesting_account_list: VestingAccount[];
+  /** this line is used by starport scaffolding # genesis/proto/state */
+  vesting_account_count: number;
 }
 
 export interface GenesisVestingType {
@@ -35,17 +35,17 @@ export const GenesisState = {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
+    for (const v of message.vesting_types) {
+      GenesisVestingType.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    for (const v of message.account_vesting_pools) {
+      AccountVestingPools.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
     for (const v of message.vesting_account_list) {
       VestingAccount.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     if (message.vesting_account_count !== 0) {
       writer.uint32(40).uint64(message.vesting_account_count);
-    }
-    for (const v of message.vesting_types) {
-      GenesisVestingType.encode(v!, writer.uint32(18).fork()).ldelim();
-    }
-    for (const v of message.vestings) {
-      AccountVestingPools.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -54,14 +54,24 @@ export const GenesisState = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
-    message.vesting_account_list = [];
     message.vesting_types = [];
-    message.vestings = [];
+    message.account_vesting_pools = [];
+    message.vesting_account_list = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
           message.params = Params.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.vesting_types.push(
+            GenesisVestingType.decode(reader, reader.uint32())
+          );
+          break;
+        case 3:
+          message.account_vesting_pools.push(
+            AccountVestingPools.decode(reader, reader.uint32())
+          );
           break;
         case 4:
           message.vesting_account_list.push(
@@ -70,16 +80,6 @@ export const GenesisState = {
           break;
         case 5:
           message.vesting_account_count = longToNumber(reader.uint64() as Long);
-          break;
-        case 2:
-          message.vesting_types.push(
-            GenesisVestingType.decode(reader, reader.uint32())
-          );
-          break;
-        case 3:
-          message.vestings.push(
-            AccountVestingPools.decode(reader, reader.uint32())
-          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -91,13 +91,26 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.vesting_account_list = [];
     message.vesting_types = [];
-    message.vestings = [];
+    message.account_vesting_pools = [];
+    message.vesting_account_list = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
       message.params = undefined;
+    }
+    if (object.vesting_types !== undefined && object.vesting_types !== null) {
+      for (const e of object.vesting_types) {
+        message.vesting_types.push(GenesisVestingType.fromJSON(e));
+      }
+    }
+    if (
+      object.account_vesting_pools !== undefined &&
+      object.account_vesting_pools !== null
+    ) {
+      for (const e of object.account_vesting_pools) {
+        message.account_vesting_pools.push(AccountVestingPools.fromJSON(e));
+      }
     }
     if (
       object.vesting_account_list !== undefined &&
@@ -115,16 +128,6 @@ export const GenesisState = {
     } else {
       message.vesting_account_count = 0;
     }
-    if (object.vesting_types !== undefined && object.vesting_types !== null) {
-      for (const e of object.vesting_types) {
-        message.vesting_types.push(GenesisVestingType.fromJSON(e));
-      }
-    }
-    if (object.vestings !== undefined && object.vestings !== null) {
-      for (const e of object.vestings) {
-        message.vestings.push(AccountVestingPools.fromJSON(e));
-      }
-    }
     return message;
   },
 
@@ -132,6 +135,20 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    if (message.vesting_types) {
+      obj.vesting_types = message.vesting_types.map((e) =>
+        e ? GenesisVestingType.toJSON(e) : undefined
+      );
+    } else {
+      obj.vesting_types = [];
+    }
+    if (message.account_vesting_pools) {
+      obj.account_vesting_pools = message.account_vesting_pools.map((e) =>
+        e ? AccountVestingPools.toJSON(e) : undefined
+      );
+    } else {
+      obj.account_vesting_pools = [];
+    }
     if (message.vesting_account_list) {
       obj.vesting_account_list = message.vesting_account_list.map((e) =>
         e ? VestingAccount.toJSON(e) : undefined
@@ -141,32 +158,31 @@ export const GenesisState = {
     }
     message.vesting_account_count !== undefined &&
       (obj.vesting_account_count = message.vesting_account_count);
-    if (message.vesting_types) {
-      obj.vesting_types = message.vesting_types.map((e) =>
-        e ? GenesisVestingType.toJSON(e) : undefined
-      );
-    } else {
-      obj.vesting_types = [];
-    }
-    if (message.vestings) {
-      obj.vestings = message.vestings.map((e) =>
-        e ? AccountVestingPools.toJSON(e) : undefined
-      );
-    } else {
-      obj.vestings = [];
-    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.vesting_account_list = [];
     message.vesting_types = [];
-    message.vestings = [];
+    message.account_vesting_pools = [];
+    message.vesting_account_list = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
       message.params = undefined;
+    }
+    if (object.vesting_types !== undefined && object.vesting_types !== null) {
+      for (const e of object.vesting_types) {
+        message.vesting_types.push(GenesisVestingType.fromPartial(e));
+      }
+    }
+    if (
+      object.account_vesting_pools !== undefined &&
+      object.account_vesting_pools !== null
+    ) {
+      for (const e of object.account_vesting_pools) {
+        message.account_vesting_pools.push(AccountVestingPools.fromPartial(e));
+      }
     }
     if (
       object.vesting_account_list !== undefined &&
@@ -183,16 +199,6 @@ export const GenesisState = {
       message.vesting_account_count = object.vesting_account_count;
     } else {
       message.vesting_account_count = 0;
-    }
-    if (object.vesting_types !== undefined && object.vesting_types !== null) {
-      for (const e of object.vesting_types) {
-        message.vesting_types.push(GenesisVestingType.fromPartial(e));
-      }
-    }
-    if (object.vestings !== undefined && object.vestings !== null) {
-      for (const e of object.vestings) {
-        message.vestings.push(AccountVestingPools.fromPartial(e));
-      }
     }
     return message;
   },

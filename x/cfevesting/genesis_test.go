@@ -140,9 +140,9 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 
 }
 
-func getUndelegableAmount(accvestings []*types.AccountVestingPools) sdk.Int {
+func getUndelegableAmount(accVestingPools []*types.AccountVestingPools) sdk.Int {
 	result := sdk.ZeroInt()
-	for _, accV := range accvestings {
+	for _, accV := range accVestingPools {
 		for _, v := range accV.VestingPools {
 			result = result.Add(v.LastModificationVested).Sub(v.LastModificationWithdrawn)
 		}
@@ -156,8 +156,8 @@ func TestGenesisAccountVestingPools(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.NewParams(commontestutils.DefaultTestDenom),
 
-		VestingTypes: []types.GenesisVestingType{},
-		Vestings:     accountVestingPoolsArray,
+		VestingTypes:        []types.GenesisVestingType{},
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -174,8 +174,8 @@ func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.NewParams("uc4e"),
 
-		VestingTypes: []types.GenesisVestingType{},
-		Vestings:     accountVestingPoolsArray,
+		VestingTypes:        []types.GenesisVestingType{},
+		AccountVestingPools: accountVestingPoolsArray,
 	}
 
 	testHelper := testapp.SetupTestApp(t)
@@ -183,7 +183,7 @@ func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {
 	undelegableAmount := getUndelegableAmount(accountVestingPoolsArray)
 	wrongAcountAmount := getUndelegableAmount(accountVestingPoolsArray).SubRaw(10)
 	mintUndelegableCoinsToModule(testHelper, genesisState, wrongAcountAmount)
-	testHelper.C4eVestingUtils.InitGenesisError(genesisState, fmt.Sprintf("module: cfevesting account balance of denom uc4e not equal of sum of undelegable vestings: %s <> %s", wrongAcountAmount.String(), undelegableAmount.String()))
+	testHelper.C4eVestingUtils.InitGenesisError(genesisState, fmt.Sprintf("module: cfevesting account balance of denom uc4e not equal of sum of undelegable vesting pools: %s <> %s", wrongAcountAmount.String(), undelegableAmount.String()))
 
 }
 
