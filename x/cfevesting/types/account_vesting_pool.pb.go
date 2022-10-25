@@ -82,6 +82,7 @@ func (m *AccountVestingPools) GetVestingPools() []*VestingPool {
 }
 
 type VestingPool struct {
+	// TODO verify if last modification data is still required after removing part of vesting mudule functionality. Check if usfeful for planned new functiolities
 	Id                        int32                                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name                      string                                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	VestingType               string                                 `protobuf:"bytes,3,opt,name=vesting_type,json=vestingType,proto3" json:"vesting_type,omitempty"`

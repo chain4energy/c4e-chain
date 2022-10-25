@@ -274,6 +274,29 @@ func (h *C4eVestingUtils) ExportGenesis(ctx sdk.Context, expected cfevestingtype
 	nullify.Fill(got)
 }
 
+func (m *C4eVestingUtils) ExportGenesisAndValidate(ctx sdk.Context) {
+	exportedGenesis := cfevesting.ExportGenesis(ctx, *m.helperCfevestingKeeper)
+	err := exportedGenesis.Validate()
+	require.NoError(m.t, err)
+	err = cfevesting.ValidateAccountsOnGenesis(
+		ctx,
+		*m.helperCfevestingKeeper,
+		*exportedGenesis,
+		*m.helperAccountKeeper,
+		*m.helperBankKeeper,
+		*m.helperStakingKeeper)
+	require.NoError(m.t, err)
+}
+
+func (m *C4eVestingUtils) ValidateInvariants(ctx sdk.Context) {
+	invariants := []sdk.Invariant{
+		cfevestingmodulekeeper.ModuleAccountInvariant(*m.helperCfevestingKeeper),
+		cfevestingmodulekeeper.VestingPoolConsistentDataInvariant(*m.helperCfevestingKeeper),
+		cfevestingmodulekeeper.NonNegativeVestingPoolAmountsInvariant(*m.helperCfevestingKeeper),
+	}
+	commontestutils.CheckManyInvariantsNoError(m.t, ctx, invariants)
+}
+
 func (h *C4eVestingUtils) QueryVestingsSummary(wctx context.Context, expectedResponse cfevestingtypes.QueryVestingsSummaryResponse) {
 	resp, err := h.helperCfevestingKeeper.VestingsSummary(wctx, &cfevestingtypes.QueryVestingsSummaryRequest{})
 	require.NoError(h.t, err)
@@ -424,6 +447,11 @@ func (h *ContextC4eVestingUtils) MessageWithdrawAllAvailableError(address string
 
 func (h *ContextC4eVestingUtils) ExportGenesis(expected cfevestingtypes.GenesisState) {
 	h.C4eVestingUtils.ExportGenesis(h.testContext.GetContext(), expected)
+}
+
+func (m *ContextC4eVestingUtils) ValidateGenesisAndInvariants() {
+	m.C4eVestingUtils.ExportGenesisAndValidate(m.testContext.GetContext())
+	m.C4eVestingUtils.ValidateInvariants(m.testContext.GetContext())
 }
 
 func (h *ContextC4eVestingUtils) InitGenesisError(genState cfevestingtypes.GenesisState, errorMessage string) {

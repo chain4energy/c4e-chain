@@ -33,7 +33,7 @@ func TestGenesis(t *testing.T) {
 	testHelper.C4eDistributorUtils.SetState(state)
 	genesisState.States = []*types.State{&state}
 	testHelper.C4eDistributorUtils.ExportGenesis(genesisState)
-
+	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 }
 
 func TestGenesisImport(t *testing.T) {
@@ -60,6 +60,7 @@ func TestGenesisImport(t *testing.T) {
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
 	testHelper.C4eDistributorUtils.ExportGenesis(genesisState)
+	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 }
 
 func TestGenesisNoStates(t *testing.T) {
@@ -74,5 +75,5 @@ func TestGenesisNoStates(t *testing.T) {
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
 	testHelper.C4eDistributorUtils.ExportGenesis(genesisState)
-
+	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 }

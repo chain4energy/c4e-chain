@@ -65,6 +65,8 @@ func TestOneYearLinear(t *testing.T) {
 			testHelper.C4eMinterUtils.VerifyInflation(sdk.ZeroDec())
 			testHelper.C4eMinterUtils.VerifyMinterState(2, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.Context.BlockTime(), sdk.ZeroDec())
 		}
+
+		testHelper.C4eMinterUtils.ExportGenesisAndValidate()
 	}
 
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, totalSupply)
@@ -128,13 +130,13 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 				prevPeriodMinted = prevPeriodMinted.Add(expectedMinted)
 			}
 
+			testHelper.C4eMinterUtils.ExportGenesisAndValidate()
 		}
 		amountYearly = amountYearly.QuoRaw(2)
 	}
 	expectedMinted := sdk.NewInt(310000000000000)
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(routingdistributortypes.DistributorMainAccount, expectedMinted)
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.Add(expectedMinted))
-
 }
 
 func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
@@ -176,7 +178,6 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 
 	testHelper.BeginBlocker(abci.RequestBeginBlock{})
 	testHelper.EndBlocker(abci.RequestEndBlock{})
-
 	expectedMinted := sdk.NewInt(320000000000000)
 	expectedRemainder := sdk.MustNewDecFromStr("0.000000004235164732")
 	testHelper.C4eMinterUtils.VerifyMinterState(1, expectedMinted, expectedRemainder, testHelper.Context.BlockTime(), sdk.ZeroDec())
@@ -185,6 +186,7 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.Add(expectedMinted))
 
+	testHelper.C4eMinterUtils.ExportGenesisAndValidate()
 }
 
 func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
@@ -270,4 +272,5 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 
 	testHelper.C4eMinterUtils.VerifyMinterHistory(expectedHist1, expectedHist2)
 
+	testHelper.C4eMinterUtils.ExportGenesisAndValidate()
 }

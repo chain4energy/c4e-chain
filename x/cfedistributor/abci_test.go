@@ -14,8 +14,6 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-
-
 func TestBurningDistributorMainCollectorDes(t *testing.T) {
 	BurningDistributorTest(t, subdistributortestutils.MainCollector)
 }
@@ -70,6 +68,7 @@ func BurningDistributorTest(t *testing.T, destinationType subdistributortestutil
 	}
 
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(sdk.NewInt(499)).Amount)
+	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 }
 
 func TestBurningWithInflationDistributorPassThroughMainCollector(t *testing.T) {
@@ -189,11 +188,10 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType sub
 
 	// 5543 - 573 - 4968 = 2 (its ramains 0,67 + 0.3540385 + 0.9759615 = 2) on main collector
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(2))
-
+	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 }
 
 func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
-
 	testHelper := testapp.SetupTestApp(t)
 
 	var subdistributors []types.SubDistributor
@@ -225,6 +223,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 			totalExpectedTruncated = totalExpectedTruncated.AddRaw(1)
 		}
 		testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(totalExpectedTruncated).Amount)
+		testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 	}
 	testHelper.SetContextBlockHeight(int64(3002))
 	testHelper.BeginBlocker(abci.RequestBeginBlock{})
@@ -261,4 +260,5 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	// 16632533 - 1720635 - 14911896 = 1 (its ramains 0.67 + 0.4695385 + 0.8604615 = 2) on main collector
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(2))
 
+	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 }

@@ -14,7 +14,6 @@ import (
 )
 
 func TestGenesisWholeApp(t *testing.T) {
-
 	genesisState := types.GenesisState{
 		Params:              types.NewParams("uc4e"),
 		VestingAccountList:  []types.VestingAccount{},
@@ -26,7 +25,7 @@ func TestGenesisWholeApp(t *testing.T) {
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestGenesisVestingTypesAndAccounts(t *testing.T) {
@@ -52,7 +51,7 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestGenesisVestingTypes(t *testing.T) {
@@ -68,7 +67,7 @@ func TestGenesisVestingTypes(t *testing.T) {
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestGenesisVestingTypesUnitsSecondsToDays(t *testing.T) {
@@ -137,7 +136,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	vestingTypesArray[0].VestingPeriodUnit = dstUnits
 
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func getUndelegableAmount(accVestingPools []*types.AccountVestingPools) sdk.Int {
@@ -165,7 +164,7 @@ func TestGenesisAccountVestingPools(t *testing.T) {
 	mintUndelegableCoinsToModule(testHelper, genesisState, getUndelegableAmount(accountVestingPoolsArray))
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {

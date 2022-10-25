@@ -27,6 +27,8 @@ func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, sdk.ZeroInt())
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableManyVestingPoolsOnLockStart(t *testing.T) {
@@ -42,6 +44,8 @@ func TestWithdrawAllAvailableManyVestingPoolsOnLockStart(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested.MulRaw(3), sdk.ZeroInt())
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableDuringLock(t *testing.T) {
@@ -59,6 +63,8 @@ func TestWithdrawAllAvailableDuringLock(t *testing.T) {
 	accountVestingPools.VestingPools[0].Withdrawn = withdrawable
 	accountVestingPools.VestingPools[0].LastModificationWithdrawn = withdrawable
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
@@ -78,6 +84,8 @@ func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
 		vesting.LastModificationWithdrawn = withdrawable
 	}
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
@@ -97,6 +105,8 @@ func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 	accountVestingPools.VestingPools[0].Withdrawn = withdrawable
 	accountVestingPools.VestingPools[0].LastModificationWithdrawn = withdrawable
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 }
 
@@ -119,6 +129,8 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 		vesting.LastModificationWithdrawn = withdrawable
 	}
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestVestAndWithdrawAllAvailable(t *testing.T) {
@@ -150,6 +162,8 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, withdrawn)
 
 	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []sdk.Int{vested}, []sdk.Int{withdrawn}, startTime)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableBadAddress(t *testing.T) {
@@ -157,4 +171,5 @@ func TestWithdrawAllAvailableBadAddress(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailableError("badaddress", "withdraw all available address parsing error: badaddress: decoding bech32 failed: invalid separator index -1: failed to parse")
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }

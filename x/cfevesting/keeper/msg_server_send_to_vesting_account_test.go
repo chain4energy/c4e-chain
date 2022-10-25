@@ -28,6 +28,7 @@ func TestSendVestingAccount(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, 1, sdk.NewInt(100), true)
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 // TODO add test with restart vesting set to false
@@ -45,6 +46,8 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 2, sdk.NewInt(100), true,
 		"send to new vesting account - withdraw all available error: withdraw all available - no vesting pools found error: address: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq: not found")
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
@@ -66,6 +69,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 2, sdk.NewInt(100), true, "send to new vesting account - vesting pool with id 2 not found: not found")
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
@@ -87,6 +91,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 1, sdk.NewInt(1100), true, "send to new vesting account - vesting available: 1000 is smaller than requested amount: 1100: insufficient funds")
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
@@ -108,6 +113,7 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, 1, sdk.NewInt(100), true)
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 1, sdk.NewInt(950), true, "send to new vesting account - vesting available: 900 is smaller than requested amount: 950: insufficient funds")
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestSendVestingAccountAlreadyExists(t *testing.T) {
@@ -130,4 +136,5 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, 1, sdk.NewInt(100), true)
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 1, sdk.NewInt(300), true, "new vesting account - account address: "+accAddr2.String()+": entity already exists")
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }

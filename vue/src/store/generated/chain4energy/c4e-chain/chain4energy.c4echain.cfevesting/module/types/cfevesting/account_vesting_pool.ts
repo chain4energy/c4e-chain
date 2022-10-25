@@ -11,6 +11,7 @@ export interface AccountVestingPools {
 }
 
 export interface VestingPool {
+  /** TODO verify if last modification data is still required after removing part of vesting mudule functionality. Check if usfeful for planned new functiolities */
   id: number;
   name: string;
   vesting_type: string;
