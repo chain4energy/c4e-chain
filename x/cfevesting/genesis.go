@@ -63,44 +63,27 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState,
 	ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) error {
 	accsVestingPools := genState.AccountVestingPools
-	undelegableAmount := sdk.ZeroInt()
-	delegableAmounts := make(map[string]sdk.Int)
+	vestingPoolsAmount := sdk.ZeroInt()
 
 	for _, accVestingPools := range accsVestingPools {
 		for _, v := range accVestingPools.VestingPools {
-			undelegableAmount = undelegableAmount.Add(v.LastModificationVested).Sub(v.LastModificationWithdrawn)
+			vestingPoolsAmount = vestingPoolsAmount.Add(v.LastModificationVested).Sub(v.LastModificationWithdrawn)
 		}
 	}
 
 	mAcc := ak.GetModuleAccount(ctx, types.ModuleName)
 	modBalance := bk.GetBalance(ctx, mAcc.GetAddress(), genState.Params.Denom)
-	k.Logger(ctx).Debug("cfevesting validate accounts on genesis data", "undelegableAmount", undelegableAmount,
+	k.Logger(ctx).Debug("cfevesting validate accounts on genesis data", "vestingPoolsAmount", vestingPoolsAmount,
 		"moduleBalance", modBalance.Amount, "moduleAccount", mAcc)
 
-	if !undelegableAmount.Equal(modBalance.Amount) {
-		k.Logger(ctx).Error("cfevesting module account balance not equal of sum of undelegable vesting pools error", "denom",
-			genState.Params.Denom, "moduleBalance", modBalance.Amount, "moduleAccount", mAcc, "undelegableAmount",
-			undelegableAmount)
-		return fmt.Errorf("module: %s account balance of denom %s not equal of sum of undelegable vesting pools: %s <> %s",
-			types.ModuleName, genState.Params.Denom, modBalance.Amount, undelegableAmount)
+	if !vestingPoolsAmount.Equal(modBalance.Amount) {
+		k.Logger(ctx).Error("cfevesting module account balance not equal of sum of vesting pools error", "denom",
+			genState.Params.Denom, "moduleBalance", modBalance.Amount, "moduleAccount", mAcc, "vestingPoolsAmount",
+			vestingPoolsAmount)
+		return fmt.Errorf("module: %s account balance of denom %s not equal of sum of vesting pools: %s <> %s",
+			types.ModuleName, genState.Params.Denom, modBalance.Amount, vestingPoolsAmount)
 	}
 
-	for delAddr, amount := range delegableAmounts {
-		acc, err := sdk.AccAddressFromBech32(delAddr)
-		if err != nil {
-			k.Logger(ctx).Error("cfevesting account vesting pools delegable address error", "error", err.Error(),
-				"delegableAddress", delAddr)
-			return fmt.Errorf("account vesting pools delegable address: %s: %s", delAddr, err.Error())
-		}
-		accBalance := bk.GetBalance(ctx, acc, genState.Params.Denom)
-
-		if !accBalance.Amount.LTE(amount) {
-			k.Logger(ctx).Error("cfevesting delegable account balance is bigger than sum of delegable vesting pools error",
-				"accountBalance", accBalance.Amount, "delegableVestingPools", amount)
-			return fmt.Errorf("module: %s - delegable account: %s balance of denom %s is bigger than sum of delegable vesting pools: %s > %s",
-				types.ModuleName, delAddr, genState.Params.Denom, accBalance.Amount, amount)
-		}
-	}
 	return nil
 }
 
