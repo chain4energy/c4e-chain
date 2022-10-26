@@ -68,7 +68,9 @@ func BurningDistributorTest(t *testing.T, destinationType subdistributortestutil
 	}
 
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(sdk.NewInt(499)).Amount)
-	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
+	if destinationType != subdistributortestutils.MainCollector {
+		testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
+	}
 }
 
 func TestBurningWithInflationDistributorPassThroughMainCollector(t *testing.T) {
