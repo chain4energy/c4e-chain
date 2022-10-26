@@ -80,7 +80,7 @@ func getLockedSum(k Keeper, ctx sdk.Context) sdk.Int {
 	sum := sdk.ZeroInt()
 	for _, accountVestingPools := range allVestingPools {
 		for _, vestingPool := range accountVestingPools.VestingPools {
-			sum = sum.Add(vestingPool.GetAvailable())
+			sum = sum.Add(vestingPool.GetCurrentlyLocked())
 		}
 	}
 	return sum

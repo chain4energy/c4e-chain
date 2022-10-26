@@ -89,14 +89,14 @@ func (k Keeper) addVestingPool(
 	}
 
 	vestingPool := types.VestingPool{
-		Id:                        id,
-		Name:                      vestingPoolName,
-		VestingType:               vestingType,
-		LockStart:                 lockStart,
-		LockEnd:                   lockEnd,
-		InitiallyLocked:           amount,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
+		Id:              id,
+		Name:            vestingPoolName,
+		VestingType:     vestingType,
+		LockStart:       lockStart,
+		LockEnd:         lockEnd,
+		InitiallyLocked: amount,
+		Withdrawn:       sdk.ZeroInt(),
+		Sent:            sdk.ZeroInt(),
 	}
 	accVestingPools.VestingPools = append(accVestingPools.VestingPools, &vestingPool)
 
@@ -214,7 +214,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 		k.Logger(ctx).Error("send to new vesting account vesting pool id not found", "fromAddr", fromAddr, "vestingPoolId", vestingPoolId)
 		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "send to new vesting account - vesting pool with id %d not found", vestingPoolId)
 	}
-	available := vestingPool.GetAvailable()
+	available := vestingPool.GetCurrentlyLocked()
 
 	if available.LT(amount) {
 		k.Logger(ctx).Error("send to new vesting account vesting available is smaller than amount", "fromAddr", fromAddr, "vestingPoolId", vestingPoolId, "available", available, "amount", amount)
@@ -324,7 +324,7 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 
 func CalculateWithdrawable(current time.Time, vestingPool types.VestingPool) sdk.Int {
 	if current.Equal(vestingPool.LockEnd) || current.After(vestingPool.LockEnd) {
-		return vestingPool.GetAvailable()
+		return vestingPool.GetCurrentlyLocked()
 	}
 	return sdk.ZeroInt()
 }

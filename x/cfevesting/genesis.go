@@ -2,6 +2,7 @@ package cfevesting
 
 import (
 	"fmt"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
@@ -67,7 +68,7 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 
 	for _, accVestingPools := range accsVestingPools {
 		for _, v := range accVestingPools.VestingPools {
-			vestingPoolsAmount = vestingPoolsAmount.Add(v.GetAvailable())
+			vestingPoolsAmount = vestingPoolsAmount.Add(v.GetCurrentlyLocked())
 		}
 	}
 
