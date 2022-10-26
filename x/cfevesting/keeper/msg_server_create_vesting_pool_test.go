@@ -25,11 +25,11 @@ func TestCreateVestingPool(t *testing.T) {
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested, 1)
 
 	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []sdk.Int{vested}, []sdk.Int{sdk.ZeroInt()})
 
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, true, true, vPool2, 1200, *usedVestingType, vested, accInitBalance.Sub(vested) /*0,*/, vested, accInitBalance.Sub(vested.MulRaw(2)) /*0,*/, vested.MulRaw(2))
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, true, true, vPool2, 1200, *usedVestingType, vested, accInitBalance.Sub(vested) /*0,*/, vested, accInitBalance.Sub(vested.MulRaw(2)) /*0,*/, vested.MulRaw(2), 2)
 
 	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1, vPool2}, []time.Duration{1000, 1200}, []types.VestingType{*usedVestingType, *usedVestingType}, []sdk.Int{vested, vested}, []sdk.Int{sdk.ZeroInt(), sdk.ZeroInt()})
 
@@ -65,7 +65,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested, 1)
 
 	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []sdk.Int{vested}, []sdk.Int{sdk.ZeroInt()})
 
@@ -88,9 +88,9 @@ func TestVestingId(t *testing.T) {
 
 	testHelper.C4eVestingUtils.SetVestingTypes(vestingTypes)
 
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested, 1)
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested, 1, 1)
 
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, true, true, vPool2, 1000, *usedVestingType, vested, accInitBalance.Sub(vested), vested, accInitBalance.Sub(vested.MulRaw(2)), vested.MulRaw(2), 1, 2)
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, true, true, vPool2, 1000, *usedVestingType, vested, accInitBalance.Sub(vested), vested, accInitBalance.Sub(vested.MulRaw(2)), vested.MulRaw(2), 2, 1, 2)
 
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, true, true, "v-pool-3", 1000, *usedVestingType, vested, accInitBalance.Sub(vested.MulRaw(2)), vested.MulRaw(2), accInitBalance.Sub(vested.MulRaw(3)), vested.MulRaw(3), 1, 2, 3)
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, true, true, "v-pool-3", 1000, *usedVestingType, vested, accInitBalance.Sub(vested.MulRaw(2)), vested.MulRaw(2), accInitBalance.Sub(vested.MulRaw(3)), vested.MulRaw(3), 3, 1, 2, 3)
 }

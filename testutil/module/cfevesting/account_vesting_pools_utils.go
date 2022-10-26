@@ -173,3 +173,12 @@ func CreateTimeFromNumOfHours(numOfHours int64) time.Time {
 func CreateDurationFromNumOfHours(numOfHours int64) time.Duration {
 	return time.Hour * time.Duration(numOfHours)
 }
+
+func GetVestingPoolById(vps []*types.VestingPool, id int32) (vp *types.VestingPool, found bool){
+	for _, vPool := range vps {
+		if vPool.Id == id {
+			return vPool, true
+		}
+	}
+	return nil, false
+}

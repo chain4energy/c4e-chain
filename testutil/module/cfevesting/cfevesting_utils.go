@@ -89,7 +89,7 @@ func NewC4eVestingUtils(t *testing.T, helperCfevestingKeeper *cfevestingmoduleke
 
 func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
 	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest sdk.Int, accAmountBefore sdk.Int, moduleAmountBefore sdk.Int,
-	accAmountAfter sdk.Int, moduleAmountAfter sdk.Int, vestingPollsIds ...int) {
+	accAmountAfter sdk.Int, moduleAmountAfter sdk.Int, expectedVestingPoolId int32, vestingPoolsIds ...int) {
 	_, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
 	require.EqualValues(h.t, accountVestingPoolsExistsBefore, accFound)
 
@@ -106,12 +106,23 @@ func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.
 	accVestingPools, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
 	require.EqualValues(h.t, accountVestingPoolsExistsAfter, accFound)
 
+	if accFound {
+		var vestingPool *cfevestingtypes.VestingPool = nil
+		for _, vest := range accVestingPools.VestingPools {
+			if vest.Name == vestingPoolName {
+				vestingPool = vest
+			}
+		}
+		require.NotNil(h.t, vestingPool)
+		h.VerifyVestingPool(ctx, vestingPool, expectedVestingPoolId, vestingPoolName, vestingType.Name, ctx.BlockTime(), ctx.BlockTime().Add(lockupDuration),
+			amountToVest, sdk.ZeroInt(), sdk.ZeroInt())
+	}
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accAmountAfter)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountAfter)
 
-	if vestingPollsIds != nil {
-		require.EqualValues(h.t, len(vestingPollsIds), len(accVestingPools.VestingPools))
-		for i, v := range vestingPollsIds {
+	if vestingPoolsIds != nil {
+		require.EqualValues(h.t, len(vestingPoolsIds), len(accVestingPools.VestingPools))
+		for i, v := range vestingPoolsIds {
 			vestingPool := accVestingPools.VestingPools[i]
 			require.EqualValues(h.t, v, vestingPool.Id)
 		}
@@ -183,15 +194,8 @@ func (h *C4eVestingUtils) VerifyAccountVestingPoolsWithModification(ctx sdk.Cont
 	for i, vesting := range accVestingPools.VestingPools {
 		found := false
 		if vesting.Id == int32(i+1) {
-			require.EqualValues(h.t, i+1, vesting.Id)
-			require.EqualValues(h.t, vestingNames[i], vesting.Name)
-			require.EqualValues(h.t, vestingTypes[i].Name, vesting.VestingType)
-			require.EqualValues(h.t, true, startsTimes[i].Equal(vesting.LockStart))
-			require.EqualValues(h.t, true, startsTimes[i].Add(durations[i]).Equal(vesting.LockEnd))
-			require.EqualValues(h.t, vestedAmounts[i], vesting.InitiallyLocked)
-			require.EqualValues(h.t, withdrawnAmounts[i], vesting.Withdrawn)
-
-			require.EqualValues(h.t, sdk.NewInt(sentAmounts[i]), vesting.Sent)
+			h.VerifyVestingPool(ctx, vesting, int32(i+1), vestingNames[i], vestingTypes[i].Name, startsTimes[i], startsTimes[i].Add(durations[i]),
+				vestedAmounts[i], withdrawnAmounts[i], sdk.NewInt(sentAmounts[i]))
 			found = true
 
 		}
@@ -199,6 +203,19 @@ func (h *C4eVestingUtils) VerifyAccountVestingPoolsWithModification(ctx sdk.Cont
 
 	}
 
+}
+
+func (h *C4eVestingUtils) VerifyVestingPool(ctx sdk.Context, vp *cfevestingtypes.VestingPool, expectedId int32, expectedName string,
+	expectedVestingType string, expectedLockStart time.Time, expectedLockEnd time.Time, expectedInitiallyLocked sdk.Int,
+	expectedWithdrawn sdk.Int, expectedSent sdk.Int) {
+	require.EqualValues(h.t, expectedId, vp.Id)
+	require.EqualValues(h.t, expectedName, vp.Name)
+	require.EqualValues(h.t, expectedVestingType, vp.VestingType)
+	require.EqualValues(h.t, true, expectedLockStart.Equal(vp.LockStart))
+	require.EqualValues(h.t, true, expectedLockEnd.Equal(vp.LockEnd))
+	require.EqualValues(h.t, expectedInitiallyLocked, vp.InitiallyLocked)
+	require.EqualValues(h.t, expectedWithdrawn, vp.Withdrawn)
+	require.EqualValues(h.t, expectedSent, vp.Sent)
 }
 
 func (h *C4eVestingUtils) SetupVestingTypes(ctx sdk.Context, numberOfVestingTypes int, amountOf10BasedVestingTypes int, startId int) cfevestingtypes.VestingTypes {
@@ -287,38 +304,43 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
+	accAmountBefore := h.bankUtils.GetAccountDefultDenomBalance(ctx, vestingAccAddress)
+	moduleAmountBefore := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
 
+	vestingPools, found := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, fromAddress.String())
+	require.Equal(h.t, true, found)
+	foundVPool, _ := GetVestingPoolById(vestingPools.VestingPools, vestingPoolId)
+	require.NotNilf(h.t, foundVPool, "vesting pool no found. Id: %d", vestingPoolId)
+	sentBefore := foundVPool.Sent
 	msg := cfevestingtypes.MsgSendToVestingAccount{FromAddress: fromAddress.String(), ToAddress: vestingAccAddress.String(),
 		VestingId: vestingPoolId, Amount: amount, RestartVesting: restartVesting}
 	_, err := msgServer.SendToVestingAccount(msgServerCtx, &msg)
 	require.EqualValues(h.t, nil, err)
 
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, vestingAccAddress, sdk.NewInt(100))
+	
+	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, vestingAccAddress, accAmountBefore.Add(amount))
+	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountBefore.Sub(amount))
 
 	require.Equal(h.t, uint64(vestingAccountCount+1), h.helperCfevestingKeeper.GetVestingAccountCount(ctx))
 	vaccFromList, found := h.helperCfevestingKeeper.GetVestingAccount(ctx, uint64(vestingAccountCount))
 	require.Equal(h.t, true, found)
 	require.Equal(h.t, vestingAccAddress.String(), vaccFromList.Address)
 
-	vestingPools, found := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, fromAddress.String())
+	vestingPools, found = h.helperCfevestingKeeper.GetAccountVestingPools(ctx, fromAddress.String())
 	require.Equal(h.t, true, found)
 
-	var foundVPool *cfevestingtypes.VestingPool = nil
-
-	for _, vPool := range vestingPools.VestingPools {
-		if vPool.Id == vestingPoolId {
-			foundVPool = vPool
-			break
-		}
-	}
+	foundVPool, _ = GetVestingPoolById(vestingPools.VestingPools, vestingPoolId)
 	require.NotNilf(h.t, foundVPool, "vesting pool no found. Id: %d", vestingPoolId)
+	require.Equal(h.t, sentBefore.Add(amount), foundVPool.Sent)
 
 	vestingType, err := h.helperCfevestingKeeper.GetVestingType(ctx, foundVPool.VestingType)
 	require.NoError(h.t, err, "GetVestingType error")
 
 	denom := h.helperCfevestingKeeper.Denom(ctx)
-	h.authUtils.VerifyVestingAccount(ctx, vestingAccAddress, denom, sdk.NewInt(100), ctx.BlockTime().Add(vestingType.LockupPeriod), ctx.BlockTime().Add(vestingType.LockupPeriod).Add(vestingType.VestingPeriod))
+	h.authUtils.VerifyVestingAccount(ctx, vestingAccAddress, denom, amount, ctx.BlockTime().Add(vestingType.LockupPeriod), ctx.BlockTime().Add(vestingType.LockupPeriod).Add(vestingType.VestingPeriod))
 }
+
+
 
 func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolId int32, amount sdk.Int, restartVesting bool, errorMessage string) {
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
@@ -356,9 +378,9 @@ func (h *ContextC4eVestingUtils) SetupAccountVestingsPoolsWithModification(modif
 
 func (h *ContextC4eVestingUtils) MessageCreateVestingPool(address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
 	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest sdk.Int, accAmountBefore sdk.Int, moduleAmountBefore sdk.Int,
-	accAmountAfter sdk.Int, moduleAmountAfter sdk.Int, vestingPollsIds ...int) {
+	accAmountAfter sdk.Int, moduleAmountAfter sdk.Int, expectedVestingPoolId int32, vestingPollsIds ...int) {
 	h.C4eVestingUtils.MessageCreateVestingPool(h.testContext.GetContext(), address, accountVestingPoolsExistsBefore, accountVestingPoolsExistsAfter, vestingPoolName, lockupDuration,
-		vestingType, amountToVest, accAmountBefore, moduleAmountBefore, accAmountAfter, moduleAmountAfter, vestingPollsIds...)
+		vestingType, amountToVest, accAmountBefore, moduleAmountBefore, accAmountAfter, moduleAmountAfter, expectedVestingPoolId, vestingPollsIds...)
 }
 
 func (h *ContextC4eVestingUtils) VerifyAccountVestingPools(address sdk.AccAddress,

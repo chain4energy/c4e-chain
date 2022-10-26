@@ -20,6 +20,17 @@ func TestNonNegativeVestingPoolAmountsInvariantCorrect(t *testing.T) {
 		"cfevesting: nonnegative vesting pool amounts invariant\n\tno negative amounts in vesting pools\n")
 }
 
+func TestNonNegativeVestingPoolAmountsInvariantManyyVestingPoolsCorrect(t *testing.T) {
+	accounts, _ := commontestutils.CreateAccounts(3, 0)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
+	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(50))
+	testUtil.SetupAccountVestingPools(ctx, accounts[1].String(), 10, sdk.NewInt(102), sdk.NewInt(23))
+	testUtil.SetupAccountVestingPools(ctx, accounts[2].String(), 10, sdk.NewInt(89), sdk.NewInt(89))
+
+	testUtil.CheckNonNegativeVestingPoolAmountsInvariant(ctx, false,
+		"cfevesting: nonnegative vesting pool amounts invariant\n\tno negative amounts in vesting pools\n")
+}
+
 func TestNonNegativeVestingPoolAmountsInvariantCorrectZeros(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
@@ -69,6 +80,16 @@ func TestVestingPoolConsistentDataInvariantCorrect(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
+	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, false,
+		"cfevesting: vesting pool consistent data invariant\n\tno inconsistent vesting pools\n")
+}
+
+func TestVestingPoolConsistentDataInvariantManyVestingPoolCorrect(t *testing.T) {
+	accounts, _ := commontestutils.CreateAccounts(3, 0)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
+	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(50))
+	testUtil.SetupAccountVestingPools(ctx, accounts[1].String(), 10, sdk.NewInt(89), sdk.NewInt(34))
+	testUtil.SetupAccountVestingPools(ctx, accounts[2].String(), 10, sdk.NewInt(23), sdk.NewInt(21))
 	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, false,
 		"cfevesting: vesting pool consistent data invariant\n\tno inconsistent vesting pools\n")
 }
@@ -129,7 +150,18 @@ func TestCheckModuleAccountInvariantCorrect(t *testing.T) {
 
 }
 
-// TODO add many vesting pools test
+func TestCheckModuleAccountInvariantMamyAccountVestingPoolsCorrect(t *testing.T) {
+	accounts, _ := commontestutils.CreateAccounts(3, 0)
+	testHelper := testapp.SetupTestApp(t)
+	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(30))
+	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[1].String(), 10, sdk.NewInt(50), sdk.NewInt(20))
+	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[2].String(), 10, sdk.NewInt(80), sdk.NewInt(54))
+	vestingPoolsAmount := int64(10*(100-30) + 10*(50-20) + 10*(80-54))
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(vestingPoolsAmount), types.ModuleName)
+	testHelper.C4eVestingUtils.CheckModuleAccountInvariant(false,
+		"cfevesting: module account invariant\n\tamount consistent with vesting pools\n")
+
+}
 
 func TestCheckModuleAccountInvariantNoModuleAccount(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(1, 0)
