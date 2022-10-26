@@ -24,21 +24,15 @@ func NonNegativeVestingPoolAmountsInvariant(k Keeper) sdk.Invariant {
 
 		for _, accountVestingPools := range allVestingPools {
 			for _, vestingPool := range accountVestingPools.VestingPools {
-				if vestingPool.LastModificationVested.IsNegative() {
-					return sdk.FormatInvariant(types.ModuleName, "nonnegative vesting pool amounts",
-						fmt.Sprintf("\tnegative LastModificationVested %s in vesting pool: %s for address: %s", vestingPool.LastModificationVested, vestingPool.Name, accountVestingPools.Address)), true
-				} else if vestingPool.Withdrawn.IsNegative() {
+				if vestingPool.Withdrawn.IsNegative() {
 					return sdk.FormatInvariant(types.ModuleName, "nonnegative vesting pool amounts",
 						fmt.Sprintf("\tnegative Withdrawn %s in vesting pool: %s for address: %s", vestingPool.Withdrawn, vestingPool.Name, accountVestingPools.Address)), true
 				} else if vestingPool.Sent.IsNegative() {
 					return sdk.FormatInvariant(types.ModuleName, "nonnegative vesting pool amounts",
 						fmt.Sprintf("\tnegative Sent %s in vesting pool: %s for address: %s", vestingPool.Sent, vestingPool.Name, accountVestingPools.Address)), true
-				} else if vestingPool.LastModificationWithdrawn.IsNegative() {
+				} else if vestingPool.InitiallyLocked.IsNegative() {
 					return sdk.FormatInvariant(types.ModuleName, "nonnegative vesting pool amounts",
-						fmt.Sprintf("\tnegative LastModificationWithdrawn %s in vesting pool: %s for address: %s", vestingPool.LastModificationWithdrawn, vestingPool.Name, accountVestingPools.Address)), true
-				} else if vestingPool.Vested.IsNegative() {
-					return sdk.FormatInvariant(types.ModuleName, "nonnegative vesting pool amounts",
-						fmt.Sprintf("\tnegative Vested %s in vesting pool: %s for address: %s", vestingPool.Vested, vestingPool.Name, accountVestingPools.Address)), true
+						fmt.Sprintf("\tnegative InitiallyLocked %s in vesting pool: %s for address: %s", vestingPool.InitiallyLocked, vestingPool.Name, accountVestingPools.Address)), true
 				}
 			}
 		}
@@ -53,18 +47,10 @@ func VestingPoolConsistentDataInvariant(k Keeper) sdk.Invariant {
 
 		for _, accountVestingPools := range allVestingPools {
 			for _, vestingPool := range accountVestingPools.VestingPools {
-				if vestingPool.LastModificationWithdrawn.GT(vestingPool.LastModificationVested) {
+				if vestingPool.Withdrawn.Add(vestingPool.Sent).GT(vestingPool.InitiallyLocked) {
 					return sdk.FormatInvariant(types.ModuleName, "vesting pool consistent data",
-						fmt.Sprintf("\tLastModificationWithdrawn (%s) GT LastModificationVested (%s) in vesting pool: %s for address: %s",
-							vestingPool.LastModificationWithdrawn, vestingPool.LastModificationVested, vestingPool.Name, accountVestingPools.Address)), true
-				} else if vestingPool.Withdrawn.Add(vestingPool.Sent).GT(vestingPool.Vested) {
-					return sdk.FormatInvariant(types.ModuleName, "vesting pool consistent data",
-						fmt.Sprintf("\tWithdrawn (%s) + Sent (%s) GT Vested (%s) in vesting pool: %s for address: %s",
-							vestingPool.Withdrawn, vestingPool.Sent, vestingPool.Vested, vestingPool.Name, accountVestingPools.Address)), true
-				} else if !vestingPool.Vested.Sub(vestingPool.Withdrawn).Sub(vestingPool.Sent).Equal(vestingPool.LastModificationVested.Sub(vestingPool.LastModificationWithdrawn)) {
-					return sdk.FormatInvariant(types.ModuleName, "vesting pool consistent data",
-						fmt.Sprintf("\t Vested (%s) - Withdrawn (%s) - Sent (%s) <> LastModificationVested (%s) - LastModificationWithdrawn (%s) in vesting pool: %s for address: %s",
-							vestingPool.Vested, vestingPool.Withdrawn, vestingPool.Sent, vestingPool.LastModificationVested, vestingPool.LastModificationWithdrawn, vestingPool.Name, accountVestingPools.Address)), true
+						fmt.Sprintf("\tWithdrawn (%s) + Sent (%s) GT InitiallyLocked (%s) in vesting pool: %s for address: %s",
+							vestingPool.Withdrawn, vestingPool.Sent, vestingPool.InitiallyLocked, vestingPool.Name, accountVestingPools.Address)), true
 				}
 			}
 		}
@@ -94,7 +80,7 @@ func getLockedSum(k Keeper, ctx sdk.Context) sdk.Int {
 	sum := sdk.ZeroInt()
 	for _, accountVestingPools := range allVestingPools {
 		for _, vestingPool := range accountVestingPools.VestingPools {
-			sum = sum.Add(vestingPool.LastModificationVested.Sub(vestingPool.LastModificationWithdrawn))
+			sum = sum.Add(vestingPool.GetAvailable())
 		}
 	}
 	return sum

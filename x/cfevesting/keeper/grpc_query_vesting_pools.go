@@ -22,9 +22,9 @@ func (k Keeper) VestingPools(goCtx context.Context, req *types.QueryVestingPools
 
 	result := types.QueryVestingPoolsResponse{}
 	for _, vesting := range accountVestingPools.VestingPools {
-		coin := sdk.Coin{Denom: k.GetParams(ctx).Denom, Amount: vesting.Vested}
+		coin := sdk.Coin{Denom: k.GetParams(ctx).Denom, Amount: vesting.InitiallyLocked}
 		withdrawable := CalculateWithdrawable(ctx.BlockTime(), *vesting)
-		current := vesting.LastModificationVested.Sub(vesting.LastModificationWithdrawn)
+		current := vesting.GetAvailable()
 		vestingInfo := types.VestingPoolInfo{
 			Id:                  vesting.Id,
 			Name:                vesting.Name,

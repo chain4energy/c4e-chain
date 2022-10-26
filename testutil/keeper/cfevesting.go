@@ -18,7 +18,9 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
+	v100cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v100"
 	v101cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v101"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 
 )
 
@@ -37,7 +39,7 @@ func NewExtendedC4eVestingKeeperUtils(t *testing.T, helperCfevestingKeeper *keep
 }
 
 func (e *ExtendedC4eVestingKeeperUtils) MigrateV100ToV101(t *testing.T, ctx sdk.Context) {
-	oldAccPools := e.GetC4eVestingKeeper().GetAllAccountVestingPools(ctx)
+	oldAccPools := getAllV100AccountVestingPools(ctx, e.StoreKey, e.Cdc)
 	err := v101cfevesting.MigrateStore(ctx, e.StoreKey, e.Cdc)
 	require.NoError(t, err)
 	newAccPools := e.GetC4eVestingKeeper().GetAllAccountVestingPools(ctx)
@@ -49,18 +51,28 @@ func (e *ExtendedC4eVestingKeeperUtils) MigrateV100ToV101(t *testing.T, ctx sdk.
 		require.EqualValues(t, len(oldAccPools[i].VestingPools), len(newAccPools[i].VestingPools))
 		for j := 0; j < len(oldAccPools[i].VestingPools); j++ {
 			require.EqualValues(t, oldAccPools[i].VestingPools[j].Id, newAccPools[i].VestingPools[j].Id)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Name + "New", newAccPools[i].VestingPools[j].Name)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].Name, newAccPools[i].VestingPools[j].Name)
 			require.EqualValues(t, oldAccPools[i].VestingPools[j].VestingType, newAccPools[i].VestingPools[j].VestingType)
 			require.EqualValues(t, oldAccPools[i].VestingPools[j].LockStart, newAccPools[i].VestingPools[j].LockStart)
 			require.EqualValues(t, oldAccPools[i].VestingPools[j].LockEnd, newAccPools[i].VestingPools[j].LockEnd)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Vested, newAccPools[i].VestingPools[j].Vested)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].Vested, newAccPools[i].VestingPools[j].InitiallyLocked)
 			require.EqualValues(t, oldAccPools[i].VestingPools[j].Withdrawn, newAccPools[i].VestingPools[j].Withdrawn)
 			require.EqualValues(t, oldAccPools[i].VestingPools[j].Sent, newAccPools[i].VestingPools[j].Sent)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].LastModification, newAccPools[i].VestingPools[j].LastModification)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].LastModificationVested, newAccPools[i].VestingPools[j].LastModificationVested)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].LastModificationWithdrawn, newAccPools[i].VestingPools[j].LastModificationWithdrawn)
 		}
 	}
+}
+
+func getAllV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v100cfevesting.AccountVestingPools) {
+	prefixStore := prefix.NewStore(ctx.KVStore(storeKey), types.AccountVestingPoolsKeyPrefix)
+	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val v100cfevesting.AccountVestingPools
+		cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, val)
+	}
+	return
 }
 
 func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight int64, blockTime time.Time, db *tmdb.MemDB, stateStore storetypes.CommitMultiStore) (*keeper.Keeper, sdk.Context, *codec.ProtoCodec, *storetypes.KVStoreKey) {

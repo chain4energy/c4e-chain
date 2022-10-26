@@ -67,7 +67,7 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 
 	for _, accVestingPools := range accsVestingPools {
 		for _, v := range accVestingPools.VestingPools {
-			vestingPoolsAmount = vestingPoolsAmount.Add(v.LastModificationVested).Sub(v.LastModificationWithdrawn)
+			vestingPoolsAmount = vestingPoolsAmount.Add(v.GetAvailable())
 		}
 	}
 

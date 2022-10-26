@@ -46,10 +46,8 @@ func (h *C4eVestingKeeperUtils) SetupAccountVestingPoolsWithModification(ctx sdk
 	accountVestingPools.Address = address
 
 	for _, vesting := range accountVestingPools.VestingPools {
-		vesting.Vested = vestingAmount
+		vesting.InitiallyLocked = vestingAmount
 		vesting.Withdrawn = withdrawnAmount
-		vesting.LastModificationVested = vestingAmount
-		vesting.LastModificationWithdrawn = withdrawnAmount
 		modifyVesting(vesting)
 	}
 	h.helperCfevestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
@@ -190,13 +188,10 @@ func (h *C4eVestingUtils) VerifyAccountVestingPoolsWithModification(ctx sdk.Cont
 			require.EqualValues(h.t, vestingTypes[i].Name, vesting.VestingType)
 			require.EqualValues(h.t, true, startsTimes[i].Equal(vesting.LockStart))
 			require.EqualValues(h.t, true, startsTimes[i].Add(durations[i]).Equal(vesting.LockEnd))
-			require.EqualValues(h.t, vestedAmounts[i], vesting.Vested)
+			require.EqualValues(h.t, vestedAmounts[i], vesting.InitiallyLocked)
 			require.EqualValues(h.t, withdrawnAmounts[i], vesting.Withdrawn)
 
 			require.EqualValues(h.t, sdk.NewInt(sentAmounts[i]), vesting.Sent)
-			require.EqualValues(h.t, true, modificationsTimes[i].Equal(vesting.LastModification))
-			require.EqualValues(h.t, modificationsVested[i], vesting.LastModificationVested)
-			require.EqualValues(h.t, modificationsWithdrawn[i], vesting.LastModificationWithdrawn)
 			found = true
 
 		}

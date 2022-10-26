@@ -1,12 +1,12 @@
 package v101
 
 import (
+	v100cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v100"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	v100cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v100"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 )
 
 // getAllOldAccountVestingPoolsAndDelete returns all old version AccountVestingPools and deletes them from the KVStore
@@ -34,25 +34,21 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 		newPools := []*types.VestingPool{}
 		for _, oldPool := range oldPools {
 			newPool := types.VestingPool{
-				Id: oldPool.Id,
-				Name: oldPool.Name + "New",
-				VestingType: oldPool.VestingType,
-				LockStart: oldPool.LockStart,
-				LockEnd: oldPool.LockEnd,
-				Vested: oldPool.Vested,
-				Withdrawn: oldPool.Withdrawn,
-				Sent: oldPool.Sent,
-				LastModification: oldPool.LastModification,
-				LastModificationVested: oldPool.LastModificationVested,
-				LastModificationWithdrawn: oldPool.LastModificationWithdrawn,
+				Id:              oldPool.Id,
+				Name:            oldPool.Name,
+				VestingType:     oldPool.VestingType,
+				LockStart:       oldPool.LockStart,
+				LockEnd:         oldPool.LockEnd,
+				InitiallyLocked: oldPool.Vested,
+				Withdrawn:       oldPool.Withdrawn,
+				Sent:            oldPool.Sent,
 			}
 			newPools = append(newPools, &newPool)
 		}
 
 		newAccPool := types.AccountVestingPools{
-			Address: oldAccPool.Address,
+			Address:      oldAccPool.Address,
 			VestingPools: newPools,
-
 		}
 		av, err := cdc.Marshal(&newAccPool)
 		if err != nil {
@@ -79,4 +75,3 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 	store := ctx.KVStore(storeKey)
 	return migrateVestingPools(store, cdc)
 }
-

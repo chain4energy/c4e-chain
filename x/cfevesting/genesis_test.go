@@ -144,7 +144,7 @@ func getVestingPoolsAmount(accVestingPools []*types.AccountVestingPools) sdk.Int
 	result := sdk.ZeroInt()
 	for _, accV := range accVestingPools {
 		for _, v := range accV.VestingPools {
-			result = result.Add(v.LastModificationVested).Sub(v.LastModificationWithdrawn)
+			result = result.Add(v.GetAvailable())
 		}
 	}
 	return result
