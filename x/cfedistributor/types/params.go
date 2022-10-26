@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
@@ -10,7 +11,44 @@ var _ paramtypes.ParamSet = (*Params)(nil)
 
 var (
 	KeySubDistributors     = []byte("SubDistributors")
-	DefaultSubDistributors []SubDistributor
+	DefaultSubDistributors = []SubDistributor{
+		{
+			Name: "tx_fee_distributor",
+			Destination: Destination{
+				Account: Account{
+					Id:   "c4e_distributor",
+					Type: MAIN,
+				},
+				BurnShare: &BurnShare{
+					Percent: sdk.Dec{},
+				},
+			},
+			Sources: []*Account{
+				{
+					Id:   "fee_collector",
+					Type: MODULE_ACCOUNT,
+				},
+			},
+		},
+		{
+			Name: "tx_fee_distributor",
+			Destination: Destination{
+				Account: Account{
+					Id:   "validators_rewards_collector",
+					Type: MODULE_ACCOUNT,
+				},
+				BurnShare: &BurnShare{
+					Percent: sdk.Dec{},
+				},
+			},
+			Sources: []*Account{
+				{
+					Id:   "c4e_distributor",
+					Type: MAIN,
+				},
+			},
+		},
+	}
 )
 
 // ParamKeyTable the param key table for launch module
@@ -57,9 +95,14 @@ func validateSubDistributors(v interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", v)
 	}
 
+	err := ValidateOrderOfSubDistributors(subDistributors)
+	if err != nil {
+		return err
+	}
+
 	for _, subDistributor := range subDistributors {
-		if error := subDistributor.Validate(); error != nil {
-			return error
+		if err := subDistributor.Validate(); err != nil {
+			return err
 		}
 	}
 	return nil

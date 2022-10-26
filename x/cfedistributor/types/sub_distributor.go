@@ -70,3 +70,53 @@ func CheckAccountType(account Account) bool {
 		return false
 	}
 }
+
+func ValidateOrderOfSubDistributors(subDistributors []SubDistributor) error {
+	lastDestMainIndex := -2
+	lastSourceMainIndex := -1
+	lastDestInternalIndex := -2
+	lastSourceInternalIndex := -1
+
+	for i := 0; i < len(subDistributors); i++ {
+		if subDistributors[i].Destination.Account.Type == MAIN {
+			lastDestMainIndex = i
+		}
+		if subDistributors[i].Destination.Account.Type == INTERNAL_ACCOUNT {
+			lastDestInternalIndex = i
+		}
+
+		for j := 0; j < len(subDistributors[i].Destination.Share); j++ {
+			if subDistributors[i].Destination.Share[j].Account.Type == MAIN {
+				lastDestMainIndex = i
+			}
+			if subDistributors[i].Destination.Share[j].Account.Type == INTERNAL_ACCOUNT {
+				lastDestInternalIndex = i
+			}
+		}
+
+		for j := 0; j < len(subDistributors[i].Sources); j++ {
+			if subDistributors[i].Sources[j].Type == MAIN {
+				lastSourceMainIndex = i
+			}
+			if subDistributors[i].Sources[j].Type == INTERNAL_ACCOUNT {
+				lastSourceInternalIndex = i
+			}
+		}
+	}
+
+	if lastSourceMainIndex < 0 {
+		return fmt.Errorf("there must be at least one subdistributor with the source main type")
+	}
+
+	if lastSourceMainIndex <= lastDestMainIndex {
+		return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the d" +
+			"estination main type there must be exactly one occurrence of a subdistributor with the source main type")
+	}
+
+	if lastSourceInternalIndex <= lastDestInternalIndex {
+		return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the d" +
+			"estination of internal account type there must be exactly one occurrence of a subdistributor with the source of internal account type")
+	}
+
+	return nil
+}

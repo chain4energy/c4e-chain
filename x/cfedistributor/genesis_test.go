@@ -77,3 +77,18 @@ func TestGenesisNoStates(t *testing.T) {
 	testHelper.C4eDistributorUtils.ExportGenesis(genesisState)
 	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 }
+
+func TestGenesisTwoSubDistributorsWithMainSource(t *testing.T) {
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
+	}
+
+	var subdistributors []types.SubDistributor
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationToPassAcoutSubDistr(subdistributortestutils.MainCollector))
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+	genesisState.Params.SubDistributors = subdistributors
+
+	testHelper := testapp.SetupTestApp(t)
+	testHelper.C4eDistributorUtils.InitGenesisError(genesisState, "value from ParamSetPair is invalid: two subdistributors with the source main type cannot be next to each other")
+}

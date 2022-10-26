@@ -169,3 +169,14 @@ func (m *ContextC4eDistributorUtils) CheckStateSumBalanceCheckInvariant(failed b
 	m.C4eDistributorUtils.CheckStateSumBalanceCheckInvariant(m.testContext.GetContext(), failed, message)
 
 }
+
+func (h *ContextC4eDistributorUtils) InitGenesisError(genState cfedistributortypes.GenesisState, errorMessage string) {
+	h.C4eDistributorUtils.InitGenesisError(h.testContext.GetContext(), genState, errorMessage)
+}
+
+func (h *C4eDistributorUtils) InitGenesisError(ctx sdk.Context, genState cfedistributortypes.GenesisState, errorMessage string) {
+	require.PanicsWithValue(h.t, errorMessage,
+		func() {
+			cfedistributor.InitGenesis(ctx, *h.helperCfedistributorKeeper, genState, h.helperAccountKeeper)
+		}, "")
+}

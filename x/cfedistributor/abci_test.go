@@ -15,7 +15,7 @@ import (
 )
 
 func TestBurningDistributorMainCollectorDes(t *testing.T) {
-	BurningDistributorTest(t, subdistributortestutils.MainCollector)
+	BurningDistributorTest(t, subdistributortestutils.MainCollector) // TODO: There is an error after validating main types in subdistributor
 }
 
 func TestBurningDistributorModuleAccountDest(t *testing.T) {
@@ -23,7 +23,7 @@ func TestBurningDistributorModuleAccountDest(t *testing.T) {
 }
 
 func TestBurningDistributorInternalAccountDest(t *testing.T) {
-	BurningDistributorTest(t, subdistributortestutils.InternalAccount)
+	BurningDistributorTest(t, subdistributortestutils.InternalAccount) // TODO: There is an error after validating main types in subdistributor
 }
 
 func TestBurningDistributorBaseAccountDest(t *testing.T) {
@@ -68,9 +68,7 @@ func BurningDistributorTest(t *testing.T, destinationType subdistributortestutil
 	}
 
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(sdk.NewInt(499)).Amount)
-	if destinationType != subdistributortestutils.MainCollector {
-		testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
-	}
+	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 }
 
 func TestBurningWithInflationDistributorPassThroughMainCollector(t *testing.T) {
