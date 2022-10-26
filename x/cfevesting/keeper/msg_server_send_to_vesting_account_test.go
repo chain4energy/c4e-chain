@@ -23,7 +23,7 @@ func TestSendVestingAccount(t *testing.T) {
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, 1, sdk.NewInt(100), true)
@@ -43,7 +43,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 
 	accInitBalance := sdk.NewInt(10000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 2, sdk.NewInt(100), true,
 		"send to new vesting account - withdraw all available error: withdraw all available - no vesting pools found error: address: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq: not found")
 
@@ -64,7 +64,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 2, sdk.NewInt(100), true, "send to new vesting account - vesting pool with id 2 not found: not found")
@@ -86,7 +86,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 1, sdk.NewInt(1100), true, "send to new vesting account - vesting available: 1000 is smaller than requested amount: 1100: insufficient funds")
@@ -108,7 +108,7 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, 1, sdk.NewInt(100), true)
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 1, sdk.NewInt(950), true, "send to new vesting account - vesting available: 900 is smaller than requested amount: 950: insufficient funds")
@@ -130,7 +130,7 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, 1, sdk.NewInt(100), true)

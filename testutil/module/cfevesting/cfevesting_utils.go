@@ -67,6 +67,12 @@ func (h *C4eVestingKeeperUtils) CheckModuleAccountInvariant(ctx sdk.Context, fai
 	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
+func (h *C4eVestingUtils) SetupVestingTypesForAccountsVestingPools(ctx sdk.Context) {
+	accountVestingPools := h.helperCfevestingKeeper.GetAllAccountVestingPools(ctx)
+	vestingTypes := cfevestingtypes.VestingTypes{VestingTypes: GenerateVestingTypesForAccounVestingPools(accountVestingPools)}
+	h.helperCfevestingKeeper.SetVestingTypes(ctx, vestingTypes)
+}
+
 type C4eVestingUtils struct {
 	C4eVestingKeeperUtils
 	helperAccountKeeper *authkeeper.AccountKeeper
@@ -460,4 +466,8 @@ func (h *ContextC4eVestingUtils) InitGenesisError(genState cfevestingtypes.Genes
 
 func (h *ContextC4eVestingUtils) CheckModuleAccountInvariant(failed bool, message string) {
 	h.C4eVestingUtils.CheckModuleAccountInvariant(h.testContext.GetContext(), failed, message)
+}
+
+func (h *ContextC4eVestingUtils) SetupVestingTypesForAccountsVestingPools() {
+	h.C4eVestingUtils.SetupVestingTypesForAccountsVestingPools(h.testContext.GetContext()) 
 }
