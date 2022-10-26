@@ -41,7 +41,7 @@ func CheckInvariant(t *testing.T, ctx sdk.Context, invariant sdk.Invariant, fail
 	require.EqualValues(t, message, msg)
 }
 
-func CheckManyInvariantsNoError(t *testing.T, ctx sdk.Context, invariants []sdk.Invariant) {
+func ValidateManyInvariants(t *testing.T, ctx sdk.Context, invariants []sdk.Invariant) {
 	for i := 0; i < len(invariants); i++ {
 		msg, failed := invariants[i](ctx)
 		require.False(t, failed, "Invariant failed - "+msg)

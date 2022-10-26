@@ -294,7 +294,7 @@ func (m *C4eVestingUtils) ValidateInvariants(ctx sdk.Context) {
 		cfevestingmodulekeeper.VestingPoolConsistentDataInvariant(*m.helperCfevestingKeeper),
 		cfevestingmodulekeeper.NonNegativeVestingPoolAmountsInvariant(*m.helperCfevestingKeeper),
 	}
-	commontestutils.CheckManyInvariantsNoError(m.t, ctx, invariants)
+	commontestutils.ValidateManyInvariants(m.t, ctx, invariants)
 }
 
 func (h *C4eVestingUtils) QueryVestingsSummary(wctx context.Context, expectedResponse cfevestingtypes.QueryVestingsSummaryResponse) {
@@ -460,4 +460,104 @@ func (h *ContextC4eVestingUtils) InitGenesisError(genState cfevestingtypes.Genes
 
 func (h *ContextC4eVestingUtils) CheckModuleAccountInvariant(failed bool, message string) {
 	h.C4eVestingUtils.CheckModuleAccountInvariant(h.testContext.GetContext(), failed, message)
+}
+
+func (h *ContextC4eVestingUtils) MessageCreateVestingAccount(
+	fromAddress sdk.AccAddress,
+	toAddress sdk.AccAddress,
+	amount sdk.Coins,
+	startTime int64,
+	endTime int64,
+	amountBefore sdk.Int,
+) {
+	h.C4eVestingUtils.MessageCreateVestingAccount(
+		h.testContext.GetContext(),
+		fromAddress,
+		toAddress,
+		amount,
+		startTime,
+		endTime,
+		amountBefore,
+	)
+}
+
+func (h *C4eVestingUtils) MessageCreateVestingAccount(
+	ctx sdk.Context,
+	fromAddress sdk.AccAddress,
+	toAddress sdk.AccAddress,
+	amount sdk.Coins,
+	startTime int64,
+	endTime int64,
+	amountBefore sdk.Int,
+) {
+	_, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, toAddress.String())
+	require.EqualValues(h.t, false, accFound)
+
+	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore)
+	vestingAccountCountBefore := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
+	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
+
+	msg := cfevestingtypes.MsgCreateVestingAccount{
+		FromAddress: fromAddress.String(),
+		ToAddress:   toAddress.String(),
+		Amount:      amount,
+		StartTime:   startTime,
+		EndTime:     endTime,
+	}
+	_, err := msgServer.CreateVestingAccount(msgServerCtx, &msg)
+	require.EqualValues(h.t, nil, err)
+
+	vestingAccountCountAfter := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
+	require.EqualValues(h.t, vestingAccountCountBefore+1, vestingAccountCountAfter)
+
+	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore.Sub(amount.AmountOf(commontestutils.DefaultTestDenom)))
+}
+
+func (h *ContextC4eVestingUtils) MessageCreateVestingAccountError(
+	fromAddress sdk.AccAddress,
+	toAddress sdk.AccAddress,
+	amount sdk.Coins,
+	startTime int64,
+	endTime int64,
+	amountBefore sdk.Int,
+	errorMessage string,
+) {
+	h.C4eVestingUtils.MessageCreateVestingAccountError(
+		h.testContext.GetContext(),
+		fromAddress,
+		toAddress,
+		amount,
+		startTime,
+		endTime,
+		amountBefore,
+		errorMessage,
+	)
+}
+
+func (h *C4eVestingUtils) MessageCreateVestingAccountError(
+	ctx sdk.Context,
+	fromAddress sdk.AccAddress,
+	toAddress sdk.AccAddress,
+	amount sdk.Coins,
+	startTime int64,
+	endTime int64,
+	amountBefore sdk.Int,
+	errorMessage string,
+) {
+	vestingAccountCountBefore := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
+	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
+
+	msg := cfevestingtypes.MsgCreateVestingAccount{
+		FromAddress: fromAddress.String(),
+		ToAddress:   toAddress.String(),
+		Amount:      amount,
+		StartTime:   startTime,
+		EndTime:     endTime,
+	}
+	vestingAccountCountAfter := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
+	_, err := msgServer.CreateVestingAccount(msgServerCtx, &msg)
+	require.EqualValues(h.t, errorMessage, err.Error())
+
+	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore)
+	require.EqualValues(h.t, vestingAccountCountBefore, vestingAccountCountAfter)
 }

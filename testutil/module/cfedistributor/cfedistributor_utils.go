@@ -99,7 +99,7 @@ func (m *C4eDistributorUtils) ValidateInvariants(ctx sdk.Context) {
 		cfedistributormodulekeeper.StateSumBalanceCheckInvariant(*m.helperCfedistributorKeeper),
 		cfedistributormodulekeeper.NonNegativeCoinStateInvariant(*m.helperCfedistributorKeeper),
 	}
-	commontestutils.CheckManyInvariantsNoError(m.t, ctx, invariants)
+	commontestutils.ValidateManyInvariants(m.t, ctx, invariants)
 }
 
 func (m *C4eDistributorUtils) SetParams(ctx sdk.Context, params cfedistributortypes.Params) {
