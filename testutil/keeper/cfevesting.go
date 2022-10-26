@@ -18,9 +18,52 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
+	v101cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v101"
+
 )
 
-func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight int64, blockTime time.Time, db *tmdb.MemDB, stateStore storetypes.CommitMultiStore) (*keeper.Keeper, sdk.Context) {
+type ExtendedC4eVestingKeeperUtils struct {
+	cfevestingtestutils.C4eVestingKeeperUtils
+	Cdc *codec.ProtoCodec
+	StoreKey *storetypes.KVStoreKey
+}
+
+func NewExtendedC4eVestingKeeperUtils(t *testing.T, helperCfevestingKeeper *keeper.Keeper,
+	cdc *codec.ProtoCodec,
+	storeKey *storetypes.KVStoreKey) ExtendedC4eVestingKeeperUtils {
+	return ExtendedC4eVestingKeeperUtils{C4eVestingKeeperUtils: cfevestingtestutils.NewC4eVestingKeeperUtils(t, helperCfevestingKeeper), 
+		Cdc: cdc,
+		StoreKey: storeKey}
+}
+
+func (e *ExtendedC4eVestingKeeperUtils) MigrateV100ToV101(t *testing.T, ctx sdk.Context) {
+	oldAccPools := e.GetC4eVestingKeeper().GetAllAccountVestingPools(ctx)
+	err := v101cfevesting.MigrateStore(ctx, e.StoreKey, e.Cdc)
+	require.NoError(t, err)
+	newAccPools := e.GetC4eVestingKeeper().GetAllAccountVestingPools(ctx)
+
+	require.EqualValues(t, len(oldAccPools), len(newAccPools))
+
+	for i := 0; i < len(oldAccPools); i++ {
+		require.EqualValues(t, oldAccPools[i].Address, newAccPools[i].Address)
+		require.EqualValues(t, len(oldAccPools[i].VestingPools), len(newAccPools[i].VestingPools))
+		for j := 0; j < len(oldAccPools[i].VestingPools); j++ {
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].Id, newAccPools[i].VestingPools[j].Id)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].Name + "New", newAccPools[i].VestingPools[j].Name)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].VestingType, newAccPools[i].VestingPools[j].VestingType)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].LockStart, newAccPools[i].VestingPools[j].LockStart)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].LockEnd, newAccPools[i].VestingPools[j].LockEnd)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].Vested, newAccPools[i].VestingPools[j].Vested)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].Withdrawn, newAccPools[i].VestingPools[j].Withdrawn)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].Sent, newAccPools[i].VestingPools[j].Sent)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].LastModification, newAccPools[i].VestingPools[j].LastModification)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].LastModificationVested, newAccPools[i].VestingPools[j].LastModificationVested)
+			require.EqualValues(t, oldAccPools[i].VestingPools[j].LastModificationWithdrawn, newAccPools[i].VestingPools[j].LastModificationWithdrawn)
+		}
+	}
+}
+
+func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight int64, blockTime time.Time, db *tmdb.MemDB, stateStore storetypes.CommitMultiStore) (*keeper.Keeper, sdk.Context, *codec.ProtoCodec, *storetypes.KVStoreKey) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -58,29 +101,40 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight in
 	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())
 
-	return k, ctx
+	return k, ctx, cdc, storeKey
 }
 
 func CfevestingKeeperWithBlockHeightAndTime(t *testing.T, blockHeight int64, blockTime time.Time) (*keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, blockTime, db, stateStore)
+	k, ctx, _, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, blockTime, db, stateStore)
+	return k, ctx
 }
 
 func CfevestingKeeperWithBlockHeight(t *testing.T, blockHeight int64) (*keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, commontestutils.TestEnvTime, db, stateStore)
+	k, ctx, _, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, commontestutils.TestEnvTime, db, stateStore)
+	return k, ctx
 }
 
 func CfevestingKeeper(t *testing.T) (*keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	return CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, commontestutils.TestEnvTime, db, stateStore)
+	k, ctx, _, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, commontestutils.TestEnvTime, db, stateStore)
+	return k, ctx
 }
 
 func CfevestingKeeperTestUtil(t *testing.T) (*cfevestingtestutils.C4eVestingKeeperUtils, *keeper.Keeper, sdk.Context) {
 	k, ctx := CfevestingKeeper(t)
 	utils := cfevestingtestutils.NewC4eVestingKeeperUtils(t, k)
+	return &utils, k, ctx
+}
+
+func CfevestingKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eVestingKeeperUtils, *keeper.Keeper, sdk.Context) {
+	db := tmdb.NewMemDB()
+	stateStore := store.NewCommitMultiStore(db)
+	k, ctx, cdc, key  := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, commontestutils.TestEnvTime, db, stateStore)
+	utils := NewExtendedC4eVestingKeeperUtils(t, k, cdc, key)
 	return &utils, k, ctx
 }

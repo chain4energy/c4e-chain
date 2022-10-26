@@ -112,7 +112,7 @@ import (
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
-	v2 "github.com/chain4energy/c4e-chain/app/upgrades/v2"
+	v101 "github.com/chain4energy/c4e-chain/app/upgrades/v101"
 )
 
 const (
@@ -195,7 +195,7 @@ var (
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v2.Upgrade}
+	Upgrades = []upgrades.Upgrade{v101.Upgrade}
 )
 
 func init() {
