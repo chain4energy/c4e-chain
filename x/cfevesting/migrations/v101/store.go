@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// getAllOldAccountVestingPoolsAndDelete returns all old version AccountVestingPools and deletes them from the KVStore
-func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (list []v100cfevesting.AccountVestingPools, err error) {
+// getAllV100AccountVestingPoolsAndDelete returns all old version AccountVestingPools and deletes them from the KVStore
+func getAllV100AccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (list []v100cfevesting.AccountVestingPools, err error) {
 	prefixStore := prefix.NewStore(store, v100cfevesting.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
@@ -58,8 +58,51 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 	return nil
 }
 
+func getV100VestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vestingTypes types.VestingTypes, err error) {
+	b := store.Get(v100cfevesting.VestingTypesKey)
+	if b == nil {
+		return vestingTypes, nil
+	}
+
+	err = cdc.Unmarshal(b, &vestingTypes)
+	if err != nil {
+		return vestingTypes, err
+	}
+	store.Delete(v100cfevesting.VestingTypesKey)
+	return
+}
+
+func SetVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes types.VestingTypes) error {
+	for _, vt := range vestingTypes.VestingTypes {
+		err := SetVestingType(store, cdc, *vt)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// set the vesting type
+func SetVestingType(store sdk.KVStore, cdc codec.BinaryCodec, vestingType types.VestingType) error {
+	pStore := prefix.NewStore(store, types.VestingTypesKeyPrefix)
+	av, err := cdc.Marshal(&vestingType)
+	if err != nil {
+		return err
+	}
+	pStore.Set([]byte(vestingType.Name), av)
+	return nil
+}
+
+func migrateVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec) error {
+	oldAccountVestingPools, err := getV100VestingTypesAndDelete(store, cdc)
+	if err != nil {
+		return err
+	}
+	return SetVestingTypes(store, cdc, oldAccountVestingPools)
+}
+
 func migrateVestingPools(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	oldAccountVestingPools, err := getAllOldAccountVestingPoolsAndDelete(store, cdc)
+	oldAccountVestingPools, err := getAllV100AccountVestingPoolsAndDelete(store, cdc)
 	if err != nil {
 		return err
 	}
@@ -70,7 +113,12 @@ func migrateVestingPools(store sdk.KVStore, cdc codec.BinaryCodec) error {
 // migration includes:
 //
 // - Vesting pools structure changed.
+// - Vesting types changed to map
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
+	err := migrateVestingTypes(store, cdc)
+	if err != nil {
+		return err
+	}
 	return migrateVestingPools(store, cdc)
 }

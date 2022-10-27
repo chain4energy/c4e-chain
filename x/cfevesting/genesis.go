@@ -92,7 +92,7 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
-	vestingTypes := k.GetVestingTypes(ctx)
+	vestingTypes := k.GetAllVestingTypes(ctx)
 	genesis.VestingTypes = types.ConvertVestingTypesToGenesisVestingTypes(&vestingTypes)
 	allAccountVestingPools := k.GetAllAccountVestingPools(ctx)
 

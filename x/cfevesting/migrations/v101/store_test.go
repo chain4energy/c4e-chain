@@ -17,6 +17,8 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+
 )
 
 func TestMigrationManyAccountVestingPoolsWithManyPools(t *testing.T) {
@@ -30,7 +32,7 @@ func TestMigrationManyAccountVestingPoolsWithManyPools(t *testing.T) {
 	MigrateV100ToV101(t, testUtil, ctx)
 }
 
-func TestMigrationNoAccountVestingPools(t *testing.T) {
+func TestMigrationNoAccountVestingPoolsAndNoVestingTypes(t *testing.T) {
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	MigrateV100ToV101(t, testUtil, ctx)
 }
@@ -52,6 +54,33 @@ func TestMigrationOneAccountVestingPoolsWithOnePool(t *testing.T) {
 	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 1, sdk.ZeroInt(), sdk.ZeroInt())
 	MigrateV100ToV101(t, testUtil, ctx)
 	
+}
+
+func TestMigrationOneVestingType(t *testing.T) {
+	vts := testutils.GenerateVestingTypes(1, 1)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
+	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
+	MigrateV100ToV101(t, testUtil, ctx)
+}
+
+func TestMigrationManyVestingType(t *testing.T) {
+	vts := testutils.GenerateVestingTypes(10, 1)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
+	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
+	MigrateV100ToV101(t, testUtil, ctx)
+}
+
+func TestMigrationAccountVestingPoolsAndVestingTypes(t *testing.T) {
+	accounts, _ := commontestutils.CreateAccounts(5, 0)
+	vts := testutils.GenerateVestingTypes(10, 1)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[1].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[2].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[3].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[4].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
+	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
+	MigrateV100ToV101(t, testUtil, ctx)
 }
 
 
@@ -80,9 +109,13 @@ func SetV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, c
 
 func MigrateV100ToV101(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context) {
 	oldAccPools := getAllV100AccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc)
+	oldVestingTypes := getAllV100VestingType(ctx, testUtil.StoreKey, testUtil.Cdc)
 	err := v101cfevesting.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)
 	require.NoError(t, err)
+	require.EqualValues(t, 0, len(getAllV100VestingType(ctx, testUtil.StoreKey, testUtil.Cdc).VestingTypes))
+
 	newAccPools := testUtil.GetC4eVestingKeeper().GetAllAccountVestingPools(ctx)
+	newVestingTypes := testUtil.GetC4eVestingKeeper().GetAllVestingTypes(ctx)
 
 	require.EqualValues(t, len(oldAccPools), len(newAccPools))
 
@@ -99,6 +132,7 @@ func MigrateV100ToV101(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 			require.EqualValues(t, oldAccPools[i].VestingPools[j].Sent, newAccPools[i].VestingPools[j].Sent)
 		}
 	}
+	require.ElementsMatch(t, oldVestingTypes.VestingTypes, newVestingTypes.VestingTypes)
 }
 
 func getAllV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v100cfevesting.AccountVestingPools) {
@@ -113,6 +147,8 @@ func getAllV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey
 	}
 	return
 }
+
+
 
 func GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPoolsPerAccount int,
 	accountId int, vestingStartId int) v100cfevesting.AccountVestingPools {
@@ -169,4 +205,22 @@ func generateRandomV100VestingPool(accuntId int, vestingId int) v100cfevesting.V
 		LastModificationVested:    sdk.NewInt(int64(lastModificationVested)),
 		LastModificationWithdrawn: sdk.NewInt(int64(lastModificationWithdrawn)),
 	}
+}
+
+func setV100VestingTypes(ctx sdk.Context, vestingTypes types.VestingTypes, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) {
+	store := ctx.KVStore(storeKey)
+	b := cdc.MustMarshal(&vestingTypes)
+	store.Set(v100cfevesting.VestingTypesKey, b)
+}
+
+func getAllV100VestingType(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (vestingTypes types.VestingTypes) {
+	store := ctx.KVStore(storeKey)
+	b := store.Get(v100cfevesting.VestingTypesKey)
+	if b == nil {
+		return vestingTypes
+	}
+
+	cdc.MustUnmarshal(b, &vestingTypes)
+	return
+
 }
