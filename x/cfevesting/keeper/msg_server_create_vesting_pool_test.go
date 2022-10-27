@@ -73,3 +73,20 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 
 }
 
+func TestCreateVestingPoolEmptyName(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+
+	accAddr := acountsAddresses[0]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+
+	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, "", 1000, *usedVestingType, vested, "add vesting pool empty name: wrong param value")
+
+}

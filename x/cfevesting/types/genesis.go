@@ -96,6 +96,9 @@ func (gs GenesisState) validateAccountVestingPools() error {
 }
 
 func (gst GenesisVestingType) Validate() error {
+	if len(gst.Name) == 0 {
+		return fmt.Errorf("vesting type has no name")
+	}
 
 	_, err := DurationFromUnits(PeriodUnit(gst.LockupPeriodUnit), gst.LockupPeriod)
 	if err != nil {

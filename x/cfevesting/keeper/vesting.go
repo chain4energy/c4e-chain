@@ -38,6 +38,11 @@ func (k Keeper) addVestingPool(
 	lockStart time.Time,
 	lockEnd time.Time) error {
 
+	if vestingPoolName == "" {
+		k.Logger(ctx).Error("add vesting pool: empty name ", "vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "amount", amount)
+		return sdkerrors.Wrap(types.ErrParam, "add vesting pool empty name")
+	}
+
 	if amount.LTE(sdk.ZeroInt()) {
 		k.Logger(ctx).Error("add vesting pool amount <= 0", "vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "amount", amount)
 		return sdkerrors.Wrap(types.ErrAmount, "add vesting pool amount <= 0")

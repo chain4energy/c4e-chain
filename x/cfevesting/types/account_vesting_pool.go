@@ -12,7 +12,9 @@ func (av AccountVestingPools) Validate() error {
 		return fmt.Errorf("account vesting pools address: %s: %s", av.Address, err.Error())
 	}
 	for _, v := range vs {
-		v.Validate(av.Address)
+		if err = v.Validate(av.Address); err != nil {
+			return err
+		}
 		err = av.checkDuplications(vs, v)
 		if err != nil {
 			return err
@@ -56,8 +58,8 @@ func (m *VestingPool) GetCurrentlyLocked() sdk.Int {
 }
 
 func (m *VestingPool) Validate(accountAdd string) error {
-	if m.Name == "" {
-		return fmt.Errorf("vesting pool defined for account: %s has not name", accountAdd)
+	if len(m.Name) == 0 {
+		return fmt.Errorf("vesting pool defined for account: %s has no name", accountAdd)
 	}
 	return nil
 }
