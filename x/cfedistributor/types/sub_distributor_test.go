@@ -103,3 +103,193 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateOrderOfSubDistributors(t *testing.T) {
+	sourceMain := createSubDistributor(false, true, false, MAIN)
+	destinationMain := createSubDistributor(true, false, false, MAIN)
+	destinationShareMain := createSubDistributor(false, false, true, MAIN)
+
+	var zeroSubDistributors []SubDistributor
+
+	var onlyOneMainSubdistributor []SubDistributor
+	onlyOneMainSubdistributor = append(onlyOneMainSubdistributor, sourceMain)
+
+	var destinationAtTheEnd []SubDistributor
+	destinationAtTheEnd = append(destinationAtTheEnd, sourceMain)
+	destinationAtTheEnd = append(destinationAtTheEnd, destinationMain)
+
+	var sourceMainAtTheEnd []SubDistributor
+	sourceMainAtTheEnd = append(sourceMainAtTheEnd, sourceMain)
+	sourceMainAtTheEnd = append(sourceMainAtTheEnd, destinationMain)
+	sourceMainAtTheEnd = append(sourceMainAtTheEnd, sourceMain)
+
+	var destinationShareAtTheEnd []SubDistributor
+	destinationShareAtTheEnd = append(destinationShareAtTheEnd, sourceMain)
+	destinationShareAtTheEnd = append(destinationShareAtTheEnd, destinationShareMain)
+
+	var destinationShareSourceMainAtTheEnd []SubDistributor
+	destinationShareSourceMainAtTheEnd = append(destinationShareSourceMainAtTheEnd, sourceMain)
+	destinationShareSourceMainAtTheEnd = append(destinationShareSourceMainAtTheEnd, destinationShareMain)
+	destinationShareSourceMainAtTheEnd = append(destinationShareSourceMainAtTheEnd, destinationShareMain)
+	destinationShareSourceMainAtTheEnd = append(destinationShareSourceMainAtTheEnd, sourceMain)
+
+	tests := []struct {
+		name            string
+		subDistributors []SubDistributor
+		wantError       bool
+	}{
+		{"only one main subdistributor", onlyOneMainSubdistributor, false},
+		{"zero sub distributors", zeroSubDistributors, true},
+		{"wrong order destination main at the end", destinationAtTheEnd, true},
+		{"correct order source main at the end", sourceMainAtTheEnd, false},
+		{"wrong order destination share at the end", destinationShareAtTheEnd, true},
+		{"correct order destination share, source main at the end", destinationShareSourceMainAtTheEnd, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateOrderOfSubDistributors(tt.subDistributors)
+			if tt.wantError == true && err == nil {
+				t.Errorf("ValidateOrderOfSubDistributors() wanted error got nil")
+			} else if tt.wantError == false && err != nil {
+				t.Errorf("ValidateOrderOfSubDistributors() error: %v", err.Error())
+			}
+		})
+	}
+}
+
+func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
+	// MAIN ACCOUNT
+	sourceMain := createSubDistributor(false, true, false, MAIN)
+	destinationMain := createSubDistributor(true, false, false, MAIN)
+	destinationShareMain := createSubDistributor(false, false, true, MAIN)
+
+	var zeroSubDistributors []SubDistributor
+
+	var onlyOneMainSubdistributor []SubDistributor
+	onlyOneMainSubdistributor = append(onlyOneMainSubdistributor, sourceMain)
+
+	var destinationAtTheEnd []SubDistributor
+	destinationAtTheEnd = append(destinationAtTheEnd, sourceMain)
+	destinationAtTheEnd = append(destinationAtTheEnd, destinationMain)
+
+	var sourceMainAtTheEnd []SubDistributor
+	sourceMainAtTheEnd = append(sourceMainAtTheEnd, sourceMain)
+	sourceMainAtTheEnd = append(sourceMainAtTheEnd, destinationMain)
+	sourceMainAtTheEnd = append(sourceMainAtTheEnd, sourceMain)
+
+	var destinationShareAtTheEnd []SubDistributor
+	destinationShareAtTheEnd = append(destinationShareAtTheEnd, sourceMain)
+	destinationShareAtTheEnd = append(destinationShareAtTheEnd, destinationShareMain)
+
+	var destinationShareSourceMainAtTheEnd []SubDistributor
+	destinationShareSourceMainAtTheEnd = append(destinationShareSourceMainAtTheEnd, sourceMain)
+	destinationShareSourceMainAtTheEnd = append(destinationShareSourceMainAtTheEnd, destinationShareMain)
+	destinationShareSourceMainAtTheEnd = append(destinationShareSourceMainAtTheEnd, destinationShareMain)
+	destinationShareSourceMainAtTheEnd = append(destinationShareSourceMainAtTheEnd, sourceMain)
+
+	// INTERNAL ACCOUNT
+	sourceInternal := createSubDistributor(false, true, false, INTERNAL_ACCOUNT)
+	destinationInternal := createSubDistributor(true, false, false, INTERNAL_ACCOUNT)
+	destinationShareInternal := createSubDistributor(false, false, true, INTERNAL_ACCOUNT)
+
+	var onlyOneInternalSubdistributor []SubDistributor
+	onlyOneInternalSubdistributor = append(onlyOneInternalSubdistributor, sourceInternal)
+
+	var destinationInternalAtTheEnd []SubDistributor
+	destinationAtTheEnd = append(destinationAtTheEnd, sourceInternal)
+	destinationAtTheEnd = append(destinationAtTheEnd, destinationInternal)
+
+	var sourceInternalAtTheEnd []SubDistributor
+	sourceInternalAtTheEnd = append(sourceInternalAtTheEnd, sourceInternal)
+	sourceInternalAtTheEnd = append(sourceInternalAtTheEnd, destinationInternal)
+	sourceInternalAtTheEnd = append(sourceInternalAtTheEnd, sourceInternal)
+	sourceInternalAtTheEnd = append(sourceInternalAtTheEnd, sourceMain)
+
+	var destinationInternalShareAtTheEnd []SubDistributor
+	destinationShareAtTheEnd = append(destinationShareAtTheEnd, sourceInternal)
+	destinationShareAtTheEnd = append(destinationShareAtTheEnd, destinationShareInternal)
+	sourceInternalAtTheEnd = append(sourceInternalAtTheEnd, sourceMain)
+
+	var destinationShareSourceInternalAtTheEndNoSource []SubDistributor
+	destinationShareSourceInternalAtTheEndNoSource = append(destinationShareSourceInternalAtTheEndNoSource, sourceInternal)
+	destinationShareSourceInternalAtTheEndNoSource = append(destinationShareSourceInternalAtTheEndNoSource, destinationShareInternal)
+	destinationShareSourceInternalAtTheEndNoSource = append(destinationShareSourceInternalAtTheEndNoSource, destinationShareInternal)
+	destinationShareSourceInternalAtTheEndNoSource = append(destinationShareSourceInternalAtTheEndNoSource, sourceInternal)
+
+	var destinationShareSourceInternalAtTheEndSource []SubDistributor
+	destinationShareSourceInternalAtTheEndSource = append(destinationShareSourceInternalAtTheEndSource, sourceInternal)
+	destinationShareSourceInternalAtTheEndSource = append(destinationShareSourceInternalAtTheEndSource, destinationShareInternal)
+	destinationShareSourceInternalAtTheEndSource = append(destinationShareSourceInternalAtTheEndSource, destinationShareInternal)
+	destinationShareSourceInternalAtTheEndSource = append(destinationShareSourceInternalAtTheEndSource, sourceInternal)
+	destinationShareSourceInternalAtTheEndSource = append(destinationShareSourceInternalAtTheEndSource, sourceMain)
+
+	tests := []struct {
+		name            string
+		subDistributors []SubDistributor
+		wantError       bool
+	}{
+		{"only one main subdistributor", onlyOneMainSubdistributor, false},
+		{"only one internal subdistributor", onlyOneInternalSubdistributor, true},
+		{"zero sub distributors", zeroSubDistributors, true},
+		{"wrong order destination main at the end", destinationAtTheEnd, true},
+		{"wrong order destination internal at the end", destinationInternalAtTheEnd, true},
+		{"correct order source main at the end", sourceMainAtTheEnd, false},
+		{"wrong order destination main share at the end", destinationShareAtTheEnd, true},
+		{"wrong order destination internal share at the end", destinationInternalShareAtTheEnd, true},
+		{"correct order destination main share, source main at the end", destinationShareSourceMainAtTheEnd, false},
+		{"correct order destination internalshare, source internal at the end, source main at the end", destinationShareSourceInternalAtTheEndSource, false},
+		{"correct order destination internal share, source internal at the end but no main source", destinationShareSourceInternalAtTheEndNoSource, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateOrderOfSubDistributors(tt.subDistributors)
+			if tt.wantError == true && err == nil {
+				t.Errorf("ValidateOrderOfSubDistributors() wanted error got nil")
+			} else if tt.wantError == false && err != nil {
+				t.Errorf("ValidateOrderOfSubDistributors() error: %v", err.Error())
+			}
+		})
+	}
+}
+
+func createSubDistributor(destinationMain bool, sourceMain bool, destinationShareMain bool, accountType string) SubDistributor {
+	destinationType, sourceType, destinationShareType := BASE_ACCOUNT, BASE_ACCOUNT, BASE_ACCOUNT
+	if destinationMain {
+		destinationType = accountType
+	}
+	if sourceMain {
+		sourceType = accountType
+	}
+	if destinationShareMain {
+		destinationShareType = accountType
+	}
+
+	return SubDistributor{
+		Name: "",
+		Destination: Destination{
+			Account: Account{
+				Id:   "",
+				Type: destinationType,
+			},
+			BurnShare: &BurnShare{
+				Percent: sdk.MustNewDecFromStr("0"),
+			},
+			Share: []*Share{
+				{
+					Name: "",
+					Account: Account{
+						Id:   "",
+						Type: destinationShareType,
+					},
+					Percent: sdk.MustNewDecFromStr("0"),
+				},
+			},
+		},
+		Sources: []*Account{
+			{
+				Id:   "",
+				Type: sourceType,
+			},
+		},
+	}
+}
