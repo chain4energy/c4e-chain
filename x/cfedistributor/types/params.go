@@ -13,37 +13,19 @@ var (
 	KeySubDistributors     = []byte("SubDistributors")
 	DefaultSubDistributors = []SubDistributor{
 		{
-			Name: "tx_fee_distributor",
+			Name: "default_distributor",
 			Destination: Destination{
 				Account: Account{
-					Id:   "c4e_distributor",
-					Type: MAIN,
+					Id:   ValidatorsRewardsCollector,
+					Type: MODULE_ACCOUNT,
 				},
 				BurnShare: &BurnShare{
-					Percent: sdk.Dec{},
+					Percent: sdk.MustNewDecFromStr("0"),
 				},
 			},
 			Sources: []*Account{
 				{
-					Id:   "fee_collector",
-					Type: MODULE_ACCOUNT,
-				},
-			},
-		},
-		{
-			Name: "tx_fee_distributor",
-			Destination: Destination{
-				Account: Account{
-					Id:   "validators_rewards_collector",
-					Type: MODULE_ACCOUNT,
-				},
-				BurnShare: &BurnShare{
-					Percent: sdk.Dec{},
-				},
-			},
-			Sources: []*Account{
-				{
-					Id:   "c4e_distributor",
+					Id:   "",
 					Type: MAIN,
 				},
 			},
@@ -78,7 +60,6 @@ func (p Params) Validate() error {
 	if err := validateSubDistributors(p.SubDistributors); err != nil {
 		return err
 	}
-
 	return nil
 }
 

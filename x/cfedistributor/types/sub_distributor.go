@@ -109,13 +109,13 @@ func ValidateOrderOfSubDistributors(subDistributors []SubDistributor) error {
 	}
 
 	if lastSourceMainIndex <= lastDestMainIndex {
-		return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the d" +
-			"estination main type there must be exactly one occurrence of a subdistributor with the source main type")
+		return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the " +
+			"destination main type there must be exactly one occurrence of a subdistributor with the source main type")
 	}
 
 	if lastSourceInternalIndex <= lastDestInternalIndex {
-		return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the d" +
-			"estination of internal account type there must be exactly one occurrence of a subdistributor with the source of internal account type")
+		return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the " +
+			"destination of internal account type there must be exactly one occurrence of a subdistributor with the source of internal account type")
 	}
 
 	return nil

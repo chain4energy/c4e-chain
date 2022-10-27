@@ -90,5 +90,5 @@ func TestGenesisTwoSubDistributorsWithMainSource(t *testing.T) {
 	genesisState.Params.SubDistributors = subdistributors
 
 	testHelper := testapp.SetupTestApp(t)
-	testHelper.C4eDistributorUtils.InitGenesisError(genesisState, "value from ParamSetPair is invalid: two subdistributors with the source main type cannot be next to each other")
+	testHelper.C4eDistributorUtils.InitGenesisError(genesisState, "value from ParamSetPair is invalid: wrong order of subdistributors, after each occurrence of a subdistributor with the destination main type there must be exactly one occurrence of a subdistributor with the source main type")
 }
