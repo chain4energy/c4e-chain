@@ -11,7 +11,7 @@ import (
 
 // getAllOldAccountVestingPoolsAndDelete returns all old version AccountVestingPools and deletes them from the KVStore
 func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (list []v100cfevesting.AccountVestingPools, err error) {
-	prefixStore := prefix.NewStore(store, types.AccountVestingPoolsKeyPrefix)
+	prefixStore := prefix.NewStore(store, v100cfevesting.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
 
@@ -34,7 +34,6 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 		newPools := []*types.VestingPool{}
 		for _, oldPool := range oldPools {
 			newPool := types.VestingPool{
-				Id:              oldPool.Id,
 				Name:            oldPool.Name,
 				VestingType:     oldPool.VestingType,
 				LockStart:       oldPool.LockStart,

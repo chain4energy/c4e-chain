@@ -17,7 +17,6 @@ func TestCalculateWithdrawable(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vesting := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
@@ -51,7 +50,6 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	withdrawn := sdk.NewInt(500000)
 
 	vesting := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 startHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
 		LockEnd:                   lockEndHeight,
@@ -84,7 +82,6 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 	withdrawn := sdk.NewInt(500000)
 	vesting := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 lockEndHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
 		LockEnd:                   lockEndHeight,

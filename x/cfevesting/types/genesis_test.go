@@ -33,8 +33,8 @@ func TestGenesisState_Validate(t *testing.T) {
 		validVestingPoolsTest(acountsAddresses),
 		invalidVestingPoolsNoVestingTypes(acountsAddresses),
 		invalidVestingPoolsVestingTypeNotFound(acountsAddresses),
-		invalidVestingPoolsMoreThanOneIdError(acountsAddresses),
-		invalidVestingPoolsMoreThanOneNameError(acountsAddresses),
+		// invalidVestingPoolsMoreThanOneIdError(acountsAddresses),
+		invalidVestingPoolsOneNameMoreThanOnceError(acountsAddresses),
 		invalidVestingPoolsMoreThanOneAddressError(acountsAddresses),
 		invalidVestingTypesWrongLockupPeriodUnitTest(),
 		invalidVestingTypesWrongVestingPeriodUnitTest(),
@@ -241,7 +241,7 @@ func invalidVestingPoolsNoVestingTypes(acountsAddresses []sdk.AccAddress) TcData
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting with id: 1 defined for account: " + accountVestingPoolsArray[0].Address + " - vesting type not found: test-vesting-account-1-1",
+		errorMassage: "vesting pool with name: test-vesting-account-name1-1 defined for account: " + accountVestingPoolsArray[0].Address + " - vesting type not found: test-vesting-account-1-1",
 	}
 
 }
@@ -260,37 +260,37 @@ func invalidVestingPoolsVestingTypeNotFound(acountsAddresses []sdk.AccAddress) T
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting with id: 8 defined for account: " + accountVestingPoolsArray[4].Address + " - vesting type not found: " + accountVestingPoolsArray[4].VestingPools[7].VestingType,
+		errorMassage: "vesting pool with name: test-vesting-account-name5-8 defined for account: " + accountVestingPoolsArray[4].Address + " - vesting type not found: " + accountVestingPoolsArray[4].VestingPools[7].VestingType,
 	}
 
 }
 
-func invalidVestingPoolsMoreThanOneIdError(acountsAddresses []sdk.AccAddress) TcData {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
-	accountVestingPoolsArray[4].VestingPools[3].Id = accountVestingPoolsArray[4].VestingPools[6].Id
-	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
+// func invalidVestingPoolsMoreThanOneIdError(acountsAddresses []sdk.AccAddress) TcData {
+// 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
+// 	accountVestingPoolsArray[4].VestingPools[3].Id = accountVestingPoolsArray[4].VestingPools[6].Id
+// 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 
-	return TcData{
-		desc: "invalid VestingPools more than one id",
-		genState: &types.GenesisState{
-			Params: types.NewParams("test_denom"),
+// 	return TcData{
+// 		desc: "invalid VestingPools more than one id",
+// 		genState: &types.GenesisState{
+// 			Params: types.NewParams("test_denom"),
 
-			VestingTypes:        vestingTypes,
-			AccountVestingPools: accountVestingPoolsArray,
-		},
-		valid:        false,
-		errorMassage: "vesting with id: 7 defined more than once for account: " + accountVestingPoolsArray[4].Address,
-	}
+// 			VestingTypes:        vestingTypes,
+// 			AccountVestingPools: accountVestingPoolsArray,
+// 		},
+// 		valid:        false,
+// 		errorMassage: "vesting with id: 7 defined more than once for account: " + accountVestingPoolsArray[4].Address,
+// 	}
 
-}
+// }
 
-func invalidVestingPoolsMoreThanOneNameError(acountsAddresses []sdk.AccAddress) TcData {
+func invalidVestingPoolsOneNameMoreThanOnceError(acountsAddresses []sdk.AccAddress) TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	accountVestingPoolsArray[4].VestingPools[3].Name = accountVestingPoolsArray[4].VestingPools[6].Name
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 
 	return TcData{
-		desc: "invalid VestingPools more than one name",
+		desc: "invalid VestingPools name more than once",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
 
@@ -298,7 +298,7 @@ func invalidVestingPoolsMoreThanOneNameError(acountsAddresses []sdk.AccAddress) 
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined more than once for account: " + accountVestingPoolsArray[4].Address,
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined more than once for account: " + accountVestingPoolsArray[4].Address,
 	}
 }
 
@@ -348,3 +348,5 @@ func invalidVestingTypesWrongVestingPeriodUnitTest() TcData {
 		errorMassage: "Unknown PeriodUnit: " + vestingTypes[7].VestingPeriodUnit + ": invalid type",
 	}
 }
+
+// TODO test for empty vesting pool name

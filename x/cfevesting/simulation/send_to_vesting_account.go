@@ -27,11 +27,11 @@ func SimulateSendToVestingAccount(
 		simAccount2Address := commontestutils.CreateRandomAccAddressNoBalance(randInt)
 		randVestingId := helpers.RandomInt(r, len(allVestingPools[randVestingPoolId].VestingPools))
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
-			FromAddress:    accAddress,
-			ToAddress:      simAccount2Address,
-			VestingId:      int32(randVestingId),
-			Amount:         randMsgSendToVestinAccAmount,
-			RestartVesting: true,
+			FromAddress:    	accAddress,
+			ToAddress:      	simAccount2Address,
+			VestingPoolName:    allVestingPools[randVestingPoolId].VestingPools[randVestingId - 1].Name,
+			Amount:         	randMsgSendToVestinAccAmount,
+			RestartVesting: 	true,
 		}
 
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)

@@ -71,14 +71,10 @@ func (k Keeper) addVestingPool(
 
 	accVestingPools, vestingPoolsFound := k.GetAccountVestingPools(ctx, vestingAddr)
 	k.Logger(ctx).Debug("data", "denom", denom, "balance", balance, "vestingPoolsFound", vestingPoolsFound)
-	var id int32
 	if !vestingPoolsFound {
 		accVestingPools = types.AccountVestingPools{}
 		accVestingPools.Address = vestingAddr
-		id = 1
 	} else {
-		id = int32(len(accVestingPools.VestingPools)) + 1
-
 		for _, pool := range accVestingPools.VestingPools {
 			if pool.Name == vestingPoolName {
 				k.Logger(ctx).Error("add vesting pool vesting pool name already exists error",
@@ -89,7 +85,6 @@ func (k Keeper) addVestingPool(
 	}
 
 	vestingPool := types.VestingPool{
-		Id:              id,
 		Name:            vestingPoolName,
 		VestingType:     vestingType,
 		LockStart:       lockStart,
@@ -146,7 +141,6 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, address string) (withdrawn
 		if toWithdraw.IsPositive() {
 			events = append(events, types.WithdrawAvailable{
 				OwnerAddress:    address,
-				VestingPoolId:   strconv.FormatInt(int64(vestingPool.Id), 10),
 				VestingPoolName: vestingPool.Name,
 				Amount:          toWithdraw.String() + denom,
 			})
@@ -186,8 +180,8 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, address string) (withdrawn
 	return result, nil
 }
 
-func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr string, vestingPoolId int32, amount sdk.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
-	k.Logger(ctx).Debug("send to new vesting account", "fromAddr", fromAddr, "toAddr", toAddr, "vestingPoolId", vestingPoolId, "amount", amount, "restartVesting", restartVesting)
+func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr string, vestingPoolName string, amount sdk.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
+	k.Logger(ctx).Debug("send to new vesting account", "fromAddr", fromAddr, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "restartVesting", restartVesting)
 	if fromAddr == toAddr {
 		k.Logger(ctx).Error("send to new vesting account from address and to address cannot be identical error", "fromAddr", fromAddr, "toAddr", toAddr)
 		return withdrawn, sdkerrors.Wrapf(types.ErrIdenticalAccountsAddresses, "send to new vesting account - identical from address (%s) and to address (%s)", fromAddr, toAddr)
@@ -206,18 +200,18 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 	}
 	var vestingPool *types.VestingPool = nil
 	for _, vest := range accVestingPools.VestingPools {
-		if vest.Id == vestingPoolId {
+		if vest.Name == vestingPoolName {
 			vestingPool = vest
 		}
 	}
 	if vestingPool == nil {
-		k.Logger(ctx).Error("send to new vesting account vesting pool id not found", "fromAddr", fromAddr, "vestingPoolId", vestingPoolId)
-		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "send to new vesting account - vesting pool with id %d not found", vestingPoolId)
+		k.Logger(ctx).Error("send to new vesting account vesting pool id not found", "fromAddr", fromAddr, "vestingPoolName", vestingPoolName)
+		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "send to new vesting account - vesting pool with name %s not found", vestingPoolName)
 	}
 	available := vestingPool.GetCurrentlyLocked()
 
 	if available.LT(amount) {
-		k.Logger(ctx).Error("send to new vesting account vesting available is smaller than amount", "fromAddr", fromAddr, "vestingPoolId", vestingPoolId, "available", available, "amount", amount)
+		k.Logger(ctx).Error("send to new vesting account vesting available is smaller than amount", "fromAddr", fromAddr, "vestingPoolName", vestingPoolName, "available", available, "amount", amount)
 		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"send to new vesting account - vesting available: %s is smaller than requested amount: %s", available, amount)
 	}
@@ -242,7 +236,6 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 		eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
 			OwnerAddress:    fromAddr,
 			Address:         toAddr,
-			VestingPoolId:   strconv.FormatInt(int64(vestingPool.Id), 10),
 			VestingPoolName: vestingPool.Name,
 			Amount:          amount.String() + k.Denom(ctx),
 			RestartVesting:  strconv.FormatBool(restartVesting),

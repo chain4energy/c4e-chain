@@ -54,7 +54,7 @@ message MsgCreateVestingAccountResponse {
 message MsgSendToVestingAccount {
   string from_address = 1;
   string to_address = 2;
-  int32 vesting_id = 3;
+  string vesting_pool_name = 3;
   string amount = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   bool restart_vesting = 5;
 }

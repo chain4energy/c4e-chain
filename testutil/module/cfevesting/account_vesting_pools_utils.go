@@ -29,8 +29,6 @@ func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools,
 	for i, expectedVesting := range expected.VestingPools {
 		actualVesting := actual.VestingPools[i]
 		j := 0
-		require.EqualValues(t, expectedVesting.Id, actualVesting.Id)
-		j++
 		require.EqualValues(t, expectedVesting.Name, actualVesting.Name)
 		j++
 		require.EqualValues(t, expectedVesting.VestingType, actualVesting.VestingType)
@@ -75,7 +73,7 @@ func GenerateOneAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVes
 func GenerateAccountVestingPoolsWithRandomVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
 	accountStartId int, vestingStartId int) []*types.AccountVestingPools {
 	return generateAccountVestingPools(numberOfAccounts, numberOfVestingPoolsPerAccount,
-		accountStartId, vestingStartId, generateRandomVesting)
+		accountStartId, vestingStartId, generateRandomVestingPool)
 }
 
 func GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(numberOfVestingPoolsPerAccount int,
@@ -86,7 +84,7 @@ func GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(numberOfVe
 func GenerateAccountVestingPoolsWith10BasedVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
 	accountStartId int, vestingStartId int) []*types.AccountVestingPools {
 	return generateAccountVestingPools(numberOfAccounts, numberOfVestingPoolsPerAccount,
-		accountStartId, vestingStartId, generate10BasedVesting)
+		accountStartId, vestingStartId, generate10BasedVestingPool)
 }
 
 func generateAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
@@ -113,13 +111,12 @@ func generateAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAc
 	return accountVestingPoolsArr
 }
 
-func generateRandomVesting(accuntId int, vestingId int) types.VestingPool {
+func generateRandomVestingPool(accuntId int, vestingId int) types.VestingPool {
 	rgen := rand.New(rand.NewSource(time.Now().UnixNano()))
 	initiallyLocked := rgen.Intn(10000000)
 	withdrawn := rgen.Intn(initiallyLocked)
 	sent := rgen.Intn(initiallyLocked - withdrawn)
 	return types.VestingPool{
-		Id:                        int32(vestingId),
 		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:                 CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
@@ -130,9 +127,8 @@ func generateRandomVesting(accuntId int, vestingId int) types.VestingPool {
 	}
 }
 
-func generate10BasedVesting(accuntId int, vestingId int) types.VestingPool {
+func generate10BasedVestingPool(accuntId int, vestingId int) types.VestingPool {
 	return types.VestingPool{
-		Id:                        int32(vestingId),
 		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:                 CreateTimeFromNumOfHours(1000),
@@ -174,9 +170,9 @@ func CreateDurationFromNumOfHours(numOfHours int64) time.Duration {
 	return time.Hour * time.Duration(numOfHours)
 }
 
-func GetVestingPoolById(vps []*types.VestingPool, id int32) (vp *types.VestingPool, found bool){
+func GetVestingPoolByName(vps []*types.VestingPool, name string) (vp *types.VestingPool, found bool){
 	for _, vPool := range vps {
-		if vPool.Id == id {
+		if vPool.Name == name {
 			return vPool, true
 		}
 	}

@@ -26,7 +26,6 @@ func (k Keeper) VestingPools(goCtx context.Context, req *types.QueryVestingPools
 		withdrawable := CalculateWithdrawable(ctx.BlockTime(), *vesting)
 		current := vesting.GetCurrentlyLocked()
 		vestingInfo := types.VestingPoolInfo{
-			Id:              vesting.Id,
 			Name:            vesting.Name,
 			VestingType:     vesting.VestingType,
 			LockStart:       vesting.LockStart,

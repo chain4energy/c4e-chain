@@ -23,7 +23,6 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
@@ -68,7 +67,6 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
@@ -142,7 +140,6 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
@@ -229,7 +226,6 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
@@ -323,7 +319,6 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,

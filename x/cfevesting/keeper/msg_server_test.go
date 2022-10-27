@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"strconv"
 	"time"
 
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
@@ -25,7 +24,7 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsRespon
 	for _, vesting := range accVestingPools.VestingPools {
 		found := false
 		for _, vestingInfo := range response.VestingPools {
-			if vesting.Id == vestingInfo.Id {
+			if vesting.Name == vestingInfo.Name {
 				require.EqualValues(t, vesting.VestingType, vestingInfo.VestingType)
 				require.EqualValues(t, vesting.Name, vestingInfo.Name)
 				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, current).String(), response.VestingPools[0].Withdrawable)
@@ -39,6 +38,6 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsRespon
 				found = true
 			}
 		}
-		require.True(t, found, "not found vesting nfo with Id: "+strconv.FormatInt(int64(vesting.Id), 10))
+		require.True(t, found, "not found vesting info with Name: "+vesting.Name)
 	}
 }

@@ -3,8 +3,6 @@ package types
 import (
 	// this line is used by starport scaffolding # genesis/types/import
 	fmt "fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // DefaultIndex is the default capability global index
@@ -92,59 +90,6 @@ func (gs GenesisState) validateAccountVestingPools() error {
 		err = avt.ValidateAgainstVestingTypes(vts)
 		if err != nil {
 			return err
-		}
-	}
-	return nil
-}
-
-func (av AccountVestingPools) Validate() error {
-	vs := av.VestingPools
-	_, err := sdk.AccAddressFromBech32(av.Address)
-	if err != nil {
-		return fmt.Errorf("account vesting pools address: %s: %s", av.Address, err.Error())
-	}
-	for _, v := range vs {
-		err = av.checkDuplications(vs, v)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (av AccountVestingPools) checkDuplications(vs []*VestingPool, v *VestingPool) error {
-	numOfIds := 0
-	numOfNames := 0
-	for _, vCheck := range vs {
-		if v.Id == vCheck.Id {
-			numOfIds++
-		}
-		if numOfIds > 1 {
-			return fmt.Errorf("vesting with id: %d defined more than once for account: %s", v.Id, av.Address)
-		}
-
-		if v.Name == vCheck.Name {
-			numOfNames++
-		}
-		if numOfNames > 1 {
-			return fmt.Errorf("vesting with name: %s defined more than once for account: %s", v.Name, av.Address)
-		}
-	}
-
-	return nil
-}
-
-func (av AccountVestingPools) ValidateAgainstVestingTypes(vestingTypes []GenesisVestingType) error {
-	vs := av.VestingPools
-	for _, v := range vs {
-		found := false
-		for _, vtCheck := range vestingTypes {
-			if v.VestingType == vtCheck.Name {
-				found = true
-			}
-		}
-		if !found {
-			return fmt.Errorf("vesting with id: %d defined for account: %s - vesting type not found: %s", v.Id, av.Address, v.VestingType)
 		}
 	}
 	return nil

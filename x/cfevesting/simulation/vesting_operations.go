@@ -26,7 +26,7 @@ func SimulateVestingOperations(
 		randInt := helpers.RandomInt(r, 10000000)
 		simAccount2Address := commontestutils.CreateRandomAccAddressNoBalance(randInt)
 
-		randVestingName := helpers.RandStringOfLength(r, 10)
+		randVestingPoolName := helpers.RandStringOfLength(r, 10)
 		randVestingAmount := sdk.NewInt(helpers.RandomInt(r, 10000000000))
 		randVestingDuration := time.Duration(helpers.RandomInt(r, 3))
 		randVesingId := helpers.RandomInt(r, 3)
@@ -34,7 +34,7 @@ func SimulateVestingOperations(
 
 		msgCreateVestingPool := &types.MsgCreateVestingPool{
 			Creator:     simAccount1.Address.String(),
-			Name:        randVestingName,
+			Name:        randVestingPoolName,
 			Amount:      randVestingAmount,
 			VestingType: randomVestingType,
 			Duration:    randVestingDuration,
@@ -51,7 +51,7 @@ func SimulateVestingOperations(
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
 			FromAddress:    simAccount1.Address.String(),
 			ToAddress:      simAccount2Address,
-			VestingId:      1,
+			VestingPoolName:      randVestingPoolName,
 			Amount:         randMsgSendToVestinAccAmount,
 			RestartVesting: true,
 		}
