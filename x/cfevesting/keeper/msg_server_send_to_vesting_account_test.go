@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"testing"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -30,6 +31,89 @@ func TestSendVestingAccount(t *testing.T) {
 
 }
 
+func TestSendVestingAccountJustBeforeLockEnd(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	lockupDuration := time.Duration(1000)
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, lockupDuration, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested, 1)
+	testHelper.SetContextBlockTime(testHelper.Context.BlockTime().Add(lockupDuration -1 ))
+
+	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, 1, sdk.NewInt(100), true)
+
+}
+
+func TestSendVestingAccountNoRestartVesting(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested, 1)
+
+	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, 1, sdk.NewInt(100), false)
+
+}
+
+func TestSendVestingAccountOnPoolLockEnd(t *testing.T) {
+	sendVestingAccountPoolLockEndedTest(t, 0, true)
+}
+
+func TestSendVestingAccountNoRestartVestingOnPoolLockEnd(t *testing.T) {
+	sendVestingAccountPoolLockEndedTest(t, 0, false)
+}
+
+func TestSendVestingAccountAfterPoolLockEnd(t *testing.T) {
+	sendVestingAccountPoolLockEndedTest(t, 1, true)
+}
+
+func TestSendVestingAccountNoRestartVestingAfterPoolLockEnd(t *testing.T) {
+	sendVestingAccountPoolLockEndedTest(t, 1, false)
+}
+
+func sendVestingAccountPoolLockEndedTest(t *testing.T, afterEnd time.Duration, restartVesting bool) {
+	vested := sdk.NewInt(1000)
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	lockupDuration := time.Duration(1000)
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, lockupDuration, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested, 1)
+	
+	testHelper.SetContextBlockTime(testHelper.Context.BlockTime().Add(lockupDuration + afterEnd))
+	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, 1, sdk.NewInt(100), restartVesting,
+	"send to new vesting account - vesting available: 0 is smaller than requested amount: 100: insufficient funds")
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(accAddr, accInitBalance)
+
+}
+
 func TestSendVestingAccountMultiple(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
@@ -53,8 +137,6 @@ func TestSendVestingAccountMultiple(t *testing.T) {
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, vestAccAddr2, 1, sdk.NewInt(34), true)
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, vestAccAddr3, 1, sdk.NewInt(345), true)
 }
-
-// TODO add test with restart vesting set to false
 
 func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
