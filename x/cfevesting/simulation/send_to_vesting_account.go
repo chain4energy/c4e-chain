@@ -1,15 +1,15 @@
 package simulation
 
 import (
+	"math/rand"
+
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"math/rand"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 func SimulateSendToVestingAccount(
@@ -25,13 +25,17 @@ func SimulateSendToVestingAccount(
 		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10))
 		randInt := helpers.RandomInt(r, 1000000000)
 		simAccount2Address := commontestutils.CreateRandomAccAddressNoBalance(randInt)
-		randVestingId := helpers.RandomInt(r, len(allVestingPools[randVestingPoolId].VestingPools))
+		numOfPools := len(allVestingPools[randVestingPoolId].VestingPools)
+		var randVestingId int64 = 0
+		if numOfPools > 1 {
+			randVestingId = helpers.RandomInt(r, numOfPools - 1)
+		}
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
-			FromAddress:    	accAddress,
-			ToAddress:      	simAccount2Address,
-			VestingPoolName:    allVestingPools[randVestingPoolId].VestingPools[randVestingId - 1].Name,
-			Amount:         	randMsgSendToVestinAccAmount,
-			RestartVesting: 	true,
+			FromAddress:     accAddress,
+			ToAddress:       simAccount2Address,
+			VestingPoolName: allVestingPools[randVestingPoolId].VestingPools[randVestingId].Name,
+			Amount:          randMsgSendToVestinAccAmount,
+			RestartVesting:  true,
 		}
 
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
