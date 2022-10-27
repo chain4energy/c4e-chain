@@ -61,6 +61,19 @@ func (m *VestingPool) Validate(accountAdd string) error {
 	if len(m.Name) == 0 {
 		return fmt.Errorf("vesting pool defined for account: %s has no name", accountAdd)
 	}
+	if m.InitiallyLocked.IsNegative() {
+		return fmt.Errorf("vesting pool with name: %s defined for account: %s has InitiallyLocked value negative %s", m.Name, accountAdd, m.InitiallyLocked)
+	}
+	if m.Withdrawn.IsNegative() {
+		return fmt.Errorf("vesting pool with name: %s defined for account: %s has Withdrawn value negative %s", m.Name, accountAdd, m.Withdrawn)
+	}
+	if m.Sent.IsNegative() {
+		return fmt.Errorf("vesting pool with name: %s defined for account: %s has Sent value negative %s", m.Name, accountAdd, m.Sent)
+	}
+	if m.GetCurrentlyLocked().IsNegative() {
+		return fmt.Errorf("vesting pool with name: %s defined for account: %s has InitiallyLocked (%s) < Withdrawn (%s) + Sent (%s)",
+			m.Name, accountAdd, m.InitiallyLocked, m.Withdrawn, m.Sent)
+	}
 	return nil
 }
 

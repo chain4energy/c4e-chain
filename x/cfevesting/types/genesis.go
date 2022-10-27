@@ -100,13 +100,19 @@ func (gst GenesisVestingType) Validate() error {
 		return fmt.Errorf("vesting type has no name")
 	}
 
-	_, err := DurationFromUnits(PeriodUnit(gst.LockupPeriodUnit), gst.LockupPeriod)
+	duration, err := DurationFromUnits(PeriodUnit(gst.LockupPeriodUnit), gst.LockupPeriod)
 	if err != nil {
-		return err
+		return fmt.Errorf("LockupPeriodUnit of veting type: %s error: %w", gst.Name, err)
 	}
-	_, err = DurationFromUnits(PeriodUnit(gst.VestingPeriodUnit), gst.VestingPeriod)
+	if duration < 0 {
+		return fmt.Errorf("LockupPeriod of veting type: %s less than 0", gst.Name)
+	}
+	duration, err = DurationFromUnits(PeriodUnit(gst.VestingPeriodUnit), gst.VestingPeriod)
 	if err != nil {
-		return err
+		return fmt.Errorf("VestingPeriodUnit of veting type: %s error: %w", gst.Name, err)
+	}
+	if duration < 0 {
+		return fmt.Errorf("VestingPeriod of veting type: %s less than 0", gst.Name)
 	}
 	return nil
 }
