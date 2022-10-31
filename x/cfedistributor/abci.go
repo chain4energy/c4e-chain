@@ -29,10 +29,12 @@ func findBurnState(states *[]types.State) int {
 
 func findAccountState(states *[]types.State, account *types.Account) int {
 	for pos, state := range *states {
-		if state.Account.Id == account.Id && state.Account.Id != "" && &state.Account.Id != nil {
-			return pos
-		} else if state.Account.Id == account.Id && state.Account.Id == "" {
-			return pos
+		if state.Account != nil {
+			if state.Account.Id == account.Id && state.Account.Id != "" && &state.Account.Id != nil {
+				return pos
+			} else if state.Account.Id == account.Id && state.Account.Id == "" {
+				return pos
+			}
 		}
 	}
 	return -1
@@ -203,12 +205,12 @@ func sendCoinsToBaseAccount(ctx sdk.Context, k keeper.Keeper, state *types.State
 
 func sendCoinsFromStates(ctx sdk.Context, k keeper.Keeper, states []types.State) {
 	for _, state := range states {
-		if types.INTERNAL_ACCOUNT != state.Account.Type && checkIfAnyCoinIsGTE1(state.CoinsStates) {
+		if checkIfAnyCoinIsGTE1(state.CoinsStates) {
 			if state.Burn {
 				burnCoins(ctx, k, &state)
 			} else if types.MODULE_ACCOUNT == state.Account.Type {
 				sendCoinsToModuleAccount(ctx, k, &state)
-			} else {
+			} else if types.BASE_ACCOUNT == state.Account.Type {
 				sendCoinsToBaseAccount(ctx, k, &state)
 			}
 		}
@@ -244,7 +246,7 @@ func addSharesToState(ctx sdk.Context, k keeper.Keeper, localRemains *[]types.St
 	if pos < 0 {
 		var state types.State
 		if burn || account == nil {
-			state = types.State{Account: &types.Account{}, CoinsStates: sdk.NewDecCoins(), Burn: true}
+			state = types.State{Account: nil, CoinsStates: sdk.NewDecCoins(), Burn: true}
 		} else {
 			state = types.State{Account: account, CoinsStates: sdk.NewDecCoins(), Burn: false}
 		}

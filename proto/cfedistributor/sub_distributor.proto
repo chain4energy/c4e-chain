@@ -31,7 +31,6 @@ message Destination {
 }
 
 message BurnShare {
-//  float percent =1;
   string percent                = 1 [
     (gogoproto.moretags)   = "yaml:\"percent\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
@@ -42,7 +41,6 @@ message BurnShare {
 
 message Share {
   string name = 1;
-//  float percent = 2;
   string percent                = 2 [
     (gogoproto.moretags)   = "yaml:\"percent\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
