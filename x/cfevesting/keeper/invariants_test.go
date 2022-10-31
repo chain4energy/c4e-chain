@@ -20,6 +20,17 @@ func TestNonNegativeVestingPoolAmountsInvariantCorrect(t *testing.T) {
 		"cfevesting: nonnegative vesting pool amounts invariant\n\tno negative amounts in vesting pools\n")
 }
 
+func TestNonNegativeVestingPoolAmountsInvariantManyyVestingPoolsCorrect(t *testing.T) {
+	accounts, _ := commontestutils.CreateAccounts(3, 0)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
+	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(50))
+	testUtil.SetupAccountVestingPools(ctx, accounts[1].String(), 10, sdk.NewInt(102), sdk.NewInt(23))
+	testUtil.SetupAccountVestingPools(ctx, accounts[2].String(), 10, sdk.NewInt(89), sdk.NewInt(89))
+
+	testUtil.CheckNonNegativeVestingPoolAmountsInvariant(ctx, false,
+		"cfevesting: nonnegative vesting pool amounts invariant\n\tno negative amounts in vesting pools\n")
+}
+
 func TestNonNegativeVestingPoolAmountsInvariantCorrectZeros(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
@@ -29,40 +40,28 @@ func TestNonNegativeVestingPoolAmountsInvariantCorrectZeros(t *testing.T) {
 
 }
 
-func TestNonNegativeVestingPoolAmountsInvariantNagativeLastModificationVested(t *testing.T) {
+func TestNonNegativeVestingPoolAmountsInvariantNagativeInitiallyLocked(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 
 	modification := func(pool *types.VestingPool) {
-		pool.LastModificationVested = sdk.NewInt(-1)
+		pool.InitiallyLocked = sdk.NewInt(-1)
 	}
 	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
 	testUtil.CheckNonNegativeVestingPoolAmountsInvariant(ctx, true,
-		fmt.Sprintf("cfevesting: nonnegative vesting pool amounts invariant\n\tnegative LastModificationVested -1 in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
+		fmt.Sprintf("cfevesting: nonnegative vesting pool amounts invariant\n\tnegative InitiallyLocked -1 in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
 }
 
-func TestNonNegativeVestingPoolAmountsInvariantNagativeLastModificationWithdrawn(t *testing.T) {
+func TestNonNegativeVestingPoolAmountsInvariantNagativeSent(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 
 	modification := func(pool *types.VestingPool) {
-		pool.LastModificationWithdrawn = sdk.NewInt(-1)
+		pool.Sent = sdk.NewInt(-1)
 	}
 	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
 	testUtil.CheckNonNegativeVestingPoolAmountsInvariant(ctx, true,
-		fmt.Sprintf("cfevesting: nonnegative vesting pool amounts invariant\n\tnegative LastModificationWithdrawn -1 in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
-}
-
-func TestNonNegativeVestingPoolAmountsInvariantNagativeVested(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
-	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
-
-	modification := func(pool *types.VestingPool) {
-		pool.Vested = sdk.NewInt(-1)
-	}
-	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
-	testUtil.CheckNonNegativeVestingPoolAmountsInvariant(ctx, true,
-		fmt.Sprintf("cfevesting: nonnegative vesting pool amounts invariant\n\tnegative Vested -1 in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
+		fmt.Sprintf("cfevesting: nonnegative vesting pool amounts invariant\n\tnegative Sent -1 in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
 }
 
 func TestNonNegativeVestingPoolAmountsInvariantNagativeWithdrawn(t *testing.T) {
@@ -85,51 +84,22 @@ func TestVestingPoolConsistentDataInvariantCorrect(t *testing.T) {
 		"cfevesting: vesting pool consistent data invariant\n\tno inconsistent vesting pools\n")
 }
 
+func TestVestingPoolConsistentDataInvariantManyVestingPoolCorrect(t *testing.T) {
+	accounts, _ := commontestutils.CreateAccounts(3, 0)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
+	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(50))
+	testUtil.SetupAccountVestingPools(ctx, accounts[1].String(), 10, sdk.NewInt(89), sdk.NewInt(34))
+	testUtil.SetupAccountVestingPools(ctx, accounts[2].String(), 10, sdk.NewInt(23), sdk.NewInt(21))
+	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, false,
+		"cfevesting: vesting pool consistent data invariant\n\tno inconsistent vesting pools\n")
+}
+
 func TestVestingPoolConsistentDataInvariantCorrectAllWithdrawn(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(100))
 	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, false,
 		"cfevesting: vesting pool consistent data invariant\n\tno inconsistent vesting pools\n")
-}
-
-func TestVestingPoolConsistentDataInvariantCorrectAfterMidifification(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
-	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
-
-	modification := func(pool *types.VestingPool) {
-		pool.LastModificationVested = sdk.NewInt(80)
-		pool.LastModificationWithdrawn = sdk.NewInt(30)
-	}
-	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
-	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, false,
-		"cfevesting: vesting pool consistent data invariant\n\tno inconsistent vesting pools\n")
-}
-
-func TestVestingPoolConsistentDataInvariantCorrectAfterMidifificationAndSent(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
-	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
-
-	modification := func(pool *types.VestingPool) {
-		pool.Sent = sdk.NewInt(10)
-		pool.LastModificationVested = sdk.NewInt(70)
-		pool.LastModificationWithdrawn = sdk.NewInt(30)
-	}
-	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
-	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, false,
-		"cfevesting: vesting pool consistent data invariant\n\tno inconsistent vesting pools\n")
-}
-
-func TestVestingPoolConsistentDataInvariantWrongLastModificationWithdrawn(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
-	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
-
-	modification := func(pool *types.VestingPool) {
-		pool.LastModificationWithdrawn = sdk.NewInt(101)
-	}
-	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
-	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, true,
-		fmt.Sprintf("cfevesting: vesting pool consistent data invariant\n\tLastModificationWithdrawn (101) GT LastModificationVested (100) in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
 }
 
 func TestVestingPoolConsistentDataInvariantWrongWithdrawn(t *testing.T) {
@@ -141,7 +111,7 @@ func TestVestingPoolConsistentDataInvariantWrongWithdrawn(t *testing.T) {
 	}
 	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
 	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, true,
-		fmt.Sprintf("cfevesting: vesting pool consistent data invariant\n\tWithdrawn (101) + Sent (0) GT Vested (100) in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
+		fmt.Sprintf("cfevesting: vesting pool consistent data invariant\n\tWithdrawn (101) + Sent (0) GT InitiallyLocked (100) in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
 }
 
 func TestVestingPoolConsistentDataInvariantWrongSent(t *testing.T) {
@@ -154,7 +124,7 @@ func TestVestingPoolConsistentDataInvariantWrongSent(t *testing.T) {
 	}
 	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
 	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, true,
-		fmt.Sprintf("cfevesting: vesting pool consistent data invariant\n\tWithdrawn (0) + Sent (101) GT Vested (100) in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
+		fmt.Sprintf("cfevesting: vesting pool consistent data invariant\n\tWithdrawn (0) + Sent (101) GT InitiallyLocked (100) in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
 }
 
 func TestVestingPoolConsistentDataInvariantWrongWithdrawnPlusSent(t *testing.T) {
@@ -167,21 +137,7 @@ func TestVestingPoolConsistentDataInvariantWrongWithdrawnPlusSent(t *testing.T) 
 	}
 	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
 	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, true,
-		fmt.Sprintf("cfevesting: vesting pool consistent data invariant\n\tWithdrawn (71) + Sent (30) GT Vested (100) in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
-}
-
-func TestVestingPoolConsistentDataInvariantWrongMainAmounVsLastModificationAmount(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
-	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
-
-	modification := func(pool *types.VestingPool) {
-		pool.Sent = sdk.NewInt(9)
-		pool.LastModificationVested = sdk.NewInt(70)
-		pool.LastModificationWithdrawn = sdk.NewInt(30)
-	}
-	testUtil.SetupAccountVestingPoolsWithModification(ctx, modification, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
-	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, true,
-		fmt.Sprintf("cfevesting: vesting pool consistent data invariant\n\t Vested (100) - Withdrawn (50) - Sent (9) <> LastModificationVested (70) - LastModificationWithdrawn (30) in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
+		fmt.Sprintf("cfevesting: vesting pool consistent data invariant\n\tWithdrawn (71) + Sent (30) GT InitiallyLocked (100) in vesting pool: test-vesting-account-name1-1 for address: %s\n", accounts[0].String()))
 }
 
 func TestCheckModuleAccountInvariantCorrect(t *testing.T) {
@@ -189,6 +145,19 @@ func TestCheckModuleAccountInvariantCorrect(t *testing.T) {
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(30))
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(70), types.ModuleName)
+	testHelper.C4eVestingUtils.CheckModuleAccountInvariant(false,
+		"cfevesting: module account invariant\n\tamount consistent with vesting pools\n")
+
+}
+
+func TestCheckModuleAccountInvariantMamyAccountVestingPoolsCorrect(t *testing.T) {
+	accounts, _ := commontestutils.CreateAccounts(3, 0)
+	testHelper := testapp.SetupTestApp(t)
+	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(30))
+	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[1].String(), 10, sdk.NewInt(50), sdk.NewInt(20))
+	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[2].String(), 10, sdk.NewInt(80), sdk.NewInt(54))
+	vestingPoolsAmount := int64(10*(100-30) + 10*(50-20) + 10*(80-54))
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(vestingPoolsAmount), types.ModuleName)
 	testHelper.C4eVestingUtils.CheckModuleAccountInvariant(false,
 		"cfevesting: module account invariant\n\tamount consistent with vesting pools\n")
 

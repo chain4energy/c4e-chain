@@ -29,6 +29,5 @@ func TestVestingTypesQueryNotEmpty(t *testing.T) {
 	k.SetVestingTypes(ctx, vestingTypes)
 	response, err := k.VestingType(wctx, &types.QueryVestingTypeRequest{})
 	require.NoError(t, err)
-	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: types.ConvertVestingTypesToGenesisVestingTypes(&vestingTypes)}, response)
-
+	require.ElementsMatch(t, types.ConvertVestingTypesToGenesisVestingTypes(&vestingTypes), response.VestingTypes)
 }

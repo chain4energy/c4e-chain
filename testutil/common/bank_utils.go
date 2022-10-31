@@ -57,6 +57,24 @@ func (bu *BankUtils) AddDefaultDenomCoinsToModule(ctx sdk.Context, amount sdk.In
 	return DefaultTestDenom
 }
 
+func (bu *BankUtils) GetModuleAccountBalanceByDenom(ctx sdk.Context, accName string, denom string) sdk.Int {
+	moduleAccAddr := bu.helperAccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
+	return bu.helperBankKeeper.GetBalance(ctx, moduleAccAddr, denom).Amount
+}
+
+func (bu *BankUtils) GetModuleAccountDefultDenomBalance(ctx sdk.Context, accName string) sdk.Int {
+	return bu.GetModuleAccountBalanceByDenom(ctx, accName, DefaultTestDenom)
+}
+
+func (bu *BankUtils) GetAccountBalanceByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Int {
+	return bu.helperBankKeeper.GetBalance(ctx, addr, denom).Amount
+}
+
+func (bu *BankUtils) GetAccountDefultDenomBalance(ctx sdk.Context, addr sdk.AccAddress) sdk.Int {
+	return bu.GetAccountBalanceByDenom(ctx, addr, DefaultTestDenom)
+
+}
+
 func (bu *BankUtils) VerifyModuleAccountBalanceByDenom(ctx sdk.Context, accName string, denom string, expectedAmount sdk.Int) {
 	moduleAccAddr := bu.helperAccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
 	moduleBalance := bu.helperBankKeeper.GetBalance(ctx, moduleAccAddr, denom)
@@ -134,4 +152,13 @@ func (bu *ContextBankUtils) VerifyTotalSupplyByDenom(denom string, expectedAmoun
 
 func (bu *ContextBankUtils) VerifyDefultDenomTotalSupply(expectedAmount sdk.Int) {
 	bu.BankUtils.VerifyDefultDenomTotalSupply(bu.testContext.GetContext(), expectedAmount)
+}
+
+func (bu *ContextBankUtils) GetModuleAccountDefultDenomBalance(accName string) sdk.Int {
+	return bu.BankUtils.GetModuleAccountDefultDenomBalance(bu.testContext.GetContext(), accName)
+}
+
+func (bu *ContextBankUtils) GetAccountDefultDenomBalance(addr sdk.AccAddress) sdk.Int {
+	return bu.BankUtils.GetAccountDefultDenomBalance(bu.testContext.GetContext(), addr)
+
 }

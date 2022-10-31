@@ -29,8 +29,6 @@ func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools,
 	for i, expectedVesting := range expected.VestingPools {
 		actualVesting := actual.VestingPools[i]
 		j := 0
-		require.EqualValues(t, expectedVesting.Id, actualVesting.Id)
-		j++
 		require.EqualValues(t, expectedVesting.Name, actualVesting.Name)
 		j++
 		require.EqualValues(t, expectedVesting.VestingType, actualVesting.VestingType)
@@ -39,17 +37,11 @@ func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools,
 		j++
 		require.EqualValues(t, true, expectedVesting.LockEnd.Equal(actualVesting.LockEnd))
 		j++
-		require.EqualValues(t, expectedVesting.Vested, actualVesting.Vested)
+		require.EqualValues(t, expectedVesting.InitiallyLocked, actualVesting.InitiallyLocked)
 		j++
 		require.EqualValues(t, expectedVesting.Withdrawn, actualVesting.Withdrawn)
 		j++
 		require.EqualValues(t, expectedVesting.Sent, actualVesting.Sent)
-		j++
-		require.EqualValues(t, true, expectedVesting.LastModification.Equal(actualVesting.LastModification))
-		j++
-		require.EqualValues(t, expectedVesting.LastModificationVested, actualVesting.LastModificationVested)
-		j++
-		require.EqualValues(t, expectedVesting.LastModificationWithdrawn, actualVesting.LastModificationWithdrawn)
 		j++
 		require.EqualValues(t, numOfFields, j)
 
@@ -81,7 +73,7 @@ func GenerateOneAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVes
 func GenerateAccountVestingPoolsWithRandomVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
 	accountStartId int, vestingStartId int) []*types.AccountVestingPools {
 	return generateAccountVestingPools(numberOfAccounts, numberOfVestingPoolsPerAccount,
-		accountStartId, vestingStartId, generateRandomVesting)
+		accountStartId, vestingStartId, generateRandomVestingPool)
 }
 
 func GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(numberOfVestingPoolsPerAccount int,
@@ -92,7 +84,7 @@ func GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(numberOfVe
 func GenerateAccountVestingPoolsWith10BasedVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
 	accountStartId int, vestingStartId int) []*types.AccountVestingPools {
 	return generateAccountVestingPools(numberOfAccounts, numberOfVestingPoolsPerAccount,
-		accountStartId, vestingStartId, generate10BasedVesting)
+		accountStartId, vestingStartId, generate10BasedVestingPool)
 }
 
 func generateAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
@@ -119,38 +111,31 @@ func generateAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAc
 	return accountVestingPoolsArr
 }
 
-func generateRandomVesting(accuntId int, vestingId int) types.VestingPool {
+func generateRandomVestingPool(accuntId int, vestingId int) types.VestingPool {
 	rgen := rand.New(rand.NewSource(time.Now().UnixNano()))
-	lastModificationVested := rgen.Intn(10000000)
-	lastModificationWithdrawn := rgen.Intn(lastModificationVested)
+	initiallyLocked := rgen.Intn(10000000)
+	withdrawn := rgen.Intn(initiallyLocked)
+	sent := rgen.Intn(initiallyLocked - withdrawn)
 	return types.VestingPool{
-		Id:                        int32(vestingId),
 		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:                 CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
 		LockEnd:                   CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		Vested:                    sdk.NewInt(int64(rgen.Intn(10000000))),
-		Withdrawn:                 sdk.NewInt(int64(rgen.Intn(10000000))),
-		Sent:                      sdk.NewInt(int64(rgen.Intn(10000000))),
-		LastModification:          CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		LastModificationVested:    sdk.NewInt(int64(lastModificationVested)),
-		LastModificationWithdrawn: sdk.NewInt(int64(lastModificationWithdrawn)),
+		InitiallyLocked:                    sdk.NewInt(int64(initiallyLocked)),
+		Withdrawn:                 sdk.NewInt(int64(withdrawn)),
+		Sent:                      sdk.NewInt(int64(sent)),
 	}
 }
 
-func generate10BasedVesting(accuntId int, vestingId int) types.VestingPool {
+func generate10BasedVestingPool(accuntId int, vestingId int) types.VestingPool {
 	return types.VestingPool{
-		Id:                        int32(vestingId),
 		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:                 CreateTimeFromNumOfHours(1000),
 		LockEnd:                   CreateTimeFromNumOfHours(110000),
-		Vested:                    sdk.NewInt(1000000),
+		InitiallyLocked:                    sdk.NewInt(1000000),
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:          CreateTimeFromNumOfHours(1000),
-		LastModificationVested:    sdk.NewInt(1000000),
-		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 }
 
@@ -162,24 +147,16 @@ func ToAccountVestingPoolsPointersArray(src []types.AccountVestingPools) []*type
 	return result
 }
 
-func GetExpectedWithdrawableForVesting(vesting types.VestingPool, current time.Time) sdk.Int {
-	unlockingStart := vesting.LockEnd
-	if vesting.LockStart.After(unlockingStart) {
-		unlockingStart = vesting.LockStart
-	}
-	if vesting.LastModification.After(unlockingStart) {
-		unlockingStart = vesting.LastModification
-	}
-	expected := GetExpectedWithdrawable(unlockingStart, vesting.LockEnd, current, vesting.LastModificationVested)
-	result := expected.Sub(vesting.LastModificationWithdrawn)
+func GetExpectedWithdrawableForVesting(vestingPool types.VestingPool, current time.Time) sdk.Int {
+	result := GetExpectedWithdrawable(vestingPool.LockEnd, current, vestingPool.InitiallyLocked.Sub(vestingPool.Sent).Sub(vestingPool.Withdrawn))
 	if result.LT(sdk.ZeroInt()) {
 		return sdk.ZeroInt()
 	}
 	return result
 }
 
-func GetExpectedWithdrawable(unlockingStart time.Time, vestingEnd time.Time, current time.Time, amount sdk.Int) sdk.Int {
-	if current.Equal(vestingEnd) || current.After(vestingEnd) {
+func GetExpectedWithdrawable(lockEnd time.Time, current time.Time, amount sdk.Int) sdk.Int {
+	if current.Equal(lockEnd) || current.After(lockEnd) {
 		return amount
 	}
 	return sdk.ZeroInt()
@@ -191,4 +168,13 @@ func CreateTimeFromNumOfHours(numOfHours int64) time.Time {
 
 func CreateDurationFromNumOfHours(numOfHours int64) time.Duration {
 	return time.Hour * time.Duration(numOfHours)
+}
+
+func GetVestingPoolByName(vps []*types.VestingPool, name string) (vp *types.VestingPool, found bool){
+	for _, vPool := range vps {
+		if vPool.Name == name {
+			return vPool, true
+		}
+	}
+	return nil, false
 }

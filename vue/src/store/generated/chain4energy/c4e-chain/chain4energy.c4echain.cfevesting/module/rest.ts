@@ -63,8 +63,6 @@ export interface CfevestingQueryVestingsSummaryResponse {
 }
 
 export interface CfevestingVestingPoolInfo {
-  /** @format int32 */
-  id?: number;
   name?: string;
   vesting_type?: string;
 
@@ -81,8 +79,8 @@ export interface CfevestingVestingPoolInfo {
    * NOTE: The amount field is an Int which implements the custom method
    * signatures required by gogoproto.
    */
-  vested?: V1Beta1Coin;
-  current_vested_amount?: string;
+  initially_locked?: V1Beta1Coin;
+  currently_locked?: string;
   sent_amount?: string;
 }
 

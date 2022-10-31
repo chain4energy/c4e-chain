@@ -32,14 +32,13 @@ export interface QueryVestingPoolsResponse {
 }
 
 export interface VestingPoolInfo {
-  id: number;
   name: string;
   vesting_type: string;
   lock_start: Date | undefined;
   lock_end: Date | undefined;
   withdrawable: string;
-  vested: Coin | undefined;
-  current_vested_amount: string;
+  initially_locked: Coin | undefined;
+  currently_locked: string;
   sent_amount: string;
 }
 
@@ -449,19 +448,15 @@ export const QueryVestingPoolsResponse = {
 };
 
 const baseVestingPoolInfo: object = {
-  id: 0,
   name: "",
   vesting_type: "",
   withdrawable: "",
-  current_vested_amount: "",
+  currently_locked: "",
   sent_amount: "",
 };
 
 export const VestingPoolInfo = {
   encode(message: VestingPoolInfo, writer: Writer = Writer.create()): Writer {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
-    }
     if (message.name !== "") {
       writer.uint32(18).string(message.name);
     }
@@ -483,11 +478,11 @@ export const VestingPoolInfo = {
     if (message.withdrawable !== "") {
       writer.uint32(50).string(message.withdrawable);
     }
-    if (message.vested !== undefined) {
-      Coin.encode(message.vested, writer.uint32(58).fork()).ldelim();
+    if (message.initially_locked !== undefined) {
+      Coin.encode(message.initially_locked, writer.uint32(58).fork()).ldelim();
     }
-    if (message.current_vested_amount !== "") {
-      writer.uint32(66).string(message.current_vested_amount);
+    if (message.currently_locked !== "") {
+      writer.uint32(66).string(message.currently_locked);
     }
     if (message.sent_amount !== "") {
       writer.uint32(74).string(message.sent_amount);
@@ -502,9 +497,6 @@ export const VestingPoolInfo = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.id = reader.int32();
-          break;
         case 2:
           message.name = reader.string();
           break;
@@ -525,10 +517,10 @@ export const VestingPoolInfo = {
           message.withdrawable = reader.string();
           break;
         case 7:
-          message.vested = Coin.decode(reader, reader.uint32());
+          message.initially_locked = Coin.decode(reader, reader.uint32());
           break;
         case 8:
-          message.current_vested_amount = reader.string();
+          message.currently_locked = reader.string();
           break;
         case 9:
           message.sent_amount = reader.string();
@@ -543,11 +535,6 @@ export const VestingPoolInfo = {
 
   fromJSON(object: any): VestingPoolInfo {
     const message = { ...baseVestingPoolInfo } as VestingPoolInfo;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = Number(object.id);
-    } else {
-      message.id = 0;
-    }
     if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
     } else {
@@ -573,18 +560,21 @@ export const VestingPoolInfo = {
     } else {
       message.withdrawable = "";
     }
-    if (object.vested !== undefined && object.vested !== null) {
-      message.vested = Coin.fromJSON(object.vested);
+    if (
+      object.initially_locked !== undefined &&
+      object.initially_locked !== null
+    ) {
+      message.initially_locked = Coin.fromJSON(object.initially_locked);
     } else {
-      message.vested = undefined;
+      message.initially_locked = undefined;
     }
     if (
-      object.current_vested_amount !== undefined &&
-      object.current_vested_amount !== null
+      object.currently_locked !== undefined &&
+      object.currently_locked !== null
     ) {
-      message.current_vested_amount = String(object.current_vested_amount);
+      message.currently_locked = String(object.currently_locked);
     } else {
-      message.current_vested_amount = "";
+      message.currently_locked = "";
     }
     if (object.sent_amount !== undefined && object.sent_amount !== null) {
       message.sent_amount = String(object.sent_amount);
@@ -596,7 +586,6 @@ export const VestingPoolInfo = {
 
   toJSON(message: VestingPoolInfo): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
     message.name !== undefined && (obj.name = message.name);
     message.vesting_type !== undefined &&
       (obj.vesting_type = message.vesting_type);
@@ -610,10 +599,12 @@ export const VestingPoolInfo = {
         message.lock_end !== undefined ? message.lock_end.toISOString() : null);
     message.withdrawable !== undefined &&
       (obj.withdrawable = message.withdrawable);
-    message.vested !== undefined &&
-      (obj.vested = message.vested ? Coin.toJSON(message.vested) : undefined);
-    message.current_vested_amount !== undefined &&
-      (obj.current_vested_amount = message.current_vested_amount);
+    message.initially_locked !== undefined &&
+      (obj.initially_locked = message.initially_locked
+        ? Coin.toJSON(message.initially_locked)
+        : undefined);
+    message.currently_locked !== undefined &&
+      (obj.currently_locked = message.currently_locked);
     message.sent_amount !== undefined &&
       (obj.sent_amount = message.sent_amount);
     return obj;
@@ -621,11 +612,6 @@ export const VestingPoolInfo = {
 
   fromPartial(object: DeepPartial<VestingPoolInfo>): VestingPoolInfo {
     const message = { ...baseVestingPoolInfo } as VestingPoolInfo;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = object.id;
-    } else {
-      message.id = 0;
-    }
     if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
     } else {
@@ -651,18 +637,21 @@ export const VestingPoolInfo = {
     } else {
       message.withdrawable = "";
     }
-    if (object.vested !== undefined && object.vested !== null) {
-      message.vested = Coin.fromPartial(object.vested);
+    if (
+      object.initially_locked !== undefined &&
+      object.initially_locked !== null
+    ) {
+      message.initially_locked = Coin.fromPartial(object.initially_locked);
     } else {
-      message.vested = undefined;
+      message.initially_locked = undefined;
     }
     if (
-      object.current_vested_amount !== undefined &&
-      object.current_vested_amount !== null
+      object.currently_locked !== undefined &&
+      object.currently_locked !== null
     ) {
-      message.current_vested_amount = object.current_vested_amount;
+      message.currently_locked = object.currently_locked;
     } else {
-      message.current_vested_amount = "";
+      message.currently_locked = "";
     }
     if (object.sent_amount !== undefined && object.sent_amount !== null) {
       message.sent_amount = object.sent_amount;

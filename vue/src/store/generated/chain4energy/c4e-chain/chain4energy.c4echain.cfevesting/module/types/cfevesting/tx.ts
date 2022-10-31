@@ -37,7 +37,7 @@ export interface MsgCreateVestingAccountResponse {}
 export interface MsgSendToVestingAccount {
   from_address: string;
   to_address: string;
-  vesting_id: number;
+  vesting_pool_name: string;
   amount: string;
   restart_vesting: boolean;
 }
@@ -568,7 +568,7 @@ export const MsgCreateVestingAccountResponse = {
 const baseMsgSendToVestingAccount: object = {
   from_address: "",
   to_address: "",
-  vesting_id: 0,
+  vesting_pool_name: "",
   amount: "",
   restart_vesting: false,
 };
@@ -584,8 +584,8 @@ export const MsgSendToVestingAccount = {
     if (message.to_address !== "") {
       writer.uint32(18).string(message.to_address);
     }
-    if (message.vesting_id !== 0) {
-      writer.uint32(24).int32(message.vesting_id);
+    if (message.vesting_pool_name !== "") {
+      writer.uint32(26).string(message.vesting_pool_name);
     }
     if (message.amount !== "") {
       writer.uint32(34).string(message.amount);
@@ -612,7 +612,7 @@ export const MsgSendToVestingAccount = {
           message.to_address = reader.string();
           break;
         case 3:
-          message.vesting_id = reader.int32();
+          message.vesting_pool_name = reader.string();
           break;
         case 4:
           message.amount = reader.string();
@@ -642,10 +642,13 @@ export const MsgSendToVestingAccount = {
     } else {
       message.to_address = "";
     }
-    if (object.vesting_id !== undefined && object.vesting_id !== null) {
-      message.vesting_id = Number(object.vesting_id);
+    if (
+      object.vesting_pool_name !== undefined &&
+      object.vesting_pool_name !== null
+    ) {
+      message.vesting_pool_name = String(object.vesting_pool_name);
     } else {
-      message.vesting_id = 0;
+      message.vesting_pool_name = "";
     }
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = String(object.amount);
@@ -668,7 +671,8 @@ export const MsgSendToVestingAccount = {
     message.from_address !== undefined &&
       (obj.from_address = message.from_address);
     message.to_address !== undefined && (obj.to_address = message.to_address);
-    message.vesting_id !== undefined && (obj.vesting_id = message.vesting_id);
+    message.vesting_pool_name !== undefined &&
+      (obj.vesting_pool_name = message.vesting_pool_name);
     message.amount !== undefined && (obj.amount = message.amount);
     message.restart_vesting !== undefined &&
       (obj.restart_vesting = message.restart_vesting);
@@ -691,10 +695,13 @@ export const MsgSendToVestingAccount = {
     } else {
       message.to_address = "";
     }
-    if (object.vesting_id !== undefined && object.vesting_id !== null) {
-      message.vesting_id = object.vesting_id;
+    if (
+      object.vesting_pool_name !== undefined &&
+      object.vesting_pool_name !== null
+    ) {
+      message.vesting_pool_name = object.vesting_pool_name;
     } else {
-      message.vesting_id = 0;
+      message.vesting_pool_name = "";
     }
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = object.amount;

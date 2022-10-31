@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	"fmt"
 	"testing"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
@@ -30,14 +31,21 @@ func TestGenesisState_Validate(t *testing.T) {
 		validVestingAccountsWithVestingTypesTest(acountsAddresses),
 		invalidVestingTypesNameMoreThanOnceError(),
 		invalidVestingAccountsWrongIdTest(acountsAddresses),
-		validVestingPoolsTest(acountsAddresses),
-		invalidVestingPoolsNoVestingTypes(acountsAddresses),
-		invalidVestingPoolsVestingTypeNotFound(acountsAddresses),
-		invalidVestingPoolsMoreThanOneIdError(acountsAddresses),
-		invalidVestingPoolsMoreThanOneNameError(acountsAddresses),
-		invalidVestingPoolsMoreThanOneAddressError(acountsAddresses),
+		validVestingPoolsTest(),
+		invalidVestingPoolsNoVestingTypes(),
+		invalidVestingPoolsVestingTypeNotFound(),
+		invalidVestingPoolsOneNameMoreThanOnceError(),
+		invalidVestingPoolsMoreThanOneAddressError(),
+		invalidVestingPoolsEmptyName(),
+		invalidVestingPoolsNegativeInitiallyLocked(),
+		invalidVestingPoolsNegativeWithdrawn(),
+		invalidVestingPoolsNegativeSent(),
+		invalidVestingPoolsNegativeCurrentlyLocked(),
 		invalidVestingTypesWrongLockupPeriodUnitTest(),
 		invalidVestingTypesWrongVestingPeriodUnitTest(),
+		invalidVestingTypesEmptyNameTest(),
+		invalidVestingTypesNegativeLockupPeriodTest(),
+		invalidVestingTypesNegativeVestingPeriodTest(),
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -213,7 +221,7 @@ func invalidVestingAccountsWrongIdTest(acountsAddresses []sdk.AccAddress) TcData
 	}
 }
 
-func validVestingPoolsTest(acountsAddresses []sdk.AccAddress) TcData {
+func validVestingPoolsTest() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 
@@ -229,7 +237,7 @@ func validVestingPoolsTest(acountsAddresses []sdk.AccAddress) TcData {
 	}
 }
 
-func invalidVestingPoolsNoVestingTypes(acountsAddresses []sdk.AccAddress) TcData {
+func invalidVestingPoolsNoVestingTypes() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 
 	return TcData{
@@ -241,12 +249,12 @@ func invalidVestingPoolsNoVestingTypes(acountsAddresses []sdk.AccAddress) TcData
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting with id: 1 defined for account: " + accountVestingPoolsArray[0].Address + " - vesting type not found: test-vesting-account-1-1",
+		errorMassage: "vesting pool with name: test-vesting-account-name1-1 defined for account: " + accountVestingPoolsArray[0].Address + " - vesting type not found: test-vesting-account-1-1",
 	}
 
 }
 
-func invalidVestingPoolsVestingTypeNotFound(acountsAddresses []sdk.AccAddress) TcData {
+func invalidVestingPoolsVestingTypeNotFound() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 	accountVestingPoolsArray[4].VestingPools[7].VestingType = "wrong type"
@@ -260,37 +268,18 @@ func invalidVestingPoolsVestingTypeNotFound(acountsAddresses []sdk.AccAddress) T
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting with id: 8 defined for account: " + accountVestingPoolsArray[4].Address + " - vesting type not found: " + accountVestingPoolsArray[4].VestingPools[7].VestingType,
+		errorMassage: "vesting pool with name: test-vesting-account-name5-8 defined for account: " + accountVestingPoolsArray[4].Address + " - vesting type not found: " + accountVestingPoolsArray[4].VestingPools[7].VestingType,
 	}
 
 }
 
-func invalidVestingPoolsMoreThanOneIdError(acountsAddresses []sdk.AccAddress) TcData {
-	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
-	accountVestingPoolsArray[4].VestingPools[3].Id = accountVestingPoolsArray[4].VestingPools[6].Id
-	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
-
-	return TcData{
-		desc: "invalid VestingPools more than one id",
-		genState: &types.GenesisState{
-			Params: types.NewParams("test_denom"),
-
-			VestingTypes:        vestingTypes,
-			AccountVestingPools: accountVestingPoolsArray,
-		},
-		valid:        false,
-		errorMassage: "vesting with id: 7 defined more than once for account: " + accountVestingPoolsArray[4].Address,
-	}
-
-}
-
-func invalidVestingPoolsMoreThanOneNameError(acountsAddresses []sdk.AccAddress) TcData {
+func invalidVestingPoolsOneNameMoreThanOnceError() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	accountVestingPoolsArray[4].VestingPools[3].Name = accountVestingPoolsArray[4].VestingPools[6].Name
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 
 	return TcData{
-		desc: "invalid VestingPools more than one name",
+		desc: "invalid VestingPools name more than once",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
 
@@ -298,11 +287,11 @@ func invalidVestingPoolsMoreThanOneNameError(acountsAddresses []sdk.AccAddress) 
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined more than once for account: " + accountVestingPoolsArray[4].Address,
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined more than once for account: " + accountVestingPoolsArray[4].Address,
 	}
 }
 
-func invalidVestingPoolsMoreThanOneAddressError(acountsAddresses []sdk.AccAddress) TcData {
+func invalidVestingPoolsMoreThanOneAddressError() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	accountVestingPoolsArray[3].Address = accountVestingPoolsArray[7].Address
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
@@ -321,17 +310,114 @@ func invalidVestingPoolsMoreThanOneAddressError(acountsAddresses []sdk.AccAddres
 
 }
 
+func invalidVestingPoolsEmptyName() TcData {
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
+	accountVestingPoolsArray[4].VestingPools[3].Name = ""
+
+	return TcData{
+		desc: "invalid VestingPools empty name",
+		genState: &types.GenesisState{
+			Params: types.NewParams("test_denom"),
+
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
+		},
+		valid:        false,
+		errorMassage: "vesting pool defined for account: " + accountVestingPoolsArray[4].Address + " has no name",
+	}
+
+}
+
+func invalidVestingPoolsNegativeInitiallyLocked() TcData {
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
+	accountVestingPoolsArray[4].VestingPools[3].InitiallyLocked = sdk.NewInt(-1)
+
+	return TcData{
+		desc: "invalid VestingPools negative initially locked",
+		genState: &types.GenesisState{
+			Params: types.NewParams("test_denom"),
+
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
+		},
+		valid:        false,
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Address + " has InitiallyLocked value negative -1",
+	}
+
+}
+
+func invalidVestingPoolsNegativeWithdrawn() TcData {
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
+	accountVestingPoolsArray[4].VestingPools[3].Withdrawn = sdk.NewInt(-1)
+
+	return TcData{
+		desc: "invalid VestingPools negative withdrawn",
+		genState: &types.GenesisState{
+			Params: types.NewParams("test_denom"),
+
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
+		},
+		valid:        false,
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Address + " has Withdrawn value negative -1",
+	}
+
+}
+
+func invalidVestingPoolsNegativeSent() TcData {
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
+	accountVestingPoolsArray[4].VestingPools[3].Sent = sdk.NewInt(-1)
+
+	return TcData{
+		desc: "invalid VestingPools negative sent",
+		genState: &types.GenesisState{
+			Params: types.NewParams("test_denom"),
+
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
+		},
+		valid:        false,
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Address + " has Sent value negative -1",
+	}
+
+}
+
+func invalidVestingPoolsNegativeCurrentlyLocked() TcData {
+	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
+	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
+	accountVestingPoolsArray[4].VestingPools[3].InitiallyLocked = sdk.NewInt(100)
+	accountVestingPoolsArray[4].VestingPools[3].Withdrawn = sdk.NewInt(50)
+	accountVestingPoolsArray[4].VestingPools[3].Sent = sdk.NewInt(51)
+
+	return TcData{
+		desc: "invalid VestingPools empty name",
+		genState: &types.GenesisState{
+			Params: types.NewParams("test_denom"),
+
+			VestingTypes:        vestingTypes,
+			AccountVestingPools: accountVestingPoolsArray,
+		},
+		valid:        false,
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Address + " has InitiallyLocked (100) < Withdrawn (50) + Sent (51)",
+	}
+
+}
+
 func invalidVestingTypesWrongLockupPeriodUnitTest() TcData {
 	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
 	vestingTypes[7].LockupPeriodUnit = "err-unit"
 	return TcData{
-		desc: "valid vestingTypes",
+		desc: "invalid vestingTypes wrong lockup period unit",
 		genState: &types.GenesisState{
 			Params:       types.NewParams("test_denom"),
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "Unknown PeriodUnit: " + vestingTypes[7].LockupPeriodUnit + ": invalid type",
+		errorMassage: "LockupPeriodUnit of veting type: "+vestingTypes[7].Name+" error: Unknown PeriodUnit: " + vestingTypes[7].LockupPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
 	}
 }
 
@@ -339,12 +425,64 @@ func invalidVestingTypesWrongVestingPeriodUnitTest() TcData {
 	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
 	vestingTypes[7].VestingPeriodUnit = "err-unit"
 	return TcData{
-		desc: "valid vestingTypes",
+		desc: "invalid vestingTypes wrong vesting period unit",
 		genState: &types.GenesisState{
 			Params:       types.NewParams("test_denom"),
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "Unknown PeriodUnit: " + vestingTypes[7].VestingPeriodUnit + ": invalid type",
+		errorMassage: "VestingPeriodUnit of veting type: "+vestingTypes[7].Name+" error: Unknown PeriodUnit: " + vestingTypes[7].VestingPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
 	}
+}
+
+func invalidVestingTypesNegativeLockupPeriodTest() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[7].LockupPeriod = -1
+	return TcData{
+		desc: "invalid vestingTypes wrong lockup period unit",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid:        false,
+		errorMassage: "LockupPeriod of veting type: "+vestingTypes[7].Name+" less than 0",
+	}
+}
+
+func invalidVestingTypesNegativeVestingPeriodTest() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[7].VestingPeriod = -1
+	return TcData{
+		desc: "invalid vestingTypes wrong lockup period unit",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid:        false,
+		errorMassage: "VestingPeriod of veting type: "+vestingTypes[7].Name+" less than 0",
+	}
+}
+
+func invalidVestingTypesEmptyNameTest() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[7].Name = ""
+	return TcData{
+		desc: "valid vestingTypes empty name",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid:        false,
+		errorMassage: "vesting type has no name",
+	}
+}
+
+func getWrongUnitMessageCodeLineInfo() string {
+
+	unit := types.PeriodUnit("unit")
+	_, err := types.DurationFromUnits(unit, 0)
+	err = fmt.Errorf("%w", err)
+	startLen := len("Unknown PeriodUnit: "+unit+": invalid type")
+	errLen := len(err.Error())
+	return err.Error()[startLen:errLen]
 }

@@ -79,28 +79,20 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
-func TestVestingId(t *testing.T) {
+func TestCreateVestingPoolEmptyName(t *testing.T) {
 	vested := sdk.NewInt(1000)
-	accInitBalance := sdk.NewInt(10000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
 	accAddr := acountsAddresses[0]
+
+	accInitBalance := sdk.NewInt(10000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
-	testHelper.C4eVestingUtils.SetVestingTypes(vestingTypes)
-
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
-
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested, 1)
-
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, true, true, vPool2, 1000, *usedVestingType, vested, accInitBalance.Sub(vested), vested, accInitBalance.Sub(vested.MulRaw(2)), vested.MulRaw(2), 1, 2)
-
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, true, true, "v-pool-3", 1000, *usedVestingType, vested, accInitBalance.Sub(vested.MulRaw(2)), vested.MulRaw(2), accInitBalance.Sub(vested.MulRaw(3)), vested.MulRaw(3), 1, 2, 3)
-
+	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, "", 1000, *usedVestingType, vested, "add vesting pool empty name: wrong param value")
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }

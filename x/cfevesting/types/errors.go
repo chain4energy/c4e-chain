@@ -16,4 +16,5 @@ var (
 	ErrAccountNotAllowedToReceiveFunds = sdkerrors.Register(ModuleName, 7, "account is not allowed to receive")
 	ErrInvalidAccountType              = sdkerrors.Register(ModuleName, 8, "invalid account type")
 	ErrParsing                         = sdkerrors.Register(ModuleName, 9, "failed to parse")
+	ErrParam                           = sdkerrors.Register(ModuleName, 10, "wrong param value")
 )

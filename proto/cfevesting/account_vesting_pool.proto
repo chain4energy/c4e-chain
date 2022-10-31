@@ -2,28 +2,21 @@ syntax = "proto3";
 package chain4energy.c4echain.cfevesting;
 
 import "gogoproto/gogo.proto";
-// import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
 message AccountVestingPools {
   string address = 1;
-  // string delegable_address = 2;
   repeated VestingPool vesting_pools = 3; 
 }
 
 message VestingPool {
-  // TODO verify if last modification data is still required after removing part of vesting mudule functionality. Check if usfeful for planned new functiolities
-  int32 id = 1;
-  string name = 2;
-  string vesting_type = 3;
-  google.protobuf.Timestamp lock_start = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp lock_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  string vested = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  string withdrawn = 7 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  string sent = 8 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  google.protobuf.Timestamp last_modification = 9 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  string last_modification_vested = 10 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  string last_modification_withdrawn = 11 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string name = 1;
+  string vesting_type = 2;
+  google.protobuf.Timestamp lock_start = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp lock_end = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string initially_locked = 5 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string withdrawn = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string sent = 7 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }

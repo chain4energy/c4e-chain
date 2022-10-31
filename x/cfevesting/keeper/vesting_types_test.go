@@ -28,9 +28,9 @@ func TestGetVestingTypes(t *testing.T) {
 
 	k.SetVestingTypes(ctx, vestingTypes)
 
-	require.EqualValues(t, vestingTypes, k.GetVestingTypes(ctx))
-	require.EqualValues(t, vestingType1, *k.GetVestingTypes(ctx).VestingTypes[0])
-	require.EqualValues(t, vestingType2, *k.GetVestingTypes(ctx).VestingTypes[1])
+	require.EqualValues(t, vestingTypes, k.GetAllVestingTypes(ctx))
+	require.EqualValues(t, vestingType1, *k.GetAllVestingTypes(ctx).VestingTypes[0])
+	require.EqualValues(t, vestingType2, *k.GetAllVestingTypes(ctx).VestingTypes[1])
 
 }
 

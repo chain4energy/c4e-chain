@@ -15,6 +15,6 @@ func (k Keeper) VestingType(goCtx context.Context, req *types.QueryVestingTypeRe
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	vestingTypes := k.GetVestingTypes(ctx)
+	vestingTypes := k.GetAllVestingTypes(ctx)
 	return &types.QueryVestingTypeResponse{VestingTypes: types.ConvertVestingTypesToGenesisVestingTypes(&vestingTypes)}, nil
 }

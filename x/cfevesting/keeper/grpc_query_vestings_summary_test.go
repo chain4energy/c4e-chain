@@ -23,16 +23,12 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
-		Vested:                    amount,
+		InitiallyLocked:                    amount,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:          start,
-		LastModificationVested:    amount,
-		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 	accVestingPools := types.AccountVestingPools{
 		Address:      acountsAddresses[0].String(),
@@ -71,16 +67,12 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
-		Vested:                    amount,
+		InitiallyLocked:                    amount,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:          start,
-		LastModificationVested:    amount,
-		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	accVestingPools := types.AccountVestingPools{
@@ -148,16 +140,12 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
-		Vested:                    amount,
+		InitiallyLocked:                    amount,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:          start,
-		LastModificationVested:    amount,
-		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	accVestingPools := types.AccountVestingPools{
@@ -238,16 +226,12 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
-		Vested:                    amount,
+		InitiallyLocked:                    amount,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:          start,
-		LastModificationVested:    amount,
-		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	accVestingPools := types.AccountVestingPools{
@@ -335,16 +319,12 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
-		Vested:                    amount,
+		InitiallyLocked:                    amount,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:          start,
-		LastModificationVested:    amount,
-		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	accVestingPools := types.AccountVestingPools{
