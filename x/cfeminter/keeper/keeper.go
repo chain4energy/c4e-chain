@@ -62,6 +62,14 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
+	lastBlockTimeForMinter := k.GetMinterState(ctx).LastMintBlockTime
+	lastBlockTime := ctx.BlockTime()
+
+	if lastBlockTimeForMinter.After(lastBlockTime) || lastBlockTimeForMinter.Equal(lastBlockTime) {
+		k.Logger(ctx).Info("mint last mint block time is smaller than current block time - possible for first block after genesis init",
+			"lastBlockTime", lastBlockTimeForMinter, "currentBlockTime", lastBlockTime)
+		return sdk.ZeroInt(), nil
+	}
 	return k.mint(ctx, 0)
 }
 
@@ -92,10 +100,6 @@ func (k Keeper) mint(ctx sdk.Context, level int) (sdk.Int, error) {
 		"previousPeriod", previousPeriod, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
 
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
-	if amount.IsNegative() {
-		k.Logger(ctx).Info("mint negative amount - possible for first block after genesis init", "lev", level, "amount", amount) // TODO compare last mint date from state insted accepting negative
-		return sdk.ZeroInt(), nil
-	}
 
 	coin := sdk.NewCoin(params.MintDenom, amount)
 	coins := sdk.NewCoins(coin)
