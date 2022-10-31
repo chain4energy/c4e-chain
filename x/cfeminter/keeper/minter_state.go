@@ -48,7 +48,7 @@ func (k Keeper) SetMinterStateHistory(ctx sdk.Context, state types.MinterState) 
 	store.Set([]byte(strconv.FormatInt(int64(state.Position), 10)), av)
 }
 
-// GetAllMinterStateHistory returns all histrical minter states for ended periods
+// GetAllMinterStateHistory returns all historical minter states for ended periods
 func (k Keeper) GetAllMinterStateHistory(ctx sdk.Context) (list []types.MinterState) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})

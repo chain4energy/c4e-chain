@@ -60,7 +60,6 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 	accountVestingPools.VestingPools[0].Withdrawn = sdk.NewInt(500)
-	// accountVestingPools.VestingPools[0].LastModificationWithdrawn = sdk.NewInt(500)
 
 	keeper.SetAccountVestingPools(ctx, accountVestingPools)
 
@@ -82,7 +81,6 @@ func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 	accountVestingPools.VestingPools[0].LockStart = accountVestingPools.VestingPools[0].LockEnd
-	// accountVestingPools.VestingPools[0].LastModification = accountVestingPools.VestingPools[0].LockEnd
 
 	accountVestingPools.VestingPools[0].LockEnd = accountVestingPools.VestingPools[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 
@@ -107,9 +105,7 @@ func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 
-	// accountVestingPools.VestingPools[0].LastModification = accountVestingPools.VestingPools[0].LockEnd
 	accountVestingPools.VestingPools[0].Sent = sdk.NewInt(100000)
-	// accountVestingPools.VestingPools[0].LastModificationVested = accountVestingPools.VestingPools[0].LastModificationVested.Sub(sdk.NewInt(100000))
 
 	accountVestingPools.VestingPools[0].LockEnd = accountVestingPools.VestingPools[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 
@@ -134,10 +130,7 @@ func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Address = addr
 
-	// accountVestingPools.VestingPools[0].LastModification = accountVestingPools.VestingPools[0].LockEnd
 	accountVestingPools.VestingPools[0].Sent = sdk.NewInt(100000)
-	// accountVestingPools.VestingPools[0].LastModificationVested = accountVestingPools.VestingPools[0].LastModificationVested.Sub(sdk.NewInt(100000))
-	// accountVestingPools.VestingPools[0].LastModificationWithdrawn = sdk.NewInt(400)
 
 	accountVestingPools.VestingPools[0].LockEnd = accountVestingPools.VestingPools[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 
