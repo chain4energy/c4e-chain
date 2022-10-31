@@ -18,7 +18,6 @@ export interface NewVestingPool {
 export interface NewVestingAccountFromVestingPool {
   owner_address: string;
   address: string;
-  vesting_pool_id: string;
   vesting_pool_name: string;
   amount: string;
   restart_vesting: string;
@@ -26,7 +25,6 @@ export interface NewVestingAccountFromVestingPool {
 
 export interface WithdrawAvailable {
   owner_address: string;
-  vesting_pool_id: string;
   vesting_pool_name: string;
   amount: string;
 }
@@ -219,7 +217,6 @@ export const NewVestingPool = {
 const baseNewVestingAccountFromVestingPool: object = {
   owner_address: "",
   address: "",
-  vesting_pool_id: "",
   vesting_pool_name: "",
   amount: "",
   restart_vesting: "",
@@ -235,9 +232,6 @@ export const NewVestingAccountFromVestingPool = {
     }
     if (message.address !== "") {
       writer.uint32(18).string(message.address);
-    }
-    if (message.vesting_pool_id !== "") {
-      writer.uint32(26).string(message.vesting_pool_id);
     }
     if (message.vesting_pool_name !== "") {
       writer.uint32(34).string(message.vesting_pool_name);
@@ -268,9 +262,6 @@ export const NewVestingAccountFromVestingPool = {
           break;
         case 2:
           message.address = reader.string();
-          break;
-        case 3:
-          message.vesting_pool_id = reader.string();
           break;
         case 4:
           message.vesting_pool_name = reader.string();
@@ -304,14 +295,6 @@ export const NewVestingAccountFromVestingPool = {
       message.address = "";
     }
     if (
-      object.vesting_pool_id !== undefined &&
-      object.vesting_pool_id !== null
-    ) {
-      message.vesting_pool_id = String(object.vesting_pool_id);
-    } else {
-      message.vesting_pool_id = "";
-    }
-    if (
       object.vesting_pool_name !== undefined &&
       object.vesting_pool_name !== null
     ) {
@@ -340,8 +323,6 @@ export const NewVestingAccountFromVestingPool = {
     message.owner_address !== undefined &&
       (obj.owner_address = message.owner_address);
     message.address !== undefined && (obj.address = message.address);
-    message.vesting_pool_id !== undefined &&
-      (obj.vesting_pool_id = message.vesting_pool_id);
     message.vesting_pool_name !== undefined &&
       (obj.vesting_pool_name = message.vesting_pool_name);
     message.amount !== undefined && (obj.amount = message.amount);
@@ -365,14 +346,6 @@ export const NewVestingAccountFromVestingPool = {
       message.address = object.address;
     } else {
       message.address = "";
-    }
-    if (
-      object.vesting_pool_id !== undefined &&
-      object.vesting_pool_id !== null
-    ) {
-      message.vesting_pool_id = object.vesting_pool_id;
-    } else {
-      message.vesting_pool_id = "";
     }
     if (
       object.vesting_pool_name !== undefined &&
@@ -401,7 +374,6 @@ export const NewVestingAccountFromVestingPool = {
 
 const baseWithdrawAvailable: object = {
   owner_address: "",
-  vesting_pool_id: "",
   vesting_pool_name: "",
   amount: "",
 };
@@ -410,9 +382,6 @@ export const WithdrawAvailable = {
   encode(message: WithdrawAvailable, writer: Writer = Writer.create()): Writer {
     if (message.owner_address !== "") {
       writer.uint32(10).string(message.owner_address);
-    }
-    if (message.vesting_pool_id !== "") {
-      writer.uint32(26).string(message.vesting_pool_id);
     }
     if (message.vesting_pool_name !== "") {
       writer.uint32(34).string(message.vesting_pool_name);
@@ -432,9 +401,6 @@ export const WithdrawAvailable = {
       switch (tag >>> 3) {
         case 1:
           message.owner_address = reader.string();
-          break;
-        case 3:
-          message.vesting_pool_id = reader.string();
           break;
         case 4:
           message.vesting_pool_name = reader.string();
@@ -458,14 +424,6 @@ export const WithdrawAvailable = {
       message.owner_address = "";
     }
     if (
-      object.vesting_pool_id !== undefined &&
-      object.vesting_pool_id !== null
-    ) {
-      message.vesting_pool_id = String(object.vesting_pool_id);
-    } else {
-      message.vesting_pool_id = "";
-    }
-    if (
       object.vesting_pool_name !== undefined &&
       object.vesting_pool_name !== null
     ) {
@@ -485,8 +443,6 @@ export const WithdrawAvailable = {
     const obj: any = {};
     message.owner_address !== undefined &&
       (obj.owner_address = message.owner_address);
-    message.vesting_pool_id !== undefined &&
-      (obj.vesting_pool_id = message.vesting_pool_id);
     message.vesting_pool_name !== undefined &&
       (obj.vesting_pool_name = message.vesting_pool_name);
     message.amount !== undefined && (obj.amount = message.amount);
@@ -499,14 +455,6 @@ export const WithdrawAvailable = {
       message.owner_address = object.owner_address;
     } else {
       message.owner_address = "";
-    }
-    if (
-      object.vesting_pool_id !== undefined &&
-      object.vesting_pool_id !== null
-    ) {
-      message.vesting_pool_id = object.vesting_pool_id;
-    } else {
-      message.vesting_pool_id = "";
     }
     if (
       object.vesting_pool_name !== undefined &&

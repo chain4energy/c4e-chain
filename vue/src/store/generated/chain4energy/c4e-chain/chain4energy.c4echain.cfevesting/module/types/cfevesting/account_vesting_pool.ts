@@ -6,22 +6,17 @@ export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
 export interface AccountVestingPools {
   address: string;
-  /** string delegable_address = 2; */
   vesting_pools: VestingPool[];
 }
 
 export interface VestingPool {
-  id: number;
   name: string;
   vesting_type: string;
   lock_start: Date | undefined;
   lock_end: Date | undefined;
-  vested: string;
+  initially_locked: string;
   withdrawn: string;
   sent: string;
-  last_modification: Date | undefined;
-  last_modification_vested: string;
-  last_modification_withdrawn: string;
 }
 
 const baseAccountVestingPools: object = { address: "" };
@@ -111,59 +106,41 @@ export const AccountVestingPools = {
 };
 
 const baseVestingPool: object = {
-  id: 0,
   name: "",
   vesting_type: "",
-  vested: "",
+  initially_locked: "",
   withdrawn: "",
   sent: "",
-  last_modification_vested: "",
-  last_modification_withdrawn: "",
 };
 
 export const VestingPool = {
   encode(message: VestingPool, writer: Writer = Writer.create()): Writer {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
-    }
     if (message.name !== "") {
-      writer.uint32(18).string(message.name);
+      writer.uint32(10).string(message.name);
     }
     if (message.vesting_type !== "") {
-      writer.uint32(26).string(message.vesting_type);
+      writer.uint32(18).string(message.vesting_type);
     }
     if (message.lock_start !== undefined) {
       Timestamp.encode(
         toTimestamp(message.lock_start),
-        writer.uint32(34).fork()
+        writer.uint32(26).fork()
       ).ldelim();
     }
     if (message.lock_end !== undefined) {
       Timestamp.encode(
         toTimestamp(message.lock_end),
-        writer.uint32(42).fork()
+        writer.uint32(34).fork()
       ).ldelim();
     }
-    if (message.vested !== "") {
-      writer.uint32(50).string(message.vested);
+    if (message.initially_locked !== "") {
+      writer.uint32(42).string(message.initially_locked);
     }
     if (message.withdrawn !== "") {
-      writer.uint32(58).string(message.withdrawn);
+      writer.uint32(50).string(message.withdrawn);
     }
     if (message.sent !== "") {
-      writer.uint32(66).string(message.sent);
-    }
-    if (message.last_modification !== undefined) {
-      Timestamp.encode(
-        toTimestamp(message.last_modification),
-        writer.uint32(74).fork()
-      ).ldelim();
-    }
-    if (message.last_modification_vested !== "") {
-      writer.uint32(82).string(message.last_modification_vested);
-    }
-    if (message.last_modification_withdrawn !== "") {
-      writer.uint32(90).string(message.last_modification_withdrawn);
+      writer.uint32(58).string(message.sent);
     }
     return writer;
   },
@@ -176,43 +153,29 @@ export const VestingPool = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.id = reader.int32();
-          break;
-        case 2:
           message.name = reader.string();
           break;
-        case 3:
+        case 2:
           message.vesting_type = reader.string();
           break;
-        case 4:
+        case 3:
           message.lock_start = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 5:
+        case 4:
           message.lock_end = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 6:
-          message.vested = reader.string();
+        case 5:
+          message.initially_locked = reader.string();
           break;
-        case 7:
+        case 6:
           message.withdrawn = reader.string();
           break;
-        case 8:
+        case 7:
           message.sent = reader.string();
-          break;
-        case 9:
-          message.last_modification = fromTimestamp(
-            Timestamp.decode(reader, reader.uint32())
-          );
-          break;
-        case 10:
-          message.last_modification_vested = reader.string();
-          break;
-        case 11:
-          message.last_modification_withdrawn = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -224,11 +187,6 @@ export const VestingPool = {
 
   fromJSON(object: any): VestingPool {
     const message = { ...baseVestingPool } as VestingPool;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = Number(object.id);
-    } else {
-      message.id = 0;
-    }
     if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
     } else {
@@ -249,10 +207,13 @@ export const VestingPool = {
     } else {
       message.lock_end = undefined;
     }
-    if (object.vested !== undefined && object.vested !== null) {
-      message.vested = String(object.vested);
+    if (
+      object.initially_locked !== undefined &&
+      object.initially_locked !== null
+    ) {
+      message.initially_locked = String(object.initially_locked);
     } else {
-      message.vested = "";
+      message.initially_locked = "";
     }
     if (object.withdrawn !== undefined && object.withdrawn !== null) {
       message.withdrawn = String(object.withdrawn);
@@ -264,40 +225,11 @@ export const VestingPool = {
     } else {
       message.sent = "";
     }
-    if (
-      object.last_modification !== undefined &&
-      object.last_modification !== null
-    ) {
-      message.last_modification = fromJsonTimestamp(object.last_modification);
-    } else {
-      message.last_modification = undefined;
-    }
-    if (
-      object.last_modification_vested !== undefined &&
-      object.last_modification_vested !== null
-    ) {
-      message.last_modification_vested = String(
-        object.last_modification_vested
-      );
-    } else {
-      message.last_modification_vested = "";
-    }
-    if (
-      object.last_modification_withdrawn !== undefined &&
-      object.last_modification_withdrawn !== null
-    ) {
-      message.last_modification_withdrawn = String(
-        object.last_modification_withdrawn
-      );
-    } else {
-      message.last_modification_withdrawn = "";
-    }
     return message;
   },
 
   toJSON(message: VestingPool): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
     message.name !== undefined && (obj.name = message.name);
     message.vesting_type !== undefined &&
       (obj.vesting_type = message.vesting_type);
@@ -309,28 +241,15 @@ export const VestingPool = {
     message.lock_end !== undefined &&
       (obj.lock_end =
         message.lock_end !== undefined ? message.lock_end.toISOString() : null);
-    message.vested !== undefined && (obj.vested = message.vested);
+    message.initially_locked !== undefined &&
+      (obj.initially_locked = message.initially_locked);
     message.withdrawn !== undefined && (obj.withdrawn = message.withdrawn);
     message.sent !== undefined && (obj.sent = message.sent);
-    message.last_modification !== undefined &&
-      (obj.last_modification =
-        message.last_modification !== undefined
-          ? message.last_modification.toISOString()
-          : null);
-    message.last_modification_vested !== undefined &&
-      (obj.last_modification_vested = message.last_modification_vested);
-    message.last_modification_withdrawn !== undefined &&
-      (obj.last_modification_withdrawn = message.last_modification_withdrawn);
     return obj;
   },
 
   fromPartial(object: DeepPartial<VestingPool>): VestingPool {
     const message = { ...baseVestingPool } as VestingPool;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = object.id;
-    } else {
-      message.id = 0;
-    }
     if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
     } else {
@@ -351,10 +270,13 @@ export const VestingPool = {
     } else {
       message.lock_end = undefined;
     }
-    if (object.vested !== undefined && object.vested !== null) {
-      message.vested = object.vested;
+    if (
+      object.initially_locked !== undefined &&
+      object.initially_locked !== null
+    ) {
+      message.initially_locked = object.initially_locked;
     } else {
-      message.vested = "";
+      message.initially_locked = "";
     }
     if (object.withdrawn !== undefined && object.withdrawn !== null) {
       message.withdrawn = object.withdrawn;
@@ -365,30 +287,6 @@ export const VestingPool = {
       message.sent = object.sent;
     } else {
       message.sent = "";
-    }
-    if (
-      object.last_modification !== undefined &&
-      object.last_modification !== null
-    ) {
-      message.last_modification = object.last_modification;
-    } else {
-      message.last_modification = undefined;
-    }
-    if (
-      object.last_modification_vested !== undefined &&
-      object.last_modification_vested !== null
-    ) {
-      message.last_modification_vested = object.last_modification_vested;
-    } else {
-      message.last_modification_vested = "";
-    }
-    if (
-      object.last_modification_withdrawn !== undefined &&
-      object.last_modification_withdrawn !== null
-    ) {
-      message.last_modification_withdrawn = object.last_modification_withdrawn;
-    } else {
-      message.last_modification_withdrawn = "";
     }
     return message;
   },

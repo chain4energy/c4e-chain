@@ -1096,9 +1096,6 @@ paths:
                 items:
                   type: object
                   properties:
-                    id:
-                      type: integer
-                      format: int32
                     name:
                       type: string
                     vesting_type:
@@ -1111,7 +1108,7 @@ paths:
                       format: date-time
                     withdrawable:
                       type: string
-                    vested:
+                    initially_locked:
                       type: object
                       properties:
                         denom:
@@ -1126,7 +1123,7 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
-                    current_vested_amount:
+                    currently_locked:
                       type: string
                     sent_amount:
                       type: string
@@ -12967,6 +12964,140 @@ paths:
           in: path
           required: true
           type: string
+      tags:
+        - Query
+  /cosmos/mint/v1beta1/annual_provisions:
+    get:
+      summary: AnnualProvisions current minting annual provisions value.
+      operationId: CosmosMintV1Beta1AnnualProvisions
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              annual_provisions:
+                type: string
+                format: byte
+                description: >-
+                  annual_provisions is the current minting annual provisions
+                  value.
+            description: |-
+              QueryAnnualProvisionsResponse is the response type for the
+              Query/AnnualProvisions RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /cosmos/mint/v1beta1/inflation:
+    get:
+      summary: Inflation returns the current minting inflation value.
+      operationId: CosmosMintV1Beta1Inflation
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              inflation:
+                type: string
+                format: byte
+                description: inflation is the current minting inflation value.
+            description: >-
+              QueryInflationResponse is the response type for the
+              Query/Inflation RPC
+
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /cosmos/mint/v1beta1/params:
+    get:
+      summary: Params returns the total set of minting parameters.
+      operationId: CosmosMintV1Beta1Params
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params defines the parameters of the module.
+                type: object
+                properties:
+                  mint_denom:
+                    type: string
+                    title: type of coin to mint
+                  inflation_rate_change:
+                    type: string
+                    title: maximum annual change in inflation rate
+                  inflation_max:
+                    type: string
+                    title: maximum inflation rate
+                  inflation_min:
+                    type: string
+                    title: minimum inflation rate
+                  goal_bonded:
+                    type: string
+                    title: goal of percent bonded atoms
+                  blocks_per_year:
+                    type: string
+                    format: uint64
+                    title: expected blocks per year
+            description: >-
+              QueryParamsResponse is the response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
       tags:
         - Query
   /cosmos/params/v1beta1/params:
@@ -32797,9 +32928,6 @@ definitions:
         items:
           type: object
           properties:
-            id:
-              type: integer
-              format: int32
             name:
               type: string
             vesting_type:
@@ -32812,7 +32940,7 @@ definitions:
               format: date-time
             withdrawable:
               type: string
-            vested:
+            initially_locked:
               type: object
               properties:
                 denom:
@@ -32827,7 +32955,7 @@ definitions:
                 method
 
                 signatures required by gogoproto.
-            current_vested_amount:
+            currently_locked:
               type: string
             sent_amount:
               type: string
@@ -32868,9 +32996,6 @@ definitions:
   chain4energy.c4echain.cfevesting.VestingPoolInfo:
     type: object
     properties:
-      id:
-        type: integer
-        format: int32
       name:
         type: string
       vesting_type:
@@ -32883,7 +33008,7 @@ definitions:
         format: date-time
       withdrawable:
         type: string
-      vested:
+      initially_locked:
         type: object
         properties:
           denom:
@@ -32895,7 +33020,7 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
-      current_vested_amount:
+      currently_locked:
         type: string
       sent_amount:
         type: string
@@ -41435,6 +41560,76 @@ definitions:
       WeightedVoteOption defines a unit of vote for vote split.
 
       Since: cosmos-sdk 0.43
+  cosmos.mint.v1beta1.Params:
+    type: object
+    properties:
+      mint_denom:
+        type: string
+        title: type of coin to mint
+      inflation_rate_change:
+        type: string
+        title: maximum annual change in inflation rate
+      inflation_max:
+        type: string
+        title: maximum inflation rate
+      inflation_min:
+        type: string
+        title: minimum inflation rate
+      goal_bonded:
+        type: string
+        title: goal of percent bonded atoms
+      blocks_per_year:
+        type: string
+        format: uint64
+        title: expected blocks per year
+    description: Params holds parameters for the mint module.
+  cosmos.mint.v1beta1.QueryAnnualProvisionsResponse:
+    type: object
+    properties:
+      annual_provisions:
+        type: string
+        format: byte
+        description: annual_provisions is the current minting annual provisions value.
+    description: |-
+      QueryAnnualProvisionsResponse is the response type for the
+      Query/AnnualProvisions RPC method.
+  cosmos.mint.v1beta1.QueryInflationResponse:
+    type: object
+    properties:
+      inflation:
+        type: string
+        format: byte
+        description: inflation is the current minting inflation value.
+    description: |-
+      QueryInflationResponse is the response type for the Query/Inflation RPC
+      method.
+  cosmos.mint.v1beta1.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params defines the parameters of the module.
+        type: object
+        properties:
+          mint_denom:
+            type: string
+            title: type of coin to mint
+          inflation_rate_change:
+            type: string
+            title: maximum annual change in inflation rate
+          inflation_max:
+            type: string
+            title: maximum inflation rate
+          inflation_min:
+            type: string
+            title: minimum inflation rate
+          goal_bonded:
+            type: string
+            title: goal of percent bonded atoms
+          blocks_per_year:
+            type: string
+            format: uint64
+            title: expected blocks per year
+    description: QueryParamsResponse is the response type for the Query/Params RPC method.
   cosmos.params.v1beta1.ParamChange:
     type: object
     properties:
