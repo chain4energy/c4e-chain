@@ -1,6 +1,5 @@
-import { AccountVestingsList } from "./types/cfevesting/account_vesting"
-import { AccountVestings } from "./types/cfevesting/account_vesting"
-import { VestingPool } from "./types/cfevesting/account_vesting"
+import { AccountVestingPools } from "./types/cfevesting/account_vesting_pool"
+import { VestingPool } from "./types/cfevesting/account_vesting_pool"
 import { NewVestingAccount } from "./types/cfevesting/event"
 import { NewVestingPool } from "./types/cfevesting/event"
 import { NewVestingAccountFromVestingPool } from "./types/cfevesting/event"
@@ -14,8 +13,7 @@ import { VestingType } from "./types/cfevesting/vesting_types"
 
 
 export {     
-    AccountVestingsList,
-    AccountVestings,
+    AccountVestingPools,
     VestingPool,
     NewVestingAccount,
     NewVestingPool,

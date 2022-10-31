@@ -2,19 +2,19 @@
 import * as Long from "long";
 import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import { Params } from "../cfevesting/params";
+import { AccountVestingPools } from "../cfevesting/account_vesting_pool";
 import { VestingAccount } from "../cfevesting/vesting_account";
-import { AccountVestingsList } from "../cfevesting/account_vesting";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
 /** GenesisState defines the cfevesting module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
-  vestingAccountList: VestingAccount[];
-  vestingAccountCount: number;
-  /** this line is used by starport scaffolding # genesis/proto/state */
   vestingTypes: GenesisVestingType[];
-  accountVestingsList: AccountVestingsList | undefined;
+  accountVestingPools: AccountVestingPools[];
+  vestingAccountList: VestingAccount[];
+  /** this line is used by starport scaffolding # genesis/proto/state */
+  vestingAccountCount: number;
 }
 
 export interface GenesisVestingType {
@@ -35,20 +35,17 @@ export const GenesisState = {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
+    for (const v of message.vestingTypes) {
+      GenesisVestingType.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    for (const v of message.accountVestingPools) {
+      AccountVestingPools.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
     for (const v of message.vestingAccountList) {
       VestingAccount.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     if (message.vestingAccountCount !== 0) {
       writer.uint32(40).uint64(message.vestingAccountCount);
-    }
-    for (const v of message.vestingTypes) {
-      GenesisVestingType.encode(v!, writer.uint32(18).fork()).ldelim();
-    }
-    if (message.accountVestingsList !== undefined) {
-      AccountVestingsList.encode(
-        message.accountVestingsList,
-        writer.uint32(26).fork()
-      ).ldelim();
     }
     return writer;
   },
@@ -57,13 +54,24 @@ export const GenesisState = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
-    message.vestingAccountList = [];
     message.vestingTypes = [];
+    message.accountVestingPools = [];
+    message.vestingAccountList = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
           message.params = Params.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.vestingTypes.push(
+            GenesisVestingType.decode(reader, reader.uint32())
+          );
+          break;
+        case 3:
+          message.accountVestingPools.push(
+            AccountVestingPools.decode(reader, reader.uint32())
+          );
           break;
         case 4:
           message.vestingAccountList.push(
@@ -72,17 +80,6 @@ export const GenesisState = {
           break;
         case 5:
           message.vestingAccountCount = longToNumber(reader.uint64() as Long);
-          break;
-        case 2:
-          message.vestingTypes.push(
-            GenesisVestingType.decode(reader, reader.uint32())
-          );
-          break;
-        case 3:
-          message.accountVestingsList = AccountVestingsList.decode(
-            reader,
-            reader.uint32()
-          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -94,12 +91,26 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.vestingAccountList = [];
     message.vestingTypes = [];
+    message.accountVestingPools = [];
+    message.vestingAccountList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
       message.params = undefined;
+    }
+    if (object.vestingTypes !== undefined && object.vestingTypes !== null) {
+      for (const e of object.vestingTypes) {
+        message.vestingTypes.push(GenesisVestingType.fromJSON(e));
+      }
+    }
+    if (
+      object.accountVestingPools !== undefined &&
+      object.accountVestingPools !== null
+    ) {
+      for (const e of object.accountVestingPools) {
+        message.accountVestingPools.push(AccountVestingPools.fromJSON(e));
+      }
     }
     if (
       object.vestingAccountList !== undefined &&
@@ -117,21 +128,6 @@ export const GenesisState = {
     } else {
       message.vestingAccountCount = 0;
     }
-    if (object.vestingTypes !== undefined && object.vestingTypes !== null) {
-      for (const e of object.vestingTypes) {
-        message.vestingTypes.push(GenesisVestingType.fromJSON(e));
-      }
-    }
-    if (
-      object.accountVestingsList !== undefined &&
-      object.accountVestingsList !== null
-    ) {
-      message.accountVestingsList = AccountVestingsList.fromJSON(
-        object.accountVestingsList
-      );
-    } else {
-      message.accountVestingsList = undefined;
-    }
     return message;
   },
 
@@ -139,6 +135,20 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    if (message.vestingTypes) {
+      obj.vestingTypes = message.vestingTypes.map((e) =>
+        e ? GenesisVestingType.toJSON(e) : undefined
+      );
+    } else {
+      obj.vestingTypes = [];
+    }
+    if (message.accountVestingPools) {
+      obj.accountVestingPools = message.accountVestingPools.map((e) =>
+        e ? AccountVestingPools.toJSON(e) : undefined
+      );
+    } else {
+      obj.accountVestingPools = [];
+    }
     if (message.vestingAccountList) {
       obj.vestingAccountList = message.vestingAccountList.map((e) =>
         e ? VestingAccount.toJSON(e) : undefined
@@ -148,28 +158,31 @@ export const GenesisState = {
     }
     message.vestingAccountCount !== undefined &&
       (obj.vestingAccountCount = message.vestingAccountCount);
-    if (message.vestingTypes) {
-      obj.vestingTypes = message.vestingTypes.map((e) =>
-        e ? GenesisVestingType.toJSON(e) : undefined
-      );
-    } else {
-      obj.vestingTypes = [];
-    }
-    message.accountVestingsList !== undefined &&
-      (obj.accountVestingsList = message.accountVestingsList
-        ? AccountVestingsList.toJSON(message.accountVestingsList)
-        : undefined);
     return obj;
   },
 
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.vestingAccountList = [];
     message.vestingTypes = [];
+    message.accountVestingPools = [];
+    message.vestingAccountList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
       message.params = undefined;
+    }
+    if (object.vestingTypes !== undefined && object.vestingTypes !== null) {
+      for (const e of object.vestingTypes) {
+        message.vestingTypes.push(GenesisVestingType.fromPartial(e));
+      }
+    }
+    if (
+      object.accountVestingPools !== undefined &&
+      object.accountVestingPools !== null
+    ) {
+      for (const e of object.accountVestingPools) {
+        message.accountVestingPools.push(AccountVestingPools.fromPartial(e));
+      }
     }
     if (
       object.vestingAccountList !== undefined &&
@@ -186,21 +199,6 @@ export const GenesisState = {
       message.vestingAccountCount = object.vestingAccountCount;
     } else {
       message.vestingAccountCount = 0;
-    }
-    if (object.vestingTypes !== undefined && object.vestingTypes !== null) {
-      for (const e of object.vestingTypes) {
-        message.vestingTypes.push(GenesisVestingType.fromPartial(e));
-      }
-    }
-    if (
-      object.accountVestingsList !== undefined &&
-      object.accountVestingsList !== null
-    ) {
-      message.accountVestingsList = AccountVestingsList.fromPartial(
-        object.accountVestingsList
-      );
-    } else {
-      message.accountVestingsList = undefined;
     }
     return message;
   },

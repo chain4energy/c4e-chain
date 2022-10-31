@@ -20,7 +20,9 @@ export interface MsgWithdrawAllAvailable {
   creator: string;
 }
 
-export interface MsgWithdrawAllAvailableResponse {}
+export interface MsgWithdrawAllAvailableResponse {
+  Withdrawn: string;
+}
 
 export interface MsgCreateVestingAccount {
   fromAddress: string;
@@ -35,7 +37,7 @@ export interface MsgCreateVestingAccountResponse {}
 export interface MsgSendToVestingAccount {
   fromAddress: string;
   toAddress: string;
-  vestingId: number;
+  vestingPoolName: string;
   amount: string;
   restartVesting: boolean;
 }
@@ -295,13 +297,16 @@ export const MsgWithdrawAllAvailable = {
   },
 };
 
-const baseMsgWithdrawAllAvailableResponse: object = {};
+const baseMsgWithdrawAllAvailableResponse: object = { Withdrawn: "" };
 
 export const MsgWithdrawAllAvailableResponse = {
   encode(
-    _: MsgWithdrawAllAvailableResponse,
+    message: MsgWithdrawAllAvailableResponse,
     writer: Writer = Writer.create()
   ): Writer {
+    if (message.Withdrawn !== "") {
+      writer.uint32(10).string(message.Withdrawn);
+    }
     return writer;
   },
 
@@ -317,6 +322,9 @@ export const MsgWithdrawAllAvailableResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.Withdrawn = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -325,24 +333,35 @@ export const MsgWithdrawAllAvailableResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgWithdrawAllAvailableResponse {
+  fromJSON(object: any): MsgWithdrawAllAvailableResponse {
     const message = {
       ...baseMsgWithdrawAllAvailableResponse,
     } as MsgWithdrawAllAvailableResponse;
+    if (object.Withdrawn !== undefined && object.Withdrawn !== null) {
+      message.Withdrawn = String(object.Withdrawn);
+    } else {
+      message.Withdrawn = "";
+    }
     return message;
   },
 
-  toJSON(_: MsgWithdrawAllAvailableResponse): unknown {
+  toJSON(message: MsgWithdrawAllAvailableResponse): unknown {
     const obj: any = {};
+    message.Withdrawn !== undefined && (obj.Withdrawn = message.Withdrawn);
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<MsgWithdrawAllAvailableResponse>
+    object: DeepPartial<MsgWithdrawAllAvailableResponse>
   ): MsgWithdrawAllAvailableResponse {
     const message = {
       ...baseMsgWithdrawAllAvailableResponse,
     } as MsgWithdrawAllAvailableResponse;
+    if (object.Withdrawn !== undefined && object.Withdrawn !== null) {
+      message.Withdrawn = object.Withdrawn;
+    } else {
+      message.Withdrawn = "";
+    }
     return message;
   },
 };
@@ -549,7 +568,7 @@ export const MsgCreateVestingAccountResponse = {
 const baseMsgSendToVestingAccount: object = {
   fromAddress: "",
   toAddress: "",
-  vestingId: 0,
+  vestingPoolName: "",
   amount: "",
   restartVesting: false,
 };
@@ -565,8 +584,8 @@ export const MsgSendToVestingAccount = {
     if (message.toAddress !== "") {
       writer.uint32(18).string(message.toAddress);
     }
-    if (message.vestingId !== 0) {
-      writer.uint32(24).int32(message.vestingId);
+    if (message.vestingPoolName !== "") {
+      writer.uint32(26).string(message.vestingPoolName);
     }
     if (message.amount !== "") {
       writer.uint32(34).string(message.amount);
@@ -593,7 +612,7 @@ export const MsgSendToVestingAccount = {
           message.toAddress = reader.string();
           break;
         case 3:
-          message.vestingId = reader.int32();
+          message.vestingPoolName = reader.string();
           break;
         case 4:
           message.amount = reader.string();
@@ -623,10 +642,13 @@ export const MsgSendToVestingAccount = {
     } else {
       message.toAddress = "";
     }
-    if (object.vestingId !== undefined && object.vestingId !== null) {
-      message.vestingId = Number(object.vestingId);
+    if (
+      object.vestingPoolName !== undefined &&
+      object.vestingPoolName !== null
+    ) {
+      message.vestingPoolName = String(object.vestingPoolName);
     } else {
-      message.vestingId = 0;
+      message.vestingPoolName = "";
     }
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = String(object.amount);
@@ -646,7 +668,8 @@ export const MsgSendToVestingAccount = {
     message.fromAddress !== undefined &&
       (obj.fromAddress = message.fromAddress);
     message.toAddress !== undefined && (obj.toAddress = message.toAddress);
-    message.vestingId !== undefined && (obj.vestingId = message.vestingId);
+    message.vestingPoolName !== undefined &&
+      (obj.vestingPoolName = message.vestingPoolName);
     message.amount !== undefined && (obj.amount = message.amount);
     message.restartVesting !== undefined &&
       (obj.restartVesting = message.restartVesting);
@@ -669,10 +692,13 @@ export const MsgSendToVestingAccount = {
     } else {
       message.toAddress = "";
     }
-    if (object.vestingId !== undefined && object.vestingId !== null) {
-      message.vestingId = object.vestingId;
+    if (
+      object.vestingPoolName !== undefined &&
+      object.vestingPoolName !== null
+    ) {
+      message.vestingPoolName = object.vestingPoolName;
     } else {
-      message.vestingId = 0;
+      message.vestingPoolName = "";
     }
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = object.amount;

@@ -18,7 +18,6 @@ export interface NewVestingPool {
 export interface NewVestingAccountFromVestingPool {
   ownerAddress: string;
   address: string;
-  vestingPoolId: string;
   vestingPoolName: string;
   amount: string;
   restartVesting: string;
@@ -26,7 +25,6 @@ export interface NewVestingAccountFromVestingPool {
 
 export interface WithdrawAvailable {
   ownerAddress: string;
-  vestingPoolId: string;
   vestingPoolName: string;
   amount: string;
 }
@@ -219,7 +217,6 @@ export const NewVestingPool = {
 const baseNewVestingAccountFromVestingPool: object = {
   ownerAddress: "",
   address: "",
-  vestingPoolId: "",
   vestingPoolName: "",
   amount: "",
   restartVesting: "",
@@ -235,9 +232,6 @@ export const NewVestingAccountFromVestingPool = {
     }
     if (message.address !== "") {
       writer.uint32(18).string(message.address);
-    }
-    if (message.vestingPoolId !== "") {
-      writer.uint32(26).string(message.vestingPoolId);
     }
     if (message.vestingPoolName !== "") {
       writer.uint32(34).string(message.vestingPoolName);
@@ -268,9 +262,6 @@ export const NewVestingAccountFromVestingPool = {
           break;
         case 2:
           message.address = reader.string();
-          break;
-        case 3:
-          message.vestingPoolId = reader.string();
           break;
         case 4:
           message.vestingPoolName = reader.string();
@@ -303,11 +294,6 @@ export const NewVestingAccountFromVestingPool = {
     } else {
       message.address = "";
     }
-    if (object.vestingPoolId !== undefined && object.vestingPoolId !== null) {
-      message.vestingPoolId = String(object.vestingPoolId);
-    } else {
-      message.vestingPoolId = "";
-    }
     if (
       object.vestingPoolName !== undefined &&
       object.vestingPoolName !== null
@@ -334,8 +320,6 @@ export const NewVestingAccountFromVestingPool = {
     message.ownerAddress !== undefined &&
       (obj.ownerAddress = message.ownerAddress);
     message.address !== undefined && (obj.address = message.address);
-    message.vestingPoolId !== undefined &&
-      (obj.vestingPoolId = message.vestingPoolId);
     message.vestingPoolName !== undefined &&
       (obj.vestingPoolName = message.vestingPoolName);
     message.amount !== undefined && (obj.amount = message.amount);
@@ -359,11 +343,6 @@ export const NewVestingAccountFromVestingPool = {
       message.address = object.address;
     } else {
       message.address = "";
-    }
-    if (object.vestingPoolId !== undefined && object.vestingPoolId !== null) {
-      message.vestingPoolId = object.vestingPoolId;
-    } else {
-      message.vestingPoolId = "";
     }
     if (
       object.vestingPoolName !== undefined &&
@@ -389,7 +368,6 @@ export const NewVestingAccountFromVestingPool = {
 
 const baseWithdrawAvailable: object = {
   ownerAddress: "",
-  vestingPoolId: "",
   vestingPoolName: "",
   amount: "",
 };
@@ -398,9 +376,6 @@ export const WithdrawAvailable = {
   encode(message: WithdrawAvailable, writer: Writer = Writer.create()): Writer {
     if (message.ownerAddress !== "") {
       writer.uint32(10).string(message.ownerAddress);
-    }
-    if (message.vestingPoolId !== "") {
-      writer.uint32(26).string(message.vestingPoolId);
     }
     if (message.vestingPoolName !== "") {
       writer.uint32(34).string(message.vestingPoolName);
@@ -420,9 +395,6 @@ export const WithdrawAvailable = {
       switch (tag >>> 3) {
         case 1:
           message.ownerAddress = reader.string();
-          break;
-        case 3:
-          message.vestingPoolId = reader.string();
           break;
         case 4:
           message.vestingPoolName = reader.string();
@@ -445,11 +417,6 @@ export const WithdrawAvailable = {
     } else {
       message.ownerAddress = "";
     }
-    if (object.vestingPoolId !== undefined && object.vestingPoolId !== null) {
-      message.vestingPoolId = String(object.vestingPoolId);
-    } else {
-      message.vestingPoolId = "";
-    }
     if (
       object.vestingPoolName !== undefined &&
       object.vestingPoolName !== null
@@ -470,8 +437,6 @@ export const WithdrawAvailable = {
     const obj: any = {};
     message.ownerAddress !== undefined &&
       (obj.ownerAddress = message.ownerAddress);
-    message.vestingPoolId !== undefined &&
-      (obj.vestingPoolId = message.vestingPoolId);
     message.vestingPoolName !== undefined &&
       (obj.vestingPoolName = message.vestingPoolName);
     message.amount !== undefined && (obj.amount = message.amount);
@@ -484,11 +449,6 @@ export const WithdrawAvailable = {
       message.ownerAddress = object.ownerAddress;
     } else {
       message.ownerAddress = "";
-    }
-    if (object.vestingPoolId !== undefined && object.vestingPoolId !== null) {
-      message.vestingPoolId = object.vestingPoolId;
-    } else {
-      message.vestingPoolId = "";
     }
     if (
       object.vestingPoolName !== undefined &&
