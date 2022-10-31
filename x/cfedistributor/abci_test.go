@@ -39,7 +39,15 @@ func BurningDistributorTest(t *testing.T, destinationType subdistributortestutil
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(senderCoin).Amount)
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(destinationType))
+	if destinationType != subdistributortestutils.MainCollector {
+		subdistributors = append(subdistributors, subdistributortestutils.PreparareMainDefaultDistributor())
+	}
+
+	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(destinationType)
+	subdistributors = append(subdistributors, burningSubSistributor)
+	if destinationType == subdistributortestutils.MainCollector || destinationType == subdistributortestutils.InternalAccount {
+		subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+	}
 
 	testHelper.C4eDistributorUtils.SetSubDistributorsParams(subdistributors)
 	testHelper.SetContextBlockHeight(int64(2))
@@ -49,17 +57,21 @@ func BurningDistributorTest(t *testing.T, destinationType subdistributortestutil
 	testHelper.C4eDistributorUtils.VerifyDefaultDenomBurnStateAmount(sdk.MustNewDecFromStr("0.67"))
 
 	if destinationType == subdistributortestutils.MainCollector {
-		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(499))
-		testHelper.C4eDistributorUtils.VerifyNumberOfStates(1)
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(1))
+		testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.HelperDestinationAccountAddress, sdk.NewInt(498))
+		testHelper.C4eDistributorUtils.VerifyNumberOfStates(2)
+		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.HelperDestinationAccountAddressString, sdk.MustNewDecFromStr("0.33"))
 	} else if destinationType == subdistributortestutils.ModuleAccount {
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(1))
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(subdistributortestutils.C4eDistributorCollectorName, sdk.NewInt(498))
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(2)
 		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.C4eDistributorCollectorName, sdk.MustNewDecFromStr("0.33"))
 	} else if destinationType == subdistributortestutils.InternalAccount {
-		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(499))
-		testHelper.C4eDistributorUtils.VerifyNumberOfStates(2)
-		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.C4eDistributorCollectorName, sdk.MustNewDecFromStr("498.33"))
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(1))
+		testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.HelperDestinationAccountAddress, sdk.NewInt(498))
+		testHelper.C4eDistributorUtils.VerifyNumberOfStates(3)
+		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.HelperDestinationAccountAddressString, sdk.MustNewDecFromStr("0.33"))
+		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.C4eDistributorCollectorName, sdk.ZeroDec())
 	} else {
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(1))
 		testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.BaseAccountAddress, sdk.NewInt(498))

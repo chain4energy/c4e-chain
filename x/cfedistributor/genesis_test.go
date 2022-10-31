@@ -25,7 +25,10 @@ func TestGenesis(t *testing.T) {
 	}
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
+	subdistributors = append(subdistributors, burningSubSistributor)
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+
 	genesisState.Params.SubDistributors = subdistributors
 
 	testHelper := testapp.SetupTestApp(t)
@@ -55,7 +58,9 @@ func TestGenesisImport(t *testing.T) {
 	}
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
+	subdistributors = append(subdistributors, burningSubSistributor)
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
 	genesisState.Params.SubDistributors = subdistributors
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
@@ -69,7 +74,9 @@ func TestGenesisNoStates(t *testing.T) {
 	}
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+		burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
+	subdistributors = append(subdistributors, burningSubSistributor)
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
 	genesisState.Params.SubDistributors = subdistributors
 
 	testHelper := testapp.SetupTestApp(t)

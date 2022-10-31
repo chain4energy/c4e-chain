@@ -2,10 +2,9 @@ package subdistributor
 
 import (
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 )
 
 type DestinationType int64
@@ -20,13 +19,49 @@ const (
 const C4eDistributorCollectorName = types.GreenEnergyBoosterCollector
 const NoValidatorsCollectorName = types.GovernanceBoosterCollector
 
-var accAdresses, _ = commontestutils.CreateAccounts(2, 0)
+var accAdresses, _ = commontestutils.CreateAccounts(3, 0)
 
 var BaseAccountAddress = accAdresses[0]
 var ShareDevelopmentFundAccountAddress = accAdresses[1]
+var HelperDestinationAccountAddress = accAdresses[2]
 
 var BaseAccountAddressString = BaseAccountAddress.String()
 var ShareDevelopmentFundAccountAddressString = ShareDevelopmentFundAccountAddress.String()
+var HelperDestinationAccountAddressString = HelperDestinationAccountAddress.String()
+
+func PreparareMainDefaultDistributor() types.SubDistributor {
+	helperDestination := types.Destination{
+		Account: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BASE_ACCOUNT},
+		Share:   nil,
+		BurnShare: &types.BurnShare{
+			Percent: sdk.MustNewDecFromStr("0"),
+		},
+	}
+	distributor1 := types.SubDistributor{
+		Name:        "default_main_distributor",
+		Sources:     []*types.Account{{Id: "", Type: types.MAIN}},
+		Destination: helperDestination,
+	}
+
+	return distributor1
+}
+
+func PreparareHelperDistributorForDestination(destination types.Account) types.SubDistributor {
+	helperDestination := types.Destination{
+		Account: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BASE_ACCOUNT},
+		Share:   nil,
+		BurnShare: &types.BurnShare{
+			Percent: sdk.MustNewDecFromStr("0"),
+		},
+	}
+	distributor1 := types.SubDistributor{
+		Name:        "test_helper_distributor",
+		Sources:     []*types.Account{&destination},
+		Destination: helperDestination,
+	}
+
+	return distributor1
+}
 
 func PrepareBurningDistributor(destinationType DestinationType) types.SubDistributor {
 	var address string
