@@ -18,8 +18,12 @@ func SimulateWithdrawAllAvailable(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		allVestingAccounts := k.GetAllAccountVestingPools(ctx)
+		if len(allVestingAccounts) < 1 {
+			return simtypes.NewOperationMsg(&types.MsgWithdrawAllAvailable{}, false, "", nil), nil, nil
+		}
 		randInt := helpers.RandomInt(r, len(allVestingAccounts))
 		accAddress := allVestingAccounts[randInt].Address
+		
 		msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
 			Creator: accAddress,
 		}
