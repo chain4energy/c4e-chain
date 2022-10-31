@@ -9,11 +9,11 @@ const TypeMsgSendToVestingAccount = "send_to_vesting_account"
 
 var _ sdk.Msg = &MsgSendToVestingAccount{}
 
-func NewMsgSendToVestingAccount(fromAddress string, toAddress string, vestingId int32, amount sdk.Int, restartVesting bool) *MsgSendToVestingAccount {
+func NewMsgSendToVestingAccount(fromAddress string, toAddress string, vestingPoolName string, amount sdk.Int, restartVesting bool) *MsgSendToVestingAccount {
 	return &MsgSendToVestingAccount{
 		FromAddress:    fromAddress,
 		ToAddress:      toAddress,
-		VestingId:      vestingId,
+		VestingPoolName:      vestingPoolName,
 		Amount:         amount,
 		RestartVesting: restartVesting,
 	}

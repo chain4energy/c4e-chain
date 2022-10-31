@@ -1,10 +1,10 @@
 package cfedistributor
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	cfedistributorsimulation "github.com/chain4energy/c4e-chain/x/cfedistributor/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -12,12 +12,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
+
 )
 
 // avoid unused import issue
 var (
 	_ = sample.AccAddress
-	_ = cfedistributorsimulation.FindAccount
 	_ = simappparams.StakePerAccount
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
@@ -29,13 +30,22 @@ const (
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
 	}
+
+	var subdistributors []types.SubDistributor
+	randDistinationType := RandomCollectorName(simState.Rand)
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(randDistinationType))
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationSubDistributor(randDistinationType, true))
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationToPassAcoutSubDistr(randDistinationType))
+
+	genesisState.Params.SubDistributors = subdistributors
 	cfedistributorGenesis := types.GenesisState{
+		Params: types.NewParams(subdistributors),
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
+
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfedistributorGenesis)
 }
 
@@ -62,4 +72,19 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
+}
+
+func RandomCollectorName(r *rand.Rand) subdistributortestutils.DestinationType {
+	randVal := helpers.RandIntBetween(r, 0, 3)
+	switch randVal {
+	case 0:
+		return subdistributortestutils.MainCollector
+	case 1:
+		return subdistributortestutils.ModuleAccount
+	case 2:
+		return subdistributortestutils.InternalAccount
+	case 3:
+		return subdistributortestutils.BaseAccount
+	}
+	return subdistributortestutils.MainCollector
 }

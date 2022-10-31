@@ -53,23 +53,30 @@ func CreateAccounts(accNum int, valAccNum int) (acountsAddresses []sdk.AccAddres
 
 func CreateIncrementalAccounts(accNum int, genInitNumber int) []sdk.AccAddress {
 	var addresses []sdk.AccAddress
-	var buffer bytes.Buffer
+	// var buffer bytes.Buffer
 
 	// start at 100 so we can make up to 999 test addresses with valid test addresses
 	for i := 100; i < (accNum + 100); i++ {
-		numString := strconv.Itoa(i + genInitNumber)
-		buffer.WriteString("A58856F0FD53BF058B4909A21AEC019107BA6") // base address string
-
-		buffer.WriteString(numString) // adding on final two digits to make addresses unique
-		res, _ := sdk.AccAddressFromHexUnsafe(buffer.String())
-		bech := res.String()
-		addr, _ := TestAddr(buffer.String(), bech)
-
+		hex, bech := createRandomAccAddressHexAndBechNoBalance(int64(i + genInitNumber))
+		addr, _ := TestAddr(hex, bech)
 		addresses = append(addresses, addr)
-		buffer.Reset()
 	}
 
 	return addresses
+}
+
+func createRandomAccAddressHexAndBechNoBalance(i int64) (hex string, bech string) {
+	var buffer bytes.Buffer
+	numString := strconv.Itoa(int(i))
+	buffer.WriteString("A58856F0FD53BF058B4909A21AEC019107BA6") // base address string
+	buffer.WriteString(numString)                               // adding on final two digits to make addresses unique
+	res, _ := sdk.AccAddressFromHexUnsafe(buffer.String())
+	return buffer.String(), res.String()
+}
+
+func CreateRandomAccAddressNoBalance(i int64) string {
+	_, bech := createRandomAccAddressHexAndBechNoBalance(i)
+	return bech
 }
 
 func ConvertAddrsToValAddrs(addrs []sdk.AccAddress) []sdk.ValAddress {

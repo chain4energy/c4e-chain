@@ -5,35 +5,49 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+
 )
 
-// get the vesting types
-func (k Keeper) GetVestingTypes(ctx sdk.Context) (vestingTypes types.VestingTypes) {
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types.VestingTypesKey)
-	if b == nil {
-		return vestingTypes
-	}
+// GetAllVestingTypes returns all VestingTypes
+func (k Keeper) GetAllVestingTypes(ctx sdk.Context) (vestingTypes types.VestingTypes) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.VestingTypesKeyPrefix)
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+	list := []*types.VestingType{}
+	defer iterator.Close()
 
-	k.cdc.MustUnmarshal(b, &vestingTypes)
-	return
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.VestingType
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, &val)
+	}
+	vestingTypes.VestingTypes = list
+	return 
 }
 
 // get the vesting type by name
 func (k Keeper) GetVestingType(ctx sdk.Context, name string) (vestingType types.VestingType, err error) {
-	vestingTypes := k.GetVestingTypes(ctx)
-	// TODO optimize storing vesting types
-	for _, vestingTypeLocal := range vestingTypes.GetVestingTypes() {
-		if vestingTypeLocal.GetName() == name {
-			return *vestingTypeLocal, nil
-		}
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.VestingTypesKeyPrefix)
+
+	b := store.Get([]byte(name))
+	if b == nil {
+		err = fmt.Errorf("vesting type not found: " + name)
+		return
 	}
-	return vestingType, fmt.Errorf("vesting type not found: " + name)
+	k.cdc.MustUnmarshal(b, &vestingType)
+	return
 }
 
 // set the vesting types
 func (k Keeper) SetVestingTypes(ctx sdk.Context, vestingTypes types.VestingTypes) {
-	store := ctx.KVStore(k.storeKey)
-	b := k.cdc.MustMarshal(&vestingTypes)
-	store.Set(types.VestingTypesKey, b)
+	for _, vt := range vestingTypes.VestingTypes {
+		k.SetVestingType(ctx, *vt)
+	}
+}
+
+// set the vesting type
+func (k Keeper) SetVestingType(ctx sdk.Context, vestingType types.VestingType) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.VestingTypesKeyPrefix)
+	av := k.cdc.MustMarshal(&vestingType)
+	store.Set([]byte(vestingType.Name), av)
 }

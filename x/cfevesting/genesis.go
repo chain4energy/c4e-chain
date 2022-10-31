@@ -2,6 +2,7 @@ package cfevesting
 
 import (
 	"fmt"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
@@ -51,56 +52,39 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 
 	k.SetVestingTypes(ctx, vestingTypes)
 
-	allVestings := genState.AccountVestingsList.Vestings
+	allAccountVestingPools := genState.AccountVestingPools
 
-	for _, av := range allVestings {
+	for _, av := range allAccountVestingPools {
 		k.Logger(ctx).Debug("set account vesting pools", "accountVestingPool", av)
-		k.SetAccountVestings(ctx, *av)
+		k.SetAccountVestingPools(ctx, *av)
 	}
 	ak.GetModuleAccount(ctx, types.ModuleName)
 }
 
 func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState,
 	ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) error {
-	accsVestings := genState.AccountVestingsList.Vestings
-	undelegableAmount := sdk.ZeroInt()
-	delegableAmounts := make(map[string]sdk.Int)
+	accsVestingPools := genState.AccountVestingPools
+	vestingPoolsAmount := sdk.ZeroInt()
 
-	for _, accVestings := range accsVestings {
-		for _, v := range accVestings.VestingPools {
-			undelegableAmount = undelegableAmount.Add(v.LastModificationVested).Sub(v.LastModificationWithdrawn)
+	for _, accVestingPools := range accsVestingPools {
+		for _, v := range accVestingPools.VestingPools {
+			vestingPoolsAmount = vestingPoolsAmount.Add(v.GetCurrentlyLocked())
 		}
 	}
 
 	mAcc := ak.GetModuleAccount(ctx, types.ModuleName)
 	modBalance := bk.GetBalance(ctx, mAcc.GetAddress(), genState.Params.Denom)
-	k.Logger(ctx).Debug("cfevesting validate accounts on genesis data", "undelegableAmount", undelegableAmount,
+	k.Logger(ctx).Debug("cfevesting validate accounts on genesis data", "vestingPoolsAmount", vestingPoolsAmount,
 		"moduleBalance", modBalance.Amount, "moduleAccount", mAcc)
 
-	if !undelegableAmount.Equal(modBalance.Amount) {
-		k.Logger(ctx).Error("cfevesting module account balance not equal of sum of undelegable vestings error", "denom",
-			genState.Params.Denom, "moduleBalance", modBalance.Amount, "moduleAccount", mAcc, "undelegableAmount",
-			undelegableAmount)
-		return fmt.Errorf("module: %s account balance of denom %s not equal of sum of undelegable vestings: %s <> %s",
-			types.ModuleName, genState.Params.Denom, modBalance.Amount, undelegableAmount)
+	if !vestingPoolsAmount.Equal(modBalance.Amount) {
+		k.Logger(ctx).Error("cfevesting module account balance not equal of sum of vesting pools error", "denom",
+			genState.Params.Denom, "moduleBalance", modBalance.Amount, "moduleAccount", mAcc, "vestingPoolsAmount",
+			vestingPoolsAmount)
+		return fmt.Errorf("module: %s account balance of denom %s not equal of sum of vesting pools: %s <> %s",
+			types.ModuleName, genState.Params.Denom, modBalance.Amount, vestingPoolsAmount)
 	}
 
-	for delAddr, amount := range delegableAmounts {
-		acc, err := sdk.AccAddressFromBech32(delAddr)
-		if err != nil {
-			k.Logger(ctx).Error("cfevesting account vestings delegable address error", "error", err.Error(),
-				"delegableAddress", delAddr)
-			return fmt.Errorf("account vestings delegable address: %s: %s", delAddr, err.Error())
-		}
-		accBalance := bk.GetBalance(ctx, acc, genState.Params.Denom)
-
-		if !accBalance.Amount.LTE(amount) {
-			k.Logger(ctx).Error("cfevesting delegable account balance is bigger than sum of delegable vestings error",
-				"accountBalance", accBalance.Amount, "delegableVestings", amount)
-			return fmt.Errorf("module: %s - delegable account: %s balance of denom %s is bigger than sum of delegable vestings: %s > %s",
-				types.ModuleName, delAddr, genState.Params.Denom, accBalance.Amount, amount)
-		}
-	}
 	return nil
 }
 
@@ -108,12 +92,12 @@ func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
-	vestingTypes := k.GetVestingTypes(ctx)
+	vestingTypes := k.GetAllVestingTypes(ctx)
 	genesis.VestingTypes = types.ConvertVestingTypesToGenesisVestingTypes(&vestingTypes)
-	allVestings := k.GetAllAccountVestings(ctx)
+	allAccountVestingPools := k.GetAllAccountVestingPools(ctx)
 
-	for i := 0; i < len(allVestings); i++ {
-		genesis.AccountVestingsList.Vestings = append(genesis.AccountVestingsList.Vestings, &allVestings[i])
+	for i := 0; i < len(allAccountVestingPools); i++ {
+		genesis.AccountVestingPools = append(genesis.AccountVestingPools, &allAccountVestingPools[i])
 	}
 
 	genesis.VestingAccountList = k.GetAllVestingAccount(ctx)

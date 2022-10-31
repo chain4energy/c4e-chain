@@ -26,6 +26,19 @@ func (s SubDistributor) Validate() error {
 	return nil
 }
 
+func (s State) StateIdString() string {
+
+	if s.Burn {
+		return "BURN"
+	} else if s.Account != nil && s.Account.Type == MAIN {
+		return MAIN
+	} else if s.Account != nil {
+		return s.Account.Type + "-" + s.Account.Id
+	} else {
+		return UNKNOWN_ACCOUNT
+	}
+}
+
 func CheckPercentShareSumIsGTEThen100(destination Destination) bool {
 	shares := destination.Share
 	percentShareSum := sdk.MustNewDecFromStr("0")

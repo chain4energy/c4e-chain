@@ -17,16 +17,12 @@ func TestCalculateWithdrawable(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vesting := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 start,
 		LockEnd:                   lockEnd,
-		Vested:                    amount,
+		InitiallyLocked:                    amount,
 		Withdrawn:                 sdk.ZeroInt(),
 		Sent:                      sdk.ZeroInt(),
-		LastModification:          start,
-		LastModificationVested:    amount,
-		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	// current block less than lock start - witdrawable 0
@@ -51,18 +47,15 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	startHeight := testutils.CreateTimeFromNumOfHours(1000)
 	lockEndHeight := testutils.CreateTimeFromNumOfHours(10000)
 	amount := sdk.NewInt(1000000)
+	withdrawn := sdk.NewInt(500000)
 
 	vesting := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 startHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
 		LockEnd:                   lockEndHeight,
-		Vested:                    amount.AddRaw(50000),
-		Withdrawn:                 sdk.NewInt(500000),
+		InitiallyLocked:           amount.AddRaw(50000),
+		Withdrawn:                 withdrawn,
 		Sent:                      sdk.NewInt(50000),
-		LastModification:          startHeight,
-		LastModificationVested:    amount,
-		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	// current block less than lock start - witdrawable 0
@@ -75,7 +68,7 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 
 	// current block equal to lock end - witdrawable 0
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight, vesting)
-	require.EqualValues(t, amount, withdrawable)
+	require.EqualValues(t, amount.Sub(withdrawn), withdrawable)
 
 	// current block higher than lock start  but lass than lock end - witdrawable 0
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight.Add(-1), vesting)
@@ -87,31 +80,27 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	startHeight := testutils.CreateTimeFromNumOfHours(10000)
 	lockEndHeight := startHeight.Add(testutils.CreateDurationFromNumOfHours(-100))
 	amount := sdk.NewInt(1000000)
-
+	withdrawn := sdk.NewInt(500000)
 	vesting := types.VestingPool{
-		Id:                        1,
 		VestingType:               "test",
 		LockStart:                 lockEndHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
 		LockEnd:                   lockEndHeight,
-		Vested:                    amount.AddRaw(50000),
-		Withdrawn:                 sdk.NewInt(500000),
+		InitiallyLocked:           amount.AddRaw(50000),
+		Withdrawn:                 withdrawn,
 		Sent:                      sdk.NewInt(50000),
-		LastModification:          startHeight,
-		LastModificationVested:    amount,
-		LastModificationWithdrawn: sdk.ZeroInt(),
 	}
 
 	// current block less than lock start - witdrawable 0
 	withdrawable := keeper.CalculateWithdrawable(startHeight.Add(testutils.CreateDurationFromNumOfHours(-100)), vesting)
-	require.EqualValues(t, amount, withdrawable)
+	require.EqualValues(t, amount.Sub(withdrawn), withdrawable)
 
 	// current block equal to vesting start - witdrawable 0
 	withdrawable = keeper.CalculateWithdrawable(startHeight, vesting)
-	require.EqualValues(t, amount, withdrawable)
+	require.EqualValues(t, amount.Sub(withdrawn), withdrawable)
 
 	// current block equal to lock end - witdrawable 0
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight, vesting)
-	require.EqualValues(t, amount, withdrawable)
+	require.EqualValues(t, amount.Sub(withdrawn), withdrawable)
 
 	withdrawable = keeper.CalculateWithdrawable(lockEndHeight.Add(-1), vesting)
 	require.EqualValues(t, sdk.ZeroInt(), withdrawable)

@@ -1,8 +1,7 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
-import { AccountVestingsList } from "./module/types/cfevesting/account_vesting"
-import { AccountVestings } from "./module/types/cfevesting/account_vesting"
-import { VestingPool } from "./module/types/cfevesting/account_vesting"
+import { AccountVestingPools } from "./module/types/cfevesting/account_vesting_pool"
+import { VestingPool } from "./module/types/cfevesting/account_vesting_pool"
 import { NewVestingAccount } from "./module/types/cfevesting/event"
 import { NewVestingPool } from "./module/types/cfevesting/event"
 import { NewVestingAccountFromVestingPool } from "./module/types/cfevesting/event"
@@ -15,7 +14,7 @@ import { VestingTypes } from "./module/types/cfevesting/vesting_types"
 import { VestingType } from "./module/types/cfevesting/vesting_types"
 
 
-export { AccountVestingsList, AccountVestings, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, VestingTypes, VestingType };
+export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, VestingTypes, VestingType };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -56,11 +55,10 @@ const getDefaultState = () => {
 				Params: {},
 				VestingType: {},
 				VestingPools: {},
-				Vestings: {},
+				VestingsSummary: {},
 				
 				_Structure: {
-						AccountVestingsList: getStructure(AccountVestingsList.fromPartial({})),
-						AccountVestings: getStructure(AccountVestings.fromPartial({})),
+						AccountVestingPools: getStructure(AccountVestingPools.fromPartial({})),
 						VestingPool: getStructure(VestingPool.fromPartial({})),
 						NewVestingAccount: getStructure(NewVestingAccount.fromPartial({})),
 						NewVestingPool: getStructure(NewVestingPool.fromPartial({})),
@@ -118,11 +116,11 @@ export default {
 					}
 			return state.VestingPools[JSON.stringify(params)] ?? {}
 		},
-				getVestings: (state) => (params = { params: {}}) => {
+				getVestingsSummary: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.Vestings[JSON.stringify(params)] ?? {}
+			return state.VestingsSummary[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -229,18 +227,18 @@ export default {
 		 		
 		
 		
-		async QueryVestings({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryVestingsSummary({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryVestings()).data
+				let value= (await queryClient.queryVestingsSummary()).data
 				
 					
-				commit('QUERY', { query: 'Vestings', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryVestings', payload: { options: { all }, params: {...key},query }})
-				return getters['getVestings']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'VestingsSummary', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryVestingsSummary', payload: { options: { all }, params: {...key},query }})
+				return getters['getVestingsSummary']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryVestings API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryVestingsSummary API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
@@ -295,14 +293,12 @@ export default {
 			try {
 				const txClient=await initTxClient(rootGetters)
 				const msg = await txClient.msgWithdrawAllAvailable(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
+				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgWithdrawAllAvailable:Send Could not broadcast Tx: '+ e.message)
+				} else{
+					throw new Error('TxClient:MsgWithdrawAllAvailable:Create Could not create message: ' + e.message)
 				}
 			}
 		},

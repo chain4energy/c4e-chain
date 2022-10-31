@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/chain4energy/c4e-chain/app/upgrades"
 	"io"
 	"net/http"
 	"os"
@@ -115,6 +116,8 @@ import (
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+
+	v101 "github.com/chain4energy/c4e-chain/app/upgrades/v101"
 )
 
 const (
@@ -198,6 +201,8 @@ var (
 	_ cosmoscmd.App           = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
+
+	Upgrades = []upgrades.Upgrade{v101.Upgrade}
 )
 
 func init() {
@@ -608,6 +613,7 @@ func New(
 		authz.ModuleName,
 		banktypes.ModuleName,
 		govtypes.ModuleName,
+		cfevestingmoduletypes.ModuleName,
 		crisistypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
@@ -617,7 +623,6 @@ func New(
 		feegrant.ModuleName,
 		group.ModuleName,
 		paramstypes.ModuleName,
-		cfevestingmoduletypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
@@ -637,7 +642,6 @@ func New(
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		vestingtypes.ModuleName,
-		// minttypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
@@ -669,6 +673,8 @@ func New(
 		vestingtypes.ModuleName,
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
+		cfedistributormoduletypes.ModuleName,
+		cfevestingmoduletypes.ModuleName,
 		crisistypes.ModuleName,
 		ibchost.ModuleName,
 		genutiltypes.ModuleName,
@@ -683,10 +689,8 @@ func New(
 		upgradetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		feegrant.ModuleName,
-		cfevestingmoduletypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
-		cfedistributormoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -695,9 +699,9 @@ func New(
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
+	app.SetupUpgradeHandlers()
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	app.sm = module.NewSimulationManager(
@@ -716,7 +720,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		cfevestingModule,
-		cfesignatureModule,
+		cfesignatureModule, // - no simulations yey
 		cfeminterModule,
 		cfedistributorModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
@@ -930,4 +934,17 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 // SimulationManager implements the SimulationApp interface
 func (app *App) SimulationManager() *module.SimulationManager {
 	return app.sm
+}
+
+func (app *App) SetupUpgradeHandlers() {
+	for _, upgrade := range Upgrades {
+		app.UpgradeKeeper.SetUpgradeHandler(
+			upgrade.UpgradeName,
+			upgrade.CreateUpgradeHandler(
+				app.mm,
+				app.configurator,
+				app.BaseApp,
+			),
+		)
+	}
 }

@@ -5,6 +5,5 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
 message VestingAccount {
   uint64 id = 1;
-  string address = 2; 
-  
+  string address = 2;
 }

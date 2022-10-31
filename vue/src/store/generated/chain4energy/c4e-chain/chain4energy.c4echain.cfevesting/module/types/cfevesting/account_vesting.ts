@@ -4,11 +4,7 @@ import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
-export interface AccountVestingsList {
-  vestings: AccountVestings[];
-}
-
-export interface AccountVestings {
+export interface AccountVestingPools {
   address: string;
   /** string delegable_address = 2; */
   vesting_pools: VestingPool[];
@@ -28,79 +24,13 @@ export interface VestingPool {
   last_modification_withdrawn: string;
 }
 
-const baseAccountVestingsList: object = {};
+const baseAccountVestingPools: object = { address: "" };
 
-export const AccountVestingsList = {
+export const AccountVestingPools = {
   encode(
-    message: AccountVestingsList,
+    message: AccountVestingPools,
     writer: Writer = Writer.create()
   ): Writer {
-    for (const v of message.vestings) {
-      AccountVestings.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): AccountVestingsList {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountVestingsList } as AccountVestingsList;
-    message.vestings = [];
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.vestings.push(
-            AccountVestings.decode(reader, reader.uint32())
-          );
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): AccountVestingsList {
-    const message = { ...baseAccountVestingsList } as AccountVestingsList;
-    message.vestings = [];
-    if (object.vestings !== undefined && object.vestings !== null) {
-      for (const e of object.vestings) {
-        message.vestings.push(AccountVestings.fromJSON(e));
-      }
-    }
-    return message;
-  },
-
-  toJSON(message: AccountVestingsList): unknown {
-    const obj: any = {};
-    if (message.vestings) {
-      obj.vestings = message.vestings.map((e) =>
-        e ? AccountVestings.toJSON(e) : undefined
-      );
-    } else {
-      obj.vestings = [];
-    }
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<AccountVestingsList>): AccountVestingsList {
-    const message = { ...baseAccountVestingsList } as AccountVestingsList;
-    message.vestings = [];
-    if (object.vestings !== undefined && object.vestings !== null) {
-      for (const e of object.vestings) {
-        message.vestings.push(AccountVestings.fromPartial(e));
-      }
-    }
-    return message;
-  },
-};
-
-const baseAccountVestings: object = { address: "" };
-
-export const AccountVestings = {
-  encode(message: AccountVestings, writer: Writer = Writer.create()): Writer {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
@@ -110,10 +40,10 @@ export const AccountVestings = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): AccountVestings {
+  decode(input: Reader | Uint8Array, length?: number): AccountVestingPools {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAccountVestings } as AccountVestings;
+    const message = { ...baseAccountVestingPools } as AccountVestingPools;
     message.vesting_pools = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -134,8 +64,8 @@ export const AccountVestings = {
     return message;
   },
 
-  fromJSON(object: any): AccountVestings {
-    const message = { ...baseAccountVestings } as AccountVestings;
+  fromJSON(object: any): AccountVestingPools {
+    const message = { ...baseAccountVestingPools } as AccountVestingPools;
     message.vesting_pools = [];
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
@@ -150,7 +80,7 @@ export const AccountVestings = {
     return message;
   },
 
-  toJSON(message: AccountVestings): unknown {
+  toJSON(message: AccountVestingPools): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
     if (message.vesting_pools) {
@@ -163,8 +93,8 @@ export const AccountVestings = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<AccountVestings>): AccountVestings {
-    const message = { ...baseAccountVestings } as AccountVestings;
+  fromPartial(object: DeepPartial<AccountVestingPools>): AccountVestingPools {
+    const message = { ...baseAccountVestingPools } as AccountVestingPools;
     message.vesting_pools = [];
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;

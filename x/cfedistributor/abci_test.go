@@ -5,7 +5,8 @@ import (
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
+
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -13,195 +14,25 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-type DestinationType int64
 
-const (
-	MainCollector DestinationType = iota
-	ModuleAccount
-	InternalAccount
-	BaseAccount
-)
-
-const c4eDistributorCollectorName = types.GreenEnergyBoosterCollector
-const noValidatorsCollectorName = types.GovernanceBoosterCollector
-
-var accAdresses, _ = commontestutils.CreateAccounts(2, 0)
-
-var baseAccountAddress = accAdresses[0]
-var shareDevelopmentFundAccountAddress = accAdresses[1]
-
-var baseAccountAddressString = baseAccountAddress.String()
-var shareDevelopmentFundAccountAddressString = shareDevelopmentFundAccountAddress.String()
-
-func prepareBurningDistributor(destinationType DestinationType) types.SubDistributor {
-	var address string
-	if destinationType == BaseAccount {
-		address = baseAccountAddressString
-	} else {
-		address = c4eDistributorCollectorName
-	}
-
-	var destAccount = types.Account{}
-	destAccount.Id = address
-
-	if destinationType == ModuleAccount {
-		destAccount.Type = types.MODULE_ACCOUNT
-	} else if destinationType == InternalAccount {
-		destAccount.Type = types.INTERNAL_ACCOUNT
-	} else {
-		destAccount.Type = types.BASE_ACCOUNT
-	}
-
-	if destinationType == MainCollector {
-		destAccount.Type = types.MAIN
-	}
-
-	burnShare := types.BurnShare{
-		Percent: sdk.MustNewDecFromStr("51"),
-	}
-
-	destination := types.Destination{
-		Account:   destAccount,
-		Share:     nil,
-		BurnShare: &burnShare,
-	}
-
-	distributor1 := types.SubDistributor{
-		Name:        "tx_fee_distributor",
-		Sources:     []*types.Account{{Id: authtypes.FeeCollectorName, Type: types.MODULE_ACCOUNT}},
-		Destination: destination,
-	}
-
-	return distributor1
-}
-
-func prepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) types.SubDistributor {
-	source := types.Account{
-		Id:   "c4e",
-		Type: types.MAIN,
-	}
-
-	var address string
-	if passThroughAccoutType == BaseAccount {
-		address = baseAccountAddressString
-	} else {
-		address = c4eDistributorCollectorName
-	}
-
-	var destAccount = types.Account{
-		Id: address,
-	}
-
-	if passThroughAccoutType == ModuleAccount {
-		destAccount.Type = types.MODULE_ACCOUNT
-	} else if passThroughAccoutType == InternalAccount {
-		destAccount.Type = types.INTERNAL_ACCOUNT
-	} else {
-		destAccount.Type = types.BASE_ACCOUNT
-	}
-
-	if passThroughAccoutType == MainCollector {
-		destAccount.Type = types.MAIN
-	}
-
-	burnShare := types.BurnShare{
-		Percent: sdk.MustNewDecFromStr("0"),
-	}
-
-	destination := types.Destination{
-		Account:   destAccount,
-		Share:     nil,
-		BurnShare: &burnShare,
-	}
-	return types.SubDistributor{
-		Name:        "pass_distributor",
-		Sources:     []*types.Account{&source},
-		Destination: destination,
-	}
-}
-
-func prepareInflationSubDistributor(sourceAccoutType DestinationType, toValidators bool) types.SubDistributor {
-
-	var address string
-	if sourceAccoutType == BaseAccount {
-		address = baseAccountAddressString
-	} else {
-		address = c4eDistributorCollectorName
-	}
-
-	var source = types.Account{
-		Id: address,
-	}
-
-	if sourceAccoutType == ModuleAccount {
-		source.Type = types.MODULE_ACCOUNT
-	} else if sourceAccoutType == InternalAccount {
-		source.Type = types.INTERNAL_ACCOUNT
-	} else {
-		source.Type = types.BASE_ACCOUNT
-	}
-
-	if sourceAccoutType == MainCollector {
-		source.Type = types.MAIN
-	}
-
-	burnShare := types.BurnShare{
-		Percent: sdk.MustNewDecFromStr("0"),
-	}
-
-	var destName string
-	if toValidators {
-		destName = types.ValidatorsRewardsCollector
-	} else {
-		destName = noValidatorsCollectorName
-	}
-
-	var destAccount = types.Account{
-		Id:   destName,
-		Type: types.MODULE_ACCOUNT,
-	}
-
-	var shareDevelopmentFundAccount = types.Account{
-		Id:   shareDevelopmentFundAccountAddressString,
-		Type: types.BASE_ACCOUNT,
-	}
-
-	shareDevelopmentFund := types.Share{
-		Name:    "development_fund",
-		Percent: sdk.MustNewDecFromStr("10.345"),
-		Account: shareDevelopmentFundAccount,
-	}
-
-	destination := types.Destination{
-		Account:   destAccount,
-		Share:     []*types.Share{&shareDevelopmentFund},
-		BurnShare: &burnShare,
-	}
-
-	return types.SubDistributor{
-		Name:        "tx_fee_distributor",
-		Sources:     []*types.Account{&source},
-		Destination: destination,
-	}
-}
 
 func TestBurningDistributorMainCollectorDes(t *testing.T) {
-	BurningDistributorTest(t, MainCollector)
+	BurningDistributorTest(t, subdistributortestutils.MainCollector)
 }
 
 func TestBurningDistributorModuleAccountDest(t *testing.T) {
-	BurningDistributorTest(t, ModuleAccount)
+	BurningDistributorTest(t, subdistributortestutils.ModuleAccount)
 }
 
 func TestBurningDistributorInternalAccountDest(t *testing.T) {
-	BurningDistributorTest(t, InternalAccount)
+	BurningDistributorTest(t, subdistributortestutils.InternalAccount)
 }
 
 func TestBurningDistributorBaseAccountDest(t *testing.T) {
-	BurningDistributorTest(t, BaseAccount)
+	BurningDistributorTest(t, subdistributortestutils.BaseAccount)
 }
 
-func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
+func BurningDistributorTest(t *testing.T, destinationType subdistributortestutils.DestinationType) {
 	senderCoin := sdk.NewInt(1017)
 
 	testHelper := testapp.SetupTestApp(t)
@@ -210,7 +41,7 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(senderCoin).Amount)
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, prepareBurningDistributor(destinationType))
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(destinationType))
 
 	testHelper.C4eDistributorUtils.SetSubDistributorsParams(subdistributors)
 	testHelper.SetContextBlockHeight(int64(2))
@@ -219,61 +50,61 @@ func BurningDistributorTest(t *testing.T, destinationType DestinationType) {
 	//coin on "burnState" should be equal 498, remains: 1 and 0.33 on remains
 	testHelper.C4eDistributorUtils.VerifyDefaultDenomBurnStateAmount(sdk.MustNewDecFromStr("0.67"))
 
-	if destinationType == MainCollector {
+	if destinationType == subdistributortestutils.MainCollector {
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(499))
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(1)
-	} else if destinationType == ModuleAccount {
+	} else if destinationType == subdistributortestutils.ModuleAccount {
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(1))
-		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(c4eDistributorCollectorName, sdk.NewInt(498))
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(subdistributortestutils.C4eDistributorCollectorName, sdk.NewInt(498))
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(2)
-		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(c4eDistributorCollectorName, sdk.MustNewDecFromStr("0.33"))
-	} else if destinationType == InternalAccount {
+		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.C4eDistributorCollectorName, sdk.MustNewDecFromStr("0.33"))
+	} else if destinationType == subdistributortestutils.InternalAccount {
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(499))
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(2)
-		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(c4eDistributorCollectorName, sdk.MustNewDecFromStr("498.33"))
+		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.C4eDistributorCollectorName, sdk.MustNewDecFromStr("498.33"))
 	} else {
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, sdk.NewInt(1))
-		testHelper.BankUtils.VerifyAccountDefultDenomBalance(baseAccountAddress, sdk.NewInt(498))
+		testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.BaseAccountAddress, sdk.NewInt(498))
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(2)
-		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(baseAccountAddressString, sdk.MustNewDecFromStr("0.33"))
+		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.BaseAccountAddressString, sdk.MustNewDecFromStr("0.33"))
 	}
 
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(sdk.NewInt(499)).Amount)
 }
 
 func TestBurningWithInflationDistributorPassThroughMainCollector(t *testing.T) {
-	BurningWithInflationDistributorTest(t, MainCollector, true)
+	BurningWithInflationDistributorTest(t, subdistributortestutils.MainCollector, true)
 }
 
 func TestBurningWithInflationDistributorPassThroughModuleAccount(t *testing.T) {
-	BurningWithInflationDistributorTest(t, ModuleAccount, true)
+	BurningWithInflationDistributorTest(t, subdistributortestutils.ModuleAccount, true)
 }
 
 func TestBurningWithInflationDistributorPassInternalAccountAccount(t *testing.T) {
-	BurningWithInflationDistributorTest(t, InternalAccount, true)
+	BurningWithInflationDistributorTest(t, subdistributortestutils.InternalAccount, true)
 }
 
 func TestBurningWithInflationDistributorPassBaseAccountAccount(t *testing.T) {
-	BurningWithInflationDistributorTest(t, BaseAccount, true)
+	BurningWithInflationDistributorTest(t, subdistributortestutils.BaseAccount, true)
 }
 
 func TestBurningWithInflationDistributorPassThroughMainCollectorNoValidators(t *testing.T) {
-	BurningWithInflationDistributorTest(t, MainCollector, false)
+	BurningWithInflationDistributorTest(t, subdistributortestutils.MainCollector, false)
 }
 
 func TestBurningWithInflationDistributorPassThroughModuleAccountNoValidators(t *testing.T) {
-	BurningWithInflationDistributorTest(t, ModuleAccount, false)
+	BurningWithInflationDistributorTest(t, subdistributortestutils.ModuleAccount, false)
 }
 
 func TestBurningWithInflationDistributorPassInternalAccountAccountNoValidators(t *testing.T) {
-	BurningWithInflationDistributorTest(t, InternalAccount, false)
+	BurningWithInflationDistributorTest(t, subdistributortestutils.InternalAccount, false)
 }
 
 func TestBurningWithInflationDistributorPassBaseAccountAccountNoValidators(t *testing.T) {
-	BurningWithInflationDistributorTest(t, BaseAccount, false)
+	BurningWithInflationDistributorTest(t, subdistributortestutils.BaseAccount, false)
 }
 
-func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType DestinationType, toValidators bool) {
+func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType subdistributortestutils.DestinationType, toValidators bool) {
 
 	testHelper := testapp.SetupTestApp(t)
 
@@ -291,17 +122,17 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 
 	var subDistributors []types.SubDistributor
 
-	subDistributors = append(subDistributors, prepareBurningDistributor(MainCollector))
-	if passThroughAccoutType != MainCollector {
-		subDistributors = append(subDistributors, prepareInflationToPassAcoutSubDistr(passThroughAccoutType))
+	subDistributors = append(subDistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+	if passThroughAccoutType != subdistributortestutils.MainCollector {
+		subDistributors = append(subDistributors, subdistributortestutils.PrepareInflationToPassAcoutSubDistr(passThroughAccoutType))
 	}
-	subDistributors = append(subDistributors, prepareInflationSubDistributor(passThroughAccoutType, toValidators))
+	subDistributors = append(subDistributors, subdistributortestutils.PrepareInflationSubDistributor(passThroughAccoutType, toValidators))
 
 	testHelper.C4eDistributorUtils.SetSubDistributorsParams(subDistributors)
 	testHelper.SetContextBlockHeight(int64(2))
 	testHelper.BeginBlocker(abci.RequestBeginBlock{})
 
-	if passThroughAccoutType == MainCollector {
+	if passThroughAccoutType == subdistributortestutils.MainCollector {
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(3)
 	} else {
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(4)
@@ -317,24 +148,24 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 	// added 499 to main collector
 	// main collector state = 499 + 5044 = 5543, but 5543 - 0,67 = 5542.33 to distribute
 
-	if passThroughAccoutType == ModuleAccount || passThroughAccoutType == InternalAccount {
+	if passThroughAccoutType == subdistributortestutils.ModuleAccount || passThroughAccoutType == subdistributortestutils.InternalAccount {
 		// 5542.33 moved to c4e_distributor module or internal account
 		// and all is distributed further, and 0 in remains
 
-		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(c4eDistributorCollectorName, sdk.NewInt(0))
-		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(c4eDistributorCollectorName, sdk.ZeroDec())
-	} else if passThroughAccoutType == BaseAccount {
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(subdistributortestutils.C4eDistributorCollectorName, sdk.NewInt(0))
+		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.C4eDistributorCollectorName, sdk.ZeroDec())
+	} else if passThroughAccoutType == subdistributortestutils.BaseAccount {
 		// 5542.33 moved to cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck account
 		// and all is distributed further, and 0 in remains
-		testHelper.BankUtils.VerifyAccountDefultDenomBalance(baseAccountAddress, sdk.NewInt(0))
-		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(baseAccountAddressString, sdk.ZeroDec())
+		testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.BaseAccountAddress, sdk.NewInt(0))
+		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.BaseAccountAddressString, sdk.ZeroDec())
 	}
 
 	// 5542.33*10.345% = 573.3540385 to cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag, so
 	// 573 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.3540385 on its distributor state
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(shareDevelopmentFundAccountAddress, sdk.NewInt(573))
-	testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(shareDevelopmentFundAccountAddressString, sdk.MustNewDecFromStr("0.3540385"))
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.ShareDevelopmentFundAccountAddress, sdk.NewInt(573))
+	testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.ShareDevelopmentFundAccountAddressString, sdk.MustNewDecFromStr("0.3540385"))
 
 	// 5542.33 - 573.3540385 = 4968.9759615 to validators_rewards_collector, so
 	// 4968 on validators_rewards_collector or no_validators module account and 0.9759615 on its distributor state
@@ -352,8 +183,8 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType Des
 		// no_validators module account coins amount is 4968,
 		// and remains 0.9759615 on its distributor state
 
-		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(noValidatorsCollectorName, sdk.NewInt(4968))
-		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(noValidatorsCollectorName, sdk.MustNewDecFromStr("0.9759615"))
+		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(subdistributortestutils.NoValidatorsCollectorName, sdk.NewInt(4968))
+		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.NoValidatorsCollectorName, sdk.MustNewDecFromStr("0.9759615"))
 	}
 
 	// 5543 - 573 - 4968 = 2 (its ramains 0,67 + 0.3540385 + 0.9759615 = 2) on main collector
@@ -366,8 +197,8 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	testHelper := testapp.SetupTestApp(t)
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, prepareBurningDistributor(MainCollector))
-	subdistributors = append(subdistributors, prepareInflationSubDistributor(MainCollector, true))
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationSubDistributor(subdistributortestutils.MainCollector, true))
 	testHelper.C4eDistributorUtils.SetSubDistributorsParams(subdistributors)
 
 	for i := int64(1); i <= 3001; i++ {
@@ -412,8 +243,8 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	// 16632532.33*10.345% = 1720635.4695385 to cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag, so
 	// 1720635 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.4695385 on its distributor state
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(shareDevelopmentFundAccountAddress, sdk.NewInt(1720635))
-	testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(shareDevelopmentFundAccountAddressString, sdk.MustNewDecFromStr("0.4695385"))
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.ShareDevelopmentFundAccountAddress, sdk.NewInt(1720635))
+	testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributortestutils.ShareDevelopmentFundAccountAddressString, sdk.MustNewDecFromStr("0.4695385"))
 
 	// 16632532.33- 1720635.4695385 = 14911896.8604615 to validators_rewards_collector, so
 	// 14911896 on validators_rewards_collector or no_validators module account and 0.8604615 on its distributor state

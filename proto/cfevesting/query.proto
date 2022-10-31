@@ -30,9 +30,9 @@ service Query {
 		option (google.api.http).get = "/c4e/vesting/vesting_pools/{address}";
 	}
 
-// Queries a list of Vestings items.
-	rpc Vestings(QueryVestingsRequest) returns (QueryVestingsResponse) {
-		option (google.api.http).get = "/c4e/vesting/vestings";
+// Queries a summary of the entire vesting.
+	rpc VestingsSummary(QueryVestingsSummaryRequest) returns (QueryVestingsSummaryResponse) {
+		option (google.api.http).get = "/c4e/vesting/summary";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -65,21 +65,20 @@ message QueryVestingPoolsResponse {
 }
 
 message VestingPoolInfo {
-  int32 id = 1;
   string name = 2;
   string vesting_type = 3;
   google.protobuf.Timestamp lock_start = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   google.protobuf.Timestamp lock_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string withdrawable = 6;
-  cosmos.base.v1beta1.Coin vested = 7;
-  string current_vested_amount = 8;
+  cosmos.base.v1beta1.Coin initially_locked = 7;
+  string currently_locked = 8;
   string sent_amount = 9;
 }
 
-message QueryVestingsRequest {
+message QueryVestingsSummaryRequest {
 }
 
-message QueryVestingsResponse {
+message QueryVestingsSummaryResponse {
   string vesting_all_amount = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string vesting_in_pools_amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string vesting_in_accounts_amount = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];

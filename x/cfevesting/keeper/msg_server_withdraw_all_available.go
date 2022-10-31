@@ -28,5 +28,5 @@ func (k msgServer) WithdrawAllAvailable(goCtx context.Context, msg *types.MsgWit
 		}()
 	}
 
-	return &types.MsgWithdrawAllAvailableResponse{}, nil
+	return &types.MsgWithdrawAllAvailableResponse{Withdrawn: withdrawn}, nil
 }

@@ -32,20 +32,19 @@ export interface QueryVestingPoolsResponse {
 }
 
 export interface VestingPoolInfo {
-  id: number;
   name: string;
   vesting_type: string;
   lock_start: Date | undefined;
   lock_end: Date | undefined;
   withdrawable: string;
-  vested: Coin | undefined;
-  current_vested_amount: string;
+  initially_locked: Coin | undefined;
+  currently_locked: string;
   sent_amount: string;
 }
 
-export interface QueryVestingsRequest {}
+export interface QueryVestingsSummaryRequest {}
 
-export interface QueryVestingsResponse {
+export interface QueryVestingsSummaryResponse {
   vesting_all_amount: string;
   vesting_in_pools_amount: string;
   vesting_in_accounts_amount: string;
@@ -449,19 +448,15 @@ export const QueryVestingPoolsResponse = {
 };
 
 const baseVestingPoolInfo: object = {
-  id: 0,
   name: "",
   vesting_type: "",
   withdrawable: "",
-  current_vested_amount: "",
+  currently_locked: "",
   sent_amount: "",
 };
 
 export const VestingPoolInfo = {
   encode(message: VestingPoolInfo, writer: Writer = Writer.create()): Writer {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
-    }
     if (message.name !== "") {
       writer.uint32(18).string(message.name);
     }
@@ -483,11 +478,11 @@ export const VestingPoolInfo = {
     if (message.withdrawable !== "") {
       writer.uint32(50).string(message.withdrawable);
     }
-    if (message.vested !== undefined) {
-      Coin.encode(message.vested, writer.uint32(58).fork()).ldelim();
+    if (message.initially_locked !== undefined) {
+      Coin.encode(message.initially_locked, writer.uint32(58).fork()).ldelim();
     }
-    if (message.current_vested_amount !== "") {
-      writer.uint32(66).string(message.current_vested_amount);
+    if (message.currently_locked !== "") {
+      writer.uint32(66).string(message.currently_locked);
     }
     if (message.sent_amount !== "") {
       writer.uint32(74).string(message.sent_amount);
@@ -502,9 +497,6 @@ export const VestingPoolInfo = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.id = reader.int32();
-          break;
         case 2:
           message.name = reader.string();
           break;
@@ -525,10 +517,10 @@ export const VestingPoolInfo = {
           message.withdrawable = reader.string();
           break;
         case 7:
-          message.vested = Coin.decode(reader, reader.uint32());
+          message.initially_locked = Coin.decode(reader, reader.uint32());
           break;
         case 8:
-          message.current_vested_amount = reader.string();
+          message.currently_locked = reader.string();
           break;
         case 9:
           message.sent_amount = reader.string();
@@ -543,11 +535,6 @@ export const VestingPoolInfo = {
 
   fromJSON(object: any): VestingPoolInfo {
     const message = { ...baseVestingPoolInfo } as VestingPoolInfo;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = Number(object.id);
-    } else {
-      message.id = 0;
-    }
     if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
     } else {
@@ -573,18 +560,21 @@ export const VestingPoolInfo = {
     } else {
       message.withdrawable = "";
     }
-    if (object.vested !== undefined && object.vested !== null) {
-      message.vested = Coin.fromJSON(object.vested);
+    if (
+      object.initially_locked !== undefined &&
+      object.initially_locked !== null
+    ) {
+      message.initially_locked = Coin.fromJSON(object.initially_locked);
     } else {
-      message.vested = undefined;
+      message.initially_locked = undefined;
     }
     if (
-      object.current_vested_amount !== undefined &&
-      object.current_vested_amount !== null
+      object.currently_locked !== undefined &&
+      object.currently_locked !== null
     ) {
-      message.current_vested_amount = String(object.current_vested_amount);
+      message.currently_locked = String(object.currently_locked);
     } else {
-      message.current_vested_amount = "";
+      message.currently_locked = "";
     }
     if (object.sent_amount !== undefined && object.sent_amount !== null) {
       message.sent_amount = String(object.sent_amount);
@@ -596,7 +586,6 @@ export const VestingPoolInfo = {
 
   toJSON(message: VestingPoolInfo): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
     message.name !== undefined && (obj.name = message.name);
     message.vesting_type !== undefined &&
       (obj.vesting_type = message.vesting_type);
@@ -610,10 +599,12 @@ export const VestingPoolInfo = {
         message.lock_end !== undefined ? message.lock_end.toISOString() : null);
     message.withdrawable !== undefined &&
       (obj.withdrawable = message.withdrawable);
-    message.vested !== undefined &&
-      (obj.vested = message.vested ? Coin.toJSON(message.vested) : undefined);
-    message.current_vested_amount !== undefined &&
-      (obj.current_vested_amount = message.current_vested_amount);
+    message.initially_locked !== undefined &&
+      (obj.initially_locked = message.initially_locked
+        ? Coin.toJSON(message.initially_locked)
+        : undefined);
+    message.currently_locked !== undefined &&
+      (obj.currently_locked = message.currently_locked);
     message.sent_amount !== undefined &&
       (obj.sent_amount = message.sent_amount);
     return obj;
@@ -621,11 +612,6 @@ export const VestingPoolInfo = {
 
   fromPartial(object: DeepPartial<VestingPoolInfo>): VestingPoolInfo {
     const message = { ...baseVestingPoolInfo } as VestingPoolInfo;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = object.id;
-    } else {
-      message.id = 0;
-    }
     if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
     } else {
@@ -651,18 +637,21 @@ export const VestingPoolInfo = {
     } else {
       message.withdrawable = "";
     }
-    if (object.vested !== undefined && object.vested !== null) {
-      message.vested = Coin.fromPartial(object.vested);
+    if (
+      object.initially_locked !== undefined &&
+      object.initially_locked !== null
+    ) {
+      message.initially_locked = Coin.fromPartial(object.initially_locked);
     } else {
-      message.vested = undefined;
+      message.initially_locked = undefined;
     }
     if (
-      object.current_vested_amount !== undefined &&
-      object.current_vested_amount !== null
+      object.currently_locked !== undefined &&
+      object.currently_locked !== null
     ) {
-      message.current_vested_amount = object.current_vested_amount;
+      message.currently_locked = object.currently_locked;
     } else {
-      message.current_vested_amount = "";
+      message.currently_locked = "";
     }
     if (object.sent_amount !== undefined && object.sent_amount !== null) {
       message.sent_amount = object.sent_amount;
@@ -673,17 +662,25 @@ export const VestingPoolInfo = {
   },
 };
 
-const baseQueryVestingsRequest: object = {};
+const baseQueryVestingsSummaryRequest: object = {};
 
-export const QueryVestingsRequest = {
-  encode(_: QueryVestingsRequest, writer: Writer = Writer.create()): Writer {
+export const QueryVestingsSummaryRequest = {
+  encode(
+    _: QueryVestingsSummaryRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryVestingsRequest {
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVestingsSummaryRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQueryVestingsRequest } as QueryVestingsRequest;
+    const message = {
+      ...baseQueryVestingsSummaryRequest,
+    } as QueryVestingsSummaryRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -695,32 +692,38 @@ export const QueryVestingsRequest = {
     return message;
   },
 
-  fromJSON(_: any): QueryVestingsRequest {
-    const message = { ...baseQueryVestingsRequest } as QueryVestingsRequest;
+  fromJSON(_: any): QueryVestingsSummaryRequest {
+    const message = {
+      ...baseQueryVestingsSummaryRequest,
+    } as QueryVestingsSummaryRequest;
     return message;
   },
 
-  toJSON(_: QueryVestingsRequest): unknown {
+  toJSON(_: QueryVestingsSummaryRequest): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial(_: DeepPartial<QueryVestingsRequest>): QueryVestingsRequest {
-    const message = { ...baseQueryVestingsRequest } as QueryVestingsRequest;
+  fromPartial(
+    _: DeepPartial<QueryVestingsSummaryRequest>
+  ): QueryVestingsSummaryRequest {
+    const message = {
+      ...baseQueryVestingsSummaryRequest,
+    } as QueryVestingsSummaryRequest;
     return message;
   },
 };
 
-const baseQueryVestingsResponse: object = {
+const baseQueryVestingsSummaryResponse: object = {
   vesting_all_amount: "",
   vesting_in_pools_amount: "",
   vesting_in_accounts_amount: "",
   delegated_vesting_amount: "",
 };
 
-export const QueryVestingsResponse = {
+export const QueryVestingsSummaryResponse = {
   encode(
-    message: QueryVestingsResponse,
+    message: QueryVestingsSummaryResponse,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.vesting_all_amount !== "") {
@@ -738,10 +741,15 @@ export const QueryVestingsResponse = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryVestingsResponse {
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryVestingsSummaryResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQueryVestingsResponse } as QueryVestingsResponse;
+    const message = {
+      ...baseQueryVestingsSummaryResponse,
+    } as QueryVestingsSummaryResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -765,8 +773,10 @@ export const QueryVestingsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryVestingsResponse {
-    const message = { ...baseQueryVestingsResponse } as QueryVestingsResponse;
+  fromJSON(object: any): QueryVestingsSummaryResponse {
+    const message = {
+      ...baseQueryVestingsSummaryResponse,
+    } as QueryVestingsSummaryResponse;
     if (
       object.vesting_all_amount !== undefined &&
       object.vesting_all_amount !== null
@@ -806,7 +816,7 @@ export const QueryVestingsResponse = {
     return message;
   },
 
-  toJSON(message: QueryVestingsResponse): unknown {
+  toJSON(message: QueryVestingsSummaryResponse): unknown {
     const obj: any = {};
     message.vesting_all_amount !== undefined &&
       (obj.vesting_all_amount = message.vesting_all_amount);
@@ -820,9 +830,11 @@ export const QueryVestingsResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryVestingsResponse>
-  ): QueryVestingsResponse {
-    const message = { ...baseQueryVestingsResponse } as QueryVestingsResponse;
+    object: DeepPartial<QueryVestingsSummaryResponse>
+  ): QueryVestingsSummaryResponse {
+    const message = {
+      ...baseQueryVestingsSummaryResponse,
+    } as QueryVestingsSummaryResponse;
     if (
       object.vesting_all_amount !== undefined &&
       object.vesting_all_amount !== null
@@ -871,8 +883,10 @@ export interface Query {
   VestingPools(
     request: QueryVestingPoolsRequest
   ): Promise<QueryVestingPoolsResponse>;
-  /** Queries a list of Vestings items. */
-  Vestings(request: QueryVestingsRequest): Promise<QueryVestingsResponse>;
+  /** Queries a summary of the entire vesting. */
+  VestingsSummary(
+    request: QueryVestingsSummaryRequest
+  ): Promise<QueryVestingsSummaryResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -918,15 +932,17 @@ export class QueryClientImpl implements Query {
     );
   }
 
-  Vestings(request: QueryVestingsRequest): Promise<QueryVestingsResponse> {
-    const data = QueryVestingsRequest.encode(request).finish();
+  VestingsSummary(
+    request: QueryVestingsSummaryRequest
+  ): Promise<QueryVestingsSummaryResponse> {
+    const data = QueryVestingsSummaryRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfevesting.Query",
-      "Vestings",
+      "VestingsSummary",
       data
     );
     return promise.then((data) =>
-      QueryVestingsResponse.decode(new Reader(data))
+      QueryVestingsSummaryResponse.decode(new Reader(data))
     );
   }
 }

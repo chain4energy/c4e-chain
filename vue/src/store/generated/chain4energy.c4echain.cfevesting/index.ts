@@ -1,7 +1,7 @@
 import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-client-ts'
 
-import { AccountVestingsList } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
-import { AccountVestings } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
+import { AccountVestingPools } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
+import { AccountVestingPools } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingPool } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { NewVestingAccount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { NewVestingPool } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
@@ -15,7 +15,7 @@ import { VestingTypes } from "chain4energy-c4e-chain-client-ts/chain4energy.c4ec
 import { VestingType } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 
 
-export { AccountVestingsList, AccountVestings, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, VestingTypes, VestingType };
+export { AccountVestingPools, AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, VestingTypes, VestingType };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -52,8 +52,8 @@ const getDefaultState = () => {
 				Vestings: {},
 				
 				_Structure: {
-						AccountVestingsList: getStructure(AccountVestingsList.fromPartial({})),
-						AccountVestings: getStructure(AccountVestings.fromPartial({})),
+						AccountVestingPools: getStructure(AccountVestingPools.fromPartial({})),
+						AccountVestingPools: getStructure(AccountVestingPools.fromPartial({})),
 						VestingPool: getStructure(VestingPool.fromPartial({})),
 						NewVestingAccount: getStructure(NewVestingAccount.fromPartial({})),
 						NewVestingPool: getStructure(NewVestingPool.fromPartial({})),
