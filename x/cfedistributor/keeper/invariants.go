@@ -18,7 +18,6 @@ func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 func NonNegativeCoinStateInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		states := k.GetAllStates(ctx)
-
 		for _, state := range states {
 			for _, coinState := range state.CoinsStates {
 				if coinState.IsNegative() {
@@ -38,9 +37,6 @@ func StateSumBalanceCheckInvariant(k Keeper) sdk.Invariant {
 		statesSum := getStatesSum(k, ctx)
 		coinsStatesSum, change := statesSum.TruncateDecimal()
 		if !change.IsZero() {
-			changeString := change.String()
-			fmt.Println(statesSum.String())
-			fmt.Println(changeString)
 			return sdk.FormatInvariant(types.ModuleName, "state sum balance check",
 				fmt.Sprintf(
 					"\tthe sum of the states should be integer: sum: %v",
