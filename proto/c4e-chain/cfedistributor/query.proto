@@ -4,8 +4,8 @@ package chain4energy.c4echain.cfedistributor;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "cfedistributor/params.proto";
-import "cfedistributor/sub_distributor.proto";
+import "c4e-chain/cfedistributor/params.proto";
+import "c4e-chain/cfedistributor/sub_distributor.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
 

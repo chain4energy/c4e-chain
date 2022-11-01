@@ -2,10 +2,10 @@ syntax = "proto3";
 package chain4energy.c4echain.cfevesting;
 
 import "gogoproto/gogo.proto";
-import "cfevesting/params.proto";
-import "cfevesting/account_vesting_pool.proto";
+import "c4e-chain/cfevesting/params.proto";
+import "c4e-chain/cfevesting/account_vesting_pool.proto";
 
-import "cfevesting/vesting_account.proto";
+import "c4e-chain/cfevesting/vesting_account.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
