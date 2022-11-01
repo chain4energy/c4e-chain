@@ -3,6 +3,7 @@ package keeper_test
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
+	"time"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
@@ -19,13 +20,15 @@ func TestCreateVestingAccount(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: commontestutils.DefaultTestDenom}}
+	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
+	endTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.UTC)
 
 	testHelper.C4eVestingUtils.MessageCreateVestingAccount(
 		accAddr1,
 		accAddr2,
 		coins,
-		10000000,
-		100000000,
+		startTime,
+		endTime,
 		accBalance,
 	)
 
@@ -44,13 +47,15 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: commontestutils.DefaultTestDenom}}
+	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
+	endTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.UTC)
 
 	testHelper.C4eVestingUtils.MessageCreateVestingAccount(
 		accAddr1,
 		accAddr2,
 		coins,
-		10000000,
-		100000000,
+		startTime,
+		endTime,
 		accBalance,
 	)
 
@@ -59,8 +64,8 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 		accAddr1,
 		accAddr3,
 		coins,
-		10000000,
-		100000000,
+		startTime,
+		endTime,
 		accBalance,
 	)
 
@@ -69,8 +74,8 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 		accAddr1,
 		accAddr1,
 		coins,
-		10000000,
-		100000000,
+		startTime,
+		endTime,
 		accBalance,
 		"create vesting account - account address: "+accAddr1.String()+": entity already exists",
 	)
@@ -79,8 +84,8 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 		accAddr1,
 		accAddr2,
 		coins,
-		10000000,
-		100000000,
+		startTime,
+		endTime,
 		accBalance,
 		"create vesting account - account address: "+accAddr2.String()+": entity already exists",
 	)
@@ -89,8 +94,8 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 		accAddr1,
 		accAddr3,
 		coins,
-		10000000,
-		100000000,
+		startTime,
+		endTime,
 		accBalance,
 		"create vesting account - account address: "+accAddr3.String()+": entity already exists",
 	)
@@ -110,13 +115,15 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: commontestutils.DefaultTestDenom}}
+	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
+	endTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.UTC)
 
 	testHelper.C4eVestingUtils.MessageCreateVestingAccount(
 		accAddr1,
 		accAddr2,
 		coins,
-		10000000,
-		100000000,
+		startTime,
+		endTime,
 		accBalance,
 	)
 
@@ -125,8 +132,8 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 		accAddr1,
 		accAddr3,
 		coins,
-		10000000,
-		100000000,
+		startTime,
+		endTime,
 		accBalance,
 		"create vesting account - send coins to vesting account error (from: "+accAddr1.String()+", to: "+accAddr3.String()+", amount: "+coins.String()+"): "+accBalance.String()+commontestutils.DefaultTestDenom+" is smaller than "+coins.String()+": insufficient funds: failed to send coins",
 	)

@@ -76,7 +76,7 @@ func validateSubDistributors(v interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", v)
 	}
 
-	err := ValidateOrderOfSubDistributors(subDistributors)
+	err := ValidateOrderOfSubDistributors(&subDistributors)
 	if err != nil {
 		return err
 	}
