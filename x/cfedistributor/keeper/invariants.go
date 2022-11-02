@@ -19,11 +19,8 @@ func NonNegativeCoinStateInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		states := k.GetAllStates(ctx)
 		for _, state := range states {
-			for _, coinState := range state.CoinsStates {
-				if coinState.IsNegative() {
-					return sdk.FormatInvariant(types.ModuleName, "nonnegative coin state",
-						fmt.Sprintf("\tnegative coin state %s in state %s", coinState, state.StateIdString())), true
-				}
+			if err := state.IsNegative(); err != nil {
+				return sdk.FormatInvariant(types.ModuleName, "nonnegative coin state", err.Error()), true
 			}
 		}
 
@@ -34,14 +31,12 @@ func NonNegativeCoinStateInvariant(k Keeper) sdk.Invariant {
 // StateSumBalanceCheckInvariant checks that sum on state equal module account balance
 func StateSumBalanceCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		statesSum := getStatesSum(k, ctx)
-		coinsStatesSum, change := statesSum.TruncateDecimal()
-		if !change.IsZero() {
-			return sdk.FormatInvariant(types.ModuleName, "state sum balance check",
-				fmt.Sprintf(
-					"\tthe sum of the states should be integer: sum: %v",
-					statesSum)), true
+		states := k.GetAllStates(ctx)
+		err, coinsStatesSum := types.StateSumIsInteger(states)
+		if err != nil {
+			return sdk.FormatInvariant(types.ModuleName, "state sum balance check", err.Error()), true
 		}
+
 		var broken bool
 
 		distributorAccountCoins := k.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
@@ -58,15 +53,4 @@ func StateSumBalanceCheckInvariant(k Keeper) sdk.Invariant {
 					"\tdistributor account balance: %v",
 				coinsStatesSum, distributorAccountCoins)), broken
 	}
-}
-
-func getStatesSum(k Keeper, ctx sdk.Context) sdk.DecCoins {
-	states := k.GetAllStates(ctx)
-	statesSum := sdk.NewDecCoins()
-
-	for _, state := range states {
-		statesSum = statesSum.Add(state.CoinsStates...)
-	}
-
-	return statesSum
 }

@@ -75,11 +75,13 @@ func validateSubDistributors(v interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", v)
 	}
+
 	for _, subDistributor := range subDistributors {
 		if err := subDistributor.Validate(); err != nil {
 			return err
 		}
 	}
+
 	err := ValidateSubDistributors(subDistributors)
 	if err != nil {
 		return err

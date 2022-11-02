@@ -94,7 +94,6 @@ test-simulation-import-export:
 	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimTest$$ -Seed=589 -v -Period=1 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
 
-
 open-cpu-profiler-result:
 	@go tool pprof cpu.out
 # HOW TO READ - https://github.com/google/pprof/blob/main/doc/README.md#interpreting-the-callgraph

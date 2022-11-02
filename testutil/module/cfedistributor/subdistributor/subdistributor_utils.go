@@ -145,7 +145,7 @@ func PrepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) 
 		BurnShare: &burnShare,
 	}
 	return types.SubDistributor{
-		Name:        "pass_distributor",
+		Name:        helpers.RandStringOfLength(10),
 		Sources:     []*types.Account{&source},
 		Destination: destination,
 	}
@@ -198,7 +198,7 @@ func PrepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 	}
 
 	shareDevelopmentFund := types.Share{
-		Name:    "development_fund",
+		Name:    helpers.RandStringOfLength(10),
 		Percent: sdk.MustNewDecFromStr("10.345"),
 		Account: shareDevelopmentFundAccount,
 	}
@@ -210,7 +210,7 @@ func PrepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 	}
 
 	return types.SubDistributor{
-		Name:        "tx_fee_distributor",
+		Name:        helpers.RandStringOfLength(10),
 		Sources:     []*types.Account{&source},
 		Destination: destination,
 	}

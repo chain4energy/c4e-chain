@@ -4,6 +4,7 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 
+	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -12,8 +13,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
-
 )
 
 // avoid unused import issue
@@ -37,8 +36,8 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	var subdistributors []types.SubDistributor
 	randDistinationType := RandomCollectorName(simState.Rand)
 	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(randDistinationType))
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationSubDistributor(randDistinationType, true))
 	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationToPassAcoutSubDistr(randDistinationType))
+	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationSubDistributor(randDistinationType, true))
 
 	genesisState.Params.SubDistributors = subdistributors
 	cfedistributorGenesis := types.GenesisState{
