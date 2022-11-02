@@ -27,6 +27,8 @@ Subdistributor is responsible for sending coins from it's source accounts to it'
 
 See the grapical represenation of subdistributor.
 
+http://www.plantuml.com/plantuml/proxy?src=(../../docs/modules/cfedistributor/subdistributor.puml)
+
 -------------                                     x% share     -----------------
 |  Source 1 |----->---                        ---->------------| Destination 1 |
 -------------        |                        |                -----------------
