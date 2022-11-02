@@ -1,11 +1,12 @@
 package app
 
 import (
-	"github.com/chain4energy/c4e-chain/app/upgrades"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/chain4energy/c4e-chain/app/upgrades"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -110,6 +111,7 @@ import (
 	cfevestingmodule "github.com/chain4energy/c4e-chain/x/cfevesting"
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	v101 "github.com/chain4energy/c4e-chain/app/upgrades/v101"
@@ -117,7 +119,8 @@ import (
 
 const (
 	AccountAddressPrefix = "c4e"
-	Name                 = "c4e-chain"
+	Name                 = "c4e"
+	HomeName             = "c4e-chain"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -204,7 +207,7 @@ func init() {
 		panic(err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, "."+Name)
+	DefaultNodeHome = filepath.Join(userHomeDir, "."+HomeName)
 }
 
 // App extends an ABCI application, but with most of its parameters exported.

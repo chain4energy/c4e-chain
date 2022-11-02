@@ -1,11 +1,14 @@
 package cli
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +17,16 @@ var _ = strconv.Itoa(0)
 func CmdInflation() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "inflation",
-		Short: "Query inflation",
+		Short: "Query current inflation",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query current inflation.
+
+Example:
+$ %s query %s inflation
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
