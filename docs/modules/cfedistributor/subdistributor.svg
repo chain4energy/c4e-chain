@@ -1,0 +1,28 @@
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="262px" preserveAspectRatio="none" style="width:262px;height:262px;background:#FFFFFF;" version="1.1" viewBox="0 0 262 262" width="262px" zoomAndPan="magnify"><defs/><g><ellipse cx="131" cy="16" fill="#222222" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><rect fill="#555555" height="8" style="stroke:none;stroke-width:1.0;" width="80" x="91" y="66"/><rect fill="#F1F1F1" height="33.9688" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="114" x="7" y="114"/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="94" x="17" y="135.1387">Parallel Action 1</text><rect fill="#555555" height="8" style="stroke:none;stroke-width:1.0;" width="80" x="91" y="188"/><rect fill="#F1F1F1" height="33.9688" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="115" x="141.5" y="114"/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="95" x="151.5" y="135.1387">Parallel Action 2</text><ellipse cx="131" cy="246" fill="none" rx="10" ry="10" style="stroke:#222222;stroke-width:1.0;"/><ellipse cx="131.5" cy="246.5" fill="#222222" rx="6" ry="6" style="stroke:none;stroke-width:1.0;"/><!--MD5=[6396badacac00578348ddb3cf20ba689]
+    link start to B1--><g id="link_start_B1"><path d="M131,26.058 C131,35.797 131,51.153 131,60.621 " fill="none" id="start-to-B1" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="131,65.874,135,56.874,131,60.874,127,56.874,131,65.874" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[bfd32addf2609835e076c042411fc443]
+    link B1 to Parallel Action 1--><g id="link_B1_Parallel Action 1"><path d="M127.398,74.172 C119.746,80.911 101.3402,97.118 86.321,110.344 " fill="none" id="B1-to-Parallel Action 1" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="82.1864,113.985,91.5845,111.0395,85.939,110.6808,86.2977,105.0353,82.1864,113.985" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[55cf7a128913b6c7244eacd4b55eda02]
+    link Parallel Action 1 to B2--><g id="link_Parallel Action 1_B2"><path d="M82.308,148.122 C95.7477,159.957 113.326,175.4365 123.267,184.1901 " fill="none" id="Parallel Action 1-to-B2" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="127.254,187.7015,123.143,178.7517,123.5015,184.3971,117.856,184.7557,127.254,187.7015" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[09cff6e8480d7c48c935ec0af115ad55]
+    link B1 to Parallel Action 2--><g id="link_B1_Parallel Action 2"><path d="M134.656,74.172 C142.489,80.968 161.423,97.396 176.736,110.683 " fill="none" id="B1-to-Parallel Action 2" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="180.542,113.985,176.3635,105.0665,176.7646,110.7091,171.122,111.1103,180.542,113.985" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[daf36031549c0e76dd7deeb02de50bdd]
+    link Parallel Action 2 to B2--><g id="link_Parallel Action 2_B2"><path d="M180.419,148.122 C166.778,159.957 148.938,175.4365 138.849,184.1901 " fill="none" id="Parallel Action 2-to-B2" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="134.802,187.7015,144.2211,184.824,138.5784,184.4245,138.9779,178.7818,134.802,187.7015" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[67dd31f82dae465fe6f080fdaa978b88]
+    link B2 to end--><g id="link_B2_end"><path d="M131,196.0971 C131,202.7713 131,218.8695 131,230.7824 " fill="none" id="B2-to-end" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="131,235.9126,135,226.9126,131,230.9126,127,226.9126,131,235.9126" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[c6258e7cf173131a7af285951408e230]
+    @startuml
+    (*) - -> ===B1===
+    - -> "Parallel Action 1"
+    - -> ===B2===
+    
+    ===B1=== - -> "Parallel Action 2"
+    - -> ===B2===
+    
+    - -> (*)
+    @enduml
+    
+    PlantUML version 1.2022.13beta2(Unknown compile time)
+    (GPL source distribution)
+    Java Runtime: Java(TM) SE Runtime Environment
+    JVM: Java HotSpot(TM) 64-Bit Server VM
+    Default Encoding: UTF-8
+    Language: en
+    Country: US
+    --></g></svg>
