@@ -1,11 +1,14 @@
 package cli
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +17,16 @@ var _ = strconv.Itoa(0)
 func CmdState() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "state",
-		Short: "Query state",
+		Short: fmt.Sprintf("Query current %s state", types.ModuleName),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query current %s state.
+
+Example:
+$ %s query %s state
+`,
+				types.ModuleName, version.AppName, types.ModuleName,
+			),
+		),
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
