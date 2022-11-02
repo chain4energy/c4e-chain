@@ -20,8 +20,8 @@ func TestCheckAccountType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CheckAccountType(tt.account); got != tt.want {
-				t.Errorf("CheckAccountType() = %v, want %v", got, tt.want)
+			if got := tt.account.Validate(); got != tt.want {
+				t.Errorf("Validate() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -59,6 +59,12 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 		Account: Account{},
 	}
 
+	shareEqualMinus20 := Share{
+		Name:    "5",
+		Percent: sdk.MustNewDecFromStr("-20"),
+		Account: Account{},
+	}
+
 	burnShare := BurnShare{Percent: sdk.MustNewDecFromStr("50")}
 
 	var sharesEqual30 []*Share
@@ -82,6 +88,11 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 	sharesEqual101 = append(sharesEqual101, &shareEqual50)
 	sharesEqual101 = append(sharesEqual101, &shareEqual20)
 
+	var sharesEqualMinus10 []*Share
+	sharesEqualMinus10 = append(sharesEqual101, &shareEqualMinus20)
+	sharesEqualMinus10 = append(sharesEqual101, &shareEqualMinus20)
+	sharesEqualMinus10 = append(sharesEqual101, &shareEqual30)
+
 	tests := []struct {
 		name        string
 		destination Destination
@@ -95,11 +106,12 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 		{"Share equal 81", Destination{Account: Account{}, Share: sharesEqual81, BurnShare: nil}, false},
 		{"Share equal 100", Destination{Account: Account{}, Share: sharesEqual100, BurnShare: nil}, true},
 		{"Share equal 101", Destination{Account: Account{}, Share: sharesEqual101, BurnShare: nil}, true},
+		{"Share equal -10", Destination{Account: Account{}, Share: sharesEqualMinus10, BurnShare: nil}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CheckPercentShareSumIsGTEThen100(tt.destination); got != tt.want {
-				t.Errorf("CheckPercentShareSumIsGTEThen100() = %v, want %v", got, tt.want)
+			if got := tt.destination.CheckPercentShareSumIsBetween0And100(); got != tt.want {
+				t.Errorf("CheckPercentShareSumIsBetween0And100() = %v, want %v", got, tt.want)
 			}
 		})
 	}

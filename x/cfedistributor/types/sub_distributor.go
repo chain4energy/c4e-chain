@@ -9,23 +9,38 @@ import (
 
 func (s SubDistributor) Validate() error {
 
-	if CheckPercentShareSumIsGTEThen100(s.Destination) {
+	if s.Destination.CheckPercentShareSumIsBetween0And100() {
 		return fmt.Errorf("share sum is greater or equal 100")
 	}
 
 	for _, source := range s.Sources {
-		if !CheckAccountType(*source) {
+		if !source.Validate() {
 			return fmt.Errorf("the source account is of the wrong type: " + source.String())
 		}
 	}
 
 	for _, share := range s.Destination.Share {
-		if !CheckAccountType(share.Account) {
+		if !share.Account.Validate() {
 			return fmt.Errorf("the destination account is of the wrong type: " + share.Account.String())
 		}
 	}
 
 	return nil
+}
+
+func (destination Destination) CheckPercentShareSumIsBetween0And100() bool {
+	shares := destination.Share
+	percentShareSum := sdk.MustNewDecFromStr("0")
+	for _, share := range shares {
+		percentShareSum = percentShareSum.Add(share.Percent)
+	}
+
+	if destination.BurnShare != nil {
+
+		percentShareSum = percentShareSum.Add(destination.BurnShare.Percent)
+	}
+
+	return percentShareSum.GTE(sdk.MustNewDecFromStr("100")) || percentShareSum.IsNegative()
 }
 
 func (s State) StateIdString() string {
@@ -41,21 +56,6 @@ func (s State) StateIdString() string {
 	}
 }
 
-func CheckPercentShareSumIsGTEThen100(destination Destination) bool {
-	shares := destination.Share
-	percentShareSum := sdk.MustNewDecFromStr("0")
-	for _, share := range shares {
-		percentShareSum = percentShareSum.Add(share.Percent)
-	}
-
-	if destination.BurnShare != nil {
-
-		percentShareSum = percentShareSum.Add(destination.BurnShare.Percent)
-	}
-
-	return percentShareSum.GTE(sdk.MustNewDecFromStr("100"))
-}
-
 const (
 	// Account Types
 	INTERNAL_ACCOUNT = "INTERNAL_ACCOUNT"
@@ -69,7 +69,7 @@ const (
 	SOURCE          = "SOURCE"
 )
 
-func CheckAccountType(account Account) bool {
+func (account Account) Validate() bool {
 	switch account.Type {
 	case INTERNAL_ACCOUNT, MODULE_ACCOUNT, MAIN, BASE_ACCOUNT:
 		return true
