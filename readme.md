@@ -15,12 +15,11 @@ Chain4Energy brings the energy industry to Web 3 by responding to the requiremen
 
 ![Banner!](./assets/banner.jpg)
 
-
-
-
-
-
 ## Documentation
 
 For the most up to date documentation please visit
 [docs.chain4energy.org](https://docs.chain4energy.org/)
+
+## Other Resources
+
+* **[Module Directory](../x/)**: Chain4Energy module implementations and their respective documentation.
