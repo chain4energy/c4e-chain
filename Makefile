@@ -5,6 +5,7 @@ COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
  
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=c4e \
+	-X github.com/cosmos/cosmos-sdk/version.AppName=c4ed \
 	-X github.com/cosmos/cosmos-sdk/version.ServerName=c4ed \
 	-X github.com/cosmos/cosmos-sdk/version.ClientName=c4ecli \
 	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \

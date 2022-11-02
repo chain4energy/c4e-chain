@@ -2,17 +2,29 @@ package cli
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 )
 
 func CmdQueryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
-		Short: "shows the parameters of the module",
+		Short: fmt.Sprintf("Query %s params", types.ModuleName),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query %s params. Params contain a configuration of the minting process.
+
+Example:
+$ %s query %s params
+`,
+				types.ModuleName, version.AppName, types.ModuleName,
+			),
+		),
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)

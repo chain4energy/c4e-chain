@@ -1,22 +1,41 @@
 package cli
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 )
 
 var _ = strconv.Itoa(0)
 
 func CmdCreateVestingAccount() *cobra.Command {
+	bech32PrefixAddr := sdk.GetConfig().GetBech32AccountAddrPrefix()
+
 	cmd := &cobra.Command{
 		Use:   "create-vesting-account [to-address] [amount] [start-time] [end-time]",
-		Short: "Broadcast message createVestingAccount",
+		Short: "Create a new vesting account funded with an allocation of tokens.",
+		Long: strings.TrimSpace(fmt.Sprintf(`Create a new vesting account funded with an allocation of tokens.
+The account is a continuous vesting account. The start_time and the end_time must be provided as a UNIX epoch timestamp.
+
+Arguments:
+  [to_address] address of a new vesting account
+  [amount]     amount of tokens to send to a new vesting account
+  [start-time] start time of continuous vesting account vesting. Must be provided as a UNIX epoch timestamp.
+  [end-time]   end time of continuous vesting account vesting. Must be provided as a UNIX epoch timestamp.
+
+Example:
+$ %s tx %s create-vesting-account %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 123000 1609455 1640991 --from mykey
+`, version.AppName, types.ModuleName, bech32PrefixAddr,
+			),
+		),
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argToAddress := args[0]
