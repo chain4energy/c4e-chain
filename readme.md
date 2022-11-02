@@ -22,4 +22,4 @@ For the most up to date documentation please visit
 
 ## Other Resources
 
-* **[Module Directory](../x/)**: Chain4Energy module implementations and their respective documentation.
+* **[Module Directory](./x/)**: Chain4Energy module implementations and their respective documentation.
