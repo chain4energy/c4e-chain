@@ -25,7 +25,10 @@ func TestGenesis(t *testing.T) {
 	}
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
+	subdistributors = append(subdistributors, burningSubSistributor)
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+
 	genesisState.Params.SubDistributors = subdistributors
 
 	testHelper := testapp.SetupTestApp(t)
@@ -55,7 +58,9 @@ func TestGenesisImport(t *testing.T) {
 	}
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
+	subdistributors = append(subdistributors, burningSubSistributor)
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
 	genesisState.Params.SubDistributors = subdistributors
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
@@ -69,11 +74,45 @@ func TestGenesisNoStates(t *testing.T) {
 	}
 
 	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
+		burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
+	subdistributors = append(subdistributors, burningSubSistributor)
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
 	genesisState.Params.SubDistributors = subdistributors
 
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
+	testHelper.C4eDistributorUtils.ExportGenesis(genesisState)
+	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
+}
+
+func TestGenesisBurnState(t *testing.T) {
+	account := types.Account{
+		Id:   "usage_incentives_collector",
+		Type: "INTERNAL_ACCOUNT",
+	}
+
+	state := types.State{
+		Account:     &account,
+		Burn:        true,
+		CoinsStates: nil,
+	}
+
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
+	}
+
+	var subdistributors []types.SubDistributor
+	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
+	subdistributors = append(subdistributors, burningSubSistributor)
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+
+	genesisState.Params.SubDistributors = subdistributors
+
+	testHelper := testapp.SetupTestApp(t)
+	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
+	testHelper.C4eDistributorUtils.SetState(state)
+	state.Account = nil
+	genesisState.States = []*types.State{&state}
 	testHelper.C4eDistributorUtils.ExportGenesis(genesisState)
 	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
 }

@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -29,7 +30,7 @@ func (s SubDistributor) Validate() error {
 func (s State) StateIdString() string {
 
 	if s.Burn {
-		return "BURN"
+		return BURN
 	} else if s.Account != nil && s.Account.Type == MAIN {
 		return MAIN
 	} else if s.Account != nil {
@@ -55,11 +56,14 @@ func CheckPercentShareSumIsGTEThen100(destination Destination) bool {
 }
 
 const (
-	INTERNAL_ACCOUNT string = "INTERNAL_ACCOUNT"
-	MODULE_ACCOUNT          = "MODULE_ACCOUNT"
-	MAIN                    = "MAIN"
-	BASE_ACCOUNT            = "BASE_ACCOUNT"
-	UNKNOWN_ACCOUNT         = "Unknown"
+	// Account Types
+	INTERNAL_ACCOUNT = "INTERNAL_ACCOUNT"
+	MODULE_ACCOUNT   = "MODULE_ACCOUNT"
+	MAIN             = "MAIN"
+	BASE_ACCOUNT     = "BASE_ACCOUNT"
+	// Other consts
+	UNKNOWN_ACCOUNT  = "Unknown"
+	BURN             = "BURN"
 )
 
 func CheckAccountType(account Account) bool {

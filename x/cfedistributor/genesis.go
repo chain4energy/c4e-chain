@@ -22,6 +22,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	states := k.GetAllStates(ctx)
+	for i, state := range states {
+		if state.Burn {
+			states[i].Account = nil
+		}
+	}
 
 	for i := 0; i < len(states); i++ {
 		genesis.States = append(genesis.States, &states[i])
