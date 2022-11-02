@@ -27,7 +27,7 @@ Subdistributor is responsible for sending coins from it's source accounts to it'
 
 See the grapical represenation of subdistributor.
 
-(../../docs/modules/cfedistributor/subdistributor.svg)
+![Banner!](./../../docs/modules/cfedistributor/subdistributor.svg)
 
 -------------                                     x% share     -----------------
 |  Source 1 |----->---                        ---->------------| Destination 1 |
