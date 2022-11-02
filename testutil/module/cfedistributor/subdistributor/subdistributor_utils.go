@@ -2,6 +2,7 @@ package subdistributor
 
 import (
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -97,7 +98,7 @@ func PrepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 	}
 
 	distributor1 := types.SubDistributor{
-		Name:        "tx_fee_distributor",
+		Name:        helpers.RandStringOfLength(10),
 		Sources:     []*types.Account{{Id: authtypes.FeeCollectorName, Type: types.MODULE_ACCOUNT}},
 		Destination: destination,
 	}

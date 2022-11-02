@@ -130,6 +130,7 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 		}
 
 	}
+
 	if lastOccurrence[MAIN] == "" {
 		return fmt.Errorf("there must be at least one subdistributor with the source main type")
 	}
@@ -156,5 +157,6 @@ func validateUniquenessOfNames(subDistributorName string, nameOccured *map[strin
 		return fmt.Errorf("subdistributor names must be unique, subdistributor name: " + subDistributorName)
 	}
 	(*nameOccured)[subDistributorName] = true
+
 	return nil
 }

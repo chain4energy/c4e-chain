@@ -33,7 +33,7 @@ func SimulateVestingMultiOperations(
 		poolsNames := []string{}
 
 		for i := 0; i < multiOperationsCount; i++ {
-			randVestingPoolName := helpers.RandStringOfLength(r, 10)
+			randVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
 			poolsNames = append(poolsNames, randVestingPoolName)
 			randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))
 			randVestingAmount := sdk.NewInt(helpers.RandomInt(r, 100000000))

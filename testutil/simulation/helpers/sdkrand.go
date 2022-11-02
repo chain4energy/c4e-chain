@@ -19,7 +19,7 @@ const (
 
 // shamelessly copied from cosmos sdk github
 // https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-golang#31832326
-func RandStringOfLength(r *rand.Rand, n int) string {
+func RandStringOfLengthCustomSeed(r *rand.Rand, n int) string {
 	b := make([]byte, n)
 	for i, cache, remain := n-1, r.Int63(), letterIdxMax; i >= 0; {
 		if remain == 0 {
@@ -34,6 +34,12 @@ func RandStringOfLength(r *rand.Rand, n int) string {
 	}
 
 	return *(*string)(unsafe.Pointer(&b))
+}
+
+func RandStringOfLength(n int) string {
+	src := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(src)
+	return RandStringOfLengthCustomSeed(r, n)
 }
 
 func RandPositiveInt(r *rand.Rand, max sdk.Int) (sdk.Int, error) {

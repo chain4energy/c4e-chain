@@ -3,9 +3,7 @@ package types
 import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"math/rand"
 	"testing"
-	"time"
 )
 
 func TestCheckAccountType(t *testing.T) {
@@ -313,12 +311,8 @@ func createSubDistributor(
 	destinationShareType string,
 	Id string,
 ) SubDistributor {
-	src := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(src)
-	name := helpers.RandStringOfLength(r, 10)
-	shareName := helpers.RandStringOfLength(r, 10)
 	return SubDistributor{
-		Name: name,
+		Name: helpers.RandStringOfLength(10),
 		Destination: Destination{
 			Account: Account{
 				Id:   Id,
@@ -329,7 +323,7 @@ func createSubDistributor(
 			},
 			Share: []*Share{
 				{
-					Name: shareName,
+					Name: helpers.RandStringOfLength(10),
 					Account: Account{
 						Id:   Id,
 						Type: destinationShareType,
