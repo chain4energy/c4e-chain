@@ -7,10 +7,10 @@ Chain4Energy distributor module provides functionality of tokens distribution me
 ## Contents
 
 1. **[Concept](#concepts)**
-2. **[State](#state)**
+2. **[Params](#parameters)**
+3. **[State](#state)**
 4. **[Events](#events)**
-6. **[Params](#parameters)**
-8. **[Queries](#queries)**
+5. **[Queries](#queries)**
 
 ## Concepts
 
@@ -108,6 +108,196 @@ Than we can model our distribution flow with following subdistributors:
 
 ![incentive boosters subdistributor](./../../docs/modules/cfedistributor/example-boosters-subdistributor.svg?raw=1)
 
+## Parameters
+
+The Chain4Energy distributor module contains the following configurations parameters:
+
+| Key                  | Type                        | Description                     |
+| -------------------- | --------------------------- | ------------------------------- |
+| sub_distributors     | List of Subdistributor type | list of defined subdistributors |
+
+### Subdistributor type
+
+| Param                | Type                        | Description                     |
+| -------------------- | --------------------------- | ------------------------------- |
+| name     | string | unique name of the subdistributor |
+| sources  | List of Account type | list of source accounts |
+| destination  | Destination type | destinations definition |
+
+### Destination type
+
+| Param       | Type               | Description                                                             |
+| ----------- | ------------------ | ----------------------------------------------------------------------- |
+| account     | Account type       | mian destination - all remaining tokens from ohers shares anr sent here |
+| burn_share  | BurnShare type     | share to burn                                                           |
+| share       | List of Share type | List of account destinations with share percentage                      |
+
+### Share type
+
+| Param   | Type         | Description              |
+| ------- | ------------ | ------------------------ |
+| name    | string       | unique name of the share |
+| account | Account type | destination account      |
+| percent | Dec          | share percentage 0-100   |
+
+### BurnShare type
+
+| Param   | Type | Description                    |
+| ------- | ---- | ------------------------------ |
+| percent | Dec  | share percentage to burn 0-100 |
+
+### Account type
+
+| Param   | Type | Description                    |
+| ------- | ---- | ------------------------------ |
+| type    | enum string  | account type:<br />- MAIN - main module account<br />- MODULE_ACCOUNT - module account<br />- BASE_ACCOUNT - base account<br />- INTERNAL_ACCOUNT - cfedistributor internal account |
+| id      | string       | account identifier dependant on the type::<br />- MAIN - empty<br />- MODULE_ACCOUNT - module account name<br />- BASE_ACCOUNT - base account address<br />- INTERNAL_ACCOUNT - cfedistributor internal account name |
+
+### Example
+
+See the configuration params for **[example](#example)** from **[Concept](#concepts)** section
+
+```json
+
+{
+    "sub_distributors": [
+        {
+            "name": "inflation_subdistributor", 
+            "sources": [
+                {
+                "id": "",
+                "type": "MAIN"
+                }
+            ],
+            "destination": {
+                "account": {
+                    "id": "validators_rewards",
+                    "type": "MODULE_ACCOUNT"
+                },
+                "share": [
+                    {
+                        "account": {
+                            "id": "c4edwijhdhwqu43efvc3543ec34c2erc342dw",
+                            "type": "BASE_ACCOUNT"
+                        },
+                        "name": "inflation_development_fund_share",
+                        "percent": "5.0"
+                    },
+                    {
+                        "account": {
+                            "id": "incentive_boosters",
+                            "type": "INTERNAL_ACCOUNT"
+                        },
+                        "name": "inflation_incentive_boosters_share",
+                        "percent": "35.0"
+                    }
+                ],
+                "burn_share": {
+                    "percent": "0.0"
+                }
+            },
+
+        },
+        {
+            "name": "transaction fees subdistributor", 
+            "sources": [
+                {
+                "id": "fee_collector",
+                "type": "MODULE_ACCOUNT"
+                }
+            ],
+            "destination": {
+                "account": {
+                    "id": "validators_rewards",
+                    "type": "MODULE_ACCOUNT"
+                },
+                "share": [
+                    {
+                        "account": {
+                            "id": "incentive_boosters",
+                            "type": "INTERNAL_ACCOUNT"
+                        },
+                        "name": "txs_incentive_boosters_share",
+                        "percent": "15.0"
+                    }
+                ],
+                "burn_share": {
+                    "percent": "5.0"
+                }
+            },
+
+        },
+        {
+            "name": "module_fees_subdistributor", 
+            "sources": [
+                {
+                "id": "fictional_module_fee_collector",
+                "type": "MODULE_ACCOUNT"
+                }
+            ],
+            "destination": {
+                "account": {
+                    "id": "validators_rewards",
+                    "type": "MODULE_ACCOUNT"
+                },
+                "share": [
+                    {
+                        "account": {
+                            "id": "c4edwijhdhwqu43efvc3543ec34c2erc342dw",
+                            "type": "BASE_ACCOUNT"
+                        },
+                        "name": "module_development_fund_share",
+                        "percent": "30.0"
+                    },
+                    {
+                        "account": {
+                            "id": "incentive_boosters",
+                            "type": "INTERNAL_ACCOUNT"
+                        },
+                        "name": "module_incentive_boosters_share",
+                        "percent": "20.0"
+                    }
+                ],
+                "burn_share": {
+                    "percent": "0.0"
+                }
+            },
+
+        },
+        {
+            "name": "incentive boosters subdistributor", 
+            "sources": [
+                {
+                "id": "incentive_boosters",
+                "type": "INTERNAL_ACCOUNT"
+                }
+            ],
+            "destination": {
+                "account": {
+                    "id": "governance_booster",
+                    "type": "MODULE_ACCOUNT"
+                },
+                "share": [
+                    {
+                        "account": {
+                            "id": "weekend_boosters",
+                            "type": "INTERNAL_ACCOUNT"
+                        },
+                        "name": "weekend_boosters_share",
+                        "percent": "35.0"
+                    }
+                ],
+                "burn_share": {
+                    "percent": "0.0"
+                }
+            },
+
+        },
+        
+    ]
+}
+
+```
 
 ## State
 
@@ -124,12 +314,7 @@ The incentives module emits the following events:
 | Type         | Attribute Key | Attribute Value |
 | ------------ | ------------- | --------------- |
 
-## Parameters
 
-The Chain4Energy distributor module contains the following parameters:
-
-| Key                  | Type   | Example  |
-| -------------------- | ------ | -------- |
 
 
 ## Queries
