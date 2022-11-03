@@ -11,6 +11,8 @@ Chain4Energy distributor module provides functionality of tokens distribution me
 3. **[State](#state)**
 4. **[Events](#events)**
 5. **[Queries](#queries)**
+6. **[Invariants](#invariants)**
+7. **[Genesis validations](#genesis-validations)**
 
 ## Concepts
 
@@ -404,17 +406,233 @@ See the state for **[example](#example)** from **[Concept](#concepts)** section
 
 Chain4Energy distributor module module emits the following events:
 
-### Handlers
-
 ### BeginBlockers
 
 #### Tokens distribution
 
 | Type         | Attribute Key | Attribute Value |
 | ------------ | ------------- | --------------- |
+| DistributionsResult | DistributionResult | list of DistributionResult type |
 
+##### DistributionResult type
 
+DistributionResult type represents one send operation to one destination in one block
 
+| Param   | Type | Description                    |
+| ------- | ---- | ------------------------------ |
+| source  | list of Account type (see **[Account type](#account-type)**) | list of sources |
+| destination | Account type (see **[Account type](#account-type)**) | destination |
+| coinSend | DecCoins | coins sent to destination |
 
 ## Queries
 
+### Params query
+
+Queries the module params.
+
+See example reponse:
+
+```json
+{
+  "params": {
+    "sub_distributors": [
+      {
+        "name": "tx_fee_distributor",
+        "sources": [
+          {
+            "id": "fee_collector",
+            "type": "MODULE_ACCOUNT"
+          }
+        ],
+        "destination": {
+          "account": {
+            "id": "c4e_distributor",
+            "type": "MAIN"
+          },
+          "share": [],
+          "burn_share": {
+            "percent": "0.000000000000000000"
+          }
+        }
+      },
+      {
+        "name": "inflation_and_fee_distributor",
+        "sources": [
+          {
+            "id": "c4e_distributor",
+            "type": "MAIN"
+          }
+        ],
+        "destination": {
+          "account": {
+            "id": "validators_rewards_collector",
+            "type": "MODULE_ACCOUNT"
+          },
+          "share": [
+            {
+              "name": "development_fund",
+              "percent": "5.000000000000000000",
+              "account": {
+                "id": "c4e10ep2sxpf2kj6jsdcs234edkuf9sf9xqq3sl",
+                "type": "BASE_ACCOUNT"
+              }
+            },
+            {
+              "name": "usage_incentives",
+              "percent": "35.000000000000000000",
+              "account": {
+                "id": "usage_incentives_collector",
+                "type": "INTERNAL_ACCOUNT"
+              }
+            }
+          ],
+          "burn_share": {
+            "percent": "0.000000000000000000"
+          }
+        }
+      },
+      {
+        "name": "usage_incentives_distributor",
+        "sources": [
+          {
+            "id": "usage_incentives_collector",
+            "type": "INTERNAL_ACCOUNT"
+          }
+        ],
+        "destination": {
+          "account": {
+            "id": "c4e1q5vgy0r3scsdc32dcewkl8nwmfe2mgr6g0jlph",
+            "type": "BASE_ACCOUNT"
+          },
+          "share": [
+            {
+              "name": "green_energy_booster",
+              "percent": "34.000000000000000000",
+              "account": {
+                "id": "green_energy_booster_collector",
+                "type": "MODULE_ACCOUNT"
+              }
+            },
+            {
+              "name": "governance_booster",
+              "percent": "33.000000000000000000",
+              "account": {
+                "id": "governance_booster_collector",
+                "type": "MODULE_ACCOUNT"
+              }
+            }
+          ],
+          "burn_share": {
+            "percent": "0.000000000000000000"
+          }
+        }
+      }
+    ]
+  }
+}
+```
+### Params states
+
+Queries the module state.
+
+See example reponse:
+
+```json
+{
+  "states": [
+    {
+      "account": {
+        "id": "c4e10ep2ssdfwefcscaewdedscs9xqqqdwqee3sl",
+        "type": "BASE_ACCOUNT"
+      },
+      "burn": false,
+      "coins_states": [
+        {
+          "denom": "uc4e",
+          "amount": "0.900000000000000000"
+        }
+      ]
+    },
+    {
+      "account": {
+        "id": "c4e1q5vgy0r3w9q4ccsdcds23422mgr6g0jlph",
+        "type": "BASE_ACCOUNT"
+      },
+      "burn": false,
+      "coins_states": [
+        {
+          "denom": "uc4e",
+          "amount": "0.359000000000000000"
+        }
+      ]
+    },
+    {
+      "account": {
+        "id": "governance_booster_collector",
+        "type": "MODULE_ACCOUNT"
+      },
+      "burn": false,
+      "coins_states": [
+        {
+          "denom": "uc4e",
+          "amount": "0.359000000000000000"
+        }
+      ]
+    },
+    {
+      "account": {
+        "id": "green_energy_booster_collector",
+        "type": "MODULE_ACCOUNT"
+      },
+      "burn": false,
+      "coins_states": [
+        {
+          "denom": "uc4e",
+          "amount": "0.582000000000000000"
+        }
+      ]
+    },
+    {
+      "account": {
+        "id": "usage_incentives_collector",
+        "type": "INTERNAL_ACCOUNT"
+      },
+      "burn": false,
+      "coins_states": []
+    },
+    {
+      "account": {
+        "id": "validators_rewards_collector",
+        "type": "MODULE_ACCOUNT"
+      },
+      "burn": false,
+      "coins_states": [
+        {
+          "denom": "uc4e",
+          "amount": "0.800000000000000000"
+        }
+      ]
+    }
+  ],
+  "coins_on_distributor_account": [
+    {
+      "denom": "uc4e",
+      "amount": "3"
+    }
+  ]
+}
+```
+
+## Invariants
+
+### Non Negative Coin State Invariant
+
+Invariant validates module state. Checks if all coins states of all destinations are non negative
+
+### State Sum Balance Check Invariant
+
+Invariant validates module state. Checks sum of all coins states of one denom of all destinations is always intiger value and is equal to cfedistributor module account balance
+
+## Genesis validations
+
+TODO
