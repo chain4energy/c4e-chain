@@ -1,0 +1,9 @@
+@startuml
+"Main cfedistrubtor module account\r[inflation]" --> ===B1===
+
+===B1=== -->[inflation subdistributor] ===B2===
+
+===B2=== -->[60% share] "validators_rewards\r<<module account>>"
+===B2=== -->[5% share] "c4edwijhdhwqu43efvc3543ec34c2erc342dw\r<<base account>>"
+===B2=== -->[35% share] "incentive_boosters\r<<internal account>>"
+@enduml

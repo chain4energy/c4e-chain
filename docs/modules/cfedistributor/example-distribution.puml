@@ -1,0 +1,16 @@
+@startuml
+"inflation" -->[60%] "validators rewards"
+"inflation" -->[5%] "development fund"
+"inflation" -->[35%] "incentive boosters"
+
+"transaction fees" --->[80%] "validators rewards"
+"transaction fees" --->[5%] "burn"
+"transaction fees" --->[15%] "incentive boosters"
+
+"module fees" -->[50%] "validators rewards"
+"module fees" -->[30%] "development fund"
+"module fees" -->[20%] "incentive boosters"
+
+"incentive boosters" -->[65%] "governance booster pool"
+"incentive boosters" -->[35%] "weekend booster pool"
+@enduml

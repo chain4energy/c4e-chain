@@ -29,26 +29,6 @@ See the grapical represenation of subdistributor.
 
 ![Subdistributor](./../../docs/modules/cfedistributor/subdistributor.svg?raw=1)
 
--------------                                     x% share     -----------------
-|  Source 1 |----->---                        ---->------------| Destination 1 |
--------------        |                        |                -----------------
-                     |                        |       
--------------        |                        |   y% share     -----------------
-|  Source 2 |----->--|                        |--->------------| Destination 3 |
--------------        |                        |                -----------------
-                     |------->------->------>-|
-      .              |                        |                        .
-      .              |                        |                        .
-      .              |                        |                        .
-                     |                        |
--------------        |                        |   z% share     -----------------
-|  Source n |----->---                        |--->------------| Destination 1 |
--------------                                 |                -----------------
-                                              |
-                                              |   v% share     -----------------
-                                              ---->------------|     Burn      |
-                                                               -----------------
-
 Subdistributors are executed in predefined order so destinations of one subdistributor can became sources of another subdistributor.
 
 #### Subdistributor sources and destinations
@@ -74,6 +54,60 @@ where:
 * Burn destination - tokens burner.
 
 #### Example
+
+Let's consider an example of tokens distribution. In our example we have following token sources:
+* inflation
+* transaction fees
+* some module functionality fees. Our fictional module provides some functionlity for which user is required to pay some fee and part of this fee is shared with the blockchain.
+
+Inflation distribution:
+* 60% to distribution module for standard validators rewarding funcionality
+* 5% to development fund
+* 35% to incentive booster pools
+
+Transaction fees distribution:
+* 80% to distribution module for standard validators rewarding funcionality
+* 5% to burn
+* 15% to incentive booster pools
+
+Fictional module functionality fees distribution:
+* 50% to distribution module for standard validators rewarding funcionality
+* 30% to development fund
+* 20% to incentive booster pools
+
+We also have following incentive booster pools distribution:
+* 65% to governance booster pool
+* 35% to weekend booster pool
+
+See the grapical represenation of this distribution.
+
+![ExampleDistribution](./../../docs/modules/cfedistributor/example-distribution.svg?raw=1)
+
+Let's also assume that:
+* inflation is minted directly to cfedistributor module account
+* cosmos sdk distribution module fetches tokens from module account named "validators_rewards"
+* development fund is base account with address "c4edwijhdhwqu43efvc3543ec34c2erc342dw"
+* governance booster pool is module account named "governance_booster"
+* weekend booster pool is module account named "weekend_booster"
+* fictional module fees are stored in module account named "fictional_module_fee_collector"
+
+Than we can model our distribution flow with following subdistributors:
+* inflation subdistributor
+
+![inflation subdistributor](./../../docs/modules/cfedistributor/example-inflation-subdistributor.svg?raw=1)
+
+* transaction fees subdistributor
+
+![transaction fees subdistributor](./../../docs/modules/cfedistributor/example-tx-fees-subdistributor.svg?raw=1)
+
+* module fees subdistributor
+
+![module fees subdistributor](./../../docs/modules/cfedistributor/example-module-fees-subdistributor.svg?raw=1)
+
+* incentive boosters subdistributor
+
+![incentive boosters subdistributor](./../../docs/modules/cfedistributor/example-boosters-subdistributor.svg?raw=1)
+
 
 ## State
 
