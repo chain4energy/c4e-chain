@@ -106,8 +106,8 @@ func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.
 
 	msg := cfevestingtypes.MsgCreateVestingPool{Creator: address.String(), Name: vestingPoolName,
 		Amount: amountToVest, Duration: lockupDuration, VestingType: vestingType.Name}
-	_, error := msgServer.CreateVestingPool(msgServerCtx, &msg)
-	require.EqualValues(h.t, nil, error)
+	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
+	require.EqualValues(h.t, nil, err)
 
 	accVestingPools, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
 	require.EqualValues(h.t, accountVestingPoolsExistsAfter, accFound)
@@ -534,6 +534,9 @@ func (h *C4eVestingUtils) MessageCreateVestingAccount(
 
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore.Sub(coins.AmountOf(commontestutils.DefaultTestDenom)))
 	h.authUtils.VerifyVestingAccount(ctx, toAddress, commontestutils.DefaultTestDenom, coins.AmountOf(commontestutils.DefaultTestDenom), startTime, endTime)
+	accFromList, found := h.helperCfevestingKeeper.GetVestingAccount(ctx, vestingAccountCountBefore)
+	require.Equal(h.t, true, found)
+	require.Equal(h.t, toAddress.String(), accFromList.Address)
 }
 
 func (h *ContextC4eVestingUtils) MessageCreateVestingAccountError(
@@ -583,4 +586,6 @@ func (h *C4eVestingUtils) MessageCreateVestingAccountError(
 
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore)
 	require.EqualValues(h.t, vestingAccountCountBefore, vestingAccountCountAfter)
+	_, found := h.helperCfevestingKeeper.GetVestingAccount(ctx, vestingAccountCountBefore)
+	require.Equal(h.t, false, found)
 }
