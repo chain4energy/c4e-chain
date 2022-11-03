@@ -327,7 +327,7 @@ func createSubDistributor(
 		Name: helpers.RandStringOfLength(10),
 		Destination: Destination{
 			Account: Account{
-				Id:   Id,
+				Id:   Id + getIdSuffix("mainDst", destinationType),
 				Type: destinationType,
 			},
 			BurnShare: &BurnShare{
@@ -337,7 +337,7 @@ func createSubDistributor(
 				{
 					Name: helpers.RandStringOfLength(10),
 					Account: Account{
-						Id:   Id,
+						Id:   Id + getIdSuffix("shareDst", destinationShareType),
 						Type: destinationShareType,
 					},
 					Percent: sdk.MustNewDecFromStr("0"),
@@ -346,9 +346,16 @@ func createSubDistributor(
 		},
 		Sources: []*Account{
 			{
-				Id:   Id,
+				Id:   Id + getIdSuffix("src", sourceType),
 				Type: sourceType,
 			},
 		},
 	}
+}
+
+func getIdSuffix(suffix string, accType string) string{
+	if accType == INTERNAL_ACCOUNT || accType == MAIN {
+		return "-" + accType
+	}
+	return "-" + suffix
 }
