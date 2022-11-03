@@ -37,8 +37,8 @@ func Generate10BasedVestingTypes(numberOfVestingTypes int, amountOf10BasedVestin
 	return vestingTypes
 }
 
-func GenerateVestingTypesForAccounVestingPools(accountVestingPools []types.AccountVestingPools) []*types.VestingType {
-	
+func GenerateVestingTypesForAccountVestingPools(accountVestingPools []types.AccountVestingPools) []*types.VestingType {
+
 	m := make(map[string]*types.VestingType)
 	result := []*types.VestingType{}
 	for _, av := range accountVestingPools {

@@ -71,7 +71,7 @@ func (h *C4eVestingKeeperUtils) CheckModuleAccountInvariant(ctx sdk.Context, fai
 
 func (h *C4eVestingUtils) SetupVestingTypesForAccountsVestingPools(ctx sdk.Context) {
 	accountVestingPools := h.helperCfevestingKeeper.GetAllAccountVestingPools(ctx)
-	vestingTypes := cfevestingtypes.VestingTypes{VestingTypes: GenerateVestingTypesForAccounVestingPools(accountVestingPools)}
+	vestingTypes := cfevestingtypes.VestingTypes{VestingTypes: GenerateVestingTypesForAccountVestingPools(accountVestingPools)}
 	h.helperCfevestingKeeper.SetVestingTypes(ctx, vestingTypes)
 }
 
