@@ -153,7 +153,7 @@ The Chain4Energy distributor module contains the following configurations parame
 | type    | enum string  | account type:<br />- MAIN - main module account<br />- MODULE_ACCOUNT - module account<br />- BASE_ACCOUNT - base account<br />- INTERNAL_ACCOUNT - cfedistributor internal account |
 | id      | string       | account identifier dependant on the type::<br />- MAIN - empty<br />- MODULE_ACCOUNT - module account name<br />- BASE_ACCOUNT - base account address<br />- INTERNAL_ACCOUNT - cfedistributor internal account name |
 
-### Example
+### Example params
 
 See the configuration params for **[example](#example)** from **[Concept](#concepts)** section
 
@@ -301,9 +301,108 @@ See the configuration params for **[example](#example)** from **[Concept](#conce
 
 ## State
 
+Chain4Energy distributor module state contains decimal amounts left from previouse block that were impossible to send due value less than 1 token.
+Module state contains followng data:
+
+| Key                  | Type                        | Description                     |
+| -------------------- | --------------------------- | ------------------------------- |
+| states     | List of State type | list of states for burn and per each destination account in all subdistributors (except main distributor) |
+
+### State type
+
+Account account = 1         [(gogoproto.nullable) = true];
+  bool burn = 2;
+  repeated cosmos.base.v1beta1.DecCoin coins_states = 3 [
+
+| Param                | Type                        | Description                     |
+| -------------------- | --------------------------- | ------------------------------- |
+| account | Account type (see **[Account type](#account-type)**) | destination account or empty in case of burn flag set to true     |
+| burn  | bool | specidies if this is burn destination state |
+| coins_states  | DecCoin | list of coins to distribute left by previous block |
+
+### Example state
+
+See the state for **[example](#example)** from **[Concept](#concepts)** section
+
+```json
+
+[
+    {
+        "account": {
+            "id": "validators_rewards",
+            "type": "MODULE_ACCOUNT"
+        },
+        "burn": false,
+        "coins_states": [
+            {
+                "denom": "uc4e",
+                "amount": "0.900000000000000000"
+            }
+        ]
+    },
+    {
+        "account": {
+            "id": "c4edwijhdhwqu43efvc3543ec34c2erc342dw",
+            "type": "BASE_ACCOUNT"
+        },
+        "burn": false,
+        "coins_states": [
+            {
+                "denom": "uc4e",
+                "amount": "0.359000000000000000"
+            }
+        ]
+    },
+    {
+        "account": {
+            "id": "incentive_boosters",
+            "type": "INTERNAL_ACCOUNT"
+        },
+        "burn": false,
+        "coins_states": []
+    },
+    {
+        "account": {
+            "id": "governance_booster",
+            "type": "MODULE_ACCOUNT"
+        },
+        "burn": false,
+        "coins_states": [
+            {
+                "denom": "uc4e",
+                "amount": "0.582000000000000000"
+            }
+        ]
+    },
+    {
+      "account": {
+            "id": "weekend_booster",
+            "type": "MODULE_ACCOUNT"
+      },
+      "burn": false,
+      "coins_states": [
+            {
+                "denom": "uc4e",
+                "amount": "0.359000000000000000"
+            }
+      ]
+    },
+    {
+        "burn": true,
+        "coins_states": [
+            {
+                "denom": "uc4e",
+                "amount": "0.800000000000000000"
+            }
+        ]
+    }
+]
+
+```
+
 ## Events
 
-The incentives module emits the following events:
+Chain4Energy distributor module module emits the following events:
 
 ### Handlers
 
