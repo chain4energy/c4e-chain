@@ -240,9 +240,10 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 			localRemains = k.addSharesToAccountState(ctx, localRemains, &share.Account, calculatedShare, findFunc)
 			distributions = append(distributions, &types.Distribution{
 				Subdistributor: subDistributor.Name,
-				Sources:     subDistributor.Sources,
-				Destination: &share.Account,
-				Amount:      calculatedShare,
+				ShareName:      share.Name,
+				Sources:        subDistributor.Sources,
+				Destination:    &share.Account,
+				Amount:         calculatedShare,
 			})
 		}
 	}
@@ -257,8 +258,8 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 			localRemains = k.addSharesToBurnState(ctx, localRemains, calculatedShare, findFunc)
 			burn = &types.DistributionBurn{
 				Subdistributor: subDistributor.Name,
-				Sources: subDistributor.Sources,
-				Amount:  calculatedShare,
+				Sources:        subDistributor.Sources,
+				Amount:         calculatedShare,
 			}
 		}
 	}
@@ -272,9 +273,10 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 		localRemains = k.addSharesToAccountState(ctx, localRemains, &accountDefault, defaultShare, findFunc)
 		distributions = append(distributions, &types.Distribution{
 			Subdistributor: subDistributor.Name,
-			Sources:     subDistributor.Sources,
-			Destination: &subDistributor.Destination.Account,
-			Amount:      defaultShare,
+			ShareName:      subDistributor.GetPrimaryShareName(),
+			Sources:        subDistributor.Sources,
+			Destination:    &subDistributor.Destination.Account,
+			Amount:         defaultShare,
 		})
 	}
 	k.Logger(ctx).Debug("start distribution process ret", "subDistributor", subDistributor.String(), "localRemains", localRemains)

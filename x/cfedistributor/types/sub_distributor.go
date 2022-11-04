@@ -7,6 +7,7 @@ import (
 )
 
 const maxShareSum = 100
+const primaryShareNameSuffix = "_primary"
 
 func (s SubDistributor) Validate() error {
 
@@ -16,17 +17,24 @@ func (s SubDistributor) Validate() error {
 
 	for _, source := range s.Sources {
 		if !source.Validate() {
-			return fmt.Errorf("the source account is of the wrong type: " + source.String())
+			return fmt.Errorf("the source account is of the wrong type: %s", source.String())
 		}
 	}
 
 	for _, share := range s.Destination.Share {
 		if !share.Account.Validate() {
-			return fmt.Errorf("the destination account is of the wrong type: " + share.Account.String())
+			return fmt.Errorf("the destination account is of the wrong type: %s", share.Account.String())
+		}
+		if share.Name == s.GetPrimaryShareName() {
+			return fmt.Errorf("share name: %s is reserved for primary share", share.Name)
 		}
 	}
 
 	return nil
+}
+
+func (s SubDistributor) GetPrimaryShareName() string {
+	return s.Name + primaryShareNameSuffix
 }
 
 func (destination Destination) CheckPercentShareSumIsBetween0And100() bool {

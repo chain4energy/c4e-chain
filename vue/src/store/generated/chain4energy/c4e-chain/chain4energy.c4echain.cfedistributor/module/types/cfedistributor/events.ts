@@ -7,6 +7,7 @@ export const protobufPackage = "chain4energy.c4echain.cfedistributor";
 
 export interface Distribution {
   subdistributor: string;
+  share_name: string;
   sources: Account[];
   destination: Account | undefined;
   amount: DecCoin[];
@@ -18,21 +19,24 @@ export interface DistributionBurn {
   amount: DecCoin[];
 }
 
-const baseDistribution: object = { subdistributor: "" };
+const baseDistribution: object = { subdistributor: "", share_name: "" };
 
 export const Distribution = {
   encode(message: Distribution, writer: Writer = Writer.create()): Writer {
     if (message.subdistributor !== "") {
       writer.uint32(10).string(message.subdistributor);
     }
+    if (message.share_name !== "") {
+      writer.uint32(18).string(message.share_name);
+    }
     for (const v of message.sources) {
-      Account.encode(v!, writer.uint32(18).fork()).ldelim();
+      Account.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     if (message.destination !== undefined) {
-      Account.encode(message.destination, writer.uint32(26).fork()).ldelim();
+      Account.encode(message.destination, writer.uint32(34).fork()).ldelim();
     }
     for (const v of message.amount) {
-      DecCoin.encode(v!, writer.uint32(34).fork()).ldelim();
+      DecCoin.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -50,12 +54,15 @@ export const Distribution = {
           message.subdistributor = reader.string();
           break;
         case 2:
-          message.sources.push(Account.decode(reader, reader.uint32()));
+          message.share_name = reader.string();
           break;
         case 3:
-          message.destination = Account.decode(reader, reader.uint32());
+          message.sources.push(Account.decode(reader, reader.uint32()));
           break;
         case 4:
+          message.destination = Account.decode(reader, reader.uint32());
+          break;
+        case 5:
           message.amount.push(DecCoin.decode(reader, reader.uint32()));
           break;
         default:
@@ -74,6 +81,11 @@ export const Distribution = {
       message.subdistributor = String(object.subdistributor);
     } else {
       message.subdistributor = "";
+    }
+    if (object.share_name !== undefined && object.share_name !== null) {
+      message.share_name = String(object.share_name);
+    } else {
+      message.share_name = "";
     }
     if (object.sources !== undefined && object.sources !== null) {
       for (const e of object.sources) {
@@ -97,6 +109,7 @@ export const Distribution = {
     const obj: any = {};
     message.subdistributor !== undefined &&
       (obj.subdistributor = message.subdistributor);
+    message.share_name !== undefined && (obj.share_name = message.share_name);
     if (message.sources) {
       obj.sources = message.sources.map((e) =>
         e ? Account.toJSON(e) : undefined
@@ -126,6 +139,11 @@ export const Distribution = {
       message.subdistributor = object.subdistributor;
     } else {
       message.subdistributor = "";
+    }
+    if (object.share_name !== undefined && object.share_name !== null) {
+      message.share_name = object.share_name;
+    } else {
+      message.share_name = "";
     }
     if (object.sources !== undefined && object.sources !== null) {
       for (const e of object.sources) {
