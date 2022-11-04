@@ -53,7 +53,6 @@ paths:
                                     type: string
                                   percent:
                                     type: string
-                                    title: float percent = 2;
                                   account:
                                     type: object
                                     properties:
@@ -66,7 +65,6 @@ paths:
                               properties:
                                 percent:
                                   type: string
-                                  title: float percent =1;
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -679,11 +677,11 @@ paths:
             type: object
             properties:
               params:
+                description: params holds all the parameters of this module.
                 type: object
                 properties:
                   denom:
                     type: string
-                description: Params defines the parameters for the module.
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -31917,7 +31915,6 @@ definitions:
     properties:
       percent:
         type: string
-        title: float percent =1;
   chain4energy.c4echain.cfedistributor.Destination:
     type: object
     properties:
@@ -31937,7 +31934,6 @@ definitions:
               type: string
             percent:
               type: string
-              title: float percent = 2;
             account:
               type: object
               properties:
@@ -31950,7 +31946,6 @@ definitions:
         properties:
           percent:
             type: string
-            title: float percent =1;
   chain4energy.c4echain.cfedistributor.Params:
     type: object
     properties:
@@ -31989,7 +31984,6 @@ definitions:
                         type: string
                       percent:
                         type: string
-                        title: float percent = 2;
                       account:
                         type: object
                         properties:
@@ -32002,7 +31996,6 @@ definitions:
                   properties:
                     percent:
                       type: string
-                      title: float percent =1;
     description: Params defines the parameters for the module.
   chain4energy.c4echain.cfedistributor.QueryParamsResponse:
     type: object
@@ -32046,7 +32039,6 @@ definitions:
                             type: string
                           percent:
                             type: string
-                            title: float percent = 2;
                           account:
                             type: object
                             properties:
@@ -32059,7 +32051,6 @@ definitions:
                       properties:
                         percent:
                           type: string
-                          title: float percent =1;
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfedistributor.QueryStatesResponse:
     type: object
@@ -32117,7 +32108,6 @@ definitions:
         type: string
       percent:
         type: string
-        title: float percent = 2;
       account:
         type: object
         properties:
@@ -32184,7 +32174,6 @@ definitions:
                   type: string
                 percent:
                   type: string
-                  title: float percent = 2;
                 account:
                   type: object
                   properties:
@@ -32197,7 +32186,6 @@ definitions:
             properties:
               percent:
                 type: string
-                title: float percent =1;
   cosmos.base.v1beta1.Coin:
     type: object
     properties:
@@ -32900,7 +32888,7 @@ definitions:
   chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
     type: object
     properties:
-      Withdrawn:
+      withdrawn:
         type: string
   chain4energy.c4echain.cfevesting.Params:
     type: object
@@ -32912,11 +32900,11 @@ definitions:
     type: object
     properties:
       params:
+        description: params holds all the parameters of this module.
         type: object
         properties:
           denom:
             type: string
-        description: Params defines the parameters for the module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfevesting.QueryVestingPoolsResponse:
     type: object

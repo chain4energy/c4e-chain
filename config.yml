@@ -153,7 +153,7 @@ genesis:
               id: "validators_rewards_collector"
               type: MODULE_ACCOUNT
             burn_share:
-              percent: "0"
+              percent: "5"
             share:
               - name: development_fund
                 percent: "5"

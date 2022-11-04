@@ -1,7 +1,7 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
-import { DistributionResult } from "./module/types/cfedistributor/events"
-import { DistributionsResult } from "./module/types/cfedistributor/events"
+import { Distribution } from "./module/types/cfedistributor/events"
+import { DistributionBurn } from "./module/types/cfedistributor/events"
 import { Params } from "./module/types/cfedistributor/params"
 import { State } from "./module/types/cfedistributor/sub_distributor"
 import { SubDistributor } from "./module/types/cfedistributor/sub_distributor"
@@ -11,7 +11,7 @@ import { Share } from "./module/types/cfedistributor/sub_distributor"
 import { Account } from "./module/types/cfedistributor/sub_distributor"
 
 
-export { DistributionResult, DistributionsResult, Params, State, SubDistributor, Destination, BurnShare, Share, Account };
+export { Distribution, DistributionBurn, Params, State, SubDistributor, Destination, BurnShare, Share, Account };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -53,8 +53,8 @@ const getDefaultState = () => {
 				States: {},
 				
 				_Structure: {
-						DistributionResult: getStructure(DistributionResult.fromPartial({})),
-						DistributionsResult: getStructure(DistributionsResult.fromPartial({})),
+						Distribution: getStructure(Distribution.fromPartial({})),
+						DistributionBurn: getStructure(DistributionBurn.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						State: getStructure(State.fromPartial({})),
 						SubDistributor: getStructure(SubDistributor.fromPartial({})),
