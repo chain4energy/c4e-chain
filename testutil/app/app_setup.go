@@ -176,7 +176,7 @@ func genesisStateWithValSet(
 	genesisState[cfevestingtypes.ModuleName] = app.AppCodec().MustMarshalJSON(vestingGenesis)
 
 	distributorGenesis := cfedistributortypes.DefaultGenesis()
-	distributorGenesis.Params.SubDistributors[0].Destination.Account.Id = commontestutils.DefaultDistributionDestination
+	distributorGenesis.Params.SubDistributors[0].Destinations.PrimaryShare.Id = commontestutils.DefaultDistributionDestination
 	genesisState[cfedistributortypes.ModuleName] = app.AppCodec().MustMarshalJSON(distributorGenesis)
 
 	return genesisState, delegationsSum

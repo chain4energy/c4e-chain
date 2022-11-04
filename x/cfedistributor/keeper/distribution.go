@@ -226,30 +226,30 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 		"coinsToDistributeDec", coinsToDistributeDec.String())
 	localRemains = states
 	defaultShare := coinsToDistributeDec
-	for _, share := range subDistributor.Destination.Share {
-		if share.Account.Type == types.MAIN {
+	for _, share := range subDistributor.Destinations.Shares {
+		if share.Destination.Type == types.MAIN {
 			continue
 		}
-		calculatedShare := calculatePercentage(share.Percent, coinsToDistributeDec)
+		calculatedShare := calculatePercentage(share.Share, coinsToDistributeDec)
 		defaultShare = defaultShare.Sub(calculatedShare)
 		if !calculatedShare.IsZero() {
 			findFunc := func() int {
-				return findAccountState(localRemains, &share.Account)
+				return findAccountState(localRemains, &share.Destination)
 			}
 
-			localRemains = k.addSharesToAccountState(ctx, localRemains, &share.Account, calculatedShare, findFunc)
+			localRemains = k.addSharesToAccountState(ctx, localRemains, &share.Destination, calculatedShare, findFunc)
 			distributions = append(distributions, &types.Distribution{
 				Subdistributor: subDistributor.Name,
 				ShareName:      share.Name,
 				Sources:        subDistributor.Sources,
-				Destination:    &share.Account,
+				Destination:    &share.Destination,
 				Amount:         calculatedShare,
 			})
 		}
 	}
 
-	if subDistributor.Destination.BurnShare.Percent != sdk.ZeroDec() {
-		calculatedShare := calculatePercentage(subDistributor.Destination.BurnShare.Percent, coinsToDistributeDec)
+	if subDistributor.Destinations.BurnShare != sdk.ZeroDec() {
+		calculatedShare := calculatePercentage(subDistributor.Destinations.BurnShare, coinsToDistributeDec)
 		defaultShare = defaultShare.Sub(calculatedShare)
 		if !calculatedShare.IsZero() {
 			findFunc := func() int {
@@ -264,7 +264,7 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 		}
 	}
 
-	accountDefault := subDistributor.Destination.GetAccount()
+	accountDefault := subDistributor.Destinations.GetPrimaryShare()
 
 	if accountDefault.Type != types.MAIN {
 		findFunc := func() int {
@@ -275,7 +275,7 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 			Subdistributor: subDistributor.Name,
 			ShareName:      subDistributor.GetPrimaryShareName(),
 			Sources:        subDistributor.Sources,
-			Destination:    &subDistributor.Destination.Account,
+			Destination:    &subDistributor.Destinations.PrimaryShare,
 			Amount:         defaultShare,
 		})
 	}

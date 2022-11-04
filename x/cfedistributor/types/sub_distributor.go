@@ -11,7 +11,7 @@ const primaryShareNameSuffix = "_primary"
 
 func (s SubDistributor) Validate() error {
 
-	if s.Destination.CheckPercentShareSumIsBetween0And100() {
+	if s.Destinations.CheckPercentShareSumIsBetween0And100() {
 		return fmt.Errorf("share sum is greater or equal 100")
 	}
 
@@ -21,9 +21,9 @@ func (s SubDistributor) Validate() error {
 		}
 	}
 
-	for _, share := range s.Destination.Share {
-		if !share.Account.Validate() {
-			return fmt.Errorf("the destination account is of the wrong type: %s", share.Account.String())
+	for _, share := range s.Destinations.Shares {
+		if !share.Destination.Validate() {
+			return fmt.Errorf("the destination account is of the wrong type: %s", share.Destination.String())
 		}
 		if share.Name == s.GetPrimaryShareName() {
 			return fmt.Errorf("share name: %s is reserved for primary share", share.Name)
@@ -37,16 +37,15 @@ func (s SubDistributor) GetPrimaryShareName() string {
 	return s.Name + primaryShareNameSuffix
 }
 
-func (destination Destination) CheckPercentShareSumIsBetween0And100() bool {
-	shares := destination.Share
+func (destination Destinations) CheckPercentShareSumIsBetween0And100() bool {
+	shares := destination.Shares
 	percentShareSum := sdk.ZeroDec()
 	for _, share := range shares {
-		percentShareSum = percentShareSum.Add(share.Percent)
+		percentShareSum = percentShareSum.Add(share.Share)
 	}
 
-	if destination.BurnShare != nil {
-
-		percentShareSum = percentShareSum.Add(destination.BurnShare.Percent)
+	if destination.BurnShare != sdk.ZeroDec() {
+		percentShareSum = percentShareSum.Add(destination.BurnShare)
 	}
 
 	return percentShareSum.GTE(sdk.NewDec(maxShareSum)) || percentShareSum.IsNegative()
@@ -106,17 +105,17 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 			}
 		}
 
-		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Account, i, DESTINATION); err != nil {
+		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.PrimaryShare, i, DESTINATION); err != nil {
 			return err
 		}
 
-		for j := 0; j < len(subDistributors[i].Destination.Share); j++ {
-			shareName := subDistributors[i].Destination.Share[j].Name
+		for j := 0; j < len(subDistributors[i].Destinations.Shares); j++ {
+			shareName := subDistributors[i].Destinations.Shares[j].Name
 			if err = validateUniquenessOfNames(shareName, &shareNameOccured); err != nil {
 				return err
 			}
 
-			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Share[j].Account, i, DESTINATION); err != nil {
+			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.Shares[j].Destination, i, DESTINATION); err != nil {
 				return err
 			}
 		}

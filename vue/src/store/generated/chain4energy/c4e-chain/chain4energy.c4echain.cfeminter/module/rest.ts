@@ -63,7 +63,7 @@ export interface CfeminterQueryInflationResponse {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CfeminterQueryParamsResponse {
-  /** Params defines the parameters for the module. */
+  /** params holds all the parameters of this module. */
   params?: CfeminterParams;
 }
 

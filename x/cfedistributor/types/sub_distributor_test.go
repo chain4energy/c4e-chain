@@ -3,7 +3,6 @@ package types
 import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -30,84 +29,84 @@ func TestCheckAccountType(t *testing.T) {
 
 func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 
-	shareEqual30 := Share{
-		Name:    "1",
-		Percent: sdk.MustNewDecFromStr("30"),
-		Account: Account{},
+	shareEqual30 := DestinationShare{
+		Name:        "1",
+		Share:       sdk.MustNewDecFromStr("30"),
+		Destination: Account{},
 	}
 
-	shareEqual31 := Share{
-		Name:    "2",
-		Percent: sdk.MustNewDecFromStr("31"),
-		Account: Account{},
+	shareEqual31 := DestinationShare{
+		Name:        "2",
+		Share:       sdk.MustNewDecFromStr("31"),
+		Destination: Account{},
 	}
 
-	shareEqual50 := Share{
-		Name:    "3",
-		Percent: sdk.MustNewDecFromStr("50"),
-		Account: Account{},
+	shareEqual50 := DestinationShare{
+		Name:        "3",
+		Share:       sdk.MustNewDecFromStr("50"),
+		Destination: Account{},
 	}
 
-	shareEqual19 := Share{
-		Name:    "4",
-		Percent: sdk.MustNewDecFromStr("19"),
-		Account: Account{},
+	shareEqual19 := DestinationShare{
+		Name:        "4",
+		Share:       sdk.MustNewDecFromStr("19"),
+		Destination: Account{},
 	}
 
-	shareEqual20 := Share{
-		Name:    "5",
-		Percent: sdk.MustNewDecFromStr("20"),
-		Account: Account{},
+	shareEqual20 := DestinationShare{
+		Name:        "5",
+		Share:       sdk.MustNewDecFromStr("20"),
+		Destination: Account{},
 	}
 
-	shareEqualMinus20 := Share{
-		Name:    "5",
-		Percent: sdk.MustNewDecFromStr("-20"),
-		Account: Account{},
+	shareEqualMinus20 := DestinationShare{
+		Name:        "5",
+		Share:       sdk.MustNewDecFromStr("-20"),
+		Destination: Account{},
 	}
 
-	burnShare := BurnShare{Percent: sdk.MustNewDecFromStr("50")}
+	burnShare := sdk.NewDec(50)
 
-	var sharesEqual30 []*Share
+	var sharesEqual30 []*DestinationShare
 	sharesEqual30 = append(sharesEqual30, &shareEqual30)
 
-	var sharesEqual50 []*Share
+	var sharesEqual50 []*DestinationShare
 	sharesEqual50 = append(sharesEqual50, &shareEqual30)
 	sharesEqual50 = append(sharesEqual50, &shareEqual50)
 
-	var sharesEqual81 []*Share
+	var sharesEqual81 []*DestinationShare
 	sharesEqual81 = append(sharesEqual81, &shareEqual30)
 	sharesEqual81 = append(sharesEqual81, &shareEqual50)
 
-	var sharesEqual100 []*Share
+	var sharesEqual100 []*DestinationShare
 	sharesEqual100 = append(sharesEqual100, &shareEqual31)
 	sharesEqual100 = append(sharesEqual100, &shareEqual50)
 	sharesEqual100 = append(sharesEqual100, &shareEqual19)
 
-	var sharesEqual101 []*Share
+	var sharesEqual101 []*DestinationShare
 	sharesEqual101 = append(sharesEqual101, &shareEqual31)
 	sharesEqual101 = append(sharesEqual101, &shareEqual50)
 	sharesEqual101 = append(sharesEqual101, &shareEqual20)
 
-	var sharesEqualMinus10 []*Share
+	var sharesEqualMinus10 []*DestinationShare
 	sharesEqualMinus10 = append(sharesEqual101, &shareEqualMinus20)
 	sharesEqualMinus10 = append(sharesEqual101, &shareEqualMinus20)
 	sharesEqualMinus10 = append(sharesEqual101, &shareEqual30)
 
 	tests := []struct {
 		name        string
-		destination Destination
+		destination Destinations
 		want        bool
 	}{
 
-		{"Share equal 30", Destination{Account: Account{}, Share: sharesEqual30, BurnShare: nil}, false},
-		{"Share equal 80 with burn", Destination{Account: Account{}, Share: sharesEqual30, BurnShare: &burnShare}, false},
-		{"Share equal 50", Destination{Account: Account{}, Share: sharesEqual50, BurnShare: nil}, false},
-		{"Share equal 100 with burn", Destination{Account: Account{}, Share: sharesEqual50, BurnShare: &burnShare}, true},
-		{"Share equal 81", Destination{Account: Account{}, Share: sharesEqual81, BurnShare: nil}, false},
-		{"Share equal 100", Destination{Account: Account{}, Share: sharesEqual100, BurnShare: nil}, true},
-		{"Share equal 101", Destination{Account: Account{}, Share: sharesEqual101, BurnShare: nil}, true},
-		{"Share equal -10", Destination{Account: Account{}, Share: sharesEqualMinus10, BurnShare: nil}, true},
+		{"Share equal 30", Destinations{PrimaryShare: Account{}, Shares: sharesEqual30, BurnShare: sdk.ZeroDec()}, false},
+		{"Share equal 80 with burn", Destinations{PrimaryShare: Account{}, Shares: sharesEqual30, BurnShare: burnShare}, false},
+		{"Share equal 50", Destinations{PrimaryShare: Account{}, Shares: sharesEqual50, BurnShare: sdk.ZeroDec()}, false},
+		{"Share equal 100 with burn", Destinations{PrimaryShare: Account{}, Shares: sharesEqual50, BurnShare: burnShare}, true},
+		{"Share equal 81", Destinations{PrimaryShare: Account{}, Shares: sharesEqual81, BurnShare: sdk.ZeroDec()}, false},
+		{"Share equal 100", Destinations{PrimaryShare: Account{}, Shares: sharesEqual100, BurnShare: sdk.ZeroDec()}, true},
+		{"Share equal 101", Destinations{PrimaryShare: Account{}, Shares: sharesEqual101, BurnShare: sdk.ZeroDec()}, true},
+		{"Share equal -10", Destinations{PrimaryShare: Account{}, Shares: sharesEqualMinus10, BurnShare: sdk.ZeroDec()}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -119,11 +118,15 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 }
 
 func TestValidateOrderOfMainSubDistributors(t *testing.T) {
+	twoMainTypesWithinOneSubdistributor := []SubDistributor{
+		createSubDistributor(BASE_ACCOUNT, MAIN, MAIN, ""),
+	}
 
 	var zeroSubDistributors []SubDistributor
 
 	onlyOneMainSubdistributor := []SubDistributor{
 		CreateSubDistributor(MAIN_SOURCE),
+		createSubDistributor(BASE_ACCOUNT, MAIN, BASE_ACCOUNT, ""),
 	}
 	destinationMainAtTheEnd := []SubDistributor{
 		CreateSubDistributor(MAIN_SOURCE),
@@ -154,6 +157,7 @@ func TestValidateOrderOfMainSubDistributors(t *testing.T) {
 		wantError       bool
 	}{
 		{"only one main subdistributor", onlyOneMainSubdistributor, false},
+		{"two main types within one subdistributor", twoMainTypesWithinOneSubdistributor, true},
 		{"zero sub distributors", zeroSubDistributors, true},
 		{"wrong order destination main at the end", destinationMainAtTheEnd, true},
 		{"correct order source main at the end", sourceMainAtTheEnd, false},
@@ -165,9 +169,9 @@ func TestValidateOrderOfMainSubDistributors(t *testing.T) {
 
 			err := ValidateSubDistributors(tt.subDistributors)
 			if tt.wantError == true && err == nil {
-				t.Errorf("TestValidateOrderOfMainSubDistributors() wanted error got nil")
+				t.Errorf("ValidateOrderOfSubDistributors() wanted error got nil")
 			} else if tt.wantError == false && err != nil {
-				t.Errorf("TestValidateOrderOfMainSubDistributors() error: %v", err.Error())
+				t.Errorf("ValidateOrderOfSubDistributors() error: %v", err.Error())
 			}
 		})
 	}
@@ -176,6 +180,9 @@ func TestValidateOrderOfMainSubDistributors(t *testing.T) {
 func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
 	onlyOneInternalSubdistributor := []SubDistributor{
 		CreateSubDistributor(INTERNAL_SOURCE),
+	}
+	twoInternalTypesWithinOneSubdistributor := []SubDistributor{
+		createSubDistributor(BASE_ACCOUNT, INTERNAL_ACCOUNT, INTERNAL_ACCOUNT, "custom_id"),
 	}
 
 	var destinationAtTheEnd []SubDistributor
@@ -193,7 +200,7 @@ func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
 	}
 
 	destinationInternalShareAtTheEnd := []SubDistributor{
-		CreateSubDistributor(INTERNAL_DESTINATION_SHARE),
+		createSubDistributor(BASE_ACCOUNT, INTERNAL_ACCOUNT, BASE_ACCOUNT, "custom_id"),
 		CreateSubDistributor(INTERNAL_DESTINATION_SHARE),
 		CreateSubDistributor(MAIN_SOURCE),
 	}
@@ -220,6 +227,7 @@ func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
 		wantError       bool
 	}{
 		{"only one internal subdistributor", onlyOneInternalSubdistributor, true},
+		{"two internal types within one subdistributor", twoInternalTypesWithinOneSubdistributor, true},
 		{"wrong order destination main at the end", destinationAtTheEnd, true},
 		{"wrong order destination internal at the end", destinationInternalAtTheEnd, true},
 		{"correct order source main at the end", sourceInternalAtTheEnd, false},
@@ -231,9 +239,9 @@ func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ValidateSubDistributors(tt.subDistributors)
 			if tt.wantError == true && err == nil {
-				t.Errorf("TestValidateOrderOfInternalSubDistributors() wanted error got nil")
+				t.Errorf("ValidateOrderOfSubDistributors() wanted error got nil")
 			} else if tt.wantError == false && err != nil {
-				t.Errorf("TestValidateOrderOfInternalSubDistributors() error: %v", err.Error())
+				t.Errorf("ValidateOrderOfSubDistributors() error: %v", err.Error())
 			}
 		})
 	}
@@ -274,60 +282,15 @@ func TestValidateUniquenessOfNames(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ValidateSubDistributors(tt.subDistributors)
 			if tt.wantError == true && err == nil {
-				t.Errorf("TestValidateUniquenessOfNames() wanted error got nil")
+				t.Errorf("ValidateSubDistributors() wanted error got nil")
 			} else if tt.wantError == false && err != nil {
-				t.Errorf("TestValidateUniquenessOfNames() error: %v", err.Error())
+				t.Errorf("ValidateSubDistributors() error: %v", err.Error())
 			}
-		})
-	}
-}
-
-func TestValidateUniquenessOfSubdistributors(t *testing.T) {
-	type test struct {
-		expectedError   string
-		subDistributors []SubDistributor
-	}
-	var tests []test
-
-	for _, accType := range []string{INTERNAL_ACCOUNT, MODULE_ACCOUNT, MAIN, BASE_ACCOUNT} {
-		subDistributorCases := make(map[int][]SubDistributor)
-		subDistributorCases[0] = []SubDistributor{
-			createSubDistributor(CUSTOM_ACCOUNT, accType, accType, CUSTOM_ID, false),
-		}
-		subDistributorCases[1] = []SubDistributor{
-			createSubDistributor(accType, CUSTOM_ACCOUNT, accType, CUSTOM_ID, false),
-		}
-		subDistributorCases[2] = []SubDistributor{
-			createSubDistributor(accType, accType, CUSTOM_ACCOUNT, CUSTOM_ID, false),
-		}
-		subDistributorCases[3] = []SubDistributor{
-			createSubDistributor(accType, accType, accType, CUSTOM_ID, false),
-		}
-
-		for i := 0; i < 4; i++ {
-			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(MAIN_SOURCE))
-			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(INTERNAL_SOURCE))
-			expectedError := "same " + getId(&Account{Type: accType, Id: CUSTOM_ID}) +
-				" account cannot occur twice within one subdistributor, subdistributor name: " + subDistributorCases[i][0].Name
-
-			tests = append(tests, test{expectedError, subDistributorCases[i]})
-		}
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.expectedError, func(t *testing.T) {
-			err := ValidateSubDistributors(tt.subDistributors)
-			if err == nil {
-				t.Errorf("TestValidateUniquenessOfSubdistributors() wanted error got nil")
-			}
-			require.EqualValues(t, tt.expectedError, err.Error())
 		})
 	}
 }
 
 const (
-	CUSTOM_ACCOUNT             = "CUSTOM_ACCOUNT"
-	CUSTOM_ID                  = "custom_id"
 	MAIN_SOURCE                = "MAIN_SOURCE"
 	MAIN_DESTINATION           = "MAIN_DESTINATION"
 	MAIN_DESTINATION_SHARE     = "MAIN_DESTINATION_SHARE"
@@ -339,17 +302,17 @@ const (
 func CreateSubDistributor(accType string) SubDistributor {
 	switch accType {
 	case MAIN_SOURCE:
-		return createSubDistributor(BASE_ACCOUNT, MAIN, BASE_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(BASE_ACCOUNT, MAIN, BASE_ACCOUNT, "custom_id")
 	case MAIN_DESTINATION:
-		return createSubDistributor(MAIN, BASE_ACCOUNT, BASE_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(MAIN, BASE_ACCOUNT, BASE_ACCOUNT, "custom_id")
 	case MAIN_DESTINATION_SHARE:
-		return createSubDistributor(BASE_ACCOUNT, BASE_ACCOUNT, MAIN, CUSTOM_ID, true)
+		return createSubDistributor(BASE_ACCOUNT, BASE_ACCOUNT, MAIN, "custom_id")
 	case INTERNAL_SOURCE:
-		return createSubDistributor(BASE_ACCOUNT, INTERNAL_ACCOUNT, BASE_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(BASE_ACCOUNT, INTERNAL_ACCOUNT, BASE_ACCOUNT, "custom_id")
 	case INTERNAL_DESTINATION:
-		return createSubDistributor(INTERNAL_ACCOUNT, BASE_ACCOUNT, BASE_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(INTERNAL_ACCOUNT, BASE_ACCOUNT, BASE_ACCOUNT, "custom_id")
 	case INTERNAL_DESTINATION_SHARE:
-		return createSubDistributor(BASE_ACCOUNT, BASE_ACCOUNT, INTERNAL_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(BASE_ACCOUNT, BASE_ACCOUNT, INTERNAL_ACCOUNT, "custom_id")
 	}
 	return SubDistributor{}
 }
@@ -359,42 +322,36 @@ func createSubDistributor(
 	sourceType string,
 	destinationShareType string,
 	Id string,
-	addIdSuffix bool,
 ) SubDistributor {
 	return SubDistributor{
 		Name: helpers.RandStringOfLength(10),
-		Destination: Destination{
-			Account: Account{
-				Id:   Id + getIdSuffix("mainDst", destinationType, addIdSuffix),
+		Destinations: Destinations{
+			PrimaryShare: Account{
+				Id:   Id + getIdSuffix("mainDst", destinationType),
 				Type: destinationType,
 			},
-			BurnShare: &BurnShare{
-				Percent: sdk.MustNewDecFromStr("0"),
-			},
-			Share: []*Share{
+			BurnShare: sdk.MustNewDecFromStr("0"),
+			Shares: []*DestinationShare{
 				{
 					Name: helpers.RandStringOfLength(10),
-					Account: Account{
-						Id:   Id + getIdSuffix("shareDst", destinationShareType, addIdSuffix),
+					Destination: Account{
+						Id:   Id + getIdSuffix("shareDst", destinationShareType),
 						Type: destinationShareType,
 					},
-					Percent: sdk.MustNewDecFromStr("0"),
+					Share: sdk.MustNewDecFromStr("0"),
 				},
 			},
 		},
 		Sources: []*Account{
 			{
-				Id:   Id + getIdSuffix("src", sourceType, addIdSuffix),
+				Id:   Id + getIdSuffix("src", sourceType),
 				Type: sourceType,
 			},
 		},
 	}
 }
 
-func getIdSuffix(suffix string, accType string, addIdSuffix bool) string {
-	if !addIdSuffix {
-		return ""
-	}
+func getIdSuffix(suffix string, accType string) string {
 	if accType == INTERNAL_ACCOUNT || accType == MAIN {
 		return "-" + accType
 	}

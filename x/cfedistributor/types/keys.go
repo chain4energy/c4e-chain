@@ -1,6 +1,5 @@
 package types
 
-var RemainsMapKey = []byte{0x03}
 var RemainsKeyPrefix = []byte{0x04}
 
 const (

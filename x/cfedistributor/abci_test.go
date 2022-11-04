@@ -46,7 +46,7 @@ func BurningDistributorTest(t *testing.T, destinationType subdistributortestutil
 	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(destinationType)
 	subdistributors = append(subdistributors, burningSubSistributor)
 	if destinationType == subdistributortestutils.MainCollector || destinationType == subdistributortestutils.InternalAccount {
-		subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+		subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destinations.PrimaryShare))
 	}
 
 	testHelper.C4eDistributorUtils.SetSubDistributorsParams(subdistributors)

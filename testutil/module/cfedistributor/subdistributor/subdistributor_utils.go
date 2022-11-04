@@ -31,34 +31,30 @@ var ShareDevelopmentFundAccountAddressString = ShareDevelopmentFundAccountAddres
 var HelperDestinationAccountAddressString = HelperDestinationAccountAddress.String()
 
 func PreparareMainDefaultDistributor() types.SubDistributor {
-	helperDestination := types.Destination{
-		Account: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BASE_ACCOUNT},
-		Share:   nil,
-		BurnShare: &types.BurnShare{
-			Percent: sdk.MustNewDecFromStr("0"),
-		},
+	helperDestination := types.Destinations{
+		PrimaryShare: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BASE_ACCOUNT},
+		Shares:       nil,
+		BurnShare:    sdk.ZeroDec(),
 	}
 	distributor1 := types.SubDistributor{
-		Name:        "default_main_distributor",
-		Sources:     []*types.Account{{Id: "", Type: types.MAIN}},
-		Destination: helperDestination,
+		Name:         "default_main_distributor",
+		Sources:      []*types.Account{{Id: "", Type: types.MAIN}},
+		Destinations: helperDestination,
 	}
 
 	return distributor1
 }
 
 func PreparareHelperDistributorForDestination(destination types.Account) types.SubDistributor {
-	helperDestination := types.Destination{
-		Account: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BASE_ACCOUNT},
-		Share:   nil,
-		BurnShare: &types.BurnShare{
-			Percent: sdk.MustNewDecFromStr("0"),
-		},
+	helperDestination := types.Destinations{
+		PrimaryShare: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BASE_ACCOUNT},
+		Shares:       nil,
+		BurnShare:    sdk.ZeroDec(),
 	}
 	distributor1 := types.SubDistributor{
-		Name:        "test_helper_distributor",
-		Sources:     []*types.Account{&destination},
-		Destination: helperDestination,
+		Name:         "test_helper_distributor",
+		Sources:      []*types.Account{&destination},
+		Destinations: helperDestination,
 	}
 
 	return distributor1
@@ -87,20 +83,18 @@ func PrepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 		destAccount.Type = types.MAIN
 	}
 
-	burnShare := types.BurnShare{
-		Percent: sdk.MustNewDecFromStr("51"),
-	}
+	burnShare := sdk.NewDec(51)
 
-	destination := types.Destination{
-		Account:   destAccount,
-		Share:     nil,
-		BurnShare: &burnShare,
+	destination := types.Destinations{
+		PrimaryShare: destAccount,
+		Shares:       nil,
+		BurnShare:    burnShare,
 	}
 
 	distributor1 := types.SubDistributor{
-		Name:        helpers.RandStringOfLength(10),
-		Sources:     []*types.Account{{Id: authtypes.FeeCollectorName, Type: types.MODULE_ACCOUNT}},
-		Destination: destination,
+		Name:         helpers.RandStringOfLength(10),
+		Sources:      []*types.Account{{Id: authtypes.FeeCollectorName, Type: types.MODULE_ACCOUNT}},
+		Destinations: destination,
 	}
 
 	return distributor1
@@ -135,19 +129,17 @@ func PrepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) 
 		destAccount.Type = types.MAIN
 	}
 
-	burnShare := types.BurnShare{
-		Percent: sdk.MustNewDecFromStr("0"),
-	}
+	burnShare := sdk.ZeroDec()
 
-	destination := types.Destination{
-		Account:   destAccount,
-		Share:     nil,
-		BurnShare: &burnShare,
+	destination := types.Destinations{
+		PrimaryShare: destAccount,
+		Shares:       nil,
+		BurnShare:    burnShare,
 	}
 	return types.SubDistributor{
-		Name:        helpers.RandStringOfLength(10),
-		Sources:     []*types.Account{&source},
-		Destination: destination,
+		Name:         helpers.RandStringOfLength(10),
+		Sources:      []*types.Account{&source},
+		Destinations: destination,
 	}
 }
 
@@ -176,9 +168,7 @@ func PrepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 		source.Type = types.MAIN
 	}
 
-	burnShare := types.BurnShare{
-		Percent: sdk.MustNewDecFromStr("0"),
-	}
+	burnShare := sdk.ZeroDec()
 
 	var destName string
 	if toValidators {
@@ -197,21 +187,21 @@ func PrepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 		Type: types.BASE_ACCOUNT,
 	}
 
-	shareDevelopmentFund := types.Share{
-		Name:    helpers.RandStringOfLength(10),
-		Percent: sdk.MustNewDecFromStr("10.345"),
-		Account: shareDevelopmentFundAccount,
+	shareDevelopmentFund := types.DestinationShare{
+		Name:        helpers.RandStringOfLength(10),
+		Share:       sdk.MustNewDecFromStr("10.345"),
+		Destination: shareDevelopmentFundAccount,
 	}
 
-	destination := types.Destination{
-		Account:   destAccount,
-		Share:     []*types.Share{&shareDevelopmentFund},
-		BurnShare: &burnShare,
+	destination := types.Destinations{
+		PrimaryShare: destAccount,
+		Shares:       []*types.DestinationShare{&shareDevelopmentFund},
+		BurnShare:    burnShare,
 	}
 
 	return types.SubDistributor{
-		Name:        helpers.RandStringOfLength(10),
-		Sources:     []*types.Account{&source},
-		Destination: destination,
+		Name:         helpers.RandStringOfLength(10),
+		Sources:      []*types.Account{&source},
+		Destinations: destination,
 	}
 }

@@ -10,7 +10,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 message State {
   Account account = 1         [(gogoproto.nullable) = true];
   bool burn = 2;
-  repeated cosmos.base.v1beta1.DecCoin coins_states = 3 [
+  repeated cosmos.base.v1beta1.DecCoin coins_states = 3 [ // rename - remains
   (gogoproto.moretags) = "yaml:\"coin_state\"",
   (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
   (gogoproto.nullable) = false];
@@ -20,33 +20,27 @@ message State {
 message SubDistributor {
   string name = 1;
   repeated Account sources = 2;
-  Destination destination = 3         [(gogoproto.nullable) = false];
-
+  Destinations destinations = 3 [(gogoproto.nullable) = false];
 }
 
-message Destination {
-  Account account = 1         [(gogoproto.nullable) = false];
-  repeated Share share = 2         [(gogoproto.nullable) = true];
-  BurnShare burn_share = 3         [(gogoproto.nullable) = true];
+message Destinations {
+  Account primary_share = 1            [(gogoproto.nullable) = false];
+  string burn_share = 2                [
+                                          (gogoproto.moretags)   = "yaml:\"percent\"",
+                                          (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+                                          (gogoproto.nullable)   = false
+                                       ];
+  repeated DestinationShare shares = 3 [(gogoproto.nullable) = true];
 }
 
-message BurnShare {
-  string percent                = 1 [
-    (gogoproto.moretags)   = "yaml:\"percent\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false
-  ];
-
-}
-
-message Share {
+message DestinationShare {
   string name = 1;
-  string percent                = 2 [
-    (gogoproto.moretags)   = "yaml:\"percent\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false
-  ];
-  Account account = 3          [(gogoproto.nullable) = false];
+  string share = 2 [
+                     (gogoproto.moretags)   = "yaml:\"percent\"",
+                     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+                     (gogoproto.nullable)   = false
+                   ];
+  Account destination = 3 [(gogoproto.nullable) = false];
 }
 
 message Account {
