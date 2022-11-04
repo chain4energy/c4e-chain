@@ -12,20 +12,20 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
-	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
+	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmtypes "github.com/tendermint/tendermint/types"
-
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 )
 
 // Setup initializes a new chainforenergyApp
@@ -172,8 +172,12 @@ func genesisStateWithValSet(
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	vestingGenesis := cfevestingtypes.DefaultGenesis()
-	vestingGenesis.Params.Denom = testcommon.DefaultTestDenom
+	vestingGenesis.Params.Denom = commontestutils.DefaultTestDenom
 	genesisState[cfevestingtypes.ModuleName] = app.AppCodec().MustMarshalJSON(vestingGenesis)
+
+	distributorGenesis := cfedistributortypes.DefaultGenesis()
+	distributorGenesis.Params.SubDistributors[0].Destination.Account.Id = commontestutils.DefaultDistributionDestination
+	genesisState[cfedistributortypes.ModuleName] = app.AppCodec().MustMarshalJSON(distributorGenesis)
 
 	return genesisState, delegationsSum
 }

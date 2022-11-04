@@ -1,9 +1,5 @@
 package types
 
-import (
-// this line is used by starport scaffolding # genesis/types/import
-)
-
 // DefaultIndex is the default capability global index
 const DefaultIndex uint64 = 1
 
@@ -19,6 +15,17 @@ func DefaultGenesis() *GenesisState {
 // failure.
 func (gs GenesisState) Validate() error {
 	// this line is used by starport scaffolding # genesis/types/validate
+	//States []*State
+	var states []State
+	for _, state := range gs.States {
+		if err := state.Validate(); err != nil {
+			return err
+		}
+		states = append(states, *state)
+	}
+	if err, _ := StateSumIsInteger(states); err != nil {
+		return err
+	}
 
 	return gs.Params.Validate()
 }

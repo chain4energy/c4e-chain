@@ -19,12 +19,11 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
+			desc:     "invalid genesis state - there must be at least one subdistributor with the source main type",
 			genState: &types.GenesisState{
-
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
-			valid: true,
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {

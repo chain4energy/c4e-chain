@@ -100,6 +100,12 @@ func (m *C4eMinterUtils) ExportGenesis(ctx sdk.Context, expected cfemintertypes.
 	}
 }
 
+func (m *C4eMinterUtils) ExportGenesisAndValidate(ctx sdk.Context) {
+	exportedGenesis := cfeminter.ExportGenesis(ctx, *m.helperCfeminterKeeper)
+	err := exportedGenesis.Validate()
+	require.NoError(m.t, err)
+}
+
 func (m *C4eMinterUtils) VerifyInflation(ctx sdk.Context, expectedInflation sdk.Dec) {
 	inflation, err := m.helperCfeminterKeeper.GetCurrentInflation(ctx)
 	require.NoError(m.t, err)
@@ -146,6 +152,10 @@ func (m *ContextC4eMinterUtils) InitGenesis(genState cfemintertypes.GenesisState
 
 func (m *ContextC4eMinterUtils) ExportGenesis(expected cfemintertypes.GenesisState) {
 	m.C4eMinterUtils.ExportGenesis(m.testContext.GetContext(), expected)
+}
+
+func (m *ContextC4eMinterUtils) ExportGenesisAndValidate() {
+	m.C4eMinterUtils.ExportGenesisAndValidate(m.testContext.GetContext())
 }
 
 func (m *ContextC4eMinterUtils) VerifyMinterState(expectedMinterStatePosition int32, expectedMinterStateAmountMinted sdk.Int,

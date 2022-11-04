@@ -1,5 +1,4 @@
 PACKAGES=$(shell go list ./... | grep -v '/simulation')
-
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
@@ -89,6 +88,11 @@ test-simulation-benchmark-profile:
 	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -v -Seed=589 -Period=1 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) \
 		-timeout 24h -cpuprofile cpu.out -memprofile mem.out
+
+test-simulation-import-export:
+	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimTest$$ -Seed=589 -v -Period=1 -PrintAllInvariants \
+		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
 
 open-cpu-profiler-result:
 	@go tool pprof cpu.out

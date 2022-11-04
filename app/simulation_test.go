@@ -1,111 +1,168 @@
-package app_test
+package app
 
 import (
-	"os"
-	"testing"
-	"time"
-
-	"github.com/chain4energy/c4e-chain/app"
-	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"encoding/json"
+	"fmt"
+	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	cfesignaturetypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+	"os"
+	"testing"
 )
 
 func init() {
 	simapp.GetSimulatorFlags()
 }
 
-type SimApp interface {
-	cosmoscmd.App
-	GetBaseApp() *baseapp.BaseApp
-	AppCodec() codec.Codec
-	SimulationManager() *module.SimulationManager
-	ModuleAccountAddrs() map[string]bool
-	Name() string
-	LegacyAmino() *codec.LegacyAmino
-	BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock
-	EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock
-	InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain
-}
-
-var defaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
-		MaxBytes: 200000,
-		MaxGas:   2000000,
-	},
-	Evidence: &tmproto.EvidenceParams{
-		MaxAgeNumBlocks: 302400,
-		MaxAgeDuration:  504 * time.Hour, // 3 weeks is the max duration
-		MaxBytes:        10000,
-	},
-	Validator: &tmproto.ValidatorParams{
-		PubKeyTypes: []string{
-			tmtypes.ABCIPubKeyTypeEd25519,
-		},
-	},
+type StoreKeysPrefixes struct {
+	A        sdk.StoreKey
+	B        sdk.StoreKey
+	Prefixes [][]byte
 }
 
 // BenchmarkSimulation run the chain simulation
 // Running as go benchmark test:
-// `go test -benchmem -run=^$ -bench ^BenchmarkSimulation ./app -NumBlocks=200 -BlockSize 50 -Commit=true -Verbose=true -Enabled=true`
 func BenchmarkSimulation(b *testing.B) {
-	simapp.FlagEnabledValue = true
-	simapp.FlagCommitValue = true
+	_, _ = setupSimulation(b, "goleveldb-app-sim", "Simulation")
+}
 
-	config, db, dir, logger, _, err := simapp.SetupSimulation("goleveldb-app-sim", "Simulation")
-	require.NoError(b, err, "simulation setup failed")
+func BenchmarkSimTest(b *testing.B) {
+	c4eapp1, _ := setupSimulation(b, "goleveldb-app-sim", "Simulation")
 
-	b.Cleanup(func() {
+	fmt.Printf("exporting genesis...\n")
+	exported, err := c4eapp1.ExportAppStateAndValidators(false, []string{})
+	require.NoError(b, err)
+
+	fmt.Printf("importing genesis...\n")
+
+	var genesisState GenesisState
+	err = json.Unmarshal(exported.AppState, &genesisState)
+	require.NoError(b, err)
+
+	c4eapp2, _, _, _ := BaseSimulationSetup(b, "goleveldb-app-sim-2", "Simulation-2")
+	ctxA := c4eapp1.NewContext(true, tmproto.Header{Height: c4eapp1.LastBlockHeight()})
+	ctxB := c4eapp2.NewContext(true, tmproto.Header{Height: c4eapp1.LastBlockHeight()})
+	c4eapp2.mm.InitGenesis(ctxB, c4eapp1.AppCodec(), genesisState)
+	c4eapp2.StoreConsensusParams(ctxB, exported.ConsensusParams)
+
+	fmt.Printf("comparing stores...\n")
+
+	storeKeysPrefixes := []StoreKeysPrefixes{
+		{c4eapp1.keys[authtypes.StoreKey], c4eapp2.keys[authtypes.StoreKey], [][]byte{}},
+		{
+			c4eapp1.keys[stakingtypes.StoreKey], c4eapp2.keys[stakingtypes.StoreKey],
+			[][]byte{
+				stakingtypes.UnbondingQueueKey, stakingtypes.RedelegationQueueKey, stakingtypes.ValidatorQueueKey,
+				stakingtypes.HistoricalInfoKey,
+			},
+		},
+		{c4eapp1.keys[slashingtypes.StoreKey], c4eapp2.keys[slashingtypes.StoreKey], [][]byte{}},
+		{c4eapp1.keys[distrtypes.StoreKey], c4eapp2.keys[distrtypes.StoreKey], [][]byte{}},
+		{c4eapp1.keys[banktypes.StoreKey], c4eapp2.keys[banktypes.StoreKey], [][]byte{banktypes.BalancesPrefix}},
+		{c4eapp1.keys[paramtypes.StoreKey], c4eapp2.keys[paramtypes.StoreKey], [][]byte{}},
+		{c4eapp1.keys[govtypes.StoreKey], c4eapp2.keys[govtypes.StoreKey], [][]byte{}},
+		{c4eapp1.keys[evidencetypes.StoreKey], c4eapp2.keys[evidencetypes.StoreKey], [][]byte{}},
+		{c4eapp1.keys[capabilitytypes.StoreKey], c4eapp2.keys[capabilitytypes.StoreKey], [][]byte{}},
+		{c4eapp1.keys[authzkeeper.StoreKey], c4eapp2.keys[authzkeeper.StoreKey], [][]byte{}},
+		{c4eapp1.keys[cfevestingtypes.StoreKey], c4eapp2.keys[cfevestingtypes.StoreKey], [][]byte{
+			cfevestingtypes.AccountVestingPoolsKeyPrefix, cfevestingtypes.VestingTypesKeyPrefix,
+		}},
+		{c4eapp1.keys[cfedistributortypes.StoreKey], c4eapp2.keys[cfedistributortypes.StoreKey], [][]byte{
+			cfedistributortypes.RemainsKeyPrefix, cfedistributortypes.RemainsMapKey,
+		}},
+		{c4eapp1.keys[cfemintertypes.StoreKey], c4eapp2.keys[cfemintertypes.StoreKey], [][]byte{
+			cfemintertypes.MinterStateHistoryKeyPrefix, cfemintertypes.IsGenesisKey, cfemintertypes.MinterStateKey,
+		}},
+		{c4eapp1.keys[cfesignaturetypes.StoreKey], c4eapp2.keys[cfesignaturetypes.StoreKey], [][]byte{}},
+	}
+
+	for _, skp := range storeKeysPrefixes {
+		storeA := ctxA.KVStore(skp.A)
+		storeB := ctxB.KVStore(skp.B)
+
+		failedKVAs, failedKVBs := sdk.DiffKVStores(storeA, storeB, skp.Prefixes)
+		require.Equal(b, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
+
+		fmt.Printf("compared %d different key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
+		require.Equal(b, len(failedKVAs), 0, simapp.GetSimulationLog(skp.A.Name(), c4eapp1.SimulationManager().StoreDecoders, failedKVAs, failedKVBs))
+	}
+}
+
+func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *App, simParams simulation.Params) {
+	config, db, dir, _, _, err := simapp.SetupSimulation(dirPrevix, dbName)
+	require.NoError(tb, err, "simulation setup failed")
+
+	tb.Cleanup(func() {
 		db.Close()
 		err = os.RemoveAll(dir)
-		require.NoError(b, err)
+		require.NoError(tb, err)
 	})
 
-	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
+	app, _, config, db := BaseSimulationSetup(tb, dirPrevix, dbName)
 
-	app := app.New(
-		logger,
+	_, simParams, simErr := simulation.SimulateFromSeed(
+		tb,
+		os.Stdout,
+		app.GetBaseApp(),
+		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
+		simulationtypes.RandomAccounts,
+		simapp.SimulationOperations(app, app.AppCodec(), config),
+		app.ModuleAccountAddrs(),
+		config,
+		app.AppCodec(),
+	)
+
+	err = simapp.CheckExportSimulation(app, config, simParams)
+	require.NoError(tb, err)
+	require.NoError(tb, simErr)
+	if config.Commit {
+		simapp.PrintStats(db)
+	}
+	return app, simParams
+}
+
+func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, GenesisState, simulationtypes.Config, dbm.DB) {
+	config, db, dir, _, _, err := simapp.SetupSimulation(dirPrevix, dbName)
+	require.NoError(tb, err, "simulation setup failed")
+	tb.Cleanup(func() {
+		db.Close()
+		err = os.RemoveAll(dir)
+		require.NoError(tb, err)
+	})
+
+	encoding := cosmoscmd.MakeEncodingConfig(ModuleBasics)
+	app := New(
+		log.TestingLogger(),
 		db,
 		nil,
 		true,
 		map[int64]bool{},
-		app.DefaultNodeHome,
+		DefaultNodeHome,
 		0,
 		encoding,
 		simapp.EmptyAppOptions{},
 	)
+	genesisState := NewDefaultGenesisState(encoding.Marshaler)
 
-	simApp, ok := app.(SimApp)
-	require.True(b, ok, "can't use simapp")
-
-	// Run randomized simulations
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		b,
-		os.Stdout,
-		simApp.GetBaseApp(),
-		simapp.AppStateFn(simApp.AppCodec(), simApp.SimulationManager()),
-		simulationtypes.RandomAccounts,
-		simapp.SimulationOperations(simApp, simApp.AppCodec(), config),
-		simApp.ModuleAccountAddrs(),
-		config,
-		simApp.AppCodec(),
-	)
-
-	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(simApp, config, simParams)
-	require.NoError(b, err)
-	require.NoError(b, simErr)
-
-	if config.Commit {
-		simapp.PrintStats(db)
-	}
+	return app.(*App), genesisState, config, db
 }

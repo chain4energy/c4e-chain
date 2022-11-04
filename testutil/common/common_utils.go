@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
-	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -39,4 +39,11 @@ func CheckInvariant(t *testing.T, ctx sdk.Context, invariant sdk.Invariant, fail
 	msg, wasFailed := invariant(ctx)
 	require.EqualValues(t, failed, wasFailed)
 	require.EqualValues(t, message, msg)
+}
+
+func ValidateManyInvariants(t *testing.T, ctx sdk.Context, invariants []sdk.Invariant) {
+	for i := 0; i < len(invariants); i++ {
+		msg, failed := invariants[i](ctx)
+		require.False(t, failed, "Invariant failed - "+msg)
+	}
 }

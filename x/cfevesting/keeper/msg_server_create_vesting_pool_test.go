@@ -25,6 +25,7 @@ func TestCreateVestingPool(t *testing.T) {
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
 	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []sdk.Int{vested}, []sdk.Int{sdk.ZeroInt()})
@@ -33,6 +34,7 @@ func TestCreateVestingPool(t *testing.T) {
 
 	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1, vPool2}, []time.Duration{1000, 1200}, []types.VestingType{*usedVestingType, *usedVestingType}, []sdk.Int{vested, vested}, []sdk.Int{sdk.ZeroInt(), sdk.ZeroInt()})
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
@@ -47,8 +49,10 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 
 	testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, "pool", 1000, types.VestingType{Name: "unknown"}, vested, "create vesting pool - get vesting type error: vesting type not found: unknown: not found")
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestCreateVestingPoolNameDuplication(t *testing.T) {
@@ -64,6 +68,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
@@ -71,6 +76,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, vPool1, 1000, *usedVestingType, vested, "add vesting pool - vesting pool name: "+vPool1+": entity already exists")
 
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestCreateVestingPoolEmptyName(t *testing.T) {
@@ -88,5 +94,5 @@ func TestCreateVestingPoolEmptyName(t *testing.T) {
 	usedVestingType := vestingTypes.VestingTypes[0]
 
 	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, "", 1000, *usedVestingType, vested, "add vesting pool empty name: wrong param value")
-
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }

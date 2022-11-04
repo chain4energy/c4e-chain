@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
@@ -10,7 +11,26 @@ var _ paramtypes.ParamSet = (*Params)(nil)
 
 var (
 	KeySubDistributors     = []byte("SubDistributors")
-	DefaultSubDistributors []SubDistributor
+	DefaultSubDistributors = []SubDistributor{
+		{
+			Name: "default_distributor",
+			Destination: Destination{
+				Account: Account{
+					Id:   ValidatorsRewardsCollector,
+					Type: MODULE_ACCOUNT,
+				},
+				BurnShare: &BurnShare{
+					Percent: sdk.ZeroDec(),
+				},
+			},
+			Sources: []*Account{
+				{
+					Id:   "",
+					Type: MAIN,
+				},
+			},
+		},
+	}
 )
 
 // ParamKeyTable the param key table for launch module
@@ -40,7 +60,6 @@ func (p Params) Validate() error {
 	if err := validateSubDistributors(p.SubDistributors); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -58,9 +77,15 @@ func validateSubDistributors(v interface{}) error {
 	}
 
 	for _, subDistributor := range subDistributors {
-		if error := subDistributor.Validate(); error != nil {
-			return error
+		if err := subDistributor.Validate(); err != nil {
+			return err
 		}
 	}
+
+	err := ValidateSubDistributors(subDistributors)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
