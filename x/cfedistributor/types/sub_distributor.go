@@ -93,12 +93,12 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 		}
 
 		for j := 0; j < len(subDistributors[i].Sources); j++ {
-			if err := setOccurence(lastOccurrence, lastOccurrenceIndex, subDistributorName, subDistributors[i].Sources[j], i, SOURCE); err != nil {
+			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, subDistributors[i].Sources[j], i, SOURCE); err != nil {
 				return err
 			}
 		}
 
-		if err := setOccurence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Account, i, DESTINATION); err != nil {
+		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Account, i, DESTINATION); err != nil {
 			return err
 		}
 
@@ -108,7 +108,7 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 				return err
 			}
 
-			if err := setOccurence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Share[j].Account, i, DESTINATION); err != nil {
+			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Share[j].Account, i, DESTINATION); err != nil {
 				return err
 			}
 		}
@@ -140,7 +140,7 @@ func isAccountPositionValidatable(accType string) bool {
 	return accType == INTERNAL_ACCOUNT || accType == MAIN
 }
 
-func setOccurence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, position int, occuranceType string) error {
+func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, position int, occuranceType string) error {
 	id := getId(account)
 	currentPosition := position + 1
 	if lastOccurrenceIndex[id] == currentPosition {
