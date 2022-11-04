@@ -304,7 +304,15 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 			createSubDistributor(accType, accType, accType, CUSTOM_ID, false),
 		}
 
-		for i := 0; i < 4; i++ {
+		sameShares := createSubDistributor(CUSTOM_ACCOUNT, "CUSTOM_ACCOUNT-2", accType, CUSTOM_ID, false)
+		copiedShare := *sameShares.Destinations.Shares[0]
+		copiedShare.Name = helpers.RandStringOfLength(10)
+		sameShares.Destinations.Shares = append(sameShares.Destinations.Shares, &copiedShare)
+		subDistributorCases[4] = []SubDistributor{
+			sameShares,
+		}
+
+		for i := 0; i < 5; i++ {
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(MAIN_SOURCE))
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(INTERNAL_SOURCE))
 			expectedError := "same " + getId(&Account{Type: accType, Id: CUSTOM_ID}) +
