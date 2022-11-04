@@ -289,7 +289,7 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 	}
 	var tests []test
 
-	for _, accType := range []string{INTERNAL_ACCOUNT, MODULE_ACCOUNT, MAIN, BASE_ACCOUNT} {
+	for _, accType := range AccountTypes {
 		subDistributorCases := make(map[int][]SubDistributor)
 		subDistributorCases[0] = []SubDistributor{
 			createSubDistributor(CUSTOM_ACCOUNT, accType, accType, CUSTOM_ID, false),
@@ -304,7 +304,7 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 			createSubDistributor(accType, accType, accType, CUSTOM_ID, false),
 		}
 
-		sameShares := createSubDistributor(CUSTOM_ACCOUNT, "CUSTOM_ACCOUNT-2", accType, CUSTOM_ID, false)
+		sameShares := createSubDistributor(CUSTOM_ACCOUNT, CUSTOM_ACCOUNT_2, accType, CUSTOM_ID, false)
 		copiedShare := *sameShares.Destinations.Shares[0]
 		copiedShare.Name = helpers.RandStringOfLength(10)
 		sameShares.Destinations.Shares = append(sameShares.Destinations.Shares, &copiedShare)
@@ -312,7 +312,7 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 			sameShares,
 		}
 
-		for i := 0; i < 5; i++ {
+		for i := 0; i < 6; i++ {
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(MAIN_SOURCE))
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(INTERNAL_SOURCE))
 			expectedError := "same " + getId(&Account{Type: accType, Id: CUSTOM_ID}) +
@@ -333,8 +333,47 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 	}
 }
 
+func TestValidateUniquenessOfPrimaryShareNames(t *testing.T) {
+	type test struct {
+		expectedError   string
+		subDistributors []SubDistributor
+	}
+	var tests []test
+
+	for _, accType := range AccountTypes {
+		subDistributor1 := createSubDistributor(CUSTOM_ACCOUNT, CUSTOM_ACCOUNT_2, accType, CUSTOM_ID, false)
+		subDistributor2 := createSubDistributor(CUSTOM_ACCOUNT, CUSTOM_ACCOUNT_2, accType, CUSTOM_ID, false)
+
+		nameWithPrefix := subDistributor2.Name + primaryShareNameSuffix
+		subDistributor2.Destinations.Shares[0].Name = nameWithPrefix
+
+		subDistributors := []SubDistributor{
+			subDistributor1,
+			subDistributor2,
+			CreateSubDistributor(MAIN_SOURCE),
+			CreateSubDistributor(INTERNAL_SOURCE),
+		}
+
+		expectedError := "subdistributor names must be unique, subdistributor name: " + nameWithPrefix
+		tests = append(tests, test{expectedError, subDistributors})
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.expectedError, func(t *testing.T) {
+			err := ValidateSubDistributors(tt.subDistributors)
+			if err == nil {
+				t.Errorf("TestValidateUniquenessOfPrimaryShareNames() wanted error got nil")
+			}
+			require.EqualValues(t, tt.expectedError, err.Error())
+		})
+	}
+}
+
+var AccountTypes = []string{INTERNAL_ACCOUNT, MODULE_ACCOUNT, MAIN, BASE_ACCOUNT}
+
 const (
 	CUSTOM_ACCOUNT             = "CUSTOM_ACCOUNT"
+	CUSTOM_ACCOUNT_2           = "CUSTOM_ACCOUNT-2"
 	CUSTOM_ID                  = "custom_id"
 	MAIN_SOURCE                = "MAIN_SOURCE"
 	MAIN_DESTINATION           = "MAIN_DESTINATION"

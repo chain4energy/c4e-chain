@@ -108,6 +108,9 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.PrimaryShare, i, DESTINATION); err != nil {
 			return err
 		}
+		if err = validateUniquenessOfNames(subDistributors[i].GetPrimaryShareName(), &shareNameOccured); err != nil {
+			return err
+		}
 
 		for j := 0; j < len(subDistributors[i].Destinations.Shares); j++ {
 			shareName := subDistributors[i].Destinations.Shares[j].Name

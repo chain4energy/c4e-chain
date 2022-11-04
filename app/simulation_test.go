@@ -88,7 +88,7 @@ func BenchmarkSimTest(b *testing.B) {
 			cfevestingtypes.AccountVestingPoolsKeyPrefix, cfevestingtypes.VestingTypesKeyPrefix,
 		}},
 		{c4eapp1.keys[cfedistributortypes.StoreKey], c4eapp2.keys[cfedistributortypes.StoreKey], [][]byte{
-			cfedistributortypes.RemainsKeyPrefix,
+			cfedistributortypes.StateKeyPrefix,
 		}},
 		{c4eapp1.keys[cfemintertypes.StoreKey], c4eapp2.keys[cfemintertypes.StoreKey], [][]byte{
 			cfemintertypes.MinterStateHistoryKeyPrefix, cfemintertypes.IsGenesisKey, cfemintertypes.MinterStateKey,

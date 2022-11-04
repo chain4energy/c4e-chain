@@ -1,6 +1,6 @@
 package types
 
-var RemainsKeyPrefix = []byte{0x04}
+var StateKeyPrefix = []byte{0x04}
 
 const (
 	// ModuleName defines the module name

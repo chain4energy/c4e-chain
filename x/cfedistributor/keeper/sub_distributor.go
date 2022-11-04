@@ -8,7 +8,7 @@ import (
 
 // GetAllStates returns all States
 func (k Keeper) GetAllStates(ctx sdk.Context) (list []types.State) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RemainsKeyPrefix)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.StateKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
@@ -23,7 +23,7 @@ func (k Keeper) GetAllStates(ctx sdk.Context) (list []types.State) {
 
 // GetState return state by key
 func (k Keeper) GetState(ctx sdk.Context, stateKey string) (remains types.State, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RemainsKeyPrefix)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.StateKeyPrefix)
 
 	b := store.Get([]byte(stateKey))
 	if b == nil {
@@ -41,7 +41,7 @@ func (k Keeper) GetBurnState(ctx sdk.Context) (remains types.State, found bool) 
 
 // SetState Set the state
 func (k Keeper) SetState(ctx sdk.Context, state types.State) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.RemainsKeyPrefix)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.StateKeyPrefix)
 	av := k.cdc.MustMarshal(&state)
 	store.Set([]byte(GetStateKey(state)), av)
 }
