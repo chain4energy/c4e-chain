@@ -6,12 +6,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-const maxShareSum = 100
+const maxShareSum = 1
 const primaryShareNameSuffix = "_primary"
 
 func (s SubDistributor) Validate() error {
 
-	if s.Destinations.CheckPercentShareSumIsBetween0And100() {
+	if s.Destinations.CheckPercentShareSumIsBetween0And1() {
 		return fmt.Errorf("share sum is greater or equal 100")
 	}
 
@@ -37,18 +37,18 @@ func (s SubDistributor) GetPrimaryShareName() string {
 	return s.Name + primaryShareNameSuffix
 }
 
-func (destination Destinations) CheckPercentShareSumIsBetween0And100() bool {
+func (destination Destinations) CheckPercentShareSumIsBetween0And1() bool {
 	shares := destination.Shares
-	percentShareSum := sdk.ZeroDec()
+	shareSum := sdk.ZeroDec()
 	for _, share := range shares {
-		percentShareSum = percentShareSum.Add(share.Share)
+		shareSum = shareSum.Add(share.Share)
 	}
 
 	if destination.BurnShare != sdk.ZeroDec() {
-		percentShareSum = percentShareSum.Add(destination.BurnShare)
+		shareSum = shareSum.Add(destination.BurnShare)
 	}
 
-	return percentShareSum.GTE(sdk.NewDec(maxShareSum)) || percentShareSum.IsNegative()
+	return shareSum.GTE(sdk.NewDec(maxShareSum)) || shareSum.IsNegative()
 }
 
 func (s State) StateIdString() string {

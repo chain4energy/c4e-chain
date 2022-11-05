@@ -30,7 +30,7 @@
               "type": "BASE_ACCOUNT"
             },
             "name": "development_fund",
-            "share": "5"
+            "share": "0.05"
           },
           {
             "destination": {
@@ -38,7 +38,7 @@
               "type": "INTERNAL_ACCOUNT"
             },
             "name": "usage_incentives",
-            "share": "35"
+            "share": "0.35"
           }
         ]
       },
@@ -64,7 +64,7 @@
               "type": "MODULE_ACCOUNT"
             },
             "name": "green_energy_booster",
-            "share": "34"
+            "share": "0.34"
           },
           {
             "destination": {
@@ -72,7 +72,7 @@
               "type": "MODULE_ACCOUNT"
             },
             "name": "governance_booster",
-            "share": "33"
+            "share": "0.33"
           }
         ]
       },

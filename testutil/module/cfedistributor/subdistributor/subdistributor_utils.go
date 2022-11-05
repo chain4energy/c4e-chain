@@ -83,7 +83,7 @@ func PrepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 		destAccount.Type = types.MAIN
 	}
 
-	burnShare := sdk.NewDec(51)
+	burnShare := sdk.MustNewDecFromStr("0.51")
 
 	destination := types.Destinations{
 		PrimaryShare: destAccount,
@@ -189,7 +189,7 @@ func PrepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 
 	shareDevelopmentFund := types.DestinationShare{
 		Name:        helpers.RandStringOfLength(10),
-		Share:       sdk.MustNewDecFromStr("10.345"),
+		Share:       sdk.MustNewDecFromStr("0.10345"),
 		Destination: shareDevelopmentFundAccount,
 	}
 

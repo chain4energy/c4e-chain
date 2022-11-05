@@ -32,41 +32,41 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 
 	shareEqual30 := DestinationShare{
 		Name:        "1",
-		Share:       sdk.MustNewDecFromStr("30"),
+		Share:       sdk.MustNewDecFromStr("0.30"),
 		Destination: Account{},
 	}
 
 	shareEqual31 := DestinationShare{
 		Name:        "2",
-		Share:       sdk.MustNewDecFromStr("31"),
+		Share:       sdk.MustNewDecFromStr("0.31"),
 		Destination: Account{},
 	}
 
 	shareEqual50 := DestinationShare{
 		Name:        "3",
-		Share:       sdk.MustNewDecFromStr("50"),
+		Share:       sdk.MustNewDecFromStr("0.50"),
 		Destination: Account{},
 	}
 
 	shareEqual19 := DestinationShare{
 		Name:        "4",
-		Share:       sdk.MustNewDecFromStr("19"),
+		Share:       sdk.MustNewDecFromStr("0.19"),
 		Destination: Account{},
 	}
 
 	shareEqual20 := DestinationShare{
 		Name:        "5",
-		Share:       sdk.MustNewDecFromStr("20"),
+		Share:       sdk.MustNewDecFromStr("0.20"),
 		Destination: Account{},
 	}
 
 	shareEqualMinus20 := DestinationShare{
 		Name:        "5",
-		Share:       sdk.MustNewDecFromStr("-20"),
+		Share:       sdk.MustNewDecFromStr("-0.20"),
 		Destination: Account{},
 	}
 
-	burnShare := sdk.NewDec(50)
+	burnShare := sdk.MustNewDecFromStr("0.50")
 
 	var sharesEqual30 []*DestinationShare
 	sharesEqual30 = append(sharesEqual30, &shareEqual30)
@@ -111,7 +111,7 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.destination.CheckPercentShareSumIsBetween0And100(); got != tt.want {
+			if got := tt.destination.CheckPercentShareSumIsBetween0And1(); got != tt.want {
 				t.Errorf("CheckPercentShareSumIsBetween0And100() = %v, want %v", got, tt.want)
 			}
 		})
@@ -312,7 +312,7 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 			sameShares,
 		}
 
-		for i := 0; i < 6; i++ {
+		for i := 0; i < 5; i++ {
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(MAIN_SOURCE))
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(INTERNAL_SOURCE))
 			expectedError := "same " + getId(&Account{Type: accType, Id: CUSTOM_ID}) +

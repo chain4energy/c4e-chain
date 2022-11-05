@@ -11,8 +11,7 @@ func calculatePercentage(sharePercent sdk.Dec, coinsToDistributeDec sdk.DecCoins
 	if !coinsToDistributeDec.IsAllPositive() {
 		return sdk.NewDecCoins()
 	}
-	percentInDecForm := sharePercent.QuoInt64(100)
-	return coinsToDistributeDec.MulDecTruncate(percentInDecForm)
+	return coinsToDistributeDec.MulDecTruncate(sharePercent)
 }
 
 func findBurnState(states *[]types.State) int {
