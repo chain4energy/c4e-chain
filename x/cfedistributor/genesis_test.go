@@ -15,9 +15,9 @@ func TestGenesis(t *testing.T) {
 	}
 
 	state := types.State{
-		Account:     &account,
-		Burn:        false,
-		CoinsStates: nil,
+		Account: &account,
+		Burn:    false,
+		Remains: nil,
 	}
 
 	genesisState := types.GenesisState{
@@ -46,9 +46,9 @@ func TestGenesisImport(t *testing.T) {
 	}
 
 	state := types.State{
-		Account:     &account,
-		Burn:        false,
-		CoinsStates: nil,
+		Account: &account,
+		Burn:    false,
+		Remains: nil,
 	}
 	var states []*types.State
 	states = append(states, &state)
@@ -92,9 +92,9 @@ func TestGenesisBurnStateAccNotNil(t *testing.T) {
 	}
 
 	state := types.State{
-		Account:     &account,
-		Burn:        true,
-		CoinsStates: nil,
+		Account: &account,
+		Burn:    true,
+		Remains: nil,
 	}
 
 	genesisState := types.GenesisState{
@@ -120,9 +120,9 @@ func TestGenesisBurnStateAccNotNil(t *testing.T) {
 func TestGenesisBurnState(t *testing.T) {
 
 	state := types.State{
-		Account:     nil,
-		Burn:        true,
-		CoinsStates: nil,
+		Account: nil,
+		Burn:    true,
+		Remains: nil,
 	}
 
 	genesisState := types.GenesisState{

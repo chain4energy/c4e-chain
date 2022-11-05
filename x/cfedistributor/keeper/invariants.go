@@ -32,7 +32,7 @@ func NonNegativeCoinStateInvariant(k Keeper) sdk.Invariant {
 func StateSumBalanceCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		states := k.GetAllStates(ctx)
-		err, coinsStatesSum := types.StateSumIsInteger(states)
+		err, remainsSum := types.StateSumIsInteger(states)
 		if err != nil {
 			return sdk.FormatInvariant(types.ModuleName, "state sum balance check", err.Error()), true
 		}
@@ -40,17 +40,17 @@ func StateSumBalanceCheckInvariant(k Keeper) sdk.Invariant {
 		var broken bool
 
 		distributorAccountCoins := k.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)
-		if coinsStatesSum.IsZero() && distributorAccountCoins.IsZero() {
+		if remainsSum.IsZero() && distributorAccountCoins.IsZero() {
 			ctx.Logger().Debug("Coin state and distributor account is empty possible start of blockchain")
 			broken = false
 		} else {
-			broken = !coinsStatesSum.IsEqual(distributorAccountCoins)
+			broken = !remainsSum.IsEqual(distributorAccountCoins)
 		}
 
 		return sdk.FormatInvariant(types.ModuleName, "state sum balance check",
 			fmt.Sprintf(
 				"\tsum of states coins: %v\n"+
 					"\tdistributor account balance: %v",
-				coinsStatesSum, distributorAccountCoins)), broken
+				remainsSum, distributorAccountCoins)), broken
 	}
 }

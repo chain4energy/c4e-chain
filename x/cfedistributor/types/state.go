@@ -22,7 +22,7 @@ func (s State) Validate() error {
 }
 
 func (s State) IsNegative() error {
-	for _, coinState := range s.CoinsStates {
+	for _, coinState := range s.Remains {
 		if coinState.IsNegative() {
 			return fmt.Errorf("\tnegative coin state %s in state %s", coinState, s.StateIdString())
 		}
@@ -34,13 +34,13 @@ func (s State) IsNegative() error {
 func StateSumIsInteger(states []State) (error, sdk.Coins) {
 	statesSum := sdk.NewDecCoins()
 	for _, state := range states {
-		statesSum = statesSum.Add(state.CoinsStates...)
+		statesSum = statesSum.Add(state.Remains...)
 	}
 
-	coinsStatesSum, change := statesSum.TruncateDecimal()
+	remainsSum, change := statesSum.TruncateDecimal()
 	if !change.IsZero() {
 		return fmt.Errorf("\tthe sum of the states should be integer: sum: %v", statesSum), nil
 	}
 
-	return nil, coinsStatesSum
+	return nil, remainsSum
 }

@@ -26,9 +26,9 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type State struct {
-	Account     *Account                                    `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	Burn        bool                                        `protobuf:"varint,2,opt,name=burn,proto3" json:"burn,omitempty"`
-	CoinsStates github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,3,rep,name=coins_states,json=coinsStates,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"coins_states" yaml:"coin_state"`
+	Account *Account                                    `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Burn    bool                                        `protobuf:"varint,2,opt,name=burn,proto3" json:"burn,omitempty"`
+	Remains github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,3,rep,name=coins_states,json=remains,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"coins_states" yaml:"coin_state"`
 }
 
 func (m *State) Reset()         { *m = State{} }
@@ -78,9 +78,9 @@ func (m *State) GetBurn() bool {
 	return false
 }
 
-func (m *State) GetCoinsStates() github_com_cosmos_cosmos_sdk_types.DecCoins {
+func (m *State) GetRemains() github_com_cosmos_cosmos_sdk_types.DecCoins {
 	if m != nil {
-		return m.CoinsStates
+		return m.Remains
 	}
 	return nil
 }
@@ -206,6 +206,7 @@ func (m *Destination) GetBurnShare() *BurnShare {
 }
 
 type BurnShare struct {
+	// float percent =1;
 	Percent github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=percent,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"percent" yaml:"percent"`
 }
 
@@ -243,7 +244,8 @@ func (m *BurnShare) XXX_DiscardUnknown() {
 var xxx_messageInfo_BurnShare proto.InternalMessageInfo
 
 type Share struct {
-	Name    string                                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// float percent = 2;
 	Percent github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=percent,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"percent" yaml:"percent"`
 	Account Account                                `protobuf:"bytes,3,opt,name=account,proto3" json:"account"`
 }
@@ -348,12 +350,12 @@ func (m *Account) GetType() string {
 }
 
 func init() {
-	proto.RegisterType((*State)(nil), "chain4energy.c4echain.cfedistributor.migrations.v100.State")
-	proto.RegisterType((*SubDistributor)(nil), "chain4energy.c4echain.cfedistributor.migrations.v100.SubDistributor")
-	proto.RegisterType((*Destination)(nil), "chain4energy.c4echain.cfedistributor.migrations.v100.Destination")
-	proto.RegisterType((*BurnShare)(nil), "chain4energy.c4echain.cfedistributor.migrations.v100.BurnShare")
-	proto.RegisterType((*Share)(nil), "chain4energy.c4echain.cfedistributor.migrations.v100.Share")
-	proto.RegisterType((*Account)(nil), "chain4energy.c4echain.cfedistributor.migrations.v100.Account")
+	proto.RegisterType((*State)(nil), "chain4energy.c4echain.cfedistributor.State")
+	proto.RegisterType((*SubDistributor)(nil), "chain4energy.c4echain.cfedistributor.SubDistributor")
+	proto.RegisterType((*Destination)(nil), "chain4energy.c4echain.cfedistributor.Destination")
+	proto.RegisterType((*BurnShare)(nil), "chain4energy.c4echain.cfedistributor.BurnShare")
+	proto.RegisterType((*Share)(nil), "chain4energy.c4echain.cfedistributor.Share")
+	proto.RegisterType((*Account)(nil), "chain4energy.c4echain.cfedistributor.Account")
 }
 
 func init() {
@@ -418,10 +420,10 @@ func (m *State) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.CoinsStates) > 0 {
-		for iNdEx := len(m.CoinsStates) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Remains) > 0 {
+		for iNdEx := len(m.Remains) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.CoinsStates[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Remains[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -714,8 +716,8 @@ func (m *State) Size() (n int) {
 	if m.Burn {
 		n += 2
 	}
-	if len(m.CoinsStates) > 0 {
-		for _, e := range m.CoinsStates {
+	if len(m.Remains) > 0 {
+		for _, e := range m.Remains {
 			l = e.Size()
 			n += 1 + l + sovSubDistributor(uint64(l))
 		}
@@ -903,7 +905,7 @@ func (m *State) Unmarshal(dAtA []byte) error {
 			m.Burn = bool(v != 0)
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CoinsStates", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Remains", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -930,8 +932,8 @@ func (m *State) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CoinsStates = append(m.CoinsStates, types.DecCoin{})
-			if err := m.CoinsStates[len(m.CoinsStates)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Remains = append(m.Remains, types.DecCoin{})
+			if err := m.Remains[len(m.Remains)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

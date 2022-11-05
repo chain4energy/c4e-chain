@@ -55,7 +55,7 @@ func NewC4eDistributorUtils(t *testing.T, helperCfedistributorKeeper *cfedistrib
 func (d *C4eDistributorUtils) VerifyStateAmount(ctx sdk.Context, stateName string, denom string, expectedRemains sdk.Dec) {
 	state, _ := d.helperCfedistributorKeeper.GetState(ctx, stateName)
 
-	coinRemains := state.CoinsStates
+	coinRemains := state.Remains
 	require.EqualValues(d.t, expectedRemains, coinRemains.AmountOf(denom))
 }
 

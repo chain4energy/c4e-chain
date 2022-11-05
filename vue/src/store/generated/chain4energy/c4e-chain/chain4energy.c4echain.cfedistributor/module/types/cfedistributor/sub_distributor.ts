@@ -7,7 +7,7 @@ export const protobufPackage = "chain4energy.c4echain.cfedistributor";
 export interface State {
   account: Account | undefined;
   burn: boolean;
-  coins_states: DecCoin[];
+  remains: DecCoin[];
 }
 
 export interface SubDistributor {
@@ -43,7 +43,7 @@ export const State = {
     if (message.burn === true) {
       writer.uint32(16).bool(message.burn);
     }
-    for (const v of message.coins_states) {
+    for (const v of message.remains) {
       DecCoin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
@@ -53,7 +53,7 @@ export const State = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseState } as State;
-    message.coins_states = [];
+    message.remains = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -64,7 +64,7 @@ export const State = {
           message.burn = reader.bool();
           break;
         case 3:
-          message.coins_states.push(DecCoin.decode(reader, reader.uint32()));
+          message.remains.push(DecCoin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -76,7 +76,7 @@ export const State = {
 
   fromJSON(object: any): State {
     const message = { ...baseState } as State;
-    message.coins_states = [];
+    message.remains = [];
     if (object.account !== undefined && object.account !== null) {
       message.account = Account.fromJSON(object.account);
     } else {
@@ -87,9 +87,9 @@ export const State = {
     } else {
       message.burn = false;
     }
-    if (object.coins_states !== undefined && object.coins_states !== null) {
-      for (const e of object.coins_states) {
-        message.coins_states.push(DecCoin.fromJSON(e));
+    if (object.remains !== undefined && object.remains !== null) {
+      for (const e of object.remains) {
+        message.remains.push(DecCoin.fromJSON(e));
       }
     }
     return message;
@@ -102,19 +102,19 @@ export const State = {
         ? Account.toJSON(message.account)
         : undefined);
     message.burn !== undefined && (obj.burn = message.burn);
-    if (message.coins_states) {
-      obj.coins_states = message.coins_states.map((e) =>
+    if (message.remains) {
+      obj.remains = message.remains.map((e) =>
         e ? DecCoin.toJSON(e) : undefined
       );
     } else {
-      obj.coins_states = [];
+      obj.remains = [];
     }
     return obj;
   },
 
   fromPartial(object: DeepPartial<State>): State {
     const message = { ...baseState } as State;
-    message.coins_states = [];
+    message.remains = [];
     if (object.account !== undefined && object.account !== null) {
       message.account = Account.fromPartial(object.account);
     } else {
@@ -125,9 +125,9 @@ export const State = {
     } else {
       message.burn = false;
     }
-    if (object.coins_states !== undefined && object.coins_states !== null) {
-      for (const e of object.coins_states) {
-        message.coins_states.push(DecCoin.fromPartial(e));
+    if (object.remains !== undefined && object.remains !== null) {
+      for (const e of object.remains) {
+        message.remains.push(DecCoin.fromPartial(e));
       }
     }
     return message;

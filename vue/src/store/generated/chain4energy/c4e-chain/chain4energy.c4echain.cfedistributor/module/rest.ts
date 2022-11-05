@@ -49,7 +49,7 @@ export interface CfedistributorQueryStatesResponse {
 export interface CfedistributorState {
   account?: CfedistributorAccount;
   burn?: boolean;
-  coins_states?: V1Beta1DecCoin[];
+  remains?: V1Beta1DecCoin[];
 }
 
 export interface CfedistributorSubDistributor {

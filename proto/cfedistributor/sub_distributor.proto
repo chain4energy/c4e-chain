@@ -10,7 +10,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 message State {
   Account account = 1         [(gogoproto.nullable) = true];
   bool burn = 2;
-  repeated cosmos.base.v1beta1.DecCoin coins_states = 3 [ // rename - remains
+  repeated cosmos.base.v1beta1.DecCoin remains = 3 [
   (gogoproto.moretags) = "yaml:\"coin_state\"",
   (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
   (gogoproto.nullable) = false];

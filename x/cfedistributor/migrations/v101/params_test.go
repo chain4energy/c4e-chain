@@ -53,7 +53,7 @@ package v101_test
 // 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 // 	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 1, sdk.ZeroInt(), sdk.ZeroInt())
 // 	MigrateV100ToV101(t, testUtil, ctx)
-	
+
 // }
 
 // func TestMigrationOneVestingType(t *testing.T) {
@@ -82,7 +82,6 @@ package v101_test
 // 	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
 // 	MigrateV100ToV101(t, testUtil, ctx)
 // }
-
 
 // func SetupV100AccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) v100cfevesting.AccountVestingPools {
 // 	return SetupV100AccountVestingPoolsWithModification(testUtil, ctx, func(*v100cfevesting.VestingPool) { /*do not modify*/ }, address, numberOfVestingPools, vestingAmount, withdrawnAmount)
@@ -147,8 +146,6 @@ package v101_test
 // 	}
 // 	return
 // }
-
-
 
 // func GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPoolsPerAccount int,
 // 	accountId int, vestingStartId int) v100cfevesting.AccountVestingPools {
