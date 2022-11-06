@@ -151,7 +151,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
 
 	mig := keeper.NewMigrator(am.keeper)
-	cfg.RegisterMigration(types.ModuleName, 2, mig.Migrate1to2)
+	cfg.RegisterMigration(types.ModuleName, 1, mig.Migrate1to2)
 }
 
 // RegisterInvariants registers the capability module's invariants.
