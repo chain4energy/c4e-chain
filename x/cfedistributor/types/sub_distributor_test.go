@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -118,15 +119,11 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 }
 
 func TestValidateOrderOfMainSubDistributors(t *testing.T) {
-	twoMainTypesWithinOneSubdistributor := []SubDistributor{
-		createSubDistributor(BASE_ACCOUNT, MAIN, MAIN, ""),
-	}
 
 	var zeroSubDistributors []SubDistributor
 
 	onlyOneMainSubdistributor := []SubDistributor{
 		CreateSubDistributor(MAIN_SOURCE),
-		createSubDistributor(BASE_ACCOUNT, MAIN, BASE_ACCOUNT, ""),
 	}
 	destinationMainAtTheEnd := []SubDistributor{
 		CreateSubDistributor(MAIN_SOURCE),
@@ -157,7 +154,6 @@ func TestValidateOrderOfMainSubDistributors(t *testing.T) {
 		wantError       bool
 	}{
 		{"only one main subdistributor", onlyOneMainSubdistributor, false},
-		{"two main types within one subdistributor", twoMainTypesWithinOneSubdistributor, true},
 		{"zero sub distributors", zeroSubDistributors, true},
 		{"wrong order destination main at the end", destinationMainAtTheEnd, true},
 		{"correct order source main at the end", sourceMainAtTheEnd, false},
@@ -169,9 +165,9 @@ func TestValidateOrderOfMainSubDistributors(t *testing.T) {
 
 			err := ValidateSubDistributors(tt.subDistributors)
 			if tt.wantError == true && err == nil {
-				t.Errorf("ValidateOrderOfSubDistributors() wanted error got nil")
+				t.Errorf("TestValidateOrderOfMainSubDistributors() wanted error got nil")
 			} else if tt.wantError == false && err != nil {
-				t.Errorf("ValidateOrderOfSubDistributors() error: %v", err.Error())
+				t.Errorf("TestValidateOrderOfMainSubDistributors() error: %v", err.Error())
 			}
 		})
 	}
@@ -180,9 +176,6 @@ func TestValidateOrderOfMainSubDistributors(t *testing.T) {
 func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
 	onlyOneInternalSubdistributor := []SubDistributor{
 		CreateSubDistributor(INTERNAL_SOURCE),
-	}
-	twoInternalTypesWithinOneSubdistributor := []SubDistributor{
-		createSubDistributor(BASE_ACCOUNT, INTERNAL_ACCOUNT, INTERNAL_ACCOUNT, "custom_id"),
 	}
 
 	var destinationAtTheEnd []SubDistributor
@@ -200,7 +193,7 @@ func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
 	}
 
 	destinationInternalShareAtTheEnd := []SubDistributor{
-		createSubDistributor(BASE_ACCOUNT, INTERNAL_ACCOUNT, BASE_ACCOUNT, "custom_id"),
+		CreateSubDistributor(INTERNAL_DESTINATION_SHARE),
 		CreateSubDistributor(INTERNAL_DESTINATION_SHARE),
 		CreateSubDistributor(MAIN_SOURCE),
 	}
@@ -227,7 +220,6 @@ func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
 		wantError       bool
 	}{
 		{"only one internal subdistributor", onlyOneInternalSubdistributor, true},
-		{"two internal types within one subdistributor", twoInternalTypesWithinOneSubdistributor, true},
 		{"wrong order destination main at the end", destinationAtTheEnd, true},
 		{"wrong order destination internal at the end", destinationInternalAtTheEnd, true},
 		{"correct order source main at the end", sourceInternalAtTheEnd, false},
@@ -239,9 +231,9 @@ func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ValidateSubDistributors(tt.subDistributors)
 			if tt.wantError == true && err == nil {
-				t.Errorf("ValidateOrderOfSubDistributors() wanted error got nil")
+				t.Errorf("TestValidateOrderOfInternalSubDistributors() wanted error got nil")
 			} else if tt.wantError == false && err != nil {
-				t.Errorf("ValidateOrderOfSubDistributors() error: %v", err.Error())
+				t.Errorf("TestValidateOrderOfInternalSubDistributors() error: %v", err.Error())
 			}
 		})
 	}
@@ -282,15 +274,60 @@ func TestValidateUniquenessOfNames(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ValidateSubDistributors(tt.subDistributors)
 			if tt.wantError == true && err == nil {
-				t.Errorf("ValidateSubDistributors() wanted error got nil")
+				t.Errorf("TestValidateUniquenessOfNames() wanted error got nil")
 			} else if tt.wantError == false && err != nil {
-				t.Errorf("ValidateSubDistributors() error: %v", err.Error())
+				t.Errorf("TestValidateUniquenessOfNames() error: %v", err.Error())
 			}
 		})
 	}
 }
 
+func TestValidateUniquenessOfSubdistributors(t *testing.T) {
+	type test struct {
+		expectedError   string
+		subDistributors []SubDistributor
+	}
+	var tests []test
+
+	for _, accType := range []string{INTERNAL_ACCOUNT, MODULE_ACCOUNT, MAIN, BASE_ACCOUNT} {
+		subDistributorCases := make(map[int][]SubDistributor)
+		subDistributorCases[0] = []SubDistributor{
+			createSubDistributor(CUSTOM_ACCOUNT, accType, accType, CUSTOM_ID, false),
+		}
+		subDistributorCases[1] = []SubDistributor{
+			createSubDistributor(accType, CUSTOM_ACCOUNT, accType, CUSTOM_ID, false),
+		}
+		subDistributorCases[2] = []SubDistributor{
+			createSubDistributor(accType, accType, CUSTOM_ACCOUNT, CUSTOM_ID, false),
+		}
+		subDistributorCases[3] = []SubDistributor{
+			createSubDistributor(accType, accType, accType, CUSTOM_ID, false),
+		}
+
+		for i := 0; i < 4; i++ {
+			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(MAIN_SOURCE))
+			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(INTERNAL_SOURCE))
+			expectedError := "same " + getId(&Account{Type: accType, Id: CUSTOM_ID}) +
+				" account cannot occur twice within one subdistributor, subdistributor name: " + subDistributorCases[i][0].Name
+
+			tests = append(tests, test{expectedError, subDistributorCases[i]})
+		}
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.expectedError, func(t *testing.T) {
+			err := ValidateSubDistributors(tt.subDistributors)
+			if err == nil {
+				t.Errorf("TestValidateUniquenessOfSubdistributors() wanted error got nil")
+			}
+			require.EqualValues(t, tt.expectedError, err.Error())
+		})
+	}
+}
+
 const (
+	CUSTOM_ACCOUNT             = "CUSTOM_ACCOUNT"
+	CUSTOM_ID                  = "custom_id"
 	MAIN_SOURCE                = "MAIN_SOURCE"
 	MAIN_DESTINATION           = "MAIN_DESTINATION"
 	MAIN_DESTINATION_SHARE     = "MAIN_DESTINATION_SHARE"
@@ -302,17 +339,17 @@ const (
 func CreateSubDistributor(accType string) SubDistributor {
 	switch accType {
 	case MAIN_SOURCE:
-		return createSubDistributor(BASE_ACCOUNT, MAIN, BASE_ACCOUNT, "custom_id")
+		return createSubDistributor(BASE_ACCOUNT, MAIN, BASE_ACCOUNT, CUSTOM_ID, true)
 	case MAIN_DESTINATION:
-		return createSubDistributor(MAIN, BASE_ACCOUNT, BASE_ACCOUNT, "custom_id")
+		return createSubDistributor(MAIN, BASE_ACCOUNT, BASE_ACCOUNT, CUSTOM_ID, true)
 	case MAIN_DESTINATION_SHARE:
-		return createSubDistributor(BASE_ACCOUNT, BASE_ACCOUNT, MAIN, "custom_id")
+		return createSubDistributor(BASE_ACCOUNT, BASE_ACCOUNT, MAIN, CUSTOM_ID, true)
 	case INTERNAL_SOURCE:
-		return createSubDistributor(BASE_ACCOUNT, INTERNAL_ACCOUNT, BASE_ACCOUNT, "custom_id")
+		return createSubDistributor(BASE_ACCOUNT, INTERNAL_ACCOUNT, BASE_ACCOUNT, CUSTOM_ID, true)
 	case INTERNAL_DESTINATION:
-		return createSubDistributor(INTERNAL_ACCOUNT, BASE_ACCOUNT, BASE_ACCOUNT, "custom_id")
+		return createSubDistributor(INTERNAL_ACCOUNT, BASE_ACCOUNT, BASE_ACCOUNT, CUSTOM_ID, true)
 	case INTERNAL_DESTINATION_SHARE:
-		return createSubDistributor(BASE_ACCOUNT, BASE_ACCOUNT, INTERNAL_ACCOUNT, "custom_id")
+		return createSubDistributor(BASE_ACCOUNT, BASE_ACCOUNT, INTERNAL_ACCOUNT, CUSTOM_ID, true)
 	}
 	return SubDistributor{}
 }
@@ -322,12 +359,13 @@ func createSubDistributor(
 	sourceType string,
 	destinationShareType string,
 	Id string,
+	addIdSuffix bool,
 ) SubDistributor {
 	return SubDistributor{
 		Name: helpers.RandStringOfLength(10),
 		Destination: Destination{
 			Account: Account{
-				Id:   Id,
+				Id:   Id + getIdSuffix("mainDst", destinationType, addIdSuffix),
 				Type: destinationType,
 			},
 			BurnShare: &BurnShare{
@@ -337,7 +375,7 @@ func createSubDistributor(
 				{
 					Name: helpers.RandStringOfLength(10),
 					Account: Account{
-						Id:   Id,
+						Id:   Id + getIdSuffix("shareDst", destinationShareType, addIdSuffix),
 						Type: destinationShareType,
 					},
 					Percent: sdk.MustNewDecFromStr("0"),
@@ -346,9 +384,19 @@ func createSubDistributor(
 		},
 		Sources: []*Account{
 			{
-				Id:   Id,
+				Id:   Id + getIdSuffix("src", sourceType, addIdSuffix),
 				Type: sourceType,
 			},
 		},
 	}
+}
+
+func getIdSuffix(suffix string, accType string, addIdSuffix bool) string {
+	if !addIdSuffix {
+		return ""
+	}
+	if accType == INTERNAL_ACCOUNT || accType == MAIN {
+		return "-" + accType
+	}
+	return "-" + suffix
 }

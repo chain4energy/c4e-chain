@@ -2,10 +2,11 @@ package types
 
 import (
 	"fmt"
-	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+const maxShareSum = 100
 
 func (s SubDistributor) Validate() error {
 
@@ -30,7 +31,7 @@ func (s SubDistributor) Validate() error {
 
 func (destination Destination) CheckPercentShareSumIsBetween0And100() bool {
 	shares := destination.Share
-	percentShareSum := sdk.MustNewDecFromStr("0")
+	percentShareSum := sdk.ZeroDec()
 	for _, share := range shares {
 		percentShareSum = percentShareSum.Add(share.Percent)
 	}
@@ -40,7 +41,7 @@ func (destination Destination) CheckPercentShareSumIsBetween0And100() bool {
 		percentShareSum = percentShareSum.Add(destination.BurnShare.Percent)
 	}
 
-	return percentShareSum.GTE(sdk.MustNewDecFromStr("100")) || percentShareSum.IsNegative()
+	return percentShareSum.GTE(sdk.NewDec(maxShareSum)) || percentShareSum.IsNegative()
 }
 
 func (s State) StateIdString() string {
@@ -92,23 +93,13 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 		}
 
 		for j := 0; j < len(subDistributors[i].Sources); j++ {
-			sourceType := subDistributors[i].Sources[j].Type
-			if sourceType == INTERNAL_ACCOUNT || sourceType == MAIN {
-				id := setId(sourceType, subDistributors[i].Sources[j].Id)
-				if lastOccurrenceIndex[id] == i && lastOccurrence[id] != "" {
-					return fmt.Errorf("same %s account cannot occur twice within one subdistributor, subdistributor name: %s",
-						strings.ToLower(sourceType), subDistributorName)
-				}
-				lastOccurrence[id] = SOURCE
-				lastOccurrenceIndex[id] = i
+			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, subDistributors[i].Sources[j], i, SOURCE); err != nil {
+				return err
 			}
 		}
 
-		destinationType := subDistributors[i].Destination.Account.Type
-		if destinationType == INTERNAL_ACCOUNT || destinationType == MAIN {
-			id := setId(destinationType, subDistributors[i].Destination.Account.Id)
-			lastOccurrence[id] = DESTINATION
-			lastOccurrenceIndex[id] = i
+		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Account, i, DESTINATION); err != nil {
+			return err
 		}
 
 		for j := 0; j < len(subDistributors[i].Destination.Share); j++ {
@@ -117,15 +108,8 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 				return err
 			}
 
-			destinationShareType := subDistributors[i].Destination.Share[j].Account.Type
-			if destinationShareType == INTERNAL_ACCOUNT || destinationShareType == MAIN {
-				id := setId(destinationShareType, subDistributors[i].Destination.Share[j].Account.Id)
-				if lastOccurrenceIndex[id] == i && lastOccurrence[id] != "" {
-					return fmt.Errorf("same %s account cannot occur twice within one subdistributor, subdistributor name: %s",
-						strings.ToLower(destinationShareType), subDistributorName)
-				}
-				lastOccurrence[id] = DESTINATION
-				lastOccurrenceIndex[id] = i
+			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Share[j].Account, i, DESTINATION); err != nil {
+				return err
 			}
 		}
 
@@ -134,7 +118,7 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 	if lastOccurrence[MAIN] == "" {
 		return fmt.Errorf("there must be at least one subdistributor with the source main type")
 	}
-	for accountId, _ := range lastOccurrence {
+	for accountId := range lastOccurrence {
 		if lastOccurrence[accountId] != SOURCE {
 			return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the " +
 				"destination of internal or main account type there must be exactly one occurrence of a subdistributor with the " +
@@ -145,11 +129,29 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 	return nil
 }
 
-func setId(accType string, id string) string {
-	if accType == INTERNAL_ACCOUNT {
-		return id
+func getId(account *Account) string {
+	if account.Type == MAIN {
+		return MAIN
 	}
-	return MAIN
+	return account.Type + "-" + account.Id
+}
+
+func isAccountPositionValidatable(accType string) bool {
+	return accType == INTERNAL_ACCOUNT || accType == MAIN
+}
+
+func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, position int, occuranceType string) error {
+	id := getId(account)
+	currentPosition := position + 1
+	if lastOccurrenceIndex[id] == currentPosition {
+		return fmt.Errorf("same %s account cannot occur twice within one subdistributor, subdistributor name: %s",
+			id, subDistributorName)
+	}
+	if isAccountPositionValidatable(account.Type) {
+		lastOccurrence[id] = occuranceType
+	}
+	lastOccurrenceIndex[id] = currentPosition
+	return nil
 }
 
 func validateUniquenessOfNames(subDistributorName string, nameOccured *map[string]bool) error {

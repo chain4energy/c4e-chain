@@ -20,7 +20,7 @@ var (
 					Type: MODULE_ACCOUNT,
 				},
 				BurnShare: &BurnShare{
-					Percent: sdk.MustNewDecFromStr("0"),
+					Percent: sdk.ZeroDec(),
 				},
 			},
 			Sources: []*Account{
