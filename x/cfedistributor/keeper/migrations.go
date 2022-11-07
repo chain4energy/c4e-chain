@@ -17,5 +17,11 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate1to2 migrates from version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
+	logger := m.keeper.Logger(ctx)
+	logger.Info("Starting migration cfedistributor")
+	if err := v101cfedistributor.UpdateParams(ctx, &m.keeper.paramstore); err != nil {
+		return err
+	}
+
 	return v101cfedistributor.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
 }

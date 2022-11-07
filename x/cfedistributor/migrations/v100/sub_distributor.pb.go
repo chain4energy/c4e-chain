@@ -350,12 +350,12 @@ func (m *Account) GetType() string {
 }
 
 func init() {
-	proto.RegisterType((*State)(nil), "chain4energy.c4echain.cfedistributor.State")
-	proto.RegisterType((*SubDistributor)(nil), "chain4energy.c4echain.cfedistributor.SubDistributor")
-	proto.RegisterType((*Destination)(nil), "chain4energy.c4echain.cfedistributor.Destination")
-	proto.RegisterType((*BurnShare)(nil), "chain4energy.c4echain.cfedistributor.BurnShare")
-	proto.RegisterType((*Share)(nil), "chain4energy.c4echain.cfedistributor.Share")
-	proto.RegisterType((*Account)(nil), "chain4energy.c4echain.cfedistributor.Account")
+	proto.RegisterType((*State)(nil), "chain4energy.c4echain.cfedistributor.v100.State")
+	proto.RegisterType((*SubDistributor)(nil), "chain4energy.c4echain.cfedistributor.v100.SubDistributor")
+	proto.RegisterType((*Destination)(nil), "chain4energy.c4echain.cfedistributor.v100.Destination")
+	proto.RegisterType((*BurnShare)(nil), "chain4energy.c4echain.cfedistributor.v100.BurnShare")
+	proto.RegisterType((*Share)(nil), "chain4energy.c4echain.cfedistributor.v100.Share")
+	proto.RegisterType((*Account)(nil), "chain4energy.c4echain.cfedistributor.v100.Account")
 }
 
 func init() {

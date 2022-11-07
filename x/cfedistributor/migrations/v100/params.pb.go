@@ -67,7 +67,7 @@ func (m *Params) GetSubDistributors() []SubDistributor {
 }
 
 func init() {
-	proto.RegisterType((*Params)(nil), "chain4energy.c4echain.cfedistributor.Params")
+	proto.RegisterType((*Params)(nil), "chain4energy.c4echain.cfedistributor.v100.Params")
 }
 
 func init() { proto.RegisterFile("cfedistributor/params.proto", fileDescriptor_adca59ea0d996ca3) }
