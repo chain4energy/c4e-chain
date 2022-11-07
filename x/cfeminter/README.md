@@ -325,7 +325,7 @@ See example reponse:
   }
 }
 ```
-### Params states
+### State query
 
 Queries the module state.
 
@@ -344,7 +344,7 @@ See example reponse:
 }
 ```
 
-### Inflation
+### Inflation query
 
 Queries current inflation.
 

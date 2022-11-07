@@ -531,7 +531,7 @@ See example reponse:
   }
 }
 ```
-### Params states
+### States query
 
 Queries the module state.
 
