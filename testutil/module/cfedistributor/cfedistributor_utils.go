@@ -36,6 +36,10 @@ func (h *C4eDistributorKeeperUtils) CheckNonNegativeCoinStateInvariant(ctx sdk.C
 	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
+func (h *C4eDistributorKeeperUtils) GetC4eDistributorKeeper() *cfedistributormodulekeeper.Keeper {
+	return h.helperCfedistributorKeeper
+}
+
 func (h *C4eDistributorKeeperUtils) CheckStateSumBalanceCheckInvariant(ctx sdk.Context, failed bool, message string) {
 	invariant := cfedistributormodulekeeper.StateSumBalanceCheckInvariant(*h.helperCfedistributorKeeper)
 	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
