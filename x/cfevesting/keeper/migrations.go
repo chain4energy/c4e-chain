@@ -17,7 +17,5 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate1to2 migrates from version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	logger := m.keeper.Logger(ctx)
-	logger.Info("Starting migration cfevesting - migration 1 to 2")
 	return v101cfevesting.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
 }
