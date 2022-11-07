@@ -404,7 +404,7 @@ See the state for **[example](#example)** from **[Concept](#concepts)** section
 
 ## Events
 
-Chain4Energy distributor module module emits the following events:
+Chain4Energy distributor module emits the following events:
 
 ### BeginBlockers
 

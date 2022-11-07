@@ -11,8 +11,7 @@ Chain4Energy minter module provides functionality of controlled token emissions.
 3. **[State](#state)**
 4. **[Events](#events)**
 5. **[Queries](#queries)**
-6. **[Invariants](#invariants)**
-7. **[Genesis validations](#genesis-validations)**
+6. **[Genesis validations](#genesis-validations)**
 
 ## Concepts
 
@@ -94,7 +93,7 @@ Result:
 * 3rd 4 years mints 2.5 millions yearly
 and so on
 
-2. Linaer minting of 100 millions of token during period of 10 years, next no emission
+2. Linear minting of 100 millions of token during period of 10 years, next no emission
 
 Minter configration:
 
@@ -114,317 +113,185 @@ Result:
 
 ## Parameters
 
-The Chain4Energy distributor module contains the following configurations parameters:
+The Chain4Energy minter module contains the following configurations parameters:
 
 | Key                  | Type                        | Description                     |
 | -------------------- | --------------------------- | ------------------------------- |
-| sub_distributors     | List of Subdistributor type | list of defined subdistributors |
+| mintDenom     | string | Denom of minting token |
+| minter     | Minter | Token emission configuration |
 
-### Subdistributor type
+### Minter type
 
 | Param                | Type                        | Description                     |
 | -------------------- | --------------------------- | ------------------------------- |
-| name     | string | unique name of the subdistributor |
-| sources  | List of Account type | list of source accounts |
-| destination  | Destination type | destinations definition |
+| start     | Time | Token emission start time |
+| periods  | List of MintingPeriod | list of minting periods |
 
-### Destination type
+### MintingPeriod type
 
 | Param       | Type               | Description                                                             |
 | ----------- | ------------------ | ----------------------------------------------------------------------- |
-| account     | Account type       | mian destination - all remaining tokens from ohers shares anr sent here |
-| burn_share  | BurnShare type     | share to burn                                                           |
-| share       | List of Share type | List of account destinations with share percentage                      |
+| position    | int32       | Minter period ordering position |
+| period_end     | Time | Minter period end time |
+| types     | Enum string | Minter period type. Allowed values:<br>- NO_MINTING<br>- TIME_LINEAR_MINTER<br>- PERIODIC_REDUCTION_MINTER;|
+| time_linear_minter  | TimeLinearMinter    | Time linear minter configuration|
+| periodic_reduction_minter | PeriodicReductionMinter | Periodic reduction minter configuration |
 
-### Share type
+### TimeLinearMinter type
 
 | Param   | Type         | Description              |
 | ------- | ------------ | ------------------------ |
-| name    | string       | unique name of the share |
-| account | Account type | destination account      |
-| percent | Dec          | share percentage 0-100   |
+| amount    | sdk.Int       | An smount to mint lieary during the period |
 
-### BurnShare type
+### PeriodicReductionMinter type
 
 | Param   | Type | Description                    |
 | ------- | ---- | ------------------------------ |
-| percent | Dec  | share percentage to burn 0-100 |
-
-### Account type
-
-| Param   | Type | Description                    |
-| ------- | ---- | ------------------------------ |
-| type    | enum string  | account type:<br />- MAIN - main module account<br />- MODULE_ACCOUNT - module account<br />- BASE_ACCOUNT - base account<br />- INTERNAL_ACCOUNT - cfedistributor internal account |
-| id      | string       | account identifier dependant on the type::<br />- MAIN - empty<br />- MODULE_ACCOUNT - module account name<br />- BASE_ACCOUNT - base account address<br />- INTERNAL_ACCOUNT - cfedistributor internal account name |
+| mint_period | int32  | period of time of "mint_amount" token emission |
+| mint_amount | sdk.Int   | amount to mint during "mint_period" |
+| reduction_period_length | int32  | defines how many mint periods are in subperiod (see **[periodic reduction minter](#periodic-reduction-minter)**) (subperiod = mint period * reduction_period_length) |
+| reduction_factor | sdk.Dec   | amount multiplying factor |
 
 ### Example params
 
-See the configuration params for **[example](#example)** from **[Concept](#concepts)** section
+#### periodic reduction minter
+
+Periodic reduction minter is block time based minter type. It mints configured amount of tokens within minting period, where it divides this period into smaller sub periods of equal lenght.
+Then within one sub period expected amount is minted, lineary. Expected amount of subperiod minted tokens is equal to tokens minted by prevoius subperiod multiplied by configured factor.
+For example initial period amount is 40 milions, multiplying factor set to 0.5 and periond length is one year, then:
+* 1st subperiod (1st year) mints 40 millions lineary 
+* 2nd subperiod (2nd year) mints 20 millions lineary
+* 3rd subperiod (3rd year) mints 10 millions lineary
+* 4th subperiod (4th year) mints 5 millions lineary
+and so on.
+
+This minter can mint infinitely.
+
+Minter type parameters: //TODO better params names
+* mint period - period of time mint amount is emitted
+* mint amount - amount to mint during mint period
+* reduction period length - defines how many mint periods are in subperiod (subperiod = mint period * reduction_period_length)
+* reduction factor - amount multiplying factor;
+
+#### Examples
+
+See the configuration params for **[examples](#examples)** from **[Concept](#concepts)** section
+
+1. Four years halving minting that starts with 10 millions of tokens yearly
 
 ```json
 
 {
-    "sub_distributors": [
+  "params": {
+    "mint_denom": "uc4e",
+    "minter": {
+      "start": "2022-07-05T00:00:00Z",
+      "periods": [
         {
-            "name": "inflation_subdistributor", 
-            "sources": [
-                {
-                "id": "",
-                "type": "MAIN"
-                }
-            ],
-            "destination": {
-                "account": {
-                    "id": "validators_rewards",
-                    "type": "MODULE_ACCOUNT"
-                },
-                "share": [
-                    {
-                        "account": {
-                            "id": "c4edwijhdhwqu43efvc3543ec34c2erc342dw",
-                            "type": "BASE_ACCOUNT"
-                        },
-                        "name": "inflation_development_fund_share",
-                        "percent": "5.0"
-                    },
-                    {
-                        "account": {
-                            "id": "incentive_boosters",
-                            "type": "INTERNAL_ACCOUNT"
-                        },
-                        "name": "inflation_incentive_boosters_share",
-                        "percent": "35.0"
-                    }
-                ],
-                "burn_share": {
-                    "percent": "0.0"
-                }
-            },
+          "position": 1,
+          "period_end": null,
+          "type": "PERIODIC_REDUCTION_MINTER",
+          "time_linear_minter": null,
+          "periodic_reduction_minter": {
+            "mint_period": 31536000,
+            "mint_amount": "10000000000000",
+            "reduction_period_length": 4,
+            "reduction_factor": "0.500000000000000000"
+          }
+        }
+      ]
+    }
+  }
+}
 
+```
+
+2. Linear minting of 100 millions of token during period of 10 years, next no emission
+
+```json
+
+{
+  "params": {
+    "mint_denom": "uc4e",
+    "minter": {
+      "start": "2022-07-05T00:00:00Z",
+      "periods": [
+        {
+          "position": 1,
+          "period_end": "2023-07-05T00:00:00Z",
+          "type": "PERIODIC_REDUCTION_MINTER",
+          "time_linear_minter": {
+            "amount": "100000000000000",
+          },
+          "periodic_reduction_minter": null
         },
         {
-            "name": "transaction fees subdistributor", 
-            "sources": [
-                {
-                "id": "fee_collector",
-                "type": "MODULE_ACCOUNT"
-                }
-            ],
-            "destination": {
-                "account": {
-                    "id": "validators_rewards",
-                    "type": "MODULE_ACCOUNT"
-                },
-                "share": [
-                    {
-                        "account": {
-                            "id": "incentive_boosters",
-                            "type": "INTERNAL_ACCOUNT"
-                        },
-                        "name": "txs_incentive_boosters_share",
-                        "percent": "15.0"
-                    }
-                ],
-                "burn_share": {
-                    "percent": "5.0"
-                }
-            },
-
-        },
-        {
-            "name": "module_fees_subdistributor", 
-            "sources": [
-                {
-                "id": "fictional_module_fee_collector",
-                "type": "MODULE_ACCOUNT"
-                }
-            ],
-            "destination": {
-                "account": {
-                    "id": "validators_rewards",
-                    "type": "MODULE_ACCOUNT"
-                },
-                "share": [
-                    {
-                        "account": {
-                            "id": "c4edwijhdhwqu43efvc3543ec34c2erc342dw",
-                            "type": "BASE_ACCOUNT"
-                        },
-                        "name": "module_development_fund_share",
-                        "percent": "30.0"
-                    },
-                    {
-                        "account": {
-                            "id": "incentive_boosters",
-                            "type": "INTERNAL_ACCOUNT"
-                        },
-                        "name": "module_incentive_boosters_share",
-                        "percent": "20.0"
-                    }
-                ],
-                "burn_share": {
-                    "percent": "0.0"
-                }
-            },
-
-        },
-        {
-            "name": "incentive boosters subdistributor", 
-            "sources": [
-                {
-                "id": "incentive_boosters",
-                "type": "INTERNAL_ACCOUNT"
-                }
-            ],
-            "destination": {
-                "account": {
-                    "id": "governance_booster",
-                    "type": "MODULE_ACCOUNT"
-                },
-                "share": [
-                    {
-                        "account": {
-                            "id": "weekend_boosters",
-                            "type": "INTERNAL_ACCOUNT"
-                        },
-                        "name": "weekend_boosters_share",
-                        "percent": "35.0"
-                    }
-                ],
-                "burn_share": {
-                    "percent": "0.0"
-                }
-            },
-
-        },
-        
-    ]
+          "position": 1,
+          "period_end": null,
+          "type": "NO_MINTING",
+          "time_linear_minter": null,
+          "periodic_reduction_minter": null
+        }
+      ]
+    }
+  }
 }
 
 ```
 
 ## State
 
-Chain4Energy distributor module state contains decimal amounts left from previouse block that were impossible to send due value less than 1 token.
+Chain4Energy minter module state contains informations used  by current minting period.
 Module state contains followng data:
 
 | Key                  | Type                        | Description                     |
 | -------------------- | --------------------------- | ------------------------------- |
-| states     | List of State type | list of states for burn and per each destination account in all subdistributors (except main distributor) |
+| minter_state     | MinterState | current minting period state |
+| state_history     | List of MinterState | previuos minting periods final states |
 
-### State type
+### MinterState
 
-Account account = 1         [(gogoproto.nullable) = true];
-  bool burn = 2;
-  repeated cosmos.base.v1beta1.DecCoin coins_states = 3 [
-
-| Param                | Type                        | Description                     |
+| Key                  | Type                        | Description                     |
 | -------------------- | --------------------------- | ------------------------------- |
-| account | Account type (see **[Account type](#account-type)**) | destination account or empty in case of burn flag set to true     |
-| burn  | bool | specidies if this is burn destination state |
-| coins_states  | DecCoin | list of coins to distribute left by previous block |
+| position     | int32 | current minting period position |
+| amount_minted     | sdk.Int | amount minted by current minting period |
+| remainder_to_mint     | sdk.Dec | decimal remainder - decimal amount that should be minted but was not Int. |
+| last_mint_block_time     | sdk.Time | Time of last mint |
+| remainder_from_previous_period     | sdk.Dec | decimal remainder left by previous minting period |
 
 ### Example state
 
-See the state for **[example](#example)** from **[Concept](#concepts)** section
-
 ```json
 
-[
-    {
-        "account": {
-            "id": "validators_rewards",
-            "type": "MODULE_ACCOUNT"
-        },
-        "burn": false,
-        "coins_states": [
-            {
-                "denom": "uc4e",
-                "amount": "0.900000000000000000"
-            }
-        ]
-    },
-    {
-        "account": {
-            "id": "c4edwijhdhwqu43efvc3543ec34c2erc342dw",
-            "type": "BASE_ACCOUNT"
-        },
-        "burn": false,
-        "coins_states": [
-            {
-                "denom": "uc4e",
-                "amount": "0.359000000000000000"
-            }
-        ]
-    },
-    {
-        "account": {
-            "id": "incentive_boosters",
-            "type": "INTERNAL_ACCOUNT"
-        },
-        "burn": false,
-        "coins_states": []
-    },
-    {
-        "account": {
-            "id": "governance_booster",
-            "type": "MODULE_ACCOUNT"
-        },
-        "burn": false,
-        "coins_states": [
-            {
-                "denom": "uc4e",
-                "amount": "0.582000000000000000"
-            }
-        ]
-    },
-    {
-      "account": {
-            "id": "weekend_booster",
-            "type": "MODULE_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": [
-            {
-                "denom": "uc4e",
-                "amount": "0.359000000000000000"
-            }
-      ]
-    },
-    {
-        "burn": true,
-        "coins_states": [
-            {
-                "denom": "uc4e",
-                "amount": "0.800000000000000000"
-            }
-        ]
-    }
-]
+{
+  "minter_state": {
+    "position": 1,
+    "amount_minted": "13766330043442",
+    "remainder_to_mint": "0.415017757483510908",
+    "last_mint_block_time": "2022-11-07T14:49:34.606250Z",
+    "remainder_from_previous_period": "0.000000000000000000"
+  },
+  "state_history": []
+}
 
 ```
 
 ## Events
 
-Chain4Energy distributor module module emits the following events:
+Chain4Energy minter module emits the following events:
 
 ### BeginBlockers
 
-#### Tokens distribution
+#### Mint
 
 | Type         | Attribute Key | Attribute Value |
 | ------------ | ------------- | --------------- |
-| DistributionsResult | DistributionResult | list of DistributionResult type |
+| bonded_ratio | Dec | |
+| inflation | sdk.Dec | Minting block inflation level |
+| amount | sdk.Int | Amount minted in block |
 
-##### DistributionResult type
-
-DistributionResult type represents one send operation to one destination in one block
-
-| Param   | Type | Description                    |
-| ------- | ---- | ------------------------------ |
-| source  | list of Account type (see **[Account type](#account-type)**) | list of sources |
-| destination | Account type (see **[Account type](#account-type)**) | destination |
-| coinSend | DecCoins | coins sent to destination |
+TODO remove bonded_ratio 
+TODO add minter period id
 
 ## Queries
 
@@ -437,99 +304,24 @@ See example reponse:
 ```json
 {
   "params": {
-    "sub_distributors": [
-      {
-        "name": "tx_fee_distributor",
-        "sources": [
-          {
-            "id": "fee_collector",
-            "type": "MODULE_ACCOUNT"
-          }
-        ],
-        "destination": {
-          "account": {
-            "id": "c4e_distributor",
-            "type": "MAIN"
-          },
-          "share": [],
-          "burn_share": {
-            "percent": "0.000000000000000000"
+    "mint_denom": "uc4e",
+    "minter": {
+      "start": "2022-07-05T00:00:00Z",
+      "periods": [
+        {
+          "position": 1,
+          "period_end": null,
+          "type": "PERIODIC_REDUCTION_MINTER",
+          "time_linear_minter": null,
+          "periodic_reduction_minter": {
+            "mint_period": 31536000,
+            "mint_amount": "40000000000000",
+            "reduction_period_length": 4,
+            "reduction_factor": "0.500000000000000000"
           }
         }
-      },
-      {
-        "name": "inflation_and_fee_distributor",
-        "sources": [
-          {
-            "id": "c4e_distributor",
-            "type": "MAIN"
-          }
-        ],
-        "destination": {
-          "account": {
-            "id": "validators_rewards_collector",
-            "type": "MODULE_ACCOUNT"
-          },
-          "share": [
-            {
-              "name": "development_fund",
-              "percent": "5.000000000000000000",
-              "account": {
-                "id": "c4e10ep2sxpf2kj6jsdcs234edkuf9sf9xqq3sl",
-                "type": "BASE_ACCOUNT"
-              }
-            },
-            {
-              "name": "usage_incentives",
-              "percent": "35.000000000000000000",
-              "account": {
-                "id": "usage_incentives_collector",
-                "type": "INTERNAL_ACCOUNT"
-              }
-            }
-          ],
-          "burn_share": {
-            "percent": "0.000000000000000000"
-          }
-        }
-      },
-      {
-        "name": "usage_incentives_distributor",
-        "sources": [
-          {
-            "id": "usage_incentives_collector",
-            "type": "INTERNAL_ACCOUNT"
-          }
-        ],
-        "destination": {
-          "account": {
-            "id": "c4e1q5vgy0r3scsdc32dcewkl8nwmfe2mgr6g0jlph",
-            "type": "BASE_ACCOUNT"
-          },
-          "share": [
-            {
-              "name": "green_energy_booster",
-              "percent": "34.000000000000000000",
-              "account": {
-                "id": "green_energy_booster_collector",
-                "type": "MODULE_ACCOUNT"
-              }
-            },
-            {
-              "name": "governance_booster",
-              "percent": "33.000000000000000000",
-              "account": {
-                "id": "governance_booster_collector",
-                "type": "MODULE_ACCOUNT"
-              }
-            }
-          ],
-          "burn_share": {
-            "percent": "0.000000000000000000"
-          }
-        }
-      }
-    ]
+      ]
+    }
   }
 }
 ```
@@ -541,99 +333,28 @@ See example reponse:
 
 ```json
 {
-  "states": [
-    {
-      "account": {
-        "id": "c4e10ep2ssdfwefcscaewdedscs9xqqqdwqee3sl",
-        "type": "BASE_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.900000000000000000"
-        }
-      ]
-    },
-    {
-      "account": {
-        "id": "c4e1q5vgy0r3w9q4ccsdcds23422mgr6g0jlph",
-        "type": "BASE_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.359000000000000000"
-        }
-      ]
-    },
-    {
-      "account": {
-        "id": "governance_booster_collector",
-        "type": "MODULE_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.359000000000000000"
-        }
-      ]
-    },
-    {
-      "account": {
-        "id": "green_energy_booster_collector",
-        "type": "MODULE_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.582000000000000000"
-        }
-      ]
-    },
-    {
-      "account": {
-        "id": "usage_incentives_collector",
-        "type": "INTERNAL_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": []
-    },
-    {
-      "account": {
-        "id": "validators_rewards_collector",
-        "type": "MODULE_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.800000000000000000"
-        }
-      ]
-    }
-  ],
-  "coins_on_distributor_account": [
-    {
-      "denom": "uc4e",
-      "amount": "3"
-    }
-  ]
+  "minter_state": {
+    "position": 1,
+    "amount_minted": "13766330043442",
+    "remainder_to_mint": "0.415017757483510908",
+    "last_mint_block_time": "2022-11-07T14:49:34.606250Z",
+    "remainder_from_previous_period": "0.000000000000000000"
+  },
+  "state_history": []
 }
 ```
 
-## Invariants
+### Inflation
 
-### Non Negative Coin State Invariant
+Queries current inflation.
 
-Invariant validates module state. Checks if all coins states of all destinations are non negative
+See example reponse:
 
-### State Sum Balance Check Invariant
-
-Invariant validates module state. Checks sum of all coins states of one denom of all destinations is always intiger value and is equal to cfedistributor module account balance
+```json
+{
+  "inflation": "0.102489480201216908"
+}
+```
 
 ## Genesis validations
 
