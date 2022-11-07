@@ -15,7 +15,6 @@ export interface CfedistributorAccount {
 }
 
 export interface CfedistributorBurnShare {
-  /** float percent =1; */
   percent?: string;
 }
 
@@ -36,7 +35,7 @@ export interface CfedistributorParams {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CfedistributorQueryParamsResponse {
-  /** Params defines the parameters for the module. */
+  /** params holds all the parameters of this module. */
   params?: CfedistributorParams;
 }
 
@@ -47,8 +46,6 @@ export interface CfedistributorQueryStatesResponse {
 
 export interface CfedistributorShare {
   name?: string;
-
-  /** float percent = 2; */
   percent?: string;
   account?: CfedistributorAccount;
 }
