@@ -122,7 +122,8 @@ func TestMintPeriodNotFound(t *testing.T) {
 
 	testHelper.C4eMinterUtils.SetMinterState(9, sdk.NewInt(0), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
-	testHelper.SetContextBlockTime(startTime)
+	newTime := startTime.Add(10)
+	testHelper.SetContextBlockTime(newTime)
 	testHelper.C4eMinterUtils.MintError("minter - mint - current period for position 9 not found: not found")
 }
 

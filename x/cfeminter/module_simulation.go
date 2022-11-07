@@ -31,7 +31,7 @@ const SecondsInYear = int32(3600 * 24 * 365)
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	randMintAmount := helpers.RandomInt(simState.Rand, 40000000000000)
 	randMintPeriod := helpers.RandomInt(simState.Rand, 31536000)
-	randReductionPeriodLength := helpers.RandomInt(simState.Rand, 8)
+	randReductionPeriodLength := helpers.RandIntBetween(simState.Rand, 1, 8)
 	randomIntBetween := helpers.RandIntBetween(simState.Rand, 1, 100)
 	reductionFloat := float64(randomIntBetween) / float64(100)
 	randReductionFactor := fmt.Sprintf("%f", reductionFloat)

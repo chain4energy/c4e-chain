@@ -20,6 +20,9 @@ func SimulateSendToVestingAccount(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		allVestingPools := k.GetAllAccountVestingPools(ctx)
+		if len(allVestingPools) == 0 {
+			return simtypes.NewOperationMsg(&types.MsgSendToVestingAccount{}, false, "", nil), nil, nil
+		}
 		randVestingPoolId := helpers.RandomInt(r, len(allVestingPools))
 		accAddress := allVestingPools[randVestingPoolId].Address
 		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10))
@@ -28,7 +31,7 @@ func SimulateSendToVestingAccount(
 		numOfPools := len(allVestingPools[randVestingPoolId].VestingPools)
 		var randVestingId int64 = 0
 		if numOfPools > 1 {
-			randVestingId = helpers.RandomInt(r, numOfPools - 1)
+			randVestingId = helpers.RandomInt(r, numOfPools-1)
 		}
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
 			FromAddress:     accAddress,

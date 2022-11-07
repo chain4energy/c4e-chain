@@ -24,9 +24,13 @@ func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
 
 	accAddr := acountsAddresses[0]
 	accountVestingPools := testHelper.C4eVestingUtils.SetupAccountVestingPools(accAddr.String(), 1, vested, sdk.ZeroInt())
+	testHelper.C4eVestingUtils.SetupVestingTypesForAccountsVestingPools()
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, sdk.ZeroInt())
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableManyVestingPoolsOnLockStart(t *testing.T) {
@@ -39,9 +43,13 @@ func TestWithdrawAllAvailableManyVestingPoolsOnLockStart(t *testing.T) {
 
 	accAddr := acountsAddresses[0]
 	accountVestingPools := testHelper.C4eVestingUtils.SetupAccountVestingPools(accAddr.String(), 3, vested, sdk.ZeroInt())
+	testHelper.C4eVestingUtils.SetupVestingTypesForAccountsVestingPools()
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested.MulRaw(3), sdk.ZeroInt())
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableDuringLock(t *testing.T) {
@@ -54,10 +62,14 @@ func TestWithdrawAllAvailableDuringLock(t *testing.T) {
 
 	accAddr := acountsAddresses[0]
 	accountVestingPools := testHelper.C4eVestingUtils.SetupAccountVestingPools(accAddr.String(), 1, vested, sdk.ZeroInt())
+	testHelper.C4eVestingUtils.SetupVestingTypesForAccountsVestingPools()
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, withdrawable)
 	accountVestingPools.VestingPools[0].Withdrawn = withdrawable
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
@@ -70,30 +82,39 @@ func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
 
 	accAddr := acountsAddresses[0]
 	accountVestingPools := testHelper.C4eVestingUtils.SetupAccountVestingPools(accAddr.String(), 3, vested, sdk.ZeroInt())
-
+	testHelper.C4eVestingUtils.SetupVestingTypesForAccountsVestingPools()
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested.MulRaw(3), withdrawable.MulRaw(3))
 	for _, vesting := range accountVestingPools.VestingPools {
 		vesting.Withdrawn = withdrawable
 	}
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 	vested := sdk.NewInt(1000000)
 	withdrawable := vested
 	withdrawn := sdk.NewInt(300)
+	balance := vested.Sub(withdrawn)
 
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 110000, testutils.CreateTimeFromNumOfHours(110000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(vested, types.ModuleName)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(balance, types.ModuleName)
 
 	accAddr := acountsAddresses[0]
 	accountVestingPools := testHelper.C4eVestingUtils.SetupAccountVestingPools(accAddr.String(), 1, vested, withdrawn)
+	testHelper.C4eVestingUtils.SetupVestingTypesForAccountsVestingPools()
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
-	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, withdrawable.Sub(withdrawn))
+	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), balance, withdrawable.Sub(withdrawn))
 	accountVestingPools.VestingPools[0].Withdrawn = withdrawable
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 }
 
@@ -101,20 +122,25 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 	vested := sdk.NewInt(1000000)
 	withdrawable := vested
 	withdrawn := sdk.NewInt(300)
+	balance := vested.Sub(withdrawn).MulRaw(3)
 
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 110000, testutils.CreateTimeFromNumOfHours(110000))
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(vested.MulRaw(3), types.ModuleName)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(balance, types.ModuleName)
 
 	accAddr := acountsAddresses[0]
 	accountVestingPools := testHelper.C4eVestingUtils.SetupAccountVestingPools(accAddr.String(), 3, vested, withdrawn)
+	testHelper.C4eVestingUtils.SetupVestingTypesForAccountsVestingPools()
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
-	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested.MulRaw(3), withdrawable.MulRaw(3).Sub(withdrawn.MulRaw(3)))
+	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), balance, withdrawable.MulRaw(3).Sub(withdrawn.MulRaw(3)))
 	for _, vesting := range accountVestingPools.VestingPools {
 		vesting.Withdrawn = withdrawable
 	}
 	testHelper.C4eVestingUtils.CompareStoredAcountVestingPools(accAddr, accountVestingPools)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestVestAndWithdrawAllAvailable(t *testing.T) {
@@ -135,6 +161,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	startTime := testHelper.Context.BlockTime()
 
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *vestingTypes.VestingTypes[0], vested, vested /*0,*/, sdk.ZeroInt(), sdk.ZeroInt() /*0,*/, vested)
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, sdk.ZeroInt())
 
@@ -146,6 +173,8 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, withdrawn)
 
 	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []sdk.Int{vested}, []sdk.Int{withdrawn}, startTime)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestWithdrawAllAvailableBadAddress(t *testing.T) {

@@ -43,7 +43,7 @@ func (h *C4eDistributorKeeperUtils) CheckStateSumBalanceCheckInvariant(ctx sdk.C
 
 type C4eDistributorUtils struct {
 	C4eDistributorKeeperUtils
-	helperAccountKeeper        *authkeeper.AccountKeeper
+	helperAccountKeeper *authkeeper.AccountKeeper
 }
 
 func NewC4eDistributorUtils(t *testing.T, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
@@ -86,6 +86,20 @@ func (m *C4eDistributorUtils) ExportGenesis(ctx sdk.Context, expected cfedistrib
 
 	require.ElementsMatch(m.t, expected.Params.SubDistributors, got.Params.SubDistributors)
 	require.ElementsMatch(m.t, expected.States, got.States)
+}
+
+func (m *C4eDistributorUtils) ExportGenesisAndValidate(ctx sdk.Context) {
+	exportedGenesis := cfedistributor.ExportGenesis(ctx, *m.helperCfedistributorKeeper)
+	err := exportedGenesis.Validate()
+	require.NoError(m.t, err)
+}
+
+func (m *C4eDistributorUtils) ValidateInvariants(ctx sdk.Context) {
+	invariants := []sdk.Invariant{
+		cfedistributormodulekeeper.StateSumBalanceCheckInvariant(*m.helperCfedistributorKeeper),
+		cfedistributormodulekeeper.NonNegativeCoinStateInvariant(*m.helperCfedistributorKeeper),
+	}
+	commontestutils.ValidateManyInvariants(m.t, ctx, invariants)
 }
 
 func (m *C4eDistributorUtils) SetParams(ctx sdk.Context, params cfedistributortypes.Params) {
@@ -138,6 +152,11 @@ func (m *ContextC4eDistributorUtils) ExportGenesis(expected cfedistributortypes.
 	m.C4eDistributorUtils.ExportGenesis(m.testContext.GetContext(), expected)
 }
 
+func (m *ContextC4eDistributorUtils) ValidateGenesisAndInvariants() {
+	m.C4eDistributorUtils.ExportGenesisAndValidate(m.testContext.GetContext())
+	m.C4eDistributorUtils.ValidateInvariants(m.testContext.GetContext())
+}
+
 func (m *ContextC4eDistributorUtils) SetState(state cfedistributortypes.State) {
 	m.C4eDistributorUtils.SetState(m.testContext.GetContext(), state)
 }
@@ -149,4 +168,15 @@ func (m *ContextC4eDistributorUtils) SetParams(params cfedistributortypes.Params
 func (m *ContextC4eDistributorUtils) CheckStateSumBalanceCheckInvariant(failed bool, message string) {
 	m.C4eDistributorUtils.CheckStateSumBalanceCheckInvariant(m.testContext.GetContext(), failed, message)
 
+}
+
+func (h *ContextC4eDistributorUtils) InitGenesisError(genState cfedistributortypes.GenesisState, errorMessage string) {
+	h.C4eDistributorUtils.InitGenesisError(h.testContext.GetContext(), genState, errorMessage)
+}
+
+func (h *C4eDistributorUtils) InitGenesisError(ctx sdk.Context, genState cfedistributortypes.GenesisState, errorMessage string) {
+	require.PanicsWithValue(h.t, errorMessage,
+		func() {
+			cfedistributor.InitGenesis(ctx, *h.helperCfedistributorKeeper, genState, h.helperAccountKeeper)
+		}, "")
 }

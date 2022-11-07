@@ -6,13 +6,12 @@ import (
 	"strconv"
 	"time"
 
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 func SimulateVestingOperations(
@@ -26,7 +25,7 @@ func SimulateVestingOperations(
 		randInt := helpers.RandomInt(r, 10000000)
 		simAccount2Address := commontestutils.CreateRandomAccAddressNoBalance(randInt)
 
-		randVestingPoolName := helpers.RandStringOfLength(r, 10)
+		randVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
 		randVestingAmount := sdk.NewInt(helpers.RandomInt(r, 10000000000))
 		randVestingDuration := time.Duration(helpers.RandomInt(r, 3))
 		randVesingId := helpers.RandomInt(r, 3)
@@ -49,11 +48,11 @@ func SimulateVestingOperations(
 
 		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10000000))
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
-			FromAddress:    simAccount1.Address.String(),
-			ToAddress:      simAccount2Address,
-			VestingPoolName:      randVestingPoolName,
-			Amount:         randMsgSendToVestinAccAmount,
-			RestartVesting: true,
+			FromAddress:     simAccount1.Address.String(),
+			ToAddress:       simAccount2Address,
+			VestingPoolName: randVestingPoolName,
+			Amount:          randMsgSendToVestinAccAmount,
+			RestartVesting:  true,
 		}
 		_, err = msgServer.SendToVestingAccount(msgServerCtx, msgSendToVestingAccount)
 		if err != nil {

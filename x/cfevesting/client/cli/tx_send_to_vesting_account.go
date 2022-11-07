@@ -1,12 +1,15 @@
 package cli
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	"github.com/cosmos/cosmos-sdk/version"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
@@ -15,9 +18,32 @@ import (
 var _ = strconv.Itoa(0)
 
 func CmdSendToVestingAccount() *cobra.Command {
+	bech32PrefixAddr := sdk.GetConfig().GetBech32AccountAddrPrefix()
+
 	cmd := &cobra.Command{
 		Use:   "send-to-vesting-account [to-address] [vesting-pool-name] [amount] [restart-vesting]",
-		Short: "Broadcast message sendToVestingAccount",
+		Short: "Create a new vesting account funded with an allocation of tokens from given vesting pool.",
+		Long: strings.TrimSpace(fmt.Sprintf(`Create a new vesting account funded with an allocation of tokens from given vesting pool.
+The account is a continuous vesting account. The start_time and the end_time are calculated according to vesting type of given vesting-pool.
+If [restart-vesting] is set to true than
+  - start_time = committed block's time + vesting's type of vesting pool lock time
+  - end_time = committed block's time + vesting's type of vesting pool lock time + vesting's type of vesting pool vesting time
+If [restart-vesting] is set to false than
+  - start_time = given vesting pool lock end time
+  - end_time = given vesting pool lock end time
+Before new vesting account creation all available tokens are withdrawn from vesting pool. If current time is after vesting pool lock end new vesting account creation fails.
+
+Arguments:
+  [to_address]        address of a new vesting account
+  [vesting-pool-name] token source vesting pool name 
+  [amount]            amount of tokens to send to a new vesting account from vesting pool
+  [restart-vesting]   true or false. Specifies if vesting account params should be calculted accordign to vesting type
+
+Example:
+$ %s tx %s create-vesting-account %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj my_vesting_pool 120000 true --from mykey
+`, version.AppName, types.ModuleName, bech32PrefixAddr,
+			),
+		),
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argToAddress := args[0]
