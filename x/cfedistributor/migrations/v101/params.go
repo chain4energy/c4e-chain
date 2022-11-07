@@ -68,39 +68,58 @@ func migrateSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec) error
 	return setNewSubdistributorStates(store, cdc, oldAccountVestingPools)
 }
 
-type subDistributors []v100cfedistributor.SubDistributor
-
-func UpdateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
+func UpdateParams(ctx sdk.Context, paramStore *paramtypes.Subspace, cdc codec.BinaryCodec) error {
 	var res []v100cfedistributor.SubDistributor
-	paramStore.Get(ctx, types.KeySubDistributors, &res)
+	rawDistributors := paramStore.GetRaw(ctx, types.KeySubDistributors)
+	var Cdc = codec.NewLegacyAmino()
+	err := cdc.Unmarshal(rawDistributors, &res)
 	var newSubdistributors []types.SubDistributor
-	for _, oldSubdistributor := range res {
-		var newShares []*types.DestinationShare
-		for _, oldShare := range oldSubdistributor.Destination.Share {
-			newShare := types.DestinationShare{
-				Share: oldShare.Percent,
-				Destination: types.Account{
-					Id:   oldShare.Account.Id,
-					Type: oldShare.Account.Type,
-				},
-				Name: oldShare.Name,
-			}
-			newShares = append(newShares, &newShare)
-		}
-
-		newSubdistributor := types.SubDistributor{
-			Name: oldSubdistributor.Name,
+	//for _, oldSubdistributor := range res {
+	//	var newShares []*types.DestinationShare
+	//	for _, oldShare := range oldSubdistributor.Destination.Share {
+	//		newShare := types.DestinationShare{
+	//			Share: oldShare.Percent,
+	//			Destination: types.Account{
+	//				Id:   oldShare.Account.Id,
+	//				Type: oldShare.Account.Type,
+	//			},
+	//			Name: oldShare.Name,
+	//		}
+	//		newShares = append(newShares, &newShare)
+	//	}
+	//
+	//	newSubdistributor := types.SubDistributor{
+	//		Name: oldSubdistributor.Name,
+	//		Destinations: types.Destinations{
+	//			Shares:    newShares,
+	//			BurnShare: oldSubdistributor.Destination.BurnShare.Percent,
+	//			PrimaryShare: types.Account{
+	//				Id:   oldSubdistributor.Destination.Account.Id,
+	//				Type: oldSubdistributor.Destination.Account.Type,
+	//			},
+	//		},
+	//	}
+	//	newSubdistributors = append(newSubdistributors, newSubdistributor)
+	//}
+	DefaultSubDistributors := []types.SubDistributor{
+		{
+			Name: "default_distributor",
 			Destinations: types.Destinations{
-				Shares:    newShares,
-				BurnShare: oldSubdistributor.Destination.BurnShare.Percent,
 				PrimaryShare: types.Account{
-					Id:   oldSubdistributor.Destination.Account.Id,
-					Type: oldSubdistributor.Destination.Account.Type,
+					Id:   types.ValidatorsRewardsCollector,
+					Type: types.MODULE_ACCOUNT,
+				},
+				BurnShare: sdk.ZeroDec(),
+			},
+			Sources: []*types.Account{
+				{
+					Id:   "",
+					Type: types.MAIN,
 				},
 			},
-		}
-		newSubdistributors = append(newSubdistributors, newSubdistributor)
+		},
 	}
+	newSubdistributors = DefaultSubDistributors
 	paramStore.Set(ctx, types.KeySubDistributors, newSubdistributors)
 
 	return nil
