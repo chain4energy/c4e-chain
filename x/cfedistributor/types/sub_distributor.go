@@ -86,6 +86,10 @@ func (account Account) Validate() bool {
 	}
 }
 
+func (account Account) GetAccounteKey() string {
+	return account.Type + "-" + account.Id
+}
+
 func ValidateSubDistributors(subDistributors []SubDistributor) error {
 	lastOccurrence := make(map[string]string)
 	lastOccurrenceIndex := make(map[string]int)

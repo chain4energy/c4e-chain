@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 func getAllV100SubDistributorStatesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (list []v100cfedistributor.State, err error) {
@@ -31,13 +30,18 @@ func setNewSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldSta
 	prefixStore := prefix.NewStore(store, types.StateKeyPrefix)
 
 	for _, oldState := range oldStates {
-		newAccount := types.Account{
-			Id:   oldState.Account.Id,
-			Type: oldState.Account.Id,
+		var newAccount *types.Account
+		if oldState.Burn == true {
+			newAccount = nil
+		} else {
+			newAccount = &types.Account{
+				Id:   oldState.Account.Id,
+				Type: oldState.Account.Id,
+			}
 		}
 
 		newState := types.State{
-			Account: &newAccount,
+			Account: newAccount,
 			Burn:    oldState.Burn,
 			Remains: oldState.CoinsStates,
 		}
@@ -46,17 +50,9 @@ func setNewSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldSta
 		if err != nil {
 			return err
 		}
-		prefixStore.Set([]byte(GetStateKey(newState)), av)
+		prefixStore.Set([]byte(types.GetStateKey(newState)), av)
 	}
 	return nil
-}
-
-func GetStateKey(state types.State) string {
-	if state.Account != nil && state.Account.Id != "" {
-		return state.Account.Id
-	} else {
-		return types.BurnStateKey
-	}
 }
 
 func migrateSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec) error {
@@ -75,46 +71,4 @@ func migrateSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec) error
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	return migrateSubdistributorStates(store, cdc)
-}
-
-func UpdateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
-	var res []v100cfedistributor.SubDistributor
-	rawDistributors := paramStore.GetRaw(ctx, types.KeySubDistributors)
-	if err := codec.NewLegacyAmino().UnmarshalJSON(rawDistributors, &res); err != nil {
-		panic(err)
-	}
-
-	var newSubdistributors []types.SubDistributor
-
-	for _, oldSubdistributor := range res {
-
-		var newShares []*types.DestinationShare
-		for _, oldShare := range oldSubdistributor.Destination.Share {
-			newShare := types.DestinationShare{
-				Share: oldShare.Percent,
-				Destination: types.Account{
-					Id:   oldShare.Account.Id,
-					Type: oldShare.Account.Type,
-				},
-				Name: oldShare.Name,
-			}
-			newShares = append(newShares, &newShare)
-		}
-
-		newSubdistributor := types.SubDistributor{
-			Name: oldSubdistributor.Name,
-			Destinations: types.Destinations{
-				Shares:    newShares,
-				BurnShare: oldSubdistributor.Destination.BurnShare.Percent,
-				PrimaryShare: types.Account{
-					Id:   oldSubdistributor.Destination.Account.Id,
-					Type: oldSubdistributor.Destination.Account.Type,
-				},
-			},
-		}
-		newSubdistributors = append(newSubdistributors, newSubdistributor)
-	}
-	paramStore.Set(ctx, types.KeySubDistributors, newSubdistributors)
-
-	return nil
 }
