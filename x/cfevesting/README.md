@@ -183,8 +183,8 @@ type MsgWithdrawAllAvailable struct {
 
 Creates new continuous vesting account and sends token from creator account.
 
-`MsgCreateVestingPool` can be submitted by any token holder via a
-`MsgCreateVestingPool` transaction.
+`MsgCreateVestingAccount` can be submitted by any token holder via a
+`MsgCreateVestingAccount` transaction.
 
 ``` {.go}
 type MsgCreateVestingAccount struct {
@@ -216,23 +216,72 @@ type MsgCreateVestingAccount struct {
 
 Chain4Energy distributor module emits the following events:
 
-### BeginBlockers
+### Handlers
 
-#### Tokens distribution
+#### MsgCreateVestingPool
 
-| Type         | Attribute Key | Attribute Value |
-| ------------ | ------------- | --------------- |
-| DistributionsResult | DistributionResult | list of DistributionResult type |
+|  Type          | Attribute Key     | Attribute Value  |
+|  --------------| ------------------| -----------------|
+|  NewVestingPool  | creator  | {creator_owner_address}   |
+|  NewVestingPool  | name             | {vesting_pool_name}          |
+|  NewVestingPool  | amount            | {vesting_pool_amount}         |
+|  NewVestingPool  | duration          | {lock_duration}       |
+|  NewVestingPool  | vesting\_type      | {vesting\_type\_name}     |
+|  message       | action            | ??     |
+|  message       | sender            | ??       |
+|  transfer      | recipient         | {moduleAccount}  |
+|  transfer      | sender            | {creator}         |
+|  transfer      | amount            | {amount}    |
 
-##### DistributionResult type
+// TODO verify
 
-DistributionResult type represents one send operation to one destination in one block
+#### MsgSendToVestingAccount
 
-| Param   | Type | Description                    |
-| ------- | ---- | ------------------------------ |
-| source  | list of Account type (see **[Account type](#account-type)**) | list of sources |
-| destination | Account type (see **[Account type](#account-type)**) | destination |
-| coinSend | DecCoins | coins sent to destination |
+|  Type          | Attribute Key     | Attribute Value  |
+|  --------------| ------------------| -----------------|
+|  WithdrawAvailable  | owner\_address  | {owner_address}   |
+|  WithdrawAvailable  | vesting\_pool\_name | {source\_vesting_pool_name}         |
+|  WithdrawAvailable  | amount          | {withdrawn_amount}       |
+|  NewVestingAccountFromVestingPool  | owner\_address  | {owner_address}   |
+|  NewVestingAccountFromVestingPool  | address             | {new\_vesting\_account\_address}          |
+|  NewVestingAccountFromVestingPool  | vesting\_pool\_name | {source\_vesting_pool_name}         |
+|  NewVestingAccountFromVestingPool  | amount          | {amount_to_send_to_new\_vesting\_account}       |
+|  NewVestingAccountFromVestingPool  | restart_vesting      | {restart_vesting} see  **[Send To Vesting Account](#send-to-vesting-account)**   |
+|  message       | action            | ??     |
+|  message       | sender            | ??       |
+|  transfer      | recipient         | {moduleAccount}  |
+|  transfer      | sender            | {creator}         |
+|  transfer      | amount            | {amount}    |
+
+// TODO verify
+
+#### MsgWithdrawAllAvailable
+
+|  Type          | Attribute Key     | Attribute Value  |
+|  --------------| ------------------| -----------------|
+|  WithdrawAvailable  | owner\_address  | {owner_address}   |
+|  WithdrawAvailable  | vesting\_pool\_name | {source\_vesting_pool_name}         |
+|  WithdrawAvailable  | amount          | {withdrawn_amount}       |
+|  message       | action            | ??     |
+|  message       | sender            | ??       |
+|  transfer      | recipient         | {moduleAccount}  |
+|  transfer      | sender            | {creator}         |
+|  transfer      | amount            | {amount}    |
+
+// TODO verify
+
+#### MsgCreateVestingAccount
+
+|  Type          | Attribute Key     | Attribute Value  |
+|  --------------| ------------------| -----------------|
+|  NewVestingAccount  | address  | {new\_vesting\_account\_address}   |
+|  message       | action            | ??     |
+|  message       | sender            | ??       |
+|  transfer      | recipient         | {moduleAccount}  |
+|  transfer      | sender            | {creator}         |
+|  transfer      | amount            | {amount}    |
+
+// TODO verify - some more params
 
 ## Queries
 
@@ -245,189 +294,86 @@ See example reponse:
 ```json
 {
   "params": {
-    "sub_distributors": [
-      {
-        "name": "tx_fee_distributor",
-        "sources": [
-          {
-            "id": "fee_collector",
-            "type": "MODULE_ACCOUNT"
-          }
-        ],
-        "destination": {
-          "account": {
-            "id": "c4e_distributor",
-            "type": "MAIN"
-          },
-          "share": [],
-          "burn_share": {
-            "percent": "0.000000000000000000"
-          }
-        }
-      },
-      {
-        "name": "inflation_and_fee_distributor",
-        "sources": [
-          {
-            "id": "c4e_distributor",
-            "type": "MAIN"
-          }
-        ],
-        "destination": {
-          "account": {
-            "id": "validators_rewards_collector",
-            "type": "MODULE_ACCOUNT"
-          },
-          "share": [
-            {
-              "name": "development_fund",
-              "percent": "5.000000000000000000",
-              "account": {
-                "id": "c4e10ep2sxpf2kj6jsdcs234edkuf9sf9xqq3sl",
-                "type": "BASE_ACCOUNT"
-              }
-            },
-            {
-              "name": "usage_incentives",
-              "percent": "35.000000000000000000",
-              "account": {
-                "id": "usage_incentives_collector",
-                "type": "INTERNAL_ACCOUNT"
-              }
-            }
-          ],
-          "burn_share": {
-            "percent": "0.000000000000000000"
-          }
-        }
-      },
-      {
-        "name": "usage_incentives_distributor",
-        "sources": [
-          {
-            "id": "usage_incentives_collector",
-            "type": "INTERNAL_ACCOUNT"
-          }
-        ],
-        "destination": {
-          "account": {
-            "id": "c4e1q5vgy0r3scsdc32dcewkl8nwmfe2mgr6g0jlph",
-            "type": "BASE_ACCOUNT"
-          },
-          "share": [
-            {
-              "name": "green_energy_booster",
-              "percent": "34.000000000000000000",
-              "account": {
-                "id": "green_energy_booster_collector",
-                "type": "MODULE_ACCOUNT"
-              }
-            },
-            {
-              "name": "governance_booster",
-              "percent": "33.000000000000000000",
-              "account": {
-                "id": "governance_booster_collector",
-                "type": "MODULE_ACCOUNT"
-              }
-            }
-          ],
-          "burn_share": {
-            "percent": "0.000000000000000000"
-          }
-        }
-      }
-    ]
+    "denom": "uc4e"
   }
 }
 ```
-### States query
+### Summary query
 
-Queries the module state.
+Queries the vesting summary data.
 
 See example reponse:
 
 ```json
 {
-  "states": [
+  "vesting_all_amount": "32500000000000",
+  "vesting_in_pools_amount": "32500000000000",
+  "vesting_in_accounts_amount": "0",
+  "delegated_vesting_amount": "0"
+}
+```
+
+### Vesting pool query
+
+Queries the vesting pools of owner address.
+
+See example reponse:
+
+```json
+{
+  "vesting_pools": [
     {
-      "account": {
-        "id": "c4e10ep2ssdfwefcscaewdedscs9xqqqdwqee3sl",
-        "type": "BASE_ACCOUNT"
+      "name": "Advisors pool",
+      "vesting_type": "Advisors pool",
+      "lock_start": "2022-03-30T00:00:00Z",
+      "lock_end": "2025-03-30T00:00:00Z",
+      "withdrawable": "0",
+      "initially_locked": {
+        "denom": "uc4e",
+        "amount": "15000000000000"
       },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.900000000000000000"
-        }
-      ]
+      "currently_locked": "15000000000000",
+      "sent_amount": "0"
     },
     {
-      "account": {
-        "id": "c4e1q5vgy0r3w9q4ccsdcds23422mgr6g0jlph",
-        "type": "BASE_ACCOUNT"
+      "name": "Validators pool",
+      "vesting_type": "Validators pool",
+      "lock_start": "2022-03-30T00:00:00Z",
+      "lock_end": "2024-03-30T00:00:00Z",
+      "withdrawable": "0",
+      "initially_locked": {
+        "denom": "uc4e",
+        "amount": "17500000000000"
       },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.359000000000000000"
-        }
-      ]
-    },
-    {
-      "account": {
-        "id": "governance_booster_collector",
-        "type": "MODULE_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.359000000000000000"
-        }
-      ]
-    },
-    {
-      "account": {
-        "id": "green_energy_booster_collector",
-        "type": "MODULE_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.582000000000000000"
-        }
-      ]
-    },
-    {
-      "account": {
-        "id": "usage_incentives_collector",
-        "type": "INTERNAL_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": []
-    },
-    {
-      "account": {
-        "id": "validators_rewards_collector",
-        "type": "MODULE_ACCOUNT"
-      },
-      "burn": false,
-      "coins_states": [
-        {
-          "denom": "uc4e",
-          "amount": "0.800000000000000000"
-        }
-      ]
+      "currently_locked": "17500000000000",
+      "sent_amount": "0"
     }
-  ],
-  "coins_on_distributor_account": [
+  ]
+}
+```
+
+### Vesting types query
+
+Queries the vesting types lisy.
+
+See example reponse:
+
+```json
+{
+  "vesting_types": [
     {
-      "denom": "uc4e",
-      "amount": "3"
+      "name": "Advisors pool",
+      "lockup_period": "5",
+      "lockup_period_unit": "minute",
+      "vesting_period": "5",
+      "vesting_period_unit": "day"
+    },
+    {
+      "name": "Validators pool",
+      "lockup_period": "10",
+      "lockup_period_unit": "minute",
+      "vesting_period": "10",
+      "vesting_period_unit": "day"
     }
   ]
 }
@@ -435,13 +381,17 @@ See example reponse:
 
 ## Invariants
 
-### Non Negative Coin State Invariant
+### Non Negative Vesting Pool Amounts Invariant
 
-Invariant validates module state. Checks if all coins states of all destinations are non negative
+Invariant validates vesting pools state. Checks if all vesting pools amounts are non negative
 
-### State Sum Balance Check Invariant
+### Vesting Pool Consistent Data Invariant
 
-Invariant validates module state. Checks sum of all coins states of one denom of all destinations is always intiger value and is equal to cfedistributor module account balance
+Invariant validates vesting pools state. Checks if all vesting pools amounts are consistent: wothdrawn + sent < initially locked
+
+### Module Account Invariant
+
+Invariant validates vesting pools state. Checks if sum of all amounts locked in vesting pools is equal to module account balance.
 
 ## Genesis validations
 
