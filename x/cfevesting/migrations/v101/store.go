@@ -34,6 +34,7 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 		var newPools []*types.VestingPool
 		for _, oldPool := range oldPools {
 			sent := oldPool.LastModificationWithdrawn.Add(oldPool.Vested).Sub(oldPool.Withdrawn).Sub(oldPool.LastModificationVested)
+
 			newPool := types.VestingPool{
 				Name:            oldPool.Name,
 				VestingType:     oldPool.VestingType,
