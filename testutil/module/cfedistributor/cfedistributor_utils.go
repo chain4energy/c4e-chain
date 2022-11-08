@@ -63,8 +63,8 @@ func (d *C4eDistributorUtils) VerifyStateAmount(ctx sdk.Context, stateName strin
 	require.EqualValues(d.t, expectedRemains, coinRemains.AmountOf(denom))
 }
 
-func (d *C4eDistributorUtils) VerifyDefaultDenomStateAmount(ctx sdk.Context, stateName string, expectedRemains sdk.Dec) {
-	d.VerifyStateAmount(ctx, stateName, commontestutils.DefaultTestDenom, expectedRemains)
+func (d *C4eDistributorUtils) VerifyDefaultDenomStateAmount(ctx sdk.Context, account cfedistributortypes.Account, expectedRemains sdk.Dec) {
+	d.VerifyStateAmount(ctx, account.GetAccounteKey(), commontestutils.DefaultTestDenom, expectedRemains)
 }
 
 func (d *C4eDistributorUtils) VerifyBurnStateAmount(ctx sdk.Context, denom string, expectedRemains sdk.Dec) {
@@ -131,8 +131,8 @@ func (d *ContextC4eDistributorUtils) VerifyStateAmount(stateName string, denom s
 
 }
 
-func (d *ContextC4eDistributorUtils) VerifyDefaultDenomStateAmount(stateName string, expectedRemains sdk.Dec) {
-	d.C4eDistributorUtils.VerifyDefaultDenomStateAmount(d.testContext.GetContext(), stateName, expectedRemains)
+func (d *ContextC4eDistributorUtils) VerifyDefaultDenomStateAmount(account cfedistributortypes.Account, expectedRemains sdk.Dec) {
+	d.C4eDistributorUtils.VerifyDefaultDenomStateAmount(d.testContext.GetContext(), account, expectedRemains)
 }
 
 func (d *ContextC4eDistributorUtils) VerifyBurnStateAmount(denom string, expectedRemains sdk.Dec) {

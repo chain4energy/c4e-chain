@@ -94,7 +94,7 @@ func MigrateStoreV100ToV101(
 			require.EqualValues(t, newStates[i].Account.Type, oldState.Account.Type)
 		}
 		require.EqualValues(t, newStates[i].Burn, oldState.Burn)
-		require.EqualValues(t, newStates[i].Remains.String(), oldState.CoinsStates.String())
+		require.ElementsMatch(t, newStates[i].Remains, oldState.CoinsStates)
 	}
 }
 

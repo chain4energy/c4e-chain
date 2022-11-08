@@ -4,8 +4,7 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	v100cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v100"
 	v101cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/stretchr/testify/require"
 
 	"testing"
@@ -23,8 +22,8 @@ func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
 		createOldSubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 	}
-	setOldSubdistributors(t, ctx, testUtil.StoreKey, oldSubDistributors)
-	MigrateParamsV100ToV101(t, testUtil, ctx, testUtil.Subspace, false)
+	setOldSubdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV100ToV101(t, ctx, testUtil, false)
 }
 
 func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
@@ -35,19 +34,19 @@ func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
 		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 	}
 
-	setOldSubdistributors(t, ctx, testUtil.StoreKey, oldSubDistributors)
-	MigrateParamsV100ToV101(t, testUtil, ctx, testUtil.Subspace, true)
+	setOldSubdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV100ToV101(t, ctx, testUtil, true)
 }
 
 func TestMigrationSubDistributorsDuplicates(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	subdistributors := []v100cfedistributor.SubDistributor{
+	oldSubDistributors := []v100cfedistributor.SubDistributor{
 		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 		createOldSubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID"),
 	}
-	setOldSubdistributors(t, ctx, testUtil.StoreKey, subdistributors)
-	MigrateParamsV100ToV101(t, testUtil, ctx, testUtil.Subspace, true)
+	setOldSubdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV100ToV101(t, ctx, testUtil, true)
 }
 
 func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
@@ -58,31 +57,34 @@ func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
 		createOldSubDistributor(types.BASE_ACCOUNT, "WRONG_ACCOUNT_TYPE", types.MODULE_ACCOUNT, "CUSTOM_ID"),
 	}
 
-	setOldSubdistributors(t, ctx, testUtil.StoreKey, oldSubDistributors)
-	MigrateParamsV100ToV101(t, testUtil, ctx, testUtil.Subspace, true)
+	setOldSubdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV100ToV101(t, ctx, testUtil, true)
 }
 
-func setOldSubdistributors(t *testing.T, ctx sdk.Context, storeKey storetypes.StoreKey, subdistributors []v100cfedistributor.SubDistributor) {
+func setOldSubdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v100cfedistributor.SubDistributor) {
+	store := newStore(ctx, testUtil)
 	bz, err := codec.NewLegacyAmino().MarshalJSON(subdistributors)
 	require.NoError(t, err)
-	store := ctx.KVStore(storeKey)
 	store.Set(types.KeySubDistributors, bz)
+}
+
+func newStore(ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils) prefix.Store {
+	return prefix.NewStore(ctx.KVStore(testUtil.StoreKey), append([]byte((testUtil.Subspace.Name())), '/'))
 }
 
 func MigrateParamsV100ToV101(
 	t *testing.T,
-	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
 	ctx sdk.Context,
-	paramsSubspace typesparams.Subspace,
+	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
 	wantError bool,
 ) {
 	var res []v100cfedistributor.SubDistributor
-	store := ctx.KVStore(testUtil.StoreKey)
+	store := newStore(ctx, testUtil)
 	distributors := store.Get(types.KeySubDistributors)
 	err := codec.NewLegacyAmino().UnmarshalJSON(distributors, &res)
 	require.NoError(t, err)
 
-	err = v101cfedistributor.MigrateParams(ctx, testUtil.StoreKey, &paramsSubspace)
+	err = v101cfedistributor.MigrateParams(ctx, testUtil.StoreKey, &testUtil.Subspace)
 	if wantError {
 		require.Error(t, err)
 		return

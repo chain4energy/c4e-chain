@@ -16,8 +16,7 @@ import (
 //- BurnShare and Share now must be set between 0 and 1, not 0 and 100.
 func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *paramtypes.Subspace) error {
 	var oldSubdistributors []v100cfedistributor.SubDistributor
-	store := ctx.KVStore(storeKey)
-	oldSubdistributorsRaw := store.Get(types.KeySubDistributors)
+	oldSubdistributorsRaw := paramStore.GetRaw(ctx, types.KeySubDistributors)
 	if err := codec.NewLegacyAmino().UnmarshalJSON(oldSubdistributorsRaw, &oldSubdistributors); err != nil {
 		panic(err)
 	}
