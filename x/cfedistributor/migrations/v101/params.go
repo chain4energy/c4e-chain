@@ -9,19 +9,24 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
+//MigrateParams performs in-place store migrations from v1.0.0 to v1.0.1. The
+//migration includes:
+//
+//- SubDistributor params structure changed.
+//- BurnShare and Share now must be set between 0 and 1, not 0 and 100.
 func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *paramtypes.Subspace) error {
-	var res []v100cfedistributor.SubDistributor
+	var oldSubdistributors []v100cfedistributor.SubDistributor
 	store := ctx.KVStore(storeKey)
-	distributors := store.Get(types.KeySubDistributors)
-	if err := codec.NewLegacyAmino().UnmarshalJSON(distributors, &res); err != nil {
+	oldSubdistributorsRaw := store.Get(types.KeySubDistributors)
+	if err := codec.NewLegacyAmino().UnmarshalJSON(oldSubdistributorsRaw, &oldSubdistributors); err != nil {
 		panic(err)
 	}
 
-	var newSubdistributors []types.SubDistributor
+	var newSubDistributors []types.SubDistributor
 
-	for _, oldSubdistributor := range res {
+	for _, oldSubDistributor := range oldSubdistributors {
 		var newShares []*types.DestinationShare
-		for _, oldShare := range oldSubdistributor.Destination.Share {
+		for _, oldShare := range oldSubDistributor.Destination.Share {
 			newShare := types.DestinationShare{
 				Share: oldShare.Percent.Quo(sdk.NewDec(100)),
 				Destination: types.Account{
@@ -34,7 +39,7 @@ func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *pa
 		}
 
 		var newSources []*types.Account
-		for _, oldSource := range oldSubdistributor.Sources {
+		for _, oldSource := range oldSubDistributor.Sources {
 			newSource := types.Account{
 				Id:   oldSource.Id,
 				Type: oldSource.Type,
@@ -42,25 +47,27 @@ func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *pa
 			newSources = append(newSources, &newSource)
 		}
 
-		newSubdistributor := types.SubDistributor{
-			Name: oldSubdistributor.Name,
+		newSubDistributor := types.SubDistributor{
+			Name: oldSubDistributor.Name,
 			Destinations: types.Destinations{
 				Shares:    newShares,
-				BurnShare: oldSubdistributor.Destination.BurnShare.Percent.Quo(sdk.NewDec(100)),
+				BurnShare: oldSubDistributor.Destination.BurnShare.Percent.Quo(sdk.NewDec(100)),
 				PrimaryShare: types.Account{
-					Id:   oldSubdistributor.Destination.Account.Id,
-					Type: oldSubdistributor.Destination.Account.Type,
+					Id:   oldSubDistributor.Destination.Account.Id,
+					Type: oldSubDistributor.Destination.Account.Type,
 				},
 			},
 			Sources: newSources,
 		}
-		newSubdistributors = append(newSubdistributors, newSubdistributor)
+		if err := newSubDistributor.Validate(); err != nil {
+			return err
+		}
+		newSubDistributors = append(newSubDistributors, newSubDistributor)
 	}
-	err := types.ValidateSubDistributors(newSubdistributors)
-	if err != nil {
+	if err := types.ValidateSubDistributors(newSubDistributors); err != nil {
 		return err
 	}
-	paramStore.Set(ctx, types.KeySubDistributors, newSubdistributors)
+	paramStore.Set(ctx, types.KeySubDistributors, newSubDistributors)
 
 	return nil
 }

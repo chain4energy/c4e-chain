@@ -26,7 +26,7 @@ func getAllV100SubDistributorStatesAndDelete(store sdk.KVStore, cdc codec.Binary
 	return
 }
 
-func setNewSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldStates []v100cfedistributor.State) error {
+func setNewSubDistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldStates []v100cfedistributor.State) error {
 	prefixStore := prefix.NewStore(store, types.StateKeyPrefix)
 
 	for _, oldState := range oldStates {
@@ -36,7 +36,7 @@ func setNewSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldSta
 		} else {
 			newAccount = &types.Account{
 				Id:   oldState.Account.Id,
-				Type: oldState.Account.Id,
+				Type: oldState.Account.Type,
 			}
 		}
 
@@ -53,24 +53,24 @@ func setNewSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldSta
 		if err != nil {
 			return err
 		}
-		prefixStore.Set([]byte(types.GetStateKey(newState)), av)
+		prefixStore.Set([]byte(newState.GetStateKey()), av)
 	}
 	return nil
 }
 
 func migrateSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	oldAccountVestingPools, err := getAllV100SubDistributorStatesAndDelete(store, cdc)
+	oldDistributorStates, err := getAllV100SubDistributorStatesAndDelete(store, cdc)
 	if err != nil {
 		return err
 	}
-	return setNewSubdistributorStates(store, cdc, oldAccountVestingPools)
+	return setNewSubDistributorStates(store, cdc, oldDistributorStates)
 }
 
 //MigrateStore performs in-place store migrations from v1.0.0 to v1.0.1. The
 //migration includes:
 //
-//- SubDistributor params structure changed.
 //- SubDistributor State rename CoinStates to Remains.
+//- If burn is set to true state account must be nil
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	return migrateSubdistributorStates(store, cdc)

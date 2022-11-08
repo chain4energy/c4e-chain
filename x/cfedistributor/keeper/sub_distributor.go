@@ -43,5 +43,5 @@ func (k Keeper) GetBurnState(ctx sdk.Context) (remains types.State, found bool) 
 func (k Keeper) SetState(ctx sdk.Context, state types.State) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.StateKeyPrefix)
 	av := k.cdc.MustMarshal(&state)
-	store.Set([]byte(types.GetStateKey(state)), av)
+	store.Set([]byte(state.GetStateKey()), av)
 }

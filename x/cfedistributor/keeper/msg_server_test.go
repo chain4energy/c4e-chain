@@ -11,6 +11,6 @@ import (
 )
 
 func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
-	k, ctx, _, _, _ := keepertest.CfedistributorKeeper(t)
+	k, ctx, _ := keepertest.CfedistributorKeeper(t)
 	return keeper.NewMsgServerImpl(*k), sdk.WrapSDKContext(ctx)
 }

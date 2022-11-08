@@ -17,36 +17,49 @@ import (
 )
 
 func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
-	testUtil, _, ctx, paramsSubspace := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	subdistributors := []v100cfedistributor.SubDistributor{
-		createOldSubDistributor("INTERNAL_ACCOUNT", "CUSTOM_ACCOUNT_2", "BASE_ACCOUNT", "CUSTOM_ID"),
-		createOldSubDistributor("CUSTOM_ACCOUNT", "INTERNAL_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
-		createOldSubDistributor("CUSTOM_ACCOUNT", "MAIN", "BASE_ACCOUNT", "CUSTOM_ID"),
+	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
+	oldSubDistributors := []v100cfedistributor.SubDistributor{
+		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 	}
-	setOldSubdistributors(t, ctx, testUtil.StoreKey, subdistributors)
-	MigrateParamsV100ToV101(t, testUtil, ctx, paramsSubspace, false)
+	setOldSubdistributors(t, ctx, testUtil.StoreKey, oldSubDistributors)
+	MigrateParamsV100ToV101(t, testUtil, ctx, testUtil.Subspace, false)
 }
 
 func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
-	testUtil, _, ctx, paramsSubspace := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	subdistributors := []v100cfedistributor.SubDistributor{
-		createOldSubDistributor("INTERNAL_ACCOUNT", "CUSTOM_ACCOUNT_2", "BASE_ACCOUNT", "CUSTOM_ID"),
-		createOldSubDistributor("CUSTOM_ACCOUNT", "INTERNAL_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
-		createOldSubDistributor("CUSTOM_ACCOUNT", "BASE_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
+	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
+	oldSubDistributors := []v100cfedistributor.SubDistributor{
+		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 	}
-	setOldSubdistributors(t, ctx, testUtil.StoreKey, subdistributors)
-	MigrateParamsV100ToV101(t, testUtil, ctx, paramsSubspace, true)
+
+	setOldSubdistributors(t, ctx, testUtil.StoreKey, oldSubDistributors)
+	MigrateParamsV100ToV101(t, testUtil, ctx, testUtil.Subspace, true)
 }
 
 func TestMigrationSubDistributorsDuplicates(t *testing.T) {
-	testUtil, _, ctx, paramsSubspace := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
+	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
 	subdistributors := []v100cfedistributor.SubDistributor{
-		createOldSubDistributor("INTERNAL_ACCOUNT", "CUSTOM_ACCOUNT_2", "BASE_ACCOUNT", "CUSTOM_ID"),
-		createOldSubDistributor("CUSTOM_ACCOUNT", "INTERNAL_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
-		createOldSubDistributor("CUSTOM_ACCOUNT", "BASE_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
+		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID"),
 	}
 	setOldSubdistributors(t, ctx, testUtil.StoreKey, subdistributors)
-	MigrateParamsV100ToV101(t, testUtil, ctx, paramsSubspace, true)
+	MigrateParamsV100ToV101(t, testUtil, ctx, testUtil.Subspace, true)
+}
+
+func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
+	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
+	oldSubDistributors := []v100cfedistributor.SubDistributor{
+		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, "WRONG_ACCOUNT_TYPE", types.MODULE_ACCOUNT, "CUSTOM_ID"),
+	}
+
+	setOldSubdistributors(t, ctx, testUtil.StoreKey, oldSubDistributors)
+	MigrateParamsV100ToV101(t, testUtil, ctx, testUtil.Subspace, true)
 }
 
 func setOldSubdistributors(t *testing.T, ctx sdk.Context, storeKey storetypes.StoreKey, subdistributors []v100cfedistributor.SubDistributor) {
@@ -123,7 +136,7 @@ func createOldSubDistributor(
 				Type: destinationType,
 			},
 			BurnShare: &v100cfedistributor.BurnShare{
-				Percent: sdk.ZeroDec(),
+				Percent: sdk.NewDec(25),
 			},
 			Share: []*v100cfedistributor.Share{
 				{
@@ -132,7 +145,7 @@ func createOldSubDistributor(
 						Id:   Id,
 						Type: destinationShareType,
 					},
-					Percent: sdk.ZeroDec(),
+					Percent: sdk.NewDec(50),
 				},
 			},
 		},

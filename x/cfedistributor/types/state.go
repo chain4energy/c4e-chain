@@ -45,7 +45,7 @@ func StateSumIsInteger(states []State) (error, sdk.Coins) {
 	return nil, remainsSum
 }
 
-func GetStateKey(state State) string {
+func (state State) GetStateKey() string {
 	if state.Account != nil && state.Account.Id != "" && state.Account.Type != "" {
 		return state.Account.GetAccounteKey()
 	} else {
