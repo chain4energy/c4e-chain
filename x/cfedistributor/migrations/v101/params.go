@@ -4,14 +4,16 @@ import (
 	v100cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v100"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
+func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *paramtypes.Subspace) error {
 	var res []v100cfedistributor.SubDistributor
-	rawDistributors := paramStore.GetRaw(ctx, types.KeySubDistributors)
-	if err := codec.NewLegacyAmino().UnmarshalJSON(rawDistributors, &res); err != nil {
+	store := ctx.KVStore(storeKey)
+	distributors := store.Get(types.KeySubDistributors)
+	if err := codec.NewLegacyAmino().UnmarshalJSON(distributors, &res); err != nil {
 		panic(err)
 	}
 
@@ -31,6 +33,15 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 			newShares = append(newShares, &newShare)
 		}
 
+		var newSources []*types.Account
+		for _, oldSource := range oldSubdistributor.Sources {
+			newSource := types.Account{
+				Id:   oldSource.Id,
+				Type: oldSource.Type,
+			}
+			newSources = append(newSources, &newSource)
+		}
+
 		newSubdistributor := types.SubDistributor{
 			Name: oldSubdistributor.Name,
 			Destinations: types.Destinations{
@@ -41,6 +52,7 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 					Type: oldSubdistributor.Destination.Account.Type,
 				},
 			},
+			Sources: newSources,
 		}
 		newSubdistributors = append(newSubdistributors, newSubdistributor)
 	}

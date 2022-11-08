@@ -412,7 +412,7 @@ func createSubDistributor(
 		Name: helpers.RandStringOfLength(10),
 		Destinations: Destinations{
 			PrimaryShare: Account{
-				Id:   Id + getIdSuffix("mainDst", destinationType, addIdSuffix),
+				Id:   Id + GetIdSuffix("mainDst", destinationType, addIdSuffix),
 				Type: destinationType,
 			},
 			BurnShare: sdk.ZeroDec(),
@@ -420,7 +420,7 @@ func createSubDistributor(
 				{
 					Name: helpers.RandStringOfLength(10),
 					Destination: Account{
-						Id:   Id + getIdSuffix("shareDst", destinationShareType, addIdSuffix),
+						Id:   Id + GetIdSuffix("shareDst", destinationShareType, addIdSuffix),
 						Type: destinationShareType,
 					},
 					Share: sdk.ZeroDec(),
@@ -429,14 +429,14 @@ func createSubDistributor(
 		},
 		Sources: []*Account{
 			{
-				Id:   Id + getIdSuffix("src", sourceType, addIdSuffix),
+				Id:   Id + GetIdSuffix("src", sourceType, addIdSuffix),
 				Type: sourceType,
 			},
 		},
 	}
 }
 
-func getIdSuffix(suffix string, accType string, addIdSuffix bool) string {
+func GetIdSuffix(suffix string, accType string, addIdSuffix bool) string {
 	if !addIdSuffix {
 		return ""
 	}

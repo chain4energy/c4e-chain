@@ -1,102 +1,146 @@
 package v101_test
 
 import (
-	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	v100cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v100"
 	v101cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
-	v100cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v100"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"testing"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 )
 
-func TestMigrationSubDistributors(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(5, 0)
+func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
 	testUtil, _, ctx, paramsSubspace := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	SetupV100SubdistributorParams(testUtil, paramsSubspace, ctx)
-	MigrateParamsV100ToV101(t, testUtil, ctx, paramsSubspace)
+	subdistributors := []v100cfedistributor.SubDistributor{
+		createOldSubDistributor("INTERNAL_ACCOUNT", "CUSTOM_ACCOUNT_2", "BASE_ACCOUNT", "CUSTOM_ID"),
+		createOldSubDistributor("CUSTOM_ACCOUNT", "INTERNAL_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
+		createOldSubDistributor("CUSTOM_ACCOUNT", "MAIN", "BASE_ACCOUNT", "CUSTOM_ID"),
+	}
+	setOldSubdistributors(t, ctx, testUtil.StoreKey, subdistributors)
+	MigrateParamsV100ToV101(t, testUtil, ctx, paramsSubspace, false)
 }
 
-func SetupV100SubdistributorParams(testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, paramsSubspace typesparams.Subspace, ctx sdk.Context) v100cfedistributor.SubDistributor {
-	var subdistributors []types.SubDistributor
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationToPassAcoutSubDistr(subdistributortestutils.MainCollector))
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationSubDistributor(subdistributortestutils.MainCollector, true))
-	paramsSubspace.SetParamSet()
-	return subdistributors
+func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
+	testUtil, _, ctx, paramsSubspace := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
+	subdistributors := []v100cfedistributor.SubDistributor{
+		createOldSubDistributor("INTERNAL_ACCOUNT", "CUSTOM_ACCOUNT_2", "BASE_ACCOUNT", "CUSTOM_ID"),
+		createOldSubDistributor("CUSTOM_ACCOUNT", "INTERNAL_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
+		createOldSubDistributor("CUSTOM_ACCOUNT", "BASE_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
+	}
+	setOldSubdistributors(t, ctx, testUtil.StoreKey, subdistributors)
+	MigrateParamsV100ToV101(t, testUtil, ctx, paramsSubspace, true)
 }
 
-func SetV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, accountVestingPools v100cfevesting.AccountVestingPools) {
-	store := prefix.NewStore(ctx.KVStore(storeKey), v100cfevesting.AccountVestingPoolsKeyPrefix)
-	av := cdc.MustMarshal(&accountVestingPools)
-	store.Set([]byte(accountVestingPools.Address), av)
+func TestMigrationSubDistributorsDuplicates(t *testing.T) {
+	testUtil, _, ctx, paramsSubspace := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
+	subdistributors := []v100cfedistributor.SubDistributor{
+		createOldSubDistributor("INTERNAL_ACCOUNT", "CUSTOM_ACCOUNT_2", "BASE_ACCOUNT", "CUSTOM_ID"),
+		createOldSubDistributor("CUSTOM_ACCOUNT", "INTERNAL_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
+		createOldSubDistributor("CUSTOM_ACCOUNT", "BASE_ACCOUNT", "BASE_ACCOUNT", "CUSTOM_ID"),
+	}
+	setOldSubdistributors(t, ctx, testUtil.StoreKey, subdistributors)
+	MigrateParamsV100ToV101(t, testUtil, ctx, paramsSubspace, true)
 }
 
-func MigrateParamsV100ToV101(t *testing.T, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, ctx sdk.Context, paramsSubspace typesparams.Subspace) {
-	oldParams := testUtil.GetC4eDistributorKeeper().GetParams(ctx)
-	err := v101cfedistributor.MigrateParams(ctx, &paramsSubspace)
-	newParams := testUtil.GetC4eDistributorKeeper().GetParams(ctx)
-	newSubdistributors := newParams.SubDistributors
+func setOldSubdistributors(t *testing.T, ctx sdk.Context, storeKey storetypes.StoreKey, subdistributors []v100cfedistributor.SubDistributor) {
+	bz, err := codec.NewLegacyAmino().MarshalJSON(subdistributors)
+	require.NoError(t, err)
+	store := ctx.KVStore(storeKey)
+	store.Set(types.KeySubDistributors, bz)
+}
+
+func MigrateParamsV100ToV101(
+	t *testing.T,
+	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
+	ctx sdk.Context,
+	paramsSubspace typesparams.Subspace,
+	wantError bool,
+) {
+	var res []v100cfedistributor.SubDistributor
+	store := ctx.KVStore(testUtil.StoreKey)
+	distributors := store.Get(types.KeySubDistributors)
+	err := codec.NewLegacyAmino().UnmarshalJSON(distributors, &res)
 	require.NoError(t, err)
 
-	require.EqualValues(t, len(oldParams.SubDistributors), len(newSubdistributors))
-	for i, oldSubdistributor := range oldParams.SubDistributors {
-		require.EqualValues(t, oldSubdistributor.Name, newSubdistributors[i].Name)
+	err = v101cfedistributor.MigrateParams(ctx, testUtil.StoreKey, &paramsSubspace)
+	if wantError {
+		require.Error(t, err)
+		return
 	}
-}
 
-func getAllv100DistributorStates(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v100cfedistributor.State, err error) {
+	require.NoError(t, err)
+	newParams := testUtil.GetC4eDistributorKeeper().GetParams(ctx)
+	newSubdistributors := newParams.SubDistributors
 
-	prefixStore := prefix.NewStore(ctx.KVStore(storeKey), v100cfedistributor.RemainsKeyPrefix)
-	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
-	defer iterator.Close()
+	for i, oldSubdistributor := range res {
+		require.EqualValues(t,
+			newSubdistributors[i].Name, oldSubdistributor.Name)
+		require.EqualValues(t,
+			newSubdistributors[i].Destinations.BurnShare, oldSubdistributor.Destination.BurnShare.Percent.Quo(sdk.NewDec(100)))
+		require.EqualValues(t,
+			newSubdistributors[i].Destinations.PrimaryShare.Id, oldSubdistributor.Destination.Account.Id)
+		require.EqualValues(t,
+			newSubdistributors[i].Destinations.PrimaryShare.Type, oldSubdistributor.Destination.Account.Type)
 
-	for ; iterator.Valid(); iterator.Next() {
-		var val v100cfedistributor.State
-		err := cdc.Unmarshal(iterator.Value(), &val)
-		if err != nil {
-			return nil, err
+		for j, oldShare := range oldSubdistributor.Destination.Share {
+			require.EqualValues(t,
+				newSubdistributors[i].Destinations.Shares[j].Share, oldShare.Percent.Quo(sdk.NewDec(100)))
+			require.EqualValues(t,
+				newSubdistributors[i].Destinations.Shares[j].Name, oldShare.Name)
+			require.EqualValues(t,
+				newSubdistributors[i].Destinations.Shares[j].Destination.Id, oldShare.Account.Id)
+			require.EqualValues(t,
+				newSubdistributors[i].Destinations.Shares[j].Destination.Type, oldShare.Account.Type)
 		}
-		list = append(list, val)
-	}
-	return list, nil
 
+		for j, oldSource := range oldSubdistributor.Sources {
+			require.EqualValues(t,
+				newSubdistributors[i].Sources[j].Id, oldSource.Id)
+			require.EqualValues(t,
+				newSubdistributors[i].Sources[j].Type, oldSource.Type)
+		}
+	}
 }
 
-func generateV100SubDistributor() v100cfedistributor.SubDistributor {
-	destAccount := v100cfedistributor.Account{
-		Id:   helpers.RandStringOfLength(10),
-		Type: "MAIN",
-	}
-	burnShare := sdk.MustNewDecFromStr("0.51")
-	destination := v100cfedistributor.Destination{
-		Account: destAccount,
-		Share:   nil,
-		BurnShare: &v100cfedistributor.BurnShare{
-			Percent: burnShare,
-		},
-	}
-
-	distributor1 := v100cfedistributor.SubDistributor{
+func createOldSubDistributor(
+	destinationType string,
+	sourceType string,
+	destinationShareType string,
+	Id string,
+) v100cfedistributor.SubDistributor {
+	return v100cfedistributor.SubDistributor{
 		Name: helpers.RandStringOfLength(10),
-		Sources: []*v100cfedistributor.Account{
-			{
-				Id:   helpers.RandStringOfLength(10),
-				Type: types.MODULE_ACCOUNT,
+		Destination: v100cfedistributor.Destination{
+			Account: v100cfedistributor.Account{
+				Id:   Id,
+				Type: destinationType,
+			},
+			BurnShare: &v100cfedistributor.BurnShare{
+				Percent: sdk.ZeroDec(),
+			},
+			Share: []*v100cfedistributor.Share{
+				{
+					Name: helpers.RandStringOfLength(10),
+					Account: v100cfedistributor.Account{
+						Id:   Id,
+						Type: destinationShareType,
+					},
+					Percent: sdk.ZeroDec(),
+				},
 			},
 		},
-		Destination: destination,
+		Sources: []*v100cfedistributor.Account{
+			{
+				Id:   Id,
+				Type: sourceType,
+			},
+		},
 	}
-
-	return distributor1
 }
