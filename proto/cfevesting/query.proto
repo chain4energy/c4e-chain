@@ -60,7 +60,6 @@ message QueryVestingPoolsRequest {
 }
 
 message QueryVestingPoolsResponse {
-  string delegable_address = 1 [(gogoproto.moretags) = "yaml:\"delegable_address\""];
   repeated VestingPoolInfo vesting_pools = 2; 
 }
 
