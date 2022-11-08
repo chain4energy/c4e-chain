@@ -91,54 +91,51 @@ genesis:
     cfedistributor:
       params:
         sub_distributors:
-          - destination:
-              account:
+          - destinations:
+              primary_share:
                 id: c4e_distributor
                 type: MAIN
-              burn_share:
-                percent: "0"
+              burn_share: "0"
             name: tx_fee_distributor
             sources:
               - id: fee_collector
                 type: MODULE_ACCOUNT
-          - destination:
-              account:
+          - destinations:
+              primary_share:
                 id: validators_rewards_collector
                 type: MODULE_ACCOUNT
-              burn_share:
-                percent: "0"
-              share:
-                - account:
+              burn_share: "0"
+              shares:
+                - destination:
                     id: c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl
                     type: BASE_ACCOUNT
                   name: development_fund
-                  percent: "5"
-                - account:
+                  share: "0.05"
+                - destination:
                     id: usage_incentives_collector
                     type: INTERNAL_ACCOUNT
                   name: usage_incentives
-                  percent: "35"
+                  share: "0.35"
             name: inflation_and_fee_distributor
             sources:
               - id: c4e_distributor
                 type: MAIN
-          - destination:
-              account:
+          - destinations:
+              primary_share:
                 id: c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph
                 type: BASE_ACCOUNT
-              burn_share:
-                percent: "0"
-              share:
-                - account:
+              burn_share: "0"
+              shares:
+                - destination:
                     id: green_energy_booster_collector
                     type: MODULE_ACCOUNT
                   name: green_energy_booster
-                  percent: "34"
-                - account:
+                  share: "0.34"
+                - destination:
                     id: governance_booster_collector
                     type: MODULE_ACCOUNT
                   name: governance_booster
-                  percent: "33"
+                  share: "0.33"
             name: usage_incentives_distributor
             sources:
               - id: usage_incentives_collector

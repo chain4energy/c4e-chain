@@ -7,29 +7,25 @@ export const protobufPackage = "chain4energy.c4echain.cfedistributor";
 export interface State {
   account: Account | undefined;
   burn: boolean;
-  coinsStates: DecCoin[];
+  remains: DecCoin[];
 }
 
 export interface SubDistributor {
   name: string;
   sources: Account[];
-  destination: Destination | undefined;
+  destinations: Destinations | undefined;
 }
 
-export interface Destination {
-  account: Account | undefined;
-  share: Share[];
-  burnShare: BurnShare | undefined;
+export interface Destinations {
+  primaryShare: Account | undefined;
+  burnShare: string;
+  shares: DestinationShare[];
 }
 
-export interface BurnShare {
-  percent: string;
-}
-
-export interface Share {
+export interface DestinationShare {
   name: string;
-  percent: string;
-  account: Account | undefined;
+  share: string;
+  destination: Account | undefined;
 }
 
 export interface Account {
@@ -38,7 +34,7 @@ export interface Account {
 }
 
 function createBaseState(): State {
-  return { account: undefined, burn: false, coinsStates: [] };
+  return { account: undefined, burn: false, remains: [] };
 }
 
 export const State = {
@@ -49,7 +45,7 @@ export const State = {
     if (message.burn === true) {
       writer.uint32(16).bool(message.burn);
     }
-    for (const v of message.coinsStates) {
+    for (const v of message.remains) {
       DecCoin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
@@ -69,7 +65,7 @@ export const State = {
           message.burn = reader.bool();
           break;
         case 3:
-          message.coinsStates.push(DecCoin.decode(reader, reader.uint32()));
+          message.remains.push(DecCoin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -83,7 +79,7 @@ export const State = {
     return {
       account: isSet(object.account) ? Account.fromJSON(object.account) : undefined,
       burn: isSet(object.burn) ? Boolean(object.burn) : false,
-      coinsStates: Array.isArray(object?.coinsStates) ? object.coinsStates.map((e: any) => DecCoin.fromJSON(e)) : [],
+      remains: Array.isArray(object?.remains) ? object.remains.map((e: any) => DecCoin.fromJSON(e)) : [],
     };
   },
 
@@ -91,10 +87,10 @@ export const State = {
     const obj: any = {};
     message.account !== undefined && (obj.account = message.account ? Account.toJSON(message.account) : undefined);
     message.burn !== undefined && (obj.burn = message.burn);
-    if (message.coinsStates) {
-      obj.coinsStates = message.coinsStates.map((e) => e ? DecCoin.toJSON(e) : undefined);
+    if (message.remains) {
+      obj.remains = message.remains.map((e) => e ? DecCoin.toJSON(e) : undefined);
     } else {
-      obj.coinsStates = [];
+      obj.remains = [];
     }
     return obj;
   },
@@ -105,13 +101,13 @@ export const State = {
       ? Account.fromPartial(object.account)
       : undefined;
     message.burn = object.burn ?? false;
-    message.coinsStates = object.coinsStates?.map((e) => DecCoin.fromPartial(e)) || [];
+    message.remains = object.remains?.map((e) => DecCoin.fromPartial(e)) || [];
     return message;
   },
 };
 
 function createBaseSubDistributor(): SubDistributor {
-  return { name: "", sources: [], destination: undefined };
+  return { name: "", sources: [], destinations: undefined };
 }
 
 export const SubDistributor = {
@@ -122,8 +118,8 @@ export const SubDistributor = {
     for (const v of message.sources) {
       Account.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    if (message.destination !== undefined) {
-      Destination.encode(message.destination, writer.uint32(26).fork()).ldelim();
+    if (message.destinations !== undefined) {
+      Destinations.encode(message.destinations, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -142,7 +138,7 @@ export const SubDistributor = {
           message.sources.push(Account.decode(reader, reader.uint32()));
           break;
         case 3:
-          message.destination = Destination.decode(reader, reader.uint32());
+          message.destinations = Destinations.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -156,7 +152,7 @@ export const SubDistributor = {
     return {
       name: isSet(object.name) ? String(object.name) : "",
       sources: Array.isArray(object?.sources) ? object.sources.map((e: any) => Account.fromJSON(e)) : [],
-      destination: isSet(object.destination) ? Destination.fromJSON(object.destination) : undefined,
+      destinations: isSet(object.destinations) ? Destinations.fromJSON(object.destinations) : undefined,
     };
   },
 
@@ -168,8 +164,8 @@ export const SubDistributor = {
     } else {
       obj.sources = [];
     }
-    message.destination !== undefined
-      && (obj.destination = message.destination ? Destination.toJSON(message.destination) : undefined);
+    message.destinations !== undefined
+      && (obj.destinations = message.destinations ? Destinations.toJSON(message.destinations) : undefined);
     return obj;
   },
 
@@ -177,46 +173,46 @@ export const SubDistributor = {
     const message = createBaseSubDistributor();
     message.name = object.name ?? "";
     message.sources = object.sources?.map((e) => Account.fromPartial(e)) || [];
-    message.destination = (object.destination !== undefined && object.destination !== null)
-      ? Destination.fromPartial(object.destination)
+    message.destinations = (object.destinations !== undefined && object.destinations !== null)
+      ? Destinations.fromPartial(object.destinations)
       : undefined;
     return message;
   },
 };
 
-function createBaseDestination(): Destination {
-  return { account: undefined, share: [], burnShare: undefined };
+function createBaseDestinations(): Destinations {
+  return { primaryShare: undefined, burnShare: "", shares: [] };
 }
 
-export const Destination = {
-  encode(message: Destination, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.account !== undefined) {
-      Account.encode(message.account, writer.uint32(10).fork()).ldelim();
+export const Destinations = {
+  encode(message: Destinations, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.primaryShare !== undefined) {
+      Account.encode(message.primaryShare, writer.uint32(10).fork()).ldelim();
     }
-    for (const v of message.share) {
-      Share.encode(v!, writer.uint32(18).fork()).ldelim();
+    if (message.burnShare !== "") {
+      writer.uint32(18).string(message.burnShare);
     }
-    if (message.burnShare !== undefined) {
-      BurnShare.encode(message.burnShare, writer.uint32(26).fork()).ldelim();
+    for (const v of message.shares) {
+      DestinationShare.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): Destination {
+  decode(input: _m0.Reader | Uint8Array, length?: number): Destinations {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDestination();
+    const message = createBaseDestinations();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.account = Account.decode(reader, reader.uint32());
+          message.primaryShare = Account.decode(reader, reader.uint32());
           break;
         case 2:
-          message.share.push(Share.decode(reader, reader.uint32()));
+          message.burnShare = reader.string();
           break;
         case 3:
-          message.burnShare = BurnShare.decode(reader, reader.uint32());
+          message.shares.push(DestinationShare.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -226,109 +222,60 @@ export const Destination = {
     return message;
   },
 
-  fromJSON(object: any): Destination {
+  fromJSON(object: any): Destinations {
     return {
-      account: isSet(object.account) ? Account.fromJSON(object.account) : undefined,
-      share: Array.isArray(object?.share) ? object.share.map((e: any) => Share.fromJSON(e)) : [],
-      burnShare: isSet(object.burnShare) ? BurnShare.fromJSON(object.burnShare) : undefined,
+      primaryShare: isSet(object.primaryShare) ? Account.fromJSON(object.primaryShare) : undefined,
+      burnShare: isSet(object.burnShare) ? String(object.burnShare) : "",
+      shares: Array.isArray(object?.shares) ? object.shares.map((e: any) => DestinationShare.fromJSON(e)) : [],
     };
   },
 
-  toJSON(message: Destination): unknown {
+  toJSON(message: Destinations): unknown {
     const obj: any = {};
-    message.account !== undefined && (obj.account = message.account ? Account.toJSON(message.account) : undefined);
-    if (message.share) {
-      obj.share = message.share.map((e) => e ? Share.toJSON(e) : undefined);
+    message.primaryShare !== undefined
+      && (obj.primaryShare = message.primaryShare ? Account.toJSON(message.primaryShare) : undefined);
+    message.burnShare !== undefined && (obj.burnShare = message.burnShare);
+    if (message.shares) {
+      obj.shares = message.shares.map((e) => e ? DestinationShare.toJSON(e) : undefined);
     } else {
-      obj.share = [];
+      obj.shares = [];
     }
-    message.burnShare !== undefined
-      && (obj.burnShare = message.burnShare ? BurnShare.toJSON(message.burnShare) : undefined);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<Destination>, I>>(object: I): Destination {
-    const message = createBaseDestination();
-    message.account = (object.account !== undefined && object.account !== null)
-      ? Account.fromPartial(object.account)
+  fromPartial<I extends Exact<DeepPartial<Destinations>, I>>(object: I): Destinations {
+    const message = createBaseDestinations();
+    message.primaryShare = (object.primaryShare !== undefined && object.primaryShare !== null)
+      ? Account.fromPartial(object.primaryShare)
       : undefined;
-    message.share = object.share?.map((e) => Share.fromPartial(e)) || [];
-    message.burnShare = (object.burnShare !== undefined && object.burnShare !== null)
-      ? BurnShare.fromPartial(object.burnShare)
-      : undefined;
+    message.burnShare = object.burnShare ?? "";
+    message.shares = object.shares?.map((e) => DestinationShare.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBaseBurnShare(): BurnShare {
-  return { percent: "" };
+function createBaseDestinationShare(): DestinationShare {
+  return { name: "", share: "", destination: undefined };
 }
 
-export const BurnShare = {
-  encode(message: BurnShare, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.percent !== "") {
-      writer.uint32(10).string(message.percent);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): BurnShare {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseBurnShare();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.percent = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): BurnShare {
-    return { percent: isSet(object.percent) ? String(object.percent) : "" };
-  },
-
-  toJSON(message: BurnShare): unknown {
-    const obj: any = {};
-    message.percent !== undefined && (obj.percent = message.percent);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<BurnShare>, I>>(object: I): BurnShare {
-    const message = createBaseBurnShare();
-    message.percent = object.percent ?? "";
-    return message;
-  },
-};
-
-function createBaseShare(): Share {
-  return { name: "", percent: "", account: undefined };
-}
-
-export const Share = {
-  encode(message: Share, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const DestinationShare = {
+  encode(message: DestinationShare, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
-    if (message.percent !== "") {
-      writer.uint32(18).string(message.percent);
+    if (message.share !== "") {
+      writer.uint32(18).string(message.share);
     }
-    if (message.account !== undefined) {
-      Account.encode(message.account, writer.uint32(26).fork()).ldelim();
+    if (message.destination !== undefined) {
+      Account.encode(message.destination, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): Share {
+  decode(input: _m0.Reader | Uint8Array, length?: number): DestinationShare {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseShare();
+    const message = createBaseDestinationShare();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -336,10 +283,10 @@ export const Share = {
           message.name = reader.string();
           break;
         case 2:
-          message.percent = reader.string();
+          message.share = reader.string();
           break;
         case 3:
-          message.account = Account.decode(reader, reader.uint32());
+          message.destination = Account.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -349,28 +296,29 @@ export const Share = {
     return message;
   },
 
-  fromJSON(object: any): Share {
+  fromJSON(object: any): DestinationShare {
     return {
       name: isSet(object.name) ? String(object.name) : "",
-      percent: isSet(object.percent) ? String(object.percent) : "",
-      account: isSet(object.account) ? Account.fromJSON(object.account) : undefined,
+      share: isSet(object.share) ? String(object.share) : "",
+      destination: isSet(object.destination) ? Account.fromJSON(object.destination) : undefined,
     };
   },
 
-  toJSON(message: Share): unknown {
+  toJSON(message: DestinationShare): unknown {
     const obj: any = {};
     message.name !== undefined && (obj.name = message.name);
-    message.percent !== undefined && (obj.percent = message.percent);
-    message.account !== undefined && (obj.account = message.account ? Account.toJSON(message.account) : undefined);
+    message.share !== undefined && (obj.share = message.share);
+    message.destination !== undefined
+      && (obj.destination = message.destination ? Account.toJSON(message.destination) : undefined);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<Share>, I>>(object: I): Share {
-    const message = createBaseShare();
+  fromPartial<I extends Exact<DeepPartial<DestinationShare>, I>>(object: I): DestinationShare {
+    const message = createBaseDestinationShare();
     message.name = object.name ?? "";
-    message.percent = object.percent ?? "";
-    message.account = (object.account !== undefined && object.account !== null)
-      ? Account.fromPartial(object.account)
+    message.share = object.share ?? "";
+    message.destination = (object.destination !== undefined && object.destination !== null)
+      ? Account.fromPartial(object.destination)
       : undefined;
     return message;
   },

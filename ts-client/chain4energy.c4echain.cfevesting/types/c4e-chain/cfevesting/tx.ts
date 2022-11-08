@@ -22,7 +22,7 @@ export interface MsgWithdrawAllAvailable {
 }
 
 export interface MsgWithdrawAllAvailableResponse {
-  Withdrawn: string;
+  withdrawn: string;
 }
 
 export interface MsgCreateVestingAccount {
@@ -221,13 +221,13 @@ export const MsgWithdrawAllAvailable = {
 };
 
 function createBaseMsgWithdrawAllAvailableResponse(): MsgWithdrawAllAvailableResponse {
-  return { Withdrawn: "" };
+  return { withdrawn: "" };
 }
 
 export const MsgWithdrawAllAvailableResponse = {
   encode(message: MsgWithdrawAllAvailableResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.Withdrawn !== "") {
-      writer.uint32(10).string(message.Withdrawn);
+    if (message.withdrawn !== "") {
+      writer.uint32(10).string(message.withdrawn);
     }
     return writer;
   },
@@ -240,7 +240,7 @@ export const MsgWithdrawAllAvailableResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.Withdrawn = reader.string();
+          message.withdrawn = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -251,12 +251,12 @@ export const MsgWithdrawAllAvailableResponse = {
   },
 
   fromJSON(object: any): MsgWithdrawAllAvailableResponse {
-    return { Withdrawn: isSet(object.Withdrawn) ? String(object.Withdrawn) : "" };
+    return { withdrawn: isSet(object.withdrawn) ? String(object.withdrawn) : "" };
   },
 
   toJSON(message: MsgWithdrawAllAvailableResponse): unknown {
     const obj: any = {};
-    message.Withdrawn !== undefined && (obj.Withdrawn = message.Withdrawn);
+    message.withdrawn !== undefined && (obj.withdrawn = message.withdrawn);
     return obj;
   },
 
@@ -264,7 +264,7 @@ export const MsgWithdrawAllAvailableResponse = {
     object: I,
   ): MsgWithdrawAllAvailableResponse {
     const message = createBaseMsgWithdrawAllAvailableResponse();
-    message.Withdrawn = object.Withdrawn ?? "";
+    message.withdrawn = object.withdrawn ?? "";
     return message;
   },
 };

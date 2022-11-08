@@ -35,7 +35,7 @@ export type CfevestingMsgCreateVestingPoolResponse = object;
 export type CfevestingMsgSendToVestingAccountResponse = object;
 
 export interface CfevestingMsgWithdrawAllAvailableResponse {
-  Withdrawn?: string;
+  withdrawn?: string;
 }
 
 /**
