@@ -8,15 +8,22 @@ import "c4e-chain/cfedistributor/sub_distributor.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 
-message DistributionResult {
-  repeated Account source = 1;
-  Account destination = 2;
-  repeated cosmos.base.v1beta1.DecCoin coinSend = 3 [
-    (gogoproto.moretags) = "yaml:\"coin_send\"",
+message Distribution {
+  string subdistributor = 1;
+  string share_name = 2;
+  repeated Account sources = 3;
+  Account destination = 4;
+  repeated cosmos.base.v1beta1.DecCoin amount = 5 [
+    (gogoproto.moretags) = "yaml:\"amount\"",
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
     (gogoproto.nullable) = false];
 }
 
-message DistributionsResult {
-  repeated DistributionResult distributionResult = 1;
+message DistributionBurn {
+  string subdistributor = 1;
+  repeated Account sources = 2;
+  repeated cosmos.base.v1beta1.DecCoin amount = 3 [
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
+    (gogoproto.nullable) = false];
 }

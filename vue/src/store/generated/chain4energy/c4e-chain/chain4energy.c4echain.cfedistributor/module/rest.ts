@@ -14,14 +14,16 @@ export interface CfedistributorAccount {
   type?: string;
 }
 
-export interface CfedistributorBurnShare {
-  percent?: string;
+export interface CfedistributorDestinationShare {
+  name?: string;
+  share?: string;
+  destination?: CfedistributorAccount;
 }
 
-export interface CfedistributorDestination {
-  account?: CfedistributorAccount;
-  share?: CfedistributorShare[];
-  burn_share?: CfedistributorBurnShare;
+export interface CfedistributorDestinations {
+  primary_share?: CfedistributorAccount;
+  burn_share?: string;
+  shares?: CfedistributorDestinationShare[];
 }
 
 /**
@@ -35,7 +37,7 @@ export interface CfedistributorParams {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CfedistributorQueryParamsResponse {
-  /** Params defines the parameters for the module. */
+  /** params holds all the parameters of this module. */
   params?: CfedistributorParams;
 }
 
@@ -44,22 +46,16 @@ export interface CfedistributorQueryStatesResponse {
   coins_on_distributor_account?: V1Beta1Coin[];
 }
 
-export interface CfedistributorShare {
-  name?: string;
-  percent?: string;
-  account?: CfedistributorAccount;
-}
-
 export interface CfedistributorState {
   account?: CfedistributorAccount;
   burn?: boolean;
-  coins_states?: V1Beta1DecCoin[];
+  remains?: V1Beta1DecCoin[];
 }
 
 export interface CfedistributorSubDistributor {
   name?: string;
   sources?: CfedistributorAccount[];
-  destination?: CfedistributorDestination;
+  destinations?: CfedistributorDestinations;
 }
 
 export interface ProtobufAny {

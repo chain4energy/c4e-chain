@@ -21,7 +21,7 @@ export interface MsgWithdrawAllAvailable {
 }
 
 export interface MsgWithdrawAllAvailableResponse {
-  Withdrawn: string;
+  withdrawn: string;
 }
 
 export interface MsgCreateVestingAccount {
@@ -297,15 +297,15 @@ export const MsgWithdrawAllAvailable = {
   },
 };
 
-const baseMsgWithdrawAllAvailableResponse: object = { Withdrawn: "" };
+const baseMsgWithdrawAllAvailableResponse: object = { withdrawn: "" };
 
 export const MsgWithdrawAllAvailableResponse = {
   encode(
     message: MsgWithdrawAllAvailableResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.Withdrawn !== "") {
-      writer.uint32(10).string(message.Withdrawn);
+    if (message.withdrawn !== "") {
+      writer.uint32(10).string(message.withdrawn);
     }
     return writer;
   },
@@ -323,7 +323,7 @@ export const MsgWithdrawAllAvailableResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.Withdrawn = reader.string();
+          message.withdrawn = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -337,17 +337,17 @@ export const MsgWithdrawAllAvailableResponse = {
     const message = {
       ...baseMsgWithdrawAllAvailableResponse,
     } as MsgWithdrawAllAvailableResponse;
-    if (object.Withdrawn !== undefined && object.Withdrawn !== null) {
-      message.Withdrawn = String(object.Withdrawn);
+    if (object.withdrawn !== undefined && object.withdrawn !== null) {
+      message.withdrawn = String(object.withdrawn);
     } else {
-      message.Withdrawn = "";
+      message.withdrawn = "";
     }
     return message;
   },
 
   toJSON(message: MsgWithdrawAllAvailableResponse): unknown {
     const obj: any = {};
-    message.Withdrawn !== undefined && (obj.Withdrawn = message.Withdrawn);
+    message.withdrawn !== undefined && (obj.withdrawn = message.withdrawn);
     return obj;
   },
 
@@ -357,10 +357,10 @@ export const MsgWithdrawAllAvailableResponse = {
     const message = {
       ...baseMsgWithdrawAllAvailableResponse,
     } as MsgWithdrawAllAvailableResponse;
-    if (object.Withdrawn !== undefined && object.Withdrawn !== null) {
-      message.Withdrawn = object.Withdrawn;
+    if (object.withdrawn !== undefined && object.withdrawn !== null) {
+      message.withdrawn = object.withdrawn;
     } else {
-      message.Withdrawn = "";
+      message.withdrawn = "";
     }
     return message;
   },

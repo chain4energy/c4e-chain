@@ -6,42 +6,49 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-const maxShareSum = 100
+const maxShareSum = 1
+const primaryShareNameSuffix = "_primary"
 
 func (s SubDistributor) Validate() error {
 
-	if s.Destination.CheckPercentShareSumIsBetween0And100() {
+	if s.Destinations.CheckPercentShareSumIsBetween0And1() {
 		return fmt.Errorf("share sum is greater or equal 100")
 	}
 
 	for _, source := range s.Sources {
 		if !source.Validate() {
-			return fmt.Errorf("the source account is of the wrong type: " + source.String())
+			return fmt.Errorf("the source account is of the wrong type: %s", source.String())
 		}
 	}
 
-	for _, share := range s.Destination.Share {
-		if !share.Account.Validate() {
-			return fmt.Errorf("the destination account is of the wrong type: " + share.Account.String())
+	for _, share := range s.Destinations.Shares {
+		if !share.Destination.Validate() {
+			return fmt.Errorf("the destination account is of the wrong type: %s", share.Destination.String())
+		}
+		if share.Name == s.GetPrimaryShareName() {
+			return fmt.Errorf("share name: %s is reserved for primary share", share.Name)
 		}
 	}
 
 	return nil
 }
 
-func (destination Destination) CheckPercentShareSumIsBetween0And100() bool {
-	shares := destination.Share
-	percentShareSum := sdk.ZeroDec()
+func (s SubDistributor) GetPrimaryShareName() string {
+	return s.Name + primaryShareNameSuffix
+}
+
+func (destination Destinations) CheckPercentShareSumIsBetween0And1() bool {
+	shares := destination.Shares
+	shareSum := sdk.ZeroDec()
 	for _, share := range shares {
-		percentShareSum = percentShareSum.Add(share.Percent)
+		shareSum = shareSum.Add(share.Share)
 	}
 
-	if destination.BurnShare != nil {
-
-		percentShareSum = percentShareSum.Add(destination.BurnShare.Percent)
+	if destination.BurnShare != sdk.ZeroDec() {
+		shareSum = shareSum.Add(destination.BurnShare)
 	}
 
-	return percentShareSum.GTE(sdk.NewDec(maxShareSum)) || percentShareSum.IsNegative()
+	return shareSum.GTE(sdk.NewDec(maxShareSum)) || shareSum.IsNegative()
 }
 
 func (s State) StateIdString() string {
@@ -79,6 +86,10 @@ func (account Account) Validate() bool {
 	}
 }
 
+func (account Account) GetAccounteKey() string {
+	return account.Type + "-" + account.Id
+}
+
 func ValidateSubDistributors(subDistributors []SubDistributor) error {
 	lastOccurrence := make(map[string]string)
 	lastOccurrenceIndex := make(map[string]int)
@@ -98,17 +109,20 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 			}
 		}
 
-		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Account, i, DESTINATION); err != nil {
+		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.PrimaryShare, i, DESTINATION); err != nil {
+			return err
+		}
+		if err = validateUniquenessOfNames(subDistributors[i].GetPrimaryShareName(), &shareNameOccured); err != nil {
 			return err
 		}
 
-		for j := 0; j < len(subDistributors[i].Destination.Share); j++ {
-			shareName := subDistributors[i].Destination.Share[j].Name
+		for j := 0; j < len(subDistributors[i].Destinations.Shares); j++ {
+			shareName := subDistributors[i].Destinations.Shares[j].Name
 			if err = validateUniquenessOfNames(shareName, &shareNameOccured); err != nil {
 				return err
 			}
 
-			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destination.Share[j].Account, i, DESTINATION); err != nil {
+			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.Shares[j].Destination, i, DESTINATION); err != nil {
 				return err
 			}
 		}

@@ -34,7 +34,7 @@ message MsgWithdrawAllAvailable {
 }
 
 message MsgWithdrawAllAvailableResponse {
-  string Withdrawn = 1  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin", (gogoproto.nullable) = false];
+  string withdrawn = 1  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin", (gogoproto.nullable) = false];
 }
 
 message MsgCreateVestingAccount {

@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetParams(t *testing.T) {
-	k, ctx := testkeeper.CfedistributorKeeper(t)
+	k, ctx, _ := testkeeper.CfedistributorKeeper(t)
 	params := types.DefaultParams()
 
 	k.SetParams(ctx, params)

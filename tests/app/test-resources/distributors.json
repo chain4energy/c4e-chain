@@ -1,14 +1,12 @@
 {
   "sub_distributors": [
     {
-      "destination": {
-        "account": {
+      "destinations": {
+        "primary_share": {
           "id": "c4e_distributor",
           "type": "MAIN"
         },
-        "burn_share": {
-          "percent": "0"
-        }
+        "burn_share": "0"
       },
       "name": "tx_fee_distributor",
       "sources": [
@@ -19,30 +17,28 @@
       ]
     },
     {
-      "destination": {
-        "account": {
+      "destinations": {
+        "primary_share": {
           "id": "validators_rewards_collector",
           "type": "MODULE_ACCOUNT"
         },
-        "burn_share": {
-          "percent": "0"
-        },
-        "share": [
+        "burn_share": "0",
+        "shares": [
           {
-            "account": {
+            "destination": {
               "id": "###development_fund_address###",
               "type": "BASE_ACCOUNT"
             },
             "name": "development_fund",
-            "percent": "5"
+            "share": "0.05"
           },
           {
-            "account": {
+            "destination": {
               "id": "usage_incentives_collector",
               "type": "INTERNAL_ACCOUNT"
             },
             "name": "usage_incentives",
-            "percent": "35"
+            "share": "0.35"
           }
         ]
       },
@@ -55,30 +51,28 @@
       ]
     },
     {
-      "destination": {
-        "account": {
+      "destinations": {
+        "primary_share": {
           "id": "###lp_address###",
           "type": "BASE_ACCOUNT"
         },
-        "burn_share": {
-          "percent": "0"
-        },
-        "share": [
+        "burn_share": "0",
+        "shares": [
           {
-            "account": {
+            "destination": {
               "id": "green_energy_booster_collector",
               "type": "MODULE_ACCOUNT"
             },
             "name": "green_energy_booster",
-            "percent": "34"
+            "share": "0.34"
           },
           {
-            "account": {
+            "destination": {
               "id": "governance_booster_collector",
               "type": "MODULE_ACCOUNT"
             },
             "name": "governance_booster",
-            "percent": "33"
+            "share": "0.33"
           }
         ]
       },
