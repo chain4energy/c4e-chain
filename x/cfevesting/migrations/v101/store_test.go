@@ -82,9 +82,30 @@ func TestMigrationAccountVestingPoolsAndVestingTypes(t *testing.T) {
 	MigrateV100ToV101(t, testUtil, ctx)
 }
 
+func TestMigrationWrongSentAmount(t *testing.T) {
+	accounts, _ := commontestutils.CreateAccounts(5, 0)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[0].String(), 10)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[1].String(), 10)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[2].String(), 10)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[3].String(), 10)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[4].String(), 10)
+	MigrateV100ToV101(t, testUtil, ctx)
+}
+
 func SetupV100AccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v100cfevesting.AccountVestingPools {
 	accountVestingPools := GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
 	accountVestingPools.Address = address
+	SetV100AccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
+	return accountVestingPools
+}
+
+func SetupV100AccountVestingPoolsWrongSent(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v100cfevesting.AccountVestingPools {
+	accountVestingPools := GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
+	accountVestingPools.Address = address
+	for _, vesting := range accountVestingPools.VestingPools {
+		vesting.Sent = sdk.NewInt(100)
+	}
 	SetV100AccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
 	return accountVestingPools
 }
@@ -106,19 +127,20 @@ func MigrateV100ToV101(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 	newVestingTypes := testUtil.GetC4eVestingKeeper().GetAllVestingTypes(ctx)
 
 	require.EqualValues(t, len(oldAccPools), len(newAccPools))
-
 	for i := 0; i < len(oldAccPools); i++ {
 		require.EqualValues(t, oldAccPools[i].Address, newAccPools[i].Address)
 		require.EqualValues(t, len(oldAccPools[i].VestingPools), len(newAccPools[i].VestingPools))
 		for j := 0; j < len(oldAccPools[i].VestingPools); j++ {
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Name, newAccPools[i].VestingPools[j].Name)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].VestingType, newAccPools[i].VestingPools[j].VestingType)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].LockStart, newAccPools[i].VestingPools[j].LockStart)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].LockEnd, newAccPools[i].VestingPools[j].LockEnd)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Vested, newAccPools[i].VestingPools[j].InitiallyLocked)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Withdrawn, newAccPools[i].VestingPools[j].Withdrawn)
-			_ = oldAccPools[i].VestingPools[j].Sent.String()
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Sent, newAccPools[i].VestingPools[j].Sent)
+			oldVestingPool := oldAccPools[i].VestingPools[j]
+			newVestingPool := newAccPools[i].VestingPools[j]
+			require.EqualValues(t, oldVestingPool.Name, newVestingPool.Name)
+			require.EqualValues(t, oldVestingPool.VestingType, newVestingPool.VestingType)
+			require.EqualValues(t, oldVestingPool.LockStart, newVestingPool.LockStart)
+			require.EqualValues(t, oldVestingPool.LockEnd, newVestingPool.LockEnd)
+			require.EqualValues(t, oldVestingPool.Vested, newVestingPool.InitiallyLocked)
+			require.EqualValues(t, oldVestingPool.Withdrawn, newVestingPool.Withdrawn)
+			oldSentCalculated := oldVestingPool.LastModificationWithdrawn.Add(oldVestingPool.Vested).Sub(oldVestingPool.Withdrawn).Sub(oldVestingPool.LastModificationVested)
+			require.EqualValues(t, oldSentCalculated, newAccPools[i].VestingPools[j].Sent)
 		}
 	}
 	require.ElementsMatch(t, oldVestingTypes.VestingTypes, newVestingTypes.VestingTypes)

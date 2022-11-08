@@ -86,6 +86,8 @@ func MigrateStoreV100ToV101(
 	require.NoError(t, err)
 
 	newStates := testUtil.GetC4eDistributorKeeper().GetAllStates(ctx)
+
+	require.EqualValues(t, len(newStates), len(oldStates))
 	for i, oldState := range oldStates {
 		if oldState.Burn == true {
 			require.Nil(t, newStates[i].Account)
