@@ -7,6 +7,7 @@ import { Api } from "./rest";
 import { MsgStoreSignature } from "./types/cfesignature/tx";
 import { MsgPublishReferencePayloadLink } from "./types/cfesignature/tx";
 import { MsgCreateAccount } from "./types/cfesignature/tx";
+import { MsgPublishReferencePayloadLink } from "./types/cfesignature/tx";
 import { MsgStoreSignature } from "./types/cfesignature/tx";
 
 
@@ -14,6 +15,7 @@ const types = [
   ["/chain4energy.c4echain.cfesignature.MsgStoreSignature", MsgStoreSignature],
   ["/chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLink", MsgPublishReferencePayloadLink],
   ["/chain4energy.c4echain.cfesignature.MsgCreateAccount", MsgCreateAccount],
+  ["/chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLink", MsgPublishReferencePayloadLink],
   ["/chain4energy.c4echain.cfesignature.MsgStoreSignature", MsgStoreSignature],
   
 ];
@@ -50,6 +52,7 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
     msgStoreSignature: (data: MsgStoreSignature): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfesignature.MsgStoreSignature", value: MsgStoreSignature.fromPartial( data ) }),
     msgPublishReferencePayloadLink: (data: MsgPublishReferencePayloadLink): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLink", value: MsgPublishReferencePayloadLink.fromPartial( data ) }),
     msgCreateAccount: (data: MsgCreateAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfesignature.MsgCreateAccount", value: MsgCreateAccount.fromPartial( data ) }),
+    msgPublishReferencePayloadLink: (data: MsgPublishReferencePayloadLink): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLink", value: MsgPublishReferencePayloadLink.fromPartial( data ) }),
     msgStoreSignature: (data: MsgStoreSignature): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfesignature.MsgStoreSignature", value: MsgStoreSignature.fromPartial( data ) }),
     
   };
