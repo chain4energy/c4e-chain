@@ -23,13 +23,11 @@ export interface Destination {
 }
 
 export interface BurnShare {
-  /** float percent =1; */
   percent: string;
 }
 
 export interface Share {
   name: string;
-  /** float percent = 2; */
   percent: string;
   account: Account | undefined;
 }

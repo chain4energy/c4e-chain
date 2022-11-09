@@ -206,7 +206,6 @@ func (m *Destination) GetBurnShare() *BurnShare {
 }
 
 type BurnShare struct {
-	// float percent =1;
 	Percent github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=percent,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"percent" yaml:"percent"`
 }
 
@@ -244,8 +243,7 @@ func (m *BurnShare) XXX_DiscardUnknown() {
 var xxx_messageInfo_BurnShare proto.InternalMessageInfo
 
 type Share struct {
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// float percent = 2;
+	Name    string                                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Percent github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=percent,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"percent" yaml:"percent"`
 	Account Account                                `protobuf:"bytes,3,opt,name=account,proto3" json:"account"`
 }
