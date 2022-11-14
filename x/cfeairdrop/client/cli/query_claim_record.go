@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdListClaimRecordXX() *cobra.Command {
+func CmdListClaimRecord() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-claim-record-xx",
-		Short: "list all claimRecordXX",
+		Use:   "list-claim-record",
+		Short: "list all claimRecord",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -23,11 +23,11 @@ func CmdListClaimRecordXX() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllClaimRecordXXRequest{
+			params := &types.QueryAllClaimRecordRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.ClaimRecordXXAll(context.Background(), params)
+			res, err := queryClient.ClaimRecordAll(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -42,10 +42,10 @@ func CmdListClaimRecordXX() *cobra.Command {
 	return cmd
 }
 
-func CmdShowClaimRecordXX() *cobra.Command {
+func CmdShowClaimRecord() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-claim-record-xx [index]",
-		Short: "shows a claimRecordXX",
+		Use:   "show-claim-record [address]",
+		Short: "shows a claimRecord",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -54,11 +54,11 @@ func CmdShowClaimRecordXX() *cobra.Command {
 
 			argIndex := args[0]
 
-			params := &types.QueryGetClaimRecordXXRequest{
-				Index: argIndex,
+			params := &types.QueryGetClaimRecordRequest{
+				Address: argIndex,
 			}
 
-			res, err := queryClient.ClaimRecordXX(context.Background(), params)
+			res, err := queryClient.ClaimRecord(context.Background(), params)
 			if err != nil {
 				return err
 			}

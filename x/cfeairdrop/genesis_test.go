@@ -30,6 +30,16 @@ func TestGenesis(t *testing.T) {
 				CampaignId: 1,
 			},
 		},
+		Missions: []types.Mission{
+			{
+				CampaignId: 0,
+				MissionId:  0,
+			},
+			{
+				CampaignId: 1,
+				MissionId:  1,
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -43,5 +53,6 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.ClaimRecords, got.ClaimRecords)
 	require.ElementsMatch(t, genesisState.InitialClaims, got.InitialClaims)
+	require.ElementsMatch(t, genesisState.Missions, got.Missions)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

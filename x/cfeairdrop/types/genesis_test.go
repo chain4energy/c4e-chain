@@ -38,6 +38,16 @@ func TestGenesisState_Validate(t *testing.T) {
 						CampaignId: 1,
 					},
 				},
+				Missions: []types.Mission{
+					{
+						CampaignId: 0,
+						MissionId:  0,
+					},
+					{
+						CampaignId: 1,
+						MissionId:  1,
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -65,6 +75,22 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						CampaignId: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated mission",
+			genState: &types.GenesisState{
+				Missions: []types.Mission{
+					{
+						CampaignId: 0,
+						MissionId:  0,
+					},
+					{
+						CampaignId: 0,
+						MissionId:  0,
 					},
 				},
 			},

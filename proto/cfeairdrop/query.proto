@@ -36,6 +36,16 @@ service Query {
 		option (google.api.http).get = "/c4e/airdrop/initial_claim";
 	}
 
+// Queries a Mission by index.
+	rpc Mission(QueryGetMissionRequest) returns (QueryGetMissionResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/mission/{campaignId}/{missionId}";
+	}
+
+	// Queries a list of Mission items.
+	rpc MissionAll(QueryAllMissionRequest) returns (QueryAllMissionResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/mission";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -81,6 +91,25 @@ message QueryAllInitialClaimRequest {
 
 message QueryAllInitialClaimResponse {
 	repeated InitialClaim initialClaim = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetMissionRequest {
+	uint64 campaignId = 1;
+	uint64 missionId = 2;
+
+}
+
+message QueryGetMissionResponse {
+	Mission mission = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllMissionRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllMissionResponse {
+	repeated Mission mission = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

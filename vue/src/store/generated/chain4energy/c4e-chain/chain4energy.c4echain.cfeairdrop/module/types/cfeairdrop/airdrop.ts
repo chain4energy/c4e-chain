@@ -20,13 +20,13 @@ export interface Campaign {
   description: string;
 }
 
-export interface InitialClaimff {
+export interface InitialClaim {
   enabled: boolean;
   campaign_id: number;
   mission_id: number;
 }
 
-export interface Mission {
+export interface MissionFF {
   campaign_id: number;
   mission_id: number;
   description: string;
@@ -316,14 +316,14 @@ export const Campaign = {
   },
 };
 
-const baseInitialClaimff: object = {
+const baseInitialClaim: object = {
   enabled: false,
   campaign_id: 0,
   mission_id: 0,
 };
 
-export const InitialClaimff = {
-  encode(message: InitialClaimff, writer: Writer = Writer.create()): Writer {
+export const InitialClaim = {
+  encode(message: InitialClaim, writer: Writer = Writer.create()): Writer {
     if (message.enabled === true) {
       writer.uint32(8).bool(message.enabled);
     }
@@ -336,10 +336,10 @@ export const InitialClaimff = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): InitialClaimff {
+  decode(input: Reader | Uint8Array, length?: number): InitialClaim {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseInitialClaimff } as InitialClaimff;
+    const message = { ...baseInitialClaim } as InitialClaim;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -360,8 +360,8 @@ export const InitialClaimff = {
     return message;
   },
 
-  fromJSON(object: any): InitialClaimff {
-    const message = { ...baseInitialClaimff } as InitialClaimff;
+  fromJSON(object: any): InitialClaim {
+    const message = { ...baseInitialClaim } as InitialClaim;
     if (object.enabled !== undefined && object.enabled !== null) {
       message.enabled = Boolean(object.enabled);
     } else {
@@ -380,7 +380,7 @@ export const InitialClaimff = {
     return message;
   },
 
-  toJSON(message: InitialClaimff): unknown {
+  toJSON(message: InitialClaim): unknown {
     const obj: any = {};
     message.enabled !== undefined && (obj.enabled = message.enabled);
     message.campaign_id !== undefined &&
@@ -389,8 +389,8 @@ export const InitialClaimff = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<InitialClaimff>): InitialClaimff {
-    const message = { ...baseInitialClaimff } as InitialClaimff;
+  fromPartial(object: DeepPartial<InitialClaim>): InitialClaim {
+    const message = { ...baseInitialClaim } as InitialClaim;
     if (object.enabled !== undefined && object.enabled !== null) {
       message.enabled = object.enabled;
     } else {
@@ -410,15 +410,15 @@ export const InitialClaimff = {
   },
 };
 
-const baseMission: object = {
+const baseMissionFF: object = {
   campaign_id: 0,
   mission_id: 0,
   description: "",
   weight: "",
 };
 
-export const Mission = {
-  encode(message: Mission, writer: Writer = Writer.create()): Writer {
+export const MissionFF = {
+  encode(message: MissionFF, writer: Writer = Writer.create()): Writer {
     if (message.campaign_id !== 0) {
       writer.uint32(8).uint64(message.campaign_id);
     }
@@ -434,10 +434,10 @@ export const Mission = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): Mission {
+  decode(input: Reader | Uint8Array, length?: number): MissionFF {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMission } as Mission;
+    const message = { ...baseMissionFF } as MissionFF;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -461,8 +461,8 @@ export const Mission = {
     return message;
   },
 
-  fromJSON(object: any): Mission {
-    const message = { ...baseMission } as Mission;
+  fromJSON(object: any): MissionFF {
+    const message = { ...baseMissionFF } as MissionFF;
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
       message.campaign_id = Number(object.campaign_id);
     } else {
@@ -486,7 +486,7 @@ export const Mission = {
     return message;
   },
 
-  toJSON(message: Mission): unknown {
+  toJSON(message: MissionFF): unknown {
     const obj: any = {};
     message.campaign_id !== undefined &&
       (obj.campaign_id = message.campaign_id);
@@ -497,8 +497,8 @@ export const Mission = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Mission>): Mission {
-    const message = { ...baseMission } as Mission;
+  fromPartial(object: DeepPartial<MissionFF>): MissionFF {
+    const message = { ...baseMissionFF } as MissionFF;
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
       message.campaign_id = object.campaign_id;
     } else {

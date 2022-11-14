@@ -27,9 +27,20 @@ export interface CfeairdropClaimRecord {
 }
 
 export interface CfeairdropInitialClaim {
+  enabled?: boolean;
+
+  /** @format uint64 */
+  campaign_id?: string;
+
+  /** @format uint64 */
+  mission_id?: string;
+}
+
+export interface CfeairdropMission {
   campaignId?: string;
-  enabled?: string;
   missionId?: string;
+  description?: string;
+  weight?: string;
 }
 
 export interface CfeairdropQueryAllClaimRecordResponse {
@@ -62,12 +73,31 @@ export interface CfeairdropQueryAllInitialClaimResponse {
   pagination?: V1Beta1PageResponse;
 }
 
+export interface CfeairdropQueryAllMissionResponse {
+  mission?: CfeairdropMission[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
 export interface CfeairdropQueryGetClaimRecordResponse {
   claimRecord?: CfeairdropClaimRecord;
 }
 
 export interface CfeairdropQueryGetInitialClaimResponse {
   initialClaim?: CfeairdropInitialClaim;
+}
+
+export interface CfeairdropQueryGetMissionResponse {
+  mission?: CfeairdropMission;
 }
 
 /**
@@ -507,6 +537,48 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
+   * @name QueryInitialClaimAll
+   * @summary Queries a list of InitialClaim items.
+   * @request GET:/c4e/airdrop/initial_claim
+   */
+  queryInitialClaimAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<CfeairdropQueryAllInitialClaimResponse, RpcStatus>({
+      path: `/c4e/airdrop/initial_claim`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryInitialClaim
+   * @summary Queries a InitialClaim by index.
+   * @request GET:/c4e/airdrop/initial_claim/{campaignId}
+   */
+  queryInitialClaim = (campaignId: string, params: RequestParams = {}) =>
+    this.request<CfeairdropQueryGetInitialClaimResponse, RpcStatus>({
+      path: `/c4e/airdrop/initial_claim/${campaignId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
    * @request GET:/c4e/airdrop/params
@@ -523,11 +595,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryInitialClaimAll
-   * @summary Queries a list of InitialClaim items.
-   * @request GET:/chain4energy/c4e-chain/cfeairdrop/initial_claim
+   * @name QueryMissionAll
+   * @summary Queries a list of Mission items.
+   * @request GET:/chain4energy/c4e-chain/cfeairdrop/mission
    */
-  queryInitialClaimAll = (
+  queryMissionAll = (
     query?: {
       "pagination.key"?: string;
       "pagination.offset"?: string;
@@ -537,8 +609,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     },
     params: RequestParams = {},
   ) =>
-    this.request<CfeairdropQueryAllInitialClaimResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfeairdrop/initial_claim`,
+    this.request<CfeairdropQueryAllMissionResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfeairdrop/mission`,
       method: "GET",
       query: query,
       format: "json",
@@ -549,13 +621,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryInitialClaim
-   * @summary Queries a InitialClaim by index.
-   * @request GET:/chain4energy/c4e-chain/cfeairdrop/initial_claim/{campaignId}
+   * @name QueryMission
+   * @summary Queries a Mission by index.
+   * @request GET:/chain4energy/c4e-chain/cfeairdrop/mission/{campaignId}/{missionId}
    */
-  queryInitialClaim = (campaignId: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryGetInitialClaimResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfeairdrop/initial_claim/${campaignId}`,
+  queryMission = (campaignId: string, missionId: string, params: RequestParams = {}) =>
+    this.request<CfeairdropQueryGetMissionResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfeairdrop/mission/${campaignId}/${missionId}`,
       method: "GET",
       format: "json",
       ...params,

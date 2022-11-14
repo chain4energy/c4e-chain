@@ -30,7 +30,7 @@ message InitialClaim {
   uint64 mission_id = 3;
 }
 
-message MissionFF {
+message Mission {
   uint64 campaign_id   = 1;
   uint64 mission_id   = 2;
   string description = 3;

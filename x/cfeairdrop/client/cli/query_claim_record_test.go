@@ -21,50 +21,50 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func networkWithInitialClaimObjects(t *testing.T, n int) (*network.Network, []types.InitialClaim) {
+func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []types.ClaimRecord) {
 	t.Helper()
 	cfg := network.DefaultConfig()
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
-		initialClaim := types.InitialClaim{
-			CampaignId: uint64(i),
+		claimRecord := types.ClaimRecord{
+			Address: strconv.Itoa(i),
 		}
-		nullify.Fill(&initialClaim)
-		state.InitialClaims = append(state.InitialClaims, initialClaim)
+		nullify.Fill(&claimRecord)
+		state.ClaimRecords = append(state.ClaimRecords, claimRecord)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.InitialClaims
+	return network.New(t, cfg), state.ClaimRecords
 }
 
-func TestShowInitialClaim(t *testing.T) {
-	net, objs := networkWithInitialClaimObjects(t, 2)
+func TestShowClaimRecord(t *testing.T) {
+	net, objs := networkWithClaimRecordObjects(t, 2)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
 		fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 	}
 	for _, tc := range []struct {
-		desc         string
-		idCampaignId string
+		desc    string
+		idIndex string
 
 		args []string
 		err  error
-		obj  types.InitialClaim
+		obj  types.ClaimRecord
 	}{
 		{
-			desc:         "found",
-			idCampaignId: strconv.FormatUint(objs[0].CampaignId, 10),
+			desc:    "found",
+			idIndex: objs[0].Address,
 
 			args: common,
 			obj:  objs[0],
 		},
 		{
-			desc:         "not found",
-			idCampaignId: strconv.Itoa(100000),
+			desc:    "not found",
+			idIndex: strconv.Itoa(100000),
 
 			args: common,
 			err:  status.Error(codes.NotFound, "not found"),
@@ -72,30 +72,30 @@ func TestShowInitialClaim(t *testing.T) {
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			args := []string{
-				tc.idCampaignId,
+				tc.idIndex,
 			}
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowInitialClaim(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowClaimRecord(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetInitialClaimResponse
+				var resp types.QueryGetClaimRecordResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.InitialClaim)
+				require.NotNil(t, resp.ClaimRecord)
 				require.Equal(t,
 					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.InitialClaim),
+					nullify.Fill(&resp.ClaimRecord),
 				)
 			}
 		})
 	}
 }
 
-func TestListInitialClaim(t *testing.T) {
-	net, objs := networkWithInitialClaimObjects(t, 5)
+func TestListClaimRecord(t *testing.T) {
+	net, objs := networkWithClaimRecordObjects(t, 5)
 
 	ctx := net.Validators[0].ClientCtx
 	request := func(next []byte, offset, limit uint64, total bool) []string {
@@ -117,14 +117,14 @@ func TestListInitialClaim(t *testing.T) {
 		step := 2
 		for i := 0; i < len(objs); i += step {
 			args := request(nil, uint64(i), uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListInitialClaim(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecord(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllInitialClaimResponse
+			var resp types.QueryAllClaimRecordResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.InitialClaim), step)
+			require.LessOrEqual(t, len(resp.ClaimRecord), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.InitialClaim),
+				nullify.Fill(resp.ClaimRecord),
 			)
 		}
 	})
@@ -133,29 +133,29 @@ func TestListInitialClaim(t *testing.T) {
 		var next []byte
 		for i := 0; i < len(objs); i += step {
 			args := request(next, 0, uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListInitialClaim(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecord(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllInitialClaimResponse
+			var resp types.QueryAllClaimRecordResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.InitialClaim), step)
+			require.LessOrEqual(t, len(resp.ClaimRecord), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.InitialClaim),
+				nullify.Fill(resp.ClaimRecord),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
-		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListInitialClaim(), args)
+		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecord(), args)
 		require.NoError(t, err)
-		var resp types.QueryAllInitialClaimResponse
+		var resp types.QueryAllClaimRecordResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 		require.NoError(t, err)
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.InitialClaim),
+			nullify.Fill(resp.ClaimRecord),
 		)
 	})
 }

@@ -12,6 +12,7 @@ func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		ClaimRecords:  []ClaimRecord{},
 		InitialClaims: []InitialClaim{},
+		Missions:   []Mission{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -39,6 +40,16 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for initialClaim")
 		}
 		initialClaimIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in mission
+	missionIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.Missions {
+		index := string(MissionKey(elem.CampaignId, elem.MissionId))
+		if _, ok := missionIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for mission")
+		}
+		missionIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

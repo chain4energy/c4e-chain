@@ -5,13 +5,13 @@ import { AirdropVestingAccount } from "./module/types/cfeairdrop/account"
 import { CampaignRecord } from "./module/types/cfeairdrop/airdrop"
 import { ClaimRecord } from "./module/types/cfeairdrop/airdrop"
 import { Campaign } from "./module/types/cfeairdrop/airdrop"
-import { InitialClaimff } from "./module/types/cfeairdrop/airdrop"
-import { Mission } from "./module/types/cfeairdrop/airdrop"
-import { InitialClaim } from "./module/types/cfeairdrop/initial_claim"
+import { InitialClaim } from "./module/types/cfeairdrop/airdrop"
+import { MissionFF } from "./module/types/cfeairdrop/airdrop"
+import { Mission } from "./module/types/cfeairdrop/mission"
 import { Params } from "./module/types/cfeairdrop/params"
 
 
-export { ContinuousVestingPeriod, AirdropVestingAccount, CampaignRecord, ClaimRecord, Campaign, InitialClaimff, Mission, InitialClaim, Params };
+export { ContinuousVestingPeriod, AirdropVestingAccount, CampaignRecord, ClaimRecord, Campaign, InitialClaim, MissionFF, Mission, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -54,6 +54,8 @@ const getDefaultState = () => {
 				ClaimRecordAll: {},
 				InitialClaim: {},
 				InitialClaimAll: {},
+				Mission: {},
+				MissionAll: {},
 				
 				_Structure: {
 						ContinuousVestingPeriod: getStructure(ContinuousVestingPeriod.fromPartial({})),
@@ -61,9 +63,9 @@ const getDefaultState = () => {
 						CampaignRecord: getStructure(CampaignRecord.fromPartial({})),
 						ClaimRecord: getStructure(ClaimRecord.fromPartial({})),
 						Campaign: getStructure(Campaign.fromPartial({})),
-						InitialClaimff: getStructure(InitialClaimff.fromPartial({})),
-						Mission: getStructure(Mission.fromPartial({})),
 						InitialClaim: getStructure(InitialClaim.fromPartial({})),
+						MissionFF: getStructure(MissionFF.fromPartial({})),
+						Mission: getStructure(Mission.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						
 		},
@@ -122,6 +124,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.InitialClaimAll[JSON.stringify(params)] ?? {}
+		},
+				getMission: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Mission[JSON.stringify(params)] ?? {}
+		},
+				getMissionAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.MissionAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -270,6 +284,54 @@ export default {
 				return getters['getInitialClaimAll']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryInitialClaimAll API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryMission({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryMission( key.campaignId,  key.missionId)).data
+				
+					
+				commit('QUERY', { query: 'Mission', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryMission', payload: { options: { all }, params: {...key},query }})
+				return getters['getMission']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryMission API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryMissionAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryMissionAll(query)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await queryClient.queryMissionAll({...query, 'pagination.key':(<any> value).pagination.next_key})).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'MissionAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryMissionAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getMissionAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryMissionAll API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

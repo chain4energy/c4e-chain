@@ -17,6 +17,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.InitialClaims {
 		k.SetInitialClaim(ctx, elem)
 	}
+	// Set all the mission
+	for _, elem := range genState.Missions {
+		k.SetMission(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 
@@ -32,6 +36,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.ClaimRecords = k.GetAllClaimRecord(ctx)
 	genesis.InitialClaims = k.GetAllInitialClaim(ctx)
+	genesis.Missions = k.GetAllMission(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

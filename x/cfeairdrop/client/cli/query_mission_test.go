@@ -21,50 +21,54 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func networkWithClaimRecordXXObjects(t *testing.T, n int) (*network.Network, []types.ClaimRecordXX) {
+func networkWithMissionObjects(t *testing.T, n int) (*network.Network, []types.Mission) {
 	t.Helper()
 	cfg := network.DefaultConfig()
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
-		claimRecordXX := types.ClaimRecordXX{
-			Index: strconv.Itoa(i),
+		mission := types.Mission{
+			CampaignId: uint64(i),
+			MissionId:  uint64(i),
 		}
-		nullify.Fill(&claimRecordXX)
-		state.ClaimRecordXXList = append(state.ClaimRecordXXList, claimRecordXX)
+		nullify.Fill(&mission)
+		state.Missions = append(state.Missions, mission)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.ClaimRecordXXList
+	return network.New(t, cfg), state.Missions
 }
 
-func TestShowClaimRecordXX(t *testing.T) {
-	net, objs := networkWithClaimRecordXXObjects(t, 2)
+func TestShowMission(t *testing.T) {
+	net, objs := networkWithMissionObjects(t, 2)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
 		fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 	}
 	for _, tc := range []struct {
-		desc    string
-		idIndex string
+		desc         string
+		idCampaignId string
+		idMissionId  string
 
 		args []string
 		err  error
-		obj  types.ClaimRecordXX
+		obj  types.Mission
 	}{
 		{
-			desc:    "found",
-			idIndex: objs[0].Index,
+			desc:         "found",
+			idCampaignId: strconv.FormatUint(objs[0].CampaignId, 10),
+			idMissionId:  strconv.FormatUint(objs[0].MissionId, 10),
 
 			args: common,
 			obj:  objs[0],
 		},
 		{
-			desc:    "not found",
-			idIndex: strconv.Itoa(100000),
+			desc:         "not found",
+			idCampaignId: strconv.Itoa(100000),
+			idMissionId:  strconv.Itoa(100000),
 
 			args: common,
 			err:  status.Error(codes.NotFound, "not found"),
@@ -72,30 +76,31 @@ func TestShowClaimRecordXX(t *testing.T) {
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			args := []string{
-				tc.idIndex,
+				tc.idCampaignId,
+				tc.idMissionId,
 			}
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowClaimRecordXX(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowMission(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetClaimRecordXXResponse
+				var resp types.QueryGetMissionResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.ClaimRecordXX)
+				require.NotNil(t, resp.Mission)
 				require.Equal(t,
 					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.ClaimRecordXX),
+					nullify.Fill(&resp.Mission),
 				)
 			}
 		})
 	}
 }
 
-func TestListClaimRecordXX(t *testing.T) {
-	net, objs := networkWithClaimRecordXXObjects(t, 5)
+func TestListMission(t *testing.T) {
+	net, objs := networkWithMissionObjects(t, 5)
 
 	ctx := net.Validators[0].ClientCtx
 	request := func(next []byte, offset, limit uint64, total bool) []string {
@@ -117,14 +122,14 @@ func TestListClaimRecordXX(t *testing.T) {
 		step := 2
 		for i := 0; i < len(objs); i += step {
 			args := request(nil, uint64(i), uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecordXX(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMission(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllClaimRecordXXResponse
+			var resp types.QueryAllMissionResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClaimRecordXX), step)
+			require.LessOrEqual(t, len(resp.Mission), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClaimRecordXX),
+				nullify.Fill(resp.Mission),
 			)
 		}
 	})
@@ -133,29 +138,29 @@ func TestListClaimRecordXX(t *testing.T) {
 		var next []byte
 		for i := 0; i < len(objs); i += step {
 			args := request(next, 0, uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecordXX(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMission(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllClaimRecordXXResponse
+			var resp types.QueryAllMissionResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.ClaimRecordXX), step)
+			require.LessOrEqual(t, len(resp.Mission), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.ClaimRecordXX),
+				nullify.Fill(resp.Mission),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
-		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecordXX(), args)
+		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMission(), args)
 		require.NoError(t, err)
-		var resp types.QueryAllClaimRecordXXResponse
+		var resp types.QueryAllMissionResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 		require.NoError(t, err)
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.ClaimRecordXX),
+			nullify.Fill(resp.Mission),
 		)
 	})
 }

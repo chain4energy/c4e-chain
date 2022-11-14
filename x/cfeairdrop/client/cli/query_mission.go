@@ -10,10 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdListInitialClaim() *cobra.Command {
+func CmdListMission() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-initial-claim",
-		Short: "list all initialClaim",
+		Use:   "list-mission",
+		Short: "list all mission",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -24,11 +24,11 @@ func CmdListInitialClaim() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllInitialClaimRequest{
+			params := &types.QueryAllMissionRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.InitialClaimAll(context.Background(), params)
+			res, err := queryClient.MissionAll(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -43,11 +43,11 @@ func CmdListInitialClaim() *cobra.Command {
 	return cmd
 }
 
-func CmdShowInitialClaim() *cobra.Command {
+func CmdShowMission() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-initial-claim [campaign-id]",
-		Short: "shows a initialClaim",
-		Args:  cobra.ExactArgs(1),
+		Use:   "show-mission [campaign-id] [mission-id]",
+		Short: "shows a mission",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -57,12 +57,17 @@ func CmdShowInitialClaim() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
-			params := &types.QueryGetInitialClaimRequest{
-				CampaignId: argCampaignId,
+			argMissionId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
 			}
 
-			res, err := queryClient.InitialClaim(context.Background(), params)
+			params := &types.QueryGetMissionRequest{
+				CampaignId: argCampaignId,
+				MissionId:  argMissionId,
+			}
+
+			res, err := queryClient.Mission(context.Background(), params)
 			if err != nil {
 				return err
 			}
