@@ -5,8 +5,8 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	// this line is used by starport scaffolding # 1
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
-	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {

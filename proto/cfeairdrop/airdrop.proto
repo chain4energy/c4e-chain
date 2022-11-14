@@ -24,7 +24,7 @@ message Campaign {
   string description = 2;
 }
 
-message InitialClaim {
+message InitialClaimff {
   bool   enabled   = 1;
   uint64 campaign_id   = 2;
   uint64 mission_id = 3;

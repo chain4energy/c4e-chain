@@ -3,11 +3,11 @@ package keeper
 import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 )
+
 func (k Keeper) CreateAirdropAccount(ctx sdk.Context, fromAddress string, toAddress string,
 	amount sdk.Coins, startTime int64, endTime int64) error {
 	k.Logger(ctx).Debug("create airdrop account", "fromAddress", fromAddress, "toAddress", toAddress,

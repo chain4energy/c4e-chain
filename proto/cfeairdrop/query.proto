@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cfeairdrop/params.proto";
+import "cfeairdrop/airdrop.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
@@ -13,9 +14,19 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/params";
+    option (google.api.http).get = "/c4e/airdrop/params";
   }
-  // this line is used by starport scaffolding # 2
+  // Queries a ClaimRecord by index.
+	rpc ClaimRecord(QueryGetClaimRecordRequest) returns (QueryGetClaimRecordResponse) {
+		option (google.api.http).get = "/c4e/airdrop/claim_record/{address}";
+	}
+
+	// Queries a list of ClaimRecord items.
+	rpc ClaimRecordAll(QueryAllClaimRecordRequest) returns (QueryAllClaimRecordResponse) {
+		option (google.api.http).get = "/c4e/airdrop/claim_record";
+	}
+
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -25,6 +36,24 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetClaimRecordRequest {
+	  string address = 1;
+
+}
+
+message QueryGetClaimRecordResponse {
+	ClaimRecord claimRecord = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllClaimRecordRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllClaimRecordResponse {
+	repeated ClaimRecord claimRecord = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

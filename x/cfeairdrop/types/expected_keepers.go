@@ -11,7 +11,6 @@ type AccountKeeper interface {
 	// Methods imported from account should be defined here
 	NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
 	SetAccount(ctx sdk.Context, acc types.AccountI)
-
 }
 
 // BankKeeper defines the expected interface needed to retrieve account balances.
@@ -21,5 +20,4 @@ type BankKeeper interface {
 	IsSendEnabledCoins(ctx sdk.Context, coins ...sdk.Coin) error
 	BlockedAddr(addr sdk.AccAddress) bool
 	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
-
 }
