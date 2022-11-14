@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	v101cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v101"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -17,5 +16,6 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate1to2 migrates from version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	return v101cfevesting.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
+	// return v101cfevesting.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
+	return nil
 }
