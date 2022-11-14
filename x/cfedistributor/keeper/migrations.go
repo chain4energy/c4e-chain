@@ -22,4 +22,5 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 	// }
 
 	// return v101cfedistributor.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
+	return nil
 }
