@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/chain4energy/c4e-chain/app"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
@@ -13,7 +14,7 @@ import (
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -44,7 +45,7 @@ func SetupWithValidatorsAmount(isCheckTx bool, bondDenom string, validatorsAmoun
 
 func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
 	db := dbm.NewMemDB()
-	encoding := cosmoscmd.MakeEncodingConfig(c4eapp.ModuleBasics)
+	encoding := app.MakeEncodingConfig()
 	app := c4eapp.New(
 		log.TestingLogger(),
 		db,
@@ -58,7 +59,7 @@ func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
 	)
 	genesisState := c4eapp.NewDefaultGenesisState(encoding.Marshaler)
 
-	return app.(*c4eapp.App), genesisState
+	return app, genesisState
 }
 
 func createValidatorSet(validatorsAmount int) *tmtypes.ValidatorSet {
