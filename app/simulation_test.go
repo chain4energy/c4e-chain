@@ -8,8 +8,8 @@ import (
 	cfesignaturetypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -22,7 +22,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -124,7 +123,7 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		tb,
 		os.Stdout,
-		app.GetBaseApp(),
+		app.BaseApp,
 		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
 		simulationtypes.RandomAccounts,
 		simapp.SimulationOperations(app, app.AppCodec(), config),
@@ -151,7 +150,7 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 		require.NoError(tb, err)
 	})
 
-	encoding := cosmoscmd.MakeEncodingConfig(ModuleBasics)
+	encoding := MakeEncodingConfig()
 	app := New(
 		log.TestingLogger(),
 		db,
@@ -165,5 +164,5 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 	)
 	genesisState := NewDefaultGenesisState(encoding.Marshaler)
 
-	return app.(*App), genesisState, config, db
+	return app, genesisState, config, db
 }
