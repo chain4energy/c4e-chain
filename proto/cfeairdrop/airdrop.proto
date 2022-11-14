@@ -1,0 +1,41 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfeairdrop;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
+
+message CampaignRecord {
+  uint64 campaign_id   = 1;
+  string claimable = 2 [
+    (gogoproto.nullable)   = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  repeated uint64 completedMissions = 3;
+}
+
+message ClaimRecord {
+  string address  = 1;
+  repeated CampaignRecord campaign_records = 2;
+}
+
+message Campaign {
+  uint64 campaign_id   = 1;
+  string description = 2;
+}
+
+message InitialClaim {
+  bool   enabled   = 1;
+  uint64 campaign_id   = 2;
+  uint64 mission_id = 3;
+}
+
+message Mission {
+  uint64 campaign_id   = 1;
+  uint64 mission_id   = 2;
+  string description = 3;
+  string weight      = 4 [
+    (gogoproto.nullable)   = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
+  ];
+}
