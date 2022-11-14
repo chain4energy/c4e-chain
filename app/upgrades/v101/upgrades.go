@@ -1,12 +1,10 @@
 package v2
 
 import (
+	"fmt"
 	"github.com/chain4energy/c4e-chain/app/upgrades"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
 	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
@@ -21,16 +19,9 @@ func CreateUpgradeHandler(
 	//keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		icamodule, correctTypecast := mm.Modules[icatypes.ModuleName].(ica.AppModule)
-		if !correctTypecast {
-			panic("mm.Modules[icatypes.ModuleName] is not of type ica.AppModule")
-		}
-
-		// We set the app version to pre-upgrade because it will be incremented by one
-		// after the upgrade is applied by the handler.
-		//if err := keepers.UpgradeKeeper.SetAppVersion(ctx, preUpgradeAppVersion); err != nil {
-		//	return nil, err
-		//}
+		// set regen module consensus version
+		//fromVM[ecocredit.ModuleName] = 2
+		//fromVM[data.ModuleName] = 1
 
 		// save oldIcaVersion, so we can skip icahost.InitModule in longer term tests.
 		oldIcaVersion := fromVM[icatypes.ModuleName]
@@ -40,34 +31,30 @@ func CreateUpgradeHandler(
 		fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
 		// create ICS27 Controller submodule params, controller module not enabled.
-		controllerParams := icacontrollertypes.Params{}
+		controllerParams := icacontrollertypes.Params{ControllerEnabled: false}
 
-		// create ICS27 Host submodule params
+		// create ICS27 Host submodule params, host module not enabled.
 		hostParams := icahosttypes.Params{
-			HostEnabled: true,
-			AllowMessages: []string{
-				sdk.MsgTypeURL(&banktypes.MsgSend{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgBeginRedelegate{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgCreateValidator{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgEditValidator{}),
-				sdk.MsgTypeURL(&distrtypes.MsgWithdrawDelegatorReward{}),
-				sdk.MsgTypeURL(&distrtypes.MsgSetWithdrawAddress{}),
-				sdk.MsgTypeURL(&distrtypes.MsgWithdrawValidatorCommission{}),
-				sdk.MsgTypeURL(&distrtypes.MsgFundCommunityPool{}),
-			},
+			HostEnabled:   false,
+			AllowMessages: []string{},
 		}
 
-		// initialize ICS27 module
-		icamodule, correctTypecast = mm.Modules[icatypes.ModuleName].(ica.AppModule)
-		if !correctTypecast {
-			panic("mm.Modules[icatypes.ModuleName] is not of type ica.AppModule")
+		mod, found := mm.Modules[icatypes.ModuleName]
+		if !found {
+			panic(fmt.Sprintf("module %s is not in the module manager", icatypes.ModuleName))
+		}
+
+		icaMod, ok := mod.(ica.AppModule)
+		if !ok {
+			panic(fmt.Sprintf("expected module %s to be type %T, got %T", icatypes.ModuleName, ica.AppModule{}, mod))
 		}
 
 		// skip InitModule in upgrade tests after the upgrade has gone through.
 		if oldIcaVersion != fromVM[icatypes.ModuleName] {
-			icamodule.InitModule(ctx, controllerParams, hostParams)
+			icaMod.InitModule(ctx, controllerParams, hostParams)
 		}
+
+		// transfer module consensus version has been bumped to 2
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
