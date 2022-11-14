@@ -22,12 +22,20 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
 
-				ClaimRecordList: []types.ClaimRecord{
+				ClaimRecords: []types.ClaimRecord{
 					{
 						Address: "0",
 					},
 					{
 						Address: "1",
+					},
+				},
+				InitialClaims: []types.InitialClaim{
+					{
+						CampaignId: 0,
+					},
+					{
+						CampaignId: 1,
 					},
 				},
 				// this line is used by starport scaffolding # types/genesis/validField
@@ -37,12 +45,26 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "duplicated claimRecord",
 			genState: &types.GenesisState{
-				ClaimRecordList: []types.ClaimRecord{
+				ClaimRecords: []types.ClaimRecord{
 					{
 						Address: "0",
 					},
 					{
 						Address: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated initialClaim",
+			genState: &types.GenesisState{
+				InitialClaims: []types.InitialClaim{
+					{
+						CampaignId: 0,
+					},
+					{
+						CampaignId: 0,
 					},
 				},
 			},

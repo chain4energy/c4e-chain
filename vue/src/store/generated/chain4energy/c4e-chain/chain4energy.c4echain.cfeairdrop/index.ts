@@ -5,13 +5,13 @@ import { AirdropVestingAccount } from "./module/types/cfeairdrop/account"
 import { CampaignRecord } from "./module/types/cfeairdrop/airdrop"
 import { ClaimRecord } from "./module/types/cfeairdrop/airdrop"
 import { Campaign } from "./module/types/cfeairdrop/airdrop"
-import { InitialClaim } from "./module/types/cfeairdrop/airdrop"
+import { InitialClaimff } from "./module/types/cfeairdrop/airdrop"
 import { Mission } from "./module/types/cfeairdrop/airdrop"
-import { ClaimRecordXX } from "./module/types/cfeairdrop/claim_record_xx"
+import { InitialClaim } from "./module/types/cfeairdrop/initial_claim"
 import { Params } from "./module/types/cfeairdrop/params"
 
 
-export { ContinuousVestingPeriod, AirdropVestingAccount, CampaignRecord, ClaimRecord, Campaign, InitialClaim, Mission, ClaimRecordXX, Params };
+export { ContinuousVestingPeriod, AirdropVestingAccount, CampaignRecord, ClaimRecord, Campaign, InitialClaimff, Mission, InitialClaim, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -50,8 +50,10 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
-				ClaimRecordXX: {},
-				ClaimRecordXXAll: {},
+				ClaimRecord: {},
+				ClaimRecordAll: {},
+				InitialClaim: {},
+				InitialClaimAll: {},
 				
 				_Structure: {
 						ContinuousVestingPeriod: getStructure(ContinuousVestingPeriod.fromPartial({})),
@@ -59,9 +61,9 @@ const getDefaultState = () => {
 						CampaignRecord: getStructure(CampaignRecord.fromPartial({})),
 						ClaimRecord: getStructure(ClaimRecord.fromPartial({})),
 						Campaign: getStructure(Campaign.fromPartial({})),
-						InitialClaim: getStructure(InitialClaim.fromPartial({})),
+						InitialClaimff: getStructure(InitialClaimff.fromPartial({})),
 						Mission: getStructure(Mission.fromPartial({})),
-						ClaimRecordXX: getStructure(ClaimRecordXX.fromPartial({})),
+						InitialClaim: getStructure(InitialClaim.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						
 		},
@@ -97,17 +99,29 @@ export default {
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
 		},
-				getClaimRecordXX: (state) => (params = { params: {}}) => {
+				getClaimRecord: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.ClaimRecordXX[JSON.stringify(params)] ?? {}
+			return state.ClaimRecord[JSON.stringify(params)] ?? {}
 		},
-				getClaimRecordXXAll: (state) => (params = { params: {}}) => {
+				getClaimRecordAll: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.ClaimRecordXXAll[JSON.stringify(params)] ?? {}
+			return state.ClaimRecordAll[JSON.stringify(params)] ?? {}
+		},
+				getInitialClaim: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.InitialClaim[JSON.stringify(params)] ?? {}
+		},
+				getInitialClaimAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.InitialClaimAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -170,18 +184,18 @@ export default {
 		 		
 		
 		
-		async QueryClaimRecordXX({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryClaimRecord({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryClaimRecordXX( key.index)).data
+				let value= (await queryClient.queryClaimRecord( key.address)).data
 				
 					
-				commit('QUERY', { query: 'ClaimRecordXX', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryClaimRecordXX', payload: { options: { all }, params: {...key},query }})
-				return getters['getClaimRecordXX']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'ClaimRecord', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryClaimRecord', payload: { options: { all }, params: {...key},query }})
+				return getters['getClaimRecord']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryClaimRecordXX API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryClaimRecord API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
@@ -192,22 +206,70 @@ export default {
 		 		
 		
 		
-		async QueryClaimRecordXXAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryClaimRecordAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryClaimRecordXXAll(query)).data
+				let value= (await queryClient.queryClaimRecordAll(query)).data
 				
 					
 				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await queryClient.queryClaimRecordXXAll({...query, 'pagination.key':(<any> value).pagination.next_key})).data
+					let next_values=(await queryClient.queryClaimRecordAll({...query, 'pagination.key':(<any> value).pagination.next_key})).data
 					value = mergeResults(value, next_values);
 				}
-				commit('QUERY', { query: 'ClaimRecordXXAll', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryClaimRecordXXAll', payload: { options: { all }, params: {...key},query }})
-				return getters['getClaimRecordXXAll']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'ClaimRecordAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryClaimRecordAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getClaimRecordAll']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryClaimRecordXXAll API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryClaimRecordAll API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryInitialClaim({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryInitialClaim( key.campaignId)).data
+				
+					
+				commit('QUERY', { query: 'InitialClaim', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryInitialClaim', payload: { options: { all }, params: {...key},query }})
+				return getters['getInitialClaim']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryInitialClaim API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryInitialClaimAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryInitialClaimAll(query)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await queryClient.queryInitialClaimAll({...query, 'pagination.key':(<any> value).pagination.next_key})).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'InitialClaimAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryInitialClaimAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getInitialClaimAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryInitialClaimAll API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

@@ -20,7 +20,7 @@ export interface Campaign {
   description: string;
 }
 
-export interface InitialClaim {
+export interface InitialClaimff {
   enabled: boolean;
   campaign_id: number;
   mission_id: number;
@@ -316,14 +316,14 @@ export const Campaign = {
   },
 };
 
-const baseInitialClaim: object = {
+const baseInitialClaimff: object = {
   enabled: false,
   campaign_id: 0,
   mission_id: 0,
 };
 
-export const InitialClaim = {
-  encode(message: InitialClaim, writer: Writer = Writer.create()): Writer {
+export const InitialClaimff = {
+  encode(message: InitialClaimff, writer: Writer = Writer.create()): Writer {
     if (message.enabled === true) {
       writer.uint32(8).bool(message.enabled);
     }
@@ -336,10 +336,10 @@ export const InitialClaim = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): InitialClaim {
+  decode(input: Reader | Uint8Array, length?: number): InitialClaimff {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseInitialClaim } as InitialClaim;
+    const message = { ...baseInitialClaimff } as InitialClaimff;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -360,8 +360,8 @@ export const InitialClaim = {
     return message;
   },
 
-  fromJSON(object: any): InitialClaim {
-    const message = { ...baseInitialClaim } as InitialClaim;
+  fromJSON(object: any): InitialClaimff {
+    const message = { ...baseInitialClaimff } as InitialClaimff;
     if (object.enabled !== undefined && object.enabled !== null) {
       message.enabled = Boolean(object.enabled);
     } else {
@@ -380,7 +380,7 @@ export const InitialClaim = {
     return message;
   },
 
-  toJSON(message: InitialClaim): unknown {
+  toJSON(message: InitialClaimff): unknown {
     const obj: any = {};
     message.enabled !== undefined && (obj.enabled = message.enabled);
     message.campaign_id !== undefined &&
@@ -389,8 +389,8 @@ export const InitialClaim = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<InitialClaim>): InitialClaim {
-    const message = { ...baseInitialClaim } as InitialClaim;
+  fromPartial(object: DeepPartial<InitialClaimff>): InitialClaimff {
+    const message = { ...baseInitialClaimff } as InitialClaimff;
     if (object.enabled !== undefined && object.enabled !== null) {
       message.enabled = object.enabled;
     } else {

@@ -10,7 +10,8 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		ClaimRecordList: []ClaimRecord{},
+		ClaimRecords:  []ClaimRecord{},
+		InitialClaims: []InitialClaim{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -20,14 +21,24 @@ func DefaultGenesis() *GenesisState {
 // failure.
 func (gs GenesisState) Validate() error {
 	// Check for duplicated index in claimRecordXX
-	claimRecordXXIndexMap := make(map[string]struct{})
+	claimRecordIndexMap := make(map[string]struct{})
 
-	for _, elem := range gs.ClaimRecordList {
+	for _, elem := range gs.ClaimRecords {
 		index := string(ClaimRecordKey(elem.Address))
-		if _, ok := claimRecordXXIndexMap[index]; ok {
+		if _, ok := claimRecordIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for claimRecordXX")
 		}
-		claimRecordXXIndexMap[index] = struct{}{}
+		claimRecordIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in initialClaim
+	initialClaimIndexMap := make(map[uint64]struct{})
+
+	for _, elem := range gs.InitialClaims {
+		index := elem.CampaignId
+		if _, ok := initialClaimIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for initialClaim")
+		}
+		initialClaimIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

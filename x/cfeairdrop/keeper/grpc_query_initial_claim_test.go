@@ -18,34 +18,34 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func TestClaimRecordXXQuerySingle(t *testing.T) {
+func TestInitialClaimQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClaimRecord(keeper, ctx, 2)
+	msgs := createNInitialClaim(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryGetClaimRecordRequest
-		response *types.QueryGetClaimRecordResponse
+		request  *types.QueryGetInitialClaimRequest
+		response *types.QueryGetInitialClaimResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryGetClaimRecordRequest{
-				Address: msgs[0].Address,
+			request: &types.QueryGetInitialClaimRequest{
+				CampaignId: msgs[0].CampaignId,
 			},
-			response: &types.QueryGetClaimRecordResponse{ClaimRecord: msgs[0]},
+			response: &types.QueryGetInitialClaimResponse{InitialClaim: msgs[0]},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryGetClaimRecordRequest{
-				Address: msgs[1].Address,
+			request: &types.QueryGetInitialClaimRequest{
+				CampaignId: msgs[1].CampaignId,
 			},
-			response: &types.QueryGetClaimRecordResponse{ClaimRecord: msgs[1]},
+			response: &types.QueryGetInitialClaimResponse{InitialClaim: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryGetClaimRecordRequest{
-				Address: strconv.Itoa(100000),
+			request: &types.QueryGetInitialClaimRequest{
+				CampaignId: uint64(100000),
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},
@@ -55,7 +55,7 @@ func TestClaimRecordXXQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.ClaimRecord(wctx, tc.request)
+			response, err := keeper.InitialClaim(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -69,13 +69,13 @@ func TestClaimRecordXXQuerySingle(t *testing.T) {
 	}
 }
 
-func TestClaimRecordXXQueryPaginated(t *testing.T) {
+func TestInitialClaimQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClaimRecord(keeper, ctx, 5)
+	msgs := createNInitialClaim(keeper, ctx, 5)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllClaimRecordRequest {
-		return &types.QueryAllClaimRecordRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllInitialClaimRequest {
+		return &types.QueryAllInitialClaimRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -87,12 +87,12 @@ func TestClaimRecordXXQueryPaginated(t *testing.T) {
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.ClaimRecordAll(wctx, request(nil, uint64(i), uint64(step), false))
+			resp, err := keeper.InitialClaimAll(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClaimRecord), step)
+			require.LessOrEqual(t, len(resp.InitialClaim), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClaimRecord),
+				nullify.Fill(resp.InitialClaim),
 			)
 		}
 	})
@@ -100,27 +100,27 @@ func TestClaimRecordXXQueryPaginated(t *testing.T) {
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.ClaimRecordAll(wctx, request(next, 0, uint64(step), false))
+			resp, err := keeper.InitialClaimAll(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClaimRecord), step)
+			require.LessOrEqual(t, len(resp.InitialClaim), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClaimRecord),
+				nullify.Fill(resp.InitialClaim),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.ClaimRecordAll(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.InitialClaimAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.ClaimRecord),
+			nullify.Fill(resp.InitialClaim),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.ClaimRecordAll(wctx, nil)
+		_, err := keeper.InitialClaimAll(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }

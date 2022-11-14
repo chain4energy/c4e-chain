@@ -47,7 +47,7 @@ func (k Keeper) ClaimRecord(c context.Context, req *types.QueryGetClaimRecordReq
 
 	val, found := k.GetClaimRecord(
 		ctx,
-		req.Index,
+		req.Address,
 	)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")

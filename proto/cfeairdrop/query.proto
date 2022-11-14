@@ -26,6 +26,16 @@ service Query {
 		option (google.api.http).get = "/c4e/airdrop/claim_record";
 	}
 
+// Queries a InitialClaim by index.
+	rpc InitialClaim(QueryGetInitialClaimRequest) returns (QueryGetInitialClaimResponse) {
+		option (google.api.http).get = "/c4e/airdrop/initial_claim/{campaignId}";
+	}
+
+	// Queries a list of InitialClaim items.
+	rpc InitialClaimAll(QueryAllInitialClaimRequest) returns (QueryAllInitialClaimResponse) {
+		option (google.api.http).get = "/c4e/airdrop/initial_claim";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -53,6 +63,24 @@ message QueryAllClaimRecordRequest {
 
 message QueryAllClaimRecordResponse {
 	repeated ClaimRecord claimRecord = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetInitialClaimRequest {
+	  uint64 campaignId = 1;
+
+}
+
+message QueryGetInitialClaimResponse {
+	InitialClaim initialClaim = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllInitialClaimRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllInitialClaimResponse {
+	repeated InitialClaim initialClaim = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

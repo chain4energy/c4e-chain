@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { Params } from "../cfeairdrop/params";
-import { ClaimRecordXX } from "../cfeairdrop/claim_record_xx";
+import { ClaimRecord } from "../cfeairdrop/airdrop";
+import { InitialClaim } from "../cfeairdrop/initial_claim";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -8,8 +9,9 @@ export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 /** GenesisState defines the cfeairdrop module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
+  claimRecordList: ClaimRecord[];
   /** this line is used by starport scaffolding # genesis/proto/state */
-  claimRecordXXList: ClaimRecordXX[];
+  initialClaimList: InitialClaim[];
 }
 
 const baseGenesisState: object = {};
@@ -19,8 +21,11 @@ export const GenesisState = {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
-    for (const v of message.claimRecordXXList) {
-      ClaimRecordXX.encode(v!, writer.uint32(18).fork()).ldelim();
+    for (const v of message.claimRecordList) {
+      ClaimRecord.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    for (const v of message.initialClaimList) {
+      InitialClaim.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -29,7 +34,8 @@ export const GenesisState = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
-    message.claimRecordXXList = [];
+    message.claimRecordList = [];
+    message.initialClaimList = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -37,8 +43,13 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
-          message.claimRecordXXList.push(
-            ClaimRecordXX.decode(reader, reader.uint32())
+          message.claimRecordList.push(
+            ClaimRecord.decode(reader, reader.uint32())
+          );
+          break;
+        case 3:
+          message.initialClaimList.push(
+            InitialClaim.decode(reader, reader.uint32())
           );
           break;
         default:
@@ -51,18 +62,27 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.claimRecordXXList = [];
+    message.claimRecordList = [];
+    message.initialClaimList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
       message.params = undefined;
     }
     if (
-      object.claimRecordXXList !== undefined &&
-      object.claimRecordXXList !== null
+      object.claimRecordList !== undefined &&
+      object.claimRecordList !== null
     ) {
-      for (const e of object.claimRecordXXList) {
-        message.claimRecordXXList.push(ClaimRecordXX.fromJSON(e));
+      for (const e of object.claimRecordList) {
+        message.claimRecordList.push(ClaimRecord.fromJSON(e));
+      }
+    }
+    if (
+      object.initialClaimList !== undefined &&
+      object.initialClaimList !== null
+    ) {
+      for (const e of object.initialClaimList) {
+        message.initialClaimList.push(InitialClaim.fromJSON(e));
       }
     }
     return message;
@@ -72,30 +92,46 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    if (message.claimRecordXXList) {
-      obj.claimRecordXXList = message.claimRecordXXList.map((e) =>
-        e ? ClaimRecordXX.toJSON(e) : undefined
+    if (message.claimRecordList) {
+      obj.claimRecordList = message.claimRecordList.map((e) =>
+        e ? ClaimRecord.toJSON(e) : undefined
       );
     } else {
-      obj.claimRecordXXList = [];
+      obj.claimRecordList = [];
+    }
+    if (message.initialClaimList) {
+      obj.initialClaimList = message.initialClaimList.map((e) =>
+        e ? InitialClaim.toJSON(e) : undefined
+      );
+    } else {
+      obj.initialClaimList = [];
     }
     return obj;
   },
 
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.claimRecordXXList = [];
+    message.claimRecordList = [];
+    message.initialClaimList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
       message.params = undefined;
     }
     if (
-      object.claimRecordXXList !== undefined &&
-      object.claimRecordXXList !== null
+      object.claimRecordList !== undefined &&
+      object.claimRecordList !== null
     ) {
-      for (const e of object.claimRecordXXList) {
-        message.claimRecordXXList.push(ClaimRecordXX.fromPartial(e));
+      for (const e of object.claimRecordList) {
+        message.claimRecordList.push(ClaimRecord.fromPartial(e));
+      }
+    }
+    if (
+      object.initialClaimList !== undefined &&
+      object.initialClaimList !== null
+    ) {
+      for (const e of object.initialClaimList) {
+        message.initialClaimList.push(InitialClaim.fromPartial(e));
       }
     }
     return message;

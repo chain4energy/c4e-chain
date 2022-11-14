@@ -24,13 +24,13 @@ message Campaign {
   string description = 2;
 }
 
-message InitialClaimff {
+message InitialClaim {
   bool   enabled   = 1;
   uint64 campaign_id   = 2;
   uint64 mission_id = 3;
 }
 
-message Mission {
+message MissionFF {
   uint64 campaign_id   = 1;
   uint64 mission_id   = 2;
   string description = 3;

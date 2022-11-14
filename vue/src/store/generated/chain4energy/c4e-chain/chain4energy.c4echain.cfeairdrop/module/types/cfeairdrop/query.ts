@@ -1,11 +1,12 @@
 /* eslint-disable */
 import { Reader, Writer } from "protobufjs/minimal";
 import { Params } from "../cfeairdrop/params";
-import { ClaimRecordXX } from "../cfeairdrop/claim_record_xx";
+import { ClaimRecord } from "../cfeairdrop/airdrop";
 import {
   PageRequest,
   PageResponse,
 } from "../cosmos/base/query/v1beta1/pagination";
+import { InitialClaim } from "../cfeairdrop/initial_claim";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
@@ -18,20 +19,37 @@ export interface QueryParamsResponse {
   params: Params | undefined;
 }
 
-export interface QueryGetClaimRecordXXRequest {
-  index: string;
+export interface QueryGetClaimRecordRequest {
+  address: string;
 }
 
-export interface QueryGetClaimRecordXXResponse {
-  claimRecordXX: ClaimRecordXX | undefined;
+export interface QueryGetClaimRecordResponse {
+  claimRecord: ClaimRecord | undefined;
 }
 
-export interface QueryAllClaimRecordXXRequest {
+export interface QueryAllClaimRecordRequest {
   pagination: PageRequest | undefined;
 }
 
-export interface QueryAllClaimRecordXXResponse {
-  claimRecordXX: ClaimRecordXX[];
+export interface QueryAllClaimRecordResponse {
+  claimRecord: ClaimRecord[];
+  pagination: PageResponse | undefined;
+}
+
+export interface QueryGetInitialClaimRequest {
+  campaignId: string;
+}
+
+export interface QueryGetInitialClaimResponse {
+  initialClaim: InitialClaim | undefined;
+}
+
+export interface QueryAllInitialClaimRequest {
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryAllInitialClaimResponse {
+  initialClaim: InitialClaim[];
   pagination: PageResponse | undefined;
 }
 
@@ -132,15 +150,15 @@ export const QueryParamsResponse = {
   },
 };
 
-const baseQueryGetClaimRecordXXRequest: object = { index: "" };
+const baseQueryGetClaimRecordRequest: object = { address: "" };
 
-export const QueryGetClaimRecordXXRequest = {
+export const QueryGetClaimRecordRequest = {
   encode(
-    message: QueryGetClaimRecordXXRequest,
+    message: QueryGetClaimRecordRequest,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.index !== "") {
-      writer.uint32(10).string(message.index);
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
     }
     return writer;
   },
@@ -148,17 +166,17 @@ export const QueryGetClaimRecordXXRequest = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryGetClaimRecordXXRequest {
+  ): QueryGetClaimRecordRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryGetClaimRecordXXRequest,
-    } as QueryGetClaimRecordXXRequest;
+      ...baseQueryGetClaimRecordRequest,
+    } as QueryGetClaimRecordRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.index = reader.string();
+          message.address = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -168,49 +186,49 @@ export const QueryGetClaimRecordXXRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetClaimRecordXXRequest {
+  fromJSON(object: any): QueryGetClaimRecordRequest {
     const message = {
-      ...baseQueryGetClaimRecordXXRequest,
-    } as QueryGetClaimRecordXXRequest;
-    if (object.index !== undefined && object.index !== null) {
-      message.index = String(object.index);
+      ...baseQueryGetClaimRecordRequest,
+    } as QueryGetClaimRecordRequest;
+    if (object.address !== undefined && object.address !== null) {
+      message.address = String(object.address);
     } else {
-      message.index = "";
+      message.address = "";
     }
     return message;
   },
 
-  toJSON(message: QueryGetClaimRecordXXRequest): unknown {
+  toJSON(message: QueryGetClaimRecordRequest): unknown {
     const obj: any = {};
-    message.index !== undefined && (obj.index = message.index);
+    message.address !== undefined && (obj.address = message.address);
     return obj;
   },
 
   fromPartial(
-    object: DeepPartial<QueryGetClaimRecordXXRequest>
-  ): QueryGetClaimRecordXXRequest {
+    object: DeepPartial<QueryGetClaimRecordRequest>
+  ): QueryGetClaimRecordRequest {
     const message = {
-      ...baseQueryGetClaimRecordXXRequest,
-    } as QueryGetClaimRecordXXRequest;
-    if (object.index !== undefined && object.index !== null) {
-      message.index = object.index;
+      ...baseQueryGetClaimRecordRequest,
+    } as QueryGetClaimRecordRequest;
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
     } else {
-      message.index = "";
+      message.address = "";
     }
     return message;
   },
 };
 
-const baseQueryGetClaimRecordXXResponse: object = {};
+const baseQueryGetClaimRecordResponse: object = {};
 
-export const QueryGetClaimRecordXXResponse = {
+export const QueryGetClaimRecordResponse = {
   encode(
-    message: QueryGetClaimRecordXXResponse,
+    message: QueryGetClaimRecordResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.claimRecordXX !== undefined) {
-      ClaimRecordXX.encode(
-        message.claimRecordXX,
+    if (message.claimRecord !== undefined) {
+      ClaimRecord.encode(
+        message.claimRecord,
         writer.uint32(10).fork()
       ).ldelim();
     }
@@ -220,17 +238,17 @@ export const QueryGetClaimRecordXXResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryGetClaimRecordXXResponse {
+  ): QueryGetClaimRecordResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryGetClaimRecordXXResponse,
-    } as QueryGetClaimRecordXXResponse;
+      ...baseQueryGetClaimRecordResponse,
+    } as QueryGetClaimRecordResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.claimRecordXX = ClaimRecordXX.decode(reader, reader.uint32());
+          message.claimRecord = ClaimRecord.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -240,47 +258,47 @@ export const QueryGetClaimRecordXXResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetClaimRecordXXResponse {
+  fromJSON(object: any): QueryGetClaimRecordResponse {
     const message = {
-      ...baseQueryGetClaimRecordXXResponse,
-    } as QueryGetClaimRecordXXResponse;
-    if (object.claimRecordXX !== undefined && object.claimRecordXX !== null) {
-      message.claimRecordXX = ClaimRecordXX.fromJSON(object.claimRecordXX);
+      ...baseQueryGetClaimRecordResponse,
+    } as QueryGetClaimRecordResponse;
+    if (object.claimRecord !== undefined && object.claimRecord !== null) {
+      message.claimRecord = ClaimRecord.fromJSON(object.claimRecord);
     } else {
-      message.claimRecordXX = undefined;
+      message.claimRecord = undefined;
     }
     return message;
   },
 
-  toJSON(message: QueryGetClaimRecordXXResponse): unknown {
+  toJSON(message: QueryGetClaimRecordResponse): unknown {
     const obj: any = {};
-    message.claimRecordXX !== undefined &&
-      (obj.claimRecordXX = message.claimRecordXX
-        ? ClaimRecordXX.toJSON(message.claimRecordXX)
+    message.claimRecord !== undefined &&
+      (obj.claimRecord = message.claimRecord
+        ? ClaimRecord.toJSON(message.claimRecord)
         : undefined);
     return obj;
   },
 
   fromPartial(
-    object: DeepPartial<QueryGetClaimRecordXXResponse>
-  ): QueryGetClaimRecordXXResponse {
+    object: DeepPartial<QueryGetClaimRecordResponse>
+  ): QueryGetClaimRecordResponse {
     const message = {
-      ...baseQueryGetClaimRecordXXResponse,
-    } as QueryGetClaimRecordXXResponse;
-    if (object.claimRecordXX !== undefined && object.claimRecordXX !== null) {
-      message.claimRecordXX = ClaimRecordXX.fromPartial(object.claimRecordXX);
+      ...baseQueryGetClaimRecordResponse,
+    } as QueryGetClaimRecordResponse;
+    if (object.claimRecord !== undefined && object.claimRecord !== null) {
+      message.claimRecord = ClaimRecord.fromPartial(object.claimRecord);
     } else {
-      message.claimRecordXX = undefined;
+      message.claimRecord = undefined;
     }
     return message;
   },
 };
 
-const baseQueryAllClaimRecordXXRequest: object = {};
+const baseQueryAllClaimRecordRequest: object = {};
 
-export const QueryAllClaimRecordXXRequest = {
+export const QueryAllClaimRecordRequest = {
   encode(
-    message: QueryAllClaimRecordXXRequest,
+    message: QueryAllClaimRecordRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.pagination !== undefined) {
@@ -292,12 +310,12 @@ export const QueryAllClaimRecordXXRequest = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryAllClaimRecordXXRequest {
+  ): QueryAllClaimRecordRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryAllClaimRecordXXRequest,
-    } as QueryAllClaimRecordXXRequest;
+      ...baseQueryAllClaimRecordRequest,
+    } as QueryAllClaimRecordRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -312,10 +330,10 @@ export const QueryAllClaimRecordXXRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllClaimRecordXXRequest {
+  fromJSON(object: any): QueryAllClaimRecordRequest {
     const message = {
-      ...baseQueryAllClaimRecordXXRequest,
-    } as QueryAllClaimRecordXXRequest;
+      ...baseQueryAllClaimRecordRequest,
+    } as QueryAllClaimRecordRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromJSON(object.pagination);
     } else {
@@ -324,7 +342,7 @@ export const QueryAllClaimRecordXXRequest = {
     return message;
   },
 
-  toJSON(message: QueryAllClaimRecordXXRequest): unknown {
+  toJSON(message: QueryAllClaimRecordRequest): unknown {
     const obj: any = {};
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
@@ -334,11 +352,11 @@ export const QueryAllClaimRecordXXRequest = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryAllClaimRecordXXRequest>
-  ): QueryAllClaimRecordXXRequest {
+    object: DeepPartial<QueryAllClaimRecordRequest>
+  ): QueryAllClaimRecordRequest {
     const message = {
-      ...baseQueryAllClaimRecordXXRequest,
-    } as QueryAllClaimRecordXXRequest;
+      ...baseQueryAllClaimRecordRequest,
+    } as QueryAllClaimRecordRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromPartial(object.pagination);
     } else {
@@ -348,15 +366,15 @@ export const QueryAllClaimRecordXXRequest = {
   },
 };
 
-const baseQueryAllClaimRecordXXResponse: object = {};
+const baseQueryAllClaimRecordResponse: object = {};
 
-export const QueryAllClaimRecordXXResponse = {
+export const QueryAllClaimRecordResponse = {
   encode(
-    message: QueryAllClaimRecordXXResponse,
+    message: QueryAllClaimRecordResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    for (const v of message.claimRecordXX) {
-      ClaimRecordXX.encode(v!, writer.uint32(10).fork()).ldelim();
+    for (const v of message.claimRecord) {
+      ClaimRecord.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     if (message.pagination !== undefined) {
       PageResponse.encode(
@@ -370,19 +388,336 @@ export const QueryAllClaimRecordXXResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryAllClaimRecordXXResponse {
+  ): QueryAllClaimRecordResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryAllClaimRecordXXResponse,
-    } as QueryAllClaimRecordXXResponse;
-    message.claimRecordXX = [];
+      ...baseQueryAllClaimRecordResponse,
+    } as QueryAllClaimRecordResponse;
+    message.claimRecord = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.claimRecordXX.push(
-            ClaimRecordXX.decode(reader, reader.uint32())
+          message.claimRecord.push(ClaimRecord.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAllClaimRecordResponse {
+    const message = {
+      ...baseQueryAllClaimRecordResponse,
+    } as QueryAllClaimRecordResponse;
+    message.claimRecord = [];
+    if (object.claimRecord !== undefined && object.claimRecord !== null) {
+      for (const e of object.claimRecord) {
+        message.claimRecord.push(ClaimRecord.fromJSON(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryAllClaimRecordResponse): unknown {
+    const obj: any = {};
+    if (message.claimRecord) {
+      obj.claimRecord = message.claimRecord.map((e) =>
+        e ? ClaimRecord.toJSON(e) : undefined
+      );
+    } else {
+      obj.claimRecord = [];
+    }
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageResponse.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryAllClaimRecordResponse>
+  ): QueryAllClaimRecordResponse {
+    const message = {
+      ...baseQueryAllClaimRecordResponse,
+    } as QueryAllClaimRecordResponse;
+    message.claimRecord = [];
+    if (object.claimRecord !== undefined && object.claimRecord !== null) {
+      for (const e of object.claimRecord) {
+        message.claimRecord.push(ClaimRecord.fromPartial(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryGetInitialClaimRequest: object = { campaignId: "" };
+
+export const QueryGetInitialClaimRequest = {
+  encode(
+    message: QueryGetInitialClaimRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.campaignId !== "") {
+      writer.uint32(10).string(message.campaignId);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetInitialClaimRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetInitialClaimRequest,
+    } as QueryGetInitialClaimRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.campaignId = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetInitialClaimRequest {
+    const message = {
+      ...baseQueryGetInitialClaimRequest,
+    } as QueryGetInitialClaimRequest;
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = String(object.campaignId);
+    } else {
+      message.campaignId = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetInitialClaimRequest): unknown {
+    const obj: any = {};
+    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetInitialClaimRequest>
+  ): QueryGetInitialClaimRequest {
+    const message = {
+      ...baseQueryGetInitialClaimRequest,
+    } as QueryGetInitialClaimRequest;
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = object.campaignId;
+    } else {
+      message.campaignId = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryGetInitialClaimResponse: object = {};
+
+export const QueryGetInitialClaimResponse = {
+  encode(
+    message: QueryGetInitialClaimResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.initialClaim !== undefined) {
+      InitialClaim.encode(
+        message.initialClaim,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryGetInitialClaimResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryGetInitialClaimResponse,
+    } as QueryGetInitialClaimResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.initialClaim = InitialClaim.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetInitialClaimResponse {
+    const message = {
+      ...baseQueryGetInitialClaimResponse,
+    } as QueryGetInitialClaimResponse;
+    if (object.initialClaim !== undefined && object.initialClaim !== null) {
+      message.initialClaim = InitialClaim.fromJSON(object.initialClaim);
+    } else {
+      message.initialClaim = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetInitialClaimResponse): unknown {
+    const obj: any = {};
+    message.initialClaim !== undefined &&
+      (obj.initialClaim = message.initialClaim
+        ? InitialClaim.toJSON(message.initialClaim)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetInitialClaimResponse>
+  ): QueryGetInitialClaimResponse {
+    const message = {
+      ...baseQueryGetInitialClaimResponse,
+    } as QueryGetInitialClaimResponse;
+    if (object.initialClaim !== undefined && object.initialClaim !== null) {
+      message.initialClaim = InitialClaim.fromPartial(object.initialClaim);
+    } else {
+      message.initialClaim = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryAllInitialClaimRequest: object = {};
+
+export const QueryAllInitialClaimRequest = {
+  encode(
+    message: QueryAllInitialClaimRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryAllInitialClaimRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryAllInitialClaimRequest,
+    } as QueryAllInitialClaimRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAllInitialClaimRequest {
+    const message = {
+      ...baseQueryAllInitialClaimRequest,
+    } as QueryAllInitialClaimRequest;
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryAllInitialClaimRequest): unknown {
+    const obj: any = {};
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryAllInitialClaimRequest>
+  ): QueryAllInitialClaimRequest {
+    const message = {
+      ...baseQueryAllInitialClaimRequest,
+    } as QueryAllInitialClaimRequest;
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryAllInitialClaimResponse: object = {};
+
+export const QueryAllInitialClaimResponse = {
+  encode(
+    message: QueryAllInitialClaimResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    for (const v of message.initialClaim) {
+      InitialClaim.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(
+        message.pagination,
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryAllInitialClaimResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryAllInitialClaimResponse,
+    } as QueryAllInitialClaimResponse;
+    message.initialClaim = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.initialClaim.push(
+            InitialClaim.decode(reader, reader.uint32())
           );
           break;
         case 2:
@@ -396,14 +731,14 @@ export const QueryAllClaimRecordXXResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllClaimRecordXXResponse {
+  fromJSON(object: any): QueryAllInitialClaimResponse {
     const message = {
-      ...baseQueryAllClaimRecordXXResponse,
-    } as QueryAllClaimRecordXXResponse;
-    message.claimRecordXX = [];
-    if (object.claimRecordXX !== undefined && object.claimRecordXX !== null) {
-      for (const e of object.claimRecordXX) {
-        message.claimRecordXX.push(ClaimRecordXX.fromJSON(e));
+      ...baseQueryAllInitialClaimResponse,
+    } as QueryAllInitialClaimResponse;
+    message.initialClaim = [];
+    if (object.initialClaim !== undefined && object.initialClaim !== null) {
+      for (const e of object.initialClaim) {
+        message.initialClaim.push(InitialClaim.fromJSON(e));
       }
     }
     if (object.pagination !== undefined && object.pagination !== null) {
@@ -414,14 +749,14 @@ export const QueryAllClaimRecordXXResponse = {
     return message;
   },
 
-  toJSON(message: QueryAllClaimRecordXXResponse): unknown {
+  toJSON(message: QueryAllInitialClaimResponse): unknown {
     const obj: any = {};
-    if (message.claimRecordXX) {
-      obj.claimRecordXX = message.claimRecordXX.map((e) =>
-        e ? ClaimRecordXX.toJSON(e) : undefined
+    if (message.initialClaim) {
+      obj.initialClaim = message.initialClaim.map((e) =>
+        e ? InitialClaim.toJSON(e) : undefined
       );
     } else {
-      obj.claimRecordXX = [];
+      obj.initialClaim = [];
     }
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
@@ -431,15 +766,15 @@ export const QueryAllClaimRecordXXResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryAllClaimRecordXXResponse>
-  ): QueryAllClaimRecordXXResponse {
+    object: DeepPartial<QueryAllInitialClaimResponse>
+  ): QueryAllInitialClaimResponse {
     const message = {
-      ...baseQueryAllClaimRecordXXResponse,
-    } as QueryAllClaimRecordXXResponse;
-    message.claimRecordXX = [];
-    if (object.claimRecordXX !== undefined && object.claimRecordXX !== null) {
-      for (const e of object.claimRecordXX) {
-        message.claimRecordXX.push(ClaimRecordXX.fromPartial(e));
+      ...baseQueryAllInitialClaimResponse,
+    } as QueryAllInitialClaimResponse;
+    message.initialClaim = [];
+    if (object.initialClaim !== undefined && object.initialClaim !== null) {
+      for (const e of object.initialClaim) {
+        message.initialClaim.push(InitialClaim.fromPartial(e));
       }
     }
     if (object.pagination !== undefined && object.pagination !== null) {
@@ -455,14 +790,22 @@ export const QueryAllClaimRecordXXResponse = {
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
-  /** Queries a ClaimRecordXX by index. */
-  ClaimRecordXX(
-    request: QueryGetClaimRecordXXRequest
-  ): Promise<QueryGetClaimRecordXXResponse>;
-  /** Queries a list of ClaimRecordXX items. */
-  ClaimRecordXXAll(
-    request: QueryAllClaimRecordXXRequest
-  ): Promise<QueryAllClaimRecordXXResponse>;
+  /** Queries a ClaimRecord by index. */
+  ClaimRecord(
+    request: QueryGetClaimRecordRequest
+  ): Promise<QueryGetClaimRecordResponse>;
+  /** Queries a list of ClaimRecord items. */
+  ClaimRecordAll(
+    request: QueryAllClaimRecordRequest
+  ): Promise<QueryAllClaimRecordResponse>;
+  /** Queries a InitialClaim by index. */
+  InitialClaim(
+    request: QueryGetInitialClaimRequest
+  ): Promise<QueryGetInitialClaimResponse>;
+  /** Queries a list of InitialClaim items. */
+  InitialClaimAll(
+    request: QueryAllInitialClaimRequest
+  ): Promise<QueryAllInitialClaimResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -480,31 +823,59 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryParamsResponse.decode(new Reader(data)));
   }
 
-  ClaimRecordXX(
-    request: QueryGetClaimRecordXXRequest
-  ): Promise<QueryGetClaimRecordXXResponse> {
-    const data = QueryGetClaimRecordXXRequest.encode(request).finish();
+  ClaimRecord(
+    request: QueryGetClaimRecordRequest
+  ): Promise<QueryGetClaimRecordResponse> {
+    const data = QueryGetClaimRecordRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
-      "ClaimRecordXX",
+      "ClaimRecord",
       data
     );
     return promise.then((data) =>
-      QueryGetClaimRecordXXResponse.decode(new Reader(data))
+      QueryGetClaimRecordResponse.decode(new Reader(data))
     );
   }
 
-  ClaimRecordXXAll(
-    request: QueryAllClaimRecordXXRequest
-  ): Promise<QueryAllClaimRecordXXResponse> {
-    const data = QueryAllClaimRecordXXRequest.encode(request).finish();
+  ClaimRecordAll(
+    request: QueryAllClaimRecordRequest
+  ): Promise<QueryAllClaimRecordResponse> {
+    const data = QueryAllClaimRecordRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
-      "ClaimRecordXXAll",
+      "ClaimRecordAll",
       data
     );
     return promise.then((data) =>
-      QueryAllClaimRecordXXResponse.decode(new Reader(data))
+      QueryAllClaimRecordResponse.decode(new Reader(data))
+    );
+  }
+
+  InitialClaim(
+    request: QueryGetInitialClaimRequest
+  ): Promise<QueryGetInitialClaimResponse> {
+    const data = QueryGetInitialClaimRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeairdrop.Query",
+      "InitialClaim",
+      data
+    );
+    return promise.then((data) =>
+      QueryGetInitialClaimResponse.decode(new Reader(data))
+    );
+  }
+
+  InitialClaimAll(
+    request: QueryAllInitialClaimRequest
+  ): Promise<QueryAllInitialClaimResponse> {
+    const data = QueryAllInitialClaimRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeairdrop.Query",
+      "InitialClaimAll",
+      data
+    );
+    return promise.then((data) =>
+      QueryAllInitialClaimResponse.decode(new Reader(data))
     );
   }
 }

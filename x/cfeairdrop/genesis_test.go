@@ -14,12 +14,20 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
-		ClaimRecordList: []types.ClaimRecord{
+		ClaimRecords: []types.ClaimRecord{
 			{
 				Address: "0",
 			},
 			{
 				Address: "1",
+			},
+		},
+		InitialClaims: []types.InitialClaim{
+			{
+				CampaignId: 0,
+			},
+			{
+				CampaignId: 1,
 			},
 		},
 		// this line is used by starport scaffolding # genesis/test/state
@@ -33,6 +41,7 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
-	require.ElementsMatch(t, genesisState.ClaimRecordList, got.ClaimRecordList)
+	require.ElementsMatch(t, genesisState.ClaimRecords, got.ClaimRecords)
+	require.ElementsMatch(t, genesisState.InitialClaims, got.InitialClaims)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
