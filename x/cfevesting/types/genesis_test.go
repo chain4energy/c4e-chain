@@ -417,7 +417,7 @@ func invalidVestingTypesWrongLockupPeriodUnitTest() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "LockupPeriodUnit of veting type: "+vestingTypes[7].Name+" error: Unknown PeriodUnit: " + vestingTypes[7].LockupPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
+		errorMassage: "LockupPeriodUnit of veting type: " + vestingTypes[7].Name + " error: Unknown PeriodUnit: " + vestingTypes[7].LockupPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
 	}
 }
 
@@ -431,7 +431,7 @@ func invalidVestingTypesWrongVestingPeriodUnitTest() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "VestingPeriodUnit of veting type: "+vestingTypes[7].Name+" error: Unknown PeriodUnit: " + vestingTypes[7].VestingPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
+		errorMassage: "VestingPeriodUnit of veting type: " + vestingTypes[7].Name + " error: Unknown PeriodUnit: " + vestingTypes[7].VestingPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
 	}
 }
 
@@ -445,7 +445,7 @@ func invalidVestingTypesNegativeLockupPeriodTest() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "LockupPeriod of veting type: "+vestingTypes[7].Name+" less than 0",
+		errorMassage: "LockupPeriod of veting type: " + vestingTypes[7].Name + " less than 0",
 	}
 }
 
@@ -459,7 +459,7 @@ func invalidVestingTypesNegativeVestingPeriodTest() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "VestingPeriod of veting type: "+vestingTypes[7].Name+" less than 0",
+		errorMassage: "VestingPeriod of veting type: " + vestingTypes[7].Name + " less than 0",
 	}
 }
 
@@ -482,7 +482,7 @@ func getWrongUnitMessageCodeLineInfo() string {
 	unit := types.PeriodUnit("unit")
 	_, err := types.DurationFromUnits(unit, 0)
 	err = fmt.Errorf("%w", err)
-	startLen := len("Unknown PeriodUnit: "+unit+": invalid type")
+	startLen := len("Unknown PeriodUnit: " + unit + ": invalid type")
 	errLen := len(err.Error())
 	return err.Error()[startLen:errLen]
 }

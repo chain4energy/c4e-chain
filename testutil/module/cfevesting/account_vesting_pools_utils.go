@@ -117,25 +117,25 @@ func generateRandomVestingPool(accuntId int, vestingId int) types.VestingPool {
 	withdrawn := rgen.Intn(initiallyLocked)
 	sent := rgen.Intn(initiallyLocked - withdrawn)
 	return types.VestingPool{
-		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		LockStart:                 CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		LockEnd:                   CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		InitiallyLocked:                    sdk.NewInt(int64(initiallyLocked)),
-		Withdrawn:                 sdk.NewInt(int64(withdrawn)),
-		Sent:                      sdk.NewInt(int64(sent)),
+		Name:            "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
+		VestingType:     "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
+		LockStart:       CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
+		LockEnd:         CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
+		InitiallyLocked: sdk.NewInt(int64(initiallyLocked)),
+		Withdrawn:       sdk.NewInt(int64(withdrawn)),
+		Sent:            sdk.NewInt(int64(sent)),
 	}
 }
 
 func generate10BasedVestingPool(accuntId int, vestingId int) types.VestingPool {
 	return types.VestingPool{
-		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		LockStart:                 CreateTimeFromNumOfHours(1000),
-		LockEnd:                   CreateTimeFromNumOfHours(110000),
-		InitiallyLocked:                    sdk.NewInt(1000000),
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
+		Name:            "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
+		VestingType:     "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
+		LockStart:       CreateTimeFromNumOfHours(1000),
+		LockEnd:         CreateTimeFromNumOfHours(110000),
+		InitiallyLocked: sdk.NewInt(1000000),
+		Withdrawn:       sdk.ZeroInt(),
+		Sent:            sdk.ZeroInt(),
 	}
 }
 
@@ -170,7 +170,7 @@ func CreateDurationFromNumOfHours(numOfHours int64) time.Duration {
 	return time.Hour * time.Duration(numOfHours)
 }
 
-func GetVestingPoolByName(vps []*types.VestingPool, name string) (vp *types.VestingPool, found bool){
+func GetVestingPoolByName(vps []*types.VestingPool, name string) (vp *types.VestingPool, found bool) {
 	for _, vPool := range vps {
 		if vPool.Name == name {
 			return vPool, true

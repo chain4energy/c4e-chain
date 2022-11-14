@@ -84,7 +84,7 @@ func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
 	accountVestingPools := testHelper.C4eVestingUtils.SetupAccountVestingPools(accAddr.String(), 3, vested, sdk.ZeroInt())
 	testHelper.C4eVestingUtils.SetupVestingTypesForAccountsVestingPools()
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
-	
+
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested.MulRaw(3), withdrawable.MulRaw(3))
 	for _, vesting := range accountVestingPools.VestingPools {
 		vesting.Withdrawn = withdrawable

@@ -4,9 +4,8 @@ import (
 	"fmt"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetAllVestingTypes returns all VestingTypes
@@ -22,7 +21,7 @@ func (k Keeper) GetAllVestingTypes(ctx sdk.Context) (vestingTypes types.VestingT
 		list = append(list, &val)
 	}
 	vestingTypes.VestingTypes = list
-	return 
+	return
 }
 
 // get the vesting type by name

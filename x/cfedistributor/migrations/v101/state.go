@@ -66,11 +66,11 @@ func migrateSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec) error
 	return setNewSubDistributorStates(store, cdc, oldDistributorStates)
 }
 
-//MigrateStore performs in-place store migrations from v1.0.0 to v1.0.1. The
-//migration includes:
+// MigrateStore performs in-place store migrations from v1.0.0 to v1.0.1. The
+// migration includes:
 //
-//- SubDistributor State rename CoinStates to Remains.
-//- If burn is set to true state account must be nil
+// - SubDistributor State rename CoinStates to Remains.
+// - If burn is set to true state account must be nil
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	return migrateSubdistributorStates(store, cdc)

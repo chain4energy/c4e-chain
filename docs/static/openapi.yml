@@ -4,6 +4,42 @@ info:
   name: ''
   description: ''
 paths:
+  /chain4energy/c4e-chain/cfeairdrop/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: Chain4EnergyC4EchainCfeairdropParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of this module.
+                type: object
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /c4e/distributor/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -31789,296 +31825,16 @@ paths:
       tags:
         - Query
 definitions:
-  chain4energy.c4echain.cfedistributor.Account:
+  chain4energy.c4echain.cfeairdrop.Params:
     type: object
-    properties:
-      id:
-        type: string
-      type:
-        type: string
-  chain4energy.c4echain.cfedistributor.DestinationShare:
-    type: object
-    properties:
-      name:
-        type: string
-      share:
-        type: string
-      destination:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-  chain4energy.c4echain.cfedistributor.Destinations:
-    type: object
-    properties:
-      primary_share:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-      burn_share:
-        type: string
-      shares:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            share:
-              type: string
-            destination:
-              type: object
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-  chain4energy.c4echain.cfedistributor.Params:
-    type: object
-    properties:
-      sub_distributors:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            sources:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  type:
-                    type: string
-            destinations:
-              type: object
-              properties:
-                primary_share:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    type:
-                      type: string
-                burn_share:
-                  type: string
-                shares:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                      share:
-                        type: string
-                      destination:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                          type:
-                            type: string
     description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfedistributor.QueryParamsResponse:
+  chain4energy.c4echain.cfeairdrop.QueryParamsResponse:
     type: object
     properties:
       params:
         description: params holds all the parameters of this module.
         type: object
-        properties:
-          sub_distributors:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                sources:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      type:
-                        type: string
-                destinations:
-                  type: object
-                  properties:
-                    primary_share:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        type:
-                          type: string
-                    burn_share:
-                      type: string
-                    shares:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                          share:
-                            type: string
-                          destination:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              type:
-                                type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfedistributor.QueryStatesResponse:
-    type: object
-    properties:
-      states:
-        type: array
-        items:
-          type: object
-          properties:
-            account:
-              type: object
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-            burn:
-              type: boolean
-            remains:
-              type: array
-              items:
-                type: object
-                properties:
-                  denom:
-                    type: string
-                  amount:
-                    type: string
-                description: >-
-                  DecCoin defines a token with a denomination and a decimal
-                  amount.
-
-
-                  NOTE: The amount field is an Dec which implements the custom
-                  method
-
-                  signatures required by gogoproto.
-      coins_on_distributor_account:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cfedistributor.State:
-    type: object
-    properties:
-      account:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-      burn:
-        type: boolean
-      remains:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cfedistributor.SubDistributor:
-    type: object
-    properties:
-      name:
-        type: string
-      sources:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-            type:
-              type: string
-      destinations:
-        type: object
-        properties:
-          primary_share:
-            type: object
-            properties:
-              id:
-                type: string
-              type:
-                type: string
-          burn_share:
-            type: string
-          shares:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                share:
-                  type: string
-                destination:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    type:
-                      type: string
-  cosmos.base.v1beta1.Coin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      Coin defines a token with a denomination and an amount.
-
-      NOTE: The amount field is an Int which implements the custom method
-      signatures required by gogoproto.
-  cosmos.base.v1beta1.DecCoin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      DecCoin defines a token with a denomination and a decimal amount.
-
-      NOTE: The amount field is an Dec which implements the custom method
-      signatures required by gogoproto.
   google.protobuf.Any:
     type: object
     properties:
@@ -32402,6 +32158,296 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
+  chain4energy.c4echain.cfedistributor.Account:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+  chain4energy.c4echain.cfedistributor.DestinationShare:
+    type: object
+    properties:
+      name:
+        type: string
+      share:
+        type: string
+      destination:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+  chain4energy.c4echain.cfedistributor.Destinations:
+    type: object
+    properties:
+      primary_share:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+      burn_share:
+        type: string
+      shares:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            share:
+              type: string
+            destination:
+              type: object
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+  chain4energy.c4echain.cfedistributor.Params:
+    type: object
+    properties:
+      sub_distributors:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            sources:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  type:
+                    type: string
+            destinations:
+              type: object
+              properties:
+                primary_share:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+                burn_share:
+                  type: string
+                shares:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      share:
+                        type: string
+                      destination:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          type:
+                            type: string
+    description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfedistributor.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of this module.
+        type: object
+        properties:
+          sub_distributors:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                sources:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: string
+                destinations:
+                  type: object
+                  properties:
+                    primary_share:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                    burn_share:
+                      type: string
+                    shares:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          share:
+                            type: string
+                          destination:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              type:
+                                type: string
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cfedistributor.QueryStatesResponse:
+    type: object
+    properties:
+      states:
+        type: array
+        items:
+          type: object
+          properties:
+            account:
+              type: object
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+            burn:
+              type: boolean
+            remains:
+              type: array
+              items:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  DecCoin defines a token with a denomination and a decimal
+                  amount.
+
+
+                  NOTE: The amount field is an Dec which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+      coins_on_distributor_account:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
+  chain4energy.c4echain.cfedistributor.State:
+    type: object
+    properties:
+      account:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+      burn:
+        type: boolean
+      remains:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            DecCoin defines a token with a denomination and a decimal amount.
+
+            NOTE: The amount field is an Dec which implements the custom method
+            signatures required by gogoproto.
+  chain4energy.c4echain.cfedistributor.SubDistributor:
+    type: object
+    properties:
+      name:
+        type: string
+      sources:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+      destinations:
+        type: object
+        properties:
+          primary_share:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+          burn_share:
+            type: string
+          shares:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                share:
+                  type: string
+                destination:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+  cosmos.base.v1beta1.Coin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      Coin defines a token with a denomination and an amount.
+
+      NOTE: The amount field is an Int which implements the custom method
+      signatures required by gogoproto.
+  cosmos.base.v1beta1.DecCoin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      DecCoin defines a token with a denomination and a decimal amount.
+
+      NOTE: The amount field is an Dec which implements the custom method
+      signatures required by gogoproto.
   chain4energy.c4echain.cfeminter.Minter:
     type: object
     properties:

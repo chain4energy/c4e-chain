@@ -1,5 +1,6 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import Chain4EnergyC4EChainChain4EnergyC4EchainCfeairdrop from './chain4energy/c4e-chain/chain4energy.c4echain.cfeairdrop'
 import Chain4EnergyC4EChainChain4EnergyC4EchainCfedistributor from './chain4energy/c4e-chain/chain4energy.c4echain.cfedistributor'
 import Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter from './chain4energy/c4e-chain/chain4energy.c4echain.cfeminter'
 import Chain4EnergyC4EChainChain4EnergyC4EchainCfesignature from './chain4energy/c4e-chain/chain4energy.c4echain.cfesignature'
@@ -29,6 +30,7 @@ import TendermintSpnTendermintSpnMonitoringp from './tendermint/spn/tendermint.s
 
 
 export default { 
+  Chain4EnergyC4EChainChain4EnergyC4EchainCfeairdrop: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfeairdrop, 'chain4energy.c4echain.cfeairdrop'),
   Chain4EnergyC4EChainChain4EnergyC4EchainCfedistributor: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfedistributor, 'chain4energy.c4echain.cfedistributor'),
   Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfeminter, 'chain4energy.c4echain.cfeminter'),
   Chain4EnergyC4EChainChain4EnergyC4EchainCfesignature: load(Chain4EnergyC4EChainChain4EnergyC4EchainCfesignature, 'chain4energy.c4echain.cfesignature'),

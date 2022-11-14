@@ -50,7 +50,5 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		states = *newStates
 	}
 
-
-
 	k.SendCoinsFromStates(ctx, states)
 }

@@ -18,21 +18,19 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
-
-
 )
 
 type ExtendedC4eVestingKeeperUtils struct {
 	cfevestingtestutils.C4eVestingKeeperUtils
-	Cdc *codec.ProtoCodec
+	Cdc      *codec.ProtoCodec
 	StoreKey *storetypes.KVStoreKey
 }
 
 func NewExtendedC4eVestingKeeperUtils(t *testing.T, helperCfevestingKeeper *keeper.Keeper,
 	cdc *codec.ProtoCodec,
 	storeKey *storetypes.KVStoreKey) ExtendedC4eVestingKeeperUtils {
-	return ExtendedC4eVestingKeeperUtils{C4eVestingKeeperUtils: cfevestingtestutils.NewC4eVestingKeeperUtils(t, helperCfevestingKeeper), 
-		Cdc: cdc,
+	return ExtendedC4eVestingKeeperUtils{C4eVestingKeeperUtils: cfevestingtestutils.NewC4eVestingKeeperUtils(t, helperCfevestingKeeper),
+		Cdc:      cdc,
 		StoreKey: storeKey}
 }
 
@@ -107,7 +105,7 @@ func CfevestingKeeperTestUtil(t *testing.T) (*cfevestingtestutils.C4eVestingKeep
 func CfevestingKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eVestingKeeperUtils, *keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	k, ctx, cdc, key  := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, commontestutils.TestEnvTime, db, stateStore)
+	k, ctx, cdc, key := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, commontestutils.TestEnvTime, db, stateStore)
 	utils := NewExtendedC4eVestingKeeperUtils(t, k, cdc, key)
 	return &utils, k, ctx
 }

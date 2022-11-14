@@ -11,11 +11,11 @@ var _ sdk.Msg = &MsgSendToVestingAccount{}
 
 func NewMsgSendToVestingAccount(fromAddress string, toAddress string, vestingPoolName string, amount sdk.Int, restartVesting bool) *MsgSendToVestingAccount {
 	return &MsgSendToVestingAccount{
-		FromAddress:    fromAddress,
-		ToAddress:      toAddress,
-		VestingPoolName:      vestingPoolName,
-		Amount:         amount,
-		RestartVesting: restartVesting,
+		FromAddress:     fromAddress,
+		ToAddress:       toAddress,
+		VestingPoolName: vestingPoolName,
+		Amount:          amount,
+		RestartVesting:  restartVesting,
 	}
 }
 
