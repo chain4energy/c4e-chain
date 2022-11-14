@@ -1,9 +1,11 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
+import { ContinuousVestingPeriod } from "./module/types/cfeairdrop/account"
+import { AirdropVestingAccount } from "./module/types/cfeairdrop/account"
 import { Params } from "./module/types/cfeairdrop/params"
 
 
-export { Params };
+export { ContinuousVestingPeriod, AirdropVestingAccount, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -44,6 +46,8 @@ const getDefaultState = () => {
 				Params: {},
 				
 				_Structure: {
+						ContinuousVestingPeriod: getStructure(ContinuousVestingPeriod.fromPartial({})),
+						AirdropVestingAccount: getStructure(AirdropVestingAccount.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						
 		},
