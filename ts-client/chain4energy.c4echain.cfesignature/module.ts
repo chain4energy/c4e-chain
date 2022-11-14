@@ -7,18 +7,12 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
-import { MsgCreateAccount } from "./types/c4e-chain/cfesignature/tx";
 import { MsgStoreSignature } from "./types/c4e-chain/cfesignature/tx";
 import { MsgPublishReferencePayloadLink } from "./types/c4e-chain/cfesignature/tx";
+import { MsgCreateAccount } from "./types/c4e-chain/cfesignature/tx";
 
 
-export { MsgCreateAccount, MsgStoreSignature, MsgPublishReferencePayloadLink };
-
-type sendMsgCreateAccountParams = {
-  value: MsgCreateAccount,
-  fee?: StdFee,
-  memo?: string
-};
+export { MsgStoreSignature, MsgPublishReferencePayloadLink, MsgCreateAccount };
 
 type sendMsgStoreSignatureParams = {
   value: MsgStoreSignature,
@@ -32,10 +26,12 @@ type sendMsgPublishReferencePayloadLinkParams = {
   memo?: string
 };
 
-
-type msgCreateAccountParams = {
+type sendMsgCreateAccountParams = {
   value: MsgCreateAccount,
+  fee?: StdFee,
+  memo?: string
 };
+
 
 type msgStoreSignatureParams = {
   value: MsgStoreSignature,
@@ -43,6 +39,10 @@ type msgStoreSignatureParams = {
 
 type msgPublishReferencePayloadLinkParams = {
   value: MsgPublishReferencePayloadLink,
+};
+
+type msgCreateAccountParams = {
+  value: MsgCreateAccount,
 };
 
 
@@ -62,20 +62,6 @@ interface TxClientOptions {
 export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "http://localhost:26657", prefix: "cosmos" }) => {
 
   return {
-		
-		async sendMsgCreateAccount({ value, fee, memo }: sendMsgCreateAccountParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgCreateAccount: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgCreateAccount({ value: MsgCreateAccount.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgCreateAccount: Could not broadcast Tx: '+ e.message)
-			}
-		},
 		
 		async sendMsgStoreSignature({ value, fee, memo }: sendMsgStoreSignatureParams): Promise<DeliverTxResponse> {
 			if (!signer) {
@@ -105,14 +91,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		
-		msgCreateAccount({ value }: msgCreateAccountParams): EncodeObject {
-			try {
-				return { typeUrl: "/chain4energy.c4echain.cfesignature.MsgCreateAccount", value: MsgCreateAccount.fromPartial( value ) }  
+		async sendMsgCreateAccount({ value, fee, memo }: sendMsgCreateAccountParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgCreateAccount: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgCreateAccount({ value: MsgCreateAccount.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:MsgCreateAccount: Could not create message: ' + e.message)
+				throw new Error('TxClient:sendMsgCreateAccount: Could not broadcast Tx: '+ e.message)
 			}
 		},
+		
 		
 		msgStoreSignature({ value }: msgStoreSignatureParams): EncodeObject {
 			try {
@@ -127,6 +119,14 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return { typeUrl: "/chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLink", value: MsgPublishReferencePayloadLink.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgPublishReferencePayloadLink: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgCreateAccount({ value }: msgCreateAccountParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfesignature.MsgCreateAccount", value: MsgCreateAccount.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgCreateAccount: Could not create message: ' + e.message)
 			}
 		},
 		

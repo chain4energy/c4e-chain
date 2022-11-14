@@ -1,7 +1,7 @@
 package app
 
 import (
-	"fmt"	
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -113,9 +113,10 @@ import (
 	cfesignaturemodule "github.com/chain4energy/c4e-chain/x/cfesignature"
 	cfesignaturemodulekeeper "github.com/chain4energy/c4e-chain/x/cfesignature/keeper"
 	cfesignaturemoduletypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
-	cfevestingmodule "github.com/chain4energy/c4e-chain/x/cfevesting"
-	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
-	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+
+	// cfevestingmodule "github.com/chain4energy/c4e-chain/x/cfevesting"
+	// cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+	// cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
@@ -174,7 +175,7 @@ var (
 		transfer.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		cfevestingmodule.AppModuleBasic{},
+		// cfevestingmodule.AppModuleBasic{},
 		cfesignaturemodule.AppModuleBasic{},
 		cfemintermodule.AppModuleBasic{},
 		cfedistributormodule.AppModuleBasic{},
@@ -183,15 +184,15 @@ var (
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:       {authtypes.Burner},
-		distrtypes.ModuleName:            nil,
-		icatypes.ModuleName:              nil,
-		stakingtypes.BondedPoolName:      {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName:   {authtypes.Burner, authtypes.Staking},
-		govtypes.ModuleName:              {authtypes.Burner},
-		ibctransfertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		cfevestingmoduletypes.ModuleName: nil,
-		cfemintermoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		authtypes.FeeCollectorName:     {authtypes.Burner},
+		distrtypes.ModuleName:          nil,
+		icatypes.ModuleName:            nil,
+		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		govtypes.ModuleName:            {authtypes.Burner},
+		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		// cfevestingmoduletypes.ModuleName: nil,
+		cfemintermoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 		cfedistributormoduletypes.DistributorMainAccount:      {authtypes.Burner},
 		cfedistributormoduletypes.ValidatorsRewardsCollector:  nil,
@@ -258,7 +259,7 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
 
-	CfevestingKeeper cfevestingmodulekeeper.Keeper
+	// CfevestingKeeper cfevestingmodulekeeper.Keeper
 
 	CfesignatureKeeper   cfesignaturemodulekeeper.Keeper
 	CfeminterKeeper      cfemintermodulekeeper.Keeper
@@ -302,7 +303,7 @@ func New(
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
 		govtypes.StoreKey,
 		evidencetypes.StoreKey,
-		cfevestingmoduletypes.StoreKey,
+		// cfevestingmoduletypes.StoreKey,
 		cfesignaturemoduletypes.StoreKey,
 		cfemintermoduletypes.StoreKey,
 		cfedistributormoduletypes.StoreKey,
@@ -505,18 +506,18 @@ func New(
 		govConfig,
 	)
 
-	app.CfevestingKeeper = *cfevestingmodulekeeper.NewKeeper(
-		appCodec,
-		keys[cfevestingmoduletypes.StoreKey],
-		keys[cfevestingmoduletypes.MemStoreKey],
-		app.GetSubspace(cfevestingmoduletypes.ModuleName),
-		app.BankKeeper,
-		app.StakingKeeper,
-		app.AccountKeeper,
-		app.DistrKeeper,
-		app.GovKeeper,
-	)
-	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
+	// app.CfevestingKeeper = *cfevestingmodulekeeper.NewKeeper(
+	// 	appCodec,
+	// 	keys[cfevestingmoduletypes.StoreKey],
+	// 	keys[cfevestingmoduletypes.MemStoreKey],
+	// 	app.GetSubspace(cfevestingmoduletypes.ModuleName),
+	// 	app.BankKeeper,
+	// 	app.StakingKeeper,
+	// 	app.AccountKeeper,
+	// 	app.DistrKeeper,
+	// 	app.GovKeeper,
+	// )
+	// cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 
 	app.CfesignatureKeeper = *cfesignaturemodulekeeper.NewKeeper(
 		appCodec,
@@ -589,7 +590,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		icaModule,
-		cfevestingModule,
+		// cfevestingModule,
 		cfesignatureModule,
 		cfeminterModule,
 		cfedistributorModule,
@@ -617,7 +618,7 @@ func New(
 		authz.ModuleName,
 		banktypes.ModuleName,
 		govtypes.ModuleName,
-		cfevestingmoduletypes.ModuleName,
+		// cfevestingmoduletypes.ModuleName,
 		crisistypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
@@ -655,7 +656,7 @@ func New(
 		upgradetypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
-		cfevestingmoduletypes.ModuleName,
+		// cfevestingmoduletypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
 		cfedistributormoduletypes.ModuleName,
@@ -678,7 +679,7 @@ func New(
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
 		cfedistributormoduletypes.ModuleName,
-		cfevestingmoduletypes.ModuleName,
+		// cfevestingmoduletypes.ModuleName,
 		crisistypes.ModuleName,
 		ibchost.ModuleName,
 		genutiltypes.ModuleName,
@@ -723,7 +724,7 @@ func New(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		cfevestingModule,
+		// cfevestingModule,
 		cfesignatureModule, // - no simulations yey
 		cfeminterModule,
 		cfedistributorModule,
@@ -926,7 +927,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
-	paramsKeeper.Subspace(cfevestingmoduletypes.ModuleName)
+	// paramsKeeper.Subspace(cfevestingmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfesignaturemoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfemintermoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfedistributormoduletypes.ModuleName)
