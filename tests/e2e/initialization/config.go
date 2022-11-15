@@ -3,6 +3,7 @@ package initialization
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	"path/filepath"
 	"time"
 
@@ -17,15 +18,6 @@ import (
 	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/gogo/protobuf/proto"
 	tmjson "github.com/tendermint/tendermint/libs/json"
-
-	epochtypes "github.com/osmosis-labs/osmosis/v10/x/epochs/types"
-	gammtypes "github.com/osmosis-labs/osmosis/v10/x/gamm/types"
-	incentivestypes "github.com/osmosis-labs/osmosis/v10/x/incentives/types"
-	minttypes "github.com/osmosis-labs/osmosis/v10/x/mint/types"
-	poolitypes "github.com/osmosis-labs/osmosis/v10/x/pool-incentives/types"
-	txfeestypes "github.com/osmosis-labs/osmosis/v10/x/txfees/types"
-
-	"github.com/osmosis-labs/osmosis/v10/tests/e2e/util"
 )
 
 // NodeConfig is a confiuration for the node supplied from the test runner
@@ -44,7 +36,7 @@ type NodeConfig struct {
 
 const (
 	// common
-	OsmoDenom           = "uosmo"
+	C4eDenom            = "uc4e"
 	StakeDenom          = "stake"
 	OsmoIBCDenom        = "ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518"
 	StakeIBCDenom       = "ibc/C053D637CCA2A2BA030E2C5EE1B28A16F71CCB0E45E8BE52766DC1B241B7787"
@@ -53,27 +45,27 @@ const (
 	ValidatorWalletName = "val"
 	// chainA
 	ChainAID      = "osmo-test-a"
-	OsmoBalanceA  = 200000000000
+	C4eBalanceA   = 200000000000
 	StakeBalanceA = 110000000000
 	StakeAmountA  = 100000000000
 	// chainB
 	ChainBID      = "osmo-test-b"
-	OsmoBalanceB  = 500000000000
+	C4eBalanceB   = 500000000000
 	StakeBalanceB = 440000000000
 	StakeAmountB  = 400000000000
 )
 
 var (
 	StakeAmountIntA  = sdk.NewInt(StakeAmountA)
-	StakeAmountCoinA = sdk.NewCoin(OsmoDenom, StakeAmountIntA)
+	StakeAmountCoinA = sdk.NewCoin(C4eDenom, StakeAmountIntA)
 	StakeAmountIntB  = sdk.NewInt(StakeAmountB)
-	StakeAmountCoinB = sdk.NewCoin(OsmoDenom, StakeAmountIntB)
+	StakeAmountCoinB = sdk.NewCoin(C4eDenom, StakeAmountIntB)
 
-	InitBalanceStrA = fmt.Sprintf("%d%s,%d%s", OsmoBalanceA, OsmoDenom, StakeBalanceA, StakeDenom)
-	InitBalanceStrB = fmt.Sprintf("%d%s,%d%s", OsmoBalanceB, OsmoDenom, StakeBalanceB, StakeDenom)
-	OsmoToken       = sdk.NewInt64Coin(OsmoDenom, IbcSendAmount)  // 3,300uosmo
+	InitBalanceStrA = fmt.Sprintf("%d%s,%d%s", C4eBalanceA, C4eDenom, StakeBalanceA, StakeDenom)
+	InitBalanceStrB = fmt.Sprintf("%d%s,%d%s", C4eBalanceB, C4eDenom, StakeBalanceB, StakeDenom)
+	C4eToken        = sdk.NewInt64Coin(C4eDenom, IbcSendAmount)   // 3,300uosmo
 	StakeToken      = sdk.NewInt64Coin(StakeDenom, IbcSendAmount) // 3,300ustake
-	tenOsmo         = sdk.Coins{sdk.NewInt64Coin(OsmoDenom, 10_000_000)}
+	tenOsmo         = sdk.Coins{sdk.NewInt64Coin(C4eDenom, 10_000_000)}
 )
 
 func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHeight int) error {
@@ -214,36 +206,6 @@ func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight in
 		return err
 	}
 
-	err = updateModuleGenesis(appGenState, poolitypes.ModuleName, &poolitypes.GenesisState{}, updatePoolIncentiveGenesis)
-	if err != nil {
-		return err
-	}
-
-	err = updateModuleGenesis(appGenState, incentivestypes.ModuleName, &incentivestypes.GenesisState{}, updateIncentivesGenesis)
-	if err != nil {
-		return err
-	}
-
-	err = updateModuleGenesis(appGenState, minttypes.ModuleName, &minttypes.GenesisState{}, updateMintGenesis)
-	if err != nil {
-		return err
-	}
-
-	err = updateModuleGenesis(appGenState, txfeestypes.ModuleName, &txfeestypes.GenesisState{}, updateTxfeesGenesis)
-	if err != nil {
-		return err
-	}
-
-	err = updateModuleGenesis(appGenState, gammtypes.ModuleName, &gammtypes.GenesisState{}, updateGammGenesis)
-	if err != nil {
-		return err
-	}
-
-	err = updateModuleGenesis(appGenState, epochtypes.ModuleName, &epochtypes.GenesisState{}, updateEpochGenesis)
-	if err != nil {
-		return err
-	}
-
 	err = updateModuleGenesis(appGenState, crisistypes.ModuleName, &crisistypes.GenesisState{}, updateCrisisGenesis)
 	if err != nil {
 		return err
@@ -283,79 +245,31 @@ func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight in
 func updateBankGenesis(bankGenState *banktypes.GenesisState) {
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
-		Display:     OsmoDenom,
-		Base:        OsmoDenom,
-		Symbol:      OsmoDenom,
-		Name:        OsmoDenom,
+		Display:     C4eDenom,
+		Base:        C4eDenom,
+		Symbol:      C4eDenom,
+		Name:        C4eDenom,
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom:    OsmoDenom,
+				Denom:    C4eDenom,
 				Exponent: 0,
 			},
 		},
 	})
-	if len(bankGenState.SupplyOffsets) == 0 {
-		bankGenState.SupplyOffsets = []banktypes.GenesisSupplyOffset{}
-	}
 }
 
 func updateStakeGenesis(stakeGenState *staketypes.GenesisState) {
 	stakeGenState.Params = staketypes.Params{
-		BondDenom:         OsmoDenom,
+		BondDenom:         C4eDenom,
 		MaxValidators:     100,
 		MaxEntries:        7,
 		HistoricalEntries: 10000,
 		UnbondingTime:     240000000000,
-		MinCommissionRate: sdk.ZeroDec(),
-	}
-}
-
-func updatePoolIncentiveGenesis(pooliGenState *poolitypes.GenesisState) {
-	pooliGenState.LockableDurations = []time.Duration{
-		time.Second * 120,
-		time.Second * 180,
-		time.Second * 240,
-	}
-	pooliGenState.Params = poolitypes.Params{
-		MintedDenom: OsmoDenom,
-	}
-}
-
-func updateIncentivesGenesis(incentivesGenState *incentivestypes.GenesisState) {
-	incentivesGenState.LockableDurations = []time.Duration{
-		time.Second,
-		time.Second * 120,
-		time.Second * 180,
-		time.Second * 240,
-	}
-	incentivesGenState.Params = incentivestypes.Params{
-		DistrEpochIdentifier: "day",
-	}
-}
-
-func updateMintGenesis(mintGenState *minttypes.GenesisState) {
-	mintGenState.Params.MintDenom = OsmoDenom
-	mintGenState.Params.EpochIdentifier = "day"
-}
-
-func updateTxfeesGenesis(txfeesGenState *txfeestypes.GenesisState) {
-	txfeesGenState.Basedenom = OsmoDenom
-}
-
-func updateGammGenesis(gammGenState *gammtypes.GenesisState) {
-	gammGenState.Params.PoolCreationFee = tenOsmo
-}
-
-func updateEpochGenesis(epochGenState *epochtypes.GenesisState) {
-	epochGenState.Epochs = []epochtypes.EpochInfo{
-		epochtypes.NewGenesisEpochInfo("week", time.Hour*24*7),
-		// override day epochs which are in default integrations, to be 1min
-		epochtypes.NewGenesisEpochInfo("day", time.Second*60),
 	}
 }
 
 func updateCrisisGenesis(crisisGenState *crisistypes.GenesisState) {
-	crisisGenState.ConstantFee.Denom = OsmoDenom
+	crisisGenState.ConstantFee.Denom = C4eDenom
 }
 
 func updateGovGenesis(votingPeriod time.Duration) func(*govtypes.GenesisState) {

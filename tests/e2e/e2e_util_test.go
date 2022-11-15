@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	"io"
 	"net/http"
 	"regexp"
@@ -15,13 +17,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ory/dockertest/v3/docker"
-
-	superfluidtypes "github.com/osmosis-labs/osmosis/v10/x/superfluid/types"
-
-	"github.com/osmosis-labs/osmosis/v10/tests/e2e/initialization"
-	"github.com/osmosis-labs/osmosis/v10/tests/e2e/util"
 )
 
 func (s *IntegrationTestSuite) ExecTx(chainId string, validatorIndex int, command []string, success string) (bytes.Buffer, bytes.Buffer, error) {
@@ -129,7 +125,7 @@ func (s *IntegrationTestSuite) sendIBC(srcChain *chainConfig, dstChain *chainCon
 			if ibcCoin.Len() == 1 {
 				tokenPre := balancesBPre.AmountOfNoDenomValidation(ibcCoin[0].Denom)
 				tokenPost := balancesBPost.AmountOfNoDenomValidation(ibcCoin[0].Denom)
-				resPre := initialization.OsmoToken.Amount
+				resPre := initialization.C4eToken.Amount
 				resPost := tokenPost.Sub(tokenPre)
 				return resPost.Uint64() == resPre.Uint64()
 			} else {
@@ -301,25 +297,6 @@ func (s *IntegrationTestSuite) extractValidatorOperatorAddresses(config *chainCo
 		operAddr := fmt.Sprintf("%s\n", re.FindString(errBuf.String()))
 		config.validators[i].operatorAddress = strings.TrimSuffix(operAddr, "\n")
 	}
-}
-
-func (s *IntegrationTestSuite) queryIntermediaryAccount(c *chainConfig, endpoint string, denom string, valAddr string) (int, error) {
-	intAccount := superfluidtypes.GetSuperfluidIntermediaryAccountAddr(denom, valAddr)
-	path := fmt.Sprintf(
-		"%s/cosmos/staking/v1beta1/validators/%s/delegations/%s",
-		endpoint, valAddr, intAccount,
-	)
-	bz, err := s.ExecQueryRPC(path)
-	s.Require().NoError(err)
-
-	var stakingResp stakingtypes.QueryDelegationResponse
-	err = util.Cdc.UnmarshalJSON(bz, &stakingResp)
-	s.Require().NoError(err)
-
-	intAccBalance := stakingResp.DelegationResponse.Balance.Amount.String()
-	intAccountBalance, err := strconv.Atoi(intAccBalance)
-	s.Require().NoError(err)
-	return intAccountBalance, err
 }
 
 func (s *IntegrationTestSuite) createWallet(c *chainConfig, index int, walletName string) string {

@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	dockerconfig "github.com/chain4energy/c4e-chain/tests/e2e/docker"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v3"
+	"github.com/ory/dockertest/v3/docker"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -17,7 +19,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ory/dockertest/v3/docker"
 	"github.com/stretchr/testify/suite"
 
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
@@ -186,7 +187,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.configureChain(initialization.ChainBID, validatorConfigsChainB, map[int]struct{}{})
 
 	for i, chainConfig := range s.chainConfigs {
-		s.runValidators(chainConfig, s.dockerImages.OsmosisRepository, s.dockerImages.OsmosisTag, i*10)
+		s.runValidators(chainConfig, s.dockerImages.C4eRepository, s.dockerImages.C4eTag, i*10)
 		s.extractValidatorOperatorAddresses(chainConfig)
 	}
 
@@ -579,8 +580,8 @@ func (s *IntegrationTestSuite) upgradeContainers(chainConfig *chainConfig, propH
 
 		runOpts := &dockertest.RunOptions{
 			Name:       val.validator.Name,
-			Repository: dockerconfig.LocalOsmoRepository,
-			Tag:        dockerconfig.LocalOsmoTag,
+			Repository: dockerconfig.LocalC4eRepository,
+			Tag:        dockerconfig.LocalC4eTag,
 			NetworkID:  s.dkrNet.Network.ID,
 			User:       "root:root",
 			Mounts: []string{
@@ -620,8 +621,8 @@ func (s *IntegrationTestSuite) createPreUpgradeState() {
 	chainA := s.chainConfigs[0]
 	chainB := s.chainConfigs[1]
 
-	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.OsmoToken)
-	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.OsmoToken)
+	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.C4eToken)
+	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.C4eToken)
 	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.StakeToken)
 	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.StakeToken)
 	s.createPool(chainA, "pool1A.json", initialization.ValidatorWalletName)
@@ -632,8 +633,8 @@ func (s *IntegrationTestSuite) runPostUpgradeTests() {
 	chainA := s.chainConfigs[0]
 	chainB := s.chainConfigs[1]
 
-	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.OsmoToken)
-	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.OsmoToken)
+	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.C4eToken)
+	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.C4eToken)
 	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.StakeToken)
 	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.StakeToken)
 	s.createPool(chainA, "pool2A.json", initialization.ValidatorWalletName)

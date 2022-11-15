@@ -6,8 +6,8 @@ type ImageConfig struct {
 	InitRepository string
 	InitTag        string
 
-	OsmosisRepository string
-	OsmosisTag        string
+	C4eRepository string
+	C4eTag        string
 
 	RelayerRepository string
 	RelayerTag        string
@@ -17,8 +17,8 @@ const (
 	// Local osmosis repo/version.
 	// It is used when skipping upgrade by setting OSMOSIS_E2E_SKIP_UPGRADE to true).
 	// This image should be pre-built with `make docker-build-debug` either in CI or locally.
-	LocalOsmoRepository = "osmosis"
-	LocalOsmoTag        = "debug"
+	LocalC4eRepository = "osmosis"
+	LocalC4eTag        = "debug"
 	// Local osmosis repo/version for osmosis initialization.
 	// It is used when skipping upgrade by setting OSMOSIS_E2E_SKIP_UPGRADE to true).
 	// This image should be pre-built with `make docker-build-e2e-chain-init` either in CI or locally.
@@ -27,8 +27,8 @@ const (
 	// Pre-upgrade osmosis repo/tag to pull.
 	// It should be uploaded to Docker Hub. OSMOSIS_E2E_SKIP_UPGRADE should be unset
 	// for this functionality to be used.
-	previousVersionOsmoRepository = "osmolabs/osmosis-dev"
-	previousVersionOsmoTag        = "v8.0.0-2-debug"
+	previousVersionC4eRepository = "osmolabs/osmosis-dev"
+	previousVersionC4eTag        = "v8.0.0-2-debug"
 	// Pre-upgrade repo/tag for osmosis initialization (this should be one version below upgradeVersion)
 	previousVersionInitRepository = "osmolabs/osmosis-init"
 	previousVersionInitTag        = "v8.0.0-4-osmo"
@@ -50,14 +50,14 @@ func NewImageConfig(isUpgrade bool) *ImageConfig {
 		config.InitRepository = previousVersionInitRepository
 		config.InitTag = previousVersionInitTag
 
-		config.OsmosisRepository = previousVersionOsmoRepository
-		config.OsmosisTag = previousVersionOsmoTag
+		config.C4eRepository = previousVersionC4eRepository
+		config.C4eTag = previousVersionC4eTag
 	} else {
 		config.InitRepository = localInitRepository
 		config.InitTag = localInitTag
 
-		config.OsmosisRepository = LocalOsmoRepository
-		config.OsmosisTag = LocalOsmoTag
+		config.C4eRepository = LocalC4eRepository
+		config.C4eTag = LocalC4eTag
 	}
 
 	return config
