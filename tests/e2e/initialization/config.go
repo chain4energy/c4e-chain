@@ -61,8 +61,8 @@ var (
 	StakeAmountIntB  = sdk.NewInt(StakeAmountB)
 	StakeAmountCoinB = sdk.NewCoin(C4eDenom, StakeAmountIntB)
 
-	InitBalanceStrA = fmt.Sprintf("%d%s,%d%s", C4eBalanceA, C4eDenom, StakeBalanceA, StakeDenom)
-	InitBalanceStrB = fmt.Sprintf("%d%s,%d%s", C4eBalanceB, C4eDenom, StakeBalanceB, StakeDenom)
+	InitBalanceStrA = fmt.Sprintf("%d%s", C4eBalanceA, C4eDenom)
+	InitBalanceStrB = fmt.Sprintf("%d%s", C4eBalanceB, C4eDenom)
 	C4eToken        = sdk.NewInt64Coin(C4eDenom, IbcSendAmount)   // 3,300uosmo
 	StakeToken      = sdk.NewInt64Coin(StakeDenom, IbcSendAmount) // 3,300ustake
 	tenC4e          = sdk.Coins{sdk.NewInt64Coin(C4eDenom, 10_000_000)}
