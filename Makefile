@@ -100,3 +100,23 @@ open-cpu-profiler-result:
 
 open-memory-profiler-result:
 	@go tool pprof mem.out
+
+#E2E
+PACKAGES_E2E=$(shell go list ./... | grep '/e2e')
+BUILDDIR ?= $(CURDIR)/build
+
+test-e2e:
+	@VERSION=$(VERSION) go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
+
+test-e2e-skip-upgrade:
+	@VERSION=$(VERSION) OSMOSIS_E2E_SKIP_UPGRADE=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
+
+build-e2e-script:
+	mkdir -p $(BUILDDIR)
+	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./tests/e2e/initialization/$(E2E_SCRIPT_NAME)
+
+docker-build-e2e-init-chain:
+	@docker build -t c4e-e2e-chain-init:debug --build-arg E2E_SCRIPT_NAME=chain -f tests/e2e/initialization/init.Dockerfile .
+
+docker-build-e2e-init-node:
+	@docker build -t c4e-e2e-init-node:debug --build-arg E2E_SCRIPT_NAME=node -f tests/e2e/initialization/init.Dockerfile .

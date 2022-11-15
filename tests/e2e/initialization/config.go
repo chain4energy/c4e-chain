@@ -37,19 +37,19 @@ type NodeConfig struct {
 const (
 	// common
 	C4eDenom            = "uc4e"
-	StakeDenom          = "stake"
+	StakeDenom          = "uc4e"
 	OsmoIBCDenom        = "ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518"
 	StakeIBCDenom       = "ibc/C053D637CCA2A2BA030E2C5EE1B28A16F71CCB0E45E8BE52766DC1B241B7787"
 	MinGasPrice         = "0.000"
 	IbcSendAmount       = 3300000000
 	ValidatorWalletName = "val"
 	// chainA
-	ChainAID      = "osmo-test-a"
+	ChainAID      = "c4e-test-a"
 	C4eBalanceA   = 200000000000
 	StakeBalanceA = 110000000000
 	StakeAmountA  = 100000000000
 	// chainB
-	ChainBID      = "osmo-test-b"
+	ChainBID      = "c4e-test-b"
 	C4eBalanceB   = 500000000000
 	StakeBalanceB = 440000000000
 	StakeAmountB  = 400000000000
@@ -65,7 +65,7 @@ var (
 	InitBalanceStrB = fmt.Sprintf("%d%s,%d%s", C4eBalanceB, C4eDenom, StakeBalanceB, StakeDenom)
 	C4eToken        = sdk.NewInt64Coin(C4eDenom, IbcSendAmount)   // 3,300uosmo
 	StakeToken      = sdk.NewInt64Coin(StakeDenom, IbcSendAmount) // 3,300ustake
-	tenOsmo         = sdk.Coins{sdk.NewInt64Coin(C4eDenom, 10_000_000)}
+	tenC4e          = sdk.Coins{sdk.NewInt64Coin(C4eDenom, 10_000_000)}
 )
 
 func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHeight int) error {
@@ -277,7 +277,7 @@ func updateGovGenesis(votingPeriod time.Duration) func(*govtypes.GenesisState) {
 		govGenState.VotingParams = govtypes.VotingParams{
 			VotingPeriod: votingPeriod,
 		}
-		govGenState.DepositParams.MinDeposit = tenOsmo
+		govGenState.DepositParams.MinDeposit = tenC4e
 	}
 }
 

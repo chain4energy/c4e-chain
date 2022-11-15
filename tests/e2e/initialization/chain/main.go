@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"os"
 	"time"
-
-	"github.com/osmosis-labs/osmosis/v10/tests/e2e/initialization"
 )
 
 func main() {

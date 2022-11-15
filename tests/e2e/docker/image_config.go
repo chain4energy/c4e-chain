@@ -17,26 +17,36 @@ const (
 	// Local osmosis repo/version.
 	// It is used when skipping upgrade by setting OSMOSIS_E2E_SKIP_UPGRADE to true).
 	// This image should be pre-built with `make docker-build-debug` either in CI or locally.
-	LocalC4eRepository = "osmosis"
+	LocalC4eRepository = "c4e-repo"
 	LocalC4eTag        = "debug"
 	// Local osmosis repo/version for osmosis initialization.
 	// It is used when skipping upgrade by setting OSMOSIS_E2E_SKIP_UPGRADE to true).
 	// This image should be pre-built with `make docker-build-e2e-chain-init` either in CI or locally.
-	localInitRepository = "osmosis-e2e-chain-init"
+	localInitRepository = "c4e-e2e-chain-init"
 	localInitTag        = "debug"
 	// Pre-upgrade osmosis repo/tag to pull.
 	// It should be uploaded to Docker Hub. OSMOSIS_E2E_SKIP_UPGRADE should be unset
 	// for this functionality to be used.
-	previousVersionC4eRepository = "osmolabs/osmosis-dev"
-	previousVersionC4eTag        = "v8.0.0-2-debug"
+	previousVersionC4eRepository = "chain4energy/c4e-dev"
+	previousVersionC4eTag        = "v1.0.0"
 	// Pre-upgrade repo/tag for osmosis initialization (this should be one version below upgradeVersion)
-	previousVersionInitRepository = "osmolabs/osmosis-init"
-	previousVersionInitTag        = "v8.0.0-4-osmo"
+	previousVersionInitRepository = "chain4energy/c4e-init"
+	previousVersionInitTag        = "v1.0.0"
 	// Hermes repo/version for relayer
 	relayerRepository = "osmolabs/hermes"
 	relayerTag        = "0.13.0"
 )
 
+//LocalOsmoRepository = "osmosis"
+//LocalOsmoTag        = "debug"
+//localInitRepository = "osmosis-e2e-chain-init"
+//localInitTag        = "debug"
+//previousVersionOsmoRepository = "osmolabs/osmosis-dev"
+//previousVersionOsmoTag        = "v8.0.0-2-debug"
+//previousVersionInitRepository = "osmolabs/osmosis-init"
+//previousVersionInitTag        = "v8.0.0-4-osmo"
+//relayerRepository = "osmolabs/hermes"
+//relayerTag        = "0.13.0"
 // Returns ImageConfig needed for running e2e test.
 // If isUpgrade is true, returns images for running the upgrade
 // Otherwise, returns images for running non-upgrade e2e tests.
