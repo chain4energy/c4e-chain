@@ -88,7 +88,7 @@ go.sum: go.mod
 		GO111MODULE=on go mod verify
 
 test:
-	@go test -coverprofile=coverage.out -mod=readonly $(PACKAGES)
+	@go test -coverprofile=coverage.out -mod=readonly -tags='ledger test_ledger_mock norace' $(PACKAGES)
 
 release:
 	@echo "--> Prepare release linux amd64"

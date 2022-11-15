@@ -156,7 +156,7 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up e2e integration test suite...")
-
+	os.Setenv("OSMOSIS_E2E_SKIP_UPGRADE", "True")
 	s.chainConfigs = make([]*chainConfig, 0, 2)
 
 	// The e2e test flow is as follows:

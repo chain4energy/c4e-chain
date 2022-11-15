@@ -32,5 +32,5 @@ WORKDIR $HOME
 # it is impossible to add CMD arguments when running a container in the shell mode.
 # As a workaround, we create the entrypoint.sh script to bypass these issues.
 RUN echo "#!/bin/bash\n${E2E_SCRIPT_NAME} \"\$@\"" >> entrypoint.sh && chmod +x entrypoint.sh
-CMD ["cat", "./entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
 
