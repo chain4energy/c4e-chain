@@ -2,15 +2,6 @@ PACKAGES=$(shell go list ./... | grep -v '/simulation')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
- 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=c4e \
-	-X github.com/cosmos/cosmos-sdk/version.AppName=c4ed \
-	-X github.com/cosmos/cosmos-sdk/version.ServerName=c4ed \
-	-X github.com/cosmos/cosmos-sdk/version.ClientName=c4ecli \
-	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
-	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) 
-
-#BUILD_FLAGS := -ldflags '$(ldflags)'
 
 build_tags = netgo
 ifeq ($(LEDGER_ENABLED),true)
@@ -36,7 +27,46 @@ ifeq ($(LEDGER_ENABLED),true)
   endif
 endif
 
+ifeq (cleveldb,$(findstring cleveldb,$(OSMOSIS_BUILD_OPTIONS)))
+  build_tags += gcc
+else ifeq (rocksdb,$(findstring rocksdb,$(OSMOSIS_BUILD_OPTIONS)))
+  build_tags += gcc
+endif
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
+
+whitespace :=
+whitespace += $(whitespace)
+comma := ,
+build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
+
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=c4e \
+	-X github.com/cosmos/cosmos-sdk/version.AppName=c4ed \
+	-X github.com/cosmos/cosmos-sdk/version.ServerName=c4ed \
+	-X github.com/cosmos/cosmos-sdk/version.ClientName=c4ecli \
+	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
+	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
+	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
+
+ifeq (cleveldb,$(findstring cleveldb,$(OSMOSIS_BUILD_OPTIONS)))
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
+else ifeq (rocksdb,$(findstring rocksdb,$(OSMOSIS_BUILD_OPTIONS)))
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb
+endif
+ifeq (,$(findstring nostrip,$(OSMOSIS_BUILD_OPTIONS)))
+  ldflags += -w -s
+endif
+ifeq ($(LINK_STATICALLY),true)
+	ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
+endif
+ldflags += $(LDFLAGS)
+ldflags := $(strip $(ldflags))
+
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+# check for nostrip option
+ifeq (,$(findstring nostrip,$(OSMOSIS_BUILD_OPTIONS)))
+  BUILD_FLAGS += -trimpath
+endif
 
 release = GOOS=$(1) GOARCH=$(2) go build -o ./build/c4ed -mod=readonly $(BUILD_FLAGS)  ./cmd/c4ed
 tar = cd build && tar -cvzf c4ed_$(tag)_$(1)_$(2).tar.gz c4ed && rm c4ed
@@ -106,17 +136,17 @@ PACKAGES_E2E=$(shell go list ./... | grep '/e2e')
 BUILDDIR ?= $(CURDIR)/build
 
 test-e2e:
-	@VERSION=$(VERSION) go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
+	@VERSION=$(VERSION) go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -v
 
 test-e2e-skip-upgrade:
-	@VERSION=$(VERSION) OSMOSIS_E2E_SKIP_UPGRADE=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
+	@VERSION=$(VERSION) OSMOSIS_E2E_SKIP_UPGRADE=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -v
 
 build-e2e-script:
 	mkdir -p $(BUILDDIR)
 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./tests/e2e/initialization/$(E2E_SCRIPT_NAME)
 
 docker-build-debug:
-	@docker build -t osmosis:debug --build-arg BASE_IMG_TAG=debug -f Dockerfile .
+	@docker build -t chain4energy:debug --build-arg BASE_IMG_TAG=debug -f Dockerfile .
 
 docker-build-e2e-init-chain:
-	@docker build -t osmosis-e2e-chain-init:debug --build-arg E2E_SCRIPT_NAME=chain -f tests/e2e/initialization/init.Dockerfile .
+	@docker build -t chain4energy-e2e-chain-init:debug --build-arg E2E_SCRIPT_NAME=chain -f tests/e2e/initialization/init.Dockerfile .

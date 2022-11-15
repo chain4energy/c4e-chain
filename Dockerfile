@@ -33,7 +33,7 @@ RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 
 FROM gcr.io/distroless/base-debian11:${BASE_IMG_TAG}
 
-COPY --from=build /osmosis/build/osmosisd /bin/osmosisd
+COPY --from=build /osmosis/build/c4ed /bin/c4ed
 
 ENV HOME /osmosis
 WORKDIR $HOME
@@ -42,5 +42,5 @@ EXPOSE 26656
 EXPOSE 26657
 EXPOSE 1317
 
-ENTRYPOINT ["osmosisd"]
+ENTRYPOINT ["c4ed"]
 CMD [ "start" ]
