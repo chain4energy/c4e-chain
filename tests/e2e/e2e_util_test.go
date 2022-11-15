@@ -125,7 +125,7 @@ func (s *IntegrationTestSuite) sendIBC(srcChain *chainConfig, dstChain *chainCon
 			if ibcCoin.Len() == 1 {
 				tokenPre := balancesBPre.AmountOfNoDenomValidation(ibcCoin[0].Denom)
 				tokenPost := balancesBPost.AmountOfNoDenomValidation(ibcCoin[0].Denom)
-				resPre := initialization.C4eToken.Amount
+				resPre := initialization.OsmoToken.Amount
 				resPost := tokenPost.Sub(tokenPre)
 				return resPost.Uint64() == resPre.Uint64()
 			} else {
@@ -251,29 +251,6 @@ func (s *IntegrationTestSuite) queryPropTally(endpoint, addr string) (sdk.Int, s
 	abstainTotal := balancesResp.Tally.Abstain
 
 	return noTotal, yesTotal, noWithVetoTotal, abstainTotal, nil
-}
-
-func (s *IntegrationTestSuite) createPool(c *chainConfig, poolFile string, from string) {
-	s.T().Logf("creating pool for chain-id: %s", c.meta.Id)
-	cmd := []string{"osmosisd", "tx", "gamm", "create-pool", fmt.Sprintf("--pool-file=/osmosis/%s", poolFile), fmt.Sprintf("--chain-id=%s", c.meta.Id), "--from=val", "-b=block", "--yes", "--keyring-backend=test"}
-	s.ExecTx(c.meta.Id, 0, cmd, "code: 0")
-	s.T().Logf("successfully created pool from %s container: %s", s.valResources[c.meta.Id][0].Container.Name[1:], s.valResources[c.meta.Id][0].Container.ID)
-}
-
-func (s *IntegrationTestSuite) lockTokens(config *chainConfig, i int, tokens string, duration string, from string) {
-	s.T().Logf("locking %s for %s on chain-id: %s", tokens, duration, config.meta.Id)
-	cmd := []string{"osmosisd", "tx", "lockup", "lock-tokens", tokens, fmt.Sprintf("--chain-id=%s", config.meta.Id), fmt.Sprintf("--duration=%s", duration), fmt.Sprintf("--from=%s", from), "-b=block", "--yes", "--keyring-backend=test"}
-	s.ExecTx(config.meta.Id, i, cmd, "code: 0")
-	s.T().Logf("successfully created lock %v from %s container: %s", config.latestLockNumber, s.valResources[config.meta.Id][i].Container.Name[1:], s.valResources[config.meta.Id][i].Container.ID)
-	config.latestLockNumber = config.latestLockNumber + 1
-}
-
-func (s *IntegrationTestSuite) superfluidDelegate(config *chainConfig, valAddress string, from string) {
-	lockStr := strconv.Itoa(config.latestLockNumber)
-	s.T().Logf("superfluid delegating lock %s to %s on chain-id: %s", lockStr, valAddress, config.meta.Id)
-	cmd := []string{"osmosisd", "tx", "superfluid", "delegate", lockStr, valAddress, fmt.Sprintf("--chain-id=%s", config.meta.Id), fmt.Sprintf("--from=%s", from), "-b=block", "--yes", "--keyring-backend=test"}
-	s.ExecTx(config.meta.Id, 0, cmd, "code: 0")
-	s.T().Logf("successfully superfluid delegated from %s container: %s", s.valResources[config.meta.Id][0].Container.Name[1:], s.valResources[config.meta.Id][0].Container.ID)
 }
 
 func (s *IntegrationTestSuite) sendTx(c *chainConfig, i int, amount string, sendAddress string, receiveAddress string) {

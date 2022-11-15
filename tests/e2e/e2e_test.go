@@ -7,5 +7,7 @@ import (
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 	chainA := s.chainConfigs[0]
 	chainB := s.chainConfigs[1]
-	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.C4eToken)
+	// compare coins of receiver pre and post IBC send
+	// diff should only be the amount sent
+	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.OsmoToken)
 }

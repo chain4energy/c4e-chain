@@ -113,7 +113,7 @@ func (n *internalNode) createAppConfig(nodeConfig *NodeConfig) {
 	appConfig.BaseConfig.PruningKeepRecent = nodeConfig.PruningKeepRecent
 	appConfig.BaseConfig.PruningInterval = nodeConfig.PruningInterval
 	appConfig.API.Enable = true
-	appConfig.MinGasPrices = fmt.Sprintf("%s%s", MinGasPrice, C4eDenom)
+	appConfig.MinGasPrices = fmt.Sprintf("%s%s", MinGasPrice, OsmoDenom)
 	appConfig.StateSync.SnapshotInterval = nodeConfig.SnapshotInterval
 	appConfig.StateSync.SnapshotKeepRecent = nodeConfig.SnapshotKeepRecent
 
@@ -310,7 +310,7 @@ func (n *internalNode) initNodeConfigs(persistentPeers []string) error {
 	valConfig.StateSync.Enable = false
 	valConfig.LogLevel = "info"
 	valConfig.P2P.PersistentPeers = strings.Join(persistentPeers, ",")
-	valConfig.Storage = tmconfig.DefaultStorageConfig()
+
 	tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 	return nil
 }
@@ -334,7 +334,7 @@ func (n *internalNode) initStateSyncConfig(trustHeight int64, trustHash string, 
 	valConfig.StateSync.TrustHeight = trustHeight
 	valConfig.StateSync.TrustHash = trustHash
 	valConfig.StateSync.RPCServers = stateSyncRPCServers
-	valConfig.Storage = tmconfig.DefaultStorageConfig()
+
 	tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 	return nil
 }
