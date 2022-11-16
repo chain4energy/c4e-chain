@@ -159,14 +159,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	os.Setenv("OSMOSIS_E2E_SKIP_UPGRADE", "True")
 	s.chainConfigs = make([]*chainConfig, 0, 2)
 
-	// The e2e test flow is as follows:
-	//
-	// 1. Configure two chains - chan A and chain B.
-	//   * For each chain, set up two validators
-	//   * Initialize configs and genesis for all validators.
-	// 2. Start both networks.
-	// 3. Run IBC relayer betweeen the two chains.
-	// 4. Execute various e2e tests, including IBC.
 	var (
 		skipUpgrade bool
 		err         error

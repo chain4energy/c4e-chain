@@ -1,4 +1,4 @@
-PACKAGES=$(shell go list ./... | grep -v '/simulation')
+PACKAGES=$(shell go list ./... | grep -v '/simulation\|e2e')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true

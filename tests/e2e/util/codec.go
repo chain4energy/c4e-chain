@@ -1,8 +1,8 @@
 package util
 
 import (
-	c4eapp "github.com/chain4energy/c4e-chain/app"
-	"github.com/chain4energy/c4e-chain/app/params"
+	c4eapp "github.com/chain4energy/c4e-chain/tests/e2e/encoding"
+	"github.com/chain4energy/c4e-chain/tests/e2e/encoding/params"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
