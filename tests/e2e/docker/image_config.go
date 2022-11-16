@@ -27,10 +27,10 @@ const (
 	// Pre-upgrade osmosis repo/tag to pull.
 	// It should be uploaded to Docker Hub. OSMOSIS_E2E_SKIP_UPGRADE should be unset
 	// for this functionality to be used.
-	previousVersionOsmoRepository = "chain4energy"
+	previousVersionOsmoRepository = "chain4energy-old-dev"
 	previousVersionOsmoTag        = "v1.0.0"
 	// Pre-upgrade repo/tag for osmosis initialization (this should be one version below upgradeVersion)
-	previousVersionInitRepository = "chain4energy"
+	previousVersionInitRepository = "chain4energy-old-chain-init"
 	previousVersionInitTag        = "v1.0.0"
 	// Hermes repo/version for relayer
 	relayerRepository = "osmolabs/hermes"

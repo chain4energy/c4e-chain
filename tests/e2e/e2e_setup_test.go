@@ -53,7 +53,7 @@ type chainConfig struct {
 
 const (
 	// osmosis version being upgraded to (folder must exist here https://github.com/osmosis-labs/osmosis/tree/main/app/upgrades)
-	upgradeVersion = "v9"
+	upgradeVersion = "v1.0.1"
 	// estimated number of blocks it takes to submit for a proposal
 	propSubmitBlocks float32 = 10
 	// estimated number of blocks it takes to deposit for a proposal
@@ -156,7 +156,7 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up e2e integration test suite...")
-	os.Setenv("OSMOSIS_E2E_SKIP_UPGRADE", "True")
+	//os.Setenv("OSMOSIS_E2E_SKIP_UPGRADE", "True")
 	s.chainConfigs = make([]*chainConfig, 0, 2)
 
 	var (
@@ -190,9 +190,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	//}
 
 	if !skipUpgrade {
-		s.createPreUpgradeState()
 		s.upgrade()
-		s.runPostUpgradeTests()
 	}
 }
 

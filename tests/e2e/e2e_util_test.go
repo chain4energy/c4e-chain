@@ -160,7 +160,7 @@ func (s *IntegrationTestSuite) submitTextProposal(c *chainConfig, text string) {
 func (s *IntegrationTestSuite) depositProposal(c *chainConfig) {
 	propStr := strconv.Itoa(c.latestProposalNumber)
 	s.T().Logf("depositing to proposal from %s container: %s", s.valResources[c.meta.Id][0].Container.Name[1:], s.valResources[c.meta.Id][0].Container.ID)
-	cmd := []string{"c4ed", "tx", "gov", "deposit", propStr, "500000000uosmo", "--from=val", fmt.Sprintf("--chain-id=%s", c.meta.Id), "-b=block", "--yes", "--keyring-backend=test"}
+	cmd := []string{"c4ed", "tx", "gov", "deposit", propStr, "500000000uc4e", "--from=val", fmt.Sprintf("--chain-id=%s", c.meta.Id), "-b=block", "--yes", "--keyring-backend=test"}
 	s.ExecTx(c.meta.Id, 0, cmd, "code: 0")
 	s.T().Log("successfully deposited to proposal")
 }
@@ -188,9 +188,9 @@ func (s *IntegrationTestSuite) voteNoProposal(c *chainConfig, i int, from string
 
 func (s *IntegrationTestSuite) chainStatus(c *chainConfig, i int) []byte {
 	cmd := []string{"c4ed", "status"}
-	_, errBuf, err := s.ExecTx(c.meta.Id, i, cmd, "")
+	outBuff, _, err := s.ExecTx(c.meta.Id, i, cmd, "")
 	s.Require().NoError(err)
-	return errBuf.Bytes()
+	return outBuff.Bytes()
 }
 
 func (s *IntegrationTestSuite) getCurrentChainHeight(c *chainConfig, i int) int {
