@@ -253,7 +253,7 @@ func (s *IntegrationTestSuite) runValidators(chainConfig *chainConfig, dockerRep
 			Name:      val.validator.Name,
 			NetworkID: s.dkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:/osmosis/.c4ed", val.validator.ConfigDir),
+				fmt.Sprintf("%s/:/osmosis/.c4e-chain", val.validator.ConfigDir),
 				fmt.Sprintf("%s/scripts:/osmosis", pwd),
 			},
 			Repository: dockerRepository,
@@ -584,7 +584,7 @@ func (s *IntegrationTestSuite) upgradeContainers(chainConfig *chainConfig, propH
 			NetworkID:  s.dkrNet.Network.ID,
 			User:       "root:root",
 			Mounts: []string{
-				fmt.Sprintf("%s/:/osmosis/.c4ed", val.validator.ConfigDir),
+				fmt.Sprintf("%s/:/osmosis/.c4e-chain", val.validator.ConfigDir),
 				fmt.Sprintf("%s/scripts:/osmosis", pwd),
 			},
 		}
