@@ -2,6 +2,7 @@ package types
 
 import (
 	"errors"
+	fmt "fmt"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -134,4 +135,70 @@ func (cvp ContinuousVestingPeriod) MarshalYAML() (interface{}, error) {
 		return nil, err
 	}
 	return string(bz), err
+}
+
+// Validate checks the claimRecord is valid
+func (m ClaimRecord) Validate() error {
+	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
+		return err
+	}
+
+	if len(m.CampaignRecords) == 0 {
+		return errors.New("at least one campaign record is required")
+	}
+
+	campaignIDMap := make(map[uint64]struct{})
+	for _, elem := range m.CampaignRecords {
+		if _, ok := campaignIDMap[elem.CampaignId]; ok {
+			return fmt.Errorf("duplicated campaign id for completed mission")
+		}
+		campaignIDMap[elem.CampaignId] = struct{}{}
+	}
+
+	for _, campaignRecord := range m.CampaignRecords {
+		if !campaignRecord.Claimable.IsPositive() {
+			return errors.New("claimable amount must be positive")
+		}
+
+		missionIDMap := make(map[uint64]struct{})
+		for _, elem := range campaignRecord.CompletedMissions {
+			if _, ok := missionIDMap[elem]; ok {
+				return fmt.Errorf("duplicated mission id for completed mission")
+			}
+			missionIDMap[elem] = struct{}{}
+		}
+	}
+
+	return nil
+}
+
+// IsMissionCompleted checks if the specified mission ID is completed for the claim record
+func (m ClaimRecord) IsMissionCompleted(campaignId uint64, missionID uint64) bool {
+	for _, campaignRecord := range m.CampaignRecords {
+		if campaignRecord.CampaignId == campaignId {
+			for _, completed := range campaignRecord.CompletedMissions {
+				if completed == missionID {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+// IsMissionCompleted checks if the specified mission ID is completed for the claim record
+func (m ClaimRecord) CompleteMission(campaignId uint64, missionID uint64) error {
+	for _, campaignRecord := range m.CampaignRecords {
+		campaignRecord.CompletedMissions = append(campaignRecord.CompletedMissions, missionID)
+		return nil
+	}
+	return fmt.Errorf("no campaign with id %d", campaignId)
+}
+
+// ClaimableFromMission returns the amount claimable for this claim record from the provided mission completion
+func (m ClaimRecord) ClaimableFromMission(mission Mission) sdk.Int {
+	for _, campaignRecord := range m.CampaignRecords {
+		return mission.Weight.Mul(sdk.NewDecFromInt(campaignRecord.Claimable)).TruncateInt()
+	}
+	return sdk.ZeroInt() // TODO panic ??
 }

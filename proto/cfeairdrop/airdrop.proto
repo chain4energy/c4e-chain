@@ -2,26 +2,36 @@ syntax = "proto3";
 package chain4energy.c4echain.cfeairdrop;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 
 message CampaignRecord {
   uint64 campaign_id   = 1;
-  string claimable = 2 [
+  string claimable = 3 [
     (gogoproto.nullable)   = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  repeated uint64 completedMissions = 3;
+  repeated uint64 completedMissions = 4;
 }
 
 message ClaimRecord {
   string address  = 1;
-  repeated CampaignRecord campaign_records = 2;
+  string claim_address  = 2;
+  repeated CampaignRecord campaign_records = 3;
 }
 
 message Campaign {
   uint64 campaign_id   = 1;
-  string description = 2;
+  bool enabled    = 2;
+  google.protobuf.Timestamp start_time = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp end_time = 4 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
+  // period of locked coins from claim
+  google.protobuf.Duration lockup_period = 5 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
+  // period of vesting coins after lockup period
+  google.protobuf.Duration vesting_period = 6 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
+  string description = 7;
 }
 
 message InitialClaim {
