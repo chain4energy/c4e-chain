@@ -1,4 +1,4 @@
-PACKAGES=$(shell go list ./... | grep -v '/simulation')
+PACKAGES=$(shell go list ./... | grep -v '/simulation\|e2e')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
@@ -150,3 +150,6 @@ docker-build-debug:
 
 docker-build-e2e-init-chain:
 	@docker build -t chain4energy-e2e-chain-init:debug --build-arg E2E_SCRIPT_NAME=chain -f tests/e2e/initialization/init.Dockerfile .
+
+docker-build-e2e-init-node:
+	@docker build -t chain4energy-e2e-node-init:debug --build-arg E2E_SCRIPT_NAME=node -f tests/e2e/initialization/init.Dockerfile .

@@ -74,7 +74,7 @@ func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHei
 
 	config.SetRoot(path)
 	config.Moniker = moniker
-
+	config.Storage.DiscardABCIResponses = false
 	coins, err := sdk.ParseCoinsNormalized(amountStr)
 	if err != nil {
 		return fmt.Errorf("failed to parse coins: %w", err)
@@ -189,7 +189,7 @@ func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight in
 
 	config.SetRoot(chain.nodes[0].configDir())
 	config.Moniker = chain.nodes[0].moniker
-
+	config.Storage.DiscardABCIResponses = false
 	genFilePath := config.GenesisFile()
 	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
 	if err != nil {
