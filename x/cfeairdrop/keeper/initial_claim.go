@@ -85,6 +85,3 @@ func (k Keeper) ClaimInitial(ctx sdk.Context, campaignId uint64, missionId uint6
 	}
 	return nil
 }
-
-
-

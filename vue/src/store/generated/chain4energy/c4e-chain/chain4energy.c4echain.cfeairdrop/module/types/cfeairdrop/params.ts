@@ -1,15 +1,21 @@
 /* eslint-disable */
+import { Campaign } from "../cfeairdrop/airdrop";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
 /** Params defines the parameters for the module. */
-export interface Params {}
+export interface Params {
+  campaigns: Campaign[];
+}
 
 const baseParams: object = {};
 
 export const Params = {
-  encode(_: Params, writer: Writer = Writer.create()): Writer {
+  encode(message: Params, writer: Writer = Writer.create()): Writer {
+    for (const v of message.campaigns) {
+      Campaign.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -17,9 +23,13 @@ export const Params = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseParams } as Params;
+    message.campaigns = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.campaigns.push(Campaign.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -28,18 +38,37 @@ export const Params = {
     return message;
   },
 
-  fromJSON(_: any): Params {
+  fromJSON(object: any): Params {
     const message = { ...baseParams } as Params;
+    message.campaigns = [];
+    if (object.campaigns !== undefined && object.campaigns !== null) {
+      for (const e of object.campaigns) {
+        message.campaigns.push(Campaign.fromJSON(e));
+      }
+    }
     return message;
   },
 
-  toJSON(_: Params): unknown {
+  toJSON(message: Params): unknown {
     const obj: any = {};
+    if (message.campaigns) {
+      obj.campaigns = message.campaigns.map((e) =>
+        e ? Campaign.toJSON(e) : undefined
+      );
+    } else {
+      obj.campaigns = [];
+    }
     return obj;
   },
 
-  fromPartial(_: DeepPartial<Params>): Params {
+  fromPartial(object: DeepPartial<Params>): Params {
     const message = { ...baseParams } as Params;
+    message.campaigns = [];
+    if (object.campaigns !== undefined && object.campaigns !== null) {
+      for (const e of object.campaigns) {
+        message.campaigns.push(Campaign.fromPartial(e));
+      }
+    }
     return message;
   },
 };

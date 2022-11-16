@@ -21,6 +21,8 @@ paths:
                   properties:
                     address:
                       type: string
+                    claim_address:
+                      type: string
                     campaign_records:
                       type: array
                       items:
@@ -321,6 +323,8 @@ paths:
                 type: object
                 properties:
                   address:
+                    type: string
+                  claim_address:
                     type: string
                   campaign_records:
                     type: array
@@ -1050,6 +1054,31 @@ paths:
               params:
                 description: params holds all the parameters of this module.
                 type: object
+                properties:
+                  campaigns:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        campaign_id:
+                          type: string
+                          format: uint64
+                        enabled:
+                          type: boolean
+                        start_time:
+                          type: string
+                          format: date-time
+                        end_time:
+                          type: string
+                          format: date-time
+                        lockup_period:
+                          type: string
+                          title: period of locked coins from claim
+                        vesting_period:
+                          type: string
+                          title: period of vesting coins after lockup period
+                        description:
+                          type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -1255,10 +1284,12 @@ paths:
                 items:
                   type: object
                   properties:
-                    campaignId:
+                    campaign_id:
                       type: string
-                    missionId:
+                      format: uint64
+                    mission_id:
                       type: string
+                      format: uint64
                     description:
                       type: string
                     weight:
@@ -1547,10 +1578,12 @@ paths:
               mission:
                 type: object
                 properties:
-                  campaignId:
+                  campaign_id:
                     type: string
-                  missionId:
+                    format: uint64
+                  mission_id:
                     type: string
+                    format: uint64
                   description:
                     type: string
                   weight:
@@ -1745,10 +1778,12 @@ paths:
           in: path
           required: true
           type: string
+          format: uint64
         - name: missionId
           in: path
           required: true
           type: string
+          format: uint64
       tags:
         - Query
   /c4e/distributor/params:
@@ -33536,6 +33571,28 @@ paths:
       tags:
         - Query
 definitions:
+  chain4energy.c4echain.cfeairdrop.Campaign:
+    type: object
+    properties:
+      campaign_id:
+        type: string
+        format: uint64
+      enabled:
+        type: boolean
+      start_time:
+        type: string
+        format: date-time
+      end_time:
+        type: string
+        format: date-time
+      lockup_period:
+        type: string
+        title: period of locked coins from claim
+      vesting_period:
+        type: string
+        title: period of vesting coins after lockup period
+      description:
+        type: string
   chain4energy.c4echain.cfeairdrop.CampaignRecord:
     type: object
     properties:
@@ -33553,6 +33610,8 @@ definitions:
     type: object
     properties:
       address:
+        type: string
+      claim_address:
         type: string
       campaign_records:
         type: array
@@ -33583,16 +33642,45 @@ definitions:
   chain4energy.c4echain.cfeairdrop.Mission:
     type: object
     properties:
-      campaignId:
+      campaign_id:
         type: string
-      missionId:
+        format: uint64
+      mission_id:
         type: string
+        format: uint64
       description:
         type: string
       weight:
         type: string
+  chain4energy.c4echain.cfeairdrop.MsgClaimResponse:
+    type: object
   chain4energy.c4echain.cfeairdrop.Params:
     type: object
+    properties:
+      campaigns:
+        type: array
+        items:
+          type: object
+          properties:
+            campaign_id:
+              type: string
+              format: uint64
+            enabled:
+              type: boolean
+            start_time:
+              type: string
+              format: date-time
+            end_time:
+              type: string
+              format: date-time
+            lockup_period:
+              type: string
+              title: period of locked coins from claim
+            vesting_period:
+              type: string
+              title: period of vesting coins after lockup period
+            description:
+              type: string
     description: Params defines the parameters for the module.
   chain4energy.c4echain.cfeairdrop.QueryAllClaimRecordResponse:
     type: object
@@ -33603,6 +33691,8 @@ definitions:
           type: object
           properties:
             address:
+              type: string
+            claim_address:
               type: string
             campaign_records:
               type: array
@@ -33693,10 +33783,12 @@ definitions:
         items:
           type: object
           properties:
-            campaignId:
+            campaign_id:
               type: string
-            missionId:
+              format: uint64
+            mission_id:
               type: string
+              format: uint64
             description:
               type: string
             weight:
@@ -33734,6 +33826,8 @@ definitions:
         properties:
           address:
             type: string
+          claim_address:
+            type: string
           campaign_records:
             type: array
             items:
@@ -33769,10 +33863,12 @@ definitions:
       mission:
         type: object
         properties:
-          campaignId:
+          campaign_id:
             type: string
-          missionId:
+            format: uint64
+          mission_id:
             type: string
+            format: uint64
           description:
             type: string
           weight:
@@ -33783,6 +33879,31 @@ definitions:
       params:
         description: params holds all the parameters of this module.
         type: object
+        properties:
+          campaigns:
+            type: array
+            items:
+              type: object
+              properties:
+                campaign_id:
+                  type: string
+                  format: uint64
+                enabled:
+                  type: boolean
+                start_time:
+                  type: string
+                  format: date-time
+                end_time:
+                  type: string
+                  format: date-time
+                lockup_period:
+                  type: string
+                  title: period of locked coins from claim
+                vesting_period:
+                  type: string
+                  title: period of vesting coins after lockup period
+                description:
+                  type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   cosmos.base.query.v1beta1.PageRequest:
     type: object

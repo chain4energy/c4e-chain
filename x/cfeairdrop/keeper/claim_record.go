@@ -5,7 +5,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
-
 )
 
 // SetClaimRecordXX set a specific claimRecordXX in the store from its index
@@ -64,8 +63,8 @@ func (k Keeper) GetAllClaimRecord(ctx sdk.Context) (list []types.ClaimRecord) {
 	return
 }
 
-func (k Keeper) addClaimRecord(ctx sdk.Context, address string, campaignId uint64, claimable sdk.Int) (*types.ClaimRecord, error)  {
-	claimRecord, found :=k.GetClaimRecord(ctx, address)
+func (k Keeper) addClaimRecord(ctx sdk.Context, address string, campaignId uint64, claimable sdk.Int) (*types.ClaimRecord, error) {
+	claimRecord, found := k.GetClaimRecord(ctx, address)
 	if !found {
 		claimRecord = types.ClaimRecord{Address: address}
 		k.grantFeeAllowance(ctx, address)
@@ -78,11 +77,11 @@ func (k Keeper) addClaimRecord(ctx sdk.Context, address string, campaignId uint6
 }
 
 type CampaignRecordData struct {
-	Address string
+	Address   string
 	Claimable sdk.Int
 }
 
-func (k Keeper) AddCampaignRecords(ctx sdk.Context, campaignId uint64, campaignRecord []*CampaignRecordData) error  {
+func (k Keeper) AddCampaignRecords(ctx sdk.Context, campaignId uint64, campaignRecord []*CampaignRecordData) error {
 	records := []*types.ClaimRecord{}
 
 	for _, recordData := range campaignRecord {
@@ -95,11 +94,11 @@ func (k Keeper) AddCampaignRecords(ctx sdk.Context, campaignId uint64, campaignR
 
 	for _, record := range records {
 		k.SetClaimRecord(ctx, *record)
-	} 
+	}
 	return nil
 }
 
-func (k Keeper) grantFeeAllowance(ctx sdk.Context, grantee string) error  {
+func (k Keeper) grantFeeAllowance(ctx sdk.Context, grantee string) error {
 	allowance := feegranttypes.BasicAllowance{}
 	address, err := sdk.AccAddressFromBech32(grantee)
 	if err != nil {

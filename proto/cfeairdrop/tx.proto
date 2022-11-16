@@ -7,7 +7,17 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+      rpc Claim(MsgClaim) returns (MsgClaimResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgClaim {
+  string claimer = 1;
+  string campaign_id = 2;
+  string mission_id = 3;
+}
+
+message MsgClaimResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

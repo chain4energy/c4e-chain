@@ -6,7 +6,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-
 )
 
 func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
@@ -55,7 +54,7 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 		k.Logger(ctx).Debug("create vesting account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
 			baseVestingAccount.OriginalVesting, "delegatedFree", baseVestingAccount.DelegatedFree, "delegatedVesting",
 			baseVestingAccount.DelegatedVesting, "endTime", baseVestingAccount.EndTime, "startTime", startTime)
-	} 
+	}
 
 	if acc == nil {
 		k.Logger(ctx).Error("create vesting account account already exists error", "toAddress", toAddress)
@@ -66,11 +65,11 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 		k.Logger(ctx).Error("create vesting account invalid account type; expected: BaseAccount", "notExpectedAccount", airdropAccount)
 		return sdkerrors.Wrapf(types.ErrSample /* TODO */, "create vesting account - expected BaseAccount, got: %T", airdropAccount)
 	}
-	
-	airdropAccount.VestingPeriods = append(airdropAccount.VestingPeriods, 
+
+	airdropAccount.VestingPeriods = append(airdropAccount.VestingPeriods,
 		types.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
 	airdropAccount.BaseVestingAccount.OriginalVesting = airdropAccount.BaseVestingAccount.OriginalVesting.Add(amount...)
-	if (endTime > airdropAccount.BaseVestingAccount.EndTime) {
+	if endTime > airdropAccount.BaseVestingAccount.EndTime {
 		airdropAccount.BaseVestingAccount.EndTime = endTime
 	}
 	if startTime < airdropAccount.StartTime {
@@ -93,6 +92,3 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	}
 	return nil
 }
-
-
-

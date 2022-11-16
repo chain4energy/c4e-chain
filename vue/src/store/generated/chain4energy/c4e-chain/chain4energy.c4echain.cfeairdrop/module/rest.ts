@@ -12,7 +12,24 @@
 /**
  * Params defines the parameters for the module.
  */
-export type C4EchaincfeairdropParams = object;
+export interface C4EchaincfeairdropParams {
+  campaigns?: CfeairdropCampaign[];
+}
+
+export interface CfeairdropCampaign {
+  /** @format uint64 */
+  campaign_id?: string;
+  enabled?: boolean;
+
+  /** @format date-time */
+  start_time?: string;
+
+  /** @format date-time */
+  end_time?: string;
+  lockup_period?: string;
+  vesting_period?: string;
+  description?: string;
+}
 
 export interface CfeairdropCampaignRecord {
   /** @format uint64 */
@@ -23,6 +40,7 @@ export interface CfeairdropCampaignRecord {
 
 export interface CfeairdropClaimRecord {
   address?: string;
+  claim_address?: string;
   campaign_records?: CfeairdropCampaignRecord[];
 }
 
@@ -37,11 +55,16 @@ export interface CfeairdropInitialClaim {
 }
 
 export interface CfeairdropMission {
-  campaignId?: string;
-  missionId?: string;
+  /** @format uint64 */
+  campaign_id?: string;
+
+  /** @format uint64 */
+  mission_id?: string;
   description?: string;
   weight?: string;
 }
+
+export type CfeairdropMsgClaimResponse = object;
 
 export interface CfeairdropQueryAllClaimRecordResponse {
   claimRecord?: CfeairdropClaimRecord[];
@@ -269,13 +292,6 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
-
-  /**
-   * reverse is set to true if results are to be returned in the descending order.
-   *
-   * Since: cosmos-sdk 0.43
-   */
-  reverse?: boolean;
 }
 
 /**
@@ -505,7 +521,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -547,7 +562,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -605,7 +619,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>

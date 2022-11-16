@@ -6,12 +6,11 @@ import { CampaignRecord } from "./module/types/cfeairdrop/airdrop"
 import { ClaimRecord } from "./module/types/cfeairdrop/airdrop"
 import { Campaign } from "./module/types/cfeairdrop/airdrop"
 import { InitialClaim } from "./module/types/cfeairdrop/airdrop"
-import { MissionFF } from "./module/types/cfeairdrop/airdrop"
-import { Mission } from "./module/types/cfeairdrop/mission"
+import { Mission } from "./module/types/cfeairdrop/airdrop"
 import { Params } from "./module/types/cfeairdrop/params"
 
 
-export { ContinuousVestingPeriod, AirdropVestingAccount, CampaignRecord, ClaimRecord, Campaign, InitialClaim, MissionFF, Mission, Params };
+export { ContinuousVestingPeriod, AirdropVestingAccount, CampaignRecord, ClaimRecord, Campaign, InitialClaim, Mission, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -64,7 +63,6 @@ const getDefaultState = () => {
 						ClaimRecord: getStructure(ClaimRecord.fromPartial({})),
 						Campaign: getStructure(Campaign.fromPartial({})),
 						InitialClaim: getStructure(InitialClaim.fromPartial({})),
-						MissionFF: getStructure(MissionFF.fromPartial({})),
 						Mission: getStructure(Mission.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						
@@ -337,7 +335,35 @@ export default {
 		},
 		
 		
+		async sendMsgClaim({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgClaim(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgClaim:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgClaim:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		
+		async MsgClaim({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgClaim(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgClaim:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgClaim:Create Could not create message: ' + e.message)
+				}
+			}
+		},
 		
 	}
 }

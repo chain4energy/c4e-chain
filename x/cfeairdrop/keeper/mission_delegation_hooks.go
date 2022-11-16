@@ -6,9 +6,9 @@ import (
 )
 
 type MissionDelegationHooks struct {
-	k         Keeper
+	k          Keeper
 	campaignId uint64
-	missionId uint64
+	missionId  uint64
 }
 
 func (h MissionDelegationHooks) AfterUnbondingInitiated(ctx sdk.Context, id uint64) error {

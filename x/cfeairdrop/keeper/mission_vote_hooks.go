@@ -6,9 +6,9 @@ import (
 )
 
 type MissionVoteHooks struct {
-	k         Keeper
+	k          Keeper
 	campaignId uint64
-	missionId uint64
+	missionId  uint64
 }
 
 // NewMissionVoteHooks returns a GovHooks that triggers mission completion on voting for a proposal
@@ -20,8 +20,8 @@ var _ govtypes.GovHooks = MissionVoteHooks{}
 
 // AfterProposalVote completes mission when a vote is cast
 func (h MissionVoteHooks) AfterProposalVote(ctx sdk.Context, _ uint64, voterAddr sdk.AccAddress) {
-		// TODO error handling
-		_ = h.k.CompleteMission(ctx, false, h.campaignId, h.missionId, voterAddr.String())
+	// TODO error handling
+	_ = h.k.CompleteMission(ctx, false, h.campaignId, h.missionId, voterAddr.String())
 }
 
 // AfterProposalSubmission implements GovHooks

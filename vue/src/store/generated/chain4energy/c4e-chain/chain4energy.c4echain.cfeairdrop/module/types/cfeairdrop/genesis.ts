@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { Params } from "../cfeairdrop/params";
-import { ClaimRecord, InitialClaim } from "../cfeairdrop/airdrop";
-import { Mission } from "../cfeairdrop/mission";
+import { ClaimRecord, InitialClaim, Mission } from "../cfeairdrop/airdrop";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -12,7 +11,7 @@ export interface GenesisState {
   claimRecords: ClaimRecord[];
   initialClaims: InitialClaim[];
   /** this line is used by starport scaffolding # genesis/proto/state */
-  missionList: Mission[];
+  missions: Mission[];
 }
 
 const baseGenesisState: object = {};
@@ -28,7 +27,7 @@ export const GenesisState = {
     for (const v of message.initialClaims) {
       InitialClaim.encode(v!, writer.uint32(26).fork()).ldelim();
     }
-    for (const v of message.missionList) {
+    for (const v of message.missions) {
       Mission.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     return writer;
@@ -40,7 +39,7 @@ export const GenesisState = {
     const message = { ...baseGenesisState } as GenesisState;
     message.claimRecords = [];
     message.initialClaims = [];
-    message.missionList = [];
+    message.missions = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -58,7 +57,7 @@ export const GenesisState = {
           );
           break;
         case 4:
-          message.missionList.push(Mission.decode(reader, reader.uint32()));
+          message.missions.push(Mission.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -72,7 +71,7 @@ export const GenesisState = {
     const message = { ...baseGenesisState } as GenesisState;
     message.claimRecords = [];
     message.initialClaims = [];
-    message.missionList = [];
+    message.missions = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
@@ -88,9 +87,9 @@ export const GenesisState = {
         message.initialClaims.push(InitialClaim.fromJSON(e));
       }
     }
-    if (object.missionList !== undefined && object.missionList !== null) {
-      for (const e of object.missionList) {
-        message.missionList.push(Mission.fromJSON(e));
+    if (object.missions !== undefined && object.missions !== null) {
+      for (const e of object.missions) {
+        message.missions.push(Mission.fromJSON(e));
       }
     }
     return message;
@@ -114,12 +113,12 @@ export const GenesisState = {
     } else {
       obj.initialClaims = [];
     }
-    if (message.missionList) {
-      obj.missionList = message.missionList.map((e) =>
+    if (message.missions) {
+      obj.missions = message.missions.map((e) =>
         e ? Mission.toJSON(e) : undefined
       );
     } else {
-      obj.missionList = [];
+      obj.missions = [];
     }
     return obj;
   },
@@ -128,7 +127,7 @@ export const GenesisState = {
     const message = { ...baseGenesisState } as GenesisState;
     message.claimRecords = [];
     message.initialClaims = [];
-    message.missionList = [];
+    message.missions = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
@@ -144,9 +143,9 @@ export const GenesisState = {
         message.initialClaims.push(InitialClaim.fromPartial(e));
       }
     }
-    if (object.missionList !== undefined && object.missionList !== null) {
-      for (const e of object.missionList) {
-        message.missionList.push(Mission.fromPartial(e));
+    if (object.missions !== undefined && object.missions !== null) {
+      for (const e of object.missions) {
+        message.missions.push(Mission.fromPartial(e));
       }
     }
     return message;

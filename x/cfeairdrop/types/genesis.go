@@ -12,7 +12,7 @@ func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		ClaimRecords:  []ClaimRecord{},
 		InitialClaims: []InitialClaim{},
-		Missions:   []Mission{},
+		Missions:      []Mission{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}

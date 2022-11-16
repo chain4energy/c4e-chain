@@ -2,12 +2,11 @@
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
 import { Params } from "../cfeairdrop/params";
-import { ClaimRecord, InitialClaim } from "../cfeairdrop/airdrop";
+import { ClaimRecord, InitialClaim, Mission } from "../cfeairdrop/airdrop";
 import {
   PageRequest,
   PageResponse,
 } from "../cosmos/base/query/v1beta1/pagination";
-import { Mission } from "../cfeairdrop/mission";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
@@ -55,8 +54,8 @@ export interface QueryAllInitialClaimResponse {
 }
 
 export interface QueryGetMissionRequest {
-  campaignId: string;
-  missionId: string;
+  campaignId: number;
+  missionId: number;
 }
 
 export interface QueryGetMissionResponse {
@@ -805,18 +804,18 @@ export const QueryAllInitialClaimResponse = {
   },
 };
 
-const baseQueryGetMissionRequest: object = { campaignId: "", missionId: "" };
+const baseQueryGetMissionRequest: object = { campaignId: 0, missionId: 0 };
 
 export const QueryGetMissionRequest = {
   encode(
     message: QueryGetMissionRequest,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.campaignId !== "") {
-      writer.uint32(10).string(message.campaignId);
+    if (message.campaignId !== 0) {
+      writer.uint32(8).uint64(message.campaignId);
     }
-    if (message.missionId !== "") {
-      writer.uint32(18).string(message.missionId);
+    if (message.missionId !== 0) {
+      writer.uint32(16).uint64(message.missionId);
     }
     return writer;
   },
@@ -829,10 +828,10 @@ export const QueryGetMissionRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.campaignId = reader.string();
+          message.campaignId = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.missionId = reader.string();
+          message.missionId = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -845,14 +844,14 @@ export const QueryGetMissionRequest = {
   fromJSON(object: any): QueryGetMissionRequest {
     const message = { ...baseQueryGetMissionRequest } as QueryGetMissionRequest;
     if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = String(object.campaignId);
+      message.campaignId = Number(object.campaignId);
     } else {
-      message.campaignId = "";
+      message.campaignId = 0;
     }
     if (object.missionId !== undefined && object.missionId !== null) {
-      message.missionId = String(object.missionId);
+      message.missionId = Number(object.missionId);
     } else {
-      message.missionId = "";
+      message.missionId = 0;
     }
     return message;
   },
@@ -871,12 +870,12 @@ export const QueryGetMissionRequest = {
     if (object.campaignId !== undefined && object.campaignId !== null) {
       message.campaignId = object.campaignId;
     } else {
-      message.campaignId = "";
+      message.campaignId = 0;
     }
     if (object.missionId !== undefined && object.missionId !== null) {
       message.missionId = object.missionId;
     } else {
-      message.missionId = "";
+      message.missionId = 0;
     }
     return message;
   },
