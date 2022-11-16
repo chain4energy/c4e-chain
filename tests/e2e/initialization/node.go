@@ -310,6 +310,7 @@ func (n *internalNode) initNodeConfigs(persistentPeers []string) error {
 	valConfig.StateSync.Enable = false
 	valConfig.LogLevel = "info"
 	valConfig.P2P.PersistentPeers = strings.Join(persistentPeers, ",")
+	valConfig.Storage = tmconfig.DefaultStorageConfig()
 
 	tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 	return nil
@@ -334,7 +335,7 @@ func (n *internalNode) initStateSyncConfig(trustHeight int64, trustHash string, 
 	valConfig.StateSync.TrustHeight = trustHeight
 	valConfig.StateSync.TrustHash = trustHash
 	valConfig.StateSync.RPCServers = stateSyncRPCServers
-
+	valConfig.Storage = tmconfig.DefaultStorageConfig()
 	tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 	return nil
 }

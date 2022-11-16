@@ -36,20 +36,19 @@ type NodeConfig struct {
 
 const (
 	// common
-	OsmoDenom           = "uosmo"
-	StakeDenom          = "stake"
+	OsmoDenom           = "uc4e"
 	OsmoIBCDenom        = "ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518"
 	StakeIBCDenom       = "ibc/C053D637CCA2A2BA030E2C5EE1B28A16F71CCB0E45E8BE52766DC1B241B7787"
 	MinGasPrice         = "0.000"
 	IbcSendAmount       = 3300000000
 	ValidatorWalletName = "val"
 	// chainA
-	ChainAID      = "osmo-test-a"
+	ChainAID      = "c4e-chain-test-a"
 	OsmoBalanceA  = 200000000000
 	StakeBalanceA = 110000000000
 	StakeAmountA  = 100000000000
 	// chainB
-	ChainBID      = "osmo-test-b"
+	ChainBID      = "c4e-chain-test-b"
 	OsmoBalanceB  = 500000000000
 	StakeBalanceB = 440000000000
 	StakeAmountB  = 400000000000
@@ -61,10 +60,9 @@ var (
 	StakeAmountIntB  = sdk.NewInt(StakeAmountB)
 	StakeAmountCoinB = sdk.NewCoin(OsmoDenom, StakeAmountIntB)
 
-	InitBalanceStrA = fmt.Sprintf("%d%s,%d%s", OsmoBalanceA, OsmoDenom, StakeBalanceA, StakeDenom)
-	InitBalanceStrB = fmt.Sprintf("%d%s,%d%s", OsmoBalanceB, OsmoDenom, StakeBalanceB, StakeDenom)
-	OsmoToken       = sdk.NewInt64Coin(OsmoDenom, IbcSendAmount)  // 3,300uosmo
-	StakeToken      = sdk.NewInt64Coin(StakeDenom, IbcSendAmount) // 3,300ustake
+	InitBalanceStrA = fmt.Sprintf("%d%s", OsmoBalanceA+StakeBalanceA, OsmoDenom)
+	InitBalanceStrB = fmt.Sprintf("%d%s", OsmoBalanceB+StakeBalanceB, OsmoDenom)
+	OsmoToken       = sdk.NewInt64Coin(OsmoDenom, IbcSendAmount) // 3,300uosmo
 	tenOsmo         = sdk.Coins{sdk.NewInt64Coin(OsmoDenom, 10_000_000)}
 )
 
@@ -74,7 +72,7 @@ func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHei
 
 	config.SetRoot(path)
 	config.Moniker = moniker
-
+	config.Storage.DiscardABCIResponses = false
 	coins, err := sdk.ParseCoinsNormalized(amountStr)
 	if err != nil {
 		return fmt.Errorf("failed to parse coins: %w", err)
@@ -189,7 +187,7 @@ func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight in
 
 	config.SetRoot(chain.nodes[0].configDir())
 	config.Moniker = chain.nodes[0].moniker
-
+	config.Storage.DiscardABCIResponses = false
 	genFilePath := config.GenesisFile()
 	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
 	if err != nil {

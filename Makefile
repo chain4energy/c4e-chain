@@ -150,3 +150,6 @@ docker-build-debug:
 
 docker-build-e2e-init-chain:
 	@docker build -t chain4energy-e2e-chain-init:debug --build-arg E2E_SCRIPT_NAME=chain -f tests/e2e/initialization/init.Dockerfile .
+
+docker-build-e2e-init-node:
+	@docker build -t chain4energy-e2e-node-init:debug --build-arg E2E_SCRIPT_NAME=node -f tests/e2e/initialization/init.Dockerfile .

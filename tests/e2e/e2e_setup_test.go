@@ -183,11 +183,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	// Run a relayer between every possible pair of chains.
-	for i := 0; i < len(s.chainConfigs); i++ {
-		for j := i + 1; j < len(s.chainConfigs); j++ {
-			s.runIBCRelayer(s.chainConfigs[i], s.chainConfigs[j])
-		}
-	}
+	//for i := 0; i < len(s.chainConfigs); i++ {
+	//	for j := i + 1; j < len(s.chainConfigs); j++ {
+	//		s.runIBCRelayer(s.chainConfigs[i], s.chainConfigs[j])
+	//	}
+	//}
 
 	if !skipUpgrade {
 		s.createPreUpgradeState()
@@ -208,7 +208,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	//s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
 
 	for _, vr := range s.valResources {
 		for _, r := range vr {
@@ -245,7 +245,7 @@ func (s *IntegrationTestSuite) runValidators(chainConfig *chainConfig, dockerRep
 			Name:      val.validator.Name,
 			NetworkID: s.dkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:/osmosis/.c4ed", val.validator.ConfigDir),
+				fmt.Sprintf("%s/:/osmosis/.c4e-chain", val.validator.ConfigDir),
 				fmt.Sprintf("%s/scripts:/osmosis", pwd),
 			},
 			Repository: dockerRepository,
@@ -576,7 +576,7 @@ func (s *IntegrationTestSuite) upgradeContainers(chainConfig *chainConfig, propH
 			NetworkID:  s.dkrNet.Network.ID,
 			User:       "root:root",
 			Mounts: []string{
-				fmt.Sprintf("%s/:/osmosis/.c4ed", val.validator.ConfigDir),
+				fmt.Sprintf("%s/:/osmosis/.c4e-chain", val.validator.ConfigDir),
 				fmt.Sprintf("%s/scripts:/osmosis", pwd),
 			},
 		}
@@ -614,8 +614,6 @@ func (s *IntegrationTestSuite) createPreUpgradeState() {
 
 	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.OsmoToken)
 	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.OsmoToken)
-	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.StakeToken)
-	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.StakeToken)
 }
 
 func (s *IntegrationTestSuite) runPostUpgradeTests() {
@@ -624,6 +622,4 @@ func (s *IntegrationTestSuite) runPostUpgradeTests() {
 
 	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.OsmoToken)
 	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.OsmoToken)
-	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.StakeToken)
-	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.StakeToken)
 }
