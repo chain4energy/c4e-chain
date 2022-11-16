@@ -190,6 +190,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	//}
 
 	if !skipUpgrade {
+		s.upgradeSubDistributors()
 		s.upgrade()
 	}
 }
@@ -318,6 +319,7 @@ func (s *IntegrationTestSuite) runIBCRelayer(chainA *chainConfig, chainB *chainC
 		filepath.Join("./scripts/", "hermes_bootstrap.sh"),
 		filepath.Join(hermesCfgPath, "hermes_bootstrap.sh"),
 	)
+
 	s.Require().NoError(err)
 
 	s.hermesResource, err = s.dkrPool.RunWithOptions(
@@ -553,6 +555,20 @@ func (s *IntegrationTestSuite) upgrade() {
 	for _, chainConfig := range s.chainConfigs {
 		s.upgradeContainers(chainConfig, chainConfig.propHeight)
 	}
+}
+func (s *IntegrationTestSuite) upgradeSubDistributors() {
+	// submit, deposit, and vote for upgrade proposal
+	// prop height = current height + voting period + time it takes to submit proposal + small buffer
+	for _, chainConfig := range s.chainConfigs {
+		currentHeight := s.getCurrentChainHeight(chainConfig, 0)
+		chainConfig.propHeight = currentHeight + int(chainConfig.votingPeriod) + int(propSubmitBlocks) + int(propBufferBlocks)
+		fmt.Println(chainConfig.meta.DataDir)
+		s.insertUpgradeProposalToContainer(chainConfig)
+		s.submitUpgradeParamsProposal(chainConfig, chainConfig.meta.DataDir+"/update-subdistributors.json")
+		s.depositProposal(chainConfig)
+		s.voteProposal(chainConfig)
+	}
+
 }
 
 func (s *IntegrationTestSuite) upgradeContainers(chainConfig *chainConfig, propHeight int) {

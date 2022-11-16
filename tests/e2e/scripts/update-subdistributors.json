@@ -1,0 +1,30 @@
+{
+  "title": "CfeDistributor module params change",
+  "description": "Change cfedistributor params",
+  "changes": [
+    {
+      "subspace": "cfedistributor",
+      "key": "SubDistributors",
+      "value": [
+        {
+          "destination": {
+            "account": {
+              "id": "validators_rewards_collector",
+              "type": "MODULE_ACCOUNT"
+            },
+            "burn_share": {
+              "percent": "0.000000000000000000"
+            }
+          },
+          "name": "default_distributor",
+          "sources": [
+            {
+              "id": "usage_incentives_collector",
+              "type": "MAIN"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

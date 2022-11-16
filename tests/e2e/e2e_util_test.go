@@ -8,6 +8,7 @@ import (
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -144,6 +145,24 @@ func (s *IntegrationTestSuite) submitUpgradeProposal(c *chainConfig) {
 	upgradeHeightStr := strconv.Itoa(c.propHeight)
 	s.T().Logf("submitting upgrade proposal on %s container: %s", s.valResources[c.meta.Id][0].Container.Name[1:], s.valResources[c.meta.Id][0].Container.ID)
 	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "software-upgrade", upgradeVersion, fmt.Sprintf("--title=\"%s upgrade\"", upgradeVersion), "--description=\"upgrade proposal submission\"", fmt.Sprintf("--upgrade-height=%s", upgradeHeightStr), "--upgrade-info=\"\"", fmt.Sprintf("--chain-id=%s", c.meta.Id), "--from=val", "-b=block", "--yes", "--keyring-backend=test", "--log_format=json"}
+	s.ExecTx(c.meta.Id, 0, cmd, "code: 0")
+	s.T().Log("successfully submitted upgrade proposal")
+	c.latestProposalNumber = c.latestProposalNumber + 1
+}
+
+func (s *IntegrationTestSuite) insertUpgradeProposalToContainer(c *chainConfig) {
+	bytes, _ := ioutil.ReadFile("./scripts/update-subdistributors.json")
+	proposalString := string(bytes)
+	s.T().Logf("inserting params upgrade file to %s container: %s", s.valResources[c.meta.Id][0].Container.Name[1:], s.valResources[c.meta.Id][0].Container.ID)
+	cmd := []string{"echo", proposalString, ">", "update-subdistributors.json"}
+	s.ExecTx(c.meta.Id, 0, cmd, "code: 0")
+	s.T().Log("successfully inserted params upgrade file")
+}
+
+func (s *IntegrationTestSuite) submitUpgradeParamsProposal(c *chainConfig, pathToProposalFile string) {
+	upgradeHeightStr := strconv.Itoa(c.propHeight)
+	s.T().Logf("submitting upgrade params on %s container: %s. Path to proposal file: pathToProposalFile", s.valResources[c.meta.Id][0].Container.Name[1:], s.valResources[c.meta.Id][0].Container.ID)
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "param-change", pathToProposalFile, fmt.Sprintf("--title=\"%s upgrade params: \"", pathToProposalFile), "--description=\"upgrade proposal params\"", fmt.Sprintf("--upgrade-height=%s", upgradeHeightStr), "--upgrade-info=\"\"", fmt.Sprintf("--chain-id=%s", c.meta.Id), "--from=val", "-b=block", "--yes", "--keyring-backend=test", "--log_format=json"}
 	s.ExecTx(c.meta.Id, 0, cmd, "code: 0")
 	s.T().Log("successfully submitted upgrade proposal")
 	c.latestProposalNumber = c.latestProposalNumber + 1
