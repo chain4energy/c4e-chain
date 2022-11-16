@@ -149,14 +149,6 @@ func (s *IntegrationTestSuite) submitUpgradeProposal(c *chainConfig) {
 	c.latestProposalNumber = c.latestProposalNumber + 1
 }
 
-func (s *IntegrationTestSuite) submitSuperfluidProposal(c *chainConfig, asset string) {
-	s.T().Logf("submitting superfluid proposal for asset %s on %s container: %s", asset, s.valResources[c.meta.Id][0].Container.Name[1:], s.valResources[c.meta.Id][0].Container.ID)
-	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "set-superfluid-assets-proposal", fmt.Sprintf("--superfluid-assets=%s", asset), fmt.Sprintf("--title=\"%s superfluid asset\"", asset), fmt.Sprintf("--description=\"%s superfluid asset\"", asset), "--from=val", "-b=block", "--yes", "--keyring-backend=test", "--log_format=json", fmt.Sprintf("--chain-id=%s", c.meta.Id)}
-	s.ExecTx(c.meta.Id, 0, cmd, "code: 0")
-	s.T().Log("successfully submitted superfluid proposal")
-	c.latestProposalNumber = c.latestProposalNumber + 1
-}
-
 func (s *IntegrationTestSuite) submitTextProposal(c *chainConfig, text string) {
 	s.T().Logf("submitting text proposal on %s container: %s", s.valResources[c.meta.Id][0].Container.Name[1:], s.valResources[c.meta.Id][0].Container.ID)
 	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "--type=text", fmt.Sprintf("--title=\"%s\"", text), "--description=\"test text proposal\"", "--from=val", "-b=block", "--yes", "--keyring-backend=test", "--log_format=json", fmt.Sprintf("--chain-id=%s", c.meta.Id)}

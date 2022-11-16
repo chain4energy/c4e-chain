@@ -159,14 +159,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	os.Setenv("OSMOSIS_E2E_SKIP_UPGRADE", "True")
 	s.chainConfigs = make([]*chainConfig, 0, 2)
 
-	// The e2e test flow is as follows:
-	//
-	// 1. Configure two chains - chan A and chain B.
-	//   * For each chain, set up two validators
-	//   * Initialize configs and genesis for all validators.
-	// 2. Start both networks.
-	// 3. Run IBC relayer betweeen the two chains.
-	// 4. Execute various e2e tests, including IBC.
 	var (
 		skipUpgrade bool
 		err         error
@@ -191,11 +183,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	// Run a relayer between every possible pair of chains.
-	for i := 0; i < len(s.chainConfigs); i++ {
-		for j := i + 1; j < len(s.chainConfigs); j++ {
-			s.runIBCRelayer(s.chainConfigs[i], s.chainConfigs[j])
-		}
-	}
+	//for i := 0; i < len(s.chainConfigs); i++ {
+	//	for j := i + 1; j < len(s.chainConfigs); j++ {
+	//		s.runIBCRelayer(s.chainConfigs[i], s.chainConfigs[j])
+	//	}
+	//}
 
 	if !skipUpgrade {
 		s.createPreUpgradeState()
@@ -216,7 +208,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	//s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
 
 	for _, vr := range s.valResources {
 		for _, r := range vr {
@@ -622,8 +614,6 @@ func (s *IntegrationTestSuite) createPreUpgradeState() {
 
 	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.OsmoToken)
 	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.OsmoToken)
-	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.StakeToken)
-	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.StakeToken)
 }
 
 func (s *IntegrationTestSuite) runPostUpgradeTests() {
@@ -632,6 +622,4 @@ func (s *IntegrationTestSuite) runPostUpgradeTests() {
 
 	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.OsmoToken)
 	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.OsmoToken)
-	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.StakeToken)
-	s.sendIBC(chainB, chainA, chainA.validators[0].validator.PublicAddress, initialization.StakeToken)
 }

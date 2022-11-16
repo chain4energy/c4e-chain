@@ -36,8 +36,7 @@ type NodeConfig struct {
 
 const (
 	// common
-	OsmoDenom           = "uosmo"
-	StakeDenom          = "stake"
+	OsmoDenom           = "uc4e"
 	OsmoIBCDenom        = "ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518"
 	StakeIBCDenom       = "ibc/C053D637CCA2A2BA030E2C5EE1B28A16F71CCB0E45E8BE52766DC1B241B7787"
 	MinGasPrice         = "0.000"
@@ -61,10 +60,9 @@ var (
 	StakeAmountIntB  = sdk.NewInt(StakeAmountB)
 	StakeAmountCoinB = sdk.NewCoin(OsmoDenom, StakeAmountIntB)
 
-	InitBalanceStrA = fmt.Sprintf("%d%s,%d%s", OsmoBalanceA, OsmoDenom, StakeBalanceA, StakeDenom)
-	InitBalanceStrB = fmt.Sprintf("%d%s,%d%s", OsmoBalanceB, OsmoDenom, StakeBalanceB, StakeDenom)
-	OsmoToken       = sdk.NewInt64Coin(OsmoDenom, IbcSendAmount)  // 3,300uosmo
-	StakeToken      = sdk.NewInt64Coin(StakeDenom, IbcSendAmount) // 3,300ustake
+	InitBalanceStrA = fmt.Sprintf("%d%s", OsmoBalanceA+StakeBalanceA, OsmoDenom)
+	InitBalanceStrB = fmt.Sprintf("%d%s", OsmoBalanceB+StakeBalanceB, OsmoDenom)
+	OsmoToken       = sdk.NewInt64Coin(OsmoDenom, IbcSendAmount) // 3,300uosmo
 	tenOsmo         = sdk.Coins{sdk.NewInt64Coin(OsmoDenom, 10_000_000)}
 )
 

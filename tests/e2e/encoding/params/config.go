@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	HumanCoinUnit = "osmo"
-	BaseCoinUnit  = "uosmo"
+	HumanCoinUnit = "uc4e"
+	BaseCoinUnit  = "uc4e"
 	OsmoExponent  = 6
 
 	DefaultBondDenom = BaseCoinUnit
@@ -38,10 +38,6 @@ func init() {
 
 func RegisterDenoms() {
 	err := sdk.RegisterDenom(HumanCoinUnit, sdk.OneDec())
-	if err != nil {
-		panic(err)
-	}
-	err = sdk.RegisterDenom(BaseCoinUnit, sdk.NewDecWithPrec(1, OsmoExponent))
 	if err != nil {
 		panic(err)
 	}
