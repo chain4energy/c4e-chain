@@ -6,6 +6,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+
 )
 
 func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
@@ -37,12 +38,11 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	}
 
 	acc := ak.GetAccount(ctx, toAddress)
-	var airdropAccount *types.AirdropVestingAccount
-	if createAccount {
-		if acc != nil {
-			k.Logger(ctx).Error("create vesting account account already exists error", "toAddress", toAddress)
-			return sdkerrors.Wrapf(types.ErrSample /* TODO */, "create vesting account - account address: %s", toAddress)
-		}
+	if createAccount && acc == nil {
+		// if acc != nil {
+		// 	k.Logger(ctx).Error("create vesting account account already exists error", "toAddress", toAddress)
+		// 	return sdkerrors.Wrapf(types.ErrSample /* TODO */, "create vesting account - account address: %s", toAddress)
+		// }
 		baseAccount := ak.NewAccountWithAddress(ctx, toAddress)
 		if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
 			k.Logger(ctx).Error("create vesting account invalid account type; expected: BaseAccount", "notExpectedAccount", baseAccount)
@@ -51,22 +51,22 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 
 		baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), amount.Sort(), endTime)
 
-		airdropAccount = types.NewAirdropVestingAccountRaw(baseVestingAccount, startTime)
+		acc = types.NewAirdropVestingAccountRaw(baseVestingAccount, startTime)
 		k.Logger(ctx).Debug("create vesting account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
 			baseVestingAccount.OriginalVesting, "delegatedFree", baseVestingAccount.DelegatedFree, "delegatedVesting",
 			baseVestingAccount.DelegatedVesting, "endTime", baseVestingAccount.EndTime, "startTime", startTime)
-	} else {
-		if acc == nil {
-			k.Logger(ctx).Error("create vesting account account already exists error", "toAddress", toAddress)
-			return sdkerrors.Wrapf(types.ErrSample /* TODO */, "create vesting account - account address: %s", toAddress)
-		}
-		ok := false
-		if airdropAccount, ok = acc.(*types.AirdropVestingAccount); !ok {
-			k.Logger(ctx).Error("create vesting account invalid account type; expected: BaseAccount", "notExpectedAccount", airdropAccount)
-			return sdkerrors.Wrapf(types.ErrSample /* TODO */, "create vesting account - expected BaseAccount, got: %T", airdropAccount)
-		}
-	}
+	} 
 
+	if acc == nil {
+		k.Logger(ctx).Error("create vesting account account already exists error", "toAddress", toAddress)
+		return sdkerrors.Wrapf(types.ErrSample /* TODO */, "create vesting account - account address: %s", toAddress)
+	}
+	airdropAccount, ok := acc.(*types.AirdropVestingAccount)
+	if !ok {
+		k.Logger(ctx).Error("create vesting account invalid account type; expected: BaseAccount", "notExpectedAccount", airdropAccount)
+		return sdkerrors.Wrapf(types.ErrSample /* TODO */, "create vesting account - expected BaseAccount, got: %T", airdropAccount)
+	}
+	
 	airdropAccount.VestingPeriods = append(airdropAccount.VestingPeriods, 
 		types.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
 	airdropAccount.BaseVestingAccount.OriginalVesting = airdropAccount.BaseVestingAccount.OriginalVesting.Add(amount...)
@@ -93,3 +93,6 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	}
 	return nil
 }
+
+
+

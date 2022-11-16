@@ -153,8 +153,7 @@ func (k Keeper) CompleteMission(ctx sdk.Context, initialClaim bool, campaignId u
 	}
 	start := ctx.BlockTime().Add(campaignConfig.LockupPeriod)
 	end := start.Add(campaignConfig.VestingPeriod)
-	k.SendToAirdropAccount(ctx, claimer, claimable, start.Unix(), end.Unix(), initialClaim)
-	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, claimer, claimable); err != nil {
+	if err := k.SendToAirdropAccount(ctx, claimer, claimable, start.Unix(), end.Unix(), initialClaim); err != nil {
 		return nil
 		// return errors.Criticalf("can't send claimable coins %s", err.Error())
 	}

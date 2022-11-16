@@ -473,6 +473,7 @@ func New(
 
 		app.AccountKeeper,
 		app.BankKeeper,
+		app.FeeGrantKeeper,
 	)
 	cfeairdropModule := cfeairdropmodule.NewAppModule(appCodec, app.CfeairdropKeeper, app.AccountKeeper, app.BankKeeper)
 

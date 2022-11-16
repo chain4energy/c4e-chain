@@ -186,6 +186,16 @@ func (m ClaimRecord) IsMissionCompleted(campaignId uint64, missionID uint64) boo
 	return false
 }
 
+// HasCampaign checks if the specified reccord for campignId ID exists 
+func (m ClaimRecord) HasCampaign(campaignId uint64) bool {
+	for _, campaignRecord := range m.CampaignRecords {
+		if campaignRecord.CampaignId == campaignId {
+			return true
+		}
+	}
+	return false
+}
+
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
 func (m ClaimRecord) CompleteMission(campaignId uint64, missionID uint64) error {
 	for _, campaignRecord := range m.CampaignRecords {
