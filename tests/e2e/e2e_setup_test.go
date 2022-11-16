@@ -190,7 +190,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	//}
 
 	if !skipUpgrade {
-		s.upgradeSubDistributors()
 		s.upgrade()
 	}
 }
