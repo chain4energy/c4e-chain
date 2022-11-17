@@ -6,6 +6,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // GetCampaignIdBytes returns the byte representation of the ID
@@ -75,13 +76,13 @@ func (k Keeper) ClaimInitial(ctx sdk.Context, campaignId uint64, missionId uint6
 	// retrieve initial claim information
 	initialClaim, found := k.GetInitialClaim(ctx, campaignId)
 	if !found {
-		return nil //types.ErrInitialClaimNotFound
+		return sdkerrors.Wrapf(types.ErrInitialClaimNotFound, "campaignId %d", campaignId)
 	}
 	if !initialClaim.Enabled {
-		return nil // types.ErrInitialClaimNotEnabled
+		return sdkerrors.Wrapf(types.ErrInitialClaimNotEnabled, "campaignId %d", campaignId)
 	}
 	if err := k.CompleteMission(ctx, true, campaignId, initialClaim.MissionId, claimer); err != nil {
-		return nil // errors.Wrap(types.ErrMissionCompleteFailure, err.Error())
+		return err // errors.Wrap(types.ErrMissionCompleteFailure, err.Error())
 	}
 	return nil
 }

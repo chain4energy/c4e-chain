@@ -4,6 +4,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // SetMission set a specific mission in the store from its index
@@ -75,8 +76,10 @@ func (k Keeper) CompleteMission(ctx sdk.Context, initialClaim bool, campaignId u
 	if !campaignConfig.Enabled {
 		return nil
 	}
-
+	k.Logger(ctx).Debug("complete mission", "campaignId", campaignId, "blockTime", ctx.BlockTime(), "campaigh start", campaignConfig.StartTime, "campaigh end", campaignConfig.EndTime)
 	if ctx.BlockTime().Before(campaignConfig.StartTime) || (campaignConfig.EndTime != nil && ctx.BlockTime().After(*campaignConfig.EndTime)) {
+		k.Logger(ctx).Debug("complete mission campaign not enabled due time", "campaignId", campaignId)
+
 		return nil
 	}
 	// airdropSupply, found := k.GetAirdropSupply(ctx)
@@ -87,7 +90,8 @@ func (k Keeper) CompleteMission(ctx sdk.Context, initialClaim bool, campaignId u
 	// retrieve mission
 	mission, found := k.GetMission(ctx, campaignId, missionId)
 	if !found {
-		return nil
+		k.Logger(ctx).Error("mission not found", "campaignId", campaignId, "missionId", missionId)
+		return sdkerrors.Wrapf(types.ErrMissionNotFound, "campaignId %d, missionId %d", campaignId, missionId)
 		// return errors.Wrapf(types.ErrMissionNotFound, "mission %d not found", missionID)
 	}
 

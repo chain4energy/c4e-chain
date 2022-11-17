@@ -51,8 +51,7 @@ type C4eDistributorUtils struct {
 }
 
 func NewC4eDistributorUtils(t *testing.T, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
-	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils) C4eDistributorUtils {
+	helperAccountKeeper *authkeeper.AccountKeeper) C4eDistributorUtils {
 	return C4eDistributorUtils{C4eDistributorKeeperUtils: NewC4eDistributorKeeperUtils(t, helperCfedistributorKeeper), helperAccountKeeper: helperAccountKeeper}
 }
 
@@ -116,9 +115,8 @@ type ContextC4eDistributorUtils struct {
 }
 
 func NewContextC4eDistributorUtils(t *testing.T, testContext commontestutils.TestContext, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
-	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils) *ContextC4eDistributorUtils {
-	c4eDistributorUtils := NewC4eDistributorUtils(t, helperCfedistributorKeeper, helperAccountKeeper, bankUtils)
+	helperAccountKeeper *authkeeper.AccountKeeper) *ContextC4eDistributorUtils {
+	c4eDistributorUtils := NewC4eDistributorUtils(t, helperCfedistributorKeeper, helperAccountKeeper)
 	return &ContextC4eDistributorUtils{C4eDistributorUtils: c4eDistributorUtils, testContext: testContext}
 }
 

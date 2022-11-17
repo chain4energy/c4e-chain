@@ -4,6 +4,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 )
 
@@ -67,13 +68,13 @@ func (k Keeper) addClaimRecord(ctx sdk.Context, address string, campaignId uint6
 	claimRecord, found := k.GetClaimRecord(ctx, address)
 	if !found {
 		claimRecord = types.ClaimRecord{Address: address}
-		k.grantFeeAllowance(ctx, address)
+		// k.grantFeeAllowance(ctx, address)
 	}
 	if claimRecord.HasCampaign(campaignId) {
-		return nil, nil // TODO error
+		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "campaignId %d already exists for address: %s", campaignId, address)
 	}
 	claimRecord.CampaignRecords = append(claimRecord.CampaignRecords, &types.CampaignRecord{CampaignId: campaignId, Claimable: claimable})
-	return nil, nil
+	return &claimRecord, nil
 }
 
 type CampaignRecordData struct {

@@ -5,6 +5,8 @@ import (
 	fmt "fmt"
 	"time"
 
+	"math"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,11 +32,7 @@ func NewAirdropVestingAccountRaw(bva *vestingtypes.BaseVestingAccount, startTime
 }
 
 // NewAirdropVestingAccount returns a new AirdropVestingAccount
-func NewAirdropVestingAccount(baseAcc *authtypes.BaseAccount, originalVesting sdk.Coins, startTime int64, periods ContinuousVestingPeriods) *AirdropVestingAccount {
-	endTime := startTime
-	// for _, p := range periods {
-	// 	endTime += p.Length
-	// }
+func NewAirdropVestingAccount(baseAcc *authtypes.BaseAccount, originalVesting sdk.Coins, startTime int64, endTime int64, periods ContinuousVestingPeriods) *AirdropVestingAccount {
 	baseVestingAcc := &vestingtypes.BaseVestingAccount{
 		BaseAccount:     baseAcc,
 		OriginalVesting: originalVesting,
@@ -52,26 +50,9 @@ func NewAirdropVestingAccount(baseAcc *authtypes.BaseAccount, originalVesting sd
 // nil is returned.
 func (cva AirdropVestingAccount) GetVestedCoins(blockTime time.Time) sdk.Coins {
 	var vestedCoins sdk.Coins
-
-	// We must handle the case where the start time for a vesting account has
-	// been set into the future or when the start of the chain is not exactly
-	// known.
-	if blockTime.Unix() <= cva.StartTime {
-		return vestedCoins
-	} else if blockTime.Unix() >= cva.EndTime {
-		return cva.OriginalVesting
+	for _, period := range cva.VestingPeriods {
+		vestedCoins = vestedCoins.Add(period.GetVestedCoins(blockTime)...)
 	}
-
-	// calculate the vesting scalar
-	x := blockTime.Unix() - cva.StartTime
-	y := cva.EndTime - cva.StartTime
-	s := sdk.NewDec(x).Quo(sdk.NewDec(y))
-
-	for _, ovc := range cva.OriginalVesting {
-		vestedAmt := sdk.NewDecFromInt(ovc.Amount).Mul(s).RoundInt()
-		vestedCoins = append(vestedCoins, sdk.NewCoin(ovc.Denom, vestedAmt))
-	}
-
 	return vestedCoins
 }
 
@@ -117,9 +98,33 @@ func (acc AirdropVestingAccount) MarshalYAML() (interface{}, error) {
 // Validate checks for errors on the account fields
 func (cva AirdropVestingAccount) Validate() error {
 	if cva.GetStartTime() >= cva.GetEndTime() {
-		return errors.New("vesting start-time cannot be before end-time")
+		return fmt.Errorf("vesting end-time (%d) cannot be before start-time (%d)", cva.GetEndTime(), cva.GetStartTime())
 	}
+	var vestedCoins sdk.Coins
+	var startTime int64 = math.MaxInt64
+	var endTime int64 = 0
 
+	for _, period := range cva.VestingPeriods {
+		if err := period.Validate(); err != nil {
+			return err
+		}
+		if period.StartTime < startTime {
+			startTime = period.StartTime
+		}
+		if period.EndTime > endTime {
+			endTime = period.EndTime
+		}
+		vestedCoins = vestedCoins.Add(period.Amount...)
+	}
+	if !cva.BaseVestingAccount.OriginalVesting.IsEqual(vestedCoins) {
+		return fmt.Errorf("original vesting (%s) not equal to sum of periods (%s)", cva.BaseVestingAccount.OriginalVesting, vestedCoins)
+	}
+	if cva.GetStartTime() != startTime {
+		return fmt.Errorf("vesting start-time (%d) not eqaul to earliest period start time (%d)", cva.GetStartTime(), startTime)
+	}
+	if cva.GetEndTime() != endTime {
+		return fmt.Errorf("vesting end-time (%d) not eqaul to lastest period end time (%d)", cva.GetEndTime(), endTime)
+	}
 	return cva.BaseVestingAccount.Validate()
 }
 
@@ -135,6 +140,39 @@ func (cvp ContinuousVestingPeriod) MarshalYAML() (interface{}, error) {
 		return nil, err
 	}
 	return string(bz), err
+}
+
+func (cva ContinuousVestingPeriod) GetVestedCoins(blockTime time.Time) sdk.Coins {
+	var vestedCoins sdk.Coins
+
+	// We must handle the case where the start time for a vesting account has
+	// been set into the future or when the start of the chain is not exactly
+	// known.
+	if blockTime.Unix() <= cva.StartTime {
+		return vestedCoins
+	} else if blockTime.Unix() >= cva.EndTime {
+		return cva.Amount
+	}
+
+	// calculate the vesting scalar
+	x := blockTime.Unix() - cva.StartTime
+	y := cva.EndTime - cva.StartTime
+	s := sdk.NewDec(x).Quo(sdk.NewDec(y))
+
+	for _, ovc := range cva.Amount {
+		vestedAmt := ovc.Amount.ToDec().Mul(s).RoundInt()
+		vestedCoins = append(vestedCoins, sdk.NewCoin(ovc.Denom, vestedAmt))
+	}
+
+	return vestedCoins
+}
+
+// Validate checks for errors on the account fields
+func (cva ContinuousVestingPeriod) Validate() error {
+	if cva.GetStartTime() >= cva.GetEndTime() {
+		return fmt.Errorf("vesting period end-time (%d) cannot be before start-time (%d)", cva.GetEndTime(), cva.GetStartTime())
+	}
+	return nil
 }
 
 // Validate checks the claimRecord is valid

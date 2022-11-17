@@ -11,7 +11,7 @@ import (
 func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	amount sdk.Coins, startTime int64, endTime int64, createAccount bool) error {
 	k.Logger(ctx).Debug("create airdrop account", "toAddress", toAddress,
-		"amount", amount, "startTime", startTime, "endTime", endTime)
+		"amount", amount, "startTime", startTime, "endTime", endTime, "createAccount", createAccount)
 	ak := k.accountKeeper
 	bk := k.bankKeeper
 
@@ -44,14 +44,14 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 		// }
 		baseAccount := ak.NewAccountWithAddress(ctx, toAddress)
 		if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
-			k.Logger(ctx).Error("create vesting account invalid account type; expected: BaseAccount", "notExpectedAccount", baseAccount)
+			k.Logger(ctx).Error("create airdrop account invalid account type; expected: BaseAccount", "notExpectedAccount", baseAccount)
 			return sdkerrors.Wrapf(types.ErrSample /* TODO */, "create vesting account - expected BaseAccount, got: %T", baseAccount)
 		}
 
-		baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), amount.Sort(), endTime)
+		baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), endTime)
 
 		acc = types.NewAirdropVestingAccountRaw(baseVestingAccount, startTime)
-		k.Logger(ctx).Debug("create vesting account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
+		k.Logger(ctx).Debug("create airdrop account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
 			baseVestingAccount.OriginalVesting, "delegatedFree", baseVestingAccount.DelegatedFree, "delegatedVesting",
 			baseVestingAccount.DelegatedVesting, "endTime", baseVestingAccount.EndTime, "startTime", startTime)
 	}
@@ -62,7 +62,7 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	}
 	airdropAccount, ok := acc.(*types.AirdropVestingAccount)
 	if !ok {
-		k.Logger(ctx).Error("create vesting account invalid account type; expected: BaseAccount", "notExpectedAccount", airdropAccount)
+		k.Logger(ctx).Error("create fffffff account invalid account type; expected: BaseAccount", "notExpectedAccount", acc)
 		return sdkerrors.Wrapf(types.ErrSample /* TODO */, "create vesting account - expected BaseAccount, got: %T", airdropAccount)
 	}
 

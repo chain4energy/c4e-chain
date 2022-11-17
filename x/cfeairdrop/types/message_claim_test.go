@@ -1,4 +1,4 @@
-package types
+package types_test
 
 import (
 	"testing"
@@ -6,23 +6,24 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
+	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 )
 
 func TestMsgClaim_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgClaim
+		msg  types.MsgClaim
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgClaim{
+			msg: types.MsgClaim{
 				Claimer: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgClaim{
+			msg: types.MsgClaim{
 				Claimer: sample.AccAddress(),
 			},
 		},
