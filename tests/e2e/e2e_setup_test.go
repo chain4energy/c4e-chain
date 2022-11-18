@@ -57,6 +57,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// 2. Start both networks.
 	// 3. Run IBC relayer betweeen the two chains.
 	// 4. Execute various e2e tests, including IBC, upgrade, superfluid.
+	//os.Setenv(skipUpgradeEnv, "false")
+	os.Setenv(upgradeVersionEnv, "v1.0.1")
+
 	if str := os.Getenv(skipUpgradeEnv); len(str) > 0 {
 		s.skipUpgrade, err = strconv.ParseBool(str)
 		s.Require().NoError(err)

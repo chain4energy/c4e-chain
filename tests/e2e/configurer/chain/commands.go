@@ -17,7 +17,7 @@ import (
 // QueryParams extracts the params for a given subspace and key. This is done generically via json to avoid having to
 // specify the QueryParamResponse type (which may not exist for all params).
 func (n *NodeConfig) QueryParams(subspace, key string, result any) {
-	cmd := []string{"osmosisd", "query", "params", "subspace", subspace, key, "--output=json"}
+	cmd := []string{"c4ed", "query", "params", "subspace", subspace, key, "--output=json"}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
@@ -39,7 +39,7 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"osmosisd", "tx", "gov", "submit-proposal", "param-change", "/osmosis/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "param-change", "/osmosis/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
 	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
@@ -53,7 +53,7 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 func (n *NodeConfig) FailIBCTransfer(from, recipient, amount string) {
 	n.LogActionF("IBC sending %s from %s to %s", amount, from, recipient)
 
-	cmd := []string{"osmosisd", "tx", "ibc-transfer", "transfer", "transfer", "channel-0", recipient, amount, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "ibc-transfer", "transfer", "transfer", "channel-0", recipient, amount, fmt.Sprintf("--from=%s", from)}
 
 	_, _, err := n.containerManager.ExecTxCmdWithSuccessString(n.t, n.chainId, n.Name, cmd, "rate limit exceeded")
 	require.NoError(n.t, err)
@@ -65,10 +65,10 @@ func (n *NodeConfig) FailIBCTransfer(from, recipient, amount string) {
 // swapRoutePoolIds is the comma separated list of pool ids to swap through.
 // swapRouteDenoms is the comma separated list of denoms to swap through.
 // To reproduce locally:
-// docker container exec <container id> osmosisd tx gamm swap-exact-amount-in <tokeinInCoin> <tokenOutMinAmountInt> --swap-route-pool-ids <swapRoutePoolIds> --swap-route-denoms <swapRouteDenoms> --chain-id=<id>--from=<address> --keyring-backend=test -b=block --yes --log_format=json
+// docker container exec <container id> c4ed tx gamm swap-exact-amount-in <tokeinInCoin> <tokenOutMinAmountInt> --swap-route-pool-ids <swapRoutePoolIds> --swap-route-denoms <swapRouteDenoms> --chain-id=<id>--from=<address> --keyring-backend=test -b=block --yes --log_format=json
 func (n *NodeConfig) SwapExactAmountIn(tokenInCoin, tokenOutMinAmountInt string, swapRoutePoolIds string, swapRouteDenoms string, from string) {
 	n.LogActionF("swapping %s to get a minimum of %s with pool id routes (%s) and denom routes (%s)", tokenInCoin, tokenOutMinAmountInt, swapRoutePoolIds, swapRouteDenoms)
-	cmd := []string{"osmosisd", "tx", "gamm", "swap-exact-amount-in", tokenInCoin, tokenOutMinAmountInt, fmt.Sprintf("--swap-route-pool-ids=%s", swapRoutePoolIds), fmt.Sprintf("--swap-route-denoms=%s", swapRouteDenoms), fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gamm", "swap-exact-amount-in", tokenInCoin, tokenOutMinAmountInt, fmt.Sprintf("--swap-route-pool-ids=%s", swapRoutePoolIds), fmt.Sprintf("--swap-route-denoms=%s", swapRouteDenoms), fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully swapped")
@@ -76,7 +76,7 @@ func (n *NodeConfig) SwapExactAmountIn(tokenInCoin, tokenOutMinAmountInt string,
 
 func (n *NodeConfig) SubmitUpgradeProposal(upgradeVersion string, upgradeHeight int64, initialDeposit sdk.Coin) {
 	n.LogActionF("submitting upgrade proposal %s for height %d", upgradeVersion, upgradeHeight)
-	cmd := []string{"osmosisd", "tx", "gov", "submit-proposal", "software-upgrade", upgradeVersion, fmt.Sprintf("--title=\"%s upgrade\"", upgradeVersion), "--description=\"upgrade proposal submission\"", fmt.Sprintf("--upgrade-height=%d", upgradeHeight), "--upgrade-info=\"\"", "--from=val", fmt.Sprintf("--deposit=%s", initialDeposit)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "software-upgrade", upgradeVersion, fmt.Sprintf("--title=\"%s upgrade\"", upgradeVersion), "--description=\"upgrade proposal submission\"", fmt.Sprintf("--upgrade-height=%d", upgradeHeight), "--upgrade-info=\"\"", "--from=val", fmt.Sprintf("--deposit=%s", initialDeposit)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully submitted upgrade proposal")
@@ -84,7 +84,7 @@ func (n *NodeConfig) SubmitUpgradeProposal(upgradeVersion string, upgradeHeight 
 
 func (n *NodeConfig) SubmitSuperfluidProposal(asset string, initialDeposit sdk.Coin) {
 	n.LogActionF("submitting superfluid proposal for asset %s", asset)
-	cmd := []string{"osmosisd", "tx", "gov", "submit-proposal", "set-superfluid-assets-proposal", fmt.Sprintf("--superfluid-assets=%s", asset), fmt.Sprintf("--title=\"%s superfluid asset\"", asset), fmt.Sprintf("--description=\"%s superfluid asset\"", asset), "--from=val", fmt.Sprintf("--deposit=%s", initialDeposit)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "set-superfluid-assets-proposal", fmt.Sprintf("--superfluid-assets=%s", asset), fmt.Sprintf("--title=\"%s superfluid asset\"", asset), fmt.Sprintf("--description=\"%s superfluid asset\"", asset), "--from=val", fmt.Sprintf("--deposit=%s", initialDeposit)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully submitted superfluid proposal for asset %s", asset)
@@ -92,7 +92,7 @@ func (n *NodeConfig) SubmitSuperfluidProposal(asset string, initialDeposit sdk.C
 
 func (n *NodeConfig) SubmitTextProposal(text string, initialDeposit sdk.Coin, isExpedited bool) {
 	n.LogActionF("submitting text gov proposal")
-	cmd := []string{"osmosisd", "tx", "gov", "submit-proposal", "--type=text", fmt.Sprintf("--title=\"%s\"", text), "--description=\"test text proposal\"", "--from=val", fmt.Sprintf("--deposit=%s", initialDeposit)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "--type=text", fmt.Sprintf("--title=\"%s\"", text), "--description=\"test text proposal\"", "--from=val", fmt.Sprintf("--deposit=%s", initialDeposit)}
 	if isExpedited {
 		cmd = append(cmd, "--is-expedited=true")
 	}
@@ -107,7 +107,7 @@ func (n *NodeConfig) DepositProposal(proposalNumber int, isExpedited bool) {
 	if isExpedited {
 		deposit = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(config.MinExpeditedDepositValue)).String()
 	}
-	cmd := []string{"osmosisd", "tx", "gov", "deposit", fmt.Sprintf("%d", proposalNumber), deposit, "--from=val"}
+	cmd := []string{"c4ed", "tx", "gov", "deposit", fmt.Sprintf("%d", proposalNumber), deposit, "--from=val"}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully deposited on proposal %d", proposalNumber)
@@ -115,7 +115,7 @@ func (n *NodeConfig) DepositProposal(proposalNumber int, isExpedited bool) {
 
 func (n *NodeConfig) VoteYesProposal(from string, proposalNumber int) {
 	n.LogActionF("voting yes on proposal: %d", proposalNumber)
-	cmd := []string{"osmosisd", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "yes", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "yes", fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully voted yes on proposal %d", proposalNumber)
@@ -123,7 +123,7 @@ func (n *NodeConfig) VoteYesProposal(from string, proposalNumber int) {
 
 func (n *NodeConfig) VoteNoProposal(from string, proposalNumber int) {
 	n.LogActionF("voting no on proposal: %d", proposalNumber)
-	cmd := []string{"osmosisd", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "no", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "no", fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully voted no on proposal: %d", proposalNumber)
@@ -131,7 +131,7 @@ func (n *NodeConfig) VoteNoProposal(from string, proposalNumber int) {
 
 func (n *NodeConfig) LockTokens(tokens string, duration string, from string) {
 	n.LogActionF("locking %s for %s", tokens, duration)
-	cmd := []string{"osmosisd", "tx", "lockup", "lock-tokens", tokens, fmt.Sprintf("--duration=%s", duration), fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "lockup", "lock-tokens", tokens, fmt.Sprintf("--duration=%s", duration), fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully created lock")
@@ -139,7 +139,7 @@ func (n *NodeConfig) LockTokens(tokens string, duration string, from string) {
 
 func (n *NodeConfig) BankSend(amount string, sendAddress string, receiveAddress string) {
 	n.LogActionF("bank sending %s from address %s to %s", amount, sendAddress, receiveAddress)
-	cmd := []string{"osmosisd", "tx", "bank", "send", sendAddress, receiveAddress, amount, "--from=val"}
+	cmd := []string{"c4ed", "tx", "bank", "send", sendAddress, receiveAddress, amount, "--from=val"}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully sent bank sent %s from address %s to %s", amount, sendAddress, receiveAddress)
@@ -147,7 +147,7 @@ func (n *NodeConfig) BankSend(amount string, sendAddress string, receiveAddress 
 
 func (n *NodeConfig) CreateWallet(walletName string) string {
 	n.LogActionF("creating wallet %s", walletName)
-	cmd := []string{"osmosisd", "keys", "add", walletName, "--keyring-backend=test"}
+	cmd := []string{"c4ed", "keys", "add", walletName, "--keyring-backend=test"}
 	outBuf, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
 	re := regexp.MustCompile("osmo1(.{38})")
@@ -159,7 +159,7 @@ func (n *NodeConfig) CreateWallet(walletName string) string {
 
 func (n *NodeConfig) GetWallet(walletName string) string {
 	n.LogActionF("retrieving wallet %s", walletName)
-	cmd := []string{"osmosisd", "keys", "show", walletName, "--keyring-backend=test"}
+	cmd := []string{"c4ed", "keys", "show", walletName, "--keyring-backend=test"}
 	outBuf, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
 	re := regexp.MustCompile("osmo1(.{38})")

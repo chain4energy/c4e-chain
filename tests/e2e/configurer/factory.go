@@ -34,7 +34,7 @@ var (
 			Pruning:            "default",
 			PruningKeepRecent:  "0",
 			PruningInterval:    "0",
-			SnapshotInterval:   25,
+			SnapshotInterval:   100,
 			SnapshotKeepRecent: 10,
 			IsValidator:        true,
 		},

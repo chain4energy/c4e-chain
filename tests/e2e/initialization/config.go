@@ -3,6 +3,7 @@ package initialization
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	"path/filepath"
 	"time"
 
@@ -13,11 +14,10 @@ import (
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/gogo/protobuf/proto"
 	tmjson "github.com/tendermint/tendermint/libs/json"
-
-	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
 
 // NodeConfig is a confiuration for the node supplied from the test runner
@@ -36,29 +36,22 @@ type NodeConfig struct {
 
 const (
 	// common
-	OsmoDenom           = "uosmo"
-	IonDenom            = "uion"
-	StakeDenom          = "stake"
+	OsmoDenom           = "uc4e"
 	OsmoIBCDenom        = "ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518"
 	StakeIBCDenom       = "ibc/C053D637CCA2A2BA030E2C5EE1B28A16F71CCB0E45E8BE52766DC1B241B7787"
 	MinGasPrice         = "0.000"
 	IbcSendAmount       = 3300000000
 	ValidatorWalletName = "val"
 	// chainA
-	ChainAID      = "osmo-test-a"
+	ChainAID      = "c4e-chain-test-a"
 	OsmoBalanceA  = 200000000000
-	IonBalanceA   = 100000000000
 	StakeBalanceA = 110000000000
 	StakeAmountA  = 100000000000
 	// chainB
-	ChainBID      = "osmo-test-b"
+	ChainBID      = "c4e-chain-test-b"
 	OsmoBalanceB  = 500000000000
-	IonBalanceB   = 100000000000
 	StakeBalanceB = 440000000000
 	StakeAmountB  = 400000000000
-
-	EpochDuration         = time.Second * 60
-	TWAPPruningKeepPeriod = EpochDuration / 4
 )
 
 var (
@@ -67,12 +60,10 @@ var (
 	StakeAmountIntB  = sdk.NewInt(StakeAmountB)
 	StakeAmountCoinB = sdk.NewCoin(OsmoDenom, StakeAmountIntB)
 
-	InitBalanceStrA = fmt.Sprintf("%d%s,%d%s,%d%s", OsmoBalanceA, OsmoDenom, StakeBalanceA, StakeDenom, IonBalanceA, IonDenom)
-	InitBalanceStrB = fmt.Sprintf("%d%s,%d%s,%d%s", OsmoBalanceB, OsmoDenom, StakeBalanceB, StakeDenom, IonBalanceB, IonDenom)
-	OsmoToken       = sdk.NewInt64Coin(OsmoDenom, IbcSendAmount)  // 3,300uosmo
-	StakeToken      = sdk.NewInt64Coin(StakeDenom, IbcSendAmount) // 3,300ustake
+	InitBalanceStrA = fmt.Sprintf("%d%s", OsmoBalanceA+StakeBalanceA, OsmoDenom)
+	InitBalanceStrB = fmt.Sprintf("%d%s", OsmoBalanceB+StakeBalanceB, OsmoDenom)
+	OsmoToken       = sdk.NewInt64Coin(OsmoDenom, IbcSendAmount) // 3,300uosmo
 	tenOsmo         = sdk.Coins{sdk.NewInt64Coin(OsmoDenom, 10_000_000)}
-	fiftyOsmo       = sdk.Coins{sdk.NewInt64Coin(OsmoDenom, 50_000_000)}
 )
 
 func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHeight int) error {
@@ -81,7 +72,7 @@ func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHei
 
 	config.SetRoot(path)
 	config.Moniker = moniker
-
+	config.Storage.DiscardABCIResponses = false
 	coins, err := sdk.ParseCoinsNormalized(amountStr)
 	if err != nil {
 		return fmt.Errorf("failed to parse coins: %w", err)
@@ -165,7 +156,7 @@ func updateModuleGenesis[V proto.Message](appGenState map[string]json.RawMessage
 	return nil
 }
 
-func initGenesis(chain *internalChain, votingPeriod, expeditedVotingPeriod time.Duration, forkHeight int) error {
+func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight int) error {
 	// initialize a genesis file
 	configDir := chain.nodes[0].configDir()
 	for _, val := range chain.nodes {
@@ -196,7 +187,7 @@ func initGenesis(chain *internalChain, votingPeriod, expeditedVotingPeriod time.
 
 	config.SetRoot(chain.nodes[0].configDir())
 	config.Moniker = chain.nodes[0].moniker
-
+	config.Storage.DiscardABCIResponses = false
 	genFilePath := config.GenesisFile()
 	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
 	if err != nil {
@@ -214,6 +205,11 @@ func initGenesis(chain *internalChain, votingPeriod, expeditedVotingPeriod time.
 	}
 
 	err = updateModuleGenesis(appGenState, crisistypes.ModuleName, &crisistypes.GenesisState{}, updateCrisisGenesis)
+	if err != nil {
+		return err
+	}
+
+	err = updateModuleGenesis(appGenState, govtypes.ModuleName, &govtypes.GenesisState{}, updateGovGenesis(votingPeriod))
 	if err != nil {
 		return err
 	}
@@ -258,6 +254,7 @@ func updateBankGenesis(bankGenState *banktypes.GenesisState) {
 			},
 		},
 	})
+
 }
 
 func updateStakeGenesis(stakeGenState *staketypes.GenesisState) {
@@ -272,6 +269,15 @@ func updateStakeGenesis(stakeGenState *staketypes.GenesisState) {
 
 func updateCrisisGenesis(crisisGenState *crisistypes.GenesisState) {
 	crisisGenState.ConstantFee.Denom = OsmoDenom
+}
+
+func updateGovGenesis(votingPeriod time.Duration) func(*govtypes.GenesisState) {
+	return func(govGenState *govtypes.GenesisState) {
+		govGenState.VotingParams = govtypes.VotingParams{
+			VotingPeriod: votingPeriod,
+		}
+		govGenState.DepositParams.MinDeposit = tenOsmo
+	}
 }
 
 func updateGenUtilGenesis(c *internalChain) func(*genutiltypes.GenesisState) {
