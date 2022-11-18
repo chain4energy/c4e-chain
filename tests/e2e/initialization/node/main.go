@@ -1,12 +1,13 @@
-package main_package
+package main
 
 import (
 	"encoding/json"
 	"flag"
-	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 )
 
 func main() {

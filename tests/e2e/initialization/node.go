@@ -3,8 +3,6 @@ package initialization
 import (
 	"encoding/json"
 	"fmt"
-	c4eapp "github.com/chain4energy/c4e-chain/app"
-	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	"os"
 	"path"
 	"path/filepath"
@@ -25,12 +23,14 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/go-bip39"
 	"github.com/spf13/viper"
-	tmcfg "github.com/tendermint/tendermint/config"
 	tmconfig "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	c4eapp "github.com/chain4energy/c4e-chain/app"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
 
 type internalNode struct {
@@ -271,7 +271,7 @@ func (n *internalNode) init() error {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
 	}
 
-	tmcfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
+	tmconfig.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 	return nil
 }
 
@@ -298,7 +298,7 @@ func (n *internalNode) initNodeConfigs(persistentPeers []string) error {
 		return err
 	}
 
-	valConfig := &tmconfig.Config{}
+	valConfig := tmconfig.DefaultConfig()
 	if err := vpr.Unmarshal(valConfig); err != nil {
 		return err
 	}
@@ -310,7 +310,7 @@ func (n *internalNode) initNodeConfigs(persistentPeers []string) error {
 	valConfig.StateSync.Enable = false
 	valConfig.LogLevel = "info"
 	valConfig.P2P.PersistentPeers = strings.Join(persistentPeers, ",")
-	valConfig.Storage = tmconfig.DefaultStorageConfig()
+	valConfig.Storage.DiscardABCIResponses = true
 
 	tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 	return nil
@@ -325,17 +325,17 @@ func (n *internalNode) initStateSyncConfig(trustHeight int64, trustHash string, 
 		return err
 	}
 
-	valConfig := &tmconfig.Config{}
+	valConfig := tmconfig.DefaultConfig()
 	if err := vpr.Unmarshal(valConfig); err != nil {
 		return err
 	}
 
-	valConfig.StateSync = tmcfg.DefaultStateSyncConfig()
+	valConfig.StateSync = tmconfig.DefaultStateSyncConfig()
 	valConfig.StateSync.Enable = true
 	valConfig.StateSync.TrustHeight = trustHeight
 	valConfig.StateSync.TrustHash = trustHash
 	valConfig.StateSync.RPCServers = stateSyncRPCServers
-	valConfig.Storage = tmconfig.DefaultStorageConfig()
+
 	tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 	return nil
 }

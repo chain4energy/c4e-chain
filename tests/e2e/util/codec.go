@@ -1,7 +1,7 @@
 package util
 
 import (
-	c4eapp "github.com/chain4energy/c4e-chain/tests/e2e/encoding"
+	encoding "github.com/chain4energy/c4e-chain/tests/e2e/encoding"
 	"github.com/chain4energy/c4e-chain/tests/e2e/encoding/params"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -21,7 +21,7 @@ func init() {
 }
 
 func initEncodingConfigAndCdc() (params.EncodingConfig, codec.Codec) {
-	encodingConfig := c4eapp.MakeEncodingConfig()
+	encodingConfig := encoding.MakeEncodingConfig()
 
 	encodingConfig.InterfaceRegistry.RegisterImplementations(
 		(*sdk.Msg)(nil),

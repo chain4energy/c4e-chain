@@ -18,7 +18,7 @@ a root user, bypassing the file permission issues.
 
 ## Structure
 
-Each folder in `tests/e2e/initialization` corresponds to a standolone script.
+Each folder in `tests/e2e/initialization` corresponds to a standalone script.
 At the time of this writing, we have the following scripts/folders:
     - `chain` - for initializing a full chain
     - `node` - for initializing a single node
@@ -63,7 +63,7 @@ Additionally, it takes the following arguments:
   - The configurable voting period duration for the chain
 
 ```go
-    tmpDir, _ := ioutil.TempDir("", "osmosis-e2e-testnet-")
+    tmpDir, _ := os.MkdirTemp("", "osmosis-e2e-testnet-")
 
  initResource, _ = s.dkrPool.RunWithOptions(
   &dockertest.RunOptions{
@@ -91,9 +91,9 @@ Additionally, it takes the following arguments:
 Assumming that a the container was correctly mounted on a volume,
 it produces the following:
 
-- `c4e-test-< chain id >-encode` file
+- `osmo-test-< chain id >-encode` file
   - This is encoded metadata about the newly created chain with its nodes
-- `c4e-test-< chain id >` folder
+- `osmo-test-< chain id >` folder
   - For every `NodeCondig` provided to the container, it will produce a folder
     with the respective node configs
 
@@ -101,25 +101,25 @@ Example:
 
 ```sh
 $:/tmp/osmosis-e2e-testnet-1167397304 $ ls
-c4e-test-a  c4e-test-a-encode
+osmo-test-a  osmo-test-a-encode
 
-$:/tmp/osmosis-e2e-testnet-1167397304/c4e-test-a $ cd  c4e-test-a
+$:/tmp/osmosis-e2e-testnet-1167397304/osmo-test-a $ cd  osmo-test-a
 
-$:/tmp/osmosis-e2e-testnet-1167397304/c4e-test-a $ ls
-c4e-test-a-osmosis-00  c4e-test-a-osmosis-11  c4e-test-a-osmosis-22  c4e-test-a-osmosis-33
+$:/tmp/osmosis-e2e-testnet-1167397304/osmo-test-a $ ls
+osmo-test-a-osmosis-00  osmo-test-a-osmosis-11  osmo-test-a-osmosis-22  osmo-test-a-osmosis-33
 
-$:/tmp/osmosis-e2e-testnet-1167397304/c4e-test-a $ cd  c4e-test-a-osmosis-00
+$:/tmp/osmosis-e2e-testnet-1167397304/osmo-test-a $ cd  osmo-test-a-osmosis-00
 
-$:/tmp/osmosis-e2e-testnet-1167397304/c4e-test-a/c4e-test-a-osmosis-00 $ ls
+$:/tmp/osmosis-e2e-testnet-1167397304/osmo-test-a/osmo-test-a-osmosis-00 $ ls
 config  data  keyring-test  wasm
 ```
 
 - Here we mounted the container on
-`/tmp/osmosis-e2e-testnet-1167397304/c4e-test`as a volume
+`/tmp/osmosis-e2e-testnet-1167397304/osmo-test`as a volume
 - < chain id > = "a"
 - 4 `NodeConfig`s were provided via the `--config` flag
-- `c4e-test-a-encode` output file corresponds to the serialized `Chain`
-struct defined in `tests/e2e/chain/chain.go`
+- `osmo-test-a-encode` output file corresponds to the serialized `Chain` struct
+defined in `tests/e2e/chain/chain.go`
 
 ### Initializing a Node (`node`)
 

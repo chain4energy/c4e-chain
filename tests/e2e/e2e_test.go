@@ -1,45 +1,133 @@
 package e2e
 
 import (
-	"encoding/json"
-	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	"fmt"
+	"io"
 	"os"
+	"path/filepath"
+	"time"
+
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+
+	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 )
 
-//func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
-//	chainA := s.chainConfigs[0]
-//	chainB := s.chainConfigs[1]
-//	// compare coins of receiver pre and post IBC send
-//	// diff should only be the amount sent
-//	s.sendIBC(chainA, chainB, chainB.validators[0].validator.PublicAddress, initialization.OsmoToken)
-//}
+// TestSuperfluidVoting tests that superfluid voting is functioning as expected.
+// It does so by doing the following:
+// - creating a pool
+// - attempting to submit a proposal to enable superfluid voting in that pool
+// - voting yes on the proposal from the validator wallet
+// - voting no on the proposal from the delegator wallet
+// - ensuring that delegator's wallet overwrites the validator's vote
 
-func (s *IntegrationTestSuite) TestSubmitTextProposal() {
-	chainA := s.chainConfigs[0]
-	// compare coins of receiver pre and post IBC send
-	// diff should only be the amount sent
-	s.submitTextProposal(chainA, "Proposal 1")
+// Copy a file from A to B with io.Copy
+func copyFile(a, b string) error {
+	source, err := os.Open(a)
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+	destination, err := os.Create(b)
+	if err != nil {
+		return err
+	}
+	defer destination.Close()
+	_, err = io.Copy(destination, source)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (s *IntegrationTestSuite) TestDistributorParamsChange() {
-	//proposal := paramsutils.ParamChangeProposalJSON{
-	//	Title:       "CfeDistributor module params change",
-	//	Description: "Change cfedistributor params",
-	//	Changes: paramsutils.ParamChangesJSON{
-	//		paramsutils.ParamChangeJSON{
-	//			Subspace: cfedistributormoduletypes.ModuleName,
-	//			Key:      string(cfedistributormoduletypes.KeySubDistributors),
-	//			Value:    []byte(fmt.Sprintf(`"%s"`, contracts[0])),
-	//		},
-	//	},
-	//	Deposit: "625000000uosmo",
-	//}
-	proposal, _ := os.ReadFile("./scripts/update-subdistributors.json")
-	proposalJson, err := json.Marshal(proposal)
-	SubmitParamChangeProposal(string(proposalJson), initialization.ValidatorWalletName)
-	s.NoError(err)
-	chainA := s.chainConfigs[0]
-	// compare coins of receiver pre and post IBC send
-	// diff should only be the amount sent
-	s.submitTextProposal(chainA, "Proposal 1")
+func (s *IntegrationTestSuite) TestStateSync() {
+	if s.skipStateSync {
+		s.T().Skip()
+	}
+
+	chainA := s.configurer.GetChainConfig(0)
+	runningNode, err := chainA.GetDefaultNode()
+	s.Require().NoError(err)
+
+	persistentPeers := chainA.GetPersistentPeers()
+
+	stateSyncHostPort := fmt.Sprintf("%s:26657", runningNode.Name)
+	stateSyncRPCServers := []string{stateSyncHostPort, stateSyncHostPort}
+
+	// get trust height and trust hash.
+	trustHeight, err := runningNode.QueryCurrentHeight()
+	s.Require().NoError(err)
+
+	trustHash, err := runningNode.QueryHashFromBlock(trustHeight)
+	s.Require().NoError(err)
+
+	stateSynchingNodeConfig := &initialization.NodeConfig{
+		Name:               "state-sync",
+		Pruning:            "default",
+		PruningKeepRecent:  "0",
+		PruningInterval:    "0",
+		SnapshotInterval:   1500,
+		SnapshotKeepRecent: 2,
+	}
+
+	tempDir, err := os.MkdirTemp("", "osmosis-e2e-statesync-")
+	s.Require().NoError(err)
+
+	// configure genesis and config files for the state-synchin node.
+	nodeInit, err := initialization.InitSingleNode(
+		chainA.Id,
+		tempDir,
+		filepath.Join(runningNode.ConfigDir, "config", "genesis.json"),
+		stateSynchingNodeConfig,
+		time.Duration(chainA.VotingPeriod),
+		// time.Duration(chainA.ExpeditedVotingPeriod),
+		trustHeight,
+		trustHash,
+		stateSyncRPCServers,
+		persistentPeers,
+	)
+	s.Require().NoError(err)
+
+	stateSynchingNode := chainA.CreateNode(nodeInit)
+
+	// ensure that the running node has snapshots at a height > trustHeight.
+	hasSnapshotsAvailable := func(syncInfo coretypes.SyncInfo) bool {
+		snapshotHeight := runningNode.SnapshotInterval
+		if uint64(syncInfo.LatestBlockHeight) < snapshotHeight {
+			s.T().Logf("snapshot height is not reached yet, current (%d), need (%d)", syncInfo.LatestBlockHeight, snapshotHeight)
+			return false
+		}
+
+		snapshots, err := runningNode.QueryListSnapshots()
+		s.Require().NoError(err)
+
+		for _, snapshot := range snapshots {
+			if snapshot.Height > uint64(trustHeight) {
+				s.T().Log("found state sync snapshot after trust height")
+				return true
+			}
+		}
+		s.T().Log("state sync snashot after trust height is not found")
+		return false
+	}
+	runningNode.WaitUntil(hasSnapshotsAvailable)
+
+	// start the state synchin node.
+	err = stateSynchingNode.Run()
+	s.Require().NoError(err)
+
+	// ensure that the state synching node cathes up to the running node.
+	s.Require().Eventually(func() bool {
+		stateSyncNodeHeight, err := stateSynchingNode.QueryCurrentHeight()
+		s.Require().NoError(err)
+		runningNodeHeight, err := runningNode.QueryCurrentHeight()
+		s.Require().NoError(err)
+		return stateSyncNodeHeight == runningNodeHeight
+	},
+		3*time.Minute,
+		500*time.Millisecond,
+	)
+
+	// stop the state synching node.
+	err = chainA.RemoveNode(stateSynchingNode.Name)
+	s.Require().NoError(err)
 }

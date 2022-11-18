@@ -3,12 +3,13 @@ package initialization
 import (
 	"errors"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	"path/filepath"
 	"time"
+
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
 
-func InitChain(id, dataDir string, nodeConfigs []*NodeConfig, votingPeriod time.Duration, forkHeight int) (*Chain, error) {
+func InitChain(id, dataDir string, nodeConfigs []*NodeConfig, votingPeriod, expeditedVotingPeriod time.Duration, forkHeight int) (*Chain, error) {
 	chain, err := new(id, dataDir)
 	if err != nil {
 		return nil, err
@@ -22,7 +23,7 @@ func InitChain(id, dataDir string, nodeConfigs []*NodeConfig, votingPeriod time.
 		chain.nodes = append(chain.nodes, newNode)
 	}
 
-	if err := initGenesis(chain, votingPeriod, forkHeight); err != nil {
+	if err := initGenesis(chain, votingPeriod, expeditedVotingPeriod, forkHeight); err != nil {
 		return nil, err
 	}
 

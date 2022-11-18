@@ -1,29 +1,30 @@
-package main_package
+package main
 
 import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"os"
 	"time"
+
+	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 )
 
 func main() {
 	var (
-		valConfig    []*initialization.NodeConfig
-		dataDir      string
-		chainId      string
-		config       string
-		votingPeriod time.Duration
-		forkHeight   int
+		valConfig             []*initialization.NodeConfig
+		dataDir               string
+		chainId               string
+		config                string
+		votingPeriod          time.Duration
+		expeditedVotingPeriod time.Duration
+		forkHeight            int
 	)
 
 	flag.StringVar(&dataDir, "data-dir", "", "chain data directory")
 	flag.StringVar(&chainId, "chain-id", "", "chain ID")
 	flag.StringVar(&config, "config", "", "serialized config")
 	flag.DurationVar(&votingPeriod, "voting-period", 30000000000, "voting period")
-	flag.IntVar(&forkHeight, "fork-height", 0, "fork height")
 
 	flag.Parse()
 
@@ -40,7 +41,7 @@ func main() {
 		panic(err)
 	}
 
-	createdChain, err := initialization.InitChain(chainId, dataDir, valConfig, votingPeriod, forkHeight)
+	createdChain, err := initialization.InitChain(chainId, dataDir, valConfig, votingPeriod, expeditedVotingPeriod, forkHeight)
 	if err != nil {
 		panic(err)
 	}
