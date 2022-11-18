@@ -410,7 +410,12 @@ func TestTimeLinearMinterInfation(t *testing.T) {
 	linearMinter1 := types.TimeLinearMinter{Amount: sdk.NewInt(1000000)}
 
 	period1 := types.MintingPeriod{Position: 1, PeriodEnd: &endTime, Type: types.TIME_LINEAR_MINTER, TimeLinearMinter: &linearMinter1}
-	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
+
+
+	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime.Add(-1000))
+	require.EqualValues(t, sdk.ZeroDec(), inflation)
+
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
 	expected, _ := sdk.NewDecFromStr("0.1")
 	require.EqualValues(t, expected, inflation)
 
@@ -438,8 +443,12 @@ func TestNoMintingInfation(t *testing.T) {
 
 	period1 := types.MintingPeriod{Position: 3, Type: types.NO_MINTING}
 
-	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
+	inflation := period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime.Add(-1000))
 	expected := sdk.ZeroDec()
+	require.EqualValues(t, expected, inflation)
+
+	inflation = period1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
+	expected = sdk.ZeroDec()
 	require.EqualValues(t, expected, inflation)
 
 	duration = time.Hour * 24 * 73
@@ -706,7 +715,11 @@ func TestPeriodicReductionMinterInfationNotLimted(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	period := types.MintingPeriod{Position: 1, PeriodEnd: nil, Type: types.PERIODIC_REDUCTION_MINTER, PeriodicReductionMinter: &minter}
 
-	inflation := period.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime)
+
+	inflation := period.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(-1000))
+	require.EqualValues(t, sdk.ZeroDec(), inflation)
+
+	inflation = period.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime)
 	expected, _ := sdk.NewDecFromStr("1")
 	require.EqualValues(t, expected, inflation)
 

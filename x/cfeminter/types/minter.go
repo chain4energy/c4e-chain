@@ -149,6 +149,9 @@ func (m MintingPeriod) Validate() error {
 }
 
 func (m *MintingPeriod) CalculateInfation(totalSupply sdk.Int, periodStart time.Time, blockTime time.Time) sdk.Dec {
+	if periodStart.After(blockTime) {
+		return sdk.ZeroDec()
+	}
 	switch m.Type {
 	case NO_MINTING:
 		return sdk.ZeroDec()
