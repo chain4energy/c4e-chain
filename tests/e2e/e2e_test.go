@@ -1,8 +1,11 @@
 package e2e
 
 import (
+	"encoding/json"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
-	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramsutils "github.com/cosmos/cosmos-sdk/x/params/client/utils"
 	"io"
 	"os"
 	"time"
@@ -132,35 +135,45 @@ func (s *IntegrationTestSuite) TestCfedistributorParamsProposal() {
 	chainA := s.configurer.GetChainConfig(0)
 
 	node, err := chainA.GetDefaultNode()
-	proposal, _ := os.ReadFile("./scripts/update-subdistributors.json")
+	//proposal, _ := os.ReadFile("./scripts/update-subdistributors.json")
 	//var result map[string]interface{}
 	//_ = json.Unmarshal(proposal, result)
-	//newSubdistributors := []cfedistributormoduletypes.SubDistributor{
-	//	{
-	//		Name: "New subdistributor",
-	//		Sources: []*cfedistributormoduletypes.Account{
-	//
-	//		},
-	//		Destinations: cfedistributormoduletypes.Destinations{
-	//
-	//		},
-	//	},
-	//}
-	//proposal := paramsutils.ParamChangeProposalJSON{
-	//	Title:       "Param Change",
-	//	Description: "Changing the rate limit contract param",
-	//	Changes: paramsutils.ParamChangesJSON{
-	//		paramsutils.ParamChangeJSON{
-	//			Subspace: cfedistributormoduletypes.ModuleName,
-	//			Key:      "SubDistributors",
-	//			Value:    ,
-	//		},
-	//	},
-	//	Deposit: "625000000uosmo",
-	//}
+	newSubdistributors := []distributortypes.SubDistributor{
+		{
+			Name: "New subdistributor",
+			Sources: []*distributortypes.Account{
+				{
+					Id:   distributortypes.GreenEnergyBoosterCollector,
+					Type: distributortypes.MAIN,
+				},
+			},
+			Destinations: distributortypes.Destinations{
+				PrimaryShare: distributortypes.Account{
+					Id:   distributortypes.ValidatorsRewardsCollector,
+					Type: distributortypes.MODULE_ACCOUNT,
+				},
+				BurnShare: sdk.ZeroDec(),
+			},
+		},
+	}
+	jsonSubdistributors, err := json.Marshal(newSubdistributors)
 	s.NoError(err)
+	proposal := paramsutils.ParamChangeProposalJSON{
+		Title:       "CfeDistributor module params change",
+		Description: "Change cfedistributor params",
+		Changes: paramsutils.ParamChangesJSON{
+			paramsutils.ParamChangeJSON{
+				Subspace: distributortypes.ModuleName,
+				Key:      "SubDistributors",
+				Value:    jsonSubdistributors,
+			},
+		},
+		Deposit: "10000000uc4e",
+	}
 
-	node.SubmitParamChangeProposal(string(proposal), initialization.ValidatorWalletName)
+	jsonProposal, err := json.Marshal(proposal)
+	s.NoError(err)
+	node.SubmitParamChangeProposal(string(jsonProposal), initialization.ValidatorWalletName)
 	chainA.LatestProposalNumber += 1
 
 	for _, n := range chainA.NodeConfigs {
@@ -177,8 +190,8 @@ func (s *IntegrationTestSuite) TestCfedistributorParamsProposal() {
 	s.Eventually(
 		func() bool {
 			var params Params
-			node.QueryParams(cfedistributormoduletypes.ModuleName, "SubDistributors", &params)
-			return params.Value != ""
+			node.QueryParams(distributortypes.ModuleName, "SubDistributors", &params)
+			return params.Value == string(jsonSubdistributors)
 		},
 		1*time.Minute,
 		10*time.Millisecond,

@@ -23,12 +23,12 @@ func (n *NodeConfig) QueryParams(subspace, key string, result any) {
 	require.NoError(n.t, err)
 
 	err = json.Unmarshal(out.Bytes(), &result)
+
 	require.NoError(n.t, err)
 }
 
 func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	n.LogActionF("submitting param change proposal %s", proposalJson)
-	// ToDo: Is there a better way to do this?
 	wd, err := os.Getwd()
 	require.NoError(n.t, err)
 	localProposalFile := wd + "/scripts/param_change_proposal.json"
