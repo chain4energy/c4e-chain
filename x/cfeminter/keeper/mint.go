@@ -1,10 +1,11 @@
 package keeper
 
 import (
+	"time"
+
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"time"
 )
 
 func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
@@ -61,7 +62,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 		return sdk.ZeroInt(), sdkerrors.Wrap(err, "minter mint coins error")
 	}
 
-	err = k.AddCollectedFees(ctx, coins)
+	err = k.SendMintedCoins(ctx, coins)
 	if err != nil {
 		k.Logger(ctx).Error("mint - add collected fees error", "lev", level, "error", err.Error())
 		return sdk.ZeroInt(), sdkerrors.Wrap(err, "minter - mint - add collected fees error")
