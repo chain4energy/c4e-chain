@@ -12,20 +12,19 @@ import (
 )
 
 const (
-	// Environment variable signifying whether to run e2e tests.
-	e2eEnabledEnv = "OSMOSIS_E2E"
 	// Environment variable name to skip the upgrade tests
-	skipUpgradeEnv = "OSMOSIS_E2E_SKIP_UPGRADE"
+	skipUpgradeEnv = "C4E_E2E_SKIP_UPGRADE"
 	// Environment variable name to skip the IBC tests
-	skipIBCEnv = "OSMOSIS_E2E_SKIP_IBC"
+	skipIBCEnv  = "C4E_E2E_SKIP_IBC"
+	debugLogEnv = "C4E_E2E_DEBUG_LOG"
 	// Environment variable name to skip state sync testing
-	skipStateSyncEnv = "OSMOSIS_E2E_SKIP_STATE_SYNC"
+	skipStateSyncEnv = "C4E_E2E_SKIP_STATE_SYNC"
 	// Environment variable name to determine if this upgrade is a fork
-	forkHeightEnv = "OSMOSIS_E2E_FORK_HEIGHT"
+	forkHeightEnv = "C4E_E2E_FORK_HEIGHT"
 	// Environment variable name to skip cleaning up Docker resources in teardown
-	skipCleanupEnv = "OSMOSIS_E2E_SKIP_CLEANUP"
+	skipCleanupEnv = "C4E_E2E_SKIP_CLEANUP"
 	// Environment variable name to determine what version we are upgrading to
-	upgradeVersionEnv = "OSMOSIS_E2E_UPGRADE_VERSION"
+	upgradeVersionEnv = "C4E_E2E_UPGRADE_VERSION"
 )
 
 type IntegrationTestSuite struct {
@@ -43,24 +42,12 @@ func TestIntegrationTestSuite(t *testing.T) {
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	os.Setenv(upgradeVersionEnv, "v1.0.1")
 	s.T().Log("setting up e2e integration test suite...")
 	var (
 		err             error
 		upgradeSettings configurer.UpgradeSettings
 	)
-
-	// The e2e test flow is as follows:
-	//
-	// 1. Configure two chains - chan A and chain B.
-	//   * For each chain, set up several validator nodes
-	//   * Initialize configs and genesis for all them.
-	// 2. Start both networks.
-	// 3. Run IBC relayer betweeen the two chains.
-	// 4. Execute various e2e tests, including IBC, upgrade, superfluid.
-	//os.Setenv(skipUpgradeEnv, "false")
-	os.Setenv(upgradeVersionEnv, "v1.0.1")
-	os.Setenv(skipUpgradeEnv, "true")
-	//os.Setenv(skipCleanupEnv, "true")
 
 	if str := os.Getenv(skipUpgradeEnv); len(str) > 0 {
 		s.skipUpgrade, err = strconv.ParseBool(str)
@@ -85,7 +72,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		}
 	}
 
-	if str := os.Getenv("OSMOSIS_E2E_SKIP_STATE_SYNC"); len(str) > 0 {
+	if str := os.Getenv(skipStateSyncEnv); len(str) > 0 {
 		s.skipStateSync, err = strconv.ParseBool(str)
 		s.Require().NoError(err)
 		if s.skipStateSync {
@@ -94,7 +81,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	isDebugLogEnabled := false
-	if str := os.Getenv("OSMOSIS_E2E_DEBUG_LOG"); len(str) > 0 {
+	if str := os.Getenv(debugLogEnv); len(str) > 0 {
 		isDebugLogEnabled, err = strconv.ParseBool(str)
 		s.Require().NoError(err)
 		if isDebugLogEnabled {

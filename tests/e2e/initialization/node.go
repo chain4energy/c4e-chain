@@ -353,21 +353,12 @@ func (n *internalNode) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	txBuilder.SetFeeAmount(sdk.NewCoins())
 	txBuilder.SetGasLimit(uint64(200000 * len(msgs)))
 
-	// TODO: Find a better way to sign this tx with less code.
 	signerData := authsigning.SignerData{
 		ChainID:       n.chain.chainMeta.Id,
 		AccountNumber: 0,
 		Sequence:      0,
 	}
 
-	// For SIGN_MODE_DIRECT, calling SetSignatures calls setSignerInfos on
-	// TxBuilder under the hood, and SignerInfos is needed to generate the sign
-	// bytes. This is the reason for setting SetSignatures here, with a nil
-	// signature.
-	//
-	// Note: This line is not needed for SIGN_MODE_LEGACY_AMINO, but putting it
-	// also doesn't affect its generated sign bytes, so for code's simplicity
-	// sake, we put it here.
 	sig := txsigning.SignatureV2{
 		PubKey: n.keyInfo.GetPubKey(),
 		Data: &txsigning.SingleSignatureData{
