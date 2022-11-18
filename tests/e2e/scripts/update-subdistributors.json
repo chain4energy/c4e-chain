@@ -1,0 +1,29 @@
+{
+  "title": "CfeDistributor module params change",
+  "description": "Change cfedistributor params",
+  "deposit": "10000000uc4e",
+  "changes": [
+    {
+      "subspace": "cfedistributor",
+      "key": "SubDistributors",
+      "value": [
+        {
+          "destinations": {
+            "primary_share": {
+              "id": "validators_rewards_collector",
+              "type": "MODULE_ACCOUNT"
+            },
+            "burn_share": "0.000000000000000000"
+          },
+          "name": "new_default_distributor",
+          "sources": [
+            {
+              "id": "usage_incentives_collector",
+              "type": "MAIN"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

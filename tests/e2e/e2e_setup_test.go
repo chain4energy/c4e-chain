@@ -59,6 +59,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// 4. Execute various e2e tests, including IBC, upgrade, superfluid.
 	//os.Setenv(skipUpgradeEnv, "false")
 	os.Setenv(upgradeVersionEnv, "v1.0.1")
+	os.Setenv(skipUpgradeEnv, "true")
+	os.Setenv(skipCleanupEnv, "true")
 
 	if str := os.Getenv(skipUpgradeEnv); len(str) > 0 {
 		s.skipUpgrade, err = strconv.ParseBool(str)
