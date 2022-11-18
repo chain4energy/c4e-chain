@@ -159,7 +159,7 @@ func (bc *baseConfigurer) runIBCRelayer(chainConfigA *chain.Config, chainConfigB
 	// transport errors.
 	time.Sleep(10 * time.Second)
 
-	// create the client, connection and channel between the two Osmosis chains
+	// create the client, connection and channel between the two C4e chains
 	return bc.connectIBCChains(chainConfigA, chainConfigB)
 }
 

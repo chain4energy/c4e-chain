@@ -39,7 +39,7 @@ func (cb *CurrentBranchConfigurer) ConfigureChains() error {
 
 func (cb *CurrentBranchConfigurer) ConfigureChain(chainConfig *chain.Config) error {
 	cb.t.Logf("starting e2e infrastructure from current branch for chain-id: %s", chainConfig.Id)
-	tmpDir, err := os.MkdirTemp("", "osmosis-e2e-testnet-")
+	tmpDir, err := os.MkdirTemp("", "c4e-e2e-testnet-")
 	if err != nil {
 		return err
 	}

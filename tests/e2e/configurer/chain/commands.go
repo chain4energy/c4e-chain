@@ -183,7 +183,7 @@ func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus stri
 		},
 		1*time.Minute,
 		10*time.Millisecond,
-		"Osmosis node failed to retrieve prop tally",
+		"C4e node failed to retrieve prop tally",
 	)
 	elapsed := time.Since(start)
 	totalTime <- elapsed

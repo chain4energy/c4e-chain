@@ -6,8 +6,8 @@ type ImageConfig struct {
 	InitRepository string
 	InitTag        string
 
-	OsmosisRepository string
-	OsmosisTag        string
+	C4eRepository string
+	C4eTag        string
 
 	RelayerRepository string
 	RelayerTag        string
@@ -18,13 +18,13 @@ const (
 	// Current Git branch osmosis repo/version. It is meant to be built locally.
 	// It is used when skipping upgrade by setting OSMOSIS_E2E_SKIP_UPGRADE to true).
 	// This image should be pre-built with `make docker-build-debug` either in CI or locally.
-	CurrentBranchOsmoRepository = "chain4energy"
-	CurrentBranchOsmoTag        = "debug"
+	CurrentBranchC4eRepository = "chain4energy"
+	CurrentBranchC4eTag        = "debug"
 	// Pre-upgrade osmosis repo/tag to pull.
 	// It should be uploaded to Docker Hub. OSMOSIS_E2E_SKIP_UPGRADE should be unset
 	// for this functionality to be used.
-	previousVersionOsmoRepository = "chain4energy-old-dev"
-	previousVersionOsmoTag        = "v1.0.0"
+	previousVersionC4eRepository = "chain4energy-old-dev"
+	previousVersionC4eTag        = "v1.0.0"
 	// Pre-upgrade repo/tag for osmosis initialization (this should be one version below upgradeVersion)
 	previousVersionInitRepository = "chain4energy-old-chain-init"
 	previousVersionInitTag        = "v1.0.0"
@@ -46,8 +46,8 @@ func NewImageConfig(isUpgrade, isFork bool) ImageConfig {
 		// If upgrade is not tested, we do not need InitRepository and InitTag
 		// because we directly call the initialization logic without
 		// the need for Docker.
-		config.OsmosisRepository = CurrentBranchOsmoRepository
-		config.OsmosisTag = CurrentBranchOsmoTag
+		config.C4eRepository = CurrentBranchC4eRepository
+		config.C4eTag = CurrentBranchC4eTag
 		return config
 	}
 
@@ -61,16 +61,16 @@ func NewImageConfig(isUpgrade, isFork bool) ImageConfig {
 		// Normally, validators switch the binaries pre-fork height
 		// Then, once the fork height is reached, the state breaking-logic
 		// is run.
-		config.OsmosisRepository = CurrentBranchOsmoRepository
-		config.OsmosisTag = CurrentBranchOsmoTag
+		config.C4eRepository = CurrentBranchC4eRepository
+		config.C4eTag = CurrentBranchC4eTag
 	} else {
 		// Upgrades are run at the time when upgrade height is reached
 		// and are submitted via a governance proposal. Thefore, we
 		// must start running the previous Osmosis version. Then, the node
 		// should auto-upgrade, at which point we can restart the updated
 		// Osmosis validator container.
-		config.OsmosisRepository = previousVersionOsmoRepository
-		config.OsmosisTag = previousVersionOsmoTag
+		config.C4eRepository = previousVersionC4eRepository
+		config.C4eTag = previousVersionC4eTag
 	}
 
 	return config
