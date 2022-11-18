@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
+	"github.com/stretchr/testify/require"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -174,6 +176,29 @@ func (s *IntegrationTestSuite) submitTextProposal(c *chainConfig, text string) {
 	s.ExecTx(c.meta.Id, 0, cmd, "code: 0")
 	s.T().Log("successfully submitted text proposal")
 	c.latestProposalNumber = c.latestProposalNumber + 1
+}
+
+func (s *IntegrationTestSuite) SubmitParamChangeProposal(proposalJson, from string) {
+	s.T().Logf("submitting param change proposal %s", proposalJson)
+	wd, err := os.Getwd()
+	require.NoError(n.t, err)
+	localProposalFile := wd + "/scripts/param_change_proposal.json"
+	f, err := os.Create(localProposalFile)
+	require.NoError(n.t, err)
+	_, err = f.WriteString(proposalJson)
+	require.NoError(n.t, err)
+	err = f.Close()
+	require.NoError(n.t, err)
+
+	cmd := []string{"osmosisd", "tx", "gov", "submit-proposal", "param-change", "/osmosis/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+
+	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	err = os.Remove(localProposalFile)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully submitted param change proposal")
 }
 
 func (s *IntegrationTestSuite) depositProposal(c *chainConfig) {

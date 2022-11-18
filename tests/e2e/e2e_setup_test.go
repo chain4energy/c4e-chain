@@ -74,7 +74,7 @@ var (
 			Pruning:            "default",
 			PruningKeepRecent:  "0",
 			PruningInterval:    "0",
-			SnapshotInterval:   100,
+			SnapshotInterval:   1500,
 			SnapshotKeepRecent: 2,
 			IsValidator:        true,
 		},
@@ -83,7 +83,7 @@ var (
 			Pruning:            "nothing",
 			PruningKeepRecent:  "0",
 			PruningInterval:    "0",
-			SnapshotInterval:   100,
+			SnapshotInterval:   1500,
 			SnapshotKeepRecent: 2,
 			IsValidator:        true,
 		},
@@ -92,7 +92,7 @@ var (
 			Pruning:            "custom",
 			PruningKeepRecent:  "10000",
 			PruningInterval:    "13",
-			SnapshotInterval:   100,
+			SnapshotInterval:   1500,
 			SnapshotKeepRecent: 2,
 			IsValidator:        true,
 		},
@@ -112,7 +112,7 @@ var (
 			Pruning:            "default",
 			PruningKeepRecent:  "0",
 			PruningInterval:    "0",
-			SnapshotInterval:   100,
+			SnapshotInterval:   1500,
 			SnapshotKeepRecent: 2,
 			IsValidator:        true,
 		},
@@ -121,7 +121,7 @@ var (
 			Pruning:            "nothing",
 			PruningKeepRecent:  "0",
 			PruningInterval:    "0",
-			SnapshotInterval:   100,
+			SnapshotInterval:   1500,
 			SnapshotKeepRecent: 2,
 			IsValidator:        true,
 		},
@@ -130,7 +130,7 @@ var (
 			Pruning:            "custom",
 			PruningKeepRecent:  "10000",
 			PruningInterval:    "13",
-			SnapshotInterval:   100,
+			SnapshotInterval:   1500,
 			SnapshotKeepRecent: 2,
 			IsValidator:        true,
 		},
@@ -191,7 +191,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	if !skipUpgrade {
 		s.upgrade()
-		time.Sleep(20 * time.Minute)
 	}
 }
 
@@ -564,7 +563,7 @@ func (s *IntegrationTestSuite) upgradeSubDistributors() {
 		chainConfig.propHeight = currentHeight + int(chainConfig.votingPeriod) + int(propSubmitBlocks) + int(propBufferBlocks)
 		fmt.Println(chainConfig.meta.DataDir)
 		s.insertUpgradeProposalToContainer(chainConfig)
-		s.submitUpgradeParamsProposal(chainConfig, chainConfig.meta.DataDir+"/update-subdistributors.json")
+		s.submitUpgradeParamsProposal(chainConfig, "update-subdistributors.json")
 		s.depositProposal(chainConfig)
 		s.voteProposal(chainConfig)
 	}
