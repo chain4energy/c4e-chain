@@ -18,12 +18,6 @@ const (
 )
 
 var (
-	// Minimum deposit value for a proposal to enter a voting period.
-	MinDepositValue = govtypes.DefaultMinDepositTokens.Int64()
-	// Minimum expedited deposit value for a proposal to enter a voting period.
-	MinExpeditedDepositValue = govtypes.DefaultMinDepositTokens.Int64()
-	// Minimum deposit value for proposal to be submitted.
-	InitialMinDeposit = MinDepositValue / 4
-	// Minimum expedited deposit value for proposal to be submitted.
-	InitialMinExpeditedDeposit = MinExpeditedDepositValue / 4
+	MinDepositValue   = govtypes.DefaultMinDepositTokens
+	InitialMinDeposit = MinDepositValue.Int64() / 4
 )

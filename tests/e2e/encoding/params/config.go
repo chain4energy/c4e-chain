@@ -8,27 +8,16 @@ import (
 )
 
 const (
-	HumanCoinUnit = "uc4e"
-	BaseCoinUnit  = "uc4e"
-	OsmoExponent  = 6
-
-	DefaultBondDenom = BaseCoinUnit
-
-	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address.
+	CoinDenom           = "uc4e"
 	Bech32PrefixAccAddr = "c4e"
 )
 
 var (
-	// Bech32PrefixAccPub defines the Bech32 prefix of an account's public key.
-	Bech32PrefixAccPub = Bech32PrefixAccAddr + "pub"
-	// Bech32PrefixValAddr defines the Bech32 prefix of a validator's operator address.
-	Bech32PrefixValAddr = Bech32PrefixAccAddr + "valoper"
-	// Bech32PrefixValPub defines the Bech32 prefix of a validator's operator public key.
-	Bech32PrefixValPub = Bech32PrefixAccAddr + "valoperpub"
-	// Bech32PrefixConsAddr defines the Bech32 prefix of a consensus node address.
+	Bech32PrefixAccPub   = Bech32PrefixAccAddr + "pub"
+	Bech32PrefixValAddr  = Bech32PrefixAccAddr + "valoper"
+	Bech32PrefixValPub   = Bech32PrefixAccAddr + "valoperpub"
 	Bech32PrefixConsAddr = Bech32PrefixAccAddr + "valcons"
-	// Bech32PrefixConsPub defines the Bech32 prefix of a consensus node public key.
-	Bech32PrefixConsPub = Bech32PrefixAccAddr + "valconspub"
+	Bech32PrefixConsPub  = Bech32PrefixAccAddr + "valconspub"
 )
 
 func init() {
@@ -37,7 +26,7 @@ func init() {
 }
 
 func RegisterDenoms() {
-	err := sdk.RegisterDenom(HumanCoinUnit, sdk.OneDec())
+	err := sdk.RegisterDenom(CoinDenom, sdk.OneDec())
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +49,6 @@ func SetAddressPrefixes() {
 			return sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "address max length is %d, got %d", address.MaxAddrLen, len(bytes))
 		}
 
-		// TODO: Do we want to allow addresses of lengths other than 20 and 32 bytes?
 		if len(bytes) != 20 && len(bytes) != 32 {
 			return sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "address length must be 20 or 32 bytes, got %d", len(bytes))
 		}

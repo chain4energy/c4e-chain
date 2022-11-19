@@ -103,11 +103,11 @@ func (n *NodeConfig) SubmitTextProposal(text string, initialDeposit sdk.Coin, is
 
 func (n *NodeConfig) DepositProposal(proposalNumber int, isExpedited bool) {
 	n.LogActionF("depositing on proposal: %d", proposalNumber)
-	deposit := sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(config.MinDepositValue)).String()
+	deposit := sdk.NewCoin(params.CoinDenom, config.MinDepositValue)
 	if isExpedited {
-		deposit = sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(config.MinExpeditedDepositValue)).String()
+		deposit = sdk.NewCoin(params.CoinDenom, sdk.NewInt(config.MinExpeditedDepositValue))
 	}
-	cmd := []string{"c4ed", "tx", "gov", "deposit", fmt.Sprintf("%d", proposalNumber), deposit, "--from=val"}
+	cmd := []string{"c4ed", "tx", "gov", "deposit", fmt.Sprintf("%d", proposalNumber), deposit.String(), "--from=val"}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully deposited on proposal %d", proposalNumber)
