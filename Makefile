@@ -27,9 +27,9 @@ ifeq ($(LEDGER_ENABLED),true)
   endif
 endif
 
-ifeq (cleveldb,$(findstring cleveldb,$(OSMOSIS_BUILD_OPTIONS)))
+ifeq (cleveldb,$(findstring cleveldb,$(C4E_BUILD_OPTIONS)))
   build_tags += gcc
-else ifeq (rocksdb,$(findstring rocksdb,$(OSMOSIS_BUILD_OPTIONS)))
+else ifeq (rocksdb,$(findstring rocksdb,$(C4E_BUILD_OPTIONS)))
   build_tags += gcc
 endif
 build_tags += $(BUILD_TAGS)
@@ -48,12 +48,12 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=c4e \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
 
-ifeq (cleveldb,$(findstring cleveldb,$(OSMOSIS_BUILD_OPTIONS)))
+ifeq (cleveldb,$(findstring cleveldb,$(C4E_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
-else ifeq (rocksdb,$(findstring rocksdb,$(OSMOSIS_BUILD_OPTIONS)))
+else ifeq (rocksdb,$(findstring rocksdb,$(C4E_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb
 endif
-ifeq (,$(findstring nostrip,$(OSMOSIS_BUILD_OPTIONS)))
+ifeq (,$(findstring nostrip,$(C4E_BUILD_OPTIONS)))
   ldflags += -w -s
 endif
 ifeq ($(LINK_STATICALLY),true)
@@ -64,7 +64,7 @@ ldflags := $(strip $(ldflags))
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 # check for nostrip option
-ifeq (,$(findstring nostrip,$(OSMOSIS_BUILD_OPTIONS)))
+ifeq (,$(findstring nostrip,$(C4E_BUILD_OPTIONS)))
   BUILD_FLAGS += -trimpath
 endif
 
@@ -139,7 +139,21 @@ test-e2e:
 	@VERSION=$(VERSION) go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -v
 
 test-e2e-skip-upgrade:
-	@VERSION=$(VERSION) OSMOSIS_E2E_SKIP_UPGRADE=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -v
+	@VERSION=$(VERSION) C4E_E2E_SKIP_UPGRADE=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -v
+
+e2e-remove-resources:
+	tests/e2e/scripts/run/remove_stale_resources.sh
+
+test-e2e: C4E_E2E=True e2e-setup test-e2e-ci
+
+test-e2e-ci:
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION)  go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
+
+test-e2e-debug: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -count=1
+
+test-e2e-short: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_UPGRADE=True C4E_E2E_SKIP_IBC=True C4E_E2E_SKIP_STATE_SYNC=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -count=1
 
 build-e2e-script:
 	mkdir -p $(BUILDDIR)
