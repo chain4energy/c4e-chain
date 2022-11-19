@@ -1,27 +1,33 @@
 package keeper
 
 import (
+	"time"
+
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"time"
 )
 
 func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	lastBlockTimeForMinter := k.GetMinterState(ctx).LastMintBlockTime
 	lastBlockTime := ctx.BlockTime()
+	params := k.GetParams(ctx)
 
+	if lastBlockTime.Before(params.Minter.Start) {
+		k.Logger(ctx).Info("minter start in the future. %d > %d", "minterStart", params.Minter.Start, "currentBlockTime", lastBlockTime)
+		return sdk.ZeroInt(), nil
+	}
 	if lastBlockTimeForMinter.After(lastBlockTime) || lastBlockTimeForMinter.Equal(lastBlockTime) {
 		k.Logger(ctx).Info("mint last mint block time is smaller than current block time - possible for first block after genesis init",
 			"lastBlockTime", lastBlockTimeForMinter, "currentBlockTime", lastBlockTime)
 		return sdk.ZeroInt(), nil
 	}
-	return k.mint(ctx, 0)
+	return k.mint(ctx, &params, 0)
 }
 
-func (k Keeper) mint(ctx sdk.Context, level int) (sdk.Int, error) {
+func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int, error) {
 	minterState := k.GetMinterState(ctx)
-	params := k.GetParams(ctx)
+
 	minter := params.Minter
 
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
@@ -56,7 +62,7 @@ func (k Keeper) mint(ctx sdk.Context, level int) (sdk.Int, error) {
 		return sdk.ZeroInt(), sdkerrors.Wrap(err, "minter mint coins error")
 	}
 
-	err = k.AddCollectedFees(ctx, coins)
+	err = k.SendMintedCoins(ctx, coins)
 	if err != nil {
 		k.Logger(ctx).Error("mint - add collected fees error", "lev", level, "error", err.Error())
 		return sdk.ZeroInt(), sdkerrors.Wrap(err, "minter - mint - add collected fees error")
@@ -81,7 +87,7 @@ func (k Keeper) mint(ctx sdk.Context, level int) (sdk.Int, error) {
 			LastMintBlockTime:           ctx.BlockTime(),
 		}
 		k.SetMinterState(ctx, minterState)
-		minted, err := k.mint(ctx, level+1)
+		minted, err := k.mint(ctx, params, level+1)
 		if err != nil {
 			k.Logger(ctx).Error("mint - sub mint error", "lev", level, "error", err.Error())
 			return minted, err

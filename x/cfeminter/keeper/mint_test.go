@@ -206,14 +206,23 @@ func TestMintBetweenFirstAndSecondPeriodsWithRemaining(t *testing.T) {
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(6014726), 2, sdk.NewInt(25000), sdk.MustNewDecFromStr("0.027397260273972602"), newTime, sdk.MustNewDecFromStr("0.027397260273972602"), sdk.NewInt(6014726), expectedHist)
 }
 
-func TestMintWithReductionMinterOnGenesisWIthNegativeToMint(t *testing.T) {
+func TestMintWithReductionMinterOnGenesisMinterStateAfterBlockTime(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createReductionMinter(startTime))
+	testHelper := prepareApp(t, startTime.Add(time.Hour), createReductionMinter(startTime))
+
+	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime.Add(2*time.Hour), sdk.ZeroDec())
+
+	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime.Add(2*time.Hour), sdk.ZeroDec(), sdk.ZeroInt())
+}
+
+func TestMintWithReductionMinterOnGenesisStartInTheFuture(t *testing.T) {
+	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
+
+	testHelper := prepareApp(t, startTime.Add(time.Hour), createReductionMinter(startTime.Add(2*time.Hour)))
 
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
-	testHelper.SetContextBlockTime(startTime)
 	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec(), sdk.ZeroInt())
 }
 

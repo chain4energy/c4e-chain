@@ -87,8 +87,23 @@ func RandTimestamp(r *rand.Rand) time.Time {
 func RandIntBetween(r *rand.Rand, min, max int) int {
 	return r.Intn(max-min) + min
 }
+func RandIntBetweenWith0(r *rand.Rand, min, max int64) int64 {
+	diff := int(max - min)
+	if diff <= 0 {
+		return min
+	}
+	return int64(r.Intn(diff)) + min
+}
+
 func RandomInt(r *rand.Rand, max int) int64 {
 	return int64(r.Intn(max))
+}
+
+func RandIntWith0(r *rand.Rand, max int) int {
+	if max == 0 {
+		return 0
+	}
+	return r.Intn(max)
 }
 
 func RandSubsetCoins(r *rand.Rand, coins sdk.Coins) sdk.Coins {

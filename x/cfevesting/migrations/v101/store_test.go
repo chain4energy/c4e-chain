@@ -1,6 +1,7 @@
 package v101_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 	"strconv"
 	"testing"
@@ -140,7 +141,7 @@ func MigrateV100ToV101(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 			require.EqualValues(t, oldVestingPool.Vested, newVestingPool.InitiallyLocked)
 			require.EqualValues(t, oldVestingPool.Withdrawn, newVestingPool.Withdrawn)
 			oldSentCalculated := oldVestingPool.LastModificationWithdrawn.Add(oldVestingPool.Vested).Sub(oldVestingPool.Withdrawn).Sub(oldVestingPool.LastModificationVested)
-			require.EqualValues(t, oldSentCalculated, newAccPools[i].VestingPools[j].Sent)
+			require.True(t, oldSentCalculated.Equal(newAccPools[i].VestingPools[j].Sent))
 		}
 	}
 	require.ElementsMatch(t, oldVestingTypes.VestingTypes, newVestingTypes.VestingTypes)
@@ -195,11 +196,11 @@ func generateV100AccountVestingPools(numberOfAccounts int, numberOfVestingPoolsP
 }
 
 func generateRandomV100VestingPool(accuntId int, vestingId int) v100cfevesting.VestingPool {
-	rgen := rand.New(rand.NewSource(time.Now().UnixNano()))
-	vested := rgen.Intn(10000000)
-	withdrawn := rgen.Intn(vested)
-	sent := rgen.Intn(vested - withdrawn)
-	randWith := rand.Intn(withdrawn)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	vested := int(helpers.RandIntBetweenWith0(r, 1, 10000000))
+	withdrawn := r.Intn(vested)
+	sent := helpers.RandIntWith0(r, vested-withdrawn)
+	randWith := helpers.RandIntWith0(r, withdrawn)
 	lastModificationVested := vested - sent - randWith
 	lastModificationWithdrawn := withdrawn - randWith
 
@@ -207,12 +208,12 @@ func generateRandomV100VestingPool(accuntId int, vestingId int) v100cfevesting.V
 		Id:                        int32(vestingId),
 		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		LockStart:                 testutils.CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		LockEnd:                   testutils.CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
+		LockStart:                 testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
+		LockEnd:                   testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
 		Vested:                    sdk.NewInt(int64(vested)),
 		Withdrawn:                 sdk.NewInt(int64(withdrawn)),
 		Sent:                      sdk.NewInt(int64(sent)),
-		LastModification:          testutils.CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
+		LastModification:          testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
 		LastModificationVested:    sdk.NewInt(int64(lastModificationVested)),
 		LastModificationWithdrawn: sdk.NewInt(int64(lastModificationWithdrawn)),
 	}
