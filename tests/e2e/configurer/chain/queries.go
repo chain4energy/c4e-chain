@@ -163,9 +163,9 @@ func (n *NodeConfig) QueryListSnapshots() ([]*tmabcitypes.Snapshot, error) {
 }
 
 func (n *NodeConfig) QueryVestingPools(address string) []*cfevestingmoduletypes.VestingPoolInfo {
-	path := "/c4e/vesting/vesting_pools"
+	path := "/c4e/vesting/vesting_pools/" + address
 
-	bz, err := n.QueryGRPCGateway(path, "address", address)
+	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)
 
 	var response cfevestingmoduletypes.QueryVestingPoolsResponse

@@ -1,7 +1,6 @@
 package configurer
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
@@ -124,6 +123,16 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings Upg
 			upgradeSettings.Version,
 			upgradeSettings.ForkHeight,
 		), nil
+	} else if upgradeSettings.IsEnabled {
+		return NewUpgradeConfigurer(t,
+			[]*chain.Config{
+				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA),
+			},
+			withUpgrade(baseSetup), // base set up with IBC and upgrade
+			containerManager,
+			upgradeSettings.Version,
+			upgradeSettings.ForkHeight,
+		), nil
 	} else if isIBCEnabled {
 		// configure two chains from current Git branch
 		return NewCurrentBranchConfigurer(t,
@@ -134,10 +143,6 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings Upg
 			withIBC(baseSetup), // base set up with IBC
 			containerManager,
 		), nil
-	} else if upgradeSettings.IsEnabled {
-		// invalid - IBC tests must be enabled for upgrade
-		// to function
-		return nil, errors.New("IBC tests must be enabled for upgrade to work")
 	} else {
 		// configure one chain from current Git branch
 		return NewCurrentBranchConfigurer(t,

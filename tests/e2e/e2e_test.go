@@ -9,6 +9,7 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramsutils "github.com/cosmos/cosmos-sdk/x/params/client/utils"
 	coretypes "github.com/tendermint/tendermint/rpc/core/types"
@@ -194,21 +195,17 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 
-	periodEnd := time.Now().Add(10 * time.Hour)
+	//periodEnd := time.Now().Add(10 * time.Hour).UTC()
 	newMinter := cfemintertypes.Minter{
-		Start: time.Now(),
+		Start: time.Now().UTC(),
 		Periods: []*cfemintertypes.MintingPeriod{
 			{
-				Position:                1,
-				Type:                    cfemintertypes.TIME_LINEAR_MINTER,
-				PeriodEnd:               &periodEnd,
-				PeriodicReductionMinter: nil,
-				TimeLinearMinter: &cfemintertypes.TimeLinearMinter{
-					Amount: sdk.NewInt(1000000000),
-				},
+				Position: 1,
+				Type:     cfemintertypes.NO_MINTING,
 			},
 		},
 	}
+
 	newMinterJSON, err := json.Marshal(newMinter)
 	s.NoError(err)
 
@@ -249,22 +246,70 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 		Value    string `json:"value"`
 	}
 
-	s.Eventually(
-		func() bool {
-			var params Params
-			node.QueryParams(cfemintertypes.ModuleName, string(cfemintertypes.KeyMinter), &params)
-			return params.Value == string(newMinterJSON)
-		},
-		1*time.Minute,
-		10*time.Millisecond,
-		"C4e node failed to retrieve params",
-	)
+	//s.Eventually(
+	//	func() bool {
+	//		var params Params
+	//		node.QueryParams(cfemintertypes.ModuleName, string(cfemintertypes.KeyMinter), &params)
+	//		return params.Value == string(newMinterJSON)
+	//	},
+	//	1*time.Minute,
+	//	10*time.Millisecond,
+	//	"C4e node failed to retrieve params",
+	//)
 
 	s.Eventually(
 		func() bool {
 			var params Params
 			node.QueryParams(cfemintertypes.ModuleName, string(cfemintertypes.KeyMintDenom), &params)
 			return params.Value == string(newMintDenomJSON)
+		},
+		1*time.Minute,
+		10*time.Millisecond,
+		"C4e node failed to retrieve params",
+	)
+}
+
+func (s *IntegrationTestSuite) TestCfeVestingProposal() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+
+	newVestingDenom, err := json.Marshal("uc4e")
+	s.NoError(err)
+
+	proposal := paramsutils.ParamChangeProposalJSON{
+		Title:       "Cfevesting module params change",
+		Description: "Change cfevesting params",
+		Changes: paramsutils.ParamChangesJSON{
+			paramsutils.ParamChangeJSON{
+				Subspace: cfevestingmoduletypes.ModuleName,
+				Key:      string(cfevestingmoduletypes.KeyDenom),
+				Value:    newVestingDenom,
+			},
+		},
+		Deposit: sdk.NewCoin(appparams.CoinDenom, config.MinDepositValue).String(),
+	}
+
+	proposalJSON, err := json.Marshal(proposal)
+	s.NoError(err)
+	node.SubmitParamChangeProposal(string(proposalJSON), initialization.ValidatorWalletName)
+	chainA.LatestProposalNumber += 1
+
+	for _, n := range chainA.NodeConfigs {
+		n.VoteYesProposal(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
+	}
+
+	// The value is returned as a string, so we have to unmarshal twice
+	type Params struct {
+		Key      string `json:"key"`
+		Subspace string `json:"subspace"`
+		Value    string `json:"value"`
+	}
+
+	s.Eventually(
+		func() bool {
+			var params Params
+			node.QueryParams(cfevestingmoduletypes.ModuleName, string(cfevestingmoduletypes.KeyDenom), &params)
+			return params.Value == string(newVestingDenom)
 		},
 		1*time.Minute,
 		10*time.Millisecond,
@@ -282,28 +327,26 @@ func (s *IntegrationTestSuite) TestCreateVestingPool() {
 	s.NoError(err)
 
 	creatorAddress := chainANode.CreateWallet(walletName)
-	chainANode.BankSend(sdk.NewCoin(appparams.CoinDenom, sdk.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	vestingTypes := chainANode.QueryVestingTypes()
-	_ = vestingTypes
+
+	chainANode.BankSend(sdk.NewCoin(appparams.CoinDenom, sdk.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balance, err := chainANode.QueryBalances(creatorAddress)
-	balanceAmount := balance.AmountOf(appparams.CoinDenom)
-	fmt.Println("Balance before: " + balance.String())
-	vestingAmount := balanceAmount.Quo(sdk.NewInt(4))
-	fmt.Println("Vesting amount: " + vestingAmount.String())
 	s.NoError(err)
+
+	balanceAmount := balance.AmountOf(appparams.CoinDenom)
+	vestingAmount := balanceAmount.Quo(sdk.NewInt(4))
 
 	chainANode.CreateVestingPool(
 		helpers.RandStringOfLength(5),
 		vestingAmount.String(),
 		(10 * time.Minute).String(),
-		"Short vesting with lockup",
+		vestingTypes[0].Name,
 		walletName)
-	fmt.Println("Created vesting pool: " + vestingAmount.String())
+
 	newBalance, err := chainANode.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceAmount.Sub(vestingAmount), newBalance)
+	s.Equal(balanceAmount.Sub(vestingAmount), newBalance.AmountOf(appparams.CoinDenom))
+
 	vestingPools := chainANode.QueryVestingPools(creatorAddress)
 	s.Equal(1, len(vestingPools))
-	// setup wallets and send gamm tokens to these wallets on chainA
-
 }

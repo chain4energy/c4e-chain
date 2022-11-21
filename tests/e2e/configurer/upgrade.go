@@ -55,7 +55,7 @@ func (uc *UpgradeConfigurer) ConfigureChains() error {
 
 func (uc *UpgradeConfigurer) ConfigureChain(chainConfig *chain.Config) error {
 	uc.t.Logf("starting upgrade e2e infrastructure for chain-id: %s", chainConfig.Id)
-	tmpDir, err := os.MkdirTemp("", "osmosis-e2e-testnet-")
+	tmpDir, err := os.MkdirTemp("", "chain4energy-e2e-testnet-")
 	if err != nil {
 		return err
 	}

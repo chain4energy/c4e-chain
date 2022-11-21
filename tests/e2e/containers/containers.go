@@ -46,7 +46,7 @@ func NewManager(isUpgrade bool, isFork bool, isDebugLogEnabled bool) (docker *Ma
 	if err != nil {
 		return nil, err
 	}
-	docker.network, err = docker.pool.CreateNetwork("osmosis-testnet")
+	docker.network, err = docker.pool.CreateNetwork("chain4energy-testnet")
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +215,7 @@ func (m *Manager) RunNodeResource(chainId string, containerName, valCondifDir st
 		Cmd:        []string{"start"},
 		Mounts: []string{
 			fmt.Sprintf("%s/:/chain4energy/.c4e-chain", valCondifDir),
-			fmt.Sprintf("%s/scripts:/osmosis", pwd),
+			fmt.Sprintf("%s/scripts:/chain4energy", pwd),
 		},
 	}
 
