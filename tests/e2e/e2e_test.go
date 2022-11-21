@@ -299,14 +299,15 @@ func (s *IntegrationTestSuite) TestCfeVestingProposal() {
 
 func (s *IntegrationTestSuite) TestCreateVestingPool() {
 	const (
-		walletName  = "user-1"
-		baseBalance = 10000000
+		creatorWalletName  = "user-1"
+		receiverWalletName = "user-2"
+		baseBalance        = 10000000
 	)
 	chainA := s.configurer.GetChainConfig(0)
 	chainANode, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorAddress := chainANode.CreateWallet(walletName)
+	creatorAddress := chainANode.CreateWallet(creatorWalletName)
 	vestingTypes := chainANode.QueryVestingTypes()
 
 	chainANode.BankSend(sdk.NewCoin(appparams.CoinDenom, sdk.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
@@ -315,8 +316,8 @@ func (s *IntegrationTestSuite) TestCreateVestingPool() {
 
 	balanceAmount := balance.AmountOf(appparams.CoinDenom)
 	vestingAmount := balanceAmount.Quo(sdk.NewInt(4))
-
-	chainANode.CreateVestingPool(helpers.RandStringOfLength(5), vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, walletName)
+	randVestingPoolName := helpers.RandStringOfLength(5)
+	chainANode.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
 
 	newBalance, err := chainANode.QueryBalances(creatorAddress)
 	s.NoError(err)
@@ -324,8 +325,9 @@ func (s *IntegrationTestSuite) TestCreateVestingPool() {
 
 	vestingPools := chainANode.QueryVestingPools(creatorAddress)
 	s.Equal(1, len(vestingPools))
-}
-
-func (s *IntegrationTestSuite) sendToVestingAccount() {
-
+	receiverAddress := chainANode.CreateWallet(receiverWalletName)
+	sendToVestingAccAmount := vestingAmount.Quo(sdk.NewInt(2))
+	chainANode.SendToVestingAccount(creatorAddress, receiverAddress, randVestingPoolName, sendToVestingAccAmount.String(), "false")
+	vestingPools = chainANode.QueryVestingPools(creatorAddress)
+	s.Equal(sendToVestingAccAmount.String(), vestingPools[0].SentAmount)
 }

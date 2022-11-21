@@ -189,11 +189,20 @@ func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus stri
 //	return poolID
 //}
 
-func (n *NodeConfig) CreateVestingPool(name, amount, duration, vestinType, from string) {
+func (n *NodeConfig) CreateVestingPool(vestingPoolName, amount, duration, vestinType, from string) {
 	n.LogActionF("creating vesting pool")
-	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", name, amount, duration, vestinType, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", vestingPoolName, amount, duration, vestinType, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
-	n.LogActionF("successfully created vesting pool %d", name)
+	n.LogActionF("successfully created vesting pool %d", vestingPoolName)
+}
+
+func (n *NodeConfig) SendToVestingAccount(fromAddress, toAddress, vestingPoolName, amount, restartVesting string) {
+	n.LogActionF("creating vesting pool")
+	cmd := []string{"c4ed", "tx", "cfevesting", "send-to-vesting-account", toAddress, vestingPoolName, amount, restartVesting, fmt.Sprintf("--from=%s", fromAddress)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully send vesting pool %d to vesting account %d", vestingPoolName, toAddress)
 }
