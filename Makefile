@@ -134,7 +134,7 @@ open-memory-profiler-result:
 #E2E
 PACKAGES_E2E=$(shell go list ./... | grep '/e2e')
 BUILDDIR ?= $(CURDIR)/build
-
+E2E_UPGRADE_VERSION="v1.0.1"
 test-e2e:
 	@VERSION=$(VERSION) go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -v
 
