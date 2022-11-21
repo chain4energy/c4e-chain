@@ -178,8 +178,8 @@ func (s *IntegrationTestSuite) TestCfedistributorParamsProposal() {
 		func() bool {
 			return node.ValidateParams(newSubDistributorsJSON, cfedistributortypes.ModuleName, string(cfedistributortypes.KeySubDistributors))
 		},
-		1*time.Minute,
-		10*time.Millisecond,
+		time.Minute,
+		time.Second,
 		"C4e node failed to validate params",
 	)
 }
@@ -239,8 +239,8 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 		func() bool {
 			return node.ValidateParams(newMinterJSON, cfemintertypes.ModuleName, string(cfemintertypes.KeyMinter))
 		},
-		1*time.Minute,
-		10*time.Millisecond,
+		time.Minute,
+		time.Second,
 		"C4e node failed to validate params",
 	)
 
@@ -249,7 +249,7 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 			return node.ValidateParams(newMintDenomJSON, cfemintertypes.ModuleName, string(cfemintertypes.KeyMintDenom))
 		},
 		1*time.Minute,
-		10*time.Millisecond,
+		time.Second,
 		"C4e node failed to retrieve params",
 	)
 }
@@ -291,8 +291,8 @@ func (s *IntegrationTestSuite) TestCfeVestingProposal() {
 		func() bool {
 			return node.ValidateParams(newVestingDenom, cfevestingtypes.ModuleName, string(cfevestingtypes.KeyDenom))
 		},
-		1*time.Minute,
-		10*time.Millisecond,
+		time.Minute,
+		time.Second,
 		"C4e node failed to validate params",
 	)
 }
@@ -352,21 +352,25 @@ func (s *IntegrationTestSuite) TestWithdrawAllAvaliable() {
 	balanceAmount := balance.AmountOf(appparams.CoinDenom)
 	vestingAmount := balanceAmount.Quo(sdk.NewInt(4))
 	randVestingPoolName := helpers.RandStringOfLength(5)
-	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (1 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
+	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Second).String(), vestingTypes[0].Name, creatorWalletName)
 	vestingPools := node.QueryVestingPools(creatorAddress)
 	s.Equal(vestingPools[0].Withdrawable, "0")
 	s.Equal(vestingPools[0].CurrentlyLocked, vestingAmount.String())
 	s.Eventually(
 		func() bool {
-			node.WithdrawAllAvaliable(creatorAddress)
 			vestingPools := node.QueryVestingPools(creatorAddress)
-			return vestingAmount.String() == vestingPools[0].Withdrawable
+			if vestingAmount.String() == vestingPools[0].Withdrawable {
+				node.WithdrawAllAvaliable(creatorAddress)
+				vestingPools = node.QueryVestingPools(creatorAddress)
+				return s.True(vestingPools[0].Withdrawable == "0")
+			}
+			return false
 		},
-		2*time.Minute,
-		100*time.Millisecond,
+		time.Minute,
+		10*time.Second,
 		"C4e node failed to validate params",
 	)
 	newBalance, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceAmount.Sub(vestingAmount), newBalance.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceAmount, newBalance.AmountOf(appparams.CoinDenom))
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
+	vestingTypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"path/filepath"
 	"time"
 
@@ -213,6 +214,11 @@ func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight in
 		return err
 	}
 
+	err = updateModuleGenesis(appGenState, vestingTypes.ModuleName, &vestingTypes.GenesisState{}, updateVestingGenesis)
+	if err != nil {
+		return err
+	}
+
 	err = updateModuleGenesis(appGenState, genutiltypes.ModuleName, &genutiltypes.GenesisState{}, updateGenUtilGenesis(chain))
 	if err != nil {
 		return err
@@ -254,6 +260,26 @@ func updateBankGenesis(bankGenState *banktypes.GenesisState) {
 		},
 	})
 
+}
+
+func updateVestingGenesis(vestingGenState *vestingTypes.GenesisState) {
+	vestingGenState.Params = vestingTypes.Params{
+		Denom: C4eDenom,
+	}
+	vestingGenState.VestingTypes = append(vestingGenState.VestingTypes, vestingTypes.GenesisVestingType{
+		Name:              "Advisors",
+		LockupPeriod:      365,
+		LockupPeriodUnit:  "day",
+		VestingPeriodUnit: "day",
+		VestingPeriod:     730,
+	})
+	vestingGenState.VestingTypes = append(vestingGenState.VestingTypes, vestingTypes.GenesisVestingType{
+		Name:              "Validators",
+		LockupPeriod:      274,
+		LockupPeriodUnit:  "day",
+		VestingPeriodUnit: "day",
+		VestingPeriod:     548,
+	})
 }
 
 func updateStakeGenesis(stakeGenState *staketypes.GenesisState) {
