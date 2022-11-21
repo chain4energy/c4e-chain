@@ -65,7 +65,7 @@ func (n *NodeConfig) QueryGRPCGateway(path string, parameters ...string) ([]byte
 	return bz, nil
 }
 
-// QueryBalancer returns balances at the address.
+// QueryBalances returns balances at the address.
 func (n *NodeConfig) QueryBalances(address string) (sdk.Coins, error) {
 	path := fmt.Sprintf("cosmos/bank/v1beta1/balances/%s", address)
 	bz, err := n.QueryGRPCGateway(path)
@@ -159,4 +159,16 @@ func (n *NodeConfig) QueryListSnapshots() ([]*tmabcitypes.Snapshot, error) {
 	}
 
 	return listSnapshots.Snapshots, nil
+}
+
+func (n *NodeConfig) QueryVestingPools(identifier string) int64 {
+	path := "osmosis/epochs/v1beta1/current_epoch"
+
+	bz, err := n.QueryGRPCGateway(path, "identifier", identifier)
+	require.NoError(n.t, err)
+
+	var response epochstypes.QueryCurrentEpochResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.CurrentEpoch
 }

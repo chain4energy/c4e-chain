@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
 	"github.com/chain4energy/c4e-chain/tests/e2e/encoding/params"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	"os"
 	"regexp"
 	"strings"
@@ -187,4 +188,42 @@ func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus stri
 	)
 	elapsed := time.Since(start)
 	totalTime <- elapsed
+}
+
+//func (n *NodeConfig) CerateVestingAccount(toAddress, from string, startTime time.Time, endTime time.Time, amount int) uint64 {
+//	n.LogActionF("creating vesting account")
+//	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-account", toAddress, ), fmt.Sprintf("--from=%s", from)}
+//	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+//	require.NoError(n.t, err)
+//
+//	path := "osmosis/gamm/v1beta1/num_pools"
+//
+//	bz, err := n.QueryGRPCGateway(path)
+//	require.NoError(n.t, err)
+//
+//	var numPools gammtypes.QueryNumPoolsResponse
+//	err = util.Cdc.UnmarshalJSON(bz, &numPools)
+//	require.NoError(n.t, err)
+//	poolID := numPools.NumPools
+//	n.LogActionF("successfully created pool %d", poolID)
+//	return poolID
+//}
+
+func (n *NodeConfig) CreateVestingPool(name, amount, duration, vestinType, from string) uint64 {
+	n.LogActionF("creating vesting account")
+	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", name, amount, duration, vestinType, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	path := "osmosis/gamm/v1beta1/num_pools"
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var numPools gammtypes.QueryNumPoolsResponse
+	err = util.Cdc.UnmarshalJSON(bz, &numPools)
+	require.NoError(n.t, err)
+	poolID := numPools.NumPools
+	n.LogActionF("successfully created pool %d", poolID)
+	return poolID
 }

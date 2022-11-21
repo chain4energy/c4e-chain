@@ -43,6 +43,8 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	os.Setenv(upgradeVersionEnv, "v1.0.1")
+	os.Setenv(skipStateSyncEnv, "true")
+	os.Setenv(skipUpgradeEnv, "true")
 	s.T().Log("setting up e2e integration test suite...")
 	var (
 		err             error

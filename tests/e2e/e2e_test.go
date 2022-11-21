@@ -6,6 +6,7 @@ import (
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
 	appparams "github.com/chain4energy/c4e-chain/tests/e2e/encoding/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -278,4 +279,31 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 		10*time.Millisecond,
 		"C4e node failed to retrieve params",
 	)
+}
+
+// TestCreateVestingPool tests lockups to both regular and superfluid locks.
+func (s *IntegrationTestSuite) TestCreateVestingPool() {
+	chainA := s.configurer.GetChainConfig(0)
+	chainANode, err := chainA.GetDefaultNode()
+	s.NoError(err)
+	// ensure we can add to new locks and superfluid locks
+	// create pool and enable superfluid assets
+	creatorAddress := chainA.NodeConfigs[0].PublicAddress
+	balance, err := chainANode.QueryBalances(creatorAddress)
+	balanceAmount := balance.AmountOf(appparams.CoinDenom)
+	vestingAmount := balanceAmount.Quo(sdk.NewInt(4))
+	s.NoError(err)
+
+	_ = chainANode.CreateVestingPool(
+		helpers.RandStringOfLength(5),
+		vestingAmount.String(),
+		(10 * time.Minute).String(),
+		"Short vesting with lockup",
+		creatorAddress)
+
+	newBalance, err := chainANode.QueryBalances(creatorAddress)
+	s.NoError(err)
+	s.Equal(balanceAmount.Sub(vestingAmount), newBalance)
+	// setup wallets and send gamm tokens to these wallets on chainA
+
 }
