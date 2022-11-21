@@ -117,8 +117,6 @@ func (uc *UpgradeConfigurer) RunUpgrade() error {
 }
 
 func (uc *UpgradeConfigurer) runProposalUpgrade() error {
-	// submit, deposit, and vote for upgrade proposal
-	// prop height = current height + voting period + time it takes to submit proposal + small buffer
 	for _, chainConfig := range uc.chainConfigs {
 		for validatorIdx, node := range chainConfig.NodeConfigs {
 			if validatorIdx == 0 {
@@ -129,7 +127,7 @@ func (uc *UpgradeConfigurer) runProposalUpgrade() error {
 				chainConfig.UpgradePropHeight = currentHeight + int64(chainConfig.VotingPeriod) + int64(config.PropSubmitBlocks) + int64(config.PropBufferBlocks)
 				node.SubmitUpgradeProposal(uc.upgradeVersion, chainConfig.UpgradePropHeight, sdk.NewCoin(params.CoinDenom, sdk.NewInt(config.InitialMinDeposit)))
 				chainConfig.LatestProposalNumber += 1
-				node.DepositProposal(chainConfig.LatestProposalNumber, false)
+				node.DepositProposal(chainConfig.LatestProposalNumber)
 			}
 			node.VoteYesProposal(initialization.ValidatorWalletName, chainConfig.LatestProposalNumber)
 		}

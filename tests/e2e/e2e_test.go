@@ -18,15 +18,6 @@ import (
 	"time"
 )
 
-// TestSuperfluidVoting tests that superfluid voting is functioning as expected.
-// It does so by doing the following:
-// - creating a pool
-// - attempting to submit a proposal to enable superfluid voting in that pool
-// - voting yes on the proposal from the validator wallet
-// - voting no on the proposal from the delegator wallet
-// - ensuring that delegator's wallet overwrites the validator's vote
-
-// Copy a file from A to B with io.Copy
 func copyFile(a, b string) error {
 	source, err := os.Open(a)
 	if err != nil {
@@ -281,29 +272,37 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 	)
 }
 
-// TestCreateVestingPool tests lockups to both regular and superfluid locks.
 func (s *IntegrationTestSuite) TestCreateVestingPool() {
+	const (
+		walletName  = "user-1"
+		baseBalance = 10000000
+	)
 	chainA := s.configurer.GetChainConfig(0)
 	chainANode, err := chainA.GetDefaultNode()
 	s.NoError(err)
-	// ensure we can add to new locks and superfluid locks
-	// create pool and enable superfluid assets
-	creatorAddress := chainA.NodeConfigs[0].PublicAddress
+
+	creatorAddress := chainANode.CreateWallet(walletName)
+	chainANode.BankSend(sdk.NewCoin(appparams.CoinDenom, sdk.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+
 	balance, err := chainANode.QueryBalances(creatorAddress)
 	balanceAmount := balance.AmountOf(appparams.CoinDenom)
+	fmt.Println("Balance before: " + balance.String())
 	vestingAmount := balanceAmount.Quo(sdk.NewInt(4))
+	fmt.Println("Vesting amount: " + vestingAmount.String())
 	s.NoError(err)
 
-	_ = chainANode.CreateVestingPool(
+	chainANode.CreateVestingPool(
 		helpers.RandStringOfLength(5),
 		vestingAmount.String(),
 		(10 * time.Minute).String(),
 		"Short vesting with lockup",
-		creatorAddress)
-
+		walletName)
+	fmt.Println("Created vesting pool: " + vestingAmount.String())
 	newBalance, err := chainANode.QueryBalances(creatorAddress)
 	s.NoError(err)
 	s.Equal(balanceAmount.Sub(vestingAmount), newBalance)
+	vestingPools := chainANode.QueryVestingPools(creatorAddress)
+	s.Equal(1, len(vestingPools))
 	// setup wallets and send gamm tokens to these wallets on chainA
 
 }

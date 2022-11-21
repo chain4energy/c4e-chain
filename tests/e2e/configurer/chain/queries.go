@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"io"
 	"net/http"
 	"time"
@@ -161,14 +162,26 @@ func (n *NodeConfig) QueryListSnapshots() ([]*tmabcitypes.Snapshot, error) {
 	return listSnapshots.Snapshots, nil
 }
 
-func (n *NodeConfig) QueryVestingPools(identifier string) int64 {
-	path := "osmosis/epochs/v1beta1/current_epoch"
+func (n *NodeConfig) QueryVestingPools(address string) []*cfevestingmoduletypes.VestingPoolInfo {
+	path := "/c4e/vesting/vesting_pools"
 
-	bz, err := n.QueryGRPCGateway(path, "identifier", identifier)
+	bz, err := n.QueryGRPCGateway(path, "address", address)
 	require.NoError(n.t, err)
 
-	var response epochstypes.QueryCurrentEpochResponse
+	var response cfevestingmoduletypes.QueryVestingPoolsResponse
 	err = util.Cdc.UnmarshalJSON(bz, &response)
 	require.NoError(n.t, err)
-	return response.CurrentEpoch
+	return response.VestingPools
+}
+
+func (n *NodeConfig) QueryVestingTypes() []cfevestingmoduletypes.GenesisVestingType {
+	path := "/c4e/vesting/vesting_type"
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfevestingmoduletypes.QueryVestingTypeResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.VestingTypes
 }

@@ -36,7 +36,7 @@ type NodeConfig struct {
 
 const (
 	// common
-	OsmoDenom           = "uc4e"
+	C4eDenom            = "uc4e"
 	OsmoIBCDenom        = "ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518"
 	StakeIBCDenom       = "ibc/C053D637CCA2A2BA030E2C5EE1B28A16F71CCB0E45E8BE52766DC1B241B7787"
 	MinGasPrice         = "0.000"
@@ -44,26 +44,26 @@ const (
 	ValidatorWalletName = "val"
 	// chainA
 	ChainAID      = "c4e-chain-test-a"
-	OsmoBalanceA  = 200000000000
+	C4eBalanceA   = 200000000000
 	StakeBalanceA = 110000000000
 	StakeAmountA  = 100000000000
 	// chainB
 	ChainBID      = "c4e-chain-test-b"
-	OsmoBalanceB  = 500000000000
+	C4eBalanceB   = 500000000000
 	StakeBalanceB = 440000000000
 	StakeAmountB  = 400000000000
 )
 
 var (
 	StakeAmountIntA  = sdk.NewInt(StakeAmountA)
-	StakeAmountCoinA = sdk.NewCoin(OsmoDenom, StakeAmountIntA)
+	StakeAmountCoinA = sdk.NewCoin(C4eDenom, StakeAmountIntA)
 	StakeAmountIntB  = sdk.NewInt(StakeAmountB)
-	StakeAmountCoinB = sdk.NewCoin(OsmoDenom, StakeAmountIntB)
+	StakeAmountCoinB = sdk.NewCoin(C4eDenom, StakeAmountIntB)
 
-	InitBalanceStrA = fmt.Sprintf("%d%s", OsmoBalanceA+StakeBalanceA, OsmoDenom)
-	InitBalanceStrB = fmt.Sprintf("%d%s", OsmoBalanceB+StakeBalanceB, OsmoDenom)
-	OsmoToken       = sdk.NewInt64Coin(OsmoDenom, IbcSendAmount) // 3,300uosmo
-	tenOsmo         = sdk.Coins{sdk.NewInt64Coin(OsmoDenom, 10_000_000)}
+	InitBalanceStrA = fmt.Sprintf("%d%s", C4eBalanceA+StakeBalanceA, C4eDenom)
+	InitBalanceStrB = fmt.Sprintf("%d%s", C4eBalanceB+StakeBalanceB, C4eDenom)
+	C4eToken        = sdk.NewInt64Coin(C4eDenom, IbcSendAmount) // 3,300uosmo
+	tenC4e          = sdk.Coins{sdk.NewInt64Coin(C4eDenom, 10_000_000)}
 )
 
 func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHeight int) error {
@@ -81,7 +81,6 @@ func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHei
 	balances := banktypes.Balance{Address: accAddr.String(), Coins: coins.Sort()}
 	genAccount := authtypes.NewBaseAccount(accAddr, nil, 0, 0)
 
-	// TODO: Make the SDK make it far cleaner to add an account to GenesisState
 	genFile := config.GenesisFile()
 	appState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFile)
 	if err != nil {
@@ -243,13 +242,13 @@ func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight in
 func updateBankGenesis(bankGenState *banktypes.GenesisState) {
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
-		Display:     OsmoDenom,
-		Base:        OsmoDenom,
-		Symbol:      OsmoDenom,
-		Name:        OsmoDenom,
+		Display:     C4eDenom,
+		Base:        C4eDenom,
+		Symbol:      C4eDenom,
+		Name:        C4eDenom,
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom:    OsmoDenom,
+				Denom:    C4eDenom,
 				Exponent: 0,
 			},
 		},
@@ -259,7 +258,7 @@ func updateBankGenesis(bankGenState *banktypes.GenesisState) {
 
 func updateStakeGenesis(stakeGenState *staketypes.GenesisState) {
 	stakeGenState.Params = staketypes.Params{
-		BondDenom:         OsmoDenom,
+		BondDenom:         C4eDenom,
 		MaxValidators:     100,
 		MaxEntries:        7,
 		HistoricalEntries: 10000,
@@ -268,7 +267,7 @@ func updateStakeGenesis(stakeGenState *staketypes.GenesisState) {
 }
 
 func updateCrisisGenesis(crisisGenState *crisistypes.GenesisState) {
-	crisisGenState.ConstantFee.Denom = OsmoDenom
+	crisisGenState.ConstantFee.Denom = C4eDenom
 }
 
 func updateGovGenesis(votingPeriod time.Duration) func(*govtypes.GenesisState) {
@@ -276,7 +275,7 @@ func updateGovGenesis(votingPeriod time.Duration) func(*govtypes.GenesisState) {
 		govGenState.VotingParams = govtypes.VotingParams{
 			VotingPeriod: votingPeriod,
 		}
-		govGenState.DepositParams.MinDeposit = tenOsmo
+		govGenState.DepositParams.MinDeposit = tenC4e
 	}
 }
 

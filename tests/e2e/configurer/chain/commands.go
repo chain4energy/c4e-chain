@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
 	"github.com/chain4energy/c4e-chain/tests/e2e/encoding/params"
-	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	"os"
 	"regexp"
 	"strings"
@@ -102,12 +101,9 @@ func (n *NodeConfig) SubmitTextProposal(text string, initialDeposit sdk.Coin, is
 	n.LogActionF("successfully submitted text gov proposal")
 }
 
-func (n *NodeConfig) DepositProposal(proposalNumber int, isExpedited bool) {
+func (n *NodeConfig) DepositProposal(proposalNumber int) {
 	n.LogActionF("depositing on proposal: %d", proposalNumber)
 	deposit := sdk.NewCoin(params.CoinDenom, config.MinDepositValue)
-	if isExpedited {
-		deposit = sdk.NewCoin(params.CoinDenom, sdk.NewInt(config.MinExpeditedDepositValue))
-	}
 	cmd := []string{"c4ed", "tx", "gov", "deposit", fmt.Sprintf("%d", proposalNumber), deposit.String(), "--from=val"}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
@@ -151,7 +147,7 @@ func (n *NodeConfig) CreateWallet(walletName string) string {
 	cmd := []string{"c4ed", "keys", "add", walletName, "--keyring-backend=test"}
 	outBuf, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
-	re := regexp.MustCompile("osmo1(.{38})")
+	re := regexp.MustCompile("c4e(.{39})")
 	walletAddr := fmt.Sprintf("%s\n", re.FindString(outBuf.String()))
 	walletAddr = strings.TrimSuffix(walletAddr, "\n")
 	n.LogActionF("created wallet %s, waller address - %s", walletName, walletAddr)
@@ -209,21 +205,11 @@ func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus stri
 //	return poolID
 //}
 
-func (n *NodeConfig) CreateVestingPool(name, amount, duration, vestinType, from string) uint64 {
-	n.LogActionF("creating vesting account")
+func (n *NodeConfig) CreateVestingPool(name, amount, duration, vestinType, from string) {
+	n.LogActionF("creating vesting pool")
 	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", name, amount, duration, vestinType, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
-	path := "osmosis/gamm/v1beta1/num_pools"
-
-	bz, err := n.QueryGRPCGateway(path)
-	require.NoError(n.t, err)
-
-	var numPools gammtypes.QueryNumPoolsResponse
-	err = util.Cdc.UnmarshalJSON(bz, &numPools)
-	require.NoError(n.t, err)
-	poolID := numPools.NumPools
-	n.LogActionF("successfully created pool %d", poolID)
-	return poolID
+	n.LogActionF("successfully created vesting pool %d", name)
 }

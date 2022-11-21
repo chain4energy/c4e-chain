@@ -67,7 +67,7 @@ func main() {
 		panic(err)
 	}
 
-	_, err = initialization.InitSingleNode(chainId, dataDir, existingGenesisDir, &nodeConfig, votingPeriod, trustHeight, trustHash, stateSyncRPCServers, persistenrPeers)
+	_, err = initialization.InitSingleNode(chainId, dataDir, existingGenesisDir, &nodeConfig, trustHeight, trustHash, stateSyncRPCServers, persistenrPeers)
 	if err != nil {
 		panic(err)
 	}
