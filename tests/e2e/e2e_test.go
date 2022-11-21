@@ -9,7 +9,7 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
-	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramsutils "github.com/cosmos/cosmos-sdk/x/params/client/utils"
 	coretypes "github.com/tendermint/tendermint/rpc/core/types"
@@ -104,11 +104,9 @@ func (s *IntegrationTestSuite) TestStateSync() {
 	}
 	runningNode.WaitUntil(hasSnapshotsAvailable)
 
-	// start the state synchin node.
 	err = stateSynchingNode.Run()
 	s.Require().NoError(err)
 
-	// ensure that the state synching node cathes up to the running node.
 	s.Require().Eventually(func() bool {
 		stateSyncNodeHeight, err := stateSynchingNode.QueryCurrentHeight()
 		s.Require().NoError(err)
@@ -120,7 +118,6 @@ func (s *IntegrationTestSuite) TestStateSync() {
 		500*time.Millisecond,
 	)
 
-	// stop the state synching node.
 	err = chainA.RemoveNode(stateSynchingNode.Name)
 	s.Require().NoError(err)
 }
@@ -177,21 +174,13 @@ func (s *IntegrationTestSuite) TestCfedistributorParamsProposal() {
 		n.VoteYesProposal(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
 	}
 
-	type Params struct {
-		Key      string `json:"key"`
-		Subspace string `json:"subspace"`
-		Value    string `json:"value"`
-	}
-
 	s.Eventually(
 		func() bool {
-			var params Params
-			node.QueryParams(cfedistributortypes.ModuleName, string(cfedistributortypes.KeySubDistributors), &params)
-			return params.Value == string(newSubDistributorsJSON)
+			return node.ValidateParams(newSubDistributorsJSON, cfedistributortypes.ModuleName, string(cfedistributortypes.KeySubDistributors))
 		},
 		1*time.Minute,
 		10*time.Millisecond,
-		"C4e node failed to retrieve params",
+		"C4e node failed to validate params",
 	)
 }
 
@@ -203,7 +192,6 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 
-	//periodEnd := time.Now().Add(10 * time.Hour).UTC()
 	newMinter := cfemintertypes.Minter{
 		Start: time.Now().UTC(),
 		Periods: []*cfemintertypes.MintingPeriod{
@@ -247,29 +235,18 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 		n.VoteYesProposal(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
 	}
 
-	// The value is returned as a string, so we have to unmarshal twice
-	type Params struct {
-		Key      string `json:"key"`
-		Subspace string `json:"subspace"`
-		Value    string `json:"value"`
-	}
-
 	s.Eventually(
 		func() bool {
-			var params Params
-			node.QueryParams(cfemintertypes.ModuleName, string(cfemintertypes.KeyMinter), &params)
-			return params.Value == string(newMinterJSON)
+			return node.ValidateParams(newMinterJSON, cfemintertypes.ModuleName, string(cfemintertypes.KeyMinter))
 		},
 		1*time.Minute,
 		10*time.Millisecond,
-		"C4e node failed to retrieve params",
+		"C4e node failed to validate params",
 	)
 
 	s.Eventually(
 		func() bool {
-			var params Params
-			node.QueryParams(cfemintertypes.ModuleName, string(cfemintertypes.KeyMintDenom), &params)
-			return params.Value == string(newMintDenomJSON)
+			return node.ValidateParams(newMintDenomJSON, cfemintertypes.ModuleName, string(cfemintertypes.KeyMintDenom))
 		},
 		1*time.Minute,
 		10*time.Millisecond,
@@ -293,8 +270,8 @@ func (s *IntegrationTestSuite) TestCfeVestingProposal() {
 		Description: "Change cfevesting params",
 		Changes: paramsutils.ParamChangesJSON{
 			paramsutils.ParamChangeJSON{
-				Subspace: cfevestingmoduletypes.ModuleName,
-				Key:      string(cfevestingmoduletypes.KeyDenom),
+				Subspace: cfevestingtypes.ModuleName,
+				Key:      string(cfevestingtypes.KeyDenom),
 				Value:    newVestingDenom,
 			},
 		},
@@ -310,22 +287,13 @@ func (s *IntegrationTestSuite) TestCfeVestingProposal() {
 		n.VoteYesProposal(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
 	}
 
-	// The value is returned as a string, so we have to unmarshal twice
-	type Params struct {
-		Key      string `json:"key"`
-		Subspace string `json:"subspace"`
-		Value    string `json:"value"`
-	}
-
 	s.Eventually(
 		func() bool {
-			var params Params
-			node.QueryParams(cfevestingmoduletypes.ModuleName, string(cfevestingmoduletypes.KeyDenom), &params)
-			return params.Value == string(newVestingDenom)
+			return node.ValidateParams(newVestingDenom, cfevestingtypes.ModuleName, string(cfevestingtypes.KeyDenom))
 		},
 		1*time.Minute,
 		10*time.Millisecond,
-		"C4e node failed to retrieve params",
+		"C4e node failed to validate params",
 	)
 }
 
@@ -348,12 +316,7 @@ func (s *IntegrationTestSuite) TestCreateVestingPool() {
 	balanceAmount := balance.AmountOf(appparams.CoinDenom)
 	vestingAmount := balanceAmount.Quo(sdk.NewInt(4))
 
-	chainANode.CreateVestingPool(
-		helpers.RandStringOfLength(5),
-		vestingAmount.String(),
-		(10 * time.Minute).String(),
-		vestingTypes[0].Name,
-		walletName)
+	chainANode.CreateVestingPool(helpers.RandStringOfLength(5), vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, walletName)
 
 	newBalance, err := chainANode.QueryBalances(creatorAddress)
 	s.NoError(err)
@@ -361,4 +324,8 @@ func (s *IntegrationTestSuite) TestCreateVestingPool() {
 
 	vestingPools := chainANode.QueryVestingPools(creatorAddress)
 	s.Equal(1, len(vestingPools))
+}
+
+func (s *IntegrationTestSuite) sendToVestingAccount() {
+
 }

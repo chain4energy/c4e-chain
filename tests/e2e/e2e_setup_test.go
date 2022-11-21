@@ -25,7 +25,7 @@ const (
 	skipCleanupEnv = "C4E_E2E_SKIP_CLEANUP"
 	// Environment variable name to determine what version we are upgrading to
 	upgradeVersionEnv = "C4E_E2E_UPGRADE_VERSION"
-
+	// Environment variable name to skip the params change tests
 	skipParamsChange = "C4E_E2E_SKIP_PARAMS_CHANGE"
 )
 
@@ -48,8 +48,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	os.Setenv(upgradeVersionEnv, "v1.0.1")
 	os.Setenv(skipStateSyncEnv, "false")
 	os.Setenv(skipUpgradeEnv, "false")
-	os.Setenv(skipIBCEnv, "false")
+	os.Setenv(skipIBCEnv, "true")
 	//os.Setenv(skipCleanupEnv, "true")
+
 	s.T().Log("setting up e2e integration test suite...")
 	var (
 		err             error

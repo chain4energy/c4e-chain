@@ -27,6 +27,19 @@ func (n *NodeConfig) QueryParams(subspace, key string, result any) {
 	require.NoError(n.t, err)
 }
 
+func (n *NodeConfig) ValidateParams(oldParams []byte, subspace, key string) bool {
+	type Params struct {
+		Key      string `json:"key"`
+		Subspace string `json:"subspace"`
+		Value    string `json:"value"`
+	}
+
+	var moduleParams Params
+
+	n.QueryParams(subspace, key, &moduleParams)
+	return moduleParams.Value == string(oldParams)
+}
+
 func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	n.LogActionF("submitting param change proposal %s", proposalJson)
 	wd, err := os.Getwd()
@@ -105,14 +118,6 @@ func (n *NodeConfig) VoteNoProposal(from string, proposalNumber int) {
 	n.LogActionF("successfully voted no on proposal: %d", proposalNumber)
 }
 
-func (n *NodeConfig) LockTokens(tokens string, duration string, from string) {
-	n.LogActionF("locking %s for %s", tokens, duration)
-	cmd := []string{"c4ed", "tx", "lockup", "lock-tokens", tokens, fmt.Sprintf("--duration=%s", duration), fmt.Sprintf("--from=%s", from)}
-	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
-	require.NoError(n.t, err)
-	n.LogActionF("successfully created lock")
-}
-
 func (n *NodeConfig) BankSend(amount string, sendAddress string, receiveAddress string) {
 	n.LogActionF("bank sending %s from address %s to %s", amount, sendAddress, receiveAddress)
 	cmd := []string{"c4ed", "tx", "bank", "send", sendAddress, receiveAddress, amount, "--from=val"}
@@ -187,10 +192,8 @@ func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus stri
 func (n *NodeConfig) CreateVestingPool(name, amount, duration, vestinType, from string) {
 	n.LogActionF("creating vesting pool")
 	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", name, amount, duration, vestinType, fmt.Sprintf("--from=%s", from)}
-	outBUff, errBuff, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
-	_ = errBuff
-	_ = outBUff
 
 	n.LogActionF("successfully created vesting pool %d", name)
 }

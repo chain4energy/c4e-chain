@@ -217,6 +217,9 @@ func (m *Manager) RunNodeResource(chainId string, containerName, valCondifDir st
 			fmt.Sprintf("%s/:/chain4energy/.c4e-chain", valCondifDir),
 			fmt.Sprintf("%s/scripts:/chain4energy", pwd),
 		},
+		ExposedPorts: []string{
+			"1317",
+		},
 	}
 
 	resource, err := m.pool.RunWithOptions(runOpts, noRestart)
@@ -252,6 +255,9 @@ func (m *Manager) RunChainInitResource(chainId string, chainVotingPeriod, chainE
 			User: "root:root",
 			Mounts: []string{
 				fmt.Sprintf("%s:%s", mountDir, mountDir),
+			},
+			ExposedPorts: []string{
+				"1317",
 			},
 		},
 		noRestart,
