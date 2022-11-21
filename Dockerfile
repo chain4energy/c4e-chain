@@ -13,8 +13,8 @@ RUN apk add git
 # Needed by github.com/zondax/hid
 RUN apk add linux-headers
 
-WORKDIR /osmosis
-COPY . /osmosis
+WORKDIR /chain4energy
+COPY . /chain4energy
 
 RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 
@@ -24,9 +24,9 @@ RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 
 FROM gcr.io/distroless/base-debian11:${BASE_IMG_TAG}
 
-COPY --from=build /osmosis/build/c4ed /bin/c4ed
+COPY --from=build /chain4energy/build/c4ed /bin/c4ed
 
-ENV HOME /osmosis
+ENV HOME /chain4energy
 WORKDIR $HOME
 
 EXPOSE 26656

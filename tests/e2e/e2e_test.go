@@ -283,7 +283,8 @@ func (s *IntegrationTestSuite) TestCreateVestingPool() {
 
 	creatorAddress := chainANode.CreateWallet(walletName)
 	chainANode.BankSend(sdk.NewCoin(appparams.CoinDenom, sdk.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
-
+	vestingTypes := chainANode.QueryVestingTypes()
+	_ = vestingTypes
 	balance, err := chainANode.QueryBalances(creatorAddress)
 	balanceAmount := balance.AmountOf(appparams.CoinDenom)
 	fmt.Println("Balance before: " + balance.String())

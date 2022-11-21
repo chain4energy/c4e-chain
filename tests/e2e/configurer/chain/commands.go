@@ -208,8 +208,10 @@ func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus stri
 func (n *NodeConfig) CreateVestingPool(name, amount, duration, vestinType, from string) {
 	n.LogActionF("creating vesting pool")
 	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", name, amount, duration, vestinType, fmt.Sprintf("--from=%s", from)}
-	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	outBUff, errBuff, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
+	_ = errBuff
+	_ = outBUff
 
 	n.LogActionF("successfully created vesting pool %d", name)
 }

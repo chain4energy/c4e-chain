@@ -12,8 +12,8 @@ RUN apk add git
 # needed by github.com/zondax/hid
 RUN apk add linux-headers
 
-WORKDIR /osmosis
-COPY . /osmosis
+WORKDIR /chain4energy
+COPY . /chain4energy
 
 RUN BUILD_TAGS=muslc LINK_STATICALLY=true E2E_SCRIPT_NAME=${E2E_SCRIPT_NAME} make build-e2e-script
 
@@ -23,9 +23,9 @@ FROM ubuntu
 # Args only last for a single build stage - renew
 ARG E2E_SCRIPT_NAME
 
-COPY --from=build /osmosis/build/${E2E_SCRIPT_NAME} /bin/${E2E_SCRIPT_NAME}
+COPY --from=build /chain4energy/build/${E2E_SCRIPT_NAME} /bin/${E2E_SCRIPT_NAME}
 
-ENV HOME /osmosis
+ENV HOME /chain4energy
 WORKDIR $HOME
 
 # Docker ARGs are not expanded in ENTRYPOINT in the exec mode. At the same time,

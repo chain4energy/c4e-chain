@@ -214,7 +214,7 @@ func (m *Manager) RunNodeResource(chainId string, containerName, valCondifDir st
 		User:       "root:root",
 		Cmd:        []string{"start"},
 		Mounts: []string{
-			fmt.Sprintf("%s/:/osmosis/.c4e-chain", valCondifDir),
+			fmt.Sprintf("%s/:/chain4energy/.c4e-chain", valCondifDir),
 			fmt.Sprintf("%s/scripts:/osmosis", pwd),
 		},
 	}

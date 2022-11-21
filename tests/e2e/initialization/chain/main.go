@@ -1,4 +1,4 @@
-package main_package
+package main
 
 import (
 	"encoding/json"
