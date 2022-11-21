@@ -126,6 +126,10 @@ func (s *IntegrationTestSuite) TestStateSync() {
 }
 
 func (s *IntegrationTestSuite) TestCfedistributorParamsProposal() {
+	if s.skipParamsChange {
+		s.T().Skip()
+	}
+
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 
@@ -192,6 +196,10 @@ func (s *IntegrationTestSuite) TestCfedistributorParamsProposal() {
 }
 
 func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
+	if s.skipParamsChange {
+		s.T().Skip()
+	}
+
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 
@@ -246,16 +254,16 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 		Value    string `json:"value"`
 	}
 
-	//s.Eventually(
-	//	func() bool {
-	//		var params Params
-	//		node.QueryParams(cfemintertypes.ModuleName, string(cfemintertypes.KeyMinter), &params)
-	//		return params.Value == string(newMinterJSON)
-	//	},
-	//	1*time.Minute,
-	//	10*time.Millisecond,
-	//	"C4e node failed to retrieve params",
-	//)
+	s.Eventually(
+		func() bool {
+			var params Params
+			node.QueryParams(cfemintertypes.ModuleName, string(cfemintertypes.KeyMinter), &params)
+			return params.Value == string(newMinterJSON)
+		},
+		1*time.Minute,
+		10*time.Millisecond,
+		"C4e node failed to retrieve params",
+	)
 
 	s.Eventually(
 		func() bool {
@@ -270,6 +278,10 @@ func (s *IntegrationTestSuite) TestCfeminterParamsProposal() {
 }
 
 func (s *IntegrationTestSuite) TestCfeVestingProposal() {
+	if s.skipParamsChange {
+		s.T().Skip()
+	}
+
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 

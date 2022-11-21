@@ -25,16 +25,19 @@ const (
 	skipCleanupEnv = "C4E_E2E_SKIP_CLEANUP"
 	// Environment variable name to determine what version we are upgrading to
 	upgradeVersionEnv = "C4E_E2E_UPGRADE_VERSION"
+
+	skipParamsChange = "C4E_E2E_SKIP_PARAMS_CHANGE"
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	configurer    configurer.Configurer
-	skipUpgrade   bool
-	skipIBC       bool
-	skipStateSync bool
-	forkHeight    int
+	configurer       configurer.Configurer
+	skipUpgrade      bool
+	skipIBC          bool
+	skipStateSync    bool
+	skipParamsChange bool
+	forkHeight       int
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
@@ -43,9 +46,9 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	os.Setenv(upgradeVersionEnv, "v1.0.1")
-	os.Setenv(skipStateSyncEnv, "true")
-	os.Setenv(skipUpgradeEnv, "true")
-	os.Setenv(skipIBCEnv, "true")
+	os.Setenv(skipStateSyncEnv, "false")
+	os.Setenv(skipUpgradeEnv, "false")
+	os.Setenv(skipIBCEnv, "false")
 	//os.Setenv(skipCleanupEnv, "true")
 	s.T().Log("setting up e2e integration test suite...")
 	var (
@@ -81,6 +84,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		s.Require().NoError(err)
 		if s.skipStateSync {
 			s.T().Log("skipping state sync testing")
+		}
+	}
+
+	if str := os.Getenv(skipParamsChange); len(str) > 0 {
+		s.skipParamsChange, err = strconv.ParseBool(str)
+		s.Require().NoError(err)
+		if s.skipStateSync {
+			s.T().Log("skipping params change testing")
 		}
 	}
 
