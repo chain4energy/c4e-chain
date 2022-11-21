@@ -141,9 +141,6 @@ test-e2e:
 test-e2e-skip-upgrade:
 	@VERSION=$(VERSION) C4E_E2E_SKIP_UPGRADE=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -v
 
-e2e-remove-resources:
-	tests/e2e/scripts/run/remove_stale_resources.sh
-
 test-e2e: C4E_E2E=True e2e-setup test-e2e-ci
 
 test-e2e-ci:
@@ -167,3 +164,12 @@ docker-build-e2e-init-chain:
 
 docker-build-e2e-init-node:
 	@docker build -t chain4energy-e2e-node-init:debug --build-arg E2E_SCRIPT_NAME=node -f tests/e2e/initialization/init.Dockerfile .
+
+e2e-setup:
+	@echo Finished e2e environment setup, ready to start the test
+
+e2e-check-image-sha:
+	tests/e2e/scripts/run/check_image_sha.sh
+
+e2e-remove-resources:
+	tests/e2e/scripts/run/remove_stale_resources.sh

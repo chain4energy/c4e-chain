@@ -195,7 +195,7 @@ func (n *NodeConfig) CreateVestingPool(vestingPoolName, amount, duration, vestin
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
-	n.LogActionF("successfully created vesting pool %d", vestingPoolName)
+	n.LogActionF("successfully created vesting pool %s", vestingPoolName)
 }
 
 func (n *NodeConfig) SendToVestingAccount(fromAddress, toAddress, vestingPoolName, amount, restartVesting string) {
@@ -204,5 +204,14 @@ func (n *NodeConfig) SendToVestingAccount(fromAddress, toAddress, vestingPoolNam
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
-	n.LogActionF("successfully send vesting pool %d to vesting account %d", vestingPoolName, toAddress)
+	n.LogActionF("successfully send vesting pool %s to vesting account %s", vestingPoolName, toAddress)
+}
+
+func (n *NodeConfig) WithdrawAllAvaliable(from string) {
+	n.LogActionF("withdraw all avaliable")
+	cmd := []string{"c4ed", "tx", "cfevesting", "withdraw-all-available", fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully withdrew all avaliable vestings")
 }

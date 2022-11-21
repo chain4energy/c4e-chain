@@ -4,7 +4,7 @@ source $(dirname $0)/common.sh
 
 # check_if_exists returns 1 if an "osmosis" image exists, 0 otherwise.
 check_if_exists() {
-    if [[ "$(docker images -q osmosis 2> /dev/null)" != "" ]]; then
+    if [[ "$(docker images -q chain4energy 2> /dev/null)" != "" ]]; then
         return 1
     fi
     return 0
@@ -31,19 +31,19 @@ check_if_exists
 exists=$?
 
 if [[ "$exists" -eq 1 ]]; then 
-    echo "osmosis:debug image found"
+    echo "chain4energy:debug image found"
     
     check_if_up_to_date
     up_to_date=$?
 
     if [[ "$up_to_date" -eq 1 ]]; then
-        echo "osmosis:debug image is up to date; nothing is done"
+        echo "chain4energy:debug image is up to date; nothing is done"
         exit 0
     else
-        echo "osmosis:debug image is not up to date; rebuilding"
+        echo "chain4energy:debug image is not up to date; rebuilding"
     fi
 else
-    echo "osmosis:debug image not found; building"
+    echo "chain4energy:debug image not found; building"
 fi
 
 # Rebuild the image

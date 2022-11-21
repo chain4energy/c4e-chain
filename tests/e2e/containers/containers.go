@@ -54,7 +54,7 @@ func NewManager(isUpgrade bool, isFork bool, isDebugLogEnabled bool) (docker *Ma
 }
 
 // ExecTxCmd Runs ExecTxCmdWithSuccessString searching for `code: 0`
-func (m *Manager) ExecTxCmd(t *testing.T, chainId string, containerName string, command []string) (bytes.Buffer, bytes.Buffer, error) {
+func (m *Manager) ExecTxCmd(t *testing.T, chainId string, containerName string, command []string) (outBuff bytes.Buffer, errBuff bytes.Buffer, err error) {
 	return m.ExecTxCmdWithSuccessString(t, chainId, containerName, command, "code: 0")
 }
 

@@ -297,37 +297,76 @@ func (s *IntegrationTestSuite) TestCfeVestingProposal() {
 	)
 }
 
-func (s *IntegrationTestSuite) TestCreateVestingPool() {
+func (s *IntegrationTestSuite) TestSendToVestingAccount() {
 	const (
 		creatorWalletName  = "user-1"
 		receiverWalletName = "user-2"
 		baseBalance        = 10000000
 	)
 	chainA := s.configurer.GetChainConfig(0)
-	chainANode, err := chainA.GetDefaultNode()
+	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorAddress := chainANode.CreateWallet(creatorWalletName)
-	vestingTypes := chainANode.QueryVestingTypes()
+	creatorAddress := node.CreateWallet(creatorWalletName)
+	vestingTypes := node.QueryVestingTypes()
 
-	chainANode.BankSend(sdk.NewCoin(appparams.CoinDenom, sdk.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
-	balance, err := chainANode.QueryBalances(creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.CoinDenom, sdk.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	balance, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
 	balanceAmount := balance.AmountOf(appparams.CoinDenom)
 	vestingAmount := balanceAmount.Quo(sdk.NewInt(4))
 	randVestingPoolName := helpers.RandStringOfLength(5)
-	chainANode.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
+	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
 
-	newBalance, err := chainANode.QueryBalances(creatorAddress)
+	newBalance, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 	s.Equal(balanceAmount.Sub(vestingAmount), newBalance.AmountOf(appparams.CoinDenom))
 
-	vestingPools := chainANode.QueryVestingPools(creatorAddress)
+	vestingPools := node.QueryVestingPools(creatorAddress)
 	s.Equal(1, len(vestingPools))
-	receiverAddress := chainANode.CreateWallet(receiverWalletName)
+	receiverAddress := node.CreateWallet(receiverWalletName)
 	sendToVestingAccAmount := vestingAmount.Quo(sdk.NewInt(2))
-	chainANode.SendToVestingAccount(creatorAddress, receiverAddress, randVestingPoolName, sendToVestingAccAmount.String(), "false")
-	vestingPools = chainANode.QueryVestingPools(creatorAddress)
+	node.SendToVestingAccount(creatorAddress, receiverAddress, randVestingPoolName, sendToVestingAccAmount.String(), "false")
+	vestingPools = node.QueryVestingPools(creatorAddress)
 	s.Equal(sendToVestingAccAmount.String(), vestingPools[0].SentAmount)
+}
+
+func (s *IntegrationTestSuite) TestWithdrawAllAvaliable() {
+	const (
+		creatorWalletName  = "user-3"
+		receiverWalletName = "user-4"
+		baseBalance        = 10000000
+	)
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
+
+	creatorAddress := node.CreateWallet(creatorWalletName)
+	vestingTypes := node.QueryVestingTypes()
+
+	node.BankSend(sdk.NewCoin(appparams.CoinDenom, sdk.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	balance, err := node.QueryBalances(creatorAddress)
+	s.NoError(err)
+
+	balanceAmount := balance.AmountOf(appparams.CoinDenom)
+	vestingAmount := balanceAmount.Quo(sdk.NewInt(4))
+	randVestingPoolName := helpers.RandStringOfLength(5)
+	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (1 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
+	vestingPools := node.QueryVestingPools(creatorAddress)
+	s.Equal(vestingPools[0].Withdrawable, "0")
+	s.Equal(vestingPools[0].CurrentlyLocked, vestingAmount.String())
+	s.Eventually(
+		func() bool {
+			node.WithdrawAllAvaliable(creatorAddress)
+			vestingPools := node.QueryVestingPools(creatorAddress)
+			return vestingAmount.String() == vestingPools[0].Withdrawable
+		},
+		2*time.Minute,
+		100*time.Millisecond,
+		"C4e node failed to validate params",
+	)
+	newBalance, err := node.QueryBalances(creatorAddress)
+	s.NoError(err)
+	s.Equal(balanceAmount.Sub(vestingAmount), newBalance.AmountOf(appparams.CoinDenom))
 }
