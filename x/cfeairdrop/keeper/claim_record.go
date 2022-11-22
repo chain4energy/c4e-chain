@@ -79,22 +79,21 @@ func (k Keeper) addClaimRecord(ctx sdk.Context, address string, campaignId uint6
 	return &claimRecord, nil
 }
 
-type CampaignRecordData struct {
-	Address   string
-	Claimable sdk.Int
-}
-
-func (k Keeper) AddCampaignRecords(ctx sdk.Context, campaignId uint64, campaignRecord []*CampaignRecordData) error {
+func (k Keeper) AddCampaignRecords(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, campaignRecord map[string]sdk.Int) error {
 	records := []*types.ClaimRecord{}
-
-	for _, recordData := range campaignRecord {
-		record, err := k.addClaimRecord(ctx, recordData.Address, campaignId, recordData.Claimable)
+	sum := sdk.ZeroInt()
+	for address, claimable := range campaignRecord {
+		record, err := k.addClaimRecord(ctx, address, campaignId, claimable)
 		if err != nil {
 			return err
 		}
 		records = append(records, record)
+		sum = sum.Add(claimable)
 	}
-
+	coins := sdk.NewCoins(sdk.NewCoin("uc4e", sum)) // TODO remove hardcoded uc4e
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, srcAddress, types.ModuleName, coins); err != nil {
+		return err
+	}
 	for _, record := range records {
 		k.SetClaimRecord(ctx, *record)
 	}

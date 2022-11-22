@@ -118,86 +118,109 @@ func TestClaimRecordGetAll(t *testing.T) {
 }
 
 func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
-	k, ctx := keepertest.CfeairdropKeeper(t)
+	testUtil, k, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
-	campaignRecordsData := make([]*keeper.CampaignRecordData, len(acountsAddresses))
+	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
+
+	sum := sdk.ZeroInt()
+	campaignRecordsData := map[string]sdk.Int{}
 	for i, addr := range acountsAddresses {
-		campaignRecordsData[i] = &keeper.CampaignRecordData{Address: addr.String(), Claimable: sdk.NewInt(int64(100 + i))}
+		amount := sdk.NewInt(int64(100 + i))
+		sum = sum.Add(amount)
+		campaignRecordsData[addr.String()] = amount
 	}
+	testUtil.BankUtils.AddDefaultDenomCoinsToAccount(ctx, sum, srcAddr)
 	campaignId := uint64(23)
-	require.NoError(t, k.AddCampaignRecords(ctx, campaignId, campaignRecordsData))
+	require.NoError(t, k.AddCampaignRecords(ctx, srcAddr, campaignId, campaignRecordsData))
 
 	allRecords := k.GetAllClaimRecord(ctx)
 	require.EqualValues(t, len(acountsAddresses), len(allRecords))
-	for _, recordData := range campaignRecordsData {
-		claimRecord, found := k.GetClaimRecord(ctx, recordData.Address)
+	for address, claimable := range campaignRecordsData {
+		claimRecord, found := k.GetClaimRecord(ctx, address)
 		require.True(t, found)
 		require.EqualValues(t, 1, len(claimRecord.CampaignRecords))
-		require.EqualValues(t, recordData.Address, claimRecord.Address)
+		require.EqualValues(t, address, claimRecord.Address)
 		require.EqualValues(t, "", claimRecord.ClaimAddress)
 		require.EqualValues(t, campaignId, claimRecord.CampaignRecords[0].CampaignId)
-		require.True(t, recordData.Claimable.Equal(claimRecord.CampaignRecords[0].Claimable))
+		require.True(t, claimable.Equal(claimRecord.CampaignRecords[0].Claimable))
 		require.EqualValues(t, 0, len(claimRecord.CampaignRecords[0].CompletedMissions))
 
 	}
+	testUtil.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.ModuleName, sum)
 }
 
 
 func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
-	k, ctx := keepertest.CfeairdropKeeper(t)
+	testUtil, k, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
-	campaignRecordsData := make([]*keeper.CampaignRecordData, len(acountsAddresses))
+	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
+	sum := sdk.ZeroInt()
+	campaignRecordsData := map[string]sdk.Int{}
 	for i, addr := range acountsAddresses {
-		campaignRecordsData[i] = &keeper.CampaignRecordData{Address: addr.String(), Claimable: sdk.NewInt(int64(100 + i))}
+		amount := sdk.NewInt(int64(100 + i))
+		sum = sum.Add(amount)
+		campaignRecordsData[addr.String()] = amount
 	}
+	testUtil.BankUtils.AddDefaultDenomCoinsToAccount(ctx, sum, srcAddr)
 	campaignId := uint64(23)
-	require.NoError(t, k.AddCampaignRecords(ctx, campaignId, campaignRecordsData))
-
-	campaignRecordsData = make([]*keeper.CampaignRecordData, len(acountsAddresses))
+	require.NoError(t, k.AddCampaignRecords(ctx, srcAddr, campaignId, campaignRecordsData))
+	testUtil.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.ModuleName, sum)
+	sum2 := sdk.ZeroInt()
+	campaignRecordsData = map[string]sdk.Int{}
 	for i, addr := range acountsAddresses {
-		campaignRecordsData[i] = &keeper.CampaignRecordData{Address: addr.String(), Claimable: sdk.NewInt(int64(500 + i))}
+		amount := sdk.NewInt(int64(500 + i))
+		sum2 = sum2.Add(amount)
+		campaignRecordsData[addr.String()] = amount
 	}
+	testUtil.BankUtils.AddDefaultDenomCoinsToAccount(ctx, sum2, srcAddr)
 	campaignId = uint64(24)
-	require.NoError(t, k.AddCampaignRecords(ctx, campaignId, campaignRecordsData))
+	require.NoError(t, k.AddCampaignRecords(ctx, srcAddr, campaignId, campaignRecordsData))
+
+	testUtil.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, types.ModuleName, sum.Add(sum2))
 
 	allRecords := k.GetAllClaimRecord(ctx)
 	require.EqualValues(t, len(acountsAddresses), len(allRecords))
-	for _, recordData := range campaignRecordsData {
-		claimRecord, found := k.GetClaimRecord(ctx, recordData.Address)
+	for address, claimable := range campaignRecordsData {
+		claimRecord, found := k.GetClaimRecord(ctx, address)
 		require.True(t, found)
 		require.EqualValues(t, 2, len(claimRecord.CampaignRecords))
-		require.EqualValues(t, recordData.Address, claimRecord.Address)
+		require.EqualValues(t, address, claimRecord.Address)
 		require.EqualValues(t, "", claimRecord.ClaimAddress)
 		require.EqualValues(t, campaignId, claimRecord.CampaignRecords[1].CampaignId)
-		require.True(t, recordData.Claimable.Equal(claimRecord.CampaignRecords[1].Claimable))
+		require.True(t, claimable.Equal(claimRecord.CampaignRecords[1].Claimable))
 		require.EqualValues(t, 0, len(claimRecord.CampaignRecords[1].CompletedMissions))
 
 	}
 }
 
 func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
-	k, ctx := keepertest.CfeairdropKeeper(t)
+	testUtil, k, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
-	campaignRecordsData := make([]*keeper.CampaignRecordData, len(acountsAddresses))
+	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
+	sum := sdk.ZeroInt()
+	campaignRecordsData := map[string]sdk.Int{}
 	for i, addr := range acountsAddresses {
-		campaignRecordsData[i] = &keeper.CampaignRecordData{Address: addr.String(), Claimable: sdk.NewInt(int64(100 + i))}
+		amount := sdk.NewInt(int64(100 + i))
+		sum = sum.Add(amount)
+		campaignRecordsData[addr.String()] = amount
 	}
+	testUtil.BankUtils.AddDefaultDenomCoinsToAccount(ctx, sum, srcAddr)
 	campaignId := uint64(23)
-	require.NoError(t, k.AddCampaignRecords(ctx, campaignId, campaignRecordsData))
+	require.NoError(t, k.AddCampaignRecords(ctx, srcAddr, campaignId, campaignRecordsData))
 
-	require.EqualError(t, k.AddCampaignRecords(ctx, campaignId, []*keeper.CampaignRecordData{campaignRecordsData[5]}), 
-		fmt.Sprintf("campaignId 23 already exists for address: %s: entity already exists", campaignRecordsData[5].Address))
+	require.EqualError(t, k.AddCampaignRecords(ctx, srcAddr, campaignId, map[string]sdk.Int{acountsAddresses[5].String(): campaignRecordsData[acountsAddresses[5].String()]}), 
+		fmt.Sprintf("campaignId 23 already exists for address: %s: entity already exists", acountsAddresses[5]))
 
 	allRecords := k.GetAllClaimRecord(ctx)
 	require.EqualValues(t, len(acountsAddresses), len(allRecords))
-	for _, recordData := range campaignRecordsData {
-		claimRecord, found := k.GetClaimRecord(ctx, recordData.Address)
+	for address, claimable := range campaignRecordsData {
+		claimRecord, found := k.GetClaimRecord(ctx, address)
 		require.True(t, found)
 		require.EqualValues(t, 1, len(claimRecord.CampaignRecords))
-		require.EqualValues(t, recordData.Address, claimRecord.Address)
+		require.EqualValues(t, address, claimRecord.Address)
 		require.EqualValues(t, "", claimRecord.ClaimAddress)
 		require.EqualValues(t, campaignId, claimRecord.CampaignRecords[0].CampaignId)
-		require.True(t, recordData.Claimable.Equal(claimRecord.CampaignRecords[0].Claimable))
+		require.True(t, claimable.Equal(claimRecord.CampaignRecords[0].Claimable))
 		require.EqualValues(t, 0, len(claimRecord.CampaignRecords[0].CompletedMissions))
 
 	}

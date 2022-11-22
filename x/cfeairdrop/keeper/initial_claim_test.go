@@ -72,7 +72,7 @@ func TestInitialClaimGetAll(t *testing.T) {
 func TestClaimInitial(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	ctx := testHelper.Context
 
@@ -93,13 +93,13 @@ func TestClaimInitial(t *testing.T) {
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions}
 	cfeairdrop.InitGenesis(ctx, testHelper.App.CfeairdropKeeper, genesisState)
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(10000), types.ModuleName)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(sdk.NewInt(10000), acountsAddresses[1])
 
-	records := []*keeper.CampaignRecordData{{Address: acountsAddresses[0].String(), Claimable: sdk.NewInt(10000)}}
+	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
 	require.Nil(t, testHelper.App.AccountKeeper.GetAccount(ctx, acountsAddresses[0]))
-	require.NoError(t, testHelper.App.CfeairdropKeeper.AddCampaignRecords(ctx, 1, records))
+	require.NoError(t, testHelper.App.CfeairdropKeeper.AddCampaignRecords(ctx, acountsAddresses[1], 1, records))
 
-	
+
 	require.Nil(t, testHelper.App.AccountKeeper.GetAccount(ctx, acountsAddresses[0]))
 
 	require.NoError(t, testHelper.App.CfeairdropKeeper.ClaimInitial(ctx, 1, 3, acountsAddresses[0].String()))
