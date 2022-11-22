@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/std"
 )
 
+// TODO: comment
 // MakeEncodingConfig creates an EncodingConfig for testing.
 func MakeEncodingConfig() params2.EncodingConfig {
 	encodingConfig := params2.MakeEncodingConfig()
