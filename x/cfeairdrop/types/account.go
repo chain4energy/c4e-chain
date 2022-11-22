@@ -119,11 +119,13 @@ func (cva AirdropVestingAccount) Validate() error {
 	if !cva.BaseVestingAccount.OriginalVesting.IsEqual(vestedCoins) {
 		return fmt.Errorf("original vesting (%s) not equal to sum of periods (%s)", cva.BaseVestingAccount.OriginalVesting, vestedCoins)
 	}
-	if cva.GetStartTime() != startTime {
-		return fmt.Errorf("vesting start-time (%d) not eqaul to earliest period start time (%d)", cva.GetStartTime(), startTime)
-	}
-	if cva.GetEndTime() != endTime {
-		return fmt.Errorf("vesting end-time (%d) not eqaul to lastest period end time (%d)", cva.GetEndTime(), endTime)
+	if len(cva.VestingPeriods) > 0 {
+		if cva.GetStartTime() != startTime {
+			return fmt.Errorf("vesting start-time (%d) not eqaul to earliest period start time (%d)", cva.GetStartTime(), startTime)
+		}
+		if cva.GetEndTime() != endTime {
+			return fmt.Errorf("vesting end-time (%d) not eqaul to lastest period end time (%d)", cva.GetEndTime(), endTime)
+		}
 	}
 	return cva.BaseVestingAccount.Validate()
 }

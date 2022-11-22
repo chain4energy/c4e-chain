@@ -6,6 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+
 )
 
 // SetClaimRecordXX set a specific claimRecordXX in the store from its index
@@ -71,7 +73,7 @@ func (k Keeper) addClaimRecord(ctx sdk.Context, address string, campaignId uint6
 		// k.grantFeeAllowance(ctx, address)
 	}
 	if claimRecord.HasCampaign(campaignId) {
-		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "campaignId %d already exists for address: %s", campaignId, address)
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrAlreadyExists, "campaignId %d already exists for address: %s", campaignId, address)
 	}
 	claimRecord.CampaignRecords = append(claimRecord.CampaignRecords, &types.CampaignRecord{CampaignId: campaignId, Claimable: claimable})
 	return &claimRecord, nil

@@ -23,6 +23,9 @@ func createNInitialClaim(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.
 	items := make([]types.InitialClaim, n)
 	for i := range items {
 		items[i].CampaignId = uint64(i)
+		items[i].MissionId = uint64(1000 +i)
+		items[i].Enabled = true
+
 
 		keeper.SetInitialClaim(ctx, items[i])
 	}
@@ -95,6 +98,8 @@ func TestClaimInitial(t *testing.T) {
 	records := []*keeper.CampaignRecordData{{Address: acountsAddresses[0].String(), Claimable: sdk.NewInt(10000)}}
 	require.Nil(t, testHelper.App.AccountKeeper.GetAccount(ctx, acountsAddresses[0]))
 	require.NoError(t, testHelper.App.CfeairdropKeeper.AddCampaignRecords(ctx, 1, records))
+
+	
 	require.Nil(t, testHelper.App.AccountKeeper.GetAccount(ctx, acountsAddresses[0]))
 
 	require.NoError(t, testHelper.App.CfeairdropKeeper.ClaimInitial(ctx, 1, 3, acountsAddresses[0].String()))

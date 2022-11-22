@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -94,6 +95,15 @@ func (bu *BankUtils) VerifyAccountDefultDenomBalance(ctx sdk.Context, addr sdk.A
 	bu.VerifyAccountBalanceByDenom(ctx, addr, DefaultTestDenom, expectedAmount)
 }
 
+func (bu *BankUtils) VerifyAccountLockedByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string, expectedAmount sdk.Int) {
+	locked := bu.helperBankKeeper.LockedCoins(ctx, addr).AmountOf(denom)
+	require.Truef(bu.t, expectedAmount.Equal(locked), "expectedAmount %s <> account locked %s", expectedAmount, locked)
+}
+
+func (bu *BankUtils) VerifyAccountDefultDenomLocked(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {
+	bu.VerifyAccountLockedByDenom(ctx, addr, DefaultTestDenom, expectedAmount)
+}
+
 func (bu *BankUtils) VerifyTotalSupplyByDenom(ctx sdk.Context, denom string, expectedAmount sdk.Int) {
 	supply := bu.helperBankKeeper.GetSupply(ctx, denom).Amount
 	require.Truef(bu.t, expectedAmount.Equal(supply), "expectedAmount %s <> supply %s", expectedAmount, supply)
@@ -101,6 +111,12 @@ func (bu *BankUtils) VerifyTotalSupplyByDenom(ctx sdk.Context, denom string, exp
 
 func (bu *BankUtils) VerifyDefultDenomTotalSupply(ctx sdk.Context, expectedAmount sdk.Int) {
 	bu.VerifyTotalSupplyByDenom(ctx, DefaultTestDenom, expectedAmount)
+}
+
+func (bu *BankUtils) DisableDefaultSend(ctx sdk.Context) {
+	params := bu.helperBankKeeper.GetParams(ctx)
+	params.DefaultSendEnabled = false
+	bu.helperBankKeeper.SetParams(ctx, params)
 }
 
 type ContextBankUtils struct {
@@ -161,4 +177,18 @@ func (bu *ContextBankUtils) GetModuleAccountDefultDenomBalance(accName string) s
 func (bu *ContextBankUtils) GetAccountDefultDenomBalance(addr sdk.AccAddress) sdk.Int {
 	return bu.BankUtils.GetAccountDefultDenomBalance(bu.testContext.GetContext(), addr)
 
+}
+
+func (bu *ContextBankUtils) VerifyAccountLockedByDenom(addr sdk.AccAddress, denom string, expectedAmount sdk.Int) {
+	bu.BankUtils.VerifyAccountLockedByDenom(bu.testContext.GetContext(), addr, denom, expectedAmount)
+}
+
+func (bu *ContextBankUtils) VerifyAccountDefultDenomLocked(addr sdk.AccAddress, expectedAmount sdk.Int) {
+	fmt.Printf("VerifyAccountDefultDenomLocked: %s\r\n", bu.testContext.GetContext().BlockTime())
+
+	bu.BankUtils.VerifyAccountDefultDenomLocked(bu.testContext.GetContext(), addr, expectedAmount)
+}
+
+func (bu *ContextBankUtils) DisableDefaultSend() {
+	bu.BankUtils.DisableDefaultSend(bu.testContext.GetContext())
 }

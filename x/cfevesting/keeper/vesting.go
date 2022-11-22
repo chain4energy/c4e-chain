@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
@@ -40,19 +41,19 @@ func (k Keeper) addVestingPool(
 
 	if vestingPoolName == "" {
 		k.Logger(ctx).Error("add vesting pool: empty name ", "vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "amount", amount)
-		return sdkerrors.Wrap(types.ErrParam, "add vesting pool empty name")
+		return sdkerrors.Wrap(c4eerrors.ErrParam, "add vesting pool empty name")
 	}
 
 	if amount.LTE(sdk.ZeroInt()) {
 		k.Logger(ctx).Error("add vesting pool amount <= 0", "vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "amount", amount)
-		return sdkerrors.Wrap(types.ErrAmount, "add vesting pool amount <= 0")
+		return sdkerrors.Wrap(c4eerrors.ErrAmount, "add vesting pool amount <= 0")
 	}
 
 	_, err := sdk.AccAddressFromBech32(vestingAddr)
 	if err != nil {
 		k.Logger(ctx).Error("add vesting pool vesting acc address parsing error",
 			"vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "error", err.Error())
-		return sdkerrors.Wrap(types.ErrParsing, sdkerrors.Wrap(err, "add vesting pool - vesting acc address error").Error())
+		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrap(err, "add vesting pool - vesting acc address error").Error())
 	}
 	denom := k.GetParams(ctx).Denom
 
@@ -61,7 +62,7 @@ func (k Keeper) addVestingPool(
 	if err != nil {
 		k.Logger(ctx).Error("add vesting pool source account address parsing error",
 			"vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "error", err.Error())
-		return sdkerrors.Wrap(types.ErrParsing, sdkerrors.Wrap(err, "add vesting pool - source account address error").Error())
+		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrap(err, "add vesting pool - source account address error").Error())
 	}
 
 	balance := k.bank.GetBalance(ctx, srcAccAddress, denom)
@@ -84,7 +85,7 @@ func (k Keeper) addVestingPool(
 			if pool.Name == vestingPoolName {
 				k.Logger(ctx).Error("add vesting pool vesting pool name already exists error",
 					"vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr")
-				return sdkerrors.Wrapf(types.ErrAlreadyExists, "add vesting pool - vesting pool name: %s", vestingPoolName)
+				return sdkerrors.Wrapf(c4eerrors.ErrAlreadyExists, "add vesting pool - vesting pool name: %s", vestingPoolName)
 			}
 		}
 	}
@@ -109,7 +110,7 @@ func (k Keeper) addVestingPool(
 		"denom", denom, "balance", balance, "vestingPoolsFound", vestingPoolsFound, "vestingPool", vestingPool)
 	if err != nil {
 		k.Logger(ctx).Error("add vesting pool sendig coins to vesting pool error", "error", err.Error())
-		return sdkerrors.Wrap(types.ErrSendCoins, sdkerrors.Wrap(err, "add vesting pool  - sendig coins to vesting pool error").Error())
+		return sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrap(err, "add vesting pool  - sendig coins to vesting pool error").Error())
 	}
 	k.SetAccountVestingPools(ctx, accVestingPools)
 	return nil
@@ -119,7 +120,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, address string) (withdrawn
 	accAddress, err := sdk.AccAddressFromBech32(address)
 	if err != nil {
 		k.Logger(ctx).Error("withdraw all available address parsing error", "address", address, "error", err.Error())
-		return withdrawn, sdkerrors.Wrap(types.ErrParsing, sdkerrors.Wrapf(err, "withdraw all available address parsing error: %s", address).Error())
+		return withdrawn, sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "withdraw all available address parsing error: %s", address).Error())
 	}
 
 	accVestingPools, vestingPoolsFound := k.GetAccountVestingPools(ctx, address)
@@ -158,7 +159,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, address string) (withdrawn
 		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accAddress, coinsToSend)
 		if err != nil {
 			k.Logger(ctx).Error("withdraw all available sending coins to vesting account error", "address", address, "error", err.Error())
-			return withdrawn, sdkerrors.Wrap(types.ErrSendCoins, sdkerrors.Wrapf(err, "withdraw all available - send coins to vesting account error: address: %s", address).Error())
+			return withdrawn, sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err, "withdraw all available - send coins to vesting account error: address: %s", address).Error())
 		}
 	}
 
@@ -268,28 +269,28 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 	from, err := sdk.AccAddressFromBech32(fromAddress)
 	if err != nil {
 		k.Logger(ctx).Error("create vesting account from-address parsing error", "fromAddress", fromAddress, "error", err.Error())
-		return sdkerrors.Wrap(types.ErrParsing, sdkerrors.Wrapf(err, "create vesting account - from-address parsing error: %s", fromAddress).Error())
+		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "create vesting account - from-address parsing error: %s", fromAddress).Error())
 	}
 	to, err := sdk.AccAddressFromBech32(toAddress)
 	if err != nil {
 		k.Logger(ctx).Error("create vesting account to-address parsing error", "toAddress", toAddress, "error", err.Error())
-		return sdkerrors.Wrap(types.ErrParsing, sdkerrors.Wrapf(err, "create vesting account - to-address parsing error: %s", toAddress).Error())
+		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "create vesting account - to-address parsing error: %s", toAddress).Error())
 	}
 
 	if bk.BlockedAddr(to) {
 		k.Logger(ctx).Error("create vesting account account is not allowed to receive funds error", "toAddress", toAddress)
-		return sdkerrors.Wrapf(types.ErrAccountNotAllowedToReceiveFunds, "create vesting account - account address: %s", toAddress)
+		return sdkerrors.Wrapf(c4eerrors.ErrAccountNotAllowedToReceiveFunds, "create vesting account - account address: %s", toAddress)
 	}
 
 	if acc := ak.GetAccount(ctx, to); acc != nil {
 		k.Logger(ctx).Error("create vesting account account already exists error", "toAddress", toAddress)
-		return sdkerrors.Wrapf(types.ErrAlreadyExists, "create vesting account - account address: %s", toAddress)
+		return sdkerrors.Wrapf(c4eerrors.ErrAlreadyExists, "create vesting account - account address: %s", toAddress)
 	}
 
 	baseAccount := ak.NewAccountWithAddress(ctx, to)
 	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
 		k.Logger(ctx).Error("create vesting account invalid account type; expected: BaseAccount", "notExpectedAccount", baseAccount)
-		return sdkerrors.Wrapf(types.ErrInvalidAccountType, "create vesting account - expected BaseAccount, got: %T", baseAccount)
+		return sdkerrors.Wrapf(c4eerrors.ErrInvalidAccountType, "create vesting account - expected BaseAccount, got: %T", baseAccount)
 	}
 
 	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), amount.Sort(), endTime)
@@ -311,7 +312,7 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 	if err != nil {
 		k.Logger(ctx).Debug("create vesting account send coins to vesting account error", "fromAddress", fromAddress, "toAddress", toAddress,
 			"amount", amount, "error", err.Error())
-		return sdkerrors.Wrap(types.ErrSendCoins, sdkerrors.Wrapf(err,
+		return sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err,
 			"create vesting account - send coins to vesting account error (from: %s, to: %s, amount: %s)", fromAddress, toAddress, amount).Error())
 	}
 
@@ -345,23 +346,23 @@ func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount sdk.
 	to, err := sdk.AccAddressFromBech32(toAddress)
 	if err != nil {
 		k.Logger(ctx).Error("new vesting account parsing error", "error", err.Error())
-		return sdkerrors.Wrap(types.ErrParsing, sdkerrors.Wrapf(err, "new vesting account - to-address parsing error: %s", toAddress).Error())
+		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "new vesting account - to-address parsing error: %s", toAddress).Error())
 	}
 
 	if bk.BlockedAddr(to) {
 		k.Logger(ctx).Error("new vesting account is not allowed to receive funds error", "address", toAddress)
-		return sdkerrors.Wrapf(types.ErrAccountNotAllowedToReceiveFunds, "new vesting account - account address: %s", toAddress)
+		return sdkerrors.Wrapf(c4eerrors.ErrAccountNotAllowedToReceiveFunds, "new vesting account - account address: %s", toAddress)
 	}
 
 	if acc := ak.GetAccount(ctx, to); acc != nil {
 		k.Logger(ctx).Error("new vesting account account already exists error", "toAddress", toAddress)
-		return sdkerrors.Wrapf(types.ErrAlreadyExists, "new vesting account - account address: %s", toAddress)
+		return sdkerrors.Wrapf(c4eerrors.ErrAlreadyExists, "new vesting account - account address: %s", toAddress)
 	}
 
 	baseAccount := ak.NewAccountWithAddress(ctx, to)
 	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
 		k.Logger(ctx).Error("new vesting account invalid account type; expected: BaseAccount", "toAddress", toAddress, "notExpectedAccount", baseAccount)
-		return sdkerrors.Wrapf(types.ErrInvalidAccountType, "new vesting account - expected BaseAccount, got: %T", baseAccount)
+		return sdkerrors.Wrapf(c4eerrors.ErrInvalidAccountType, "new vesting account - expected BaseAccount, got: %T", baseAccount)
 	}
 
 	coinsToSend := sdk.NewCoins(coinToSend)
@@ -391,7 +392,7 @@ func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount sdk.
 
 	if err != nil {
 		k.Logger(ctx).Error("new vesting account send coins to vesting account error", "error", err.Error())
-		return sdkerrors.Wrap(types.ErrSendCoins, sdkerrors.Wrapf(err, "new vesting account - send coins to vesting account error").Error())
+		return sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err, "new vesting account - send coins to vesting account error").Error())
 	}
 
 	return nil

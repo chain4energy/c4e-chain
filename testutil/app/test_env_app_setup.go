@@ -94,17 +94,15 @@ func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time
 		InitTime:              initTime,
 	}
 
-	var testHelperP testcommon.TestContext = &testHelper
+	bankUtils := testcommon.NewContextBankUtils(t, &testHelper, &helperAk, helperBk)
 
-	bankUtils := testcommon.NewContextBankUtils(t, testHelper, &helperAk, helperBk)
-
-	testHelper.BankUtils = bankUtils
-	testHelper.AuthUtils = testcommon.NewContextAuthUtils(t, testHelper, &helperAk, &bankUtils.BankUtils)
-	testHelper.StakingUtils = testcommon.NewContextStakingUtils(t, testHelper, app.StakingKeeper, &bankUtils.BankUtils)
-	testHelper.C4eVestingUtils = testcfevesting.NewContextC4eVestingUtils(t, testHelperP, &app.CfevestingKeeper, &app.AccountKeeper, &app.BankKeeper, &app.StakingKeeper, &bankUtils.BankUtils, &testHelper.AuthUtils.AuthUtils)
-	testHelper.C4eMinterUtils = testcfeminter.NewContextC4eMinterUtils(t, testHelperP, &app.CfeminterKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
-	testHelper.C4eDistributorUtils = testcfedistributor.NewContextC4eDistributorUtils(t, testHelperP, &app.CfedistributorKeeper, &app.AccountKeeper)
-	testHelper.C4eAirdropUtils = testcfeairdrop.NewContextC4eAirdropUtils(t, testHelperP, &app.CfeairdropKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
+	testHelper.BankUtils = testcommon.NewContextBankUtils(t, &testHelper, &helperAk, helperBk)
+	testHelper.AuthUtils = testcommon.NewContextAuthUtils(t, &testHelper, &helperAk, &bankUtils.BankUtils)
+	testHelper.StakingUtils = testcommon.NewContextStakingUtils(t, &testHelper, app.StakingKeeper, &bankUtils.BankUtils)
+	testHelper.C4eVestingUtils = testcfevesting.NewContextC4eVestingUtils(t, &testHelper, &app.CfevestingKeeper, &app.AccountKeeper, &app.BankKeeper, &app.StakingKeeper, &bankUtils.BankUtils, &testHelper.AuthUtils.AuthUtils)
+	testHelper.C4eMinterUtils = testcfeminter.NewContextC4eMinterUtils(t, &testHelper, &app.CfeminterKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
+	testHelper.C4eDistributorUtils = testcfedistributor.NewContextC4eDistributorUtils(t, &testHelper, &app.CfedistributorKeeper, &app.AccountKeeper)
+	testHelper.C4eAirdropUtils = testcfeairdrop.NewContextC4eAirdropUtils(t, &testHelper, &app.CfeairdropKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
 
 	return &testHelper
 }

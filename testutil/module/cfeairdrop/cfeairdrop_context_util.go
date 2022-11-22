@@ -25,3 +25,9 @@ func (h *ContextC4eAirdropUtils) SendToAirdropAccount(toAddress sdk.AccAddress,
 	amount sdk.Int, startTime int64, endTime int64, createAccount bool) {
 	h.C4eAirdropUtils.SendToAirdropAccount(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount)
 }
+
+func (h *ContextC4eAirdropUtils) SendToAirdropAccountError(toAddress sdk.AccAddress,
+	amount sdk.Int, startTime int64, endTime int64, createAccount bool, errorMessage string, expectNewAccount bool) {
+	h.C4eAirdropUtils.SendToAirdropAccountError(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount, errorMessage, expectNewAccount)
+
+}
