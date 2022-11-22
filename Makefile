@@ -149,8 +149,8 @@ E2E_SCRIPT_NAME=chain
 
 test-e2e: C4E_E2E=True e2e-setup test-e2e-ci
 
-run-e2e-chain: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SKIP_UPGRADE=True go test  -mod=readonly -timeout=25m -v ./tests/e2e -testify.m ^TestAppRun
+run-chain: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SKIP_UPGRADE=True C4E_E2E_SKIP_IBC=True go test  -mod=readonly -timeout=25m -v ./tests/e2e -testify.m ^TestAppRun
 
 test-e2e-ci:
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION)  go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
@@ -161,7 +161,7 @@ test-e2e-debug: e2e-setup
 test-e2e-short: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_UPGRADE=True C4E_E2E_SKIP_IBC=True C4E_E2E_SKIP_STATE_SYNC=True C4E_E2E_SKIP_CLEANUP=False go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -count=1
 
-e2e-setup:
+e2e-setup: e2e-remove-resources
 	@echo Finished e2e environment setup, ready to start the test
 
 e2e-check-image-sha:

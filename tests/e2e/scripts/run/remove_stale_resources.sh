@@ -3,8 +3,8 @@
 source $(dirname $0)/common.sh
 
 # Filtering by containers belonging to the "osmosis-testnet" network
-LIST_CONTAINERS_CMD=$(docker ps -a --filter network=c4e-testnet --format {{.ID}})
-LIST_NETWORKS_CMD=$(docker network ls --filter name=c4e-testnet --format {{.ID}})
+LIST_CONTAINERS_CMD=$(docker ps -a --filter network=chain4energy-testnet --format {{.ID}})
+LIST_NETWORKS_CMD=$(docker network ls --filter name=chain4energy-testnet --format {{.ID}})
 
 if [[ "$LIST_CONTAINERS_CMD" != "" ]]; then
     echo "Removing stale e2e containers"
