@@ -6,11 +6,11 @@
 
 The `e2e` package defines an integration testing suite used for full
 end-to-end testing functionality. This package is decoupled from
-depending on the Osmosis codebase. It initializes the chains for testing
+depending on the Chain4Energy codebase. It initializes the chains for testing
 via Docker files. As a result, the test suite may provide the desired
-Osmosis version to Docker containers during the initialization. This
+Chain4Energy version to Docker containers during the initialization. This
 design allows for the opportunity of testing chain upgrades in the
-future by providing an older Osmosis version to the container,
+future by providing an older Chain4Energy version to the container,
 performing the chain upgrade, and running the latest test suite. When
 testing a normal upgrade, the e2e test suite submits an upgrade proposal at
 an upgrade height, ensures the upgrade happens at the desired height, and
@@ -19,7 +19,7 @@ testing a fork, the test suite instead starts the chain a few blocks before
 the set fork height and ensures the chain continues after the fork triggers
 the upgrade. Note that a regular upgrade and a fork upgrade are mutually exclusive. 
 
-The file e2e\_setup\_test.go defines the testing suite and contains the
+The file e2e_setup_test.go defines the testing suite and contains the
 core bootstrapping logic that creates a testing environment via Docker
 containers. A testing network is created dynamically with 2 test
 validators.
@@ -45,7 +45,7 @@ Conceptually, we can split the e2e setup into 2 parts:
     by calling `chain.Init(...)` method in the `configurer/current.go`.
 
     If with the upgrade, the same `chain.Init(...)` function is run inside a Docker container
-    of the previous Osmosis version, inside `configurer/upgrade.go`. This is
+    of the previous Chain4Energy version, inside `configurer/upgrade.go`. This is
     needed to initialize chain configs and the genesis of the previous version that
     we are upgrading from.
 
@@ -77,16 +77,16 @@ Conceptually, we can split the e2e setup into 2 parts:
     are as follows:
     
     - If only `isIBCEnabled`, we want to have 2 chains initialized at the
-    current branch version of Osmosis codebase
+    current branch version of Chain4Energy codebase
 
     - If only `isUpgradeEnabled`, that's invalid (we can decouple upgrade
      testing from IBC in a future PR)
 
     - If both `isIBCEnabled` and `isUpgradeEnabled`, we want 2 chain
-    with IBC initialized at the previous Osmosis version
+    with IBC initialized at the previous Chain4Energy version
 
     - If none are true, we only need one chain at the current branch version
-    of the Osmosis code
+    of the Chain4Energy code
 
 2. Setting up e2e components
 
@@ -98,25 +98,25 @@ Conceptually, we can split the e2e setup into 2 parts:
     - IBC testing
         - 2 chains are created connected by Hermes relayer
         - Upgrade Testing
-        - 2 chains of the older Osmosis version are created, and
+        - 2 chains of the older Chain4Energy version are created, and
         connected by Hermes relayer
     - Upgrade testing
         - CLI commands are run to create an upgrade proposal and approve it
         - Old version containers are stopped and the upgrade binary is added
-        - Current branch Osmosis version is spun up to continue with testing
+        - Current branch Chain4Energy version is spun up to continue with testing
     - State Sync Testing (WIP)
         - An additional full node is created after a chain has started.
         - This node is meant to state sync with the rest of the system.
 
     This is done in `configurer/setup_runner.go` via function decorator design pattern
     where we chain the desired setup components during configurer creation.
-    [Example](https://github.com/osmosis-labs/osmosis/blob/c5d5c9f0c6b5c7fdf9688057eb78ec793f6dd580/tests/e2e/configurer/configurer.go#L166)
+    [Example](https://github.com/Chain4Energy-labs/Chain4Energy/blob/c5d5c9f0c6b5c7fdf9688057eb78ec793f6dd580/tests/e2e/configurer/configurer.go#L166)
 
 ## `initialization` Package
 
 The `initialization` package introduces the logic necessary for initializing a
 chain by creating a genesis file and all required configuration files
-such as the `app.toml`. This package directly depends on the Osmosis
+such as the `app.toml`. This package directly depends on the Chain4Energy
 codebase.
 
 ## `upgrade` Package
@@ -125,7 +125,7 @@ The `upgrade` package starts chain initialization. In addition, there is
 a Dockerfile `init-e2e.Dockerfile`. When executed, its container
 produces all files necessary for starting up a new chain. These
 resulting files can be mounted on a volume and propagated to our
-production osmosis container to start the `c4ed` service.
+production Chain4Energy container to start the `c4ed` service.
 
 The decoupling between chain initialization and start-up allows to
 minimize the differences between our test suite and the production
@@ -144,7 +144,7 @@ in the `chain` package.
 
 Please refer to `tests/e2e/initialization/README.md`
 
-### To build the debug Osmosis image
+### To build the debug Chain4Energy image
 
 ```sh
     make docker-build-e2e-debug
@@ -155,23 +155,23 @@ Some tests take a long time to run. Sometimes, we would like to disable them
 locally or in CI. The following are the environment variables to disable
 certain components of e2e testing.
 
-- `OSMOSIS_E2E_SKIP_UPGRADE` - when true, skips the upgrade tests.
-If OSMOSIS_E2E_SKIP_IBC is true, this must also be set to true because upgrade
+- `C4E_E2E_SKIP_UPGRADE` - when true, skips the upgrade tests.
+If C4E_E2E_SKIP_IBC is true, this must also be set to true because upgrade
 tests require IBC logic.
 
-- `OSMOSIS_E2E_SKIP_IBC` - when true, skips the IBC tests tests.
+- `C4E_E2E_SKIP_IBC` - when true, skips the IBC tests tests.
 
-- `OSMOSIS_E2E_SKIP_STATE_SYNC` - when true, skips the state sync tests.
+- `C4E_E2E_SKIP_STATE_SYNC` - when true, skips the state sync tests.
 
-- `OSMOSIS_E2E_SKIP_CLEANUP` - when true, avoids cleaning up the e2e Docker
+- `C4E_E2E_SKIP_CLEANUP` - when true, avoids cleaning up the e2e Docker
 containers.
 
-- `OSMOSIS_E2E_FORK_HEIGHT` - when the above "IS_FORK" env variable is set to true, this is the string
+- `C4E_E2E_FORK_HEIGHT` - when the above "IS_FORK" env variable is set to true, this is the string
 of the height in which the network should fork. This should match the ForkHeight set in constants.go
 
-- `OSMOSIS_E2E_UPGRADE_VERSION` - string of what version will be upgraded to (for example, "v10")
+- `C4E_E2E_UPGRADE_VERSION` - string of what version will be upgraded to (for example, "v10")
 
-- `OSMOSIS_E2E_DEBUG_LOG` - when true, prints debug logs from executing CLI commands
+- `C4E_E2E_DEBUG_LOG` - when true, prints debug logs from executing CLI commands
 via Docker containers. Set to trus in CI by default.
 
 #### VS Code Debug Configuration
@@ -194,13 +194,13 @@ This debug configuration helps to run e2e tests locally and skip the desired tes
     ],
     "buildFlags": "-tags e2e",
     "env": {
-        "OSMOSIS_E2E_SKIP_IBC": "true",
-        "OSMOSIS_E2E_SKIP_UPGRADE": "true",
-        "OSMOSIS_E2E_SKIP_CLEANUP": "true",
-        "OSMOSIS_E2E_SKIP_STATE_SYNC": "true",
-        "OSMOSIS_E2E_UPGRADE_VERSION": "v10",
-        "OSMOSIS_E2E_DEBUG_LOG": "true",
-        "OSMOSIS_E2E_FORK_HEIGHT": "4713065" # this is v10 fork height.
+        "C4E_E2E_SKIP_IBC": "true",
+        "C4E_E2E_SKIP_UPGRADE": "true",
+        "C4E_E2E_SKIP_CLEANUP": "true",
+        "C4E_E2E_SKIP_STATE_SYNC": "true",
+        "C4E_E2E_UPGRADE_VERSION": "v10",
+        "C4E_E2E_DEBUG_LOG": "true",
+        "C4E_E2E_FORK_HEIGHT": "4713065" # this is v10 fork height.
     }
 }
 ```

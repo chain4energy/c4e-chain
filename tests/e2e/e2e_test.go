@@ -374,3 +374,7 @@ func (s *IntegrationTestSuite) TestWithdrawAllAvaliable() {
 	s.NoError(err)
 	s.Equal(balanceAmount, newBalance.AmountOf(appparams.CoinDenom))
 }
+
+func (s *IntegrationTestSuite) TestAppRun() {
+	_ = s.SetupSuite
+}

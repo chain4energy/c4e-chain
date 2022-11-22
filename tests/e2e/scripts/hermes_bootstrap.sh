@@ -38,11 +38,11 @@ rpc_addr = 'http://$OSMO_A_E2E_VAL_HOST:26657'
 grpc_addr = 'http://$OSMO_A_E2E_VAL_HOST:9090'
 websocket_addr = 'ws://$OSMO_A_E2E_VAL_HOST:26657/websocket'
 rpc_timeout = '10s'
-account_prefix = 'osmo'
+account_prefix = 'c4e'
 key_name = 'val01-osmosis-a'
 store_prefix = 'ibc'
 max_gas = 6000000
-gas_price = { price = 0.000, denom = 'uosmo' }
+gas_price = { price = 0.000, denom = 'uc4e' }
 gas_adjustment = 1.0
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '239seconds'
@@ -53,11 +53,11 @@ rpc_addr = 'http://$OSMO_B_E2E_VAL_HOST:26657'
 grpc_addr = 'http://$OSMO_B_E2E_VAL_HOST:9090'
 websocket_addr = 'ws://$OSMO_B_E2E_VAL_HOST:26657/websocket'
 rpc_timeout = '10s'
-account_prefix = 'osmo'
+account_prefix = 'c4e'
 key_name = 'val01-osmosis-b'
 store_prefix = 'ibc'
 max_gas = 6000000
-gas_price = { price = 0.000, denom = 'uosmo' }
+gas_price = { price = 0.000, denom = 'uc4e' }
 gas_adjustment = 1.0
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '239seconds'

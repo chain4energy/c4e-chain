@@ -12,18 +12,12 @@ import (
 )
 
 const (
-	// Environment variable name to skip the upgrade tests
-	skipUpgradeEnv = "C4E_E2E_SKIP_UPGRADE"
-	// Environment variable name to skip the IBC tests
-	skipIBCEnv  = "C4E_E2E_SKIP_IBC"
-	debugLogEnv = "C4E_E2E_DEBUG_LOG"
-	// Environment variable name to skip state sync testing
-	skipStateSyncEnv = "C4E_E2E_SKIP_STATE_SYNC"
-	// Environment variable name to determine if this upgrade is a fork
-	forkHeightEnv = "C4E_E2E_FORK_HEIGHT"
-	// Environment variable name to skip cleaning up Docker resources in teardown
-	skipCleanupEnv = "C4E_E2E_SKIP_CLEANUP"
-	// Environment variable name to determine what version we are upgrading to
+	skipUpgradeEnv    = "C4E_E2E_SKIP_UPGRADE"
+	skipIBCEnv        = "C4E_E2E_SKIP_IBC"
+	debugLogEnv       = "C4E_E2E_DEBUG_LOG"
+	skipStateSyncEnv  = "C4E_E2E_SKIP_STATE_SYNC"
+	forkHeightEnv     = "C4E_E2E_FORK_HEIGHT"
+	skipCleanupEnv    = "C4E_E2E_SKIP_CLEANUP"
 	upgradeVersionEnv = "C4E_E2E_UPGRADE_VERSION"
 	// Environment variable name to skip the params change tests
 	skipParamsChange = "C4E_E2E_SKIP_PARAMS_CHANGE"
@@ -45,10 +39,10 @@ func TestIntegrationTestSuite(t *testing.T) {
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	os.Setenv(upgradeVersionEnv, "v1.0.1")
-	os.Setenv(skipStateSyncEnv, "false")
-	os.Setenv(skipUpgradeEnv, "true")
-	os.Setenv(skipIBCEnv, "true")
+	//os.Setenv(upgradeVersionEnv, "v1.0.1")
+	//os.Setenv(skipStateSyncEnv, "false")
+	//os.Setenv(skipUpgradeEnv, "true")
+	//os.Setenv(skipIBCEnv, "true")
 	//os.Setenv(skipCleanupEnv, "true")
 
 	s.T().Log("setting up e2e integration test suite...")

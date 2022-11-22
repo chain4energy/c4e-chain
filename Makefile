@@ -132,6 +132,16 @@ open-memory-profiler-result:
 	@go tool pprof mem.out
 
 #E2E
+#Environments description
+#C4E_E2E_SKIP_UPGRADE - skip the upgrade tests
+#C4E_E2E_SKIP_IBC - skip the IBC tests
+#C4E_E2E_DEBUG_LOG - debug logs and print them onto the screen
+#C4E_E2E_SKIP_STATE_SYNC - skip state sync test
+#C4E_E2E_FORK_HEIGHT - determine if this upgrade is a fork
+#C4E_E2E_SKIP_CLEANUP - skip cleaning up Docker resources in teardown
+#C4E_E2E_UPGRADE_VERSION - environment variable name to determine what version we are upgrading to
+#C4E_E2E_SKIP_PARAMS_CHANGE - skip params change tests
+
 PACKAGES_E2E=$(shell go list ./... | grep '/e2e')
 BUILDDIR ?= $(CURDIR)/build
 E2E_UPGRADE_VERSION="v1.0.1"
@@ -139,8 +149,8 @@ E2E_SCRIPT_NAME=chain
 
 test-e2e: C4E_E2E=True e2e-setup test-e2e-ci
 
-run-e2e-chain:
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=False C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) go test -mod=readonly -timeout=25m -run TestIntegrationTestSuite -v ./tests/e2e
+run-e2e-chain: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SKIP_UPGRADE=True go test  -mod=readonly -timeout=25m -v ./tests/e2e -testify.m ^TestAppRun
 
 test-e2e-ci:
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION)  go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
