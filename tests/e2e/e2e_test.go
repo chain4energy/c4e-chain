@@ -37,6 +37,18 @@ func copyFile(a, b string) error {
 	return nil
 }
 
+func (s *IntegrationTestSuite) TestIbcTokenTransfer() {
+	if s.skipIBC {
+		s.T().Skip("Skipping IBC tests")
+	}
+	chainA := s.configurer.GetChainConfig(0)
+	chainB := s.configurer.GetChainConfig(1)
+	chainA.SendIBC(chainB, chainB.NodeConfigs[0].PublicAddress, initialization.C4eToken)
+	//chainB.SendIBC(chainA, chainA.NodeConfigs[0].PublicAddress, initialization.C4eToken)
+	chainA.SendIBC(chainB, chainB.NodeConfigs[0].PublicAddress, initialization.C4eToken)
+	//chainB.SendIBC(chainA, chainA.NodeConfigs[0].PublicAddress, initialization.C4eToken)
+
+}
 func (s *IntegrationTestSuite) TestStateSync() {
 	if s.skipStateSync {
 		s.T().Skip()

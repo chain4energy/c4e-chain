@@ -131,7 +131,7 @@ open-cpu-profiler-result:
 open-memory-profiler-result:
 	@go tool pprof mem.out
 
-#E2E
+#E2E framework
 #Environments description
 #C4E_E2E_SKIP_UPGRADE - skip the upgrade tests
 #C4E_E2E_SKIP_IBC - skip the IBC tests
@@ -150,10 +150,7 @@ E2E_SCRIPT_NAME=chain
 test-e2e: C4E_E2E=True e2e-setup test-e2e-ci
 
 run-chain: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SKIP_UPGRADE=True C4E_E2E_SKIP_IBC=True go test  -mod=readonly -timeout=25m -v ./tests/e2e -testify.m ^TestAppRun
-
-test-e2e-ci:
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION)  go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=False C4E_E2E_SKIP_UPGRADE=True C4E_E2E_SKIP_IBC=True go test -mod=readonly -timeout=25m -v ./tests/e2e -testify.m ^TestAppRun
 
 test-e2e-debug: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_SKIP_CLEANUP=False go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -count=1

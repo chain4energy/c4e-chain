@@ -33,30 +33,30 @@ enabled = true
 host = '127.0.0.1'
 port = 3001
 [[chains]]
-id = '$OSMO_A_E2E_CHAIN_ID'
-rpc_addr = 'http://$OSMO_A_E2E_VAL_HOST:26657'
-grpc_addr = 'http://$OSMO_A_E2E_VAL_HOST:9090'
-websocket_addr = 'ws://$OSMO_A_E2E_VAL_HOST:26657/websocket'
+id = '$C4E_A_E2E_CHAIN_ID'
+rpc_addr = 'http://$C4E_E2E_VAL_HOST:26657'
+grpc_addr = 'http://$C4E_E2E_VAL_HOST:9090'
+websocket_addr = 'ws://$C4E_E2E_VAL_HOST:26657/websocket'
 rpc_timeout = '10s'
 account_prefix = 'c4e'
-key_name = 'val01-osmosis-a'
+key_name = 'val01-c4e-a'
 store_prefix = 'ibc'
-max_gas = 6000000
+max_gas = 400000
 gas_price = { price = 0.000, denom = 'uc4e' }
 gas_adjustment = 1.0
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '239seconds'
 trust_threshold = { numerator = '1', denominator = '3' }
 [[chains]]
-id = '$OSMO_B_E2E_CHAIN_ID'
-rpc_addr = 'http://$OSMO_B_E2E_VAL_HOST:26657'
-grpc_addr = 'http://$OSMO_B_E2E_VAL_HOST:9090'
-websocket_addr = 'ws://$OSMO_B_E2E_VAL_HOST:26657/websocket'
+id = '$C4E_B_E2E_CHAIN_ID'
+rpc_addr = 'http://$C4E_B_E2E_VAL_HOST:26657'
+grpc_addr = 'http://$C4E_B_E2E_VAL_HOST:9090'
+websocket_addr = 'ws://$C4E_B_E2E_VAL_HOST:26657/websocket'
 rpc_timeout = '10s'
 account_prefix = 'c4e'
-key_name = 'val01-osmosis-b'
+key_name = 'val01-c4e-b'
 store_prefix = 'ibc'
-max_gas = 6000000
+max_gas = 400000
 gas_price = { price = 0.000, denom = 'uc4e' }
 gas_adjustment = 1.0
 clock_drift = '1m' # to accomdate docker containers
@@ -65,8 +65,8 @@ trust_threshold = { numerator = '1', denominator = '3' }
 EOF
 
 # import keys
-hermes keys restore ${OSMO_B_E2E_CHAIN_ID} -n "val01-osmosis-b" -m "${OSMO_B_E2E_VAL_MNEMONIC}"
-hermes keys restore ${OSMO_A_E2E_CHAIN_ID} -n "val01-osmosis-a" -m "${OSMO_A_E2E_VAL_MNEMONIC}"
+hermes keys restore ${C4E_B_E2E_CHAIN_ID} -n "val01-c4e-b" -m "${C4E_B_E2E_VAL_MNEMONIC}"
+hermes keys restore ${C4E_A_E2E_CHAIN_ID} -n "val01-c4e-a" -m "${C4E_A_E2E_VAL_MNEMONIC}"
 
 # start Hermes relayer
 hermes start

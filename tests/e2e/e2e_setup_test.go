@@ -40,8 +40,8 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	//os.Setenv(upgradeVersionEnv, "v1.0.1")
-	//os.Setenv(skipStateSyncEnv, "false")
-	//os.Setenv(skipUpgradeEnv, "true")
+	os.Setenv(skipStateSyncEnv, "True")
+	os.Setenv(skipUpgradeEnv, "true")
 	//os.Setenv(skipIBCEnv, "true")
 	//os.Setenv(skipCleanupEnv, "true")
 
