@@ -6,7 +6,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/std"
 )
 
-// TODO: comment
+// e2e framework requires a new way of declaring parameters and
+// encoding for the application. The way it has been added here is identical to how
+// these variables and functions are declared in the new cosmos sdk version (0.46.x)
+
 // MakeEncodingConfig creates an EncodingConfig for testing.
 func MakeEncodingConfig() params2.EncodingConfig {
 	encodingConfig := params2.MakeEncodingConfig()

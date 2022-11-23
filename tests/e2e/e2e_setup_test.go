@@ -2,11 +2,10 @@ package e2e
 
 import (
 	"fmt"
+	"github.com/chain4energy/c4e-chain/tests/e2e/configurer"
 	"github.com/stretchr/testify/suite"
 	"os"
 	"strconv"
-
-	"github.com/chain4energy/c4e-chain/tests/e2e/configurer"
 )
 
 const (

@@ -133,31 +133,33 @@ open-memory-profiler-result:
 
 #E2E framework
 #Environments description
-#C4E_E2E_SKIP_UPGRADE - skip the upgrade tests
-#C4E_E2E_SKIP_IBC - skip the IBC tests
 #C4E_E2E_DEBUG_LOG - debug logs and print them onto the screen
-#C4E_E2E_SKIP_STATE_SYNC - skip state sync test
 #C4E_E2E_FORK_HEIGHT - determine if this upgrade is a fork
 #C4E_E2E_SKIP_CLEANUP - skip cleaning up Docker resources in teardown
 #C4E_E2E_UPGRADE_VERSION - environment variable name to determine what version we are upgrading to
-#C4E_E2E_SKIP_PARAMS_CHANGE - skip params change tests
 
 PACKAGES_E2E=./tests/e2e
 BUILDDIR ?= $(CURDIR)/build
 E2E_UPGRADE_VERSION="v1.0.1"
 E2E_SCRIPT_NAME=chain
 
-run-chain: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=False C4E_E2E_SKIP_UPGRADE=True C4E_E2E_SKIP_IBC=True go test -mod=readonly -timeout=25m -v ./tests/e2e -testify.m ^TestAppRun
+test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change
 
-test-e2e: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
+run-e2e-chain: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainSuite
 
-test-e2e-debug: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_SKIP_CLEANUP=False go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -count=1
+test-e2e-ibc: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestIbcSuite
 
-test-e2e-short: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_UPGRADE=True C4E_E2E_SKIP_IBC=True C4E_E2E_SKIP_STATE_SYNC=True C4E_E2E_SKIP_CLEANUP=False go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -count=1
+test-e2e-vesting: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestVestingSuite
+
+test-e2e-params-change: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestParamsChangeSuite
+
+SPECIFIC_TEST_NAME=TestSendToVestingAccount
+test-e2e-run-specific-test: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 
 e2e-setup: e2e-cleanup
 	@echo Finished e2e environment setup, ready to start the test
