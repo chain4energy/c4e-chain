@@ -148,6 +148,9 @@ func (m *Manager) ExecCmd(t *testing.T, containerName string, command []string, 
 	return outBuf, errBuf, nil
 }
 
+// Eventually asserts that given condition will be met in waitFor time,
+// periodically checking target function each tick.
+// copied and modified this function from testify assertion package
 func Eventually(condition func() bool, waitFor time.Duration, tick time.Duration) error {
 	ch := make(chan bool, 1)
 

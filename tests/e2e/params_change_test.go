@@ -24,7 +24,7 @@ func TestParamsChangeSuite(t *testing.T) {
 }
 
 func (s *ParamsSetupSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(true, false)
+	s.BaseSetupSuite.SetupSuite(false, false)
 }
 
 func (s *ParamsSetupSuite) TestCfedistributorParamsProposal() {
@@ -85,7 +85,7 @@ func (s *ParamsSetupSuite) TestCfedistributorParamsProposal() {
 	)
 }
 
-func (s *ParamsSetupSuite) TestCfeminterParamsProposal() {
+func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 
@@ -126,6 +126,8 @@ func (s *ParamsSetupSuite) TestCfeminterParamsProposal() {
 	proposalJSON, err := json.Marshal(proposal)
 	s.NoError(err)
 	node.SubmitParamChangeProposal(string(proposalJSON), initialization.ValidatorWalletName)
+	totalSupplyBefore, err := node.QuerySupplyOf(appparams.CoinDenom)
+	s.NoError(err)
 	chainA.LatestProposalNumber += 1
 
 	for _, n := range chainA.NodeConfigs {
@@ -149,6 +151,74 @@ func (s *ParamsSetupSuite) TestCfeminterParamsProposal() {
 		time.Second,
 		"C4e node failed to retrieve params",
 	)
+	time.Sleep(time.Second * 10)
+	totalSupplyAfter, err := node.QuerySupplyOf(appparams.CoinDenom)
+	s.Equal(totalSupplyBefore, totalSupplyAfter)
+	s.NoError(err)
+}
+
+func (s *ParamsSetupSuite) TestCfeminterParamsProposalLinearMinter() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	periodEnd := time.Now().Add(10 * time.Minute).UTC()
+	newMinter := cfemintertypes.Minter{
+		Start: time.Now().UTC(),
+		Periods: []*cfemintertypes.MintingPeriod{
+			{
+				Position: 1,
+				Type:     cfemintertypes.TIME_LINEAR_MINTER,
+				TimeLinearMinter: &cfemintertypes.TimeLinearMinter{
+					Amount: sdk.NewInt(100000),
+				},
+				PeriodEnd: &periodEnd,
+			},
+			{
+				Position: 2,
+				Type:     cfemintertypes.NO_MINTING,
+			},
+		},
+	}
+
+	newMinterJSON, err := json.Marshal(newMinter)
+	s.NoError(err)
+
+	proposal := paramsutils.ParamChangeProposalJSON{
+		Title:       "Cfeminter module params change",
+		Description: "Change cfeminter params",
+		Changes: paramsutils.ParamChangesJSON{
+			paramsutils.ParamChangeJSON{
+				Subspace: cfemintertypes.ModuleName,
+				Key:      string(cfemintertypes.KeyMinter),
+				Value:    newMinterJSON,
+			},
+		},
+		Deposit: sdk.NewCoin(appparams.CoinDenom, config.MinDepositValue).String(),
+	}
+
+	proposalJSON, err := json.Marshal(proposal)
+	s.NoError(err)
+	node.SubmitParamChangeProposal(string(proposalJSON), initialization.ValidatorWalletName)
+	totalSupplyBefore, err := node.QuerySupplyOf(appparams.CoinDenom)
+	s.NoError(err)
+	chainA.LatestProposalNumber += 1
+
+	for _, n := range chainA.NodeConfigs {
+		n.VoteYesProposal(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
+	}
+
+	s.Eventually(
+		func() bool {
+			return node.ValidateParams(newMinterJSON, cfemintertypes.ModuleName, string(cfemintertypes.KeyMinter))
+		},
+		time.Minute,
+		time.Second,
+		"C4e node failed to validate params",
+	)
+
+	time.Sleep(time.Second * 10)
+	totalSupplyAfter, err := node.QuerySupplyOf(appparams.CoinDenom)
+	s.Greater(totalSupplyAfter, totalSupplyBefore)
+	s.NoError(err)
 }
 
 func (s *ParamsSetupSuite) TestCfeVestingProposal() {
