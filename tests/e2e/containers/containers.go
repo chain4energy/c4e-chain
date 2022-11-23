@@ -139,7 +139,7 @@ func (m *Manager) ExecCmd(t *testing.T, containerName string, command []string, 
 			return true
 		},
 		time.Minute,
-		100*time.Millisecond,
+		1*time.Second,
 	)
 	if err != nil {
 		return bytes.Buffer{}, bytes.Buffer{}, err

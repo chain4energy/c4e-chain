@@ -79,6 +79,23 @@ func (n *NodeConfig) QueryBalances(address string) (sdk.Coins, error) {
 	return balancesResp.GetBalances(), nil
 }
 
+// QueryBalances returns balances at the address.
+func (n *NodeConfig) QueryModuleAccountBalances(moduleName string) (sdk.Coins, error) {
+	path := fmt.Sprintf("/cosmos/auth/v1beta1/module_accounts/%s", moduleName)
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	if err := util.Cdc.UnmarshalJSON(bz, &accAddress); err != nil {
+		return sdk.Coins{}, err
+	}
+	bz, err = n.QueryBalances()
+	var balancesResp banktypes.QueryAllBalancesResponse
+	if err := util.Cdc.UnmarshalJSON(bz, &balancesResp); err != nil {
+		return sdk.Coins{}, err
+	}
+	return balancesResp.GetBalances(), nil
+}
+
 func (n *NodeConfig) QuerySupplyOf(denom string) (sdk.Int, error) {
 	path := fmt.Sprintf("cosmos/bank/v1beta1/supply/%s", denom)
 	bz, err := n.QueryGRPCGateway(path)

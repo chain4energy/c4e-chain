@@ -54,10 +54,8 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 
 	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
-	outBUff, errBuff, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
-	_ = outBUff
-	_ = errBuff
 	err = os.Remove(localProposalFile)
 	require.NoError(n.t, err)
 
