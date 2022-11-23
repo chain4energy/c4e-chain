@@ -83,12 +83,6 @@ func (s *ParamsSetupSuite) TestCfedistributorParamsProposal() {
 		time.Second*5,
 		"C4e node failed to validate params",
 	)
-	totalSupplyBefore, err := node.QueryBalances(cfedistributortypes.ValidatorsRewardsCollector)
-	s.NoError(err)
-	time.Sleep(time.Second * 15)
-	totalSupplyAfter, err := node.QueryBalances(cfedistributortypes.ValidatorsRewardsCollector)
-	s.Equal(totalSupplyBefore, totalSupplyAfter)
-	s.NoError(err)
 }
 
 func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {
