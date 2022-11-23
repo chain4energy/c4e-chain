@@ -142,15 +142,16 @@ open-memory-profiler-result:
 #C4E_E2E_UPGRADE_VERSION - environment variable name to determine what version we are upgrading to
 #C4E_E2E_SKIP_PARAMS_CHANGE - skip params change tests
 
-PACKAGES_E2E=$(shell go list ./... | grep '/e2e')
+PACKAGES_E2E=./tests/e2e
 BUILDDIR ?= $(CURDIR)/build
 E2E_UPGRADE_VERSION="v1.0.1"
 E2E_SCRIPT_NAME=chain
 
-test-e2e: C4E_E2E=True e2e-setup test-e2e-ci
-
 run-chain: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=False C4E_E2E_SKIP_UPGRADE=True C4E_E2E_SKIP_IBC=True go test -mod=readonly -timeout=25m -v ./tests/e2e -testify.m ^TestAppRun
+
+test-e2e: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E)
 
 test-e2e-debug: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_SKIP_CLEANUP=False go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -count=1
@@ -158,13 +159,13 @@ test-e2e-debug: e2e-setup
 test-e2e-short: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_UPGRADE=True C4E_E2E_SKIP_IBC=True C4E_E2E_SKIP_STATE_SYNC=True C4E_E2E_SKIP_CLEANUP=False go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -count=1
 
-e2e-setup: e2e-remove-resources
+e2e-setup: e2e-cleanup
 	@echo Finished e2e environment setup, ready to start the test
 
 e2e-check-image-sha:
 	tests/e2e/scripts/run/check_image_sha.sh
 
-e2e-remove-resources:
+e2e-cleanup:
 	tests/e2e/scripts/run/remove_stale_resources.sh
 
 build-e2e-script:

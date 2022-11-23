@@ -23,6 +23,7 @@ type BaseSetupSuite struct {
 }
 
 func (s *BaseSetupSuite) SetupSuite(startUpgrade, startIBC bool) {
+	os.Setenv(upgradeVersionEnv, "v1.0.1")
 	s.T().Log("setting up e2e integration test suite...")
 	var (
 		err             error

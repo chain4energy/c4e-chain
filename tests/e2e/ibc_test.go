@@ -15,7 +15,7 @@ type IbcSetupSuite struct {
 	BaseSetupSuite
 }
 
-func TestIntegrationIbcSuite(t *testing.T) {
+func TestIbcSuite(t *testing.T) {
 	suite.Run(t, new(IbcSetupSuite))
 }
 

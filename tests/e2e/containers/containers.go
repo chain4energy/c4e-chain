@@ -3,6 +3,7 @@ package containers
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
-	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -96,10 +96,9 @@ func (m *Manager) ExecCmd(t *testing.T, containerName string, command []string, 
 	}
 	maxDebugLogTriesLeft := maxDebugLogsPerCommand
 
-	// We use the `require.Eventually` function because it is only allowed to do one transaction per block without
+	// We use the `Eventually` function because it is only allowed to do one transaction per block without
 	// sequence numbers. For simplicity, we avoid keeping track of the sequence number and just use the `require.Eventually`.
-	require.Eventually(
-		t,
+	err := Eventually(
 		func() bool {
 			exec, err := m.pool.Client.CreateExec(docker.CreateExecOptions{
 				Context:      ctx,
@@ -109,7 +108,9 @@ func (m *Manager) ExecCmd(t *testing.T, containerName string, command []string, 
 				User:         "root",
 				Cmd:          command,
 			})
-			require.NoError(t, err)
+			if err != nil {
+				return false
+			}
 
 			err = m.pool.Client.StartExec(exec.ID, docker.StartExecOptions{
 				Context:      ctx,
@@ -117,25 +118,17 @@ func (m *Manager) ExecCmd(t *testing.T, containerName string, command []string, 
 				OutputStream: &outBuf,
 				ErrorStream:  &errBuf,
 			})
-			if err != nil {
-				return false
-			}
 
 			errBufString := errBuf.String()
-			// Note that this does not match all errors.
-			// This only works if CLI outpurs "Error" or "error"
-			// to stderr.
+
 			if (errRegex.MatchString(errBufString) || m.isDebugLogEnabled) && maxDebugLogTriesLeft > 0 {
 				t.Log("\nstderr:")
 				t.Log(errBufString)
-
+				fmt.Println(errBufString)
+				fmt.Println(outBuf.String())
 				t.Log("\nstdout:")
 				t.Log(outBuf.String())
-				// N.B: We should not be returning false here
-				// because some applications such as Hermes might log
-				// "error" to stderr when they function correctly,
-				// causing test flakiness. This log is needed only for
-				// debugging purposes.
+
 				maxDebugLogTriesLeft--
 			}
 
@@ -146,11 +139,38 @@ func (m *Manager) ExecCmd(t *testing.T, containerName string, command []string, 
 			return true
 		},
 		time.Minute,
-		50*time.Millisecond,
-		"tx returned a non-zero code",
+		100*time.Millisecond,
 	)
+	if err != nil {
+		return bytes.Buffer{}, bytes.Buffer{}, err
+	}
 
 	return outBuf, errBuf, nil
+}
+
+func Eventually(condition func() bool, waitFor time.Duration, tick time.Duration) error {
+	ch := make(chan bool, 1)
+
+	timer := time.NewTimer(waitFor)
+	defer timer.Stop()
+
+	ticker := time.NewTicker(tick)
+	defer ticker.Stop()
+
+	for tick := ticker.C; ; {
+		select {
+		case <-timer.C:
+			return errors.New("condition never satisfied")
+		case <-tick:
+			tick = nil
+			go func() { ch <- condition() }()
+		case v := <-ch:
+			if v {
+				return nil
+			}
+			tick = ticker.C
+		}
+	}
 }
 
 // RunHermesResource runs a Hermes container. Returns the container resource and error if any.

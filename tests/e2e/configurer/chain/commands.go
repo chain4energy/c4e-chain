@@ -207,7 +207,7 @@ func (n *NodeConfig) SendToVestingAccount(fromAddress, toAddress, vestingPoolNam
 	n.LogActionF("successfully send vesting pool %s to vesting account %s", vestingPoolName, toAddress)
 }
 
-func (n *NodeConfig) WithdrawAllAvaliable(from string) {
+func (n *NodeConfig) WithdrawAllAvailable(from string) {
 	n.LogActionF("withdraw all avaliable")
 	cmd := []string{"c4ed", "tx", "cfevesting", "withdraw-all-available", fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)

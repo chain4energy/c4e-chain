@@ -272,11 +272,11 @@ func updateVestingGenesis(vestingGenState *vestingTypes.GenesisState) {
 		VestingPeriod:     730,
 	})
 	vestingGenState.VestingTypes = append(vestingGenState.VestingTypes, vestingTypes.GenesisVestingType{
-		Name:              "Validators",
-		LockupPeriod:      274,
-		LockupPeriodUnit:  "day",
-		VestingPeriodUnit: "day",
-		VestingPeriod:     548,
+		Name:              "TestVestingPool",
+		LockupPeriod:      30,
+		LockupPeriodUnit:  "second",
+		VestingPeriodUnit: "second",
+		VestingPeriod:     30,
 	})
 }
 
