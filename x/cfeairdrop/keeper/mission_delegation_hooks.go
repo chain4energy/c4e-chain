@@ -1,14 +1,13 @@
 package keeper
 
 import (
+	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 type MissionDelegationHooks struct {
 	k          Keeper
-	campaignId uint64
-	missionId  uint64
 }
 
 func (h MissionDelegationHooks) AfterUnbondingInitiated(ctx sdk.Context, id uint64) error {
@@ -16,16 +15,23 @@ func (h MissionDelegationHooks) AfterUnbondingInitiated(ctx sdk.Context, id uint
 }
 
 // NewMissionDelegationHooks returns a StakingHooks that triggers mission completion on delegation for an account
-func (k Keeper) NewMissionDelegationHooks(campaignId uint64, missionId uint64) MissionDelegationHooks {
-	return MissionDelegationHooks{k, campaignId, missionId}
+func (k Keeper) NewMissionDelegationHooks() MissionDelegationHooks {
+	return MissionDelegationHooks{k}
 }
 
 var _ stakingtypes.StakingHooks = MissionDelegationHooks{}
 
 // BeforeDelegationCreated completes mission when a delegation is performed
 func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, _ sdk.ValAddress) {
-	// TODO error handling
-	_ = h.k.CompleteMission(ctx, false, h.campaignId, h.missionId, delAddr.String())
+
+	missions := h.k.GetAllMission(ctx)
+	for _, mission := range missions {
+			// TODO error handling
+		if mission.MissionId == uint64(types.DELEGATION) {
+			_ = h.k.CompleteMission(ctx, mission.CampaignId, mission.MissionId, delAddr.String())
+		}
+	}
+	
 }
 
 // AfterValidatorCreated implements StakingHooks

@@ -8,10 +8,8 @@ import (
 
 // x/cfeairdrop module sentinel errors
 var (
-	ErrInitialClaimNotFound = sdkerrors.Register(ModuleName, 3, "initial claim not found")
-	ErrInitialClaimNotEnabled = sdkerrors.Register(ModuleName, 4, "initial claim not enabled")
-	ErrMissionNotFound = sdkerrors.Register(ModuleName, 5, "mission not found")
-
+	ErrCampaignDisabled = sdkerrors.Register(ModuleName, 2, "camapaign is disabled")
+	ErrMissionCompleted = sdkerrors.Register(ModuleName, 3, "mission already completed")
+	ErrMissionClaimed   = sdkerrors.Register(ModuleName, 4, "mission already claimed")
+	ErrMissionNotCompleted = sdkerrors.Register(ModuleName, 5, "mission not completed yet")
 )
-
-

@@ -59,6 +59,10 @@ func (bu *BankUtils) AddDefaultDenomCoinsToModule(ctx sdk.Context, amount sdk.In
 }
 
 func (bu *BankUtils) GetModuleAccountBalanceByDenom(ctx sdk.Context, accName string, denom string) sdk.Int {
+	account := bu.helperAccountKeeper.GetModuleAccount(ctx, accName)
+	if account == nil {
+		return sdk.ZeroInt()
+	}
 	moduleAccAddr := bu.helperAccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
 	return bu.helperBankKeeper.GetBalance(ctx, moduleAccAddr, denom).Amount
 }

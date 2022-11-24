@@ -25,33 +25,33 @@ import (
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 )
 
-type ExtendedC4eAirdropKeeperUtils struct {
-	cfeairdroptestutils.C4eAirdropKeeperUtils
-	BankUtils *commontestutils.BankUtils
-	Cdc      *codec.ProtoCodec
-	StoreKey *storetypes.KVStoreKey
-}
+// type ExtendedC4eAirdropKeeperUtils struct {
+// 	cfeairdroptestutils.C4eAirdropKeeperUtils
+// 	BankUtils *commontestutils.BankUtils
+// 	Cdc      *codec.ProtoCodec
+// 	StoreKey *storetypes.KVStoreKey
+// }
 
-func NewExtendedC4eAirdropKeeperUtils(t *testing.T, helperCfeairdropKeeper *keeper.Keeper,
-	bankUtils *commontestutils.BankUtils, 
-	cdc *codec.ProtoCodec,
-	storeKey *storetypes.KVStoreKey) ExtendedC4eAirdropKeeperUtils {
-	return ExtendedC4eAirdropKeeperUtils{C4eAirdropKeeperUtils: cfeairdroptestutils.NewC4eAirdropKeeperUtils(t, helperCfeairdropKeeper),
-		BankUtils: bankUtils,
-		Cdc:      cdc,
-		StoreKey: storeKey}
-}
+// func NewExtendedC4eAirdropKeeperUtils(t *testing.T, helperCfeairdropKeeper *keeper.Keeper,
+// 	bankUtils *commontestutils.BankUtils, 
+// 	cdc *codec.ProtoCodec,
+// 	storeKey *storetypes.KVStoreKey) ExtendedC4eAirdropKeeperUtils {
+// 	return ExtendedC4eAirdropKeeperUtils{C4eAirdropKeeperUtils: cfeairdroptestutils.NewC4eAirdropKeeperUtils(t, helperCfeairdropKeeper),
+// 		BankUtils: bankUtils,
+// 		Cdc:      cdc,
+// 		StoreKey: storeKey}
+// }
 
-func CfeairdropKeeperTestUtil(t *testing.T) (*cfeairdroptestutils.C4eAirdropKeeperUtils, *keeper.Keeper, sdk.Context) {
-	k, ctx := CfeairdropKeeper(t)
-	utils := cfeairdroptestutils.NewC4eAirdropKeeperUtils(t, k)
-	return &utils, k, ctx
-}
+// func CfeairdropKeeperTestUtil(t *testing.T) (*cfeairdroptestutils.C4eAirdropKeeperUtils, *keeper.Keeper, sdk.Context) {
+// 	k, ctx := CfeairdropKeeper(t)
+// 	utils := cfeairdroptestutils.NewC4eAirdropKeeperUtils(t, k)
+// 	return &utils, k, ctx
+// }
 
-func CfeairdropKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eAirdropKeeperUtils, *keeper.Keeper, sdk.Context) {
-	k, ak, bk, ctx, cdc, key := cfeairdropKeeperWithBlockHeightAndTime(t, 0, commontestutils.TestEnvTime)
+func CfeairdropKeeperTestUtilWithCdc(t *testing.T) (*cfeairdroptestutils.C4eAirdropUtils, *keeper.Keeper, sdk.Context) {
+	k, ak, bk, ctx, _, _ := cfeairdropKeeperWithBlockHeightAndTime(t, 0, commontestutils.TestEnvTime)
 	bankUtils := commontestutils.NewBankUtils(t, ctx, ak, bk)
-	utils := NewExtendedC4eAirdropKeeperUtils(t, k, &bankUtils, cdc, key)
+	utils := cfeairdroptestutils.NewC4eAirdropUtils(t, k, ak, &bankUtils)
 	return &utils, k, ctx
 }
 

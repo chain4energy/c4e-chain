@@ -72,16 +72,14 @@ func (k Keeper) GetAllInitialClaim(ctx sdk.Context) (list []types.InitialClaim) 
 	return
 }
 
-func (k Keeper) ClaimInitial(ctx sdk.Context, campaignId uint64, missionId uint64, claimer string) error {
+func (k Keeper) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer string) error {
+	k.Logger(ctx).Debug("claim initial", "campaignId", campaignId, "claimer", claimer)
 	// retrieve initial claim information
 	initialClaim, found := k.GetInitialClaim(ctx, campaignId)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrInitialClaimNotFound, "campaignId %d", campaignId)
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign not found: campaign id: %d ", campaignId)
 	}
-	if !initialClaim.Enabled {
-		return sdkerrors.Wrapf(types.ErrInitialClaimNotEnabled, "campaignId %d", campaignId)
-	}
-	if err := k.CompleteMission(ctx, true, campaignId, initialClaim.MissionId, claimer); err != nil {
+	if err := k.ClaimInitialMission(ctx, campaignId, initialClaim.MissionId, claimer); err != nil {
 		return err // errors.Wrap(types.ErrMissionCompleteFailure, err.Error())
 	}
 	return nil

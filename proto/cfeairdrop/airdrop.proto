@@ -14,6 +14,7 @@ message CampaignRecord {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
   repeated uint64 completedMissions = 4;
+  repeated uint64 claimedMissions = 5;
 }
 
 message ClaimRecord {
@@ -35,7 +36,6 @@ message Campaign {
 }
 
 message InitialClaim {
-  bool   enabled   = 1;
   uint64 campaign_id   = 2;
   uint64 mission_id = 3;
 }

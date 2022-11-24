@@ -96,8 +96,8 @@ func (acc AirdropVestingAccount) MarshalYAML() (interface{}, error) {
 }
 
 // Validate checks for errors on the account fields
-func (cva AirdropVestingAccount) Validate() error {
-	if cva.GetStartTime() >= cva.GetEndTime() {
+func (cva *AirdropVestingAccount) Validate() error {
+	if cva.GetStartTime() > cva.GetEndTime() {
 		return fmt.Errorf("vesting end-time (%d) cannot be before start-time (%d)", cva.GetEndTime(), cva.GetStartTime())
 	}
 	var vestedCoins sdk.Coins
@@ -170,7 +170,7 @@ func (cva ContinuousVestingPeriod) GetVestedCoins(blockTime time.Time) sdk.Coins
 }
 
 // Validate checks for errors on the account fields
-func (cva ContinuousVestingPeriod) Validate() error {
+func (cva *ContinuousVestingPeriod) Validate() error {
 	if cva.GetStartTime() >= cva.GetEndTime() {
 		return fmt.Errorf("vesting period end-time (%d) cannot be before start-time (%d)", cva.GetEndTime(), cva.GetStartTime())
 	}
@@ -178,7 +178,7 @@ func (cva ContinuousVestingPeriod) Validate() error {
 }
 
 // Validate checks the claimRecord is valid
-func (m ClaimRecord) Validate() error {
+func (m *ClaimRecord) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
 		return err
 	}
@@ -213,10 +213,23 @@ func (m ClaimRecord) Validate() error {
 }
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
-func (m ClaimRecord) IsMissionCompleted(campaignId uint64, missionID uint64) bool {
+func (m *ClaimRecord) IsMissionCompleted(campaignId uint64, missionID uint64) bool {
 	for _, campaignRecord := range m.CampaignRecords {
 		if campaignRecord.CampaignId == campaignId {
 			for _, completed := range campaignRecord.CompletedMissions {
+				if completed == missionID {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (m *ClaimRecord) IsMissionClaimed(campaignId uint64, missionID uint64) bool {
+	for _, campaignRecord := range m.CampaignRecords {
+		if campaignRecord.CampaignId == campaignId {
+			for _, completed := range campaignRecord.ClaimedMissions {
 				if completed == missionID {
 					return true
 				}
@@ -237,7 +250,7 @@ func (m ClaimRecord) HasCampaign(campaignId uint64) bool {
 }
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
-func (m ClaimRecord) CompleteMission(campaignId uint64, missionID uint64) error {
+func (m *ClaimRecord) CompleteMission(campaignId uint64, missionID uint64) error {
 	for _, campaignRecord := range m.CampaignRecords {
 		campaignRecord.CompletedMissions = append(campaignRecord.CompletedMissions, missionID)
 		return nil
@@ -245,8 +258,17 @@ func (m ClaimRecord) CompleteMission(campaignId uint64, missionID uint64) error 
 	return fmt.Errorf("no campaign with id %d", campaignId)
 }
 
+// IsMissionCompleted checks if the specified mission ID is completed for the claim record
+func (m *ClaimRecord) ClaimMission(campaignId uint64, missionID uint64) error {
+	for _, campaignRecord := range m.CampaignRecords {
+		campaignRecord.ClaimedMissions = append(campaignRecord.ClaimedMissions, missionID)
+		return nil
+	}
+	return fmt.Errorf("no campaign with id %d", campaignId)
+}
+
 // ClaimableFromMission returns the amount claimable for this claim record from the provided mission completion
-func (m ClaimRecord) ClaimableFromMission(mission Mission) sdk.Int {
+func (m ClaimRecord) ClaimableFromMission(mission *Mission) sdk.Int {
 	for _, campaignRecord := range m.CampaignRecords {
 		return mission.Weight.Mul(sdk.NewDecFromInt(campaignRecord.Claimable)).TruncateInt()
 	}

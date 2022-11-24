@@ -3,17 +3,16 @@ package keeper_test
 import (
 	"strconv"
 	"testing"
+	"time"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/testutil/nullify"
-	"github.com/chain4energy/c4e-chain/x/cfeairdrop"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 // Prevent strconv unused error
@@ -23,10 +22,7 @@ func createNInitialClaim(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.
 	items := make([]types.InitialClaim, n)
 	for i := range items {
 		items[i].CampaignId = uint64(i)
-		items[i].MissionId = uint64(1000 +i)
-		items[i].Enabled = true
-
-
+		items[i].MissionId = uint64(1000 + i)
 		keeper.SetInitialClaim(ctx, items[i])
 	}
 	return items
@@ -74,7 +70,40 @@ func TestClaimInitial(t *testing.T) {
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
-	ctx := testHelper.Context
+	// ctx := testHelper.Context
+
+	end := testHelper.Context.BlockTime().Add(1000)
+	lockupPeriod := time.Hour
+	vestingPeriod := 3 * time.Hour
+	params := types.Params{Campaigns: []*types.Campaign{
+		{
+			CampaignId:    1,
+			Enabled:       true,
+			StartTime:     testHelper.Context.BlockTime(),
+			EndTime:       &end,
+			LockupPeriod:  lockupPeriod,
+			VestingPeriod: vestingPeriod,
+			Description:   "test-campaign",
+		},
+	}}
+	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}}
+	missions := []types.Mission{{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
+	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions}
+	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
+
+	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
+	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 1, records)
+
+	testHelper.C4eAirdropUtils.ClaimInitial(1, acountsAddresses[0])
+
+}
+
+func TestClaimInitialCampaignNotFound(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+
+	// ctx := testHelper.Context
 
 	end := testHelper.Context.BlockTime().Add(1000)
 	params := types.Params{Campaigns: []*types.Campaign{
@@ -88,21 +117,45 @@ func TestClaimInitial(t *testing.T) {
 			Description:   "test-campaign",
 		},
 	}}
-	initialClaims := []types.InitialClaim{{Enabled: true, CampaignId: 1, MissionId: 3}}
+	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}}
 	missions := []types.Mission{{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions}
-	cfeairdrop.InitGenesis(ctx, testHelper.App.CfeairdropKeeper, genesisState)
-
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(sdk.NewInt(10000), acountsAddresses[1])
+	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
 	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
-	require.Nil(t, testHelper.App.AccountKeeper.GetAccount(ctx, acountsAddresses[0]))
-	require.NoError(t, testHelper.App.CfeairdropKeeper.AddCampaignRecords(ctx, acountsAddresses[1], 1, records))
+	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 1, records)
 
+	testHelper.C4eAirdropUtils.ClaimInitialError(2, acountsAddresses[0], "campaign not found: campaign id: 2 : not found")
 
-	require.Nil(t, testHelper.App.AccountKeeper.GetAccount(ctx, acountsAddresses[0]))
+}
 
-	require.NoError(t, testHelper.App.CfeairdropKeeper.ClaimInitial(ctx, 1, 3, acountsAddresses[0].String()))
+func TestClaimInitialCampaignClaimError(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(acountsAddresses[0], sdk.NewInt(2000))
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	end := testHelper.Context.BlockTime().Add(1000)
+	params := types.Params{Campaigns: []*types.Campaign{
+		{
+			CampaignId:    1,
+			Enabled:       true,
+			StartTime:     testHelper.Context.BlockTime(),
+			EndTime:       &end,
+			LockupPeriod:  1000,
+			VestingPeriod: 2000,
+			Description:   "test-campaign",
+		},
+	}}
+	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}}
+	missions := []types.Mission{{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
+	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions}
+	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
+
+	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
+	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 1, records)
+	claimRecord := testHelper.C4eAirdropUtils.GetClaimRecord(acountsAddresses[0].String())
+	claimRecord.GetCampaignRecords()[0].ClaimedMissions = []uint64{3}
+	testHelper.C4eAirdropUtils.SetClaimRecord(claimRecord)
+
+	testHelper.C4eAirdropUtils.ClaimInitialError(1, acountsAddresses[0], "mission already claimed: address cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, campaignId: 1, missionId: 3: mission already claimed")
+
 }

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -69,63 +70,74 @@ func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 	return
 }
 
-// CompleteMission triggers the completion of the mission and distribute the claimable portion of airdrop to the user
-// the method fails if the mission has already been completed
-func (k Keeper) CompleteMission(ctx sdk.Context, initialClaim bool, campaignId uint64, missionId uint64, address string) error {
+func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64, missionId uint64, address string) (*types.Campaign, *types.Mission, *types.ClaimRecord, error) {
 	campaignConfig := k.Campaign(ctx, campaignId)
-	if !campaignConfig.Enabled {
-		return nil
+	if err := campaignConfig.IsEnabled(ctx.BlockTime()); err != nil {
+		return nil, nil, nil, sdkerrors.Wrapf(err, "claim mission - campaignId %d", campaignId)
 	}
-	k.Logger(ctx).Debug("complete mission", "campaignId", campaignId, "blockTime", ctx.BlockTime(), "campaigh start", campaignConfig.StartTime, "campaigh end", campaignConfig.EndTime)
-	if ctx.BlockTime().Before(campaignConfig.StartTime) || (campaignConfig.EndTime != nil && ctx.BlockTime().After(*campaignConfig.EndTime)) {
-		k.Logger(ctx).Debug("complete mission campaign not enabled due time", "campaignId", campaignId)
+	k.Logger(ctx).Debug(log, "campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaignConfig.StartTime, "campaigh end", campaignConfig.EndTime)
 
-		return nil
-	}
-	// airdropSupply, found := k.GetAirdropSupply(ctx)
-	// if !found {
-	// return errors.Wrapf(types.ErrAirdropSupplyNotFound, "airdrop supply is not defined")
-	// }
-
-	// retrieve mission
 	mission, found := k.GetMission(ctx, campaignId, missionId)
 	if !found {
-		k.Logger(ctx).Error("mission not found", "campaignId", campaignId, "missionId", missionId)
-		return sdkerrors.Wrapf(types.ErrMissionNotFound, "campaignId %d, missionId %d", campaignId, missionId)
-		// return errors.Wrapf(types.ErrMissionNotFound, "mission %d not found", missionID)
+		k.Logger(ctx).Error(log+" - mission not found", "campaignId", campaignId, "missionId", missionId)
+		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "mission not found - campaignId %d, missionId %d", campaignId, missionId)
 	}
-
-	// retrieve claim record of the user
 	claimRecord, found := k.GetClaimRecord(ctx, address)
 	if !found {
-		return nil
-		// return errors.Wrapf(types.ErrClaimRecordNotFound, "claim record not found for address %s", address)
+		k.Logger(ctx).Error(log+" - claim record not found", "address", address)
+		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "claim record not found for address %s", address)
 	}
 
-	// check if the mission is already complted for the claim record
-	if claimRecord.IsMissionCompleted(campaignId, missionId) {
-		// return errors.Wrapf(
-		// 	types.ErrMissionCompleted,
-		// 	"mission %d completed for address %s",
-		// 	missionID,
-		// 	address,
-		// )
-		return nil
+	return campaignConfig, &mission, &claimRecord, nil
+}
+
+func (k Keeper) ClaimInitialMission(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {
+	campaignConfig, mission, claimRecord, err := k.missionIntialStep(ctx, "claim initial mission", campaignId, missionId, address)
+	if err != nil {
+		return err
+	}
+	claimRecord, err = k.completeMission(ctx, true, mission, claimRecord)
+	if err != nil {
+		return err
+	}
+	claimRecord, err = k.claimMission(ctx, true, campaignConfig, mission, claimRecord)
+	if err != nil {
+		return err
+	}
+	k.SetClaimRecord(ctx, *claimRecord)
+	return nil
+}
+
+func (k Keeper) ClaimMission(ctx sdk.Context, initialClaim bool, campaignId uint64, missionId uint64, address string) error {
+	campaignConfig, mission, claimRecord, err := k.missionIntialStep(ctx, "claim mission", campaignId, missionId, address)
+	if err != nil {
+		return err
+	}
+	claimRecord, err = k.claimMission(ctx, false, campaignConfig, mission, claimRecord)
+	if err != nil {
+		return err
 	}
 
-	if !initialClaim {
-		initialClaim, found := k.GetInitialClaim(ctx, campaignId)
-		if !found {
-			return nil //types.ErrInitialClaimNotFound
-		}
-		if !claimRecord.IsMissionCompleted(initialClaim.CampaignId, initialClaim.MissionId) {
-			return nil //types.ErrInitialClaimNotFound
-		}
-	}
-	// claimRecord.CompletedMissions = append(claimRecord.CompletedMissions, missionID)
+	k.SetClaimRecord(ctx, *claimRecord)
+	return nil
+}
 
-	claimRecord.CompleteMission(campaignId, missionId)
-	// calculate claimable from mission weight and claim
+func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig *types.Campaign, mission *types.Mission, claimRecord *types.ClaimRecord) (*types.ClaimRecord, error) {
+	campaignId := mission.CampaignId
+	missionId := mission.MissionId
+	address := claimRecord.Address
+	if !claimRecord.IsMissionCompleted(campaignId, missionId) {
+		k.Logger(ctx).Error("claim mission - mission not completed", "address", address, "campaignId", campaignId, "missionId", missionId)
+		return nil, sdkerrors.Wrapf(types.ErrMissionNotCompleted, "mission not completed: address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
+	}
+
+	if claimRecord.IsMissionClaimed(campaignId, missionId) {
+		k.Logger(ctx).Error("claim mission - mission already claimed", "address", address, "campaignId", campaignId, "missionId", missionId)
+		return nil, sdkerrors.Wrapf(types.ErrMissionClaimed, "mission already claimed: address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
+	}
+
+	claimRecord.ClaimMission(campaignId, missionId)
+
 	claimableAmount := claimRecord.ClaimableFromMission(mission)
 	// claimable := sdk.NewCoins(sdk.NewCoin(airdropSupply.Denom, claimableAmount))
 	claimable := sdk.NewCoins(sdk.NewCoin("uc4e", claimableAmount)) // TODO - uc4e to param
@@ -152,24 +164,64 @@ func (k Keeper) CompleteMission(ctx sdk.Context, initialClaim bool, campaignId u
 	}
 	claimer, err := sdk.AccAddressFromBech32(sendTo)
 	if err != nil {
-		return nil
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), sendTo)
+
 		// return errors.Criticalf("invalid claimer address %s", err.Error())
 	}
 	start := ctx.BlockTime().Add(campaignConfig.LockupPeriod)
 	end := start.Add(campaignConfig.VestingPeriod)
 	if err := k.SendToAirdropAccount(ctx, claimer, claimable, start.Unix(), end.Unix(), initialClaim); err != nil {
-		return nil
-		// return errors.Criticalf("can't send claimable coins %s", err.Error())
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), sendTo)
+	}
+	return claimRecord, nil
+
+}
+
+func (k Keeper) CompleteMission(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {
+	_, mission, claimRecord, err := k.missionIntialStep(ctx, "complete mission", campaignId, missionId, address)
+	if err != nil {
+		return err
+	}
+	claimRecord, err = k.completeMission(ctx, false, mission, claimRecord)
+	if err != nil {
+		return err
+	}
+	k.SetClaimRecord(ctx, *claimRecord)
+	return nil
+}
+
+// CompleteMission triggers the completion of the mission and distribute the claimable portion of airdrop to the user
+// the method fails if the mission has already been completed
+func (k Keeper) completeMission(ctx sdk.Context, initialClaim bool, mission *types.Mission, claimRecord *types.ClaimRecord) (*types.ClaimRecord, error) {
+	campaignId := mission.CampaignId
+	missionId := mission.MissionId
+	address := claimRecord.Address
+	// check if the mission is already complted for the claim record
+	if claimRecord.IsMissionCompleted(campaignId, missionId) {
+		k.Logger(ctx).Error("complete mission - mission already completed", "address", address, "campaignId", campaignId, "missionId", missionId)
+		return nil, sdkerrors.Wrapf(types.ErrMissionCompleted, "mission already completed: address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
 	}
 
-	// update store
-	// k.SetAirdropSupply(ctx, airdropSupply)
-	k.SetClaimRecord(ctx, claimRecord)
+	if !initialClaim {
+		initialClaim, found := k.GetInitialClaim(ctx, campaignId)
+		if !found {
+			k.Logger(ctx).Error("complete mission - initial claim not found", "campaignId", campaignId)
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "initial claim not found - campaignId %d", campaignId)
+		}
+		if !claimRecord.IsMissionClaimed(initialClaim.CampaignId, initialClaim.MissionId) {
+			k.Logger(ctx).Error("complete mission - mission already completed", "address", address, "campaignId", campaignId, "missionId", missionId)
+			return nil, sdkerrors.Wrapf(types.ErrMissionClaimed, "mission already completed: address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
+		}
+	}
+
+	claimRecord.CompleteMission(campaignId, missionId)
+
+	// k.SetClaimRecord(ctx, claimRecord)
 
 	// err = ctx.EventManager().EmitTypedEvent(&types.EventMissionCompleted{
 	// 	MissionID: missionID,
 	// 	Claimer:   address,
 	// })
 
-	return err
+	return claimRecord, nil
 }
