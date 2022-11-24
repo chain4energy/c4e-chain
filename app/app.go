@@ -115,6 +115,7 @@ import (
 	cfeairdropmodule "github.com/chain4energy/c4e-chain/x/cfeairdrop"
 	cfeairdropmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	cfeairdropmoduletypes "github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	v101 "github.com/chain4energy/c4e-chain/app/upgrades/v101"
@@ -363,6 +364,18 @@ func New(
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
 
+	app.CfeairdropKeeper = *cfeairdropmodulekeeper.NewKeeper(
+		appCodec,
+		keys[cfeairdropmoduletypes.StoreKey],
+		keys[cfeairdropmoduletypes.MemStoreKey],
+		app.GetSubspace(cfeairdropmoduletypes.ModuleName),
+
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.FeeGrantKeeper,
+	)
+	cfeairdropModule := cfeairdropmodule.NewAppModule(appCodec, app.CfeairdropKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.StakingKeeper = *stakingKeeper.SetHooks(
@@ -470,18 +483,6 @@ func New(
 		app.AccountKeeper,
 	)
 	cfedistributorModule := cfedistributormodule.NewAppModule(appCodec, app.CfedistributorKeeper, app.AccountKeeper, app.BankKeeper)
-
-	app.CfeairdropKeeper = *cfeairdropmodulekeeper.NewKeeper(
-		appCodec,
-		keys[cfeairdropmoduletypes.StoreKey],
-		keys[cfeairdropmoduletypes.MemStoreKey],
-		app.GetSubspace(cfeairdropmoduletypes.ModuleName),
-
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.FeeGrantKeeper,
-	)
-	cfeairdropModule := cfeairdropmodule.NewAppModule(appCodec, app.CfeairdropKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 

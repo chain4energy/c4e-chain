@@ -9,13 +9,13 @@ const (
 	MissionKeyPrefix = "Mission/value/"
 )
 
-func MissionKey(campaignId uint64, MissionId uint64) []byte {
+func MissionKey(campaignId uint64, missionId uint64) []byte {
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, campaignId)
 
 	bz = append(bz, []byte("/")...)
 	bz2 := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz2, campaignId)
+	binary.BigEndian.PutUint64(bz2, missionId)
 	bz = append(bz, bz2...)
 	return bz
 }

@@ -1,10 +1,10 @@
 package keeper
 
 import (
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
@@ -54,16 +54,16 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 		return sdkerrors.Wrapf(c4eerrors.ErrInvalidAccountType, "send to airdrop account - expected AirdropVestingAccount, got: %T", acc)
 	}
 	ak.SetAccount(ctx, airdropAccount)
+	hadPariods := len(airdropAccount.VestingPeriods) > 0
 	airdropAccount.VestingPeriods = append(airdropAccount.VestingPeriods,
 		types.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
 	airdropAccount.BaseVestingAccount.OriginalVesting = airdropAccount.BaseVestingAccount.OriginalVesting.Add(amount...)
-	if endTime > airdropAccount.BaseVestingAccount.EndTime {
+	if !hadPariods || endTime > airdropAccount.BaseVestingAccount.EndTime {
 		airdropAccount.BaseVestingAccount.EndTime = endTime
 	}
-	if startTime < airdropAccount.StartTime {
+	if !hadPariods || startTime < airdropAccount.StartTime {
 		airdropAccount.StartTime = startTime
 	}
-	
 
 	// err = ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
 	// 	Address: acc.Address,

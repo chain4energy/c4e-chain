@@ -62,3 +62,29 @@ func (h *ContextC4eAirdropUtils) GetClaimRecord(address string) *cfeairdroptypes
 func (h *ContextC4eAirdropUtils) SetClaimRecord(claimRecord *cfeairdroptypes.ClaimRecord) {
 	h.C4eAirdropUtils.SetClaimRecord(h.testContext.GetContext(), claimRecord)
 }
+
+func (h *ContextC4eAirdropUtils) CompleteMission(campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
+	h.C4eAirdropUtils.CompleteMission(h.testContext.GetContext(), campaignId, missionId, claimer)
+
+}
+
+func (h *ContextC4eAirdropUtils) CompleteMissionError(campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
+	h.C4eAirdropUtils.CompleteMissionError(h.testContext.GetContext(), campaignId, missionId, claimer, errorMessage)
+
+}
+
+func (h *ContextC4eAirdropUtils) ClaimMission(campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
+	h.C4eAirdropUtils.ClaimMission(h.testContext.GetContext(), campaignId, missionId, claimer)
+}
+
+func (h *ContextC4eAirdropUtils) ClaimMissionToAddress(campaignId uint64, missionId uint64, claimer sdk.AccAddress, claimerDstAddress sdk.AccAddress) {
+	h.C4eAirdropUtils.ClaimMissionToAddress(h.testContext.GetContext(), campaignId, missionId, claimer, claimerDstAddress)
+}
+
+func (h *ContextC4eAirdropUtils) ClaimMissionError(campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
+	h.C4eAirdropUtils.ClaimMissionError(h.testContext.GetContext(), campaignId, missionId, claimer, errorMessage)
+}
+
+func (h *ContextC4eAirdropUtils) CreateAirdropAccout(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64, endTime int64, periods... cfeairdroptypes.ContinuousVestingPeriod) *cfeairdroptypes.AirdropVestingAccount {
+	return h.C4eAirdropUtils.CreateAirdropAccout(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
+}

@@ -8,6 +8,7 @@ import (
 	cfeairdroptypes "github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -52,15 +53,6 @@ func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.Ac
 
 	airdropAccount, ok := h.helperAccountKeeper.GetAccount(ctx, toAddress).(*cfeairdroptypes.AirdropVestingAccount)
 	require.True(h.t, ok)
-	// periodPosition := len(airdropAccount.VestingPeriods) - 1
-	// require.EqualValues(h.t, periodsAmount+1, len(airdropAccount.VestingPeriods))
-	// require.EqualValues(h.t, startTime, airdropAccount.StartTime)
-	// require.EqualValues(h.t, endTime, airdropAccount.EndTime)
-	// require.EqualValues(h.t, previousOriginalVesting.Add(coins...), airdropAccount.OriginalVesting)
-	// require.EqualValues(h.t, startTime, airdropAccount.VestingPeriods[periodPosition].StartTime)
-	// require.EqualValues(h.t, endTime, airdropAccount.VestingPeriods[periodPosition].EndTime)
-	// require.EqualValues(h.t, coins, airdropAccount.VestingPeriods[periodPosition].Amount)
-
 	newPeriods := append(previousPeriods, cfeairdroptypes.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: coins})
 	h.VerifyAirdropAccount(ctx, toAddress, previousOriginalVesting.Add(coins...), startTime, endTime, newPeriods)
 	require.NoError(h.t, airdropAccount.Validate())
@@ -263,4 +255,116 @@ func (h *C4eAirdropUtils) SetClaimRecord(
 	claimRecord *cfeairdroptypes.ClaimRecord,
 ) {
 	h.helpeCfeairdropkeeper.SetClaimRecord(ctx, *claimRecord)
+}
+
+func (h *C4eAirdropUtils) CompleteMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
+	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
+	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
+	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	claimRecordBefore, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	require.True(h.t, foundCr)
+
+	require.NoError(h.t, h.helpeCfeairdropkeeper.CompleteMission(ctx, campaignId, missionId, claimer.String()))
+
+	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
+	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
+	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore)
+
+	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecordBefore.GetCampaignRecord(campaignId).CompletedMissions = append(claimRecordBefore.GetCampaignRecord(campaignId).CompletedMissions, missionId)
+
+	require.True(h.t, foundCr)
+	require.EqualValues(h.t, claimRecordBefore, claimRecord)
+}
+
+func (h *C4eAirdropUtils) CompleteMissionError(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
+	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
+	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
+	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	claimRecordBefore, foundCrBefore := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+
+	require.EqualError(h.t, h.helpeCfeairdropkeeper.CompleteMission(ctx, campaignId, missionId, claimer.String()), errorMessage)
+
+	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
+	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
+	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore)
+	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	require.Equal(h.t, foundCrBefore, foundCr)
+	require.EqualValues(h.t, claimRecordBefore, claimRecord)
+}
+
+func (h *C4eAirdropUtils) ClaimMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
+	h.ClaimMissionToAddress(ctx, campaignId, missionId, claimer, claimer)
+}
+
+func (h *C4eAirdropUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, claimerDstAddress sdk.AccAddress) {
+
+	claimerAccountBefore, ok := h.helperAccountKeeper.GetAccount(ctx, claimerDstAddress).(*cfeairdroptypes.AirdropVestingAccount)
+	require.True(h.t, ok)
+	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
+	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimerDstAddress)
+	claimRecordBefore, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	require.True(h.t, foundCr)
+
+	require.NoError(h.t, h.helpeCfeairdropkeeper.ClaimMission(ctx, campaignId, missionId, claimer.String()))
+
+	claimRecordBefore.GetCampaignRecord(campaignId).ClaimedMissions = append(claimRecordBefore.GetCampaignRecord(campaignId).ClaimedMissions, missionId)
+	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	require.True(h.t, foundCr)
+	require.EqualValues(h.t, claimRecordBefore, claimRecord)
+
+	mission, _ := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, missionId)
+	expectedAmount := mission.Weight.MulInt(claimRecord.GetCampaignRecord(campaignId).Claimable).TruncateInt()
+
+	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimerDstAddress, claimerBefore.Add(expectedAmount))
+	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore.Sub(expectedAmount))
+
+	campaign := h.helpeCfeairdropkeeper.Campaign(ctx, campaignId)
+	expectedStartTime := ctx.BlockTime().Add(campaign.LockupPeriod)
+	expectedEndTime := expectedStartTime.Add(campaign.VestingPeriod)
+	expectedOriginalVesting := sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, expectedAmount))
+	if len(claimerAccountBefore.VestingPeriods) == 0 {
+		claimerAccountBefore.StartTime = expectedStartTime.Unix()
+		claimerAccountBefore.EndTime = expectedEndTime.Unix()
+
+	} else {
+		if claimerAccountBefore.StartTime > expectedStartTime.Unix() {
+			claimerAccountBefore.StartTime = expectedStartTime.Unix()
+		}
+		if claimerAccountBefore.EndTime < expectedEndTime.Unix() {
+			claimerAccountBefore.EndTime = expectedEndTime.Unix()
+		}
+	}
+	claimerAccountBefore.OriginalVesting = claimerAccountBefore.OriginalVesting.Add(expectedOriginalVesting...)
+	claimerAccountBefore.VestingPeriods = append(claimerAccountBefore.VestingPeriods, cfeairdroptypes.ContinuousVestingPeriod{StartTime: expectedStartTime.Unix(), EndTime: expectedEndTime.Unix(), Amount: expectedOriginalVesting})
+
+	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimerDstAddress).(*cfeairdroptypes.AirdropVestingAccount)
+	require.True(h.t, ok)
+	require.NoError(h.t, claimerAccount.Validate())
+	require.EqualValues(h.t, claimerAccountBefore, claimerAccount)
+
+}
+
+func (h *C4eAirdropUtils) ClaimMissionError(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
+	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
+	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
+	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	claimRecordBefore, foundCrBefore := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+
+	require.EqualError(h.t, h.helpeCfeairdropkeeper.ClaimMission(ctx, campaignId, missionId, claimer.String()), errorMessage)
+
+	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
+	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
+	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore)
+	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	require.Equal(h.t, foundCrBefore, foundCr)
+	require.EqualValues(h.t, claimRecordBefore, claimRecord)
+}
+
+func (h *C4eAirdropUtils) CreateAirdropAccout(ctx sdk.Context, address sdk.AccAddress, originalVesting sdk.Coins, startTime int64, endTime int64, periods ...cfeairdroptypes.ContinuousVestingPeriod) *cfeairdroptypes.AirdropVestingAccount {
+	baseAccount := h.helperAccountKeeper.NewAccountWithAddress(ctx, address)
+	airdropAcc := cfeairdroptypes.NewAirdropVestingAccount(baseAccount.(*authtypes.BaseAccount), originalVesting, startTime, endTime, periods)
+	h.helperAccountKeeper.SetAccount(ctx, airdropAcc)
+	require.NoError(h.t, airdropAcc.Validate())
+	return airdropAcc
 }

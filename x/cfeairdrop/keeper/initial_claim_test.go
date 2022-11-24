@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -103,8 +104,6 @@ func TestClaimInitialCampaignNotFound(t *testing.T) {
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
-	// ctx := testHelper.Context
-
 	end := testHelper.Context.BlockTime().Add(1000)
 	params := types.Params{Campaigns: []*types.Campaign{
 		{
@@ -156,6 +155,8 @@ func TestClaimInitialCampaignClaimError(t *testing.T) {
 	claimRecord.GetCampaignRecords()[0].ClaimedMissions = []uint64{3}
 	testHelper.C4eAirdropUtils.SetClaimRecord(claimRecord)
 
-	testHelper.C4eAirdropUtils.ClaimInitialError(1, acountsAddresses[0], "mission already claimed: address cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, campaignId: 1, missionId: 3: mission already claimed")
+	testHelper.C4eAirdropUtils.ClaimInitialError(1, acountsAddresses[0], fmt.Sprintf("mission already claimed: address %s, campaignId: 1, missionId: 3: mission already claimed", acountsAddresses[0]))
 
 }
+
+// TODO test with 2 initial claims for different camapaigns for same address

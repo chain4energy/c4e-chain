@@ -251,26 +251,29 @@ func (m ClaimRecord) HasCampaign(campaignId uint64) bool {
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
 func (m *ClaimRecord) CompleteMission(campaignId uint64, missionID uint64) error {
-	for _, campaignRecord := range m.CampaignRecords {
-		campaignRecord.CompletedMissions = append(campaignRecord.CompletedMissions, missionID)
-		return nil
+	campaignRecord := m.GetCampaignRecord(campaignId)
+	if campaignRecord == nil {
+		return fmt.Errorf("no campaign record with id %d for address %s", campaignId, m.Address)
 	}
-	return fmt.Errorf("no campaign with id %d", campaignId)
+	campaignRecord.CompletedMissions = append(campaignRecord.CompletedMissions, missionID)
+	return nil
 }
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
 func (m *ClaimRecord) ClaimMission(campaignId uint64, missionID uint64) error {
-	for _, campaignRecord := range m.CampaignRecords {
-		campaignRecord.ClaimedMissions = append(campaignRecord.ClaimedMissions, missionID)
-		return nil
+	campaignRecord := m.GetCampaignRecord(campaignId)
+	if campaignRecord == nil {
+		return fmt.Errorf("no campaign record with id %d for address %s", campaignId, m.Address)
 	}
-	return fmt.Errorf("no campaign with id %d", campaignId)
+	campaignRecord.ClaimedMissions = append(campaignRecord.ClaimedMissions, missionID)
+	return nil
 }
 
 // ClaimableFromMission returns the amount claimable for this claim record from the provided mission completion
 func (m ClaimRecord) ClaimableFromMission(mission *Mission) sdk.Int {
-	for _, campaignRecord := range m.CampaignRecords {
-		return mission.Weight.Mul(sdk.NewDecFromInt(campaignRecord.Claimable)).TruncateInt()
+	campaignRecord := m.GetCampaignRecord(mission.CampaignId)
+	if campaignRecord == nil {
+		return sdk.ZeroInt() // TODO error ??
 	}
-	return sdk.ZeroInt() // TODO panic ??
+	return mission.Weight.Mul(sdk.NewDecFromInt(campaignRecord.Claimable)).TruncateInt()
 }
