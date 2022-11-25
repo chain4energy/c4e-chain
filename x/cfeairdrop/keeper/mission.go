@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
+// TODO tests when campaigns in params are nil
 
 // SetMission set a specific mission in the store from its index
 func (k Keeper) SetMission(ctx sdk.Context, mission types.Mission) {
@@ -70,13 +71,18 @@ func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 	return
 }
 
-func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64, missionId uint64, address string) (*types.Campaign, *types.Mission, *types.ClaimRecord, error) {
+func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64, missionId uint64, address string, isHook bool) (*types.Campaign, *types.Mission, *types.ClaimRecord, error) {
 	campaignConfig := k.Campaign(ctx, campaignId)
 	if campaignConfig == nil {
 		k.Logger(ctx).Error(log+" - camapign not found", "campaignId", campaignId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
 	}
 	if err := campaignConfig.IsEnabled(ctx.BlockTime()); err != nil {
+		if isHook {
+			k.Logger(ctx).Debug(log+" - camapign disabled", "campaignId", campaignId, "err", err)
+			return nil, nil, nil, nil
+		}
+		k.Logger(ctx).Error(log+" - camapign disabled", "campaignId", campaignId, "err", err)
 		return nil, nil, nil, sdkerrors.Wrapf(err, "campaign disabled - campaignId %d", campaignId)
 	}
 	k.Logger(ctx).Debug(log, "campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaignConfig.StartTime, "campaigh end", campaignConfig.EndTime)
@@ -90,11 +96,19 @@ func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64
 
 	claimRecord, found := k.GetClaimRecord(ctx, address)
 	if !found {
+		if isHook {
+			k.Logger(ctx).Debug(log+" - claim record not found", "address", address)
+			return nil, nil, nil, nil
+		}
 		k.Logger(ctx).Error(log+" - claim record not found", "address", address)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "claim record not found for address %s", address)
 	}
 
 	if !claimRecord.HasCampaign(campaignId) {
+		if isHook {
+			k.Logger(ctx).Error(log+" - campaign record not found", "address", address, "campaignId", campaignId)
+			return nil, nil, nil, nil
+		}
 		k.Logger(ctx).Error(log+" - campaign record not found", "address", address, "campaignId", campaignId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id: %d not found for address %s", campaignId, address)
 	}
@@ -102,7 +116,7 @@ func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64
 }
 
 func (k Keeper) ClaimInitialMission(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {
-	campaignConfig, mission, claimRecord, err := k.missionIntialStep(ctx, "claim initial mission", campaignId, missionId, address)
+	campaignConfig, mission, claimRecord, err := k.missionIntialStep(ctx, "claim initial mission", campaignId, missionId, address, false)
 	if err != nil {
 		return err
 	}
@@ -119,7 +133,7 @@ func (k Keeper) ClaimInitialMission(ctx sdk.Context, campaignId uint64, missionI
 }
 
 func (k Keeper) ClaimMission(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {
-	campaignConfig, mission, claimRecord, err := k.missionIntialStep(ctx, "claim mission", campaignId, missionId, address)
+	campaignConfig, mission, claimRecord, err := k.missionIntialStep(ctx, "claim mission", campaignId, missionId, address, false)
 	if err != nil {
 		return err
 	}
@@ -188,8 +202,8 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig 
 
 }
 
-func (k Keeper) CompleteMission(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {
-	_, mission, claimRecord, err := k.missionIntialStep(ctx, "complete mission", campaignId, missionId, address)
+func (k Keeper) CompleteMission(ctx sdk.Context, campaignId uint64, missionId uint64, address string, isHook bool) error {
+	_, mission, claimRecord, err := k.missionIntialStep(ctx, "complete mission", campaignId, missionId, address, isHook)
 	if err != nil {
 		return err
 	}

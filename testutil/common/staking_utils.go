@@ -13,18 +13,18 @@ import (
 )
 
 type StakingUtils struct {
-	t                   *testing.T
-	helperStakingkeeper stakingkeeper.Keeper
-	bankUtils           *BankUtils
+	t             *testing.T
+	StakingKeeper stakingkeeper.Keeper
+	bankUtils     *BankUtils
 }
 
 func NewStakingUtils(t *testing.T, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) StakingUtils {
-	return StakingUtils{t: t, helperStakingkeeper: helperStakingkeeper, bankUtils: bankUtils}
+	return StakingUtils{t: t, StakingKeeper: helperStakingkeeper, bankUtils: bankUtils}
 }
 
 func (su *StakingUtils) CreateValidator(ctx sdk.Context, addr sdk.ValAddress, pk cryptotypes.PubKey, coin sdk.Coin, commisions stakingtypes.CommissionRates) {
 	msg, err := stakingtypes.NewMsgCreateValidator(addr, pk, coin, stakingtypes.Description{}, commisions, sdk.OneInt())
-	msgSrvr := stakingkeeper.NewMsgServerImpl(su.helperStakingkeeper)
+	msgSrvr := stakingkeeper.NewMsgServerImpl(su.StakingKeeper)
 	require.NoError(su.t, err)
 	res, err := msgSrvr.CreateValidator(sdk.WrapSDKContext(ctx), msg)
 	require.NoError(su.t, err)
@@ -36,43 +36,51 @@ func (su *StakingUtils) SetupValidators(ctx sdk.Context, validators []sdk.ValAdd
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 	delCoin := sdk.NewCoin(DefaultTestDenom, delegatePerValidator)
 	for i, valAddr := range validators {
-		su.bankUtils.AddCoinsToAccount(ctx, delCoin, valAddr.Bytes())
+		su.bankUtils.AddCoinToAccount(ctx, delCoin, valAddr.Bytes())
 		su.CreateValidator(ctx, valAddr, PKs[i], delCoin, commission)
 	}
-	require.EqualValues(su.t, len(validators)+1, len(su.helperStakingkeeper.GetAllValidators(ctx)))
+	require.EqualValues(su.t, len(validators)+1, len(su.StakingKeeper.GetAllValidators(ctx)))
 }
 
 func (su *StakingUtils) GetValidator(ctx sdk.Context, addr sdk.ValAddress) (validator stakingtypes.Validator, found bool) {
-	return su.helperStakingkeeper.GetValidator(ctx, addr)
+	return su.StakingKeeper.GetValidator(ctx, addr)
+}
+
+func (su *StakingUtils) GetValidators(ctx sdk.Context) []stakingtypes.Validator {
+	return su.StakingKeeper.GetValidators(ctx, 100)
 }
 
 func (su *StakingUtils) MessageDelegate(ctx sdk.Context, expectedCurrentAmountOfDelegations int, expectedCurrentAmountOfUnbondingDelegations int, validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, bondAmount sdk.Int) {
 	validator, found := su.GetValidator(ctx, validatorAddress)
 	require.True(su.t, found, "validator not found")
-	require.Equal(su.t, expectedCurrentAmountOfDelegations, len(su.helperStakingkeeper.GetAllDelegations(ctx)))
-	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations, len(su.helperStakingkeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
-	newShares, err := su.helperStakingkeeper.Delegate(ctx, delegatorAddress, bondAmount, stakingtypes.Unbonded,
+	require.Equal(su.t, expectedCurrentAmountOfDelegations, len(su.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations, len(su.StakingKeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
+
+	newShares, err := su.StakingKeeper.Delegate(ctx, delegatorAddress, bondAmount, stakingtypes.Unbonded,
 		validator, true)
 	require.Nil(su.t, err, "Delegation error")
-	require.Truef(su.t, newShares.Equal(sdk.NewDecFromInt(bondAmount)), "newShares %s <> bondAmount %s", newShares, bondAmount)
+	validator, found = su.GetValidator(ctx, validatorAddress)
+	require.True(su.t, found, "validator not found")
+	tokensFromSshares := validator.TokensFromShares(newShares).TruncateInt()
+	require.Truef(su.t, tokensFromSshares.Equal(bondAmount), "newShares %s <> bondAmount %s", tokensFromSshares, bondAmount)
 
-	require.Equal(su.t, expectedCurrentAmountOfDelegations+1, len(su.helperStakingkeeper.GetAllDelegations(ctx)))
-	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations, len(su.helperStakingkeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
+	require.Equal(su.t, expectedCurrentAmountOfDelegations+1, len(su.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations, len(su.StakingKeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
 }
 
 func (su *StakingUtils) MessageUndelegate(ctx sdk.Context, expectedCurrentAmountOfDelegations int, expectedCurrentAmountOfUnbondingDelegations int, validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, unbondAmount sdk.Int) {
 
-	require.Equal(su.t, expectedCurrentAmountOfDelegations, len(su.helperStakingkeeper.GetAllDelegations(ctx)))
-	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations, len(su.helperStakingkeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
-	_, err := su.helperStakingkeeper.Undelegate(ctx, delegatorAddress, validatorAddress, sdk.NewDecFromInt(unbondAmount))
+	require.Equal(su.t, expectedCurrentAmountOfDelegations, len(su.StakingKeeper.GetAllDelegations(ctx)))
+	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations, len(su.StakingKeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
+	_, err := su.StakingKeeper.Undelegate(ctx, delegatorAddress, validatorAddress, sdk.NewDecFromInt(unbondAmount))
 	require.Nil(su.t, err, "Delegation error")
 
-	require.Equal(su.t, expectedCurrentAmountOfDelegations, len(su.helperStakingkeeper.GetAllDelegations(ctx))) // TODO check why expectedCurrentAmountOfDelegations not decrements  by 1
-	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations+1, len(su.helperStakingkeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
+	require.Equal(su.t, expectedCurrentAmountOfDelegations, len(su.StakingKeeper.GetAllDelegations(ctx))) // TODO check why expectedCurrentAmountOfDelegations not decrements  by 1
+	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations+1, len(su.StakingKeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
 }
 
 func (su *StakingUtils) VerifyNumberOfUnbondingDelegations(ctx sdk.Context, expectedNumberOfUnbondingDelegations int, delegatorAddress sdk.AccAddress) {
-	require.Equal(su.t, expectedNumberOfUnbondingDelegations, len(su.helperStakingkeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
+	require.Equal(su.t, expectedNumberOfUnbondingDelegations, len(su.StakingKeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
 }
 
 type ContextStakingUtils struct {
@@ -111,4 +119,8 @@ func (su *ContextStakingUtils) MessageUndelegate(expectedCurrentAmountOfDelegati
 
 func (su *ContextStakingUtils) VerifyNumberOfUnbondingDelegations(expectedNumberOfUnbondingDelegations int, delegatorAddress sdk.AccAddress) {
 	su.StakingUtils.VerifyNumberOfUnbondingDelegations(su.testContext.GetContext(), expectedNumberOfUnbondingDelegations, delegatorAddress)
+}
+
+func (su *ContextStakingUtils) GetValidators() []stakingtypes.Validator {
+	return su.StakingUtils.GetValidators(su.testContext.GetContext())
 }

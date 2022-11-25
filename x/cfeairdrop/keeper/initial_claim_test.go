@@ -76,7 +76,7 @@ func TestClaimInitial(t *testing.T) {
 	end := testHelper.Context.BlockTime().Add(1000)
 	lockupPeriod := time.Hour
 	vestingPeriod := 3 * time.Hour
-	params := types.Params{Campaigns: []*types.Campaign{
+	params := types.Params{Denom: commontestutils.DefaultTestDenom, Campaigns: []*types.Campaign{
 		{
 			CampaignId:    1,
 			Enabled:       true,
@@ -105,7 +105,7 @@ func TestClaimInitialCampaignNotFound(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	end := testHelper.Context.BlockTime().Add(1000)
-	params := types.Params{Campaigns: []*types.Campaign{
+	params := types.Params{Denom: commontestutils.DefaultTestDenom, Campaigns: []*types.Campaign{
 		{
 			CampaignId:    1,
 			Enabled:       true,
@@ -133,7 +133,7 @@ func TestClaimInitialCampaignClaimError(t *testing.T) {
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 	end := testHelper.Context.BlockTime().Add(1000)
-	params := types.Params{Campaigns: []*types.Campaign{
+	params := types.Params{Denom: commontestutils.DefaultTestDenom, Campaigns: []*types.Campaign{
 		{
 			CampaignId:    1,
 			Enabled:       true,

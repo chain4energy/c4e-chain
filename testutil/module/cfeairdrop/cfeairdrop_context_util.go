@@ -17,8 +17,8 @@ type ContextC4eAirdropUtils struct {
 
 func NewContextC4eAirdropUtils(t *testing.T, testContext commontestutils.TestContext, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils) *ContextC4eAirdropUtils {
-	c4eAirdropUtils := NewC4eAirdropUtils(t, helpeCfeairdropmodulekeeper, helperAccountKeeper, bankUtils)
+	bankUtils *commontestutils.BankUtils, stakingUtils *commontestutils.StakingUtils, govUtils *commontestutils.GovUtils) *ContextC4eAirdropUtils {
+	c4eAirdropUtils := NewC4eAirdropUtils(t, helpeCfeairdropmodulekeeper, helperAccountKeeper, bankUtils, stakingUtils, govUtils)
 	return &ContextC4eAirdropUtils{C4eAirdropUtils: c4eAirdropUtils, testContext: testContext}
 }
 
@@ -85,6 +85,18 @@ func (h *ContextC4eAirdropUtils) ClaimMissionError(campaignId uint64, missionId 
 	h.C4eAirdropUtils.ClaimMissionError(h.testContext.GetContext(), campaignId, missionId, claimer, errorMessage)
 }
 
-func (h *ContextC4eAirdropUtils) CreateAirdropAccout(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64, endTime int64, periods... cfeairdroptypes.ContinuousVestingPeriod) *cfeairdroptypes.AirdropVestingAccount {
+func (h *ContextC4eAirdropUtils) CreateAirdropAccout(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64, 
+		endTime int64, periods... cfeairdroptypes.ContinuousVestingPeriod) *cfeairdroptypes.AirdropVestingAccount {
 	return h.C4eAirdropUtils.CreateAirdropAccout(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
 }
+
+func (h *ContextC4eAirdropUtils) CompleteDelegationMission(campaignId uint64, 
+		claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
+	h.C4eAirdropUtils.CompleteDelegationMission(h.testContext.GetContext(), campaignId, claimer, deleagtionAmount)
+}
+
+func (h *ContextC4eAirdropUtils) CompleteVoteMission(campaignId uint64, claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
+	h.C4eAirdropUtils.CompleteVoteMission(h.testContext.GetContext(), campaignId, claimer, deleagtionAmount)
+
+}
+

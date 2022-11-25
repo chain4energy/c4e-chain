@@ -67,6 +67,7 @@ type TestHelper struct {
 	BankUtils             *testcommon.ContextBankUtils
 	AuthUtils             *testcommon.ContextAuthUtils
 	StakingUtils          *testcommon.ContextStakingUtils
+	GovUtils			  *testcommon.ContextGovUtils
 	C4eVestingUtils       *testcfevesting.ContextC4eVestingUtils
 	C4eMinterUtils        *testcfeminter.ContextC4eMinterUtils
 	C4eDistributorUtils   *testcfedistributor.ContextC4eDistributorUtils
@@ -99,11 +100,11 @@ func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time
 	testHelper.BankUtils = testcommon.NewContextBankUtils(t, &testHelper, &helperAk, helperBk)
 	testHelper.AuthUtils = testcommon.NewContextAuthUtils(t, &testHelper, &helperAk, &bankUtils.BankUtils)
 	testHelper.StakingUtils = testcommon.NewContextStakingUtils(t, &testHelper, app.StakingKeeper, &bankUtils.BankUtils)
+	testHelper.GovUtils = testcommon.NewContextGovUtils(t, &testHelper, &app.GovKeeper)
 	testHelper.C4eVestingUtils = testcfevesting.NewContextC4eVestingUtils(t, &testHelper, &app.CfevestingKeeper, &app.AccountKeeper, &app.BankKeeper, &app.StakingKeeper, &bankUtils.BankUtils, &testHelper.AuthUtils.AuthUtils)
 	testHelper.C4eMinterUtils = testcfeminter.NewContextC4eMinterUtils(t, &testHelper, &app.CfeminterKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
 	testHelper.C4eDistributorUtils = testcfedistributor.NewContextC4eDistributorUtils(t, &testHelper, &app.CfedistributorKeeper, &app.AccountKeeper)
-	testHelper.C4eAirdropUtils = testcfeairdrop.NewContextC4eAirdropUtils(t, &testHelper, &app.CfeairdropKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
-
+	testHelper.C4eAirdropUtils = testcfeairdrop.NewContextC4eAirdropUtils(t, &testHelper, &app.CfeairdropKeeper, &app.AccountKeeper, &bankUtils.BankUtils, &testHelper.StakingUtils.StakingUtils, &testHelper.GovUtils.GovUtils)
 	return &testHelper
 }
 

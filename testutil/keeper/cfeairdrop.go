@@ -19,10 +19,10 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	cfeairdroptestutils "github.com/chain4energy/c4e-chain/testutil/module/cfeairdrop"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 )
 
 // type ExtendedC4eAirdropKeeperUtils struct {
@@ -33,7 +33,7 @@ import (
 // }
 
 // func NewExtendedC4eAirdropKeeperUtils(t *testing.T, helperCfeairdropKeeper *keeper.Keeper,
-// 	bankUtils *commontestutils.BankUtils, 
+// 	bankUtils *commontestutils.BankUtils,
 // 	cdc *codec.ProtoCodec,
 // 	storeKey *storetypes.KVStoreKey) ExtendedC4eAirdropKeeperUtils {
 // 	return ExtendedC4eAirdropKeeperUtils{C4eAirdropKeeperUtils: cfeairdroptestutils.NewC4eAirdropKeeperUtils(t, helperCfeairdropKeeper),
@@ -51,7 +51,7 @@ import (
 func CfeairdropKeeperTestUtilWithCdc(t *testing.T) (*cfeairdroptestutils.C4eAirdropUtils, *keeper.Keeper, sdk.Context) {
 	k, ak, bk, ctx, _, _ := cfeairdropKeeperWithBlockHeightAndTime(t, 0, commontestutils.TestEnvTime)
 	bankUtils := commontestutils.NewBankUtils(t, ctx, ak, bk)
-	utils := cfeairdroptestutils.NewC4eAirdropUtils(t, k, ak, &bankUtils)
+	utils := cfeairdroptestutils.NewC4eAirdropUtils(t, k, ak, &bankUtils, nil, nil)
 	return &utils, k, ctx
 }
 

@@ -20,7 +20,7 @@ func TestCreateVestingPool(t *testing.T) {
 	accAddr := acountsAddresses[0]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -45,7 +45,7 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 
 	accAddr := acountsAddresses[0]
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(sdk.NewInt(10000), accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinToAccount(sdk.NewInt(10000), accAddr)
 
 	testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 
@@ -64,7 +64,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	accAddr := acountsAddresses[0]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -88,7 +88,7 @@ func TestCreateVestingPoolEmptyName(t *testing.T) {
 	accAddr := acountsAddresses[0]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]

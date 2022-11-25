@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,12 +17,15 @@ type C4eAirdropUtils struct {
 	C4eAirdropKeeperUtils
 	helperAccountKeeper *authkeeper.AccountKeeper
 	BankUtils           *commontestutils.BankUtils
+	StakingUtils        *commontestutils.StakingUtils
+	GovUtils            *commontestutils.GovUtils
 }
 
 func NewC4eAirdropUtils(t *testing.T, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils) C4eAirdropUtils {
-	return C4eAirdropUtils{C4eAirdropKeeperUtils: NewC4eAirdropKeeperUtils(t, helpeCfeairdropmodulekeeper), helperAccountKeeper: helperAccountKeeper, BankUtils: bankUtils}
+	bankUtils *commontestutils.BankUtils, stakingUtils *commontestutils.StakingUtils, govUtils *commontestutils.GovUtils) C4eAirdropUtils {
+	return C4eAirdropUtils{C4eAirdropKeeperUtils: NewC4eAirdropKeeperUtils(t, helpeCfeairdropmodulekeeper),
+		helperAccountKeeper: helperAccountKeeper, BankUtils: bankUtils, StakingUtils: stakingUtils, GovUtils: govUtils}
 }
 
 func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
@@ -118,7 +122,7 @@ func (h *C4eAirdropUtils) AddCampaignRecords(ctx sdk.Context, srcAddress sdk.Acc
 		sum = sum.Add(amount)
 	}
 	allRecordsBefore := h.helpeCfeairdropkeeper.GetAllClaimRecord(ctx)
-	h.BankUtils.AddDefaultDenomCoinsToAccount(ctx, sum, srcAddress)
+	h.BankUtils.AddDefaultDenomCoinToAccount(ctx, sum, srcAddress)
 	srcBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, srcAddress)
 
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
@@ -166,7 +170,7 @@ func (h *C4eAirdropUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sd
 		for _, amount := range campaignRecord {
 			sum = sum.Add(amount)
 		}
-		h.BankUtils.AddDefaultDenomCoinsToAccount(ctx, sum, srcAddress)
+		h.BankUtils.AddDefaultDenomCoinToAccount(ctx, sum, srcAddress)
 	}
 	allRecordsBefore := h.helpeCfeairdropkeeper.GetAllClaimRecord(ctx)
 
@@ -257,15 +261,65 @@ func (h *C4eAirdropUtils) SetClaimRecord(
 	h.helpeCfeairdropkeeper.SetClaimRecord(ctx, *claimRecord)
 }
 
+func (h *C4eAirdropUtils) CompleteDelegationMission(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
+	action := func() error {
+		validators := h.StakingUtils.StakingKeeper.GetValidators(ctx, 1)
+		valAddr, err := sdk.ValAddressFromBech32(validators[0].OperatorAddress)
+		if err != nil {
+			return err
+		}
+		h.StakingUtils.MessageDelegate(ctx, 1, 0, valAddr, claimer, deleagtionAmount)
+		return nil
+	}
+	beforeCheck := func(acc authtypes.AccountI, claimerAmountBefore sdk.Int) (authtypes.AccountI, sdk.Int) {
+		ve, ok := acc.(*cfeairdroptypes.AirdropVestingAccount)
+		if ok {
+			ve.DelegatedFree = sdk.NewCoins(sdk.NewCoin(h.StakingUtils.StakingKeeper.BondDenom(ctx), deleagtionAmount))
+		}
+		return ve, claimerAmountBefore.Sub(deleagtionAmount)
+	}
+	h.completeAnyMission(ctx, campaignId, uint64(cfeairdroptypes.DELEGATION), claimer, action, beforeCheck)
+}
+
+func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
+	action := func() error {
+		depParams := h.GovUtils.GovKeeper.GetDepositParams(ctx)
+		depositAmount := depParams.MinDeposit
+		h.BankUtils.AddCoinsToAccount(ctx, depositAmount, claimer)
+
+		testProposal := &govtypes.TextProposal{Title: "Title", Description: "Description"}
+		proposal, err := h.GovUtils.GovKeeper.SubmitProposal(ctx, testProposal)
+		if err != nil {
+			return err
+		}
+		h.GovUtils.GovKeeper.AddDeposit(ctx, proposal.ProposalId, claimer, depositAmount)
+
+		
+		return h.GovUtils.GovKeeper.AddVote(ctx, proposal.ProposalId,
+			claimer, []govtypes.WeightedVoteOption{{Option: govtypes.OptionAbstain, Weight: sdk.NewDec(1)}})
+	}
+	h.completeAnyMission(ctx, campaignId, uint64(cfeairdroptypes.VOTE), claimer, action, nil)
+}
+
 func (h *C4eAirdropUtils) CompleteMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
+	action := func() error {
+		return h.helpeCfeairdropkeeper.CompleteMission(ctx, campaignId, missionId, claimer.String(), false)
+	}
+	h.completeAnyMission(ctx, campaignId, missionId, claimer, action, nil)
+}
+
+func (h *C4eAirdropUtils) completeAnyMission(ctx sdk.Context, campaignId uint64, missionId uint64,
+	claimer sdk.AccAddress, action func() error, beforeCheck func(authtypes.AccountI, sdk.Int) (authtypes.AccountI, sdk.Int)) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
 	claimRecordBefore, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
 	require.True(h.t, foundCr)
 
-	require.NoError(h.t, h.helpeCfeairdropkeeper.CompleteMission(ctx, campaignId, missionId, claimer.String()))
-
+	require.NoError(h.t, action())
+	if beforeCheck != nil {
+		claimerAccountBefore, claimerBefore = beforeCheck(claimerAccountBefore, claimerBefore)
+	}
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore)
@@ -283,7 +337,7 @@ func (h *C4eAirdropUtils) CompleteMissionError(ctx sdk.Context, campaignId uint6
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
 	claimRecordBefore, foundCrBefore := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
 
-	require.EqualError(h.t, h.helpeCfeairdropkeeper.CompleteMission(ctx, campaignId, missionId, claimer.String()), errorMessage)
+	require.EqualError(h.t, h.helpeCfeairdropkeeper.CompleteMission(ctx, campaignId, missionId, claimer.String(), false), errorMessage)
 
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)

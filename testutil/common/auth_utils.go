@@ -41,7 +41,7 @@ func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coin 
 
 	au.helperAccountKeeper.SetAccount(ctx, acc)
 
-	au.bankUtils.AddCoinsToAccount(ctx, coin, to)
+	au.bankUtils.AddCoinToAccount(ctx, coin, to)
 	return nil
 }
 

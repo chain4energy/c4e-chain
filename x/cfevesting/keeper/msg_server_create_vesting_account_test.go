@@ -1,9 +1,10 @@
 package keeper_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
@@ -17,7 +18,7 @@ func TestCreateVestingAccount(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	accBalance := sdk.NewInt(100000)
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
+	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: commontestutils.DefaultTestDenom}}
 	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
@@ -44,7 +45,7 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 	accAddr3 := acountsAddresses[2]
 
 	accBalance := sdk.NewInt(100000)
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
+	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: commontestutils.DefaultTestDenom}}
 	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
@@ -112,7 +113,7 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 	accAddr3 := acountsAddresses[2]
 
 	accBalance := sdk.NewInt(15000)
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
+	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: commontestutils.DefaultTestDenom}}
 	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)

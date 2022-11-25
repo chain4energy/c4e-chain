@@ -14,7 +14,7 @@ var KeyCampaigns = []byte("Campaigns")
 var (
 	KeyDenom            = []byte("Denom")
 	DefaultDenom string = "uc4e"
-) 
+)
 
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
@@ -28,7 +28,7 @@ func NewParams(denom string, campaigns []*Campaign) Params {
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	return NewParams(DefaultDenom, []*Campaign{})
+	return NewParams(DefaultDenom, nil)
 }
 
 // ParamSetPairs get the params.ParamSet
@@ -43,7 +43,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 func (p Params) Validate() error {
 	if err := validateDenom(p.Denom); err != nil {
 		return err
-	} 
+	}
 	if err := validateCampaigns(p.Campaigns); err != nil {
 		return err
 	} //

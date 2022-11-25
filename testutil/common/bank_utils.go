@@ -34,15 +34,20 @@ func NewBankUtils(t *testing.T, ctx sdk.Context, helperAccountKeeper *authkeeper
 	return BankUtils{t: t, helperAccountKeeper: helperAccountKeeper, helperBankKeeper: helperBankKeeper}
 }
 
-func (bu *BankUtils) AddCoinsToAccount(ctx sdk.Context, coinsToMint sdk.Coin, toAddr sdk.AccAddress) {
-	mintedCoins := sdk.NewCoins(coinsToMint)
+func (bu *BankUtils) AddCoinToAccount(ctx sdk.Context, coinToMint sdk.Coin, toAddr sdk.AccAddress) {
+	mintedCoins := sdk.NewCoins(coinToMint)
 	bu.helperBankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
 	bu.helperBankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, mintedCoins)
 }
 
-func (bu *BankUtils) AddDefaultDenomCoinsToAccount(ctx sdk.Context, amount sdk.Int, toAddr sdk.AccAddress) (denom string) {
+func (bu *BankUtils) AddCoinsToAccount(ctx sdk.Context, coinsToMint sdk.Coins, toAddr sdk.AccAddress) {
+	bu.helperBankKeeper.MintCoins(ctx, helperModuleAccount, coinsToMint)
+	bu.helperBankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, coinsToMint)
+}
+
+func (bu *BankUtils) AddDefaultDenomCoinToAccount(ctx sdk.Context, amount sdk.Int, toAddr sdk.AccAddress) (denom string) {
 	coinsToMint := sdk.NewCoin(DefaultTestDenom, amount)
-	bu.AddCoinsToAccount(ctx, coinsToMint, toAddr)
+	bu.AddCoinToAccount(ctx, coinsToMint, toAddr)
 	return DefaultTestDenom
 }
 
@@ -133,12 +138,16 @@ func NewContextBankUtils(t *testing.T, testContext TestContext, helperAccountKee
 	return &ContextBankUtils{BankUtils: bankUtils, testContext: testContext}
 }
 
-func (bu *ContextBankUtils) AddCoinsToAccount(coinsToMint sdk.Coin, toAddr sdk.AccAddress) {
+func (bu *ContextBankUtils) AddCoinToAccount(coinsToMint sdk.Coin, toAddr sdk.AccAddress) {
+	bu.BankUtils.AddCoinToAccount(bu.testContext.GetContext(), coinsToMint, toAddr)
+}
+
+func (bu *ContextBankUtils) AddCoinsToAccount(coinsToMint sdk.Coins, toAddr sdk.AccAddress) {
 	bu.BankUtils.AddCoinsToAccount(bu.testContext.GetContext(), coinsToMint, toAddr)
 }
 
-func (bu *ContextBankUtils) AddDefaultDenomCoinsToAccount(amount sdk.Int, toAddr sdk.AccAddress) (denom string) {
-	return bu.BankUtils.AddDefaultDenomCoinsToAccount(bu.testContext.GetContext(), amount, toAddr)
+func (bu *ContextBankUtils) AddDefaultDenomCoinToAccount(amount sdk.Int, toAddr sdk.AccAddress) (denom string) {
+	return bu.BankUtils.AddDefaultDenomCoinToAccount(bu.testContext.GetContext(), amount, toAddr)
 }
 
 func (bu *ContextBankUtils) AddCoinsToModule(coinsToMint sdk.Coin, moduleName string) {
