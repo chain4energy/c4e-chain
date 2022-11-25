@@ -2,8 +2,9 @@
 
 ## Abstract
 
-Chain4Energy vesting module provides functionality creation and manegement of vesting pools. 
-Vesting pool locks  configured amount of tokens for configured period of time. Those locked tokens can further be sent form vesting pool, but only to newly created continuous vesting account. Vesting account parameters are calculted from vesting pool configuration.
+Chain4Energy vesting module provides creation and management of the vesting pools functionality.
+One can create a vesting pool in order to lock the configured amount of tokens for a period of time. During this locking period the locked tokens can only be used for vesting accounts creation. 
+The vesting account parameters are calculated from the vesting pool configuration.
 
 ## Contents
 
@@ -18,30 +19,35 @@ Vesting pool locks  configured amount of tokens for configured period of time. T
 
 ## Concepts
 
-The purpose of `cfevesting` module is to provide functionality of locking tokens in a pool for specified amount of time, but with the ability to send those tokens to continuous vesting accounts. So, tokens are still locked but a cannot be sent further from vesting account. This allows to create vesting target groups (e.g. validators vesting pool, investors vesting pools).
-`Cfevesting` module keeps list of all vesting accounts cretated form vesting pools. It is use for calculation of current toens amount in vesting.
+The purpose of `cfevesting` module is to provide the functionality of locking tokens in a pool for specified amount of time with the ability of sending those tokens to continuous vesting accounts. 
+The tokens are still locked on the vesting accounts and cannot be sent further until the locking period ends. This allows to create vesting target groups (e.g. validators vesting pool, investors vesting pools).
+The `cfevesting` module keeps track of all the vesting pools and vesting accounts and calculates the current amount of tokens in vesting.
 
 ### Vesting Pool
 
-Vesting pool locks some amount of tokens to configured period of time. Each vesting pool has its owner (account). One owner can have multiple vasting pools. Each vesting pool is identified by its name. The name is unique among all vesitng pools of one owner. Vesting pools have fillowing parameters:
-* name - unique name per owner
+Vesting pool locks some amount of tokens for configured period of time. Each vesting pool has its owner (creator account).
+A single owner can have multiple vesting pools. Each vesting pool is identified by its unique name (among all the pools belonging to a single owner). 
+
+Vesting pools have the following parameters:
+* name - unique name (among owner's pools)
 * vesting type - vesting type used by vesting pool (see **[Vesting Type](#vesting-type)**)
 * lock start - time of pool creation
-* lock end - time of tokens unlocking
-* initially_locked - amount locked initially in the pool
-* withdrawn - amount withdrawn from the pool (currently tokens can be withdrawn only after lock end time)
-* sent - amount sent to vesting accounts from the vesting pool
+* lock end - unlocking time (end of lock period)
+* initially_locked - amount of tokens locked initially in the pool
+* withdrawn - amount available for withdrawn from the pool (current amount of tokens that can be withdrawn by the owner after lock end time)
+* sent - amount of tokens that were already sent to vesting accounts from the vesting pool
 
 ### Vesting Type
 
-Vesting type defines how continuous vesting account time values are calculated during creation: 
-* continuous vesting account start time - last block time + vesting type lockup period
-* continuous vesting account end time - last block time + vesting type lockup period + vesting type vesting period
-where:
-* vesting type lockup period - is period of time when all tokens are locked
-* vesting type vesting period - is period of time when tokens are are lieary vested
+Vesting type defines how the continuous vesting account time values are calculated at its creation:
+* continuous vesting account start time = last block time + vesting type lockup period
+* continuous vesting account end time = last block time + vesting type lockup period + vesting type vesting period
 
-The list of vesting types is predifined on genesis.
+where:
+* vesting type lockup period - period of time when all the tokens in the pool are locked
+* vesting type vesting period - period of time when tokens are linearly vested
+
+The vesting types are predefined on genesis.
 
 ## Parameters
 
@@ -56,36 +62,36 @@ The Chain4Energy vesting module contains the following configurations parameters
 ### Vesting pools state
 
 Chain4Energy vesting module state of account vesting pools stores vesting pools lists per owners.
-Vesting pools state contains followng data:
+Vesting pools state contains following data:
 
 #### AccountVestingPool type
 
-| Key                  | Type                        | Description                     |
-| -------------------- | --------------------------- | ------------------------------- |
-| address     | string | Owner address |
-| vesting_pools     | List of VestingPool type | Vesting pools of the owner |
+| Key                  | Type                      | Description                     |
+| -------------------- |---------------------------| ------------------------------- |
+| address     | string                    | Owner address |
+| vesting_pools     | List of VestingPool types | Vesting pools of the owner |
 
 #### VestingPool type
 
-| Key                  | Type                        | Description                     |
-| -------------------- | --------------------------- | ------------------------------- |
-| name     | string | unique name per owner |
-| vesting_type     | string | vesting type used by vesting pool (see **[Vesting Type](#vesting-type)**) |
-| lock_start     | time.Duration | time of pool creation |
-| lock_end     | time.Duration  | time of tokens unlockin |
-| initially_locked     | sdk.Int | amount locked initially in the pool |
-| withdrawn     | sdk.Int | amount withdrawn from the pool (currently tokens can be withdrawn only after lock end time) |
-| sent     | sdk.Int | amount sent to vesting accounts from the vesting pool |
+| Key                  | Type                        | Description                                                                      |
+| -------------------- | --------------------------- |----------------------------------------------------------------------------------|
+| name     | string | unique name per owner                                                            |
+| vesting_type     | string | vesting type used by vesting pool (see **[Vesting Type](#vesting-type)**)        |
+| lock_start     | time.Duration | time of pool creation                                                            |
+| lock_end     | time.Duration  | unlocking time (end of lock period)                                                    |
+| initially_locked     | sdk.Int | amount of tokens locked initially in the pool                                              |
+| withdrawn     | sdk.Int | amount available for withdrawn from the pool                                     |
+| sent     | sdk.Int | amount of tokens that were already sent to vesting accounts from the vesting pool |
 
 ### Vesting types data dictionary
 
 Vesting types data dictionary contains list of predefined vesting types:
 
-| Key                  | Type                        | Description                     |
-| -------------------- | --------------------------- | ------------------------------- |
-| name     | string | unique vestoing type name |
-| lockup_period     | time.Duration | is period of time when all tokens are locked |
-| vesting_period     | time.Duration | is period of time when tokens are are lieary vested |
+| Key                  | Type                        | Description                    |
+| -------------------- | --------------------------- | ------------------------------ |
+| name     | string | unique vesting type name |
+| lockup_period     | time.Duration | period of time when all tokens are locked |
+| vesting_period     | time.Duration | period of time when tokens are are lieary vested |
 
 ## Messages
 
@@ -109,23 +115,23 @@ type MsgCreateVestingPool struct {
 **Params:**
 
 | Param                  | Description                     |
-| -------------------- | ------------------------------- |
-| Creator     | Creator address |
-| Name     | Vesting pool name |
-| Amount     | Amount to lock in vesting pool |
-| Duration     | Lock duration |
-| VestingType     | Vesting Type of niew vesting pool |
+| -------------------- |---------------------------------|
+| Creator     | Creator address                 |
+| Name     | Vesting pool name               |
+| Amount     | Amount to lock in vesting pool  |
+| Duration     | Lock duration                   |
+| VestingType     | Vesting Type of the pool |
 
 **State modifications:**
 
 - Validate `Creator` has enough tokens
 - Generate new `VestingPool` record for creator
-- Save the record inside the keeper's Account Vesting Pools
+- Save the record inside the Account Vesting Pools keeper's
 - Transfer the tokens from the `Creator` account to cfevesting `ModuleAccount`.
 
 ### Send To Vesting Account
 
-Creates new continuous vesting account and sends token from vestoing pool.
+Creates a new continuous vesting account and sends tokens from vesting pool to it.
 
 `MsgSendToVestingAccount` can be submitted by any Vesting pool owner via a
 `MsgSendToVestingAccount` transaction.
@@ -142,24 +148,24 @@ type MsgSendToVestingAccount struct {
 
 **Params:**
 
-| Param                  | Description                     |
-| -------------------- | ------------------------------- |
-| FromAddress     | Vesting pool owenr address |
-| ToAddress     | New continuous vesting account address |
-| VestingPoolName     | Vesting pool name |
-| Amount     | Amount to lock in vesting pool |
-| RestartVesting     | Defines how time parameters of new vesting account should be calculatad:<br>- true:<br>&nbsp;&nbsp;&nbsp;continuous vesting account start time - last block time + vesting type lockup period<br>&nbsp;&nbsp;&nbsp;continuous vesting account end time - last block time + vesting type lockup period + vesting type vesting period<br>- false:<br>&nbsp;&nbsp;&nbsp;continuous vesting account start time - vesting pool lock end<br>&nbsp;&nbsp;&nbsp;continuous vesting account end time - vesting pool lock end |
+| Param                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| FromAddress     | Vesting pool owenr address                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ToAddress     | New continuous vesting account address                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| VestingPoolName     | Vesting pool name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Amount     | Amount to lock in the vesting pool                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| RestartVesting     | Defines how time parameters of new vesting account should be calculatad:<br>- true:<br>&nbsp;&nbsp;&nbsp;continuous vesting account start time = last block time + vesting type lockup period<br>&nbsp;&nbsp;&nbsp;continuous vesting account end time = last block time + vesting type lockup period + vesting type vesting period<br>- false:<br>&nbsp;&nbsp;&nbsp;continuous vesting account start time = vesting pool lock end<br>&nbsp;&nbsp;&nbsp;continuous vesting account end time = vesting pool lock end |
 
 **State modifications:**
 
-- Validate `FromAddress` vesting pool with name has enough tokens
-- Creates new continuous vesting account with address equal to ToAddress and time params according vesting type of VestingPool with name equal to VestingPoolName
-- Sends tokens from cfevesting `ModuleAccount` to ToAddress
-- Updates Vesting pool state
+- Validate `FromAddress` owner's vesting pool `VestingPoolName` has enough tokens
+- Creates new continuous vesting account with `ToAddress` address and the time params calculated according to the pool vesting type
+- Sends tokens from cfevesting `ModuleAccount` to `ToAddress`
+- Updates the vesting pool state
 
 ### Withdraw All Available
 
-Withdraws all available (unlocked) tokens from vesting pool back to owner account
+Withdraws all available (unlocked) tokens from the vesting pool back to the owner account
 
 `MsgWithdrawAllAvailable` can be submitted by any Vesting pool owner via a
 `MsgWithdrawAllAvailable` transaction.
@@ -170,14 +176,14 @@ type MsgWithdrawAllAvailable struct {
 }
 ```
 
-| Param                  | Description                     |
-| -------------------- | ------------------------------- |
-| Creator     | Vestign pool owner address |   // TODO change to owner
+| Param   | Description                |
+|---------|----------------------------|
+| Creator | Vesting pool owner address |   // TODO change to owner
 
 **State modifications:**
 
 - Sends unlocked tokens from cfevesting `ModuleAccount` to `Creator` account
-- Updates Vesting pool state
+- Updates the vesting pool state
 
 ### Create Vesting Account
 
@@ -289,7 +295,7 @@ Chain4Energy distributor module emits the following events:
 
 Queries the module params.
 
-See example reponse:
+See example response:
 
 ```json
 {
@@ -302,7 +308,7 @@ See example reponse:
 
 Queries the vesting summary data.
 
-See example reponse:
+See example response:
 
 ```json
 {
@@ -315,9 +321,9 @@ See example reponse:
 
 ### Vesting pool query
 
-Queries the vesting pools of owner address.
+Queries the vesting pools owned by account with given address.
 
-See example reponse:
+See example response:
 
 ```json
 {
@@ -354,9 +360,9 @@ See example reponse:
 
 ### Vesting types query
 
-Queries the vesting types lisy.
+Queries the vesting types.
 
-See example reponse:
+See example response:
 
 ```json
 {
@@ -381,13 +387,13 @@ See example reponse:
 
 ## Invariants
 
-### Non Negative Vesting Pool Amounts Invariant
+### Non-Negative Vesting Pool Amounts Invariant
 
-Invariant validates vesting pools state. Checks if all vesting pools amounts are non negative
+Invariant validates vesting pools state. Checks if all vesting pools amounts are non-negative
 
 ### Vesting Pool Consistent Data Invariant
 
-Invariant validates vesting pools state. Checks if all vesting pools amounts are consistent: wothdrawn + sent < initially locked
+Invariant validates vesting pools state. Checks if all vesting pools amounts are consistent: withdrawn + sent < initially locked
 
 ### Module Account Invariant
 
