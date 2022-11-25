@@ -472,7 +472,34 @@ func TestCompleteVoteMission(t *testing.T) {
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions})
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.INITIAL)}, []uint64{uint64(types.INITIAL)})
 
-	testHelper.C4eAirdropUtils.CompleteVoteMission(1, acountsAddresses[0], delagationAmount)
+	testHelper.C4eAirdropUtils.CompleteVoteMission(1, acountsAddresses[0])
+
+}
+
+func TestFullCampaign(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+
+	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[0], sdk.NewCoins(), 12312, 1555565657676576)
+
+	params := prepareTestCampaign(testHelper.Context)
+	initialClaims, missions := prepareMissions()
+	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{}, []uint64{})
+
+	testHelper.C4eAirdropUtils.ClaimInitial(1, acountsAddresses[0])
+
+	delagationAmount := sdk.NewInt(1000000)
+	testHelper.BankUtils.AddDefaultDenomCoinToAccount(delagationAmount, acountsAddresses[0])
+
+	testHelper.C4eAirdropUtils.CompleteDelegationMission(1, acountsAddresses[0], delagationAmount)
+
+	testHelper.C4eAirdropUtils.CompleteVoteMission(1, acountsAddresses[0])
+
+	testHelper.C4eAirdropUtils.ClaimMission(1, uint64(types.DELEGATION), acountsAddresses[0])
+
+	testHelper.C4eAirdropUtils.ClaimMission(1, uint64(types.VOTE), acountsAddresses[0])
 
 }
 
@@ -513,7 +540,7 @@ func prepareMissions() ([]types.InitialClaim, []types.Mission) {
 	missions := []types.Mission{
 		{CampaignId: 1, MissionId: uint64(types.INITIAL), Description: "initial-mission", Weight: sdk.MustNewDecFromStr("0.1")},
 		{CampaignId: 1, MissionId: uint64(types.DELEGATION), Description: "test-delegation-mission", Weight: sdk.MustNewDecFromStr("0.2")},
-		{CampaignId: 1, MissionId: uint64(types.VOTE), Description: "test-vote-mission", Weight: sdk.MustNewDecFromStr("0.2")},
+		{CampaignId: 1, MissionId: uint64(types.VOTE), Description: "test-vote-mission", Weight: sdk.MustNewDecFromStr("0.3")},
 	}
 	return initialClaims, missions
 }

@@ -1,7 +1,9 @@
-package v2
+package v101
 
 import (
 	"github.com/chain4energy/c4e-chain/app/upgrades"
+	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
+	"github.com/chain4energy/c4e-chain/app/upgrades/v101/airdrop"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -11,9 +13,12 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	bpm upgrades.BaseAppParamManager,
-	//keepers *keepers.AppKeepers,
+	appKeepers cfeupgradetypes.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		if err := airdrop.CreateAirdrops(ctx, appKeepers.GetAirdropKeeper(), appKeepers.GetAccountKeeper()); err != nil {
+			return nil, err
+		}
 		return mm.RunMigrations(ctx, configurator, vm)
 	}
 }

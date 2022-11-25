@@ -159,4 +159,49 @@ func TestClaimInitialCampaignClaimError(t *testing.T) {
 
 }
 
+func TestClaimInitialTwoCampaigns(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+
+	end := testHelper.Context.BlockTime().Add(1000)
+	lockupPeriod := time.Hour
+	vestingPeriod := 3 * time.Hour
+	params := types.Params{Denom: commontestutils.DefaultTestDenom, Campaigns: []*types.Campaign{
+		{
+			CampaignId:    1,
+			Enabled:       true,
+			StartTime:     testHelper.Context.BlockTime(),
+			EndTime:       &end,
+			LockupPeriod:  lockupPeriod,
+			VestingPeriod: vestingPeriod,
+			Description:   "test-campaign",
+		},
+		{
+			CampaignId:    2,
+			Enabled:       true,
+			StartTime:     testHelper.Context.BlockTime(),
+			EndTime:       &end,
+			LockupPeriod:  lockupPeriod,
+			VestingPeriod: vestingPeriod,
+			Description:   "test-campaign-1",
+		},
+	}}
+	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}, {CampaignId: 2, MissionId: 4}}
+
+	missions := []types.Mission{
+		{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")},
+		{CampaignId: 2, MissionId: 4, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.3")},
+	}
+	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions}
+	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
+
+	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
+	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 1, records)
+	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 2, records)
+
+	testHelper.C4eAirdropUtils.ClaimInitial(1, acountsAddresses[0])
+	testHelper.C4eAirdropUtils.ClaimInitial(2, acountsAddresses[0])
+}
+
 // TODO test with 2 initial claims for different camapaigns for same address

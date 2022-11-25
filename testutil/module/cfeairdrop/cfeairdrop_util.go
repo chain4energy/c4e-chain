@@ -188,8 +188,16 @@ func (h *C4eAirdropUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sd
 }
 
 func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress) {
-
+	acc := h.helperAccountKeeper.GetAccount(ctx, claimer)
+	claimerAccountBefore, ok := acc.(*cfeairdroptypes.AirdropVestingAccount)
+	accExisted := acc != nil
+	if accExisted {
+		require.True(h.t, ok)
+	} else {
+		claimerAccountBefore = nil
+	}
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
+	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
 
 	require.NoError(h.t, h.helpeCfeairdropkeeper.ClaimInitial(ctx, campaignId, claimer.String()))
 	initialClaim, foundIc := h.helpeCfeairdropkeeper.GetInitialClaim(ctx, campaignId)
@@ -200,18 +208,25 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 
 	expectedAmount := mission.Weight.MulInt(claimRecord.GetCampaignRecord(campaignId).Claimable).TruncateInt()
 
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, expectedAmount)
+	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore.Add(expectedAmount))
 
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore.Sub(expectedAmount))
 
-	campaign := h.helpeCfeairdropkeeper.Campaign(ctx, campaignId)
+	if claimerAccountBefore == nil {
+		baseAccount := h.helperAccountKeeper.NewAccountWithAddress(ctx, claimer)
+		claimerAccountBefore = cfeairdroptypes.NewAirdropVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), 100000000, 100000000, nil)
+	}
 
-	expectedOriginalVesting := sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, expectedAmount))
-	expectedStartTime := ctx.BlockTime().Add(campaign.LockupPeriod)
-	expectedEndTime := expectedStartTime.Add(campaign.VestingPeriod)
-	expectedPeriod := cfeairdroptypes.ContinuousVestingPeriod{StartTime: expectedStartTime.Unix(), EndTime: expectedEndTime.Unix(), Amount: expectedOriginalVesting}
-	h.VerifyAirdropAccount(ctx, claimer, expectedOriginalVesting,
-		expectedStartTime.Unix(), expectedEndTime.Unix(), []cfeairdroptypes.ContinuousVestingPeriod{expectedPeriod})
+	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, expectedAmount)
+
+	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimer).(*cfeairdroptypes.AirdropVestingAccount)
+	if !accExisted {
+		claimerAccountBefore.AccountNumber = claimerAccount.AccountNumber
+	}
+	require.True(h.t, ok)
+	require.NoError(h.t, claimerAccount.Validate())
+
+	require.EqualValues(h.t, claimerAccountBefore, claimerAccount)
 
 	claimRecord, found := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
 	require.True(h.t, found)
@@ -271,17 +286,19 @@ func (h *C4eAirdropUtils) CompleteDelegationMission(ctx sdk.Context, campaignId 
 		h.StakingUtils.MessageDelegate(ctx, 1, 0, valAddr, claimer, deleagtionAmount)
 		return nil
 	}
-	beforeCheck := func(acc authtypes.AccountI, claimerAmountBefore sdk.Int) (authtypes.AccountI, sdk.Int) {
-		ve, ok := acc.(*cfeairdroptypes.AirdropVestingAccount)
-		if ok {
-			ve.DelegatedFree = sdk.NewCoins(sdk.NewCoin(h.StakingUtils.StakingKeeper.BondDenom(ctx), deleagtionAmount))
+	beforeCheck := func(accBefore authtypes.AccountI, accAfter authtypes.AccountI, claimerAmountBefore sdk.Int) (authtypes.AccountI, sdk.Int) {
+		veBefore, okBefore := accBefore.(*cfeairdroptypes.AirdropVestingAccount)
+		veAfter, okAfter := accAfter.(*cfeairdroptypes.AirdropVestingAccount)
+		if okBefore && okAfter {
+			veBefore.DelegatedFree = veAfter.DelegatedFree
+			veBefore.DelegatedVesting = veAfter.DelegatedVesting
 		}
-		return ve, claimerAmountBefore.Sub(deleagtionAmount)
+		return veBefore, claimerAmountBefore.Sub(deleagtionAmount)
 	}
 	h.completeAnyMission(ctx, campaignId, uint64(cfeairdroptypes.DELEGATION), claimer, action, beforeCheck)
 }
 
-func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
+func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress) {
 	action := func() error {
 		depParams := h.GovUtils.GovKeeper.GetDepositParams(ctx)
 		depositAmount := depParams.MinDeposit
@@ -294,7 +311,6 @@ func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64
 		}
 		h.GovUtils.GovKeeper.AddDeposit(ctx, proposal.ProposalId, claimer, depositAmount)
 
-		
 		return h.GovUtils.GovKeeper.AddVote(ctx, proposal.ProposalId,
 			claimer, []govtypes.WeightedVoteOption{{Option: govtypes.OptionAbstain, Weight: sdk.NewDec(1)}})
 	}
@@ -309,7 +325,7 @@ func (h *C4eAirdropUtils) CompleteMission(ctx sdk.Context, campaignId uint64, mi
 }
 
 func (h *C4eAirdropUtils) completeAnyMission(ctx sdk.Context, campaignId uint64, missionId uint64,
-	claimer sdk.AccAddress, action func() error, beforeCheck func(authtypes.AccountI, sdk.Int) (authtypes.AccountI, sdk.Int)) {
+	claimer sdk.AccAddress, action func() error, beforeCheck func(before authtypes.AccountI, after authtypes.AccountI, ampountBefore sdk.Int) (authtypes.AccountI, sdk.Int)) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
@@ -317,10 +333,11 @@ func (h *C4eAirdropUtils) completeAnyMission(ctx sdk.Context, campaignId uint64,
 	require.True(h.t, foundCr)
 
 	require.NoError(h.t, action())
+	claimerAccountAfter := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	if beforeCheck != nil {
-		claimerAccountBefore, claimerBefore = beforeCheck(claimerAccountBefore, claimerBefore)
+		claimerAccountBefore, claimerBefore = beforeCheck(claimerAccountBefore, claimerAccountAfter, claimerBefore)
 	}
-	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
+	require.EqualValues(h.t, claimerAccountBefore, claimerAccountAfter)
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore)
 
@@ -373,6 +390,17 @@ func (h *C4eAirdropUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimerDstAddress, claimerBefore.Add(expectedAmount))
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore.Sub(expectedAmount))
 
+	h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, expectedAmount)
+
+	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimerDstAddress).(*cfeairdroptypes.AirdropVestingAccount)
+	require.True(h.t, ok)
+	require.NoError(h.t, claimerAccount.Validate())
+	require.EqualValues(h.t, claimerAccountBefore, claimerAccount)
+
+}
+
+func (h *C4eAirdropUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId uint64,
+	claimerAccountBefore *cfeairdroptypes.AirdropVestingAccount, expectedAmount sdk.Int) *cfeairdroptypes.AirdropVestingAccount {
 	campaign := h.helpeCfeairdropkeeper.Campaign(ctx, campaignId)
 	expectedStartTime := ctx.BlockTime().Add(campaign.LockupPeriod)
 	expectedEndTime := expectedStartTime.Add(campaign.VestingPeriod)
@@ -391,12 +419,7 @@ func (h *C4eAirdropUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint
 	}
 	claimerAccountBefore.OriginalVesting = claimerAccountBefore.OriginalVesting.Add(expectedOriginalVesting...)
 	claimerAccountBefore.VestingPeriods = append(claimerAccountBefore.VestingPeriods, cfeairdroptypes.ContinuousVestingPeriod{StartTime: expectedStartTime.Unix(), EndTime: expectedEndTime.Unix(), Amount: expectedOriginalVesting})
-
-	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimerDstAddress).(*cfeairdroptypes.AirdropVestingAccount)
-	require.True(h.t, ok)
-	require.NoError(h.t, claimerAccount.Validate())
-	require.EqualValues(h.t, claimerAccountBefore, claimerAccount)
-
+	return claimerAccountBefore
 }
 
 func (h *C4eAirdropUtils) ClaimMissionError(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {

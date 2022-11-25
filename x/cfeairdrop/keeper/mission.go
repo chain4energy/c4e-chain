@@ -166,6 +166,7 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig 
 	}
 
 	claimableAmount := claimRecord.ClaimableFromMission(mission)
+	// TODO initial mission claim should have not waight but get whats left from ther missions
 	
 	claimable := sdk.NewCoins(sdk.NewCoin(k.Denom(ctx), claimableAmount))
 

@@ -1,4 +1,4 @@
-package v2
+package v101
 
 import (
 	"github.com/chain4energy/c4e-chain/app/upgrades"

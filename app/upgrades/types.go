@@ -6,6 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+	cfeairdropkeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 )
 
 // BaseAppParamManager defines an interrace that BaseApp is expected to fullfil
@@ -13,6 +15,11 @@ import (
 type BaseAppParamManager interface {
 	GetConsensusParams(ctx sdk.Context) *abci.ConsensusParams
 	StoreConsensusParams(ctx sdk.Context, cp *abci.ConsensusParams)
+}
+
+type AppKeepers interface {
+	GetAirdropKeeper() *cfeairdropkeeper.Keeper
+	GetAccountKeeper() *authkeeper.AccountKeeper
 }
 
 // Upgrade defines a struct containing necessary fields that a SoftwareUpgradeProposal
@@ -24,7 +31,7 @@ type Upgrade struct {
 	UpgradeName string
 
 	// CreateUpgradeHandler defines the function that creates an upgrade handler
-	CreateUpgradeHandler func(*module.Manager, module.Configurator, BaseAppParamManager) upgradetypes.UpgradeHandler
+	CreateUpgradeHandler func(*module.Manager, module.Configurator, BaseAppParamManager, AppKeepers) upgradetypes.UpgradeHandler
 
 	// Store upgrades, should be used for any new modules introduced, new modules deleted, or store names renamed.
 	StoreUpgrades store.StoreUpgrades

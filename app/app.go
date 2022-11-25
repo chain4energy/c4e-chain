@@ -861,6 +861,7 @@ func (app *App) SetupUpgradeHandlers() {
 				app.mm,
 				app.configurator,
 				app.BaseApp,
+				app,
 			),
 		)
 	}
