@@ -2,8 +2,8 @@
 
 ## Abstract
 
-Chain4Energy vesting module provides creation and management of the vesting pools functionality.
-One can create a vesting pool in order to lock the configured amount of tokens for a period of time. During this locking period the locked tokens can only be used for vesting accounts creation. 
+Chain4Energy vesting module allows to create and manage vesting pools.
+One can create a vesting pool in order to lock the configured amount of tokens for a period of time. During this locking period the locked tokens can only be used for continuous vesting accounts creation. 
 The vesting account parameters are calculated from the vesting pool configuration.
 
 ## Contents
@@ -26,7 +26,7 @@ The `cfevesting` module keeps track of all the vesting pools and vesting account
 ### Vesting Pool
 
 Vesting pool locks some amount of tokens for configured period of time. Each vesting pool has its owner (creator account).
-A single owner can have multiple vesting pools. Each vesting pool is identified by its unique name (among all the pools belonging to a single owner). 
+A single owner can have multiple vesting pools. Each vesting pool is identified by its unique name (unique among all the pools belonging to a single owner). 
 
 Vesting pools have the following parameters:
 * name - unique name (among owner's pools)
@@ -34,7 +34,7 @@ Vesting pools have the following parameters:
 * lock start - time of pool creation
 * lock end - unlocking time (end of lock period)
 * initially_locked - amount of tokens locked initially in the pool
-* withdrawn - amount available for withdrawn from the pool (current amount of tokens that can be withdrawn by the owner after lock end time)
+* withdrawn - amount of tokens that were already withdrawn from the pool (currently all available (available = initially_locked - sent) tokens can be withdrawn by the owner only after lock end time)
 * sent - amount of tokens that were already sent to vesting accounts from the vesting pool
 
 ### Vesting Type
@@ -80,7 +80,7 @@ Vesting pools state contains following data:
 | lock_start     | time.Duration | time of pool creation                                                            |
 | lock_end     | time.Duration  | unlocking time (end of lock period)                                                    |
 | initially_locked     | sdk.Int | amount of tokens locked initially in the pool                                              |
-| withdrawn     | sdk.Int | amount available for withdrawn from the pool                                     |
+| withdrawn     | sdk.Int | amount of tokens that were already withdrawn from the pool                                     |
 | sent     | sdk.Int | amount of tokens that were already sent to vesting accounts from the vesting pool |
 
 ### Vesting types data dictionary
@@ -116,7 +116,7 @@ type MsgCreateVestingPool struct {
 
 | Param                  | Description                     |
 | -------------------- |---------------------------------|
-| Creator     | Creator address                 |
+| Creator     | Creator/Owner address                 |
 | Name     | Vesting pool name               |
 | Amount     | Amount to lock in vesting pool  |
 | Duration     | Lock duration                   |
@@ -125,8 +125,8 @@ type MsgCreateVestingPool struct {
 **State modifications:**
 
 - Validate `Creator` has enough tokens
-- Generate new `VestingPool` record for creator
-- Save the record inside the Account Vesting Pools keeper's
+- Generate new `VestingPool` record for creator/owner
+- Save the record in the owner account Vesting Pools list
 - Transfer the tokens from the `Creator` account to cfevesting `ModuleAccount`.
 
 ### Send To Vesting Account

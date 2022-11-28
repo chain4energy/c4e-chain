@@ -15,7 +15,7 @@ Chain4Energy minter module provides functionality of controlled token emissions.
 
 ## Concepts
 
-The purpose of `cfedistributor` module is to provide token emission mechanism.
+The purpose of `cfeminter` module is to provide token emission mechanism.
 
 ### Token emission mechanism
 
