@@ -1,20 +1,18 @@
 package e2e
 
 import (
-	"github.com/stretchr/testify/suite"
+	"github.com/chain4energy/c4e-chain/tests/e2e/configurer"
 	"testing"
 )
 
-type RunChainSuite struct {
-	BaseSetupSuite
-}
+func TestRunChainWithOptions(t *testing.T) {
+	var upgradeSettings configurer.UpgradeSettings
 
-func (s *RunChainSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(false, false)
-}
+	//upgradeSettings.Version = "v1.0.1"
+	//upgradeSettings.IsEnabled = true
 
-func TestRunChainSuite(t *testing.T) {
-	suite.Run(t, new(RunChainSuite))
+	_, err := configurer.StartDockerContainers(t, false, true, upgradeSettings)
+	if err != nil {
+		return
+	}
 }
-
-func (s *RunChainSuite) TestRunChainSuiteEmpty() {}

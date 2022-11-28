@@ -9,6 +9,7 @@ import (
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramsutils "github.com/cosmos/cosmos-sdk/x/params/client/utils"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -36,13 +37,13 @@ func (s *ParamsSetupSuite) TestCfedistributorParamsProposal() {
 			Name: "New subdistributor",
 			Sources: []*cfedistributortypes.Account{
 				{
-					Id:   cfedistributortypes.GreenEnergyBoosterCollector,
+					Id:   cfedistributortypes.DistributorMainAccount,
 					Type: cfedistributortypes.MAIN,
 				},
 			},
 			Destinations: cfedistributortypes.Destinations{
 				PrimaryShare: cfedistributortypes.Account{
-					Id:   cfedistributortypes.ValidatorsRewardsCollector,
+					Id:   cfedistributortypes.GreenEnergyBoosterCollector,
 					Type: cfedistributortypes.MODULE_ACCOUNT,
 				},
 				BurnShare: sdk.ZeroDec(),
@@ -83,6 +84,13 @@ func (s *ParamsSetupSuite) TestCfedistributorParamsProposal() {
 		time.Second*5,
 		"C4e node failed to validate params",
 	)
+	accAddress := authtypes.NewModuleAddress(cfedistributortypes.GreenEnergyBoosterCollector).String()
+	totalSupplyBefore, err := node.QueryBalances(accAddress)
+	s.NoError(err)
+	time.Sleep(time.Second * 40)
+	totalSupplyAfter, err := node.QueryBalances(accAddress)
+	s.True(totalSupplyAfter.AmountOf(appparams.CoinDenom).GT(totalSupplyBefore.AmountOf(appparams.CoinDenom)))
+	s.NoError(err)
 }
 
 func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {

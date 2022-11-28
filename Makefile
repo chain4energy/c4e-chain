@@ -146,7 +146,7 @@ E2E_SCRIPT_NAME=chain
 test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change
 
 run-e2e-chain: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainSuite
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions
 
 test-e2e-ibc: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestIbcSuite
