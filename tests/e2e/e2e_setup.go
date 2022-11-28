@@ -57,13 +57,7 @@ func (s *BaseSetupSuite) SetupSuite(startUpgrade, startIBC bool) {
 		}
 	}
 
-	s.configurer, err = configurer.New(s.T(), startIBC, isDebugLogEnabled, upgradeSettings)
-	s.Require().NoError(err)
-
-	err = s.configurer.ConfigureChains()
-	s.Require().NoError(err)
-
-	err = s.configurer.RunSetup()
+	s.configurer, err = configurer.StartDockerContainers(s.T(), startIBC, isDebugLogEnabled, upgradeSettings)
 	s.Require().NoError(err)
 }
 

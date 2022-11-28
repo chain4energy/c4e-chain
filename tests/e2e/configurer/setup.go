@@ -2,6 +2,7 @@ package configurer
 
 import (
 	"fmt"
+	"testing"
 )
 
 type setupFn func(configurer Configurer) error
@@ -44,4 +45,20 @@ func withUpgrade(setupHandler setupFn) setupFn {
 
 		return nil
 	}
+}
+
+func StartDockerContainers(t *testing.T, startIBC, isDebugLogEnabled bool, upgradeSettings UpgradeSettings) (Configurer, error) {
+	config, err := New(t, startIBC, isDebugLogEnabled, upgradeSettings)
+	if err != nil {
+		return nil, err
+	}
+	err = config.ConfigureChains()
+	if err != nil {
+		return nil, err
+	}
+	err = config.RunSetup()
+	if err != nil {
+		return nil, err
+	}
+	return config, nil
 }
