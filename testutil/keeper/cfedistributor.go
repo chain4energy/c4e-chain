@@ -3,6 +3,7 @@ package keeper
 import (
 	"testing"
 
+	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,11 +16,37 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
-	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
-
 )
 
-func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+type ExtendedC4eDistributorKeeperUtils struct {
+	cfedistributortestutils.C4eDistributorKeeperUtils
+	Cdc      *codec.ProtoCodec
+	StoreKey *storetypes.KVStoreKey
+	typesparams.Subspace
+}
+
+func NewExtendedC4eDistributorKeeperUtils(
+	t *testing.T,
+	helperCfedistributorKeeper *keeper.Keeper,
+	cdc *codec.ProtoCodec,
+	storeKey *storetypes.KVStoreKey,
+	paramsStore typesparams.Subspace,
+) ExtendedC4eDistributorKeeperUtils {
+	return ExtendedC4eDistributorKeeperUtils{
+		C4eDistributorKeeperUtils: cfedistributortestutils.NewC4eDistributorKeeperUtils(t, helperCfedistributorKeeper),
+		Cdc:                       cdc,
+		StoreKey:                  storeKey,
+		Subspace:                  paramsStore,
+	}
+}
+
+type AdditionalDistributorKeeperData struct {
+	*codec.ProtoCodec
+	*storetypes.KVStoreKey
+	typesparams.Subspace
+}
+
+func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, AdditionalDistributorKeeperData) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -32,7 +59,7 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	registry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(registry)
 
-	paramsSubspace := typesparams.NewSubspace(cdc,
+	paramsStore := typesparams.NewSubspace(cdc,
 		types.Amino,
 		storeKey,
 		memStoreKey,
@@ -42,7 +69,7 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		cdc,
 		storeKey,
 		memStoreKey,
-		paramsSubspace,
+		paramsStore,
 		nil,
 		nil,
 	)
@@ -52,12 +79,27 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())
 
-	return k, ctx
+	return k, ctx, AdditionalDistributorKeeperData{
+		cdc,
+		storeKey,
+		paramsStore,
+	}
 }
 
 func CfedistributorKeeperTestUtil(t *testing.T) (*cfedistributortestutils.C4eDistributorKeeperUtils, *keeper.Keeper, sdk.Context) {
-	k, ctx := CfedistributorKeeper(t)
+	k, ctx, _ := CfedistributorKeeper(t)
 	utils := cfedistributortestutils.NewC4eDistributorKeeperUtils(t, k)
 	return &utils, k, ctx
 }
 
+func CfedistributorKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eDistributorKeeperUtils, sdk.Context) {
+	k, ctx, subDistributorKeeperData := CfedistributorKeeper(t)
+	utils := NewExtendedC4eDistributorKeeperUtils(
+		t,
+		k,
+		subDistributorKeeperData.ProtoCodec,
+		subDistributorKeeperData.KVStoreKey,
+		subDistributorKeeperData.Subspace,
+	)
+	return &utils, ctx
+}

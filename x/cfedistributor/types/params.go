@@ -14,14 +14,12 @@ var (
 	DefaultSubDistributors = []SubDistributor{
 		{
 			Name: "default_distributor",
-			Destination: Destination{
-				Account: Account{
+			Destinations: Destinations{
+				PrimaryShare: Account{
 					Id:   ValidatorsRewardsCollector,
 					Type: MODULE_ACCOUNT,
 				},
-				BurnShare: &BurnShare{
-					Percent: sdk.ZeroDec(),
-				},
+				BurnShare: sdk.ZeroDec(),
 			},
 			Sources: []*Account{
 				{

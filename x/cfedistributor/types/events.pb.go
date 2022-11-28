@@ -25,24 +25,26 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type DistributionResult struct {
-	Source      []*Account                                  `protobuf:"bytes,1,rep,name=source,proto3" json:"source,omitempty"`
-	Destination *Account                                    `protobuf:"bytes,2,opt,name=destination,proto3" json:"destination,omitempty"`
-	CoinSend    github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,3,rep,name=coinSend,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"coinSend" yaml:"coin_send"`
+type Distribution struct {
+	Subdistributor string                                      `protobuf:"bytes,1,opt,name=subdistributor,proto3" json:"subdistributor,omitempty"`
+	ShareName      string                                      `protobuf:"bytes,2,opt,name=share_name,json=shareName,proto3" json:"share_name,omitempty"`
+	Sources        []*Account                                  `protobuf:"bytes,3,rep,name=sources,proto3" json:"sources,omitempty"`
+	Destination    *Account                                    `protobuf:"bytes,4,opt,name=destination,proto3" json:"destination,omitempty"`
+	Amount         github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,5,rep,name=amount,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"amount" yaml:"amount"`
 }
 
-func (m *DistributionResult) Reset()         { *m = DistributionResult{} }
-func (m *DistributionResult) String() string { return proto.CompactTextString(m) }
-func (*DistributionResult) ProtoMessage()    {}
-func (*DistributionResult) Descriptor() ([]byte, []int) {
+func (m *Distribution) Reset()         { *m = Distribution{} }
+func (m *Distribution) String() string { return proto.CompactTextString(m) }
+func (*Distribution) ProtoMessage()    {}
+func (*Distribution) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3ccf2e9cad100e99, []int{0}
 }
-func (m *DistributionResult) XXX_Unmarshal(b []byte) error {
+func (m *Distribution) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *DistributionResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Distribution) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_DistributionResult.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Distribution.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -52,55 +54,71 @@ func (m *DistributionResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *DistributionResult) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DistributionResult.Merge(m, src)
+func (m *Distribution) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Distribution.Merge(m, src)
 }
-func (m *DistributionResult) XXX_Size() int {
+func (m *Distribution) XXX_Size() int {
 	return m.Size()
 }
-func (m *DistributionResult) XXX_DiscardUnknown() {
-	xxx_messageInfo_DistributionResult.DiscardUnknown(m)
+func (m *Distribution) XXX_DiscardUnknown() {
+	xxx_messageInfo_Distribution.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DistributionResult proto.InternalMessageInfo
+var xxx_messageInfo_Distribution proto.InternalMessageInfo
 
-func (m *DistributionResult) GetSource() []*Account {
+func (m *Distribution) GetSubdistributor() string {
 	if m != nil {
-		return m.Source
+		return m.Subdistributor
+	}
+	return ""
+}
+
+func (m *Distribution) GetShareName() string {
+	if m != nil {
+		return m.ShareName
+	}
+	return ""
+}
+
+func (m *Distribution) GetSources() []*Account {
+	if m != nil {
+		return m.Sources
 	}
 	return nil
 }
 
-func (m *DistributionResult) GetDestination() *Account {
+func (m *Distribution) GetDestination() *Account {
 	if m != nil {
 		return m.Destination
 	}
 	return nil
 }
 
-func (m *DistributionResult) GetCoinSend() github_com_cosmos_cosmos_sdk_types.DecCoins {
+func (m *Distribution) GetAmount() github_com_cosmos_cosmos_sdk_types.DecCoins {
 	if m != nil {
-		return m.CoinSend
+		return m.Amount
 	}
 	return nil
 }
 
-type DistributionsResult struct {
-	DistributionResult []*DistributionResult `protobuf:"bytes,1,rep,name=distributionResult,proto3" json:"distributionResult,omitempty"`
+type DistributionBurn struct {
+	Subdistributor string                                      `protobuf:"bytes,1,opt,name=subdistributor,proto3" json:"subdistributor,omitempty"`
+	Sources        []*Account                                  `protobuf:"bytes,2,rep,name=sources,proto3" json:"sources,omitempty"`
+	Amount         github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,3,rep,name=amount,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"amount" yaml:"amount"`
 }
 
-func (m *DistributionsResult) Reset()         { *m = DistributionsResult{} }
-func (m *DistributionsResult) String() string { return proto.CompactTextString(m) }
-func (*DistributionsResult) ProtoMessage()    {}
-func (*DistributionsResult) Descriptor() ([]byte, []int) {
+func (m *DistributionBurn) Reset()         { *m = DistributionBurn{} }
+func (m *DistributionBurn) String() string { return proto.CompactTextString(m) }
+func (*DistributionBurn) ProtoMessage()    {}
+func (*DistributionBurn) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3ccf2e9cad100e99, []int{1}
 }
-func (m *DistributionsResult) XXX_Unmarshal(b []byte) error {
+func (m *DistributionBurn) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *DistributionsResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *DistributionBurn) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_DistributionsResult.Marshal(b, m, deterministic)
+		return xxx_messageInfo_DistributionBurn.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -110,61 +128,76 @@ func (m *DistributionsResult) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *DistributionsResult) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DistributionsResult.Merge(m, src)
+func (m *DistributionBurn) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DistributionBurn.Merge(m, src)
 }
-func (m *DistributionsResult) XXX_Size() int {
+func (m *DistributionBurn) XXX_Size() int {
 	return m.Size()
 }
-func (m *DistributionsResult) XXX_DiscardUnknown() {
-	xxx_messageInfo_DistributionsResult.DiscardUnknown(m)
+func (m *DistributionBurn) XXX_DiscardUnknown() {
+	xxx_messageInfo_DistributionBurn.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DistributionsResult proto.InternalMessageInfo
+var xxx_messageInfo_DistributionBurn proto.InternalMessageInfo
 
-func (m *DistributionsResult) GetDistributionResult() []*DistributionResult {
+func (m *DistributionBurn) GetSubdistributor() string {
 	if m != nil {
-		return m.DistributionResult
+		return m.Subdistributor
+	}
+	return ""
+}
+
+func (m *DistributionBurn) GetSources() []*Account {
+	if m != nil {
+		return m.Sources
+	}
+	return nil
+}
+
+func (m *DistributionBurn) GetAmount() github_com_cosmos_cosmos_sdk_types.DecCoins {
+	if m != nil {
+		return m.Amount
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterType((*DistributionResult)(nil), "chain4energy.c4echain.cfedistributor.DistributionResult")
-	proto.RegisterType((*DistributionsResult)(nil), "chain4energy.c4echain.cfedistributor.DistributionsResult")
+	proto.RegisterType((*Distribution)(nil), "chain4energy.c4echain.cfedistributor.Distribution")
+	proto.RegisterType((*DistributionBurn)(nil), "chain4energy.c4echain.cfedistributor.DistributionBurn")
 }
 
 func init() { proto.RegisterFile("cfedistributor/events.proto", fileDescriptor_3ccf2e9cad100e99) }
 
 var fileDescriptor_3ccf2e9cad100e99 = []byte{
-	// 371 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0xcf, 0x4e, 0xf2, 0x40,
-	0x14, 0xc5, 0x5b, 0x48, 0xc8, 0x97, 0xb2, 0xf9, 0x52, 0x5d, 0x10, 0x34, 0x85, 0x34, 0x2c, 0x4c,
-	0x0c, 0x33, 0x41, 0x59, 0x10, 0x77, 0x22, 0xc6, 0xa5, 0x49, 0xdd, 0xb9, 0x21, 0xed, 0xf4, 0x5a,
-	0x26, 0xc2, 0x0c, 0xe9, 0x9d, 0x12, 0x59, 0x19, 0xdf, 0xc0, 0xe7, 0x70, 0xe5, 0x63, 0xb0, 0x64,
-	0xe9, 0x0a, 0x0d, 0xbc, 0x81, 0x4f, 0x60, 0xfa, 0x07, 0x53, 0xc1, 0x05, 0xae, 0xda, 0xb9, 0xed,
-	0x39, 0xf7, 0x9e, 0xdf, 0x5c, 0xe3, 0x80, 0xdd, 0x81, 0xcf, 0x51, 0x85, 0xdc, 0x8b, 0x94, 0x0c,
-	0x29, 0x4c, 0x40, 0x28, 0x24, 0xe3, 0x50, 0x2a, 0x69, 0x36, 0xd8, 0xc0, 0xe5, 0xa2, 0x0d, 0x02,
-	0xc2, 0x60, 0x4a, 0x58, 0x1b, 0x92, 0x33, 0xf9, 0x29, 0xa9, 0xee, 0x07, 0x32, 0x90, 0x89, 0x80,
-	0xc6, 0x6f, 0xa9, 0xb6, 0x6a, 0x31, 0x89, 0x23, 0x89, 0xd4, 0x73, 0x11, 0xe8, 0xa4, 0xe5, 0x81,
-	0x72, 0x5b, 0x94, 0x49, 0x2e, 0xb2, 0xef, 0x8d, 0x8d, 0xc6, 0x18, 0x79, 0xfd, 0xdc, 0x39, 0xfd,
-	0xcb, 0x7e, 0x2d, 0x18, 0x66, 0x6f, 0x5d, 0xe5, 0x52, 0x38, 0x80, 0xd1, 0x50, 0x99, 0x97, 0x46,
-	0x09, 0x65, 0x14, 0x32, 0xa8, 0xe8, 0xf5, 0xe2, 0x51, 0xf9, 0xa4, 0x49, 0x76, 0x99, 0x94, 0x9c,
-	0x33, 0x26, 0x23, 0xa1, 0x9c, 0x4c, 0x6c, 0x5e, 0x1b, 0x65, 0x1f, 0x50, 0x71, 0xe1, 0xc6, 0xde,
-	0x95, 0x42, 0x5d, 0xff, 0xbb, 0x57, 0xde, 0xc1, 0x7c, 0xd2, 0x8d, 0x7f, 0x71, 0xc6, 0x1b, 0x10,
-	0x7e, 0xa5, 0x98, 0x8c, 0x76, 0x48, 0x52, 0x10, 0x24, 0x06, 0x41, 0x32, 0x10, 0xa4, 0x07, 0xec,
-	0x42, 0x72, 0xd1, 0xbd, 0x9a, 0x2d, 0x6a, 0xda, 0xe7, 0xa2, 0xf6, 0x7f, 0xea, 0x8e, 0x86, 0x67,
-	0x76, 0xac, 0xed, 0x23, 0x08, 0xdf, 0x7e, 0x79, 0xaf, 0x1d, 0x07, 0x5c, 0x0d, 0x22, 0x8f, 0x30,
-	0x39, 0xa2, 0x19, 0xcc, 0xf4, 0xd1, 0x44, 0xff, 0x9e, 0xaa, 0xe9, 0x18, 0x70, 0xed, 0x83, 0xce,
-	0x77, 0x5b, 0xfb, 0xd1, 0xd8, 0xcb, 0x13, 0xc3, 0x0c, 0xd9, 0xc0, 0x30, 0xfd, 0x2d, 0x90, 0x19,
-	0xbe, 0xce, 0x6e, 0x91, 0xb7, 0x2f, 0xc2, 0xf9, 0xc5, 0xb3, 0xeb, 0xcc, 0x96, 0x96, 0x3e, 0x5f,
-	0x5a, 0xfa, 0xc7, 0xd2, 0xd2, 0x9f, 0x57, 0x96, 0x36, 0x5f, 0x59, 0xda, 0xdb, 0xca, 0xd2, 0x6e,
-	0x3b, 0xf9, 0x44, 0xb9, 0x8e, 0x94, 0xb5, 0xa1, 0x99, 0x14, 0xe8, 0x03, 0xdd, 0xd8, 0x8b, 0x24,
-	0xa7, 0x57, 0x4a, 0xd6, 0xe1, 0xf4, 0x2b, 0x00, 0x00, 0xff, 0xff, 0x01, 0x63, 0x5a, 0x89, 0xaf,
-	0x02, 0x00, 0x00,
+	// 400 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x92, 0x31, 0x6f, 0xda, 0x40,
+	0x14, 0xc7, 0x6d, 0x68, 0xa9, 0x38, 0xda, 0xaa, 0xb2, 0x3a, 0x58, 0xb4, 0x35, 0xc8, 0x42, 0x15,
+	0x52, 0xc5, 0x9d, 0x68, 0x19, 0xaa, 0x6e, 0xa5, 0x48, 0xdd, 0x5a, 0xc9, 0x63, 0x17, 0x74, 0x3e,
+	0x5e, 0xcd, 0x29, 0xf1, 0x1d, 0xf2, 0x9d, 0x51, 0xc8, 0xa7, 0xc8, 0xe7, 0xc8, 0x27, 0x61, 0x64,
+	0xcc, 0x44, 0x22, 0x18, 0xb3, 0xe5, 0x0b, 0x24, 0xf2, 0xd9, 0x28, 0x0e, 0x13, 0x51, 0xa4, 0x4c,
+	0xf6, 0xfd, 0xfd, 0xfe, 0xff, 0x77, 0xef, 0xe7, 0x87, 0x3e, 0xb0, 0xff, 0x30, 0xe1, 0x4a, 0x27,
+	0x3c, 0x4c, 0xb5, 0x4c, 0x08, 0xcc, 0x41, 0x68, 0x85, 0x67, 0x89, 0xd4, 0xd2, 0xe9, 0xb0, 0x29,
+	0xe5, 0x62, 0x00, 0x02, 0x92, 0x68, 0x81, 0xd9, 0x00, 0xcc, 0x19, 0x3f, 0xb4, 0x34, 0xdf, 0x47,
+	0x32, 0x92, 0xc6, 0x40, 0xb2, 0xb7, 0xdc, 0xdb, 0xf4, 0x98, 0x54, 0xb1, 0x54, 0x24, 0xa4, 0x0a,
+	0xc8, 0xbc, 0x1f, 0x82, 0xa6, 0x7d, 0xc2, 0x24, 0x17, 0xc5, 0xf7, 0xce, 0x5e, 0x63, 0x95, 0x86,
+	0xe3, 0xd2, 0x39, 0xaf, 0xf2, 0xaf, 0x2b, 0xe8, 0xf5, 0x68, 0xa7, 0x72, 0x29, 0x9c, 0xcf, 0xe8,
+	0xad, 0x4a, 0xc3, 0x52, 0xa1, 0x6b, 0xb7, 0xed, 0x6e, 0x3d, 0xd8, 0x53, 0x9d, 0x4f, 0x08, 0xa9,
+	0x29, 0x4d, 0x60, 0x2c, 0x68, 0x0c, 0x6e, 0xc5, 0xd4, 0xd4, 0x8d, 0xf2, 0x87, 0xc6, 0xe0, 0xfc,
+	0x46, 0xaf, 0x94, 0x4c, 0x13, 0x06, 0xca, 0xad, 0xb6, 0xab, 0xdd, 0xc6, 0xd7, 0x1e, 0x3e, 0x64,
+	0x56, 0xfc, 0x93, 0x31, 0x99, 0x0a, 0x1d, 0xec, 0xdc, 0xce, 0x5f, 0xd4, 0x98, 0x80, 0xd2, 0x5c,
+	0xd0, 0xec, 0x7a, 0xee, 0x8b, 0xb6, 0xfd, 0xf8, 0xb0, 0x72, 0x82, 0x73, 0x8a, 0x6a, 0x34, 0xce,
+	0x64, 0xf7, 0xa5, 0xb9, 0xd8, 0x47, 0x9c, 0x83, 0xc4, 0x19, 0x48, 0x5c, 0x80, 0xc4, 0x23, 0x60,
+	0xbf, 0x24, 0x17, 0xc3, 0xd1, 0x72, 0xdd, 0xb2, 0x6e, 0xd6, 0xad, 0x37, 0x0b, 0x1a, 0x1f, 0xff,
+	0xf0, 0x73, 0xa7, 0x7f, 0x7e, 0xd9, 0xfa, 0x12, 0x71, 0x3d, 0x4d, 0x43, 0xcc, 0x64, 0x4c, 0x8a,
+	0x3f, 0x91, 0x3f, 0x7a, 0x6a, 0x72, 0x44, 0xf4, 0x62, 0x06, 0x6a, 0x17, 0xa2, 0x82, 0xa2, 0xa3,
+	0x7f, 0x6b, 0xa3, 0x77, 0x65, 0xda, 0xc3, 0x34, 0x39, 0x9c, 0x78, 0x09, 0x69, 0xe5, 0x49, 0x48,
+	0xef, 0x09, 0x54, 0x9f, 0x9b, 0xc0, 0x30, 0x58, 0x6e, 0x3c, 0x7b, 0xb5, 0xf1, 0xec, 0xab, 0x8d,
+	0x67, 0x9f, 0x6d, 0x3d, 0x6b, 0xb5, 0xf5, 0xac, 0x8b, 0xad, 0x67, 0xfd, 0xfb, 0x5e, 0x8e, 0x2b,
+	0xcd, 0x45, 0xd8, 0x00, 0x7a, 0x46, 0x20, 0x27, 0x64, 0x6f, 0xa7, 0x4d, 0x93, 0xb0, 0x66, 0x56,
+	0xf9, 0xdb, 0x5d, 0x00, 0x00, 0x00, 0xff, 0xff, 0x96, 0x18, 0xd7, 0xf0, 0x6b, 0x03, 0x00, 0x00,
 }
 
-func (m *DistributionResult) Marshal() (dAtA []byte, err error) {
+func (m *Distribution) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -174,20 +207,20 @@ func (m *DistributionResult) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *DistributionResult) MarshalTo(dAtA []byte) (int, error) {
+func (m *Distribution) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *DistributionResult) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Distribution) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.CoinSend) > 0 {
-		for iNdEx := len(m.CoinSend) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Amount) > 0 {
+		for iNdEx := len(m.Amount) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.CoinSend[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Amount[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -195,7 +228,7 @@ func (m *DistributionResult) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintEvents(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x1a
+			dAtA[i] = 0x2a
 		}
 	}
 	if m.Destination != nil {
@@ -208,12 +241,12 @@ func (m *DistributionResult) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintEvents(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x22
 	}
-	if len(m.Source) > 0 {
-		for iNdEx := len(m.Source) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Sources) > 0 {
+		for iNdEx := len(m.Sources) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Source[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Sources[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -221,13 +254,27 @@ func (m *DistributionResult) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintEvents(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x1a
 		}
+	}
+	if len(m.ShareName) > 0 {
+		i -= len(m.ShareName)
+		copy(dAtA[i:], m.ShareName)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.ShareName)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Subdistributor) > 0 {
+		i -= len(m.Subdistributor)
+		copy(dAtA[i:], m.Subdistributor)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Subdistributor)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *DistributionsResult) Marshal() (dAtA []byte, err error) {
+func (m *DistributionBurn) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -237,20 +284,20 @@ func (m *DistributionsResult) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *DistributionsResult) MarshalTo(dAtA []byte) (int, error) {
+func (m *DistributionBurn) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *DistributionsResult) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *DistributionBurn) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.DistributionResult) > 0 {
-		for iNdEx := len(m.DistributionResult) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Amount) > 0 {
+		for iNdEx := len(m.Amount) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.DistributionResult[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Amount[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -258,8 +305,29 @@ func (m *DistributionsResult) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintEvents(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x1a
 		}
+	}
+	if len(m.Sources) > 0 {
+		for iNdEx := len(m.Sources) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Sources[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintEvents(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Subdistributor) > 0 {
+		i -= len(m.Subdistributor)
+		copy(dAtA[i:], m.Subdistributor)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Subdistributor)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -275,14 +343,22 @@ func encodeVarintEvents(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *DistributionResult) Size() (n int) {
+func (m *Distribution) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.Source) > 0 {
-		for _, e := range m.Source {
+	l = len(m.Subdistributor)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.ShareName)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if len(m.Sources) > 0 {
+		for _, e := range m.Sources {
 			l = e.Size()
 			n += 1 + l + sovEvents(uint64(l))
 		}
@@ -291,8 +367,8 @@ func (m *DistributionResult) Size() (n int) {
 		l = m.Destination.Size()
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	if len(m.CoinSend) > 0 {
-		for _, e := range m.CoinSend {
+	if len(m.Amount) > 0 {
+		for _, e := range m.Amount {
 			l = e.Size()
 			n += 1 + l + sovEvents(uint64(l))
 		}
@@ -300,14 +376,24 @@ func (m *DistributionResult) Size() (n int) {
 	return n
 }
 
-func (m *DistributionsResult) Size() (n int) {
+func (m *DistributionBurn) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.DistributionResult) > 0 {
-		for _, e := range m.DistributionResult {
+	l = len(m.Subdistributor)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if len(m.Sources) > 0 {
+		for _, e := range m.Sources {
+			l = e.Size()
+			n += 1 + l + sovEvents(uint64(l))
+		}
+	}
+	if len(m.Amount) > 0 {
+		for _, e := range m.Amount {
 			l = e.Size()
 			n += 1 + l + sovEvents(uint64(l))
 		}
@@ -321,7 +407,7 @@ func sovEvents(x uint64) (n int) {
 func sozEvents(x uint64) (n int) {
 	return sovEvents(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *DistributionResult) Unmarshal(dAtA []byte) error {
+func (m *Distribution) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -344,15 +430,79 @@ func (m *DistributionResult) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: DistributionResult: wiretype end group for non-group")
+			return fmt.Errorf("proto: Distribution: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: DistributionResult: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Distribution: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Subdistributor", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Subdistributor = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ShareName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ShareName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sources", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -379,12 +529,12 @@ func (m *DistributionResult) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Source = append(m.Source, &Account{})
-			if err := m.Source[len(m.Source)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Sources = append(m.Sources, &Account{})
+			if err := m.Sources[len(m.Sources)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		case 2:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Destination", wireType)
 			}
@@ -420,9 +570,9 @@ func (m *DistributionResult) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 3:
+		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CoinSend", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -449,8 +599,8 @@ func (m *DistributionResult) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CoinSend = append(m.CoinSend, types.DecCoin{})
-			if err := m.CoinSend[len(m.CoinSend)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Amount = append(m.Amount, types.DecCoin{})
+			if err := m.Amount[len(m.Amount)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -475,7 +625,7 @@ func (m *DistributionResult) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *DistributionsResult) Unmarshal(dAtA []byte) error {
+func (m *DistributionBurn) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -498,15 +648,47 @@ func (m *DistributionsResult) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: DistributionsResult: wiretype end group for non-group")
+			return fmt.Errorf("proto: DistributionBurn: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: DistributionsResult: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: DistributionBurn: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DistributionResult", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Subdistributor", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Subdistributor = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sources", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -533,8 +715,42 @@ func (m *DistributionsResult) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DistributionResult = append(m.DistributionResult, &DistributionResult{})
-			if err := m.DistributionResult[len(m.DistributionResult)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Sources = append(m.Sources, &Account{})
+			if err := m.Sources[len(m.Sources)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Amount = append(m.Amount, types.DecCoin{})
+			if err := m.Amount[len(m.Amount)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

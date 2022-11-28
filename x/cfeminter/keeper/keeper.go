@@ -61,7 +61,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
+func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO add unit tests
 	minterState := k.GetMinterState(ctx)
 	params := k.GetParams(ctx)
 	minter := params.Minter
@@ -97,9 +97,9 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 	return k.bankKeeper.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
-// AddCollectedFees implements an alias call to the underlying supply keeper's
-// AddCollectedFees to be used in BeginBlocker.
-func (k Keeper) AddCollectedFees(ctx sdk.Context, fees sdk.Coins) error {
+// SendMintedCoins implements an alias call to the underlying supply keeper's
+// SendMintedCoins to be used in BeginBlocker.
+func (k Keeper) SendMintedCoins(ctx sdk.Context, fees sdk.Coins) error {
 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.collectorName, fees)
 }
 

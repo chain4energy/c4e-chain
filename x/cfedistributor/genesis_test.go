@@ -15,9 +15,9 @@ func TestGenesis(t *testing.T) {
 	}
 
 	state := types.State{
-		Account:     &account,
-		Burn:        false,
-		CoinsStates: nil,
+		Account: &account,
+		Burn:    false,
+		Remains: nil,
 	}
 
 	genesisState := types.GenesisState{
@@ -27,7 +27,7 @@ func TestGenesis(t *testing.T) {
 	var subdistributors []types.SubDistributor
 	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
 	subdistributors = append(subdistributors, burningSubSistributor)
-	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destinations.PrimaryShare))
 
 	genesisState.Params.SubDistributors = subdistributors
 
@@ -46,9 +46,9 @@ func TestGenesisImport(t *testing.T) {
 	}
 
 	state := types.State{
-		Account:     &account,
-		Burn:        false,
-		CoinsStates: nil,
+		Account: &account,
+		Burn:    false,
+		Remains: nil,
 	}
 	var states []*types.State
 	states = append(states, &state)
@@ -60,7 +60,7 @@ func TestGenesisImport(t *testing.T) {
 	var subdistributors []types.SubDistributor
 	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
 	subdistributors = append(subdistributors, burningSubSistributor)
-	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destinations.PrimaryShare))
 	genesisState.Params.SubDistributors = subdistributors
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
@@ -76,7 +76,7 @@ func TestGenesisNoStates(t *testing.T) {
 	var subdistributors []types.SubDistributor
 	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
 	subdistributors = append(subdistributors, burningSubSistributor)
-	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destinations.PrimaryShare))
 	genesisState.Params.SubDistributors = subdistributors
 
 	testHelper := testapp.SetupTestApp(t)
@@ -92,9 +92,9 @@ func TestGenesisBurnStateAccNotNil(t *testing.T) {
 	}
 
 	state := types.State{
-		Account:     &account,
-		Burn:        true,
-		CoinsStates: nil,
+		Account: &account,
+		Burn:    true,
+		Remains: nil,
 	}
 
 	genesisState := types.GenesisState{
@@ -104,7 +104,7 @@ func TestGenesisBurnStateAccNotNil(t *testing.T) {
 	var subdistributors []types.SubDistributor
 	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
 	subdistributors = append(subdistributors, burningSubSistributor)
-	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destinations.PrimaryShare))
 
 	genesisState.Params.SubDistributors = subdistributors
 
@@ -120,9 +120,9 @@ func TestGenesisBurnStateAccNotNil(t *testing.T) {
 func TestGenesisBurnState(t *testing.T) {
 
 	state := types.State{
-		Account:     nil,
-		Burn:        true,
-		CoinsStates: nil,
+		Account: nil,
+		Burn:    true,
+		Remains: nil,
 	}
 
 	genesisState := types.GenesisState{
@@ -132,7 +132,7 @@ func TestGenesisBurnState(t *testing.T) {
 	var subdistributors []types.SubDistributor
 	burningSubSistributor := subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector)
 	subdistributors = append(subdistributors, burningSubSistributor)
-	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destination.Account))
+	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destinations.PrimaryShare))
 
 	genesisState.Params.SubDistributors = subdistributors
 

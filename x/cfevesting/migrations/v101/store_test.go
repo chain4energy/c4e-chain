@@ -1,6 +1,7 @@
 package v101_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 	"strconv"
 	"testing"
@@ -13,22 +14,21 @@ import (
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-
 )
 
 func TestMigrationManyAccountVestingPoolsWithManyPools(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[1].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[2].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[3].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[4].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[1].String(), 10)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[2].String(), 10)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
 	MigrateV100ToV101(t, testUtil, ctx)
 }
 
@@ -40,20 +40,20 @@ func TestMigrationNoAccountVestingPoolsAndNoVestingTypes(t *testing.T) {
 func TestMigrationManyAccountVestingPoolsWithNoPools(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 0, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[1].String(), 0, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[2].String(), 0, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[3].String(), 0, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[4].String(), 0, sdk.ZeroInt(), sdk.ZeroInt())
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 0)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[1].String(), 0)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[2].String(), 0)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[3].String(), 0)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[4].String(), 0)
 	MigrateV100ToV101(t, testUtil, ctx)
 }
 
 func TestMigrationOneAccountVestingPoolsWithOnePool(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 1, sdk.ZeroInt(), sdk.ZeroInt())
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 1)
 	MigrateV100ToV101(t, testUtil, ctx)
-	
+
 }
 
 func TestMigrationOneVestingType(t *testing.T) {
@@ -74,28 +74,38 @@ func TestMigrationAccountVestingPoolsAndVestingTypes(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(5, 0)
 	vts := testutils.GenerateVestingTypes(10, 1)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[1].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[2].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[3].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
-	SetupV100AccountVestingPools(testUtil, ctx, accounts[4].String(), 10, sdk.ZeroInt(), sdk.ZeroInt())
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[1].String(), 10)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[2].String(), 10)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
+	SetupV100AccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
 	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
 	MigrateV100ToV101(t, testUtil, ctx)
 }
 
-
-func SetupV100AccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) v100cfevesting.AccountVestingPools {
-	return SetupV100AccountVestingPoolsWithModification(testUtil, ctx, func(*v100cfevesting.VestingPool) { /*do not modify*/ }, address, numberOfVestingPools, vestingAmount, withdrawnAmount)
+func TestMigrationWrongSentAmount(t *testing.T) {
+	accounts, _ := commontestutils.CreateAccounts(5, 0)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[0].String(), 10)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[1].String(), 10)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[2].String(), 10)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[3].String(), 10)
+	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[4].String(), 10)
+	MigrateV100ToV101(t, testUtil, ctx)
 }
 
-func SetupV100AccountVestingPoolsWithModification(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, modifyVesting func(*v100cfevesting.VestingPool), address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) v100cfevesting.AccountVestingPools {
+func SetupV100AccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v100cfevesting.AccountVestingPools {
 	accountVestingPools := GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
 	accountVestingPools.Address = address
+	SetV100AccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
+	return accountVestingPools
+}
 
+func SetupV100AccountVestingPoolsWrongSent(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v100cfevesting.AccountVestingPools {
+	accountVestingPools := GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
+	accountVestingPools.Address = address
 	for _, vesting := range accountVestingPools.VestingPools {
-		vesting.Vested = vestingAmount
-		vesting.Withdrawn = withdrawnAmount
-		modifyVesting(vesting)
+		vesting.Sent = sdk.NewInt(100)
 	}
 	SetV100AccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
 	return accountVestingPools
@@ -118,18 +128,20 @@ func MigrateV100ToV101(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 	newVestingTypes := testUtil.GetC4eVestingKeeper().GetAllVestingTypes(ctx)
 
 	require.EqualValues(t, len(oldAccPools), len(newAccPools))
-
 	for i := 0; i < len(oldAccPools); i++ {
 		require.EqualValues(t, oldAccPools[i].Address, newAccPools[i].Address)
 		require.EqualValues(t, len(oldAccPools[i].VestingPools), len(newAccPools[i].VestingPools))
 		for j := 0; j < len(oldAccPools[i].VestingPools); j++ {
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Name, newAccPools[i].VestingPools[j].Name)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].VestingType, newAccPools[i].VestingPools[j].VestingType)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].LockStart, newAccPools[i].VestingPools[j].LockStart)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].LockEnd, newAccPools[i].VestingPools[j].LockEnd)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Vested, newAccPools[i].VestingPools[j].InitiallyLocked)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Withdrawn, newAccPools[i].VestingPools[j].Withdrawn)
-			require.EqualValues(t, oldAccPools[i].VestingPools[j].Sent, newAccPools[i].VestingPools[j].Sent)
+			oldVestingPool := oldAccPools[i].VestingPools[j]
+			newVestingPool := newAccPools[i].VestingPools[j]
+			require.EqualValues(t, oldVestingPool.Name, newVestingPool.Name)
+			require.EqualValues(t, oldVestingPool.VestingType, newVestingPool.VestingType)
+			require.EqualValues(t, oldVestingPool.LockStart, newVestingPool.LockStart)
+			require.EqualValues(t, oldVestingPool.LockEnd, newVestingPool.LockEnd)
+			require.EqualValues(t, oldVestingPool.Vested, newVestingPool.InitiallyLocked)
+			require.EqualValues(t, oldVestingPool.Withdrawn, newVestingPool.Withdrawn)
+			oldSentCalculated := oldVestingPool.LastModificationWithdrawn.Add(oldVestingPool.Vested).Sub(oldVestingPool.Withdrawn).Sub(oldVestingPool.LastModificationVested)
+			require.True(t, oldSentCalculated.Equal(newAccPools[i].VestingPools[j].Sent))
 		}
 	}
 	require.ElementsMatch(t, oldVestingTypes.VestingTypes, newVestingTypes.VestingTypes)
@@ -147,8 +159,6 @@ func getAllV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey
 	}
 	return
 }
-
-
 
 func GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPoolsPerAccount int,
 	accountId int, vestingStartId int) v100cfevesting.AccountVestingPools {
@@ -186,22 +196,24 @@ func generateV100AccountVestingPools(numberOfAccounts int, numberOfVestingPoolsP
 }
 
 func generateRandomV100VestingPool(accuntId int, vestingId int) v100cfevesting.VestingPool {
-	rgen := rand.New(rand.NewSource(time.Now().UnixNano()))
-	initiallyLocked := rgen.Intn(10000000)
-	withdrawn := rgen.Intn(initiallyLocked)
-	sent := rgen.Intn(initiallyLocked - withdrawn)
-	lastModificationVested := rgen.Intn(10000000)
-	lastModificationWithdrawn := rgen.Intn(lastModificationVested)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	vested := int(helpers.RandIntBetweenWith0(r, 1, 10000000))
+	withdrawn := r.Intn(vested)
+	sent := helpers.RandIntWith0(r, vested-withdrawn)
+	randWith := helpers.RandIntWith0(r, withdrawn)
+	lastModificationVested := vested - sent - randWith
+	lastModificationWithdrawn := withdrawn - randWith
+
 	return v100cfevesting.VestingPool{
 		Id:                        int32(vestingId),
 		Name:                      "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
-		LockStart:                 testutils.CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		LockEnd:                   testutils.CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		Vested:                    sdk.NewInt(int64(initiallyLocked)),
+		LockStart:                 testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
+		LockEnd:                   testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
+		Vested:                    sdk.NewInt(int64(vested)),
 		Withdrawn:                 sdk.NewInt(int64(withdrawn)),
 		Sent:                      sdk.NewInt(int64(sent)),
-		LastModification:          testutils.CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
+		LastModification:          testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
 		LastModificationVested:    sdk.NewInt(int64(lastModificationVested)),
 		LastModificationWithdrawn: sdk.NewInt(int64(lastModificationWithdrawn)),
 	}

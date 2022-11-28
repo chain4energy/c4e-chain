@@ -28,7 +28,7 @@ export type CfevestingMsgCreateVestingPoolResponse = object;
 export type CfevestingMsgSendToVestingAccountResponse = object;
 
 export interface CfevestingMsgWithdrawAllAvailableResponse {
-  Withdrawn?: string;
+  withdrawn?: string;
 }
 
 /**
@@ -42,7 +42,7 @@ export interface CfevestingParams {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CfevestingQueryParamsResponse {
-  /** Params defines the parameters for the module. */
+  /** params holds all the parameters of this module. */
   params?: CfevestingParams;
 }
 

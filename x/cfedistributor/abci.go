@@ -13,7 +13,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	subDistributors := k.GetParams(ctx).SubDistributors
 	states := k.GetAllStates(ctx)
-	distributionsResult := types.DistributionsResult{}
 
 	for _, subDistributor := range subDistributors {
 		allCoinsToDistribute := sdk.NewDecCoins()
@@ -34,13 +33,24 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		if allCoinsToDistribute.IsZero() {
 			continue
 		}
-		states = *k.StartDistributionProcess(ctx, &states, allCoinsToDistribute, subDistributor, &distributionsResult)
+
+		newStates, distributions, burn := k.StartDistributionProcess(ctx, &states, allCoinsToDistribute, subDistributor)
+		for _, distribution := range distributions {
+			err := ctx.EventManager().EmitTypedEvent(distribution)
+			if err != nil {
+				k.Logger(ctx).Error("distributions emit event error", "distribution", distribution, "error", err.Error())
+			}
+		}
+		if burn != nil {
+			err := ctx.EventManager().EmitTypedEvent(burn)
+			if err != nil {
+				k.Logger(ctx).Error("distributions emit event error", "distribution_burn", burn, "error", err.Error())
+			}
+		}
+		states = *newStates
 	}
 
-	err := ctx.EventManager().EmitTypedEvent(&distributionsResult)
-	if err != nil {
-		k.Logger(ctx).Error("distributions result emit event error", "distributionsResult", distributionsResult, "error", err.Error())
-	}
+
 
 	k.SendCoinsFromStates(ctx, states)
 }
