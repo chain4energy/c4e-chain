@@ -124,29 +124,23 @@ The Chain4Energy distributor module contains the following configurations parame
 | -------------------- | --------------------------- | ------------------------------- |
 | name     | string | unique name of the subdistributor |
 | sources  | List of Account type | list of source accounts |
-| destination  | Destination type | destinations definition |
+| destinations  | Destinations type | destinations definition |
 
-### Destination type
+### Destinations type
 
 | Param       | Type               | Description                                                             |
 | ----------- | ------------------ | ----------------------------------------------------------------------- |
-| account     | Account type       | mian destination - all remaining tokens from ohers shares anr sent here |
-| burn_share  | BurnShare type     | share to burn                                                           |
-| share       | List of Share type | List of account destinations with share percentage                      |
+| primary_share | Account type       | primary destination - all remaining tokens from others shares are sent here |
+| burn_share  | sdk.Dec type     | share to burn (0-1)                                                          |
+| shares       | List of DestinationShare type | List of destination accounts with share percentage                      |
 
-### Share type
+### DestinationShare type
 
 | Param   | Type         | Description              |
 | ------- | ------------ | ------------------------ |
 | name    | string       | unique name of the share |
-| account | Account type | destination account      |
-| percent | Dec          | share percentage 0-100   |
-
-### BurnShare type
-
-| Param   | Type | Description                    |
-| ------- | ---- | ------------------------------ |
-| percent | Dec  | share percentage to burn 0-100 |
+| destination | Account type | destination account      |
+| share | sdk.Dec          | share percentage (0-1)   |
 
 ### Account type
 
@@ -171,32 +165,30 @@ See the configuration params for **[example](#example)** from **[Concept](#conce
                 "type": "MAIN"
                 }
             ],
-            "destination": {
-                "account": {
+            "destinations": {
+                "primary_share": {
                     "id": "validators_rewards",
                     "type": "MODULE_ACCOUNT"
                 },
-                "share": [
+                "shares": [
                     {
-                        "account": {
+                        "destination": {
                             "id": "c4edwijhdhwqu43efvc3543ec34c2erc342dw",
                             "type": "BASE_ACCOUNT"
                         },
                         "name": "inflation_development_fund_share",
-                        "percent": "5.0"
+                        "share": "0.05"
                     },
                     {
-                        "account": {
+                        "destination": {
                             "id": "incentive_boosters",
                             "type": "INTERNAL_ACCOUNT"
                         },
                         "name": "inflation_incentive_boosters_share",
-                        "percent": "35.0"
+                        "share": "0.35"
                     }
                 ],
-                "burn_share": {
-                    "percent": "0.0"
-                }
+                "burn_share": "0.0"
             },
 
         },
@@ -208,24 +200,22 @@ See the configuration params for **[example](#example)** from **[Concept](#conce
                 "type": "MODULE_ACCOUNT"
                 }
             ],
-            "destination": {
-                "account": {
+            "destinations": {
+                "primary_share": {
                     "id": "validators_rewards",
                     "type": "MODULE_ACCOUNT"
                 },
-                "share": [
+                "shares": [
                     {
-                        "account": {
+                        "destination": {
                             "id": "incentive_boosters",
                             "type": "INTERNAL_ACCOUNT"
                         },
                         "name": "txs_incentive_boosters_share",
-                        "percent": "15.0"
+                        "share": "0.15"
                     }
                 ],
-                "burn_share": {
-                    "percent": "5.0"
-                }
+                "burn_share": "0.05"
             },
 
         },
@@ -237,32 +227,30 @@ See the configuration params for **[example](#example)** from **[Concept](#conce
                 "type": "MODULE_ACCOUNT"
                 }
             ],
-            "destination": {
-                "account": {
+            "destinations": {
+                "primary_share": {
                     "id": "validators_rewards",
                     "type": "MODULE_ACCOUNT"
                 },
-                "share": [
+                "shares": [
                     {
-                        "account": {
+                        "destination": {
                             "id": "c4edwijhdhwqu43efvc3543ec34c2erc342dw",
                             "type": "BASE_ACCOUNT"
                         },
                         "name": "module_development_fund_share",
-                        "percent": "30.0"
+                        "share": "0.3"
                     },
                     {
-                        "account": {
+                        "destination": {
                             "id": "incentive_boosters",
                             "type": "INTERNAL_ACCOUNT"
                         },
                         "name": "module_incentive_boosters_share",
-                        "percent": "20.0"
+                        "share": "0.2"
                     }
                 ],
-                "burn_share": {
-                    "percent": "0.0"
-                }
+                "burn_share": "0.0"
             },
 
         },
@@ -274,24 +262,22 @@ See the configuration params for **[example](#example)** from **[Concept](#conce
                 "type": "INTERNAL_ACCOUNT"
                 }
             ],
-            "destination": {
-                "account": {
+            "destinations": {
+                "primary_share": {
                     "id": "governance_booster",
                     "type": "MODULE_ACCOUNT"
                 },
-                "share": [
+                "shares": [
                     {
-                        "account": {
+                        "destination": {
                             "id": "weekend_boosters",
                             "type": "INTERNAL_ACCOUNT"
                         },
                         "name": "weekend_boosters_share",
-                        "percent": "35.0"
+                        "share": "0.35"
                     }
                 ],
-                "burn_share": {
-                    "percent": "0.0"
-                }
+                "burn_share": "0.0"
             },
 
         },
@@ -320,7 +306,7 @@ Account account = 1         [(gogoproto.nullable) = true];
 | -------------------- | --------------------------- | ------------------------------- |
 | account | Account type (see **[Account type](#account-type)**) | destination account or empty in case of burn flag set to true     |
 | burn  | bool | specidies if this is burn destination state |
-| coins_states  | DecCoin | list of coins to distribute left by previous block |
+| remains  | DecCoin | list of coins to distribute left by previous block |
 
 ### Example state
 
@@ -335,7 +321,7 @@ See the state for **[example](#example)** from **[Concept](#concepts)** section
             "type": "MODULE_ACCOUNT"
         },
         "burn": false,
-        "coins_states": [
+        "remains": [
             {
                 "denom": "uc4e",
                 "amount": "0.900000000000000000"
@@ -348,7 +334,7 @@ See the state for **[example](#example)** from **[Concept](#concepts)** section
             "type": "BASE_ACCOUNT"
         },
         "burn": false,
-        "coins_states": [
+        "remains": [
             {
                 "denom": "uc4e",
                 "amount": "0.359000000000000000"
@@ -361,7 +347,7 @@ See the state for **[example](#example)** from **[Concept](#concepts)** section
             "type": "INTERNAL_ACCOUNT"
         },
         "burn": false,
-        "coins_states": []
+        "remains": []
     },
     {
         "account": {
@@ -369,7 +355,7 @@ See the state for **[example](#example)** from **[Concept](#concepts)** section
             "type": "MODULE_ACCOUNT"
         },
         "burn": false,
-        "coins_states": [
+        "remains": [
             {
                 "denom": "uc4e",
                 "amount": "0.582000000000000000"
@@ -382,7 +368,7 @@ See the state for **[example](#example)** from **[Concept](#concepts)** section
             "type": "MODULE_ACCOUNT"
       },
       "burn": false,
-      "coins_states": [
+      "remains": [
             {
                 "denom": "uc4e",
                 "amount": "0.359000000000000000"
@@ -391,7 +377,7 @@ See the state for **[example](#example)** from **[Concept](#concepts)** section
     },
     {
         "burn": true,
-        "coins_states": [
+        "remains": [
             {
                 "denom": "uc4e",
                 "amount": "0.800000000000000000"
@@ -410,19 +396,32 @@ Chain4Energy distributor module emits the following events:
 
 #### Tokens distribution
 
-| Type         | Attribute Key | Attribute Value |
+| Type         | Attribute Key | Description |
 | ------------ | ------------- | --------------- |
-| DistributionsResult | DistributionResult | list of DistributionResult type |
+| Distribution | Distribution type | Distribution data |
+| DistributionBurn | DistributionBurn type | Burn data |
 
-##### DistributionResult type
+##### Distribution type
 
-DistributionResult type represents one send operation to one destination in one block
+Distribution type represents one send operation to one destination in one block
 
 | Param   | Type | Description                    |
 | ------- | ---- | ------------------------------ |
-| source  | list of Account type (see **[Account type](#account-type)**) | list of sources |
+| subdistributor | string | Name of the subdisributor | 
+| share_name | string | Name of the DestinationShare (see **[DestinationShare type](#destinationshare-type)**) | 
+| sources  | list of Account type (see **[Account type](#account-type)**) | list of sources |
 | destination | Account type (see **[Account type](#account-type)**) | destination |
-| coinSend | DecCoins | coins sent to destination |
+| amount | DecCoins | coins sent to destination |
+
+##### DistributionBurn type
+
+DistributionBurn type represents one burn operation
+
+| Param   | Type | Description                    |
+| ------- | ---- | ------------------------------ |
+| subdistributor | string | Name of the subdisributor | 
+| sources  | list of Account type (see **[Account type](#account-type)**) | list of sources |
+| amount | DecCoins | coins burned |
 
 ## Queries
 
@@ -444,15 +443,13 @@ See example reponse:
             "type": "MODULE_ACCOUNT"
           }
         ],
-        "destination": {
-          "account": {
+        "destinations": {
+          "primary_share": {
             "id": "c4e_distributor",
             "type": "MAIN"
           },
-          "share": [],
-          "burn_share": {
-            "percent": "0.000000000000000000"
-          }
+          "shares": [],
+          "burn_share": "0.000000000000000000"
         }
       },
       {
@@ -463,32 +460,30 @@ See example reponse:
             "type": "MAIN"
           }
         ],
-        "destination": {
-          "account": {
+        "destinations": {
+          "primary_share": {
             "id": "validators_rewards_collector",
             "type": "MODULE_ACCOUNT"
           },
-          "share": [
+          "shares": [
             {
               "name": "development_fund",
-              "percent": "5.000000000000000000",
-              "account": {
+              "share": "0.050000000000000000",
+              "destination": {
                 "id": "c4e10ep2sxpf2kj6jsdcs234edkuf9sf9xqq3sl",
                 "type": "BASE_ACCOUNT"
               }
             },
             {
               "name": "usage_incentives",
-              "percent": "35.000000000000000000",
-              "account": {
+              "share": "0.350000000000000000",
+              "destination": {
                 "id": "usage_incentives_collector",
                 "type": "INTERNAL_ACCOUNT"
               }
             }
           ],
-          "burn_share": {
-            "percent": "0.000000000000000000"
-          }
+          "burn_share":  "0.000000000000000000"
         }
       },
       {
@@ -499,32 +494,30 @@ See example reponse:
             "type": "INTERNAL_ACCOUNT"
           }
         ],
-        "destination": {
-          "account": {
+        "destinations": {
+          "primary_share": {
             "id": "c4e1q5vgy0r3scsdc32dcewkl8nwmfe2mgr6g0jlph",
             "type": "BASE_ACCOUNT"
           },
-          "share": [
+          "shares": [
             {
               "name": "green_energy_booster",
-              "percent": "34.000000000000000000",
-              "account": {
+              "share": "0.340000000000000000",
+              "destination": {
                 "id": "green_energy_booster_collector",
                 "type": "MODULE_ACCOUNT"
               }
             },
             {
               "name": "governance_booster",
-              "percent": "33.000000000000000000",
-              "account": {
+              "share": "0.330000000000000000",
+              "destination": {
                 "id": "governance_booster_collector",
                 "type": "MODULE_ACCOUNT"
               }
             }
           ],
-          "burn_share": {
-            "percent": "0.000000000000000000"
-          }
+          "burn_share": "0.000000000000000000"
         }
       }
     ]
@@ -546,7 +539,7 @@ See example reponse:
         "type": "BASE_ACCOUNT"
       },
       "burn": false,
-      "coins_states": [
+      "remains": [
         {
           "denom": "uc4e",
           "amount": "0.900000000000000000"
@@ -559,7 +552,7 @@ See example reponse:
         "type": "BASE_ACCOUNT"
       },
       "burn": false,
-      "coins_states": [
+      "remains": [
         {
           "denom": "uc4e",
           "amount": "0.359000000000000000"
@@ -572,7 +565,7 @@ See example reponse:
         "type": "MODULE_ACCOUNT"
       },
       "burn": false,
-      "coins_states": [
+      "remains": [
         {
           "denom": "uc4e",
           "amount": "0.359000000000000000"
@@ -585,7 +578,7 @@ See example reponse:
         "type": "MODULE_ACCOUNT"
       },
       "burn": false,
-      "coins_states": [
+      "remains": [
         {
           "denom": "uc4e",
           "amount": "0.582000000000000000"
@@ -598,7 +591,7 @@ See example reponse:
         "type": "INTERNAL_ACCOUNT"
       },
       "burn": false,
-      "coins_states": []
+      "remains": []
     },
     {
       "account": {
@@ -606,7 +599,7 @@ See example reponse:
         "type": "MODULE_ACCOUNT"
       },
       "burn": false,
-      "coins_states": [
+      "remains": [
         {
           "denom": "uc4e",
           "amount": "0.800000000000000000"
