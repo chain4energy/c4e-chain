@@ -13,7 +13,7 @@ export interface VestingType {
   name: string;
   /** period of locked coins (minutes) from vesting start */
   lockup_period: Duration | undefined;
-  /** period of veesting coins (minutes) from lockup period end */
+  /** period of vesting coins (minutes) from lockup period end */
   vesting_period: Duration | undefined;
 }
 

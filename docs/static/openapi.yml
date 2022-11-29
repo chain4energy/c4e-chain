@@ -1084,8 +1084,6 @@ paths:
           schema:
             type: object
             properties:
-              delegable_address:
-                type: string
               vesting_pools:
                 type: array
                 items:
@@ -32778,8 +32776,6 @@ definitions:
   chain4energy.c4echain.cfevesting.QueryVestingPoolsResponse:
     type: object
     properties:
-      delegable_address:
-        type: string
       vesting_pools:
         type: array
         items:

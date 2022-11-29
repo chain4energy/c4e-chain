@@ -47,7 +47,6 @@ export interface CfevestingQueryParamsResponse {
 }
 
 export interface CfevestingQueryVestingPoolsResponse {
-  delegable_address?: string;
   vesting_pools?: CfevestingVestingPoolInfo[];
 }
 

@@ -76,7 +76,7 @@ type VestingType struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// period of locked coins (minutes) from vesting start
 	LockupPeriod time.Duration `protobuf:"bytes,2,opt,name=lockup_period,json=lockupPeriod,proto3,stdduration" json:"lockup_period"`
-	// period of veesting coins (minutes) from lockup period end
+	// period of vesting coins (minutes) from lockup period end
 	VestingPeriod time.Duration `protobuf:"bytes,3,opt,name=vesting_period,json=vestingPeriod,proto3,stdduration" json:"vesting_period"`
 }
 

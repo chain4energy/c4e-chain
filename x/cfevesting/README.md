@@ -93,6 +93,16 @@ Vesting types data dictionary contains list of predefined vesting types:
 | lockup_period     | time.Duration | period of time when all tokens are locked |
 | vesting_period     | time.Duration | period of time when tokens are are lieary vested |
 
+### Vesting account list
+
+Vesting account list contains address of all vesting accounts created with cfevesting module.
+
+#### VestingAccount type
+| Key                  | Type                        | Description                    |
+| -------------------- | --------------------------- | ------------------------------ |
+| id     | uint64 | id of entity in the Vesting account list |
+| address     | string | vesting account address |
+
 ## Messages
 
 ### Create Vesting Pool
@@ -148,12 +158,12 @@ type MsgSendToVestingAccount struct {
 
 **Params:**
 
-| Param                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| -------------------- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| FromAddress     | Vesting pool owenr address                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ToAddress     | New continuous vesting account address                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| VestingPoolName     | Vesting pool name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Amount     | Amount to lock in the vesting pool                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Param                  | Description |
+| -------------------- |-----------------|
+| FromAddress     | Vesting pool owenr address |
+| ToAddress     | New continuous vesting account address  |
+| VestingPoolName     | Vesting pool name   |
+| Amount     | Amount to lock in the vesting pool  |
 | RestartVesting     | Defines how time parameters of new vesting account should be calculatad:<br>- true:<br>&nbsp;&nbsp;&nbsp;continuous vesting account start time = last block time + vesting type lockup period<br>&nbsp;&nbsp;&nbsp;continuous vesting account end time = last block time + vesting type lockup period + vesting type vesting period<br>- false:<br>&nbsp;&nbsp;&nbsp;continuous vesting account start time = vesting pool lock end<br>&nbsp;&nbsp;&nbsp;continuous vesting account end time = vesting pool lock end |
 
 **State modifications:**
