@@ -114,7 +114,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 
 	vestingTypesArray[0].VestingPeriod = 345 * multiplier
 	vestingTypesArray[0].VestingPeriodUnit = srcUnits
-
+	vestingTypesArray[0].InitialBonus = sdk.ZeroDec()
 	genesisState := types.GenesisState{
 		Params:              types.NewParams("uc4e"),
 		VestingAccountList:  []types.VestingAccount{},

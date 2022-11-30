@@ -1,6 +1,7 @@
 package cfevesting
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -17,6 +18,7 @@ func GenerateGenesisVestingTypes(numberOfVestingTypes int, startId int) []types.
 			LockupPeriodUnit:  types.Day,
 			VestingPeriod:     vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
 			VestingPeriodUnit: types.Day,
+			InitialBonus:      sdk.ZeroDec(),
 		}
 		result = append(result, gvt)
 	}

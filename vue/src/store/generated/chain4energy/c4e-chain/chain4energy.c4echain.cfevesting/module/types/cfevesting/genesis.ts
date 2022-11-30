@@ -26,6 +26,14 @@ export interface GenesisVestingType {
   /** period of veesting coins from lockup period end */
   vesting_period: number;
   vesting_period_unit: string;
+  /**
+   * units to select:
+   * days
+   * hours
+   * minutes
+   * seconds
+   */
+  initial_bonus: string;
 }
 
 const baseGenesisState: object = { vesting_account_count: 0 };
@@ -210,6 +218,7 @@ const baseGenesisVestingType: object = {
   lockup_period_unit: "",
   vesting_period: 0,
   vesting_period_unit: "",
+  initial_bonus: "",
 };
 
 export const GenesisVestingType = {
@@ -231,6 +240,9 @@ export const GenesisVestingType = {
     }
     if (message.vesting_period_unit !== "") {
       writer.uint32(42).string(message.vesting_period_unit);
+    }
+    if (message.initial_bonus !== "") {
+      writer.uint32(50).string(message.initial_bonus);
     }
     return writer;
   },
@@ -256,6 +268,9 @@ export const GenesisVestingType = {
           break;
         case 5:
           message.vesting_period_unit = reader.string();
+          break;
+        case 6:
+          message.initial_bonus = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -298,6 +313,11 @@ export const GenesisVestingType = {
     } else {
       message.vesting_period_unit = "";
     }
+    if (object.initial_bonus !== undefined && object.initial_bonus !== null) {
+      message.initial_bonus = String(object.initial_bonus);
+    } else {
+      message.initial_bonus = "";
+    }
     return message;
   },
 
@@ -312,6 +332,8 @@ export const GenesisVestingType = {
       (obj.vesting_period = message.vesting_period);
     message.vesting_period_unit !== undefined &&
       (obj.vesting_period_unit = message.vesting_period_unit);
+    message.initial_bonus !== undefined &&
+      (obj.initial_bonus = message.initial_bonus);
     return obj;
   },
 
@@ -347,6 +369,11 @@ export const GenesisVestingType = {
       message.vesting_period_unit = object.vesting_period_unit;
     } else {
       message.vesting_period_unit = "";
+    }
+    if (object.initial_bonus !== undefined && object.initial_bonus !== null) {
+      message.initial_bonus = object.initial_bonus;
+    } else {
+      message.initial_bonus = "";
     }
     return message;
   },

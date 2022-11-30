@@ -226,6 +226,12 @@ genesis:
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "day"
+        - name: "TestPool"
+          lockup_period: 1
+          lockup_period_unit: "minute"
+          vesting_period: 10
+          vesting_period_unit: "minute"
+          initial_bonus: "0.05"
       account_vesting_pools:
         - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
           # delegable_address: ""

@@ -15,6 +15,8 @@ export interface VestingType {
   lockup_period: Duration | undefined;
   /** period of vesting coins (minutes) from lockup period end */
   vesting_period: Duration | undefined;
+  /** the percentage of tokens that are released initially */
+  initial_bonus: string;
 }
 
 const baseVestingTypes: object = {};
@@ -83,7 +85,7 @@ export const VestingTypes = {
   },
 };
 
-const baseVestingType: object = { name: "" };
+const baseVestingType: object = { name: "", initial_bonus: "" };
 
 export const VestingType = {
   encode(message: VestingType, writer: Writer = Writer.create()): Writer {
@@ -98,6 +100,9 @@ export const VestingType = {
         message.vesting_period,
         writer.uint32(26).fork()
       ).ldelim();
+    }
+    if (message.initial_bonus !== "") {
+      writer.uint32(34).string(message.initial_bonus);
     }
     return writer;
   },
@@ -117,6 +122,9 @@ export const VestingType = {
           break;
         case 3:
           message.vesting_period = Duration.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.initial_bonus = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -143,6 +151,11 @@ export const VestingType = {
     } else {
       message.vesting_period = undefined;
     }
+    if (object.initial_bonus !== undefined && object.initial_bonus !== null) {
+      message.initial_bonus = String(object.initial_bonus);
+    } else {
+      message.initial_bonus = "";
+    }
     return message;
   },
 
@@ -157,6 +170,8 @@ export const VestingType = {
       (obj.vesting_period = message.vesting_period
         ? Duration.toJSON(message.vesting_period)
         : undefined);
+    message.initial_bonus !== undefined &&
+      (obj.initial_bonus = message.initial_bonus);
     return obj;
   },
 
@@ -176,6 +191,11 @@ export const VestingType = {
       message.vesting_period = Duration.fromPartial(object.vesting_period);
     } else {
       message.vesting_period = undefined;
+    }
+    if (object.initial_bonus !== undefined && object.initial_bonus !== null) {
+      message.initial_bonus = object.initial_bonus;
+    } else {
+      message.initial_bonus = "";
     }
     return message;
   },

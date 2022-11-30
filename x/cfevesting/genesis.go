@@ -44,6 +44,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 			Name:          gVestingType.Name,
 			LockupPeriod:  lockupPeriod,
 			VestingPeriod: vestingPeriod,
+			InitialBonus:  gVestingType.InitialBonus,
 		}
 		k.Logger(ctx).Debug("append vesting type", "vestingType", &vt)
 

@@ -276,6 +276,12 @@ func (h *C4eVestingUtils) ExportGenesis(ctx sdk.Context, expected cfevestingtype
 	require.NotNil(h.t, got)
 	// require.EqualValues(h.t, expected, *got)
 	require.EqualValues(h.t, expected.Params, got.GetParams())
+	require.EqualValues(h.t, expected.Params, got.GetParams())
+	require.EqualValues(h.t, expected.Params, got.GetParams())
+	require.EqualValues(h.t, expected.Params, got.GetParams())
+	require.EqualValues(h.t, expected.Params, got.GetParams())
+	require.EqualValues(h.t, expected.Params, got.GetParams())
+
 	require.ElementsMatch(h.t, expected.VestingTypes, (*got).VestingTypes)
 	require.EqualValues(h.t, len(expected.AccountVestingPools), len((*got).AccountVestingPools))
 	AssertAccountVestingPoolsArrays(h.t, expected.AccountVestingPools, (*got).AccountVestingPools)
