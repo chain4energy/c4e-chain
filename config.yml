@@ -67,7 +67,6 @@ genesis:
               - amount: "5000000000000"
                 denom: "uc4e"
           start_time: "1670429736"
-
     bank:
       denom_metadata:
         - description: "Chain4Energy Token"
@@ -96,7 +95,6 @@ genesis:
       params:
         bond_denom: "uc4e"
         unbonding_time: "100s"
-
     gov:
       deposit_params:
         max_deposit_period: "50s"
@@ -105,7 +103,6 @@ genesis:
             amount: "10000000"
       voting_params:
         voting_period: "10s"
-
     cfeminter:
       params:
         mint_denom: "uc4e"
@@ -126,7 +123,6 @@ genesis:
             #     amount: "40000000000000"
             # - position: 2
             #   type: "NO_MINTING"
-
       minter_state:
         position: 1
         amount_minted: "0"
@@ -185,8 +181,6 @@ genesis:
                 destination:
                   id: "governance_booster_collector"
                   type: MODULE_ACCOUNT
-
-
     cfevesting:
       params:
         denom: "uc4e"
@@ -196,41 +190,42 @@ genesis:
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "minute"
+          initial_bonus: "0"
         - name: "Mid vesting with lockup"
           lockup_period: 150
           lockup_period_unit: "minute"
           vesting_period: 150
           vesting_period_unit: "hour"
+          initial_bonus: "0"
         - name: "Long vesting with lockup"
           lockup_period: 600
           lockup_period_unit: "hour"
           vesting_period: 70
           vesting_period_unit: "day"
+          initial_bonus: "0"
         - name: "Mid vesting delegable"
           lockup_period: 0
           lockup_period_unit: "minute"
           vesting_period: 200
           vesting_period_unit: "hour"
+          initial_bonus: "0"
         - name: "Long vesting delegable"
           lockup_period: 0
           lockup_period_unit: "minute"
           vesting_period: 100
           vesting_period_unit: "day"
+          initial_bonus: "0"
         - name: "Advisors pool"
           lockup_period: 5
           lockup_period_unit: "minute"
           vesting_period: 5
           vesting_period_unit: "day"
+          initial_bonus: "0"
         - name: "Validators pool"
           lockup_period: 10
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "day"
-        - name: "TestPool"
-          lockup_period: 1
-          lockup_period_unit: "minute"
-          vesting_period: 10
-          vesting_period_unit: "minute"
           initial_bonus: "0.05"
       account_vesting_pools:
         - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"

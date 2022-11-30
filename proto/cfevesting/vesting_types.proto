@@ -18,5 +18,8 @@ message VestingType {
   // period of vesting coins (minutes) from lockup period end
   google.protobuf.Duration vesting_period = 3 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
   // the percentage of tokens that are released initially
-  string initial_bonus = 4 [(gogoproto.moretags) = "yaml:\"percent\"", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  string initial_bonus = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
 }

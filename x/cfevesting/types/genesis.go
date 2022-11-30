@@ -3,6 +3,7 @@ package types
 import (
 	// this line is used by starport scaffolding # genesis/types/import
 	fmt "fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // DefaultIndex is the default capability global index
@@ -114,5 +115,10 @@ func (gst GenesisVestingType) Validate() error {
 	if duration < 0 {
 		return fmt.Errorf("VestingPeriod of veting type: %s less than 0", gst.Name)
 	}
+
+	if gst.InitialBonus.GT(sdk.NewDec(1)) {
+		return fmt.Errorf("InitialBonus of veting type %s is greater than 100", gst.Name)
+	}
+
 	return nil
 }
