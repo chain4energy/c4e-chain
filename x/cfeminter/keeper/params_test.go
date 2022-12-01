@@ -18,18 +18,18 @@ func TestGetParams(t *testing.T) {
 
 	getParams := k.GetParams(ctx)
 	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinters(t, params.Minter, getParams.Minter)
+	testminter.CompareMinters(t, params, getParams)
 }
 
 func TestGetParams2(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	params.MintDenom = "dfda"
-	params.Minter = createLinearMintings(time.Now())
+	params.Minters = createLinearMintings(time.Now())
 	k.SetParams(ctx, params)
 
 	getParams := k.GetParams(ctx)
 	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinters(t, params.Minter, getParams.Minter)
+	testminter.CompareMinters(t, params, getParams)
 
 }

@@ -150,21 +150,21 @@ func getId(account *Account) string {
 	return account.Type + "-" + account.Id
 }
 
-func isAccountSequenceIdValidatable(accType string) bool {
+func isAccountPositionValidatable(accType string) bool {
 	return accType == INTERNAL_ACCOUNT || accType == MAIN
 }
 
-func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, SequenceId int, occuranceType string) error {
+func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, position int, occuranceType string) error {
 	id := getId(account)
-	currentSequenceId := SequenceId + 1
-	if lastOccurrenceIndex[id] == currentSequenceId {
+	currentPosition := position + 1
+	if lastOccurrenceIndex[id] == currentPosition {
 		return fmt.Errorf("same %s account cannot occur twice within one subdistributor, subdistributor name: %s",
 			id, subDistributorName)
 	}
-	if isAccountSequenceIdValidatable(account.Type) {
+	if isAccountPositionValidatable(account.Type) {
 		lastOccurrence[id] = occuranceType
 	}
-	lastOccurrenceIndex[id] = currentSequenceId
+	lastOccurrenceIndex[id] = currentPosition
 	return nil
 }
 

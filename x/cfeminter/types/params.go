@@ -43,7 +43,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyMintDenom, &p.MintDenom, validateDenom),
 		paramtypes.NewParamSetPair(KeyStartTime, &p.StartTime, validateStartTime),
-		paramtypes.NewParamSetPair(KeyMinters, &p, validateMinters),
+		paramtypes.NewParamSetPair(KeyMinters, &p.Minters, validateMinters),
 	}
 }
 
@@ -55,7 +55,7 @@ func (p Params) Validate() error {
 	if err := validateStartTime(p.StartTime); err != nil {
 		return err
 	}
-	if err := validateMinters(p); err != nil {
+	if err := validateMinters(p.Minters); err != nil {
 		return err
 	}
 
@@ -84,14 +84,21 @@ func validateDenom(v interface{}) error {
 
 // validateMinters validates the Denom param
 func validateMinters(v interface{}) error {
-	params, ok := v.(Params)
+	minters, ok := v.([]*Minter)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", v)
 	}
-	return params.ValidateMinters()
+
+	var mintersType Minters
+	mintersType = minters
+	if err := mintersType.ValidateMinters(); err != nil {
+		return err
+	}
+
+	return nil // TODO: add validation
 }
 
-// validateStartTime validates the StartTime param //TODO: add logic here
+// validateStartTime validates the StartTime param //TODO: add additional validation (if possible)
 func validateStartTime(v interface{}) error {
 	startTime, ok := v.(time.Time)
 	if !ok {

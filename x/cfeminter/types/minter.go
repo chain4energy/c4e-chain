@@ -17,13 +17,15 @@ const ( // MintingPeriod types
 	PERIODIC_REDUCTION_MINTER string = "PERIODIC_REDUCTION_MINTER"
 )
 
-func (m Params) ValidateMinters() error {
-	sort.Sort(BySequenceId(m.Minters))
-	if len(m.Minters) < 1 {
+type Minters []*Minter
+
+func (m Minters) ValidateMinters() error {
+	sort.Sort(BySequenceId(m))
+	if len(m) < 1 {
 		return fmt.Errorf("no minter Minters defined")
 	}
 
-	lastPos := len(m.Minters) - 1
+	lastPos := len(m) - 1
 	id := int32(0)
 	for i, period := range m.Minters {
 		periodId, err := m.validatePeriodOrderingId(period, id)

@@ -11,10 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-const iterationText = "iterarion %d"
-
 const PeriodDuration = time.Duration(345600000000 * 1000000)
-const Year = time.Hour * 24 * 365
 const SecondsInYear = int32(3600 * 24 * 365)
 
 func TestGenesis(t *testing.T) {
@@ -24,7 +21,7 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.NewParams("myc4e", time.Now(), createMinter(time.Now())),
 		MinterState: types.MinterState{
-			SequenceId:                  9,
+			Position:                    9,
 			AmountMinted:                sdk.NewInt(12312),
 			RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
 			RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("7654.423"),
@@ -32,7 +29,6 @@ func TestGenesis(t *testing.T) {
 		},
 
 		// this line is used by starport scaffolding # genesis/test/state
-
 	}
 	testHelper := testapp.SetupTestApp(t)
 
@@ -48,7 +44,7 @@ func TestGenesisWithHistory(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.NewParams("myc4e", time.Now(), createMinter(time.Now())),
 		MinterState: types.MinterState{
-			SequenceId:                  9,
+			Position:                    9,
 			AmountMinted:                sdk.NewInt(12312),
 			RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
 			RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("7654.423"),
@@ -72,7 +68,7 @@ func createHistory() []*types.MinterState {
 
 	history := make([]*types.MinterState, 0)
 	state1 := types.MinterState{
-		SequenceId:                  0,
+		Position:                    0,
 		AmountMinted:                sdk.NewInt(324),
 		RemainderToMint:             sdk.MustNewDecFromStr("1243.221"),
 		LastMintBlockTime:           mintTime,
@@ -81,7 +77,7 @@ func createHistory() []*types.MinterState {
 	str = "2016-06-12T11:35:46.371Z"
 	mintTime, _ = time.Parse(layout, str)
 	state2 := types.MinterState{
-		SequenceId:                  1,
+		Position:                    1,
 		AmountMinted:                sdk.NewInt(432),
 		RemainderToMint:             sdk.MustNewDecFromStr("12433.221"),
 		LastMintBlockTime:           mintTime,

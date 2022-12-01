@@ -17,7 +17,7 @@ const Year = time.Hour * 24 * 365
 
 func TestLinearMinting(t *testing.T) {
 	minter := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	minterState := types.MinterState{SequenceId: 1, AmountMinted: sdk.ZeroInt()}
+	minterState := types.MinterState{Position: 1, AmountMinted: sdk.ZeroInt()}
 
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	endTime := startTime.Add(time.Duration(345600000000 * 1000000))
@@ -48,7 +48,7 @@ func TestLinearMinting(t *testing.T) {
 }
 
 func TestNoMinting(t *testing.T) {
-	minterState := types.MinterState{SequenceId: 1, AmountMinted: sdk.ZeroInt()}
+	minterState := types.MinterState{Position: 1, AmountMinted: sdk.ZeroInt()}
 
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	endTime := startTime.Add(time.Duration(345600000000 * 1000000))
@@ -381,25 +381,25 @@ func TestCointainsIdFalse(t *testing.T) {
 
 func TestValidateMinterState(t *testing.T) {
 
-	minterState := types.MinterState{SequenceId: 1, AmountMinted: sdk.ZeroInt(), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState := types.MinterState{Position: 1, AmountMinted: sdk.ZeroInt(), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.NoError(t, minterState.Validate())
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{Position: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.NoError(t, minterState.Validate())
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(-123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{Position: 1, AmountMinted: sdk.NewInt(-123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.EqualError(t, minterState.Validate(), "minter state amount cannot be less than 0")
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.MustNewDecFromStr("231321.1234"), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{Position: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.MustNewDecFromStr("231321.1234"), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.NoError(t, minterState.Validate())
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.MustNewDecFromStr("-231321.1234"), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{Position: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.MustNewDecFromStr("-231321.1234"), RemainderFromPreviousPeriod: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.EqualError(t, minterState.Validate(), "minter remainder to mint amount cannot be less than 0")
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("231321.1234"), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{Position: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("231321.1234"), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.NoError(t, minterState.Validate())
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("-231321.1234"), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{Position: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("-231321.1234"), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.EqualError(t, minterState.Validate(), "minter remainder from previous period amount cannot be less than 0")
 }
 
@@ -467,7 +467,7 @@ func TestNoMintingInfation(t *testing.T) {
 
 func TestUnlimitedExponentialStepMinting(t *testing.T) {
 	minter := types.ExponentialStepMinting{Amount: sdk.NewInt(40000000000000), StepDuration: time.Duration(SecondsInYear), AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
-	minterState := types.MinterState{SequenceId: 1, AmountMinted: sdk.ZeroInt()}
+	minterState := types.MinterState{Position: 1, AmountMinted: sdk.ZeroInt()}
 
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 
@@ -610,7 +610,7 @@ func TestUnlimitedExponentialStepMinting(t *testing.T) {
 
 func TestLimitedExponentialStepMinting(t *testing.T) {
 	minter := types.ExponentialStepMinting{Amount: sdk.NewInt(40000000000000), StepDuration: time.Duration(SecondsInYear), AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
-	minterState := types.MinterState{SequenceId: 1, AmountMinted: sdk.ZeroInt()}
+	minterState := types.MinterState{Position: 1, AmountMinted: sdk.ZeroInt()}
 
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	endTime := startTime.Add(7 * Year)
@@ -648,8 +648,8 @@ func TestLimitedExponentialStepMinting(t *testing.T) {
 
 func TestValidateExponentialStepMintingMinterNotSet(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
-	endTime1 := startTime.Add(time.Duration(PeriodDuration))
-	endTime2 := endTime1.Add(time.Duration(PeriodDuration))
+	endTime1 := startTime.Add(PeriodDuration)
+	endTime2 := endTime1.Add(PeriodDuration)
 
 	pminter := types.ExponentialStepMinting{Amount: sdk.NewInt(40000000000000), StepDuration: time.Duration(SecondsInYear), AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
@@ -709,7 +709,6 @@ func TestValidateExponentialStepMintingLengthLessThanZeror(t *testing.T) {
 }
 
 func TestExponentialStepMintingInfationNotLimted(t *testing.T) {
-
 	minter := types.ExponentialStepMinting{Amount: sdk.NewInt(40000000000000), StepDuration: time.Duration(SecondsInYear), AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	period := types.Minter{SequenceId: 1, EndTime: nil, Type: types.PERIODIC_REDUCTION_MINTER, ExponentialStepMinting: &minter}
@@ -759,7 +758,6 @@ func TestExponentialStepMintingInfationNotLimted(t *testing.T) {
 }
 
 func TestExponentialStepMintingInfationLimted(t *testing.T) {
-
 	minter := types.ExponentialStepMinting{Amount: sdk.NewInt(40000000000000), StepDuration: time.Duration(SecondsInYear), AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	endTime := startTime.Add(10 * Year)
