@@ -28,10 +28,10 @@ func (k Keeper) SetMinterState(ctx sdk.Context, minter types.MinterState) {
 }
 
 // get the vesting types
-func (k Keeper) GetMinterStateHistory(ctx sdk.Context, position int32) (state types.MinterState, found bool) {
+func (k Keeper) GetMinterStateHistory(ctx sdk.Context, SequenceId int32) (state types.MinterState, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
 
-	b := store.Get([]byte(strconv.FormatInt(int64(position), 10)))
+	b := store.Get([]byte(strconv.FormatInt(int64(SequenceId), 10)))
 	if b == nil {
 		found = false
 		return
@@ -45,10 +45,10 @@ func (k Keeper) GetMinterStateHistory(ctx sdk.Context, position int32) (state ty
 func (k Keeper) SetMinterStateHistory(ctx sdk.Context, state types.MinterState) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
 	av := k.cdc.MustMarshal(&state)
-	store.Set([]byte(strconv.FormatInt(int64(state.Position), 10)), av)
+	store.Set([]byte(strconv.FormatInt(int64(state.SequenceId), 10)), av)
 }
 
-// GetAllMinterStateHistory returns all historical minter states for ended periods
+// GetAllMinterStateHistory returns all historical minter states for ended Minters
 func (k Keeper) GetAllMinterStateHistory(ctx sdk.Context) (list []types.MinterState) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})

@@ -25,7 +25,7 @@ func TestGetParams2(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	params.MintDenom = "dfda"
-	params.Minter = createLinearMinters(time.Now())
+	params.Minter = createLinearMintings(time.Now())
 	k.SetParams(ctx, params)
 
 	getParams := k.GetParams(ctx)

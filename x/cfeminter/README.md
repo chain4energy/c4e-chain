@@ -20,13 +20,13 @@ The purpose of `cfeminter` module is to provide token emission mechanism.
 ### Token emission mechanism
 
 Token emission mechanism mints calculated amount of tokens per each block. Token amount is calculated according to cfeminter module configuration params. 
-Tokens minting process is divided into periods where each period has fully separated minting rules. Those periods rules are difined within cfeminter module configuration params.
-Simply, mintining process configuration is a list of ordered minting periods, where each period has its own start and end time (end time for last period is not required, in that case last minting period works infinitely).
+Tokens minting process is divided into Minters where each period has fully separated minting rules. Those Minters rules are difined within cfeminter module configuration params.
+Simply, mintining process configuration is a list of ordered minting Minters, where each period has its own start and end time (end time for last period is not required, in that case last minting period works infinitely).
 
-### Miniting periods
+### Miniting Minters
 
-Minting period is a period of time when configured minting rules apply. Ordered list of minting periods deifnes whole token emmision process.
-End time of one period is a start time of the next period on the periods list.
+Minting period is a period of time when configured minting rules apply. Ordered list of minting Minters deifnes whole token emmision process.
+End time of one period is a start time of the next period on the Minters list.
 Each minting pariond has minter type assigned. 
 Last minting period on the list must be defined to work indefinitely. (must have no end time)
 
@@ -53,7 +53,7 @@ Minter type parameters:
 
 #### periodic reduction minter
 
-Periodic reduction minter is block time based minter type. It mints configured amount of tokens within minting period, where it divides this period into smaller sub periods of equal lenght.
+Periodic reduction minter is block time based minter type. It mints configured amount of tokens within minting period, where it divides this period into smaller sub Minters of equal lenght.
 Then within one sub period expected amount is minted, lineary. Expected amount of subperiod minted tokens is equal to tokens minted by prevoius subperiod multiplied by configured factor.
 For example initial period amount is 40 milions, multiplying factor set to 0.5 and periond length is one year, then:
 * 1st subperiod (1st year) mints 40 millions lineary 
@@ -67,7 +67,7 @@ This minter can mint infinitely.
 Minter type parameters: //TODO better params names
 * mint period - period of time mint amount is emitted
 * mint amount - amount to mint during mint period
-* reduction period length - defines how many mint periods are in subperiod (subperiod = mint period * reduction_period_length)
+* reduction period length - defines how many mint Minters are in subperiod (subperiod = mint period * reduction_period_length)
 * reduction factor - amount multiplying factor;
 
 #### Examples
@@ -77,7 +77,7 @@ Minter type parameters: //TODO better params names
 Minter configration:
 
 * minting start: now
-* Amount of minter periods: 1
+* Amount of minter Minters: 1
 * Minter period 1:
     * period end: null
     * minter type: periodic reduction minter
@@ -98,7 +98,7 @@ and so on
 Minter configration:
 
 * minting start: now
-* Amount of minter periods: 2
+* Amount of minter Minters: 2
 * Minter period 1:
     * period end: 10 years from now
     * minter type: time linaer minter
@@ -125,38 +125,38 @@ The Chain4Energy minter module contains the following configurations parameters:
 | Param                | Type                        | Description                     |
 | -------------------- | --------------------------- | ------------------------------- |
 | start     | Time | Token emission start time |
-| periods  | List of MintingPeriod | list of minting periods |
+| Minters  | List of MintingPeriod | list of minting Minters |
 
 ### MintingPeriod type
 
 | Param       | Type               | Description                                                             |
 | ----------- | ------------------ | ----------------------------------------------------------------------- |
-| position    | int32       | Minter period ordering position |
+| SequenceId    | int32       | Minter period ordering SequenceId |
 | period_end     | Time | Minter period end time |
 | types     | Enum string | Minter period type. Allowed values:<br>- NO_MINTING<br>- TIME_LINEAR_MINTER<br>- PERIODIC_REDUCTION_MINTER;|
-| time_linear_minter  | TimeLinearMinter    | Time linear minter configuration|
-| periodic_reduction_minter | PeriodicReductionMinter | Periodic reduction minter configuration |
+| time_linear_minter  | LinearMinting    | Time linear minter configuration|
+| periodic_reduction_minter | ExponentialStepMinting | Periodic reduction minter configuration |
 
-### TimeLinearMinter type
+### LinearMinting type
 
 | Param   | Type         | Description              |
 | ------- | ------------ | ------------------------ |
 | amount    | sdk.Int       | An smount to mint lieary during the period |
 
-### PeriodicReductionMinter type
+### ExponentialStepMinting type
 
 | Param   | Type | Description                    |
 | ------- | ---- | ------------------------------ |
 | mint_period | int32  | period of time of "mint_amount" token emission |
 | mint_amount | sdk.Int   | amount to mint during "mint_period" |
-| reduction_period_length | int32  | defines how many mint periods are in subperiod (see **[periodic reduction minter](#periodic-reduction-minter)**) (subperiod = mint period * reduction_period_length) |
+| reduction_period_length | int32  | defines how many mint Minters are in subperiod (see **[periodic reduction minter](#periodic-reduction-minter)**) (subperiod = mint period * reduction_period_length) |
 | reduction_factor | sdk.Dec   | amount multiplying factor |
 
 ### Example params
 
 #### periodic reduction minter
 
-Periodic reduction minter is block time based minter type. It mints configured amount of tokens within minting period, where it divides this period into smaller sub periods of equal lenght.
+Periodic reduction minter is block time based minter type. It mints configured amount of tokens within minting period, where it divides this period into smaller sub Minters of equal lenght.
 Then within one sub period expected amount is minted, lineary. Expected amount of subperiod minted tokens is equal to tokens minted by prevoius subperiod multiplied by configured factor.
 For example initial period amount is 40 milions, multiplying factor set to 0.5 and periond length is one year, then:
 * 1st subperiod (1st year) mints 40 millions lineary 
@@ -170,7 +170,7 @@ This minter can mint infinitely.
 Minter type parameters: //TODO better params names
 * mint period - period of time mint amount is emitted
 * mint amount - amount to mint during mint period
-* reduction period length - defines how many mint periods are in subperiod (subperiod = mint period * reduction_period_length)
+* reduction period length - defines how many mint Minters are in subperiod (subperiod = mint period * reduction_period_length)
 * reduction factor - amount multiplying factor;
 
 #### Examples
@@ -186,9 +186,9 @@ See the configuration params for **[examples](#examples)** from **[Concept](#con
     "mint_denom": "uc4e",
     "minter": {
       "start": "2022-07-05T00:00:00Z",
-      "periods": [
+      "Minters": [
         {
-          "position": 1,
+          "SequenceId": 1,
           "period_end": null,
           "type": "PERIODIC_REDUCTION_MINTER",
           "time_linear_minter": null,
@@ -215,9 +215,9 @@ See the configuration params for **[examples](#examples)** from **[Concept](#con
     "mint_denom": "uc4e",
     "minter": {
       "start": "2022-07-05T00:00:00Z",
-      "periods": [
+      "Minters": [
         {
-          "position": 1,
+          "SequenceId": 1,
           "period_end": "2023-07-05T00:00:00Z",
           "type": "PERIODIC_REDUCTION_MINTER",
           "time_linear_minter": {
@@ -226,7 +226,7 @@ See the configuration params for **[examples](#examples)** from **[Concept](#con
           "periodic_reduction_minter": null
         },
         {
-          "position": 1,
+          "SequenceId": 1,
           "period_end": null,
           "type": "NO_MINTING",
           "time_linear_minter": null,
@@ -247,13 +247,13 @@ Module state contains followng data:
 | Key                  | Type                        | Description                     |
 | -------------------- | --------------------------- | ------------------------------- |
 | minter_state     | MinterState | current minting period state |
-| state_history     | List of MinterState | previuos minting periods final states |
+| state_history     | List of MinterState | previuos minting Minters final states |
 
 ### MinterState
 
 | Key                  | Type                        | Description                     |
 | -------------------- | --------------------------- | ------------------------------- |
-| position     | int32 | current minting period position |
+| SequenceId     | int32 | current minting period SequenceId |
 | amount_minted     | sdk.Int | amount minted by current minting period |
 | remainder_to_mint     | sdk.Dec | decimal remainder - decimal amount that should be minted but was not Int. |
 | last_mint_block_time     | sdk.Time | Time of last mint |
@@ -265,7 +265,7 @@ Module state contains followng data:
 
 {
   "minter_state": {
-    "position": 1,
+    "SequenceId": 1,
     "amount_minted": "13766330043442",
     "remainder_to_mint": "0.415017757483510908",
     "last_mint_block_time": "2022-11-07T14:49:34.606250Z",
@@ -307,9 +307,9 @@ See example reponse:
     "mint_denom": "uc4e",
     "minter": {
       "start": "2022-07-05T00:00:00Z",
-      "periods": [
+      "Minters": [
         {
-          "position": 1,
+          "SequenceId": 1,
           "period_end": null,
           "type": "PERIODIC_REDUCTION_MINTER",
           "time_linear_minter": null,
@@ -334,7 +334,7 @@ See example reponse:
 ```json
 {
   "minter_state": {
-    "position": 1,
+    "SequenceId": 1,
     "amount_minted": "13766330043442",
     "remainder_to_mint": "0.415017757483510908",
     "last_mint_block_time": "2022-11-07T14:49:34.606250Z",

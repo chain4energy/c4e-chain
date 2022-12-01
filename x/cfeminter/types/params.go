@@ -9,10 +9,16 @@ import (
 )
 
 var (
-	KeyMintDenom            = []byte("MintDenom")
-	KeyMinter               = []byte("Minter")
-	DefaultMintDenom string = "uc4e"
-	DefaultMinter    Minter = Minter{Start: time.Now(), Periods: []*MintingPeriod{{Position: 1, Type: NO_MINTING}}}
+	KeyMintDenom     = []byte("MintDenom")
+	KeyMinters       = []byte("Minters")
+	KeyStartTime     = []byte("StartTime")
+	DefaultMintDenom = "uc4e"
+	DefaultStartTime = time.Now()
+	DefaultMinters   = []*Minter{{
+		SequenceId: 1,
+		Type:       NO_MINTING,
+	},
+	}
 ) //
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -23,31 +29,36 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params instance
-func NewParams(denom string, minter Minter) Params {
-	return Params{MintDenom: denom, Minter: minter}
+func NewParams(denom string, startTime time.Time, minters []*Minter) Params {
+	return Params{MintDenom: denom, StartTime: startTime, Minters: minters}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	return NewParams(DefaultMintDenom, DefaultMinter)
+	return NewParams(DefaultMintDenom, DefaultStartTime, DefaultMinters)
 }
 
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyMintDenom, &p.MintDenom, validateDenom),
-		paramtypes.NewParamSetPair(KeyMinter, &p.Minter, validateMinter),
+		paramtypes.NewParamSetPair(KeyStartTime, &p.StartTime, validateStartTime),
+		paramtypes.NewParamSetPair(KeyMinters, &p, validateMinters),
 	}
 }
 
 // Validate validates the set of params
 func (p Params) Validate() error {
+	if err := validateMinters(p); err != nil {
+		return err
+	}
 	if err := validateDenom(p.MintDenom); err != nil {
 		return err
 	}
-	if err := validateMinter(p.Minter); err != nil {
+	if err := validateStartTime(p.StartTime); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -71,8 +82,17 @@ func validateDenom(v interface{}) error {
 	return nil
 }
 
-// validateDenom validates the Denom param
-func validateMinter(v interface{}) error {
+// validateMinters validates the Denom param
+func validateMinters(v interface{}) error {
+	params, ok := v.(Params)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", v)
+	}
+	return params.ValidateMinters()
+}
+
+// validateStartTime validates the StartTime param //TODO: add logic here
+func validateStartTime(v interface{}) error {
 	minter, ok := v.(Minter)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", v)

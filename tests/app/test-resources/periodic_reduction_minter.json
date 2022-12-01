@@ -1,7 +1,7 @@
 {
   "mint_denom": "uc4e",
   "minter": {
-    "periods": [
+    "Minters": [
       {
         "periodic_reduction_minter": {
           "mint_amount": "40000000000000",
@@ -9,7 +9,7 @@
           "reduction_factor": "0.5",
           "reduction_period_length": 4
         },
-        "position": 1,
+        "SequenceId": 1,
         "type": "PERIODIC_REDUCTION_MINTER"
       }
     ],

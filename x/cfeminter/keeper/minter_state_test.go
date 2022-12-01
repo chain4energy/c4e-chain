@@ -14,7 +14,7 @@ func TestGetMinterState(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 
 	minterState := types.MinterState{
-		Position:                    7,
+		SequenceId:                  7,
 		AmountMinted:                sdk.NewInt(123412),
 		RemainderToMint:             sdk.ZeroDec(),
 		RemainderFromPreviousPeriod: sdk.ZeroDec(),

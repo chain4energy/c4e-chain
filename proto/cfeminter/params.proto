@@ -3,7 +3,7 @@ package chain4energy.c4echain.cfeminter;
 
 import "gogoproto/gogo.proto";
 import "cfeminter/minter.proto";
-
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 
@@ -11,5 +11,6 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 message Params {
   option (gogoproto.goproto_stringer) = false;
   string mint_denom = 1;
-  Minter minter = 2  [(gogoproto.nullable) = false];
+  google.protobuf.Timestamp start_time = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  repeated Minter minters = 3;
 }

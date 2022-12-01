@@ -3,13 +3,13 @@ import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-cli
 import { Mint } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 import { Minter } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 import { MintingPeriod } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
-import { TimeLinearMinter } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
-import { PeriodicReductionMinter } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
+import { LinearMinting } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
+import { ExponentialStepMinting } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 import { MinterState } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 
 
-export { Mint, Minter, MintingPeriod, TimeLinearMinter, PeriodicReductionMinter, MinterState, Params };
+export { Mint, Minter, MintingPeriod, LinearMinting, ExponentialStepMinting, MinterState, Params };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -48,8 +48,8 @@ const getDefaultState = () => {
 						Mint: getStructure(Mint.fromPartial({})),
 						Minter: getStructure(Minter.fromPartial({})),
 						MintingPeriod: getStructure(MintingPeriod.fromPartial({})),
-						TimeLinearMinter: getStructure(TimeLinearMinter.fromPartial({})),
-						PeriodicReductionMinter: getStructure(PeriodicReductionMinter.fromPartial({})),
+						LinearMinting: getStructure(LinearMinting.fromPartial({})),
+						ExponentialStepMinting: getStructure(ExponentialStepMinting.fromPartial({})),
 						MinterState: getStructure(MinterState.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						

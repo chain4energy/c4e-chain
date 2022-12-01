@@ -2,14 +2,13 @@ import { txClient, queryClient, MissingWalletError , registry} from './module'
 
 import { Mint } from "./module/types/cfeminter/event"
 import { Minter } from "./module/types/cfeminter/minter"
-import { MintingPeriod } from "./module/types/cfeminter/minter"
-import { TimeLinearMinter } from "./module/types/cfeminter/minter"
-import { PeriodicReductionMinter } from "./module/types/cfeminter/minter"
+import { LinearMinting } from "./module/types/cfeminter/minter"
+import { ExponentialStepMinting } from "./module/types/cfeminter/minter"
 import { MinterState } from "./module/types/cfeminter/minter"
 import { Params } from "./module/types/cfeminter/params"
 
 
-export { Mint, Minter, MintingPeriod, TimeLinearMinter, PeriodicReductionMinter, MinterState, Params };
+export { Mint, Minter, LinearMinting, ExponentialStepMinting, MinterState, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -54,9 +53,8 @@ const getDefaultState = () => {
 				_Structure: {
 						Mint: getStructure(Mint.fromPartial({})),
 						Minter: getStructure(Minter.fromPartial({})),
-						MintingPeriod: getStructure(MintingPeriod.fromPartial({})),
-						TimeLinearMinter: getStructure(TimeLinearMinter.fromPartial({})),
-						PeriodicReductionMinter: getStructure(PeriodicReductionMinter.fromPartial({})),
+						LinearMinting: getStructure(LinearMinting.fromPartial({})),
+						ExponentialStepMinting: getStructure(ExponentialStepMinting.fromPartial({})),
 						MinterState: getStructure(MinterState.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						

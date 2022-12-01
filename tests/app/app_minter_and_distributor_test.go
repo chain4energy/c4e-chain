@@ -76,7 +76,7 @@ func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults tes
 	testcommon.UnmarshalJsonFile("test-resources/periodic_reduction_minter.json", &minterParams)
 
 	startTime := time.Now()
-	minterParams.Minter.Start = startTime
+	minterParams.startTimeMinter = startTime
 
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, startTime)
 	testHelper.C4eMinterUtils.SetParams(minterParams)

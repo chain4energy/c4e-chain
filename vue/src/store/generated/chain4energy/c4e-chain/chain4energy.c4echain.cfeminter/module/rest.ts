@@ -9,15 +9,30 @@
  * ---------------------------------------------------------------
  */
 
+export interface CfeminterExponentialStepMinting {
+  amount?: string;
+  step_duration?: string;
+  amount_multiplier?: string;
+}
+
+export interface CfeminterLinearMinting {
+  amount?: string;
+}
+
 export interface CfeminterMinter {
+  /** @format int32 */
+  sequence_id?: number;
+
   /** @format date-time */
-  start?: string;
-  periods?: CfeminterMintingPeriod[];
+  end_time?: string;
+  type?: string;
+  linear_minting?: CfeminterLinearMinting;
+  exponential_step_minting?: CfeminterExponentialStepMinting;
 }
 
 export interface CfeminterMinterState {
   /** @format int32 */
-  position?: number;
+  SequenceId?: number;
   amount_minted?: string;
   remainder_to_mint?: string;
 
@@ -26,33 +41,15 @@ export interface CfeminterMinterState {
   remainder_from_previous_period?: string;
 }
 
-export interface CfeminterMintingPeriod {
-  /** @format int32 */
-  position?: number;
-
-  /** @format date-time */
-  period_end?: string;
-  type?: string;
-  time_linear_minter?: CfeminterTimeLinearMinter;
-  periodic_reduction_minter?: CfeminterPeriodicReductionMinter;
-}
-
 /**
  * Params defines the parameters for the module.
  */
 export interface CfeminterParams {
   mint_denom?: string;
-  minter?: CfeminterMinter;
-}
 
-export interface CfeminterPeriodicReductionMinter {
-  /** @format int32 */
-  mint_period?: number;
-  mint_amount?: string;
-
-  /** @format int32 */
-  reduction_period_length?: number;
-  reduction_factor?: string;
+  /** @format date-time */
+  start_time?: string;
+  minters?: CfeminterMinter[];
 }
 
 export interface CfeminterQueryInflationResponse {
@@ -70,10 +67,6 @@ export interface CfeminterQueryParamsResponse {
 export interface CfeminterQueryStateResponse {
   minter_state?: CfeminterMinterState;
   state_history?: CfeminterMinterState[];
-}
-
-export interface CfeminterTimeLinearMinter {
-  amount?: string;
 }
 
 export interface ProtobufAny {

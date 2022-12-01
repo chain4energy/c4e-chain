@@ -1,17 +1,14 @@
 /* eslint-disable */
 import { Timestamp } from "../google/protobuf/timestamp";
+import { Duration } from "../google/protobuf/duration";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
 
 export interface Minter {
-  start: Date | undefined;
-  periods: MintingPeriod[];
-}
-
-export interface MintingPeriod {
-  position: number;
-  period_end: Date | undefined;
+  /** option (gogoproto.goproto_getters) = false; */
+  sequence_id: number;
+  end_time: Date | undefined;
   /**
    * types:
    *   NO_MINTING;
@@ -19,42 +16,56 @@ export interface MintingPeriod {
    *   PERIODIC_REDUCTION_MINTER;
    */
   type: string;
-  time_linear_minter: TimeLinearMinter | undefined;
-  periodic_reduction_minter: PeriodicReductionMinter | undefined;
+  linear_minting: LinearMinting | undefined;
+  exponential_step_minting: ExponentialStepMinting | undefined;
 }
 
-export interface TimeLinearMinter {
+export interface LinearMinting {
   amount: string;
 }
 
-export interface PeriodicReductionMinter {
+export interface ExponentialStepMinting {
   /** mint_period in seconds */
-  mint_period: number;
-  mint_amount: string;
-  reduction_period_length: number;
-  reduction_factor: string;
+  amount: string;
+  step_duration: Duration | undefined;
+  amount_multiplier: string;
 }
 
 export interface MinterState {
-  position: number;
+  SequenceId: number;
   amount_minted: string;
   remainder_to_mint: string;
   last_mint_block_time: Date | undefined;
   remainder_from_previous_period: string;
 }
 
-const baseMinter: object = {};
+const baseMinter: object = { sequence_id: 0, type: "" };
 
 export const Minter = {
   encode(message: Minter, writer: Writer = Writer.create()): Writer {
-    if (message.start !== undefined) {
+    if (message.sequence_id !== 0) {
+      writer.uint32(8).int32(message.sequence_id);
+    }
+    if (message.end_time !== undefined) {
       Timestamp.encode(
-        toTimestamp(message.start),
-        writer.uint32(10).fork()
+        toTimestamp(message.end_time),
+        writer.uint32(18).fork()
       ).ldelim();
     }
-    for (const v of message.periods) {
-      MintingPeriod.encode(v!, writer.uint32(18).fork()).ldelim();
+    if (message.type !== "") {
+      writer.uint32(26).string(message.type);
+    }
+    if (message.linear_minting !== undefined) {
+      LinearMinting.encode(
+        message.linear_minting,
+        writer.uint32(34).fork()
+      ).ldelim();
+    }
+    if (message.exponential_step_minting !== undefined) {
+      ExponentialStepMinting.encode(
+        message.exponential_step_minting,
+        writer.uint32(42).fork()
+      ).ldelim();
     }
     return writer;
   },
@@ -63,17 +74,31 @@ export const Minter = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseMinter } as Minter;
-    message.periods = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.start = fromTimestamp(
+          message.sequence_id = reader.int32();
+          break;
+        case 2:
+          message.end_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 2:
-          message.periods.push(MintingPeriod.decode(reader, reader.uint32()));
+        case 3:
+          message.type = reader.string();
+          break;
+        case 4:
+          message.linear_minting = LinearMinting.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
+        case 5:
+          message.exponential_step_minting = ExponentialStepMinting.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -85,236 +110,108 @@ export const Minter = {
 
   fromJSON(object: any): Minter {
     const message = { ...baseMinter } as Minter;
-    message.periods = [];
-    if (object.start !== undefined && object.start !== null) {
-      message.start = fromJsonTimestamp(object.start);
+    if (object.sequence_id !== undefined && object.sequence_id !== null) {
+      message.sequence_id = Number(object.sequence_id);
     } else {
-      message.start = undefined;
+      message.sequence_id = 0;
     }
-    if (object.periods !== undefined && object.periods !== null) {
-      for (const e of object.periods) {
-        message.periods.push(MintingPeriod.fromJSON(e));
-      }
-    }
-    return message;
-  },
-
-  toJSON(message: Minter): unknown {
-    const obj: any = {};
-    message.start !== undefined &&
-      (obj.start =
-        message.start !== undefined ? message.start.toISOString() : null);
-    if (message.periods) {
-      obj.periods = message.periods.map((e) =>
-        e ? MintingPeriod.toJSON(e) : undefined
-      );
+    if (object.end_time !== undefined && object.end_time !== null) {
+      message.end_time = fromJsonTimestamp(object.end_time);
     } else {
-      obj.periods = [];
-    }
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<Minter>): Minter {
-    const message = { ...baseMinter } as Minter;
-    message.periods = [];
-    if (object.start !== undefined && object.start !== null) {
-      message.start = object.start;
-    } else {
-      message.start = undefined;
-    }
-    if (object.periods !== undefined && object.periods !== null) {
-      for (const e of object.periods) {
-        message.periods.push(MintingPeriod.fromPartial(e));
-      }
-    }
-    return message;
-  },
-};
-
-const baseMintingPeriod: object = { position: 0, type: "" };
-
-export const MintingPeriod = {
-  encode(message: MintingPeriod, writer: Writer = Writer.create()): Writer {
-    if (message.position !== 0) {
-      writer.uint32(8).int32(message.position);
-    }
-    if (message.period_end !== undefined) {
-      Timestamp.encode(
-        toTimestamp(message.period_end),
-        writer.uint32(18).fork()
-      ).ldelim();
-    }
-    if (message.type !== "") {
-      writer.uint32(26).string(message.type);
-    }
-    if (message.time_linear_minter !== undefined) {
-      TimeLinearMinter.encode(
-        message.time_linear_minter,
-        writer.uint32(34).fork()
-      ).ldelim();
-    }
-    if (message.periodic_reduction_minter !== undefined) {
-      PeriodicReductionMinter.encode(
-        message.periodic_reduction_minter,
-        writer.uint32(42).fork()
-      ).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): MintingPeriod {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMintingPeriod } as MintingPeriod;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.position = reader.int32();
-          break;
-        case 2:
-          message.period_end = fromTimestamp(
-            Timestamp.decode(reader, reader.uint32())
-          );
-          break;
-        case 3:
-          message.type = reader.string();
-          break;
-        case 4:
-          message.time_linear_minter = TimeLinearMinter.decode(
-            reader,
-            reader.uint32()
-          );
-          break;
-        case 5:
-          message.periodic_reduction_minter = PeriodicReductionMinter.decode(
-            reader,
-            reader.uint32()
-          );
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MintingPeriod {
-    const message = { ...baseMintingPeriod } as MintingPeriod;
-    if (object.position !== undefined && object.position !== null) {
-      message.position = Number(object.position);
-    } else {
-      message.position = 0;
-    }
-    if (object.period_end !== undefined && object.period_end !== null) {
-      message.period_end = fromJsonTimestamp(object.period_end);
-    } else {
-      message.period_end = undefined;
+      message.end_time = undefined;
     }
     if (object.type !== undefined && object.type !== null) {
       message.type = String(object.type);
     } else {
       message.type = "";
     }
-    if (
-      object.time_linear_minter !== undefined &&
-      object.time_linear_minter !== null
-    ) {
-      message.time_linear_minter = TimeLinearMinter.fromJSON(
-        object.time_linear_minter
-      );
+    if (object.linear_minting !== undefined && object.linear_minting !== null) {
+      message.linear_minting = LinearMinting.fromJSON(object.linear_minting);
     } else {
-      message.time_linear_minter = undefined;
+      message.linear_minting = undefined;
     }
     if (
-      object.periodic_reduction_minter !== undefined &&
-      object.periodic_reduction_minter !== null
+      object.exponential_step_minting !== undefined &&
+      object.exponential_step_minting !== null
     ) {
-      message.periodic_reduction_minter = PeriodicReductionMinter.fromJSON(
-        object.periodic_reduction_minter
+      message.exponential_step_minting = ExponentialStepMinting.fromJSON(
+        object.exponential_step_minting
       );
     } else {
-      message.periodic_reduction_minter = undefined;
+      message.exponential_step_minting = undefined;
     }
     return message;
   },
 
-  toJSON(message: MintingPeriod): unknown {
+  toJSON(message: Minter): unknown {
     const obj: any = {};
-    message.position !== undefined && (obj.position = message.position);
-    message.period_end !== undefined &&
-      (obj.period_end =
-        message.period_end !== undefined
-          ? message.period_end.toISOString()
-          : null);
+    message.sequence_id !== undefined &&
+      (obj.sequence_id = message.sequence_id);
+    message.end_time !== undefined &&
+      (obj.end_time =
+        message.end_time !== undefined ? message.end_time.toISOString() : null);
     message.type !== undefined && (obj.type = message.type);
-    message.time_linear_minter !== undefined &&
-      (obj.time_linear_minter = message.time_linear_minter
-        ? TimeLinearMinter.toJSON(message.time_linear_minter)
+    message.linear_minting !== undefined &&
+      (obj.linear_minting = message.linear_minting
+        ? LinearMinting.toJSON(message.linear_minting)
         : undefined);
-    message.periodic_reduction_minter !== undefined &&
-      (obj.periodic_reduction_minter = message.periodic_reduction_minter
-        ? PeriodicReductionMinter.toJSON(message.periodic_reduction_minter)
+    message.exponential_step_minting !== undefined &&
+      (obj.exponential_step_minting = message.exponential_step_minting
+        ? ExponentialStepMinting.toJSON(message.exponential_step_minting)
         : undefined);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MintingPeriod>): MintingPeriod {
-    const message = { ...baseMintingPeriod } as MintingPeriod;
-    if (object.position !== undefined && object.position !== null) {
-      message.position = object.position;
+  fromPartial(object: DeepPartial<Minter>): Minter {
+    const message = { ...baseMinter } as Minter;
+    if (object.sequence_id !== undefined && object.sequence_id !== null) {
+      message.sequence_id = object.sequence_id;
     } else {
-      message.position = 0;
+      message.sequence_id = 0;
     }
-    if (object.period_end !== undefined && object.period_end !== null) {
-      message.period_end = object.period_end;
+    if (object.end_time !== undefined && object.end_time !== null) {
+      message.end_time = object.end_time;
     } else {
-      message.period_end = undefined;
+      message.end_time = undefined;
     }
     if (object.type !== undefined && object.type !== null) {
       message.type = object.type;
     } else {
       message.type = "";
     }
-    if (
-      object.time_linear_minter !== undefined &&
-      object.time_linear_minter !== null
-    ) {
-      message.time_linear_minter = TimeLinearMinter.fromPartial(
-        object.time_linear_minter
-      );
+    if (object.linear_minting !== undefined && object.linear_minting !== null) {
+      message.linear_minting = LinearMinting.fromPartial(object.linear_minting);
     } else {
-      message.time_linear_minter = undefined;
+      message.linear_minting = undefined;
     }
     if (
-      object.periodic_reduction_minter !== undefined &&
-      object.periodic_reduction_minter !== null
+      object.exponential_step_minting !== undefined &&
+      object.exponential_step_minting !== null
     ) {
-      message.periodic_reduction_minter = PeriodicReductionMinter.fromPartial(
-        object.periodic_reduction_minter
+      message.exponential_step_minting = ExponentialStepMinting.fromPartial(
+        object.exponential_step_minting
       );
     } else {
-      message.periodic_reduction_minter = undefined;
+      message.exponential_step_minting = undefined;
     }
     return message;
   },
 };
 
-const baseTimeLinearMinter: object = { amount: "" };
+const baseLinearMinting: object = { amount: "" };
 
-export const TimeLinearMinter = {
-  encode(message: TimeLinearMinter, writer: Writer = Writer.create()): Writer {
+export const LinearMinting = {
+  encode(message: LinearMinting, writer: Writer = Writer.create()): Writer {
     if (message.amount !== "") {
       writer.uint32(10).string(message.amount);
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): TimeLinearMinter {
+  decode(input: Reader | Uint8Array, length?: number): LinearMinting {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseTimeLinearMinter } as TimeLinearMinter;
+    const message = { ...baseLinearMinting } as LinearMinting;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -329,8 +226,8 @@ export const TimeLinearMinter = {
     return message;
   },
 
-  fromJSON(object: any): TimeLinearMinter {
-    const message = { ...baseTimeLinearMinter } as TimeLinearMinter;
+  fromJSON(object: any): LinearMinting {
+    const message = { ...baseLinearMinting } as LinearMinting;
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = String(object.amount);
     } else {
@@ -339,14 +236,14 @@ export const TimeLinearMinter = {
     return message;
   },
 
-  toJSON(message: TimeLinearMinter): unknown {
+  toJSON(message: LinearMinting): unknown {
     const obj: any = {};
     message.amount !== undefined && (obj.amount = message.amount);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<TimeLinearMinter>): TimeLinearMinter {
-    const message = { ...baseTimeLinearMinter } as TimeLinearMinter;
+  fromPartial(object: DeepPartial<LinearMinting>): LinearMinting {
+    const message = { ...baseLinearMinting } as LinearMinting;
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = object.amount;
     } else {
@@ -356,53 +253,43 @@ export const TimeLinearMinter = {
   },
 };
 
-const basePeriodicReductionMinter: object = {
-  mint_period: 0,
-  mint_amount: "",
-  reduction_period_length: 0,
-  reduction_factor: "",
+const baseExponentialStepMinting: object = {
+  amount: "",
+  amount_multiplier: "",
 };
 
-export const PeriodicReductionMinter = {
+export const ExponentialStepMinting = {
   encode(
-    message: PeriodicReductionMinter,
+    message: ExponentialStepMinting,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.mint_period !== 0) {
-      writer.uint32(8).int32(message.mint_period);
+    if (message.amount !== "") {
+      writer.uint32(18).string(message.amount);
     }
-    if (message.mint_amount !== "") {
-      writer.uint32(18).string(message.mint_amount);
+    if (message.step_duration !== undefined) {
+      Duration.encode(message.step_duration, writer.uint32(10).fork()).ldelim();
     }
-    if (message.reduction_period_length !== 0) {
-      writer.uint32(24).int32(message.reduction_period_length);
-    }
-    if (message.reduction_factor !== "") {
-      writer.uint32(34).string(message.reduction_factor);
+    if (message.amount_multiplier !== "") {
+      writer.uint32(34).string(message.amount_multiplier);
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): PeriodicReductionMinter {
+  decode(input: Reader | Uint8Array, length?: number): ExponentialStepMinting {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...basePeriodicReductionMinter,
-    } as PeriodicReductionMinter;
+    const message = { ...baseExponentialStepMinting } as ExponentialStepMinting;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.mint_period = reader.int32();
-          break;
         case 2:
-          message.mint_amount = reader.string();
+          message.amount = reader.string();
           break;
-        case 3:
-          message.reduction_period_length = reader.int32();
+        case 1:
+          message.step_duration = Duration.decode(reader, reader.uint32());
           break;
         case 4:
-          message.reduction_factor = reader.string();
+          message.amount_multiplier = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -412,90 +299,69 @@ export const PeriodicReductionMinter = {
     return message;
   },
 
-  fromJSON(object: any): PeriodicReductionMinter {
-    const message = {
-      ...basePeriodicReductionMinter,
-    } as PeriodicReductionMinter;
-    if (object.mint_period !== undefined && object.mint_period !== null) {
-      message.mint_period = Number(object.mint_period);
+  fromJSON(object: any): ExponentialStepMinting {
+    const message = { ...baseExponentialStepMinting } as ExponentialStepMinting;
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = String(object.amount);
     } else {
-      message.mint_period = 0;
+      message.amount = "";
     }
-    if (object.mint_amount !== undefined && object.mint_amount !== null) {
-      message.mint_amount = String(object.mint_amount);
+    if (object.step_duration !== undefined && object.step_duration !== null) {
+      message.step_duration = Duration.fromJSON(object.step_duration);
     } else {
-      message.mint_amount = "";
+      message.step_duration = undefined;
     }
     if (
-      object.reduction_period_length !== undefined &&
-      object.reduction_period_length !== null
+      object.amount_multiplier !== undefined &&
+      object.amount_multiplier !== null
     ) {
-      message.reduction_period_length = Number(object.reduction_period_length);
+      message.amount_multiplier = String(object.amount_multiplier);
     } else {
-      message.reduction_period_length = 0;
-    }
-    if (
-      object.reduction_factor !== undefined &&
-      object.reduction_factor !== null
-    ) {
-      message.reduction_factor = String(object.reduction_factor);
-    } else {
-      message.reduction_factor = "";
+      message.amount_multiplier = "";
     }
     return message;
   },
 
-  toJSON(message: PeriodicReductionMinter): unknown {
+  toJSON(message: ExponentialStepMinting): unknown {
     const obj: any = {};
-    message.mint_period !== undefined &&
-      (obj.mint_period = message.mint_period);
-    message.mint_amount !== undefined &&
-      (obj.mint_amount = message.mint_amount);
-    message.reduction_period_length !== undefined &&
-      (obj.reduction_period_length = message.reduction_period_length);
-    message.reduction_factor !== undefined &&
-      (obj.reduction_factor = message.reduction_factor);
+    message.amount !== undefined && (obj.amount = message.amount);
+    message.step_duration !== undefined &&
+      (obj.step_duration = message.step_duration
+        ? Duration.toJSON(message.step_duration)
+        : undefined);
+    message.amount_multiplier !== undefined &&
+      (obj.amount_multiplier = message.amount_multiplier);
     return obj;
   },
 
   fromPartial(
-    object: DeepPartial<PeriodicReductionMinter>
-  ): PeriodicReductionMinter {
-    const message = {
-      ...basePeriodicReductionMinter,
-    } as PeriodicReductionMinter;
-    if (object.mint_period !== undefined && object.mint_period !== null) {
-      message.mint_period = object.mint_period;
+    object: DeepPartial<ExponentialStepMinting>
+  ): ExponentialStepMinting {
+    const message = { ...baseExponentialStepMinting } as ExponentialStepMinting;
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
     } else {
-      message.mint_period = 0;
+      message.amount = "";
     }
-    if (object.mint_amount !== undefined && object.mint_amount !== null) {
-      message.mint_amount = object.mint_amount;
+    if (object.step_duration !== undefined && object.step_duration !== null) {
+      message.step_duration = Duration.fromPartial(object.step_duration);
     } else {
-      message.mint_amount = "";
+      message.step_duration = undefined;
     }
     if (
-      object.reduction_period_length !== undefined &&
-      object.reduction_period_length !== null
+      object.amount_multiplier !== undefined &&
+      object.amount_multiplier !== null
     ) {
-      message.reduction_period_length = object.reduction_period_length;
+      message.amount_multiplier = object.amount_multiplier;
     } else {
-      message.reduction_period_length = 0;
-    }
-    if (
-      object.reduction_factor !== undefined &&
-      object.reduction_factor !== null
-    ) {
-      message.reduction_factor = object.reduction_factor;
-    } else {
-      message.reduction_factor = "";
+      message.amount_multiplier = "";
     }
     return message;
   },
 };
 
 const baseMinterState: object = {
-  position: 0,
+  SequenceId: 0,
   amount_minted: "",
   remainder_to_mint: "",
   remainder_from_previous_period: "",
@@ -503,8 +369,8 @@ const baseMinterState: object = {
 
 export const MinterState = {
   encode(message: MinterState, writer: Writer = Writer.create()): Writer {
-    if (message.position !== 0) {
-      writer.uint32(8).int32(message.position);
+    if (message.SequenceId !== 0) {
+      writer.uint32(8).int32(message.SequenceId);
     }
     if (message.amount_minted !== "") {
       writer.uint32(18).string(message.amount_minted);
@@ -532,7 +398,7 @@ export const MinterState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.position = reader.int32();
+          message.SequenceId = reader.int32();
           break;
         case 2:
           message.amount_minted = reader.string();
@@ -558,10 +424,10 @@ export const MinterState = {
 
   fromJSON(object: any): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (object.position !== undefined && object.position !== null) {
-      message.position = Number(object.position);
+    if (object.SequenceId !== undefined && object.SequenceId !== null) {
+      message.SequenceId = Number(object.SequenceId);
     } else {
-      message.position = 0;
+      message.SequenceId = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = String(object.amount_minted);
@@ -601,7 +467,7 @@ export const MinterState = {
 
   toJSON(message: MinterState): unknown {
     const obj: any = {};
-    message.position !== undefined && (obj.position = message.position);
+    message.SequenceId !== undefined && (obj.SequenceId = message.SequenceId);
     message.amount_minted !== undefined &&
       (obj.amount_minted = message.amount_minted);
     message.remainder_to_mint !== undefined &&
@@ -619,10 +485,10 @@ export const MinterState = {
 
   fromPartial(object: DeepPartial<MinterState>): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (object.position !== undefined && object.position !== null) {
-      message.position = object.position;
+    if (object.SequenceId !== undefined && object.SequenceId !== null) {
+      message.SequenceId = object.SequenceId;
     } else {
-      message.position = 0;
+      message.SequenceId = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = object.amount_minted;

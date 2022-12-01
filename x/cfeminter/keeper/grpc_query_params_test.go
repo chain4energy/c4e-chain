@@ -16,7 +16,7 @@ func TestParamsQuery(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
 	params.MintDenom = "denom"
-	params.Minter = createLinearMinters(time.Now())
+	params.Minter = createLinearMintings(time.Now())
 
 	keeper.SetParams(ctx, params)
 
