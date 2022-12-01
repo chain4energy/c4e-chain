@@ -29,9 +29,9 @@ message GenesisVestingType {
   // period of veesting coins from lockup period end
   int64 vesting_period = 4; 
   string vesting_period_unit = 5;
-  string initial_bonus = 6 [
+  string free = 6 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false
+    (gogoproto.nullable) = false
   ];
   // units to select:
   // days

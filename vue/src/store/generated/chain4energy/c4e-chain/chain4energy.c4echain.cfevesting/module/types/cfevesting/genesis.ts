@@ -33,7 +33,7 @@ export interface GenesisVestingType {
    * minutes
    * seconds
    */
-  initial_bonus: string;
+  free: string;
 }
 
 const baseGenesisState: object = { vesting_account_count: 0 };
@@ -218,7 +218,7 @@ const baseGenesisVestingType: object = {
   lockup_period_unit: "",
   vesting_period: 0,
   vesting_period_unit: "",
-  initial_bonus: "",
+  free: "",
 };
 
 export const GenesisVestingType = {
@@ -241,8 +241,8 @@ export const GenesisVestingType = {
     if (message.vesting_period_unit !== "") {
       writer.uint32(42).string(message.vesting_period_unit);
     }
-    if (message.initial_bonus !== "") {
-      writer.uint32(50).string(message.initial_bonus);
+    if (message.free !== "") {
+      writer.uint32(50).string(message.free);
     }
     return writer;
   },
@@ -270,7 +270,7 @@ export const GenesisVestingType = {
           message.vesting_period_unit = reader.string();
           break;
         case 6:
-          message.initial_bonus = reader.string();
+          message.free = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -313,10 +313,10 @@ export const GenesisVestingType = {
     } else {
       message.vesting_period_unit = "";
     }
-    if (object.initial_bonus !== undefined && object.initial_bonus !== null) {
-      message.initial_bonus = String(object.initial_bonus);
+    if (object.free !== undefined && object.free !== null) {
+      message.free = String(object.free);
     } else {
-      message.initial_bonus = "";
+      message.free = "";
     }
     return message;
   },
@@ -332,8 +332,7 @@ export const GenesisVestingType = {
       (obj.vesting_period = message.vesting_period);
     message.vesting_period_unit !== undefined &&
       (obj.vesting_period_unit = message.vesting_period_unit);
-    message.initial_bonus !== undefined &&
-      (obj.initial_bonus = message.initial_bonus);
+    message.free !== undefined && (obj.free = message.free);
     return obj;
   },
 
@@ -370,10 +369,10 @@ export const GenesisVestingType = {
     } else {
       message.vesting_period_unit = "";
     }
-    if (object.initial_bonus !== undefined && object.initial_bonus !== null) {
-      message.initial_bonus = object.initial_bonus;
+    if (object.free !== undefined && object.free !== null) {
+      message.free = object.free;
     } else {
-      message.initial_bonus = "";
+      message.free = "";
     }
     return message;
   },

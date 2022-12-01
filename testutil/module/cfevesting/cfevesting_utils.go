@@ -362,7 +362,7 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 
 	denom := h.helperCfevestingKeeper.Denom(ctx)
 	decAmount := amount.ToDec()
-	lockedVesting := decAmount.Sub(decAmount.Mul(vestingType.InitialBonus)).TruncateInt()
+	lockedVesting := decAmount.Sub(decAmount.Mul(vestingType.Free)).TruncateInt()
 	if restartVesting {
 		h.authUtils.VerifyVestingAccount(ctx, vestingAccAddress, denom, lockedVesting, ctx.BlockTime().Add(vestingType.LockupPeriod), ctx.BlockTime().Add(vestingType.LockupPeriod).Add(vestingType.VestingPeriod))
 	} else {

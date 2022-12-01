@@ -46,8 +46,8 @@ func TestGenesisState_Validate(t *testing.T) {
 		invalidVestingTypesEmptyNameTest(),
 		invalidVestingTypesNegativeLockupPeriodTest(),
 		invalidVestingTypesNegativeVestingPeriodTest(),
-		invalidVestingTypesInitialBonusGreaterThan1(),
-		invalidVestingTypesInitialBonusLowerThan0(),
+		invalidVestingTypesFreeGreaterThan1(),
+		invalidVestingTypesFreeLowerThan0(),
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -489,9 +489,9 @@ func getWrongUnitMessageCodeLineInfo() string {
 	return err.Error()[startLen:errLen]
 }
 
-func invalidVestingTypesInitialBonusGreaterThan1() TcData {
+func invalidVestingTypesFreeGreaterThan1() TcData {
 	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
-	vestingTypes[6].InitialBonus = sdk.MustNewDecFromStr("1.1")
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("1.1")
 	return TcData{
 		desc: "invalid vestingTypes initial bonus greater than 100",
 		genState: &types.GenesisState{
@@ -499,13 +499,13 @@ func invalidVestingTypesInitialBonusGreaterThan1() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "InitialBonus of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
+		errorMassage: "Free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
 	}
 }
 
-func invalidVestingTypesInitialBonusLowerThan0() TcData {
+func invalidVestingTypesFreeLowerThan0() TcData {
 	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
-	vestingTypes[6].InitialBonus = sdk.MustNewDecFromStr("-1")
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("-1")
 	return TcData{
 		desc: "invalid vestingTypes initial bonus lower than 100",
 		genState: &types.GenesisState{
@@ -513,6 +513,6 @@ func invalidVestingTypesInitialBonusLowerThan0() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "InitialBonus of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
+		errorMassage: "Free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
 	}
 }

@@ -227,10 +227,10 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 			k.Logger(ctx).Error("send to new vesting account get vesting type error", "fromAddr", fromAddr, "vestingPool", vestingPool, "error", err.Error())
 			return withdrawn, sdkerrors.Wrap(types.ErrGetVestingType, sdkerrors.Wrapf(err, "send to new vesting account - from addr: %s, vestingType %s", fromAddr, vestingPool.VestingType).Error())
 		}
-		err = k.newVestingAccount(ctx, toAddr, amount, vt.InitialBonus,
+		err = k.newVestingAccount(ctx, toAddr, amount, vt.Free,
 			ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod))
 	} else {
-		err = k.newVestingAccount(ctx, toAddr, amount, vt.InitialBonus,
+		err = k.newVestingAccount(ctx, toAddr, amount, vt.Free,
 			vestingPool.LockEnd, vestingPool.LockEnd)
 	}
 	if err == nil {

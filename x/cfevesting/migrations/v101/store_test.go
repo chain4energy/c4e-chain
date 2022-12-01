@@ -57,15 +57,23 @@ func TestMigrationOneAccountVestingPoolsWithOnePool(t *testing.T) {
 }
 
 func TestMigrationOneVestingType(t *testing.T) {
-	vts := testutils.GenerateVestingTypes(1, 1)
+	vts := Generatev100VestingTypes(1, 1)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
 	MigrateV100ToV101(t, testUtil, ctx)
 }
 
 func TestMigrationManyVestingType(t *testing.T) {
-	vts := testutils.GenerateVestingTypes(10, 1)
+	vts := Generatev100VestingTypes(10, 1)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
+	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
+	MigrateV100ToV101(t, testUtil, ctx)
+}
+
+func TestMigrationValidatorsVestingType(t *testing.T) {
+	vts := Generatev100VestingTypes(10, 1)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
+	vts[3].Name = "Validators"
 	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
 	MigrateV100ToV101(t, testUtil, ctx)
 }
@@ -127,6 +135,26 @@ func MigrateV100ToV101(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 	newAccPools := testUtil.GetC4eVestingKeeper().GetAllAccountVestingPools(ctx)
 	newVestingTypes := testUtil.GetC4eVestingKeeper().GetAllVestingTypes(ctx)
 
+	for _, oldVestingType := range oldVestingTypes.VestingTypes {
+		foundNewVestingType := false
+		for _, newVesting := range newVestingTypes.VestingTypes {
+			if oldVestingType.Name == newVesting.Name {
+				require.EqualValues(t, oldVestingType.Name, newVesting.Name)
+				require.EqualValues(t, oldVestingType.LockupPeriod, newVesting.LockupPeriod)
+				require.EqualValues(t, oldVestingType.VestingPeriod, newVesting.VestingPeriod)
+				if newVesting.Name == "Validators" {
+					require.EqualValues(t, sdk.MustNewDecFromStr("0.05"), newVesting.Free)
+				} else {
+					require.EqualValues(t, sdk.ZeroDec(), newVesting.Free)
+				}
+				foundNewVestingType = true
+				break
+			}
+
+		}
+		require.True(t, foundNewVestingType)
+	}
+
 	require.EqualValues(t, len(oldAccPools), len(newAccPools))
 	for i := 0; i < len(oldAccPools); i++ {
 		require.EqualValues(t, oldAccPools[i].Address, newAccPools[i].Address)
@@ -144,7 +172,6 @@ func MigrateV100ToV101(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 			require.True(t, oldSentCalculated.Equal(newAccPools[i].VestingPools[j].Sent))
 		}
 	}
-	require.ElementsMatch(t, oldVestingTypes.VestingTypes, newVestingTypes.VestingTypes)
 }
 
 func getAllV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v100cfevesting.AccountVestingPools) {
@@ -195,6 +222,22 @@ func generateV100AccountVestingPools(numberOfAccounts int, numberOfVestingPoolsP
 	return accountVestingPoolsArr
 }
 
+func Generatev100VestingTypes(numberOfVestingTypes int, startId int) []*types.VestingType {
+	vestingTypes := []*types.VestingType{}
+
+	for i := 0; i < numberOfVestingTypes; i++ {
+		vestingType := types.VestingType{
+			Name:          "test-vesting-type-" + strconv.Itoa(i+startId),
+			LockupPeriod:  testutils.CreateDurationFromNumOfHours(1000),
+			VestingPeriod: testutils.CreateDurationFromNumOfHours(5000),
+			Free:          sdk.MustNewDecFromStr("0.5"),
+		}
+		vestingTypes = append(vestingTypes, &vestingType)
+	}
+
+	return vestingTypes
+}
+
 func generateRandomV100VestingPool(accuntId int, vestingId int) v100cfevesting.VestingPool {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	vested := int(helpers.RandIntBetweenWith0(r, 1, 10000000))
@@ -225,7 +268,7 @@ func setV100VestingTypes(ctx sdk.Context, vestingTypes types.VestingTypes, store
 	store.Set(v100cfevesting.VestingTypesKey, b)
 }
 
-func getAllV100VestingType(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (vestingTypes types.VestingTypes) {
+func getAllV100VestingType(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (vestingTypes v100cfevesting.VestingTypes) {
 	store := ctx.KVStore(storeKey)
 	b := store.Get(v100cfevesting.VestingTypesKey)
 	if b == nil {
@@ -234,5 +277,4 @@ func getAllV100VestingType(ctx sdk.Context, storeKey storetypes.StoreKey, cdc co
 
 	cdc.MustUnmarshal(b, &vestingTypes)
 	return
-
 }

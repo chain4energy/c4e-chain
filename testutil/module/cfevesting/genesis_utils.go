@@ -18,7 +18,7 @@ func GenerateGenesisVestingTypes(numberOfVestingTypes int, startId int) []types.
 			LockupPeriodUnit:  types.Day,
 			VestingPeriod:     vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
 			VestingPeriodUnit: types.Day,
-			InitialBonus:      sdk.MustNewDecFromStr("0.5"),
+			Free:              sdk.MustNewDecFromStr("0.5"),
 		}
 		result = append(result, gvt)
 	}
@@ -37,7 +37,7 @@ func GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPools []*typ
 				LockupPeriodUnit:  types.Day,
 				VestingPeriod:     vt.VestingPeriod.Nanoseconds() / int64(time.Hour),
 				VestingPeriodUnit: types.Day,
-				InitialBonus:      sdk.MustNewDecFromStr("0.5"),
+				Free:              sdk.MustNewDecFromStr("0.5"),
 			}
 			m[v.VestingType] = gvt
 

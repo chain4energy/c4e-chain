@@ -16,7 +16,7 @@ export interface VestingType {
   /** period of vesting coins (minutes) from lockup period end */
   vesting_period: Duration | undefined;
   /** the percentage of tokens that are released initially */
-  initial_bonus: string;
+  free: string;
 }
 
 const baseVestingTypes: object = {};
@@ -85,7 +85,7 @@ export const VestingTypes = {
   },
 };
 
-const baseVestingType: object = { name: "", initial_bonus: "" };
+const baseVestingType: object = { name: "", free: "" };
 
 export const VestingType = {
   encode(message: VestingType, writer: Writer = Writer.create()): Writer {
@@ -101,8 +101,8 @@ export const VestingType = {
         writer.uint32(26).fork()
       ).ldelim();
     }
-    if (message.initial_bonus !== "") {
-      writer.uint32(34).string(message.initial_bonus);
+    if (message.free !== "") {
+      writer.uint32(34).string(message.free);
     }
     return writer;
   },
@@ -124,7 +124,7 @@ export const VestingType = {
           message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         case 4:
-          message.initial_bonus = reader.string();
+          message.free = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -151,10 +151,10 @@ export const VestingType = {
     } else {
       message.vesting_period = undefined;
     }
-    if (object.initial_bonus !== undefined && object.initial_bonus !== null) {
-      message.initial_bonus = String(object.initial_bonus);
+    if (object.free !== undefined && object.free !== null) {
+      message.free = String(object.free);
     } else {
-      message.initial_bonus = "";
+      message.free = "";
     }
     return message;
   },
@@ -170,8 +170,7 @@ export const VestingType = {
       (obj.vesting_period = message.vesting_period
         ? Duration.toJSON(message.vesting_period)
         : undefined);
-    message.initial_bonus !== undefined &&
-      (obj.initial_bonus = message.initial_bonus);
+    message.free !== undefined && (obj.free = message.free);
     return obj;
   },
 
@@ -192,10 +191,10 @@ export const VestingType = {
     } else {
       message.vesting_period = undefined;
     }
-    if (object.initial_bonus !== undefined && object.initial_bonus !== null) {
-      message.initial_bonus = object.initial_bonus;
+    if (object.free !== undefined && object.free !== null) {
+      message.free = object.free;
     } else {
-      message.initial_bonus = "";
+      message.free = "";
     }
     return message;
   },

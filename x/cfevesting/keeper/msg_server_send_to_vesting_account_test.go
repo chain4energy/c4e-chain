@@ -245,7 +245,7 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
-func TestSendVestingAccountInitialBonus(t *testing.T) {
+func TestSendVestingAccountFree(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
@@ -261,7 +261,7 @@ func TestSendVestingAccountInitialBonus(t *testing.T) {
 		Name:          "test1",
 		LockupPeriod:  2324,
 		VestingPeriod: 42423,
-		InitialBonus:  sdk.MustNewDecFromStr("0.5"),
+		Free:          sdk.MustNewDecFromStr("0.5"),
 	}
 
 	vestingTypesArray := []*types.VestingType{&vestingType}

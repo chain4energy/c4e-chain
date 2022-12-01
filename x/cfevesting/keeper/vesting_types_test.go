@@ -17,13 +17,13 @@ func TestGetVestingTypes(t *testing.T) {
 		Name:          "test1",
 		LockupPeriod:  2324,
 		VestingPeriod: 42423,
-		InitialBonus:  sdk.ZeroDec(),
+		Free:          sdk.ZeroDec(),
 	}
 	vestingType2 := types.VestingType{
 		Name:          "test2",
 		LockupPeriod:  1111,
 		VestingPeriod: 112233,
-		InitialBonus:  sdk.ZeroDec(),
+		Free:          sdk.ZeroDec(),
 	}
 
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}
@@ -44,13 +44,13 @@ func TestGetVestingTypeByName(t *testing.T) {
 		Name:          "test1",
 		LockupPeriod:  2324,
 		VestingPeriod: 42423,
-		InitialBonus:  sdk.ZeroDec(),
+		Free:          sdk.ZeroDec(),
 	}
 	vestingType2 := types.VestingType{
 		Name:          "test2",
 		LockupPeriod:  1111,
 		VestingPeriod: 112233,
-		InitialBonus:  sdk.ZeroDec(),
+		Free:          sdk.ZeroDec(),
 	}
 
 	vestingTypesArray := []*types.VestingType{&vestingType1, &vestingType2}

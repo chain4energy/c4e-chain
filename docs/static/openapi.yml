@@ -1342,7 +1342,7 @@ paths:
                       title: period of veesting coins from lockup period end
                     vesting_period_unit:
                       type: string
-                    initial_bonus:
+                    free:
                       type: string
                       title: |-
                         units to select:
@@ -32808,7 +32808,7 @@ definitions:
         title: period of veesting coins from lockup period end
       vesting_period_unit:
         type: string
-      initial_bonus:
+      free:
         type: string
         title: |-
           units to select:
@@ -32905,7 +32905,7 @@ definitions:
               title: period of veesting coins from lockup period end
             vesting_period_unit:
               type: string
-            initial_bonus:
+            free:
               type: string
               title: |-
                 units to select:
