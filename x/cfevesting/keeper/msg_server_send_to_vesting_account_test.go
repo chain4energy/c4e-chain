@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
 	"time"
 
@@ -242,4 +243,37 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, vPool1, sdk.NewInt(100), true)
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, vPool1, sdk.NewInt(300), true, "new vesting account - account address: "+accAddr2.String()+": entity already exists")
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
+func TestSendVestingAccountInitialBonus(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := types.VestingTypes{}
+	vestingType := types.VestingType{
+		Name:          "test1",
+		LockupPeriod:  2324,
+		VestingPeriod: 42423,
+		InitialBonus:  sdk.MustNewDecFromStr("0.5"),
+	}
+
+	vestingTypesArray := []*types.VestingType{&vestingType}
+	vestingTypes.VestingTypes = vestingTypesArray
+	sendToVestingAccountAmount := sdk.NewInt(100)
+	testHelper.C4eVestingUtils.SetVestingTypes(vestingTypes)
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, vestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
+	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, vPool1, sendToVestingAccountAmount, true)
+	denom := "uc4e"
+	testHelper.AuthUtils.VerifyVestingAccount(
+		accAddr2, denom, sdk.NewInt(50),
+		testHelper.Context.BlockTime().Add(vestingType.LockupPeriod),
+		testHelper.Context.BlockTime().Add(vestingType.LockupPeriod).Add(vestingType.VestingPeriod),
+	)
 }

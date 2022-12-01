@@ -116,8 +116,8 @@ func (gst GenesisVestingType) Validate() error {
 		return fmt.Errorf("VestingPeriod of veting type: %s less than 0", gst.Name)
 	}
 
-	if gst.InitialBonus.GT(sdk.NewDec(1)) {
-		return fmt.Errorf("InitialBonus of veting type %s is greater than 100", gst.Name)
+	if gst.InitialBonus.GT(sdk.NewDec(1)) || gst.InitialBonus.IsNegative() {
+		return fmt.Errorf("InitialBonus of veting type %s must be set between 0 and 1", gst.Name)
 	}
 
 	return nil

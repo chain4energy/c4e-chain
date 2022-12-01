@@ -12,7 +12,7 @@ const primaryShareNameSuffix = "_primary"
 func (s SubDistributor) Validate() error {
 
 	if s.Destinations.CheckPercentShareSumIsBetween0And1() {
-		return fmt.Errorf("share sum is greater or equal 100")
+		return fmt.Errorf("share sum must be between 0 and 1")
 	}
 
 	for _, source := range s.Sources {
