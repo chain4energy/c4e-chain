@@ -34,7 +34,7 @@ func (m *C4eMinterUtils) SetMinterState(ctx sdk.Context, SequenceId int32, amoun
 	remainderToMint sdk.Dec, lastMintBlockTime time.Time, remainderFromPreviousPeriod sdk.Dec) {
 
 	minterState := cfemintertypes.MinterState{
-		SequenceId:                  SequenceId,
+		Position:                    SequenceId,
 		AmountMinted:                amountMinted,
 		RemainderToMint:             remainderToMint,
 		LastMintBlockTime:           lastMintBlockTime,
@@ -46,7 +46,7 @@ func (m *C4eMinterUtils) SetMinterState(ctx sdk.Context, SequenceId int32, amoun
 func (m *C4eMinterUtils) VerifyMinterState(ctx sdk.Context, expectedMinterStateSequenceId int32, expectedMinterStateAmountMinted sdk.Int,
 	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousPeriod sdk.Dec) {
 	expectedMinterState := cfemintertypes.MinterState{
-		SequenceId:                  expectedMinterStateSequenceId,
+		Position:                    expectedMinterStateSequenceId,
 		AmountMinted:                expectedMinterStateAmountMinted,
 		RemainderToMint:             expectedMinterStateRemainderToMint,
 		LastMintBlockTime:           expectedMinterStateLastMintBlockTime,
@@ -91,7 +91,7 @@ func (m *C4eMinterUtils) ExportGenesis(ctx sdk.Context, expected cfemintertypes.
 	require.NotNil(m.t, got)
 
 	require.EqualValues(m.t, expected.Params.MintDenom, got.Params.MintDenom)
-	CompareMinters(m.t, expected.Params.Minter, got.Params.Minter)
+	CompareMinters(m.t, expected.Params, got.Params)
 	CompareMinterStates(m.t, expected.MinterState, got.MinterState)
 	require.EqualValues(m.t, len(expected.StateHistory), len(got.StateHistory))
 

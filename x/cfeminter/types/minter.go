@@ -100,14 +100,14 @@ func (m Params) ContainsId(id int32) bool {
 	return false
 }
 
-func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, Minterstart time.Time, blockTime time.Time) sdk.Dec {
+func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, MinterStartTime time.Time, blockTime time.Time) sdk.Dec {
 	switch m.Type {
 	case NO_MINTING:
 		return sdk.ZeroDec()
 	case TIME_LINEAR_MINTER:
-		return m.LinearMinting.amountToMint(state, Minterstart, *m.EndTime, blockTime)
+		return m.LinearMinting.amountToMint(state, MinterStartTime, *m.EndTime, blockTime)
 	case PERIODIC_REDUCTION_MINTER:
-		return m.ExponentialStepMinting.amountToMint(logger, state, Minterstart, m.EndTime, blockTime)
+		return m.ExponentialStepMinting.amountToMint(logger, state, MinterStartTime, m.EndTime, blockTime)
 	default:
 		return sdk.ZeroDec()
 	}

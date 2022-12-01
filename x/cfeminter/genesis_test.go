@@ -22,7 +22,7 @@ func TestGenesis(t *testing.T) {
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
 	genesisState := types.GenesisState{
-		Params: types.NewParams("myc4e", createMinter(time.Now())),
+		Params: types.NewParams("myc4e", time.Now(), createMinter(time.Now())),
 		MinterState: types.MinterState{
 			SequenceId:                  9,
 			AmountMinted:                sdk.NewInt(12312),
@@ -46,7 +46,7 @@ func TestGenesisWithHistory(t *testing.T) {
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
 	genesisState := types.GenesisState{
-		Params: types.NewParams("myc4e", createMinter(time.Now())),
+		Params: types.NewParams("myc4e", time.Now(), createMinter(time.Now())),
 		MinterState: types.MinterState{
 			SequenceId:                  9,
 			AmountMinted:                sdk.NewInt(12312),
@@ -90,18 +90,17 @@ func createHistory() []*types.MinterState {
 	return append(history, &state1, &state2)
 }
 
-func createMinter(startTime time.Time) types.Minter {
+func createMinter(startTime time.Time) []*types.Minter {
 	endTime1 := startTime.Add(time.Duration(PeriodDuration))
 	endTime2 := endTime1.Add(time.Duration(PeriodDuration))
 
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	period1 := types.MintingPeriod{SequenceId: 1, EndTime: &endTime1, Type: types.TIME_LINEAR_MINTER, LinearMinting: &LinearMinting1}
-	period2 := types.MintingPeriod{SequenceId: 2, EndTime: &endTime2, Type: types.TIME_LINEAR_MINTER, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.TIME_LINEAR_MINTER, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.TIME_LINEAR_MINTER, LinearMinting: &LinearMinting2}
 
-	period3 := types.MintingPeriod{SequenceId: 3, Type: types.NO_MINTING}
-	Minters := []*types.MintingPeriod{&period1, &period2, &period3}
-	minter := types.Minter{Start: startTime, Minters: Minters}
-	return minter
+	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+	minters := []*types.Minter{&minter1, &minter2, &minter3}
+	return minters
 }

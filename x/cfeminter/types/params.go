@@ -49,13 +49,13 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 
 // Validate validates the set of params
 func (p Params) Validate() error {
-	if err := validateMinters(p); err != nil {
-		return err
-	}
 	if err := validateDenom(p.MintDenom); err != nil {
 		return err
 	}
 	if err := validateStartTime(p.StartTime); err != nil {
+		return err
+	}
+	if err := validateMinters(p); err != nil {
 		return err
 	}
 
@@ -93,9 +93,10 @@ func validateMinters(v interface{}) error {
 
 // validateStartTime validates the StartTime param //TODO: add logic here
 func validateStartTime(v interface{}) error {
-	minter, ok := v.(Minter)
+	startTime, ok := v.(time.Time)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", v)
 	}
-	return minter.Validate()
+	_ = startTime
+	return nil
 }

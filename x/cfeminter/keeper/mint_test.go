@@ -249,7 +249,7 @@ func createLinearMintings(startTime time.Time) types.Minter {
 
 	period3 := types.MintingPeriod{SequenceId: 3, Type: types.NO_MINTING}
 	Minters := []*types.MintingPeriod{&period1, &period2, &period3}
-	minter := types.Minter{Start: startTime, Minters: Minters}
+	params := types.Params{StartTime: startTime, Minters: Minters}
 	return minter
 }
 

@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CompareMinters(t *testing.T, m1 types.Minter, m2 types.Minter) {
-	require.True(t, m1.Start.Equal(m2.Start))
+func CompareMinters(t *testing.T, m1 types.Params, m2 types.Params) {
+	require.True(t, m1.StartTime.Equal(m2.StartTime))
 	for i, p1 := range m1.Minters {
 		p2 := m2.Minters[i]
 		if p1.EndTime == nil {
@@ -23,7 +23,7 @@ func CompareMinters(t *testing.T, m1 types.Minter, m2 types.Minter) {
 }
 
 func CompareMinterStates(t *testing.T, expected types.MinterState, state types.MinterState) {
-	require.EqualValues(t, expected.SequenceId, state.SequenceId)
+	require.EqualValues(t, expected.Position, state.Position)
 	require.Truef(t, expected.AmountMinted.Equal(state.AmountMinted), "expected.AmountMinted %s <> state.AmountMinted %s", expected.AmountMinted, state.AmountMinted)
 	require.Truef(t, expected.RemainderToMint.Equal(state.RemainderToMint), "expected.RemainderToMint %s <> state.RemainderToMint %s", expected.RemainderToMint, state.RemainderToMint)
 	require.Truef(t, expected.LastMintBlockTime.Equal(state.LastMintBlockTime), "expected.LastMintBlockTime %s <> state.LastMintBlockTime %s", expected.LastMintBlockTime.Local(), state.LastMintBlockTime.Local())

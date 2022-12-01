@@ -68,8 +68,8 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO 
 	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(&params, &minterState)
 
 	if currentPeriod == nil {
-		k.Logger(ctx).Error("minter current period not found error", "SequenceId", minterState.SequenceId)
-		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.SequenceId)
+		k.Logger(ctx).Error("minter current period not found error", "SequenceId", minterState.Position)
+		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.Position)
 	}
 
 	var Minterstart time.Time

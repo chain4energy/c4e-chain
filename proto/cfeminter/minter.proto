@@ -32,7 +32,7 @@ message ExponentialStepMinting {
 }
 
 message MinterState {
-  int32 SequenceId = 1;
+  int32 position = 1;
   string amount_minted = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
   string remainder_to_mint = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
   google.protobuf.Timestamp last_mint_block_time = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];

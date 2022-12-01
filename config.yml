@@ -109,26 +109,23 @@ genesis:
     cfeminter:
       params:
         mint_denom: "uc4e"
-        minter:
-          start: "2022-07-05T00:00:00.00000000Z"
-          Minters:
-            - SequenceId: 1
-              type: "PERIODIC_REDUCTION_MINTER"
-              periodic_reduction_minter:
-                mint_period: 31536000 # year - 365*24*3600
-                mint_amount: "40000000000000"
-                reduction_period_length: 4
-                reduction_factor: "0.5"
-            # - SequenceId: 1
-            #   period_end: "2024-03-30T00:00:00.00000000Z"
-            #   type: "TIME_LINEAR_MINTER"
-            #   time_linear_minter:
-            #     amount: "40000000000000"
-            # - SequenceId: 2
-            #   type: "NO_MINTING"
-
+        start_time: "2022-07-05T00:00:00.00000000Z",
+        minters:
+          - SequenceId: 1
+            type: "PERIODIC_REDUCTION_MINTER"
+            periodic_reduction_minter:
+              step_duration: 10 # year - 365*24*3600
+              amount: "40000000000000"
+              amount_multiplier: "0.5"
+          # - SequenceId: 1
+          #   period_end: "2024-03-30T00:00:00.00000000Z"
+          #   type: "TIME_LINEAR_MINTER"
+          #   time_linear_minter:
+          #     amount: "40000000000000"
+          # - SequenceId: 2
+          #   type: "NO_MINTING"
       minter_state:
-        SequenceId: 1
+        position: 1
         amount_minted: "0"
     cfedistributor:
       params:

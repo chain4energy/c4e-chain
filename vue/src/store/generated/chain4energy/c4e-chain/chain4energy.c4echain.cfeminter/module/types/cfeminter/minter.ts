@@ -32,7 +32,7 @@ export interface ExponentialStepMinting {
 }
 
 export interface MinterState {
-  SequenceId: number;
+  position: number;
   amount_minted: string;
   remainder_to_mint: string;
   last_mint_block_time: Date | undefined;
@@ -361,7 +361,7 @@ export const ExponentialStepMinting = {
 };
 
 const baseMinterState: object = {
-  SequenceId: 0,
+  position: 0,
   amount_minted: "",
   remainder_to_mint: "",
   remainder_from_previous_period: "",
@@ -369,8 +369,8 @@ const baseMinterState: object = {
 
 export const MinterState = {
   encode(message: MinterState, writer: Writer = Writer.create()): Writer {
-    if (message.SequenceId !== 0) {
-      writer.uint32(8).int32(message.SequenceId);
+    if (message.position !== 0) {
+      writer.uint32(8).int32(message.position);
     }
     if (message.amount_minted !== "") {
       writer.uint32(18).string(message.amount_minted);
@@ -398,7 +398,7 @@ export const MinterState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.SequenceId = reader.int32();
+          message.position = reader.int32();
           break;
         case 2:
           message.amount_minted = reader.string();
@@ -424,10 +424,10 @@ export const MinterState = {
 
   fromJSON(object: any): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (object.SequenceId !== undefined && object.SequenceId !== null) {
-      message.SequenceId = Number(object.SequenceId);
+    if (object.position !== undefined && object.position !== null) {
+      message.position = Number(object.position);
     } else {
-      message.SequenceId = 0;
+      message.position = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = String(object.amount_minted);
@@ -467,7 +467,7 @@ export const MinterState = {
 
   toJSON(message: MinterState): unknown {
     const obj: any = {};
-    message.SequenceId !== undefined && (obj.SequenceId = message.SequenceId);
+    message.position !== undefined && (obj.position = message.position);
     message.amount_minted !== undefined &&
       (obj.amount_minted = message.amount_minted);
     message.remainder_to_mint !== undefined &&
@@ -485,10 +485,10 @@ export const MinterState = {
 
   fromPartial(object: DeepPartial<MinterState>): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (object.SequenceId !== undefined && object.SequenceId !== null) {
-      message.SequenceId = object.SequenceId;
+    if (object.position !== undefined && object.position !== null) {
+      message.position = object.position;
     } else {
-      message.SequenceId = 0;
+      message.position = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = object.amount_minted;

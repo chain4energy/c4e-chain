@@ -32,7 +32,7 @@ export interface CfeminterMinter {
 
 export interface CfeminterMinterState {
   /** @format int32 */
-  SequenceId?: number;
+  position?: number;
   amount_minted?: string;
   remainder_to_mint?: string;
 
