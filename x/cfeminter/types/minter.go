@@ -211,19 +211,19 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 		now = *endTime
 	}
 	passedTime := int64(now.Sub(startTIme))
-	epoch := int64(m.StepDuration) * int64(m.ReductionPeriodLength) * int64(time.Second)
+	epoch := int64(m.StepDuration)
 	numOfPassedEpochs := passedTime / epoch
-	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
+	initialEpochAmount := m.Amount
 
 	amountToMint := sdk.ZeroDec()
 	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
 	for i := int64(0); i < numOfPassedEpochs; i++ {
 		if i > 0 {
-			epochAmount = epochAmount.Mul(m.ReductionFactor)
+			epochAmount = epochAmount.Mul(m.AmountMultiplier)
 		}
 		amountToMint = amountToMint.Add(epochAmount)
 	}
-	currentEpochStart := periodStart.Add(time.Duration(numOfPassedEpochs * epoch))
+	currentEpochStart := startTIme.Add(time.Duration(numOfPassedEpochs * epoch))
 	currentEpochPassedTime := now.Sub(currentEpochStart)
 	currentEpochAmount := epochAmount
 
@@ -231,10 +231,10 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 		"initialEpochAmount", initialEpochAmount, "epochAmount", epochAmount, "amountToMint", amountToMint, "currentEpochStart", currentEpochStart,
 		"currentEpochPassedTime", currentEpochPassedTime, "currentEpochAmount", currentEpochAmount)
 	if numOfPassedEpochs > 0 {
-		currentEpochAmount = currentEpochAmount.Mul(m.ReductionFactor)
+		currentEpochAmount = currentEpochAmount.Mul(m.AmountMultiplier)
 	}
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
-	logger.Debug("PRMinterMintCon", "ReductionFactor", m.ReductionFactor, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
+	logger.Debug("PRMinterMintCon", "ReductionFactor", m.AmountMultiplier, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
 	return amountToMint.Add(currentEpochAmountToMint)
 
 }
@@ -250,19 +250,19 @@ func (m ExponentialStepMinting) validate(id int32) error {
 	return nil
 }
 
-func (m *ExponentialStepMinting) calculateInfation(totalSupply sdk.Int, Minterstart time.Time, EndTime *time.Time, blockTime time.Time) sdk.Dec {
+func (m *ExponentialStepMinting) calculateInfation(totalSupply sdk.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
 	if totalSupply.LTE(sdk.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
 
-	if EndTime != nil && (blockTime.Equal(*EndTime) || blockTime.After(*EndTime)) {
+	if endTime != nil && (blockTime.Equal(*endTime) || blockTime.After(*endTime)) {
 		return sdk.ZeroDec()
 	}
 
-	passedTime := int64(blockTime.Sub(Minterstart))
-	epoch := int64(m.StepDuration) * int64(5 /* //TODO: change this valuye*/) * int64(time.Second)
+	passedTime := int64(blockTime.Sub(startTime))
+	epoch := int64(m.StepDuration)
 	numOfPassedEpochs := passedTime / epoch
-	initialEpochAmount := m.Amount.MulRaw(5 /* //TODO: change this valuye*/)
+	initialEpochAmount := m.Amount
 
 	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
 	for i := int64(0); i < numOfPassedEpochs; i++ {
