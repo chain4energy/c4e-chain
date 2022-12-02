@@ -35,18 +35,18 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter - mint - current period for SequenceId %d not found", minterState.Position)
 	}
 
-	var StartTime time.Time
+	var startTime time.Time
 	if previousPeriod == nil {
-		StartTime = params.StartTime
+		startTime = params.StartTime
 	} else {
-		StartTime = *previousPeriod.EndTime
+		startTime = *previousPeriod.EndTime
 	}
 
-	expectedAmountToMint := currentPeriod.AmountToMint(k.Logger(ctx), &minterState, StartTime, ctx.BlockTime())
+	expectedAmountToMint := currentPeriod.AmountToMint(k.Logger(ctx), &minterState, startTime, ctx.BlockTime())
 	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousPeriod)
 
 	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
-	k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "StartTime", StartTime, "currentPeriod", currentPeriod,
+	k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "startTime", startTime, "currentPeriod", currentPeriod,
 		"previousPeriod", previousPeriod, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
 
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())

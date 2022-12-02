@@ -102,14 +102,14 @@ func (params Params) ContainsId(id int32) bool {
 	return false
 }
 
-func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, MinterStartTime time.Time, blockTime time.Time) sdk.Dec {
+func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, startTime time.Time, blockTime time.Time) sdk.Dec {
 	switch m.Type {
 	case NO_MINTING:
 		return sdk.ZeroDec()
 	case LINEAR_MINTING:
-		return m.LinearMinting.amountToMint(state, MinterStartTime, *m.EndTime, blockTime)
+		return m.LinearMinting.amountToMint(state, startTime, *m.EndTime, blockTime)
 	case EXPONENTIAL_STEP_MINTING:
-		return m.ExponentialStepMinting.amountToMint(logger, state, MinterStartTime, m.EndTime, blockTime)
+		return m.ExponentialStepMinting.amountToMint(logger, startTime, m.EndTime, blockTime)
 	default:
 		return sdk.ZeroDec()
 	}
@@ -205,25 +205,25 @@ func (m *LinearMinting) calculateInfation(totalSupply sdk.Int, Minterstart time.
 
 }
 
-func (m *ExponentialStepMinting) amountToMint(logger log.Logger, state *MinterState, Minterstart time.Time, EndTime *time.Time, blockTime time.Time) sdk.Dec {
+func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
 	now := blockTime
-	if EndTime != nil && blockTime.After(*EndTime) {
-		now = *EndTime
+	if endTime != nil && blockTime.After(*endTime) {
+		now = *endTime
 	}
-	passedTime := int64(now.Sub(Minterstart))
-	epoch := int64(m.StepDuration) * int64(5 /* //TODO: change this valuye*/) * int64(time.Second)
+	passedTime := int64(now.Sub(startTIme))
+	epoch := int64(m.StepDuration) * int64(m.ReductionPeriodLength) * int64(time.Second)
 	numOfPassedEpochs := passedTime / epoch
-	initialEpochAmount := m.Amount.MulRaw(5 /* //TODO: change this valuye*/)
+	initialEpochAmount := m.MintAmount.MulRaw(int64(m.ReductionPeriodLength))
 
 	amountToMint := sdk.ZeroDec()
 	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
 	for i := int64(0); i < numOfPassedEpochs; i++ {
 		if i > 0 {
-			epochAmount = epochAmount.Mul(m.AmountMultiplier)
+			epochAmount = epochAmount.Mul(m.ReductionFactor)
 		}
 		amountToMint = amountToMint.Add(epochAmount)
 	}
-	currentEpochStart := Minterstart.Add(time.Duration(numOfPassedEpochs * epoch))
+	currentEpochStart := periodStart.Add(time.Duration(numOfPassedEpochs * epoch))
 	currentEpochPassedTime := now.Sub(currentEpochStart)
 	currentEpochAmount := epochAmount
 
@@ -231,10 +231,10 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, state *MinterSt
 		"initialEpochAmount", initialEpochAmount, "epochAmount", epochAmount, "amountToMint", amountToMint, "currentEpochStart", currentEpochStart,
 		"currentEpochPassedTime", currentEpochPassedTime, "currentEpochAmount", currentEpochAmount)
 	if numOfPassedEpochs > 0 {
-		currentEpochAmount = currentEpochAmount.Mul(m.AmountMultiplier)
+		currentEpochAmount = currentEpochAmount.Mul(m.ReductionFactor)
 	}
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
-	logger.Debug("PRMinterMintCon", "AmountMultiplier", m.AmountMultiplier, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
+	logger.Debug("PRMinterMintCon", "ReductionFactor", m.ReductionFactor, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
 	return amountToMint.Add(currentEpochAmountToMint)
 
 }
