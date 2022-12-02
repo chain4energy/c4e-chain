@@ -45,7 +45,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "no minter Minters defined",
+			errorMassage: "no minters defined",
 		},
 		{
 			desc:     "default is valid",
@@ -81,7 +81,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "missing minter with ordering id 3",
+			errorMassage: "missing minter with sequence id 3",
 		},
 		{
 			desc: "invalid genesis state - wrong minter state - amount",
@@ -132,7 +132,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			errorMassage: "minter remainder from previous period amount cannot be less than 0",
 		},
 		{
-			desc: "invalid genesis state - wrong minter state ordering id",
+			desc: "invalid genesis state - wrong minter state position",
 			genState: &types.GenesisState{
 				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
 				MinterState: types.MinterState{
@@ -145,7 +145,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state Current Ordering Id not found in minter Minters",
+			errorMassage: "minter state current position not found in minters",
 		},
 		{
 			desc: "valid genesis state with history",
