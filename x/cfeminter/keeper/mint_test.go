@@ -16,7 +16,7 @@ const PeriodDuration = time.Duration(345600000000 * 1000000)
 func TestMintFirstPeriod(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createLinearMintings(startTime))
+	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
 
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
@@ -46,7 +46,7 @@ func TestMintFirstPeriod(t *testing.T) {
 func TestMintSecondPeriod(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createLinearMintings(startTime))
+	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
 
 	testHelper.C4eMinterUtils.SetMinterState(2, sdk.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
@@ -78,7 +78,7 @@ func TestMintSecondPeriod(t *testing.T) {
 func TestMintBetweenFirstAndSecondMinters(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createLinearMintings(startTime))
+	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
 
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(750000), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
@@ -97,7 +97,7 @@ func TestMintBetweenFirstAndSecondMinters(t *testing.T) {
 func TestMintBetweenSecondAndThirdMinters(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createLinearMintings(startTime))
+	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
 
 	testHelper.C4eMinterUtils.SetMinterState(2, sdk.NewInt(75000), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
@@ -116,7 +116,7 @@ func TestMintBetweenSecondAndThirdMinters(t *testing.T) {
 func TestStepDurationNotFound(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 
-	testHelper := prepareApp(t, startTime, createLinearMintings(startTime))
+	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
 
 	testHelper.C4eMinterUtils.SetMinterState(9, sdk.NewInt(0), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
@@ -128,7 +128,7 @@ func TestStepDurationNotFound(t *testing.T) {
 func TestMintSecondPeriodWithRemaining(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createLinearMintings(startTime))
+	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
 
 	testHelper.C4eMinterUtils.SetMinterState(2, sdk.NewInt(0), sdk.ZeroDec(), startTime, sdk.MustNewDecFromStr("0.5"))
 
@@ -159,7 +159,7 @@ func TestMintSecondPeriodWithRemaining(t *testing.T) {
 func TestMintFirstPeriodWithRemaining(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createExponentialStepMintingWithRemainingPassing(startTime))
+	testHelper := prepareApp(t, startTime, startTime, createExponentialStepMintingWithRemainingPassing(startTime))
 
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
@@ -189,7 +189,7 @@ func TestMintFirstPeriodWithRemaining(t *testing.T) {
 func TestMintBetweenFirstAndSecondMintersWithRemaining(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createExponentialStepMintingWithRemainingPassing(startTime))
+	testHelper := prepareApp(t, startTime, startTime, createExponentialStepMintingWithRemainingPassing(startTime))
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(750000), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
 	newTime := startTime.Add(PeriodDuration + PeriodDuration/4)
@@ -207,28 +207,37 @@ func TestMintBetweenFirstAndSecondMintersWithRemaining(t *testing.T) {
 func TestMintWithExponentialStepMintingOnGenesisMinterStateAfterBlockTime(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime.Add(time.Hour), createExponentialStepMinting())
+	testHelper := prepareApp(t, startTime.Add(time.Hour), startTime, createExponentialStepMinting())
 
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime.Add(2*time.Hour), sdk.ZeroDec())
-
 	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime.Add(2*time.Hour), sdk.ZeroDec(), sdk.ZeroInt())
 }
 
 func TestMintWithExponentialStepMintingOnGenesisStartInTheFuture(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime.Add(time.Hour), createExponentialStepMinting())
+	testHelper := prepareApp(t, startTime.Add(time.Hour), startTime.Add(2*time.Hour), createExponentialStepMinting())
 
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
 	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec(), sdk.ZeroInt())
 }
 
-func prepareApp(t *testing.T, startTime time.Time, minters []*types.Minter) *testapp.TestHelper {
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
+//func TestMintWithExponentialStepMintingOnGenesisStartInTheFutureXXXX(t *testing.T) {
+//	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
+//
+//	testHelper := prepareApp(t, startTime.Add(time.Hour), startTime.Add(time.Hour), createExponentialStepMinting())
+//
+//	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec())
+//
+//	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec(), sdk.ZeroInt())
+//}
+
+func prepareApp(t *testing.T, initialBlockTime time.Time, mintingStartTime time.Time, minters []*types.Minter) *testapp.TestHelper {
+	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, initialBlockTime)
 	params := types.DefaultParams()
 	params.MintDenom = commontestutils.DefaultTestDenom
-	params.StartTime = startTime
+	params.StartTime = mintingStartTime
 	params.Minters = minters
 
 	k := testHelper.App.CfeminterKeeper

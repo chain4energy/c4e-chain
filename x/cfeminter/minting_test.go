@@ -71,8 +71,9 @@ func TestOneYearLinear(t *testing.T) {
 }
 
 func TestFewYearsPeriodicReduction(t *testing.T) {
-	totalSupply := sdk.NewInt(1600000000000000)
+	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(160000000000000)
+
 	testHelper := testapp.SetupTestApp(t)
 	pminter := types.ExponentialStepMinting{Amount: startAmountYearly, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
@@ -100,7 +101,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 
 	year := 365 //* 24
 	numOfHours := 4 * year
-	amountYearly := startAmountYearly
+	amountYearly := startAmountYearly.QuoRaw(4)
 	prevPeriodMinted := sdk.ZeroInt()
 
 	for MintersCount := 1; MintersCount <= 5; MintersCount++ {
@@ -135,7 +136,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 }
 
 func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
-	totalSupply := sdk.NewInt(1600000000000000)
+	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(160000000000000)
 	testHelper := testapp.SetupTestApp(t)
 
@@ -179,7 +180,7 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 }
 
 func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
-	totalSupply := sdk.NewInt(1600000000000000)
+	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(160000000000000)
 
 	testHelper := testapp.SetupTestApp(t)
@@ -193,7 +194,6 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	exponentialStepMinting := types.ExponentialStepMinting{Amount: startAmountYearly, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	minter3 := types.Minter{SequenceId: 3, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &exponentialStepMinting}
 
