@@ -243,8 +243,8 @@ func createLinearMintings(startTime time.Time) []*types.Minter {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	period1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.TIME_LINEAR_MINTER, LinearMinting: &LinearMinting1}
-	period2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.TIME_LINEAR_MINTER, LinearMinting: &LinearMinting2}
+	period1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
+	period2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
 
 	period3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	return []*types.Minter{&period1, &period2, &period3}
@@ -260,8 +260,8 @@ func createReductionMinterWithRemainingPassing(startTime time.Time) []*types.Min
 
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	period1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.PERIODIC_REDUCTION_MINTER, ExponentialStepMinting: &pminter}
-	period2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.TIME_LINEAR_MINTER, LinearMinting: &LinearMinting2}
+	period1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &pminter}
+	period2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
 
 	period3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	return []*types.Minter{&period1, &period2, &period3}
@@ -269,6 +269,6 @@ func createReductionMinterWithRemainingPassing(startTime time.Time) []*types.Min
 
 func createReductionMinter() []*types.Minter {
 	pminter := types.ExponentialStepMinting{Amount: sdk.NewInt(1000000), StepDuration: time.Duration(SecondsInYear), AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
-	period1 := types.Minter{SequenceId: 1, Type: types.PERIODIC_REDUCTION_MINTER, ExponentialStepMinting: &pminter}
+	period1 := types.Minter{SequenceId: 1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &pminter}
 	return []*types.Minter{&period1}
 }

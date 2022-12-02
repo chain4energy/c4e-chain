@@ -12,39 +12,39 @@ import (
 const year = time.Hour * 24 * 365
 
 const ( // MintingPeriod types
-	NO_MINTING                string = "NO_MINTING"
-	TIME_LINEAR_MINTER        string = "TIME_LINEAR_MINTER"
-	PERIODIC_REDUCTION_MINTER string = "PERIODIC_REDUCTION_MINTER"
+	NO_MINTING               string = "NO_MINTING"
+	LINEAR_MINTING           string = "LINEAR_MINTING"
+	EXPONENTIAL_STEP_MINTING string = "EXPONENTIAL_STEP_MINTING"
 )
 
 type Minters []*Minter
 
-func (m Minters) ValidateMinters() error {
-	sort.Sort(BySequenceId(m))
-	if len(m) < 1 {
-		return fmt.Errorf("no minter Minters defined")
+func (params Params) ValidateMinters() error {
+	sort.Sort(BySequenceId(params.Minters))
+	if len(params.Minters) < 1 {
+		return fmt.Errorf("no minters defined")
 	}
 
-	lastPos := len(m) - 1
+	lastPos := len(params.Minters) - 1
 	id := int32(0)
-	for i, period := range m.Minters {
-		periodId, err := m.validatePeriodOrderingId(period, id)
+	for i, minter := range params.Minters {
+		minterId, err := params.validateMinterOrderingId(minter, id)
 		if err != nil {
 			return err
 		}
-		id = periodId
+		id = minterId
 
-		err = m.validateEndTimeExistance(period, i, lastPos)
-		if err != nil {
-			return err
-		}
-
-		err = m.validateEndTimeValue(period, i, lastPos)
+		err = params.validateEndTimeExistance(minter, i, lastPos)
 		if err != nil {
 			return err
 		}
 
-		err = period.Validate()
+		err = params.validateEndTimeValue(minter, i, lastPos)
+		if err != nil {
+			return err
+		}
+
+		err = minter.Validate()
 		if err != nil {
 			return err
 		}
@@ -52,50 +52,50 @@ func (m Minters) ValidateMinters() error {
 	return nil
 }
 
-func (m Params) validatePeriodOrderingId(period *Minter, id int32) (int32, error) {
+func (params Params) validateMinterOrderingId(minter *Minter, id int32) (int32, error) {
 	if id == 0 {
-		if period.SequenceId <= id {
-			return 0, fmt.Errorf("first period ordering id must be bigger than 0, but is %d", period.SequenceId)
+		if minter.SequenceId <= id {
+			return 0, fmt.Errorf("first minter sequence id must be bigger than 0, but is %d", minter.SequenceId)
 		}
-		id = period.SequenceId
+		id = minter.SequenceId
 	} else {
-		if period.SequenceId != id+1 {
-			return 0, fmt.Errorf("missing period with ordering id %d", id+1)
+		if minter.SequenceId != id+1 {
+			return 0, fmt.Errorf("missing minter with sequence id %d", id+1)
 		}
-		id = period.SequenceId
+		id = minter.SequenceId
 	}
 	return id, nil
 }
 
-func (m Params) validateEndTimeExistance(period *Minter, SequenceId int, lastPos int) error {
-	if SequenceId == lastPos && period.EndTime != nil {
-		return fmt.Errorf("last period cannot have EndTime set, but is set to %s", period.EndTime)
+func (params Params) validateEndTimeExistance(minter *Minter, SequenceId int, lastPos int) error {
+	if SequenceId == lastPos && minter.EndTime != nil {
+		return fmt.Errorf("last minter cannot have EndTime set, but is set to %s", minter.EndTime)
 	}
-	if SequenceId < lastPos && period.EndTime == nil {
-		return fmt.Errorf("only last period can have EndTime empty")
+	if SequenceId < lastPos && minter.EndTime == nil {
+		return fmt.Errorf("only last minter can have EndTime empty")
 	}
 	return nil
 }
 
-func (m Params) validateEndTimeValue(period *Minter, SequenceId int, lastPos int) error {
+func (params Params) validateEndTimeValue(minter *Minter, SequenceId int, lastPos int) error {
 	if lastPos > 0 {
 		if SequenceId == 0 {
-			if period.EndTime.Before(m.StartTime) || period.EndTime.Equal(m.StartTime) {
-				return fmt.Errorf("first period end must be bigger than minter start")
+			if minter.EndTime.Before(params.StartTime) || minter.EndTime.Equal(params.StartTime) {
+				return fmt.Errorf("first minter end must be bigger than minter start")
 			}
 		} else if SequenceId < lastPos {
 			prev := SequenceId - 1
-			if period.EndTime.Before(*m.Minters[prev].EndTime) || period.EndTime.Equal(*m.Minters[prev].EndTime) {
-				return fmt.Errorf("period with Id %d mast have EndTime bigger than period with id %d", period.SequenceId, m.Minters[prev].SequenceId)
+			if minter.EndTime.Before(*params.Minters[prev].EndTime) || minter.EndTime.Equal(*params.Minters[prev].EndTime) {
+				return fmt.Errorf("minter with sequence id %d mast have EndTime bigger than minter with sequence id %d", minter.SequenceId, params.Minters[prev].SequenceId)
 			}
 		}
 	}
 	return nil
 }
 
-func (m Params) ContainsId(id int32) bool {
-	for _, period := range m.Minters {
-		if id == period.SequenceId {
+func (params Params) ContainsId(id int32) bool {
+	for _, minter := range params.Minters {
+		if id == minter.SequenceId {
 			return true
 		}
 	}
@@ -106,9 +106,9 @@ func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, MinterStart
 	switch m.Type {
 	case NO_MINTING:
 		return sdk.ZeroDec()
-	case TIME_LINEAR_MINTER:
+	case LINEAR_MINTING:
 		return m.LinearMinting.amountToMint(state, MinterStartTime, *m.EndTime, blockTime)
-	case PERIODIC_REDUCTION_MINTER:
+	case EXPONENTIAL_STEP_MINTING:
 		return m.ExponentialStepMinting.amountToMint(logger, state, MinterStartTime, m.EndTime, blockTime)
 	default:
 		return sdk.ZeroDec()
@@ -119,29 +119,29 @@ func (m Minter) Validate() error {
 	switch m.Type {
 	case NO_MINTING:
 		if m.LinearMinting != nil {
-			return fmt.Errorf("period id: %d - for NO_MINTING type (0) LinearMinting must not be set", m.SequenceId)
+			return fmt.Errorf("minter id: %d - for NO_MINTING type (0) LinearMinting must not be set", m.SequenceId)
 		}
-	case TIME_LINEAR_MINTER:
+	case LINEAR_MINTING:
 		if m.LinearMinting == nil {
-			return fmt.Errorf("period id: %d - for TIME_LINEAR_MINTER type (1) LinearMinting must be set", m.SequenceId)
+			return fmt.Errorf("minter id: %d - for LINEAR_MINTING type (1) LinearMinting must be set", m.SequenceId)
 		}
 		if m.EndTime == nil {
-			return fmt.Errorf("period id: %d - for TIME_LINEAR_MINTER type (1) EndTime must be set", m.SequenceId)
+			return fmt.Errorf("minter id: %d - for LINEAR_MINTING type (1) EndTime must be set", m.SequenceId)
 		}
 		err := m.LinearMinting.validate(m.SequenceId)
 		if err != nil {
 			return err
 		}
-	case PERIODIC_REDUCTION_MINTER:
+	case EXPONENTIAL_STEP_MINTING:
 		if m.ExponentialStepMinting == nil {
-			return fmt.Errorf("period id: %d - for PERIODIC_REDUCTION_MINTER type (1) ExponentialStepMinting must be set", m.SequenceId)
+			return fmt.Errorf("minter id: %d - for EXPONENTIAL_STEP_MINTING type (1) ExponentialStepMinting must be set", m.SequenceId)
 		}
 		err := m.ExponentialStepMinting.validate(m.SequenceId)
 		if err != nil {
 			return err
 		}
 	default:
-		return fmt.Errorf("period id: %d - unknow minting period type: %s", m.SequenceId, m.Type)
+		return fmt.Errorf("minter id: %d - unknow minting configuration type: %s", m.SequenceId, m.Type)
 
 	}
 	return nil
@@ -154,9 +154,9 @@ func (m *Minter) CalculateInfation(totalSupply sdk.Int, Minterstart time.Time, b
 	switch m.Type {
 	case NO_MINTING:
 		return sdk.ZeroDec()
-	case TIME_LINEAR_MINTER:
+	case LINEAR_MINTING:
 		return m.LinearMinting.calculateInfation(totalSupply, Minterstart, *m.EndTime)
-	case PERIODIC_REDUCTION_MINTER:
+	case EXPONENTIAL_STEP_MINTING:
 		return m.ExponentialStepMinting.calculateInfation(totalSupply, Minterstart, m.EndTime, blockTime)
 	default:
 		return sdk.ZeroDec()
@@ -186,7 +186,7 @@ func (m *LinearMinting) amountToMint(state *MinterState, Minterstart time.Time, 
 
 func (m LinearMinting) validate(id int32) error {
 	if m.Amount.IsNegative() {
-		return fmt.Errorf("period id: %d - LinearMinting amount cannot be less than 0", id)
+		return fmt.Errorf("minter id: %d - LinearMinting amount cannot be less than 0", id)
 
 	}
 	return nil
@@ -241,10 +241,10 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, state *MinterSt
 
 func (m ExponentialStepMinting) validate(id int32) error {
 	if m.Amount.IsNegative() {
-		return fmt.Errorf("period id: %d - ExponentialStepMinting Amount cannot be less than 0", id)
+		return fmt.Errorf("minter id: %d - ExponentialStepMinting Amount cannot be less than 0", id)
 	}
 	if m.StepDuration <= 0 {
-		return fmt.Errorf("period id: %d - ExponentialStepMinting StepDuration must be bigger than 0", id)
+		return fmt.Errorf("minter id: %d - ExponentialStepMinting StepDuration must be bigger than 0", id)
 	}
 
 	return nil

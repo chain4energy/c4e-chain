@@ -133,9 +133,9 @@ The Chain4Energy minter module contains the following configurations parameters:
 | ----------- | ------------------ | ----------------------------------------------------------------------- |
 | SequenceId    | int32       | Minter period ordering SequenceId |
 | period_end     | Time | Minter period end time |
-| types     | Enum string | Minter period type. Allowed values:<br>- NO_MINTING<br>- TIME_LINEAR_MINTER<br>- PERIODIC_REDUCTION_MINTER;|
-| time_linear_minter  | LinearMinting    | Time linear minter configuration|
-| periodic_reduction_minter | ExponentialStepMinting | Periodic reduction minter configuration |
+| types     | Enum string | Minter period type. Allowed values:<br>- NO_MINTING<br>- LINEAR_MINTING<br>- EXPONENTIAL_STEP_MINTING;|
+| LINEAR_MINTING  | LinearMinting    | Time linear minter configuration|
+| EXPONENTIAL_STEP_MINTING | ExponentialStepMinting | Periodic reduction minter configuration |
 
 ### LinearMinting type
 
@@ -190,9 +190,9 @@ See the configuration params for **[examples](#examples)** from **[Concept](#con
         {
           "SequenceId": 1,
           "period_end": null,
-          "type": "PERIODIC_REDUCTION_MINTER",
-          "time_linear_minter": null,
-          "periodic_reduction_minter": {
+          "type": "EXPONENTIAL_STEP_MINTING",
+          "LINEAR_MINTING": null,
+          "EXPONENTIAL_STEP_MINTING": {
             "mint_period": 31536000,
             "mint_amount": "10000000000000",
             "reduction_period_length": 4,
@@ -219,18 +219,18 @@ See the configuration params for **[examples](#examples)** from **[Concept](#con
         {
           "SequenceId": 1,
           "period_end": "2023-07-05T00:00:00Z",
-          "type": "PERIODIC_REDUCTION_MINTER",
-          "time_linear_minter": {
+          "type": "EXPONENTIAL_STEP_MINTING",
+          "LINEAR_MINTING": {
             "amount": "100000000000000",
           },
-          "periodic_reduction_minter": null
+          "EXPONENTIAL_STEP_MINTING": null
         },
         {
           "SequenceId": 1,
           "period_end": null,
           "type": "NO_MINTING",
-          "time_linear_minter": null,
-          "periodic_reduction_minter": null
+          "LINEAR_MINTING": null,
+          "EXPONENTIAL_STEP_MINTING": null
         }
       ]
     }
@@ -311,9 +311,9 @@ See example reponse:
         {
           "SequenceId": 1,
           "period_end": null,
-          "type": "PERIODIC_REDUCTION_MINTER",
-          "time_linear_minter": null,
-          "periodic_reduction_minter": {
+          "type": "EXPONENTIAL_STEP_MINTING",
+          "LINEAR_MINTING": null,
+          "EXPONENTIAL_STEP_MINTING": {
             "mint_period": 31536000,
             "mint_amount": "40000000000000",
             "reduction_period_length": 4,

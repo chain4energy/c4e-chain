@@ -13,8 +13,8 @@ message Minter {
   google.protobuf.Timestamp end_time = 2 [(gogoproto.stdtime) = true];
   // types:
   //   NO_MINTING;
-  //   TIME_LINEAR_MINTER;
-  //   PERIODIC_REDUCTION_MINTER;
+  //   LINEAR_MINTING;
+  //   EXPONENTIAL_STEP_MINTING;
   string type = 3;
   LinearMinting linear_minting = 4;
   ExponentialStepMinting exponential_step_minting = 5;

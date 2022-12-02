@@ -232,8 +232,8 @@ paths:
                           title: |-
                             types:
                               NO_MINTING;
-                              TIME_LINEAR_MINTER;
-                              PERIODIC_REDUCTION_MINTER;
+                              LINEAR_MINTING;
+                              EXPONENTIAL_STEP_MINTING;
                         linear_minting:
                           type: object
                           properties:
@@ -32478,8 +32478,8 @@ definitions:
         title: |-
           types:
             NO_MINTING;
-            TIME_LINEAR_MINTER;
-            PERIODIC_REDUCTION_MINTER;
+            LINEAR_MINTING;
+            EXPONENTIAL_STEP_MINTING;
       linear_minting:
         type: object
         properties:
@@ -32535,8 +32535,8 @@ definitions:
               title: |-
                 types:
                   NO_MINTING;
-                  TIME_LINEAR_MINTER;
-                  PERIODIC_REDUCTION_MINTER;
+                  LINEAR_MINTING;
+                  EXPONENTIAL_STEP_MINTING;
             linear_minting:
               type: object
               properties:
@@ -32587,8 +32587,8 @@ definitions:
                   title: |-
                     types:
                       NO_MINTING;
-                      TIME_LINEAR_MINTER;
-                      PERIODIC_REDUCTION_MINTER;
+                      LINEAR_MINTING;
+                      EXPONENTIAL_STEP_MINTING;
                 linear_minting:
                   type: object
                   properties:

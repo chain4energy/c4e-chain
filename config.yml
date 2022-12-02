@@ -112,15 +112,15 @@ genesis:
         start_time: "2022-07-05T00:00:00.00000000Z",
         minters:
           - SequenceId: 1
-            type: "PERIODIC_REDUCTION_MINTER"
-            periodic_reduction_minter:
+            type: "EXPONENTIAL_STEP_MINTING"
+            EXPONENTIAL_STEP_MINTING:
               step_duration: 10 # year - 365*24*3600
               amount: "40000000000000"
               amount_multiplier: "0.5"
           # - SequenceId: 1
           #   period_end: "2024-03-30T00:00:00.00000000Z"
-          #   type: "TIME_LINEAR_MINTER"
-          #   time_linear_minter:
+          #   type: "LINEAR_MINTING"
+          #   LINEAR_MINTING:
           #     amount: "40000000000000"
           # - SequenceId: 2
           #   type: "NO_MINTING"

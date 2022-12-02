@@ -39,23 +39,20 @@ func DefaultParams() Params {
 }
 
 // ParamSetPairs get the params.ParamSet
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
+func (params *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyMintDenom, &p.MintDenom, validateDenom),
-		paramtypes.NewParamSetPair(KeyStartTime, &p.StartTime, validateStartTime),
-		paramtypes.NewParamSetPair(KeyMinters, &p.Minters, validateMinters),
+		paramtypes.NewParamSetPair(KeyMintDenom, &params.MintDenom, validateDenom),
+		paramtypes.NewParamSetPair(KeyStartTime, &params.StartTime, validateStartTime),
+		paramtypes.NewParamSetPair(KeyMinters, &params.Minters, validateMinters),
 	}
 }
 
 // Validate validates the set of params
-func (p Params) Validate() error {
-	if err := validateDenom(p.MintDenom); err != nil {
+func (params Params) Validate() error {
+	if err := validateDenom(params.MintDenom); err != nil {
 		return err
 	}
-	if err := validateStartTime(p.StartTime); err != nil {
-		return err
-	}
-	if err := validateMinters(p.Minters); err != nil {
+	if err := params.ValidateMinters(); err != nil {
 		return err
 	}
 
@@ -63,8 +60,8 @@ func (p Params) Validate() error {
 }
 
 // String implements the Stringer interface.
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
+func (params Params) String() string {
+	out, _ := yaml.Marshal(params)
 	return string(out)
 }
 
@@ -83,17 +80,17 @@ func validateDenom(v interface{}) error {
 }
 
 // validateMinters validates the Denom param
-func validateMinters(v interface{}) error {
-	minters, ok := v.([]*Minter)
+func validateMinters(mintersInterface interface{}) error {
+	minters, ok := mintersInterface.([]*Minter)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", v)
+		return fmt.Errorf("invalid parameter type: %T", minters)
 	}
 
-	var mintersType Minters
-	mintersType = minters
-	if err := mintersType.ValidateMinters(); err != nil {
-		return err
-	}
+	//var mintersType Minters
+	//mintersType = minters
+	//if err := mintersType.ValidateMinters(); err != nil {
+	//	return err
+	//}
 
 	return nil // TODO: add validation
 }

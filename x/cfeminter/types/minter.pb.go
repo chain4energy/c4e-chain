@@ -35,8 +35,8 @@ type Minter struct {
 	EndTime    *time.Time `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time,omitempty"`
 	// types:
 	//   NO_MINTING;
-	//   TIME_LINEAR_MINTER;
-	//   PERIODIC_REDUCTION_MINTER;
+	//   LINEAR_MINTING;
+	//   EXPONENTIAL_STEP_MINTING;
 	Type                   string                  `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
 	LinearMinting          *LinearMinting          `protobuf:"bytes,4,opt,name=linear_minting,json=linearMinting,proto3" json:"linear_minting,omitempty"`
 	ExponentialStepMinting *ExponentialStepMinting `protobuf:"bytes,5,opt,name=exponential_step_minting,json=exponentialStepMinting,proto3" json:"exponential_step_minting,omitempty"`

@@ -12,8 +12,8 @@ export interface Minter {
   /**
    * types:
    *   NO_MINTING;
-   *   TIME_LINEAR_MINTER;
-   *   PERIODIC_REDUCTION_MINTER;
+   *   LINEAR_MINTING;
+   *   EXPONENTIAL_STEP_MINTING;
    */
   type: string;
   linear_minting: LinearMinting | undefined;

@@ -34,55 +34,55 @@ type Params struct {
 	Minters   []*Minter `protobuf:"bytes,3,rep,name=minters,proto3" json:"minters,omitempty"`
 }
 
-func (m *Params) Reset()      { *m = Params{} }
+func (params *Params) Reset() { *params = Params{} }
 func (*Params) ProtoMessage() {}
 func (*Params) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6773875318c7f1b7, []int{0}
 }
-func (m *Params) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
+func (params *Params) XXX_Unmarshal(b []byte) error {
+	return params.Unmarshal(b)
 }
-func (m *Params) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (params *Params) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Params.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Params.Marshal(b, params, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
+		n, err := params.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (m *Params) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Params.Merge(m, src)
+func (params *Params) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Params.Merge(params, src)
 }
-func (m *Params) XXX_Size() int {
-	return m.Size()
+func (params *Params) XXX_Size() int {
+	return params.Size()
 }
-func (m *Params) XXX_DiscardUnknown() {
-	xxx_messageInfo_Params.DiscardUnknown(m)
+func (params *Params) XXX_DiscardUnknown() {
+	xxx_messageInfo_Params.DiscardUnknown(params)
 }
 
 var xxx_messageInfo_Params proto.InternalMessageInfo
 
-func (m *Params) GetMintDenom() string {
-	if m != nil {
-		return m.MintDenom
+func (params *Params) GetMintDenom() string {
+	if params != nil {
+		return params.MintDenom
 	}
 	return ""
 }
 
-func (m *Params) GetStartTime() time.Time {
-	if m != nil {
-		return m.StartTime
+func (params *Params) GetStartTime() time.Time {
+	if params != nil {
+		return params.StartTime
 	}
 	return time.Time{}
 }
 
-func (m *Params) GetMinters() []*Minter {
-	if m != nil {
-		return m.Minters
+func (params *Params) GetMinters() []*Minter {
+	if params != nil {
+		return params.Minters
 	}
 	return nil
 }
@@ -116,30 +116,30 @@ var fileDescriptor_6773875318c7f1b7 = []byte{
 	0x97, 0x01, 0x00, 0x00,
 }
 
-func (m *Params) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+func (params *Params) Marshal() (dAtA []byte, err error) {
+	size := params.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	n, err := params.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
 	return dAtA[:n], nil
 }
 
-func (m *Params) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
+func (params *Params) MarshalTo(dAtA []byte) (int, error) {
+	size := params.Size()
+	return params.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (params *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Minters) > 0 {
-		for iNdEx := len(m.Minters) - 1; iNdEx >= 0; iNdEx-- {
+	if len(params.Minters) > 0 {
+		for iNdEx := len(params.Minters) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Minters[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := params.Minters[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -150,7 +150,7 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x1a
 		}
 	}
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
+	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(params.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(params.StartTime):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -158,10 +158,10 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintParams(dAtA, i, uint64(n1))
 	i--
 	dAtA[i] = 0x12
-	if len(m.MintDenom) > 0 {
-		i -= len(m.MintDenom)
-		copy(dAtA[i:], m.MintDenom)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.MintDenom)))
+	if len(params.MintDenom) > 0 {
+		i -= len(params.MintDenom)
+		copy(dAtA[i:], params.MintDenom)
+		i = encodeVarintParams(dAtA, i, uint64(len(params.MintDenom)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -179,20 +179,20 @@ func encodeVarintParams(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Params) Size() (n int) {
-	if m == nil {
+func (params *Params) Size() (n int) {
+	if params == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.MintDenom)
+	l = len(params.MintDenom)
 	if l > 0 {
 		n += 1 + l + sovParams(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime)
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(params.StartTime)
 	n += 1 + l + sovParams(uint64(l))
-	if len(m.Minters) > 0 {
-		for _, e := range m.Minters {
+	if len(params.Minters) > 0 {
+		for _, e := range params.Minters {
 			l = e.Size()
 			n += 1 + l + sovParams(uint64(l))
 		}
@@ -206,7 +206,7 @@ func sovParams(x uint64) (n int) {
 func sozParams(x uint64) (n int) {
 	return sovParams(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Params) Unmarshal(dAtA []byte) error {
+func (params *Params) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -265,7 +265,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MintDenom = string(dAtA[iNdEx:postIndex])
+			params.MintDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -296,7 +296,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&params.StartTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -329,8 +329,8 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Minters = append(m.Minters, &Minter{})
-			if err := m.Minters[len(m.Minters)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			params.Minters = append(params.Minters, &Minter{})
+			if err := params.Minters[len(params.Minters)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
