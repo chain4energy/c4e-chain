@@ -72,17 +72,17 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO 
 		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.Position)
 	}
 
-	var Minterstart time.Time
+	var startTime time.Time
 	if previousPeriod == nil {
-		Minterstart = params.StartTime
+		startTime = params.StartTime
 	} else {
-		Minterstart = *previousPeriod.EndTime
+		startTime = *previousPeriod.EndTime
 	}
 
 	supply := k.bankKeeper.GetSupply(ctx, params.MintDenom)
-	result := currentPeriod.CalculateInfation(supply.Amount, Minterstart, ctx.BlockHeader().Time)
-	k.Logger(ctx).Debug("get current inflation", "currentPeriod", currentPeriod, "previousPeriod", previousPeriod, "Minterstart",
-		Minterstart, "supply", supply, "blockTime", ctx.BlockHeader().Time, "result", result)
+	result := currentPeriod.CalculateInfation(supply.Amount, startTime, ctx.BlockHeader().Time)
+	k.Logger(ctx).Debug("get current inflation", "currentPeriod", currentPeriod, "previousPeriod", previousPeriod, "startTime",
+		startTime, "supply", supply, "blockTime", ctx.BlockHeader().Time, "result", result)
 	return result, nil
 }
 

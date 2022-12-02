@@ -250,13 +250,13 @@ func createLinearMintings(startTime time.Time) []*types.Minter {
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }
 
-const SecondsInYear = int32(3600 * 24 * 365)
+const NanoSecondsInFourYears = 3600 * 24 * 365 * 4 * time.Second
 
 func createExponentialStepMintingWithRemainingPassing(startTime time.Time) []*types.Minter {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	pminter := types.ExponentialStepMinting{Amount: sdk.NewInt(1000000), StepDuration: time.Duration(SecondsInYear), AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	pminter := types.ExponentialStepMinting{Amount: sdk.NewInt(4000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
@@ -268,7 +268,7 @@ func createExponentialStepMintingWithRemainingPassing(startTime time.Time) []*ty
 }
 
 func createExponentialStepMinting() []*types.Minter {
-	pminter := types.ExponentialStepMinting{Amount: sdk.NewInt(1000000), StepDuration: time.Duration(SecondsInYear), AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
-	minter1 := types.Minter{SequenceId: 1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &pminter}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(1000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	minter1 := types.Minter{SequenceId: 1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &exponentialStepMinting}
 	return []*types.Minter{&minter1}
 }

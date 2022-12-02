@@ -107,7 +107,7 @@ func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, startTime t
 	case NO_MINTING:
 		return sdk.ZeroDec()
 	case LINEAR_MINTING:
-		return m.LinearMinting.amountToMint(state, startTime, *m.EndTime, blockTime)
+		return m.LinearMinting.amountToMint(startTime, *m.EndTime, blockTime)
 	case EXPONENTIAL_STEP_MINTING:
 		return m.ExponentialStepMinting.amountToMint(logger, startTime, m.EndTime, blockTime)
 	default:
@@ -147,17 +147,17 @@ func (m Minter) Validate() error {
 	return nil
 }
 
-func (m *Minter) CalculateInfation(totalSupply sdk.Int, Minterstart time.Time, blockTime time.Time) sdk.Dec {
-	if Minterstart.After(blockTime) {
+func (m *Minter) CalculateInfation(totalSupply sdk.Int, startTime time.Time, blockTime time.Time) sdk.Dec {
+	if startTime.After(blockTime) {
 		return sdk.ZeroDec()
 	}
 	switch m.Type {
 	case NO_MINTING:
 		return sdk.ZeroDec()
 	case LINEAR_MINTING:
-		return m.LinearMinting.calculateInfation(totalSupply, Minterstart, *m.EndTime)
+		return m.LinearMinting.calculateInfation(totalSupply, startTime, *m.EndTime)
 	case EXPONENTIAL_STEP_MINTING:
-		return m.ExponentialStepMinting.calculateInfation(totalSupply, Minterstart, m.EndTime, blockTime)
+		return m.ExponentialStepMinting.calculateInfation(totalSupply, startTime, m.EndTime, blockTime)
 	default:
 		return sdk.ZeroDec()
 	}
@@ -169,7 +169,7 @@ func (a BySequenceId) Len() int           { return len(a) }
 func (a BySequenceId) Less(i, j int) bool { return a[i].SequenceId < a[j].SequenceId }
 func (a BySequenceId) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
-func (m *LinearMinting) amountToMint(state *MinterState, Minterstart time.Time, EndTime time.Time, blockTime time.Time) sdk.Dec {
+func (m *LinearMinting) amountToMint(Minterstart time.Time, EndTime time.Time, blockTime time.Time) sdk.Dec {
 	if blockTime.After(EndTime) {
 		return sdk.NewDecFromInt(m.Amount)
 	}
@@ -213,10 +213,9 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 	passedTime := int64(now.Sub(startTIme))
 	epoch := int64(m.StepDuration)
 	numOfPassedEpochs := passedTime / epoch
-	initialEpochAmount := m.Amount
 
 	amountToMint := sdk.ZeroDec()
-	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
+	epochAmount := sdk.NewDecFromInt(m.Amount)
 	for i := int64(0); i < numOfPassedEpochs; i++ {
 		if i > 0 {
 			epochAmount = epochAmount.Mul(m.AmountMultiplier)
@@ -228,13 +227,13 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 	currentEpochAmount := epochAmount
 
 	logger.Debug("PRMinterMint", "blockTime", blockTime, "now", now, "passedTime", passedTime, "epoch", epoch, "numOfPassedEpochs", numOfPassedEpochs,
-		"initialEpochAmount", initialEpochAmount, "epochAmount", epochAmount, "amountToMint", amountToMint, "currentEpochStart", currentEpochStart,
+		"Amount", m.Amount, "epochAmount", epochAmount, "amountToMint", amountToMint, "currentEpochStart", currentEpochStart,
 		"currentEpochPassedTime", currentEpochPassedTime, "currentEpochAmount", currentEpochAmount)
 	if numOfPassedEpochs > 0 {
 		currentEpochAmount = currentEpochAmount.Mul(m.AmountMultiplier)
 	}
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
-	logger.Debug("PRMinterMintCon", "ReductionFactor", m.AmountMultiplier, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
+	logger.Debug("PRMinterMintCon", "AmountMultiplier", m.AmountMultiplier, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
 	return amountToMint.Add(currentEpochAmountToMint)
 
 }
@@ -262,14 +261,14 @@ func (m *ExponentialStepMinting) calculateInfation(totalSupply sdk.Int, startTim
 	passedTime := int64(blockTime.Sub(startTime))
 	epoch := int64(m.StepDuration)
 	numOfPassedEpochs := passedTime / epoch
-	initialEpochAmount := m.Amount
+	epochAmount := sdk.NewDecFromInt(m.Amount)
 
-	epochAmount := sdk.NewDecFromInt(initialEpochAmount)
 	for i := int64(0); i < numOfPassedEpochs; i++ {
 		if i > 0 {
 			epochAmount = epochAmount.Mul(m.AmountMultiplier)
 		}
 	}
+
 	if numOfPassedEpochs > 0 {
 		epochAmount = epochAmount.Mul(m.AmountMultiplier)
 	}

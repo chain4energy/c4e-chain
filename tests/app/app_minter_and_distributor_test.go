@@ -77,7 +77,7 @@ func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults tes
 
 	startTime := time.Now()
 	minterParams.StartTime = startTime
-
+	minterParams.Minters[0].ExponentialStepMinting.StepDuration = 126144000 * time.Second
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, startTime)
 	testHelper.C4eMinterUtils.SetParams(minterParams)
 	testHelper.C4eDistributorUtils.SetParams(distributorParams)

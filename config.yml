@@ -114,8 +114,8 @@ genesis:
           - sequence_id: 1
             type: "EXPONENTIAL_STEP_MINTING"
             exponential_step_minting:
-              step_duration: "31536000s" # year - 365*24*3600
-              amount: "40000000000000"
+              step_duration: "126144000s" # 4 years - 365*24*3600*4
+              amount: "160000000000000"
               amount_multiplier: "0.5"
             # - position: 1
             #   period_end: "2024-03-30T00:00:00.00000000Z"

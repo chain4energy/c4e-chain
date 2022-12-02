@@ -4,7 +4,7 @@
   "minters": [
     {
       "exponential_step_minting": {
-        "amount": "40000000000000",
+        "amount": "160000000000000",
         "step_duration": "31536000s",
         "amount_multiplier": "0.5"
       },
