@@ -73,7 +73,7 @@ func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults tes
 
 	//read minter params from json
 	var minterParams mintertypes.Params
-	testcommon.UnmarshalJsonFile("test-resources/EXPONENTIAL_STEP_MINTING.json", &minterParams)
+	testcommon.UnmarshalJsonFile("test-resources/exponential_step_minting.json", &minterParams)
 
 	startTime := time.Now()
 	minterParams.StartTime = startTime

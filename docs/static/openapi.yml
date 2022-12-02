@@ -285,7 +285,7 @@ paths:
               minter_state:
                 type: object
                 properties:
-                  SequenceId:
+                  position:
                     type: integer
                     format: int32
                   amount_minted:
@@ -302,7 +302,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    SequenceId:
+                    position:
                       type: integer
                       format: int32
                     amount_minted:
@@ -32498,7 +32498,7 @@ definitions:
   chain4energy.c4echain.cfeminter.MinterState:
     type: object
     properties:
-      SequenceId:
+      position:
         type: integer
         format: int32
       amount_minted:
@@ -32611,7 +32611,7 @@ definitions:
       minter_state:
         type: object
         properties:
-          SequenceId:
+          position:
             type: integer
             format: int32
           amount_minted:
@@ -32628,7 +32628,7 @@ definitions:
         items:
           type: object
           properties:
-            SequenceId:
+            position:
               type: integer
               format: int32
             amount_minted:

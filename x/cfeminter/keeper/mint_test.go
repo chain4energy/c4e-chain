@@ -159,7 +159,7 @@ func TestMintSecondPeriodWithRemaining(t *testing.T) {
 func TestMintFirstPeriodWithRemaining(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createReductionMinterWithRemainingPassing(startTime))
+	testHelper := prepareApp(t, startTime, createExponentialStepMintingWithRemainingPassing(startTime))
 
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
@@ -189,7 +189,7 @@ func TestMintFirstPeriodWithRemaining(t *testing.T) {
 func TestMintBetweenFirstAndSecondMintersWithRemaining(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime, createReductionMinterWithRemainingPassing(startTime))
+	testHelper := prepareApp(t, startTime, createExponentialStepMintingWithRemainingPassing(startTime))
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(750000), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
 	newTime := startTime.Add(PeriodDuration + PeriodDuration/4)
@@ -204,20 +204,20 @@ func TestMintBetweenFirstAndSecondMintersWithRemaining(t *testing.T) {
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(6014726), 2, sdk.NewInt(25000), sdk.MustNewDecFromStr("0.027397260273972602"), newTime, sdk.MustNewDecFromStr("0.027397260273972602"), sdk.NewInt(6014726), expectedHist)
 }
 
-func TestMintWithReductionMinterOnGenesisMinterStateAfterBlockTime(t *testing.T) {
+func TestMintWithExponentialStepMintingOnGenesisMinterStateAfterBlockTime(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime.Add(time.Hour), createReductionMinter())
+	testHelper := prepareApp(t, startTime.Add(time.Hour), createExponentialStepMinting())
 
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime.Add(2*time.Hour), sdk.ZeroDec())
 
 	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime.Add(2*time.Hour), sdk.ZeroDec(), sdk.ZeroInt())
 }
 
-func TestMintWithReductionMinterOnGenesisStartInTheFuture(t *testing.T) {
+func TestMintWithExponentialStepMintingOnGenesisStartInTheFuture(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	testHelper := prepareApp(t, startTime.Add(time.Hour), createReductionMinter())
+	testHelper := prepareApp(t, startTime.Add(time.Hour), createExponentialStepMinting())
 
 	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
@@ -243,16 +243,16 @@ func createLinearMintings(startTime time.Time) []*types.Minter {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	period1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-	period2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
 
-	period3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
-	return []*types.Minter{&period1, &period2, &period3}
+	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+	return []*types.Minter{&minter1, &minter2, &minter3}
 }
 
 const SecondsInYear = int32(3600 * 24 * 365)
 
-func createReductionMinterWithRemainingPassing(startTime time.Time) []*types.Minter {
+func createExponentialStepMintingWithRemainingPassing(startTime time.Time) []*types.Minter {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
@@ -260,15 +260,15 @@ func createReductionMinterWithRemainingPassing(startTime time.Time) []*types.Min
 
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	period1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &pminter}
-	period2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &pminter}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
 
-	period3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
-	return []*types.Minter{&period1, &period2, &period3}
+	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+	return []*types.Minter{&minter1, &minter2, &minter3}
 }
 
-func createReductionMinter() []*types.Minter {
+func createExponentialStepMinting() []*types.Minter {
 	pminter := types.ExponentialStepMinting{Amount: sdk.NewInt(1000000), StepDuration: time.Duration(SecondsInYear), AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
-	period1 := types.Minter{SequenceId: 1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &pminter}
-	return []*types.Minter{&period1}
+	minter1 := types.Minter{SequenceId: 1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &pminter}
+	return []*types.Minter{&minter1}
 }

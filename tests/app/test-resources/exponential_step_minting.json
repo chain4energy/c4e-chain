@@ -1,0 +1,15 @@
+{
+  "mint_denom": "uc4e",
+  "start_time": "2022-07-05T00:00:00.00000000Z",
+  "minters": [
+    {
+      "exponential_step_minting": {
+        "amount": "40000000000000",
+        "step_duration": "31536000s",
+        "amount_multiplier": "0.5"
+      },
+      "sequence_id": 1,
+      "type": "EXPONENTIAL_STEP_MINTING"
+    }
+  ]
+}

@@ -24,5 +24,4 @@ func TestParamsQuery(t *testing.T) {
 	require.NoError(t, err)
 	require.EqualValues(t, params.MintDenom, response.Params.MintDenom)
 	testminter.CompareMinters(t, params, response.Params)
-
 }
