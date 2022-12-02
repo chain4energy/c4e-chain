@@ -223,15 +223,15 @@ func TestMintWithExponentialStepMintingOnGenesisStartInTheFuture(t *testing.T) {
 	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec(), sdk.ZeroInt())
 }
 
-//func TestMintWithExponentialStepMintingOnGenesisStartInTheFutureXXXX(t *testing.T) {
-//	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
-//
-//	testHelper := prepareApp(t, startTime.Add(time.Hour), startTime.Add(time.Hour), createExponentialStepMinting())
-//
-//	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec())
-//
-//	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec(), sdk.ZeroInt())
-//}
+func TestMintWithExponentialStepMintingOnGenesisStartInTheFutureXXXX(t *testing.T) {
+	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
+
+	testHelper := prepareApp(t, startTime.Add(time.Hour), startTime.Add(time.Hour), createExponentialStepMinting())
+
+	testHelper.C4eMinterUtils.SetMinterState(1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime.Add(time.Hour), sdk.ZeroDec())
+
+	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime.Add(time.Hour), sdk.ZeroDec(), sdk.ZeroInt())
+}
 
 func prepareApp(t *testing.T, initialBlockTime time.Time, mintingStartTime time.Time, minters []*types.Minter) *testapp.TestHelper {
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, initialBlockTime)
