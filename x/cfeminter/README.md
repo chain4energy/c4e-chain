@@ -23,22 +23,22 @@ Token emission mechanism mints calculated amount of tokens per each block. Token
 Tokens minting process is divided into periods where each period has fully separated minting rules. Those periods rules are difined within cfeminter module configuration params.
 Simply, mintining process configuration is a list of ordered minting periods, where each period has its own start and end time (end time for last period is not required, in that case last minting period works infinitely).
 
-### Miniting periods
+### Minting periods
 
 Minting period is a period of time when configured minting rules apply. Ordered list of minting periods deifnes whole token emmision process.
 End time of one period is a start time of the next period on the periods list.
 Each minting pariond has minter type assigned. 
 Last minting period on the list must be defined to work indefinitely. (must have no end time)
 
-### Miniter type
+### Minter type
 
 Minter type defines general rules of token emission. Each minter type has its specific set of parameters modifying token emission. Parameters are set per minting period.
 Currently cfeminter module suppoerts following minter types:
-- no miniting
+- no minting
 - time linear minter
 - periodic reduction minter
 
-#### No minitng
+#### No minting
 
 No minting is simple minter type that mints nothing.
 This minter type has no parameters.
