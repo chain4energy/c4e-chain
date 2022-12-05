@@ -28,7 +28,7 @@ func TestOneYearLinear(t *testing.T) {
 	}
 	genesisState := types.GenesisState{
 		Params:      types.NewParams(commontestutils.DefaultTestDenom, testHelper.InitTime, minters),
-		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.ZeroInt(), LastMintBlockTime: testHelper.InitTime},
+		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.ZeroInt(), LastMintBlockTime: testHelper.InitTime},
 	}
 
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
@@ -84,7 +84,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params:      types.NewParams(commontestutils.DefaultTestDenom, testHelper.InitTime, minters),
-		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
+		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
 	}
 
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
@@ -145,7 +145,7 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 	minters := []*types.Minter{{SequenceId: 1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &pminter}}
 	genesisState := types.GenesisState{
 		Params:      types.NewParams(commontestutils.DefaultTestDenom, testHelper.InitTime, minters),
-		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
+		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
 	}
 
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
@@ -205,7 +205,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params:      types.NewParams(commontestutils.DefaultTestDenom, testHelper.InitTime, minters),
-		MinterState: types.MinterState{Position: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
+		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
 	}
 
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
@@ -242,7 +242,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.Add(expectedMinted))
 
 	expectedHist1 := types.MinterState{
-		Position:                    1,
+		SequenceId:                  1,
 		AmountMinted:                sdk.NewInt(200000000000000),
 		RemainderToMint:             sdk.ZeroDec(),
 		LastMintBlockTime:           testHelper.Context.BlockTime(),
@@ -250,7 +250,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 	}
 
 	expectedHist2 := types.MinterState{
-		Position:                    2,
+		SequenceId:                  2,
 		AmountMinted:                sdk.NewInt(100000000000000),
 		RemainderToMint:             sdk.ZeroDec(),
 		LastMintBlockTime:           testHelper.Context.BlockTime(),

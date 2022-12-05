@@ -119,14 +119,14 @@ func (m Minter) Validate() error {
 	switch m.Type {
 	case NO_MINTING:
 		if m.LinearMinting != nil {
-			return fmt.Errorf("minter id: %d - for NO_MINTING type (0) LinearMinting must not be set", m.SequenceId)
+			return fmt.Errorf("minter sequence id: %d - for NO_MINTING type (0) LinearMinting must not be set", m.SequenceId)
 		}
 	case LINEAR_MINTING:
 		if m.LinearMinting == nil {
-			return fmt.Errorf("minter id: %d - for LINEAR_MINTING type (1) LinearMinting must be set", m.SequenceId)
+			return fmt.Errorf("minter sequence id: %d - for LINEAR_MINTING type (1) LinearMinting must be set", m.SequenceId)
 		}
 		if m.EndTime == nil {
-			return fmt.Errorf("minter id: %d - for LINEAR_MINTING type (1) EndTime must be set", m.SequenceId)
+			return fmt.Errorf("minter sequence id: %d - for LINEAR_MINTING type (1) EndTime must be set", m.SequenceId)
 		}
 		err := m.LinearMinting.validate(m.SequenceId)
 		if err != nil {
@@ -134,14 +134,14 @@ func (m Minter) Validate() error {
 		}
 	case EXPONENTIAL_STEP_MINTING:
 		if m.ExponentialStepMinting == nil {
-			return fmt.Errorf("minter id: %d - for EXPONENTIAL_STEP_MINTING type (1) ExponentialStepMinting must be set", m.SequenceId)
+			return fmt.Errorf("minter sequence id: %d - for EXPONENTIAL_STEP_MINTING type (1) ExponentialStepMinting must be set", m.SequenceId)
 		}
 		err := m.ExponentialStepMinting.validate(m.SequenceId)
 		if err != nil {
 			return err
 		}
 	default:
-		return fmt.Errorf("minter id: %d - unknow minting configuration type: %s", m.SequenceId, m.Type)
+		return fmt.Errorf("minter sequence id: %d - unknow minting configuration type: %s", m.SequenceId, m.Type)
 
 	}
 	return nil
@@ -186,7 +186,7 @@ func (m *LinearMinting) amountToMint(Minterstart time.Time, EndTime time.Time, b
 
 func (m LinearMinting) validate(id int32) error {
 	if m.Amount.IsNegative() {
-		return fmt.Errorf("minter id: %d - LinearMinting amount cannot be less than 0", id)
+		return fmt.Errorf("minter sequence id: %d - LinearMinting amount cannot be less than 0", id)
 
 	}
 	return nil

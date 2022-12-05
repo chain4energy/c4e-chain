@@ -14,6 +14,7 @@ import (
 
 const developmentFundAddrParamName = "development_fund_address"
 const lpAccountAddrParamName = "lp_address"
+const oneYearDuration = time.Hour * 24 * 365
 
 var accountsAddresses, _ = testcommon.CreateAccounts(2, 0)
 var developmentFundAddr = accountsAddresses[0]
@@ -77,7 +78,7 @@ func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults tes
 
 	startTime := time.Now()
 	minterParams.StartTime = startTime
-	minterParams.Minters[0].ExponentialStepMinting.StepDuration = 126144000 * time.Second
+	minterParams.Minters[0].ExponentialStepMinting.StepDuration = time.Hour * 24 * 365 * 4 // 4 years year
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, startTime)
 	testHelper.C4eMinterUtils.SetParams(minterParams)
 	testHelper.C4eDistributorUtils.SetParams(distributorParams)

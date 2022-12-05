@@ -45,7 +45,7 @@ func (k Keeper) GetMinterStateHistory(ctx sdk.Context, SequenceId int32) (state 
 func (k Keeper) SetMinterStateHistory(ctx sdk.Context, state types.MinterState) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
 	av := k.cdc.MustMarshal(&state)
-	store.Set([]byte(strconv.FormatInt(int64(state.Position), 10)), av)
+	store.Set([]byte(strconv.FormatInt(int64(state.SequenceId), 10)), av)
 }
 
 // GetAllMinterStateHistory returns all historical minter states for ended Minters

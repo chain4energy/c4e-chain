@@ -105,7 +105,6 @@ genesis:
             amount: "10000000"
       voting_params:
         voting_period: "10s"
-
     cfeminter:
       params:
         mint_denom: "uc4e"
@@ -117,16 +116,16 @@ genesis:
               step_duration: "126144000s" # 4 years - 365*24*3600*4
               amount: "160000000000000"
               amount_multiplier: "0.5"
-            # - position: 1
+            # - SequenceId: 1
             #   period_end: "2024-03-30T00:00:00.00000000Z"
             #   type: "TIME_LINEAR_MINTER"
             #   time_linear_minter:
             #     amount: "40000000000000"
-            # - position: 2
+            # - SequenceId: 2
             #   type: "NO_MINTING"
 
       minter_state:
-        position: 1
+        sequence_id: 1
         amount_minted: "0"
     cfedistributor:
       params:

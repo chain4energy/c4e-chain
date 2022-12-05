@@ -20,7 +20,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "no denom param",
 			genState: &types.GenesisState{
 				MinterState: types.MinterState{
-					Position:                    2,
+					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
@@ -36,7 +36,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.NewParams("myc4e", time.Now(), []*types.Minter{}),
 				MinterState: types.MinterState{
-					Position:                    2,
+					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
@@ -57,7 +57,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
 				MinterState: types.MinterState{
-					Position:                    2,
+					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
@@ -72,7 +72,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.NewParams("myc4e", time.Now(), createNotOkMinters()),
 				MinterState: types.MinterState{
-					Position:                    2,
+					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
@@ -88,7 +88,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
 				MinterState: types.MinterState{
-					Position:                    2,
+					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(-123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
@@ -104,7 +104,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
 				MinterState: types.MinterState{
-					Position:                    2,
+					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("-123.221"),
 					LastMintBlockTime:           time.Now(),
@@ -120,7 +120,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
 				MinterState: types.MinterState{
-					Position:                    2,
+					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
@@ -132,11 +132,11 @@ func TestGenesisState_Validate(t *testing.T) {
 			errorMassage: "minter remainder from previous period amount cannot be less than 0",
 		},
 		{
-			desc: "invalid genesis state - wrong minter state position",
+			desc: "invalid genesis state - wrong minter state SequenceId",
 			genState: &types.GenesisState{
 				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
 				MinterState: types.MinterState{
-					Position:                    6,
+					SequenceId:                  6,
 					AmountMinted:                sdk.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
@@ -145,14 +145,14 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state current position not found in minters",
+			errorMassage: "minter state current SequenceId not found in minters",
 		},
 		{
 			desc: "valid genesis state with history",
 			genState: &types.GenesisState{
 				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
 				MinterState: types.MinterState{
-					Position:                    2,
+					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
@@ -179,14 +179,14 @@ func TestGenesisState_Validate(t *testing.T) {
 func createHistory() []*types.MinterState {
 	history := make([]*types.MinterState, 0)
 	state1 := types.MinterState{
-		Position:                    0,
+		SequenceId:                  0,
 		AmountMinted:                sdk.NewInt(324),
 		RemainderToMint:             sdk.MustNewDecFromStr("1243.221"),
 		LastMintBlockTime:           time.Now(),
 		RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("3124.543"),
 	}
 	state2 := types.MinterState{
-		Position:                    1,
+		SequenceId:                  1,
 		AmountMinted:                sdk.NewInt(432),
 		RemainderToMint:             sdk.MustNewDecFromStr("12433.221"),
 		LastMintBlockTime:           time.Now(),

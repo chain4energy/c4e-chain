@@ -223,7 +223,6 @@ paths:
                         sequence_id:
                           type: integer
                           format: int32
-                          title: option (gogoproto.goproto_getters) = false;
                         end_time:
                           type: string
                           format: date-time
@@ -244,7 +243,6 @@ paths:
                           properties:
                             amount:
                               type: string
-                              title: mint_period in seconds
                             step_duration:
                               type: string
                             amount_multiplier:
@@ -285,7 +283,7 @@ paths:
               minter_state:
                 type: object
                 properties:
-                  position:
+                  sequence_id:
                     type: integer
                     format: int32
                   amount_minted:
@@ -302,7 +300,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    position:
+                    sequence_id:
                       type: integer
                       format: int32
                     amount_minted:
@@ -32453,7 +32451,6 @@ definitions:
     properties:
       amount:
         type: string
-        title: mint_period in seconds
       step_duration:
         type: string
       amount_multiplier:
@@ -32469,7 +32466,6 @@ definitions:
       sequence_id:
         type: integer
         format: int32
-        title: option (gogoproto.goproto_getters) = false;
       end_time:
         type: string
         format: date-time
@@ -32490,7 +32486,6 @@ definitions:
         properties:
           amount:
             type: string
-            title: mint_period in seconds
           step_duration:
             type: string
           amount_multiplier:
@@ -32498,7 +32493,7 @@ definitions:
   chain4energy.c4echain.cfeminter.MinterState:
     type: object
     properties:
-      position:
+      sequence_id:
         type: integer
         format: int32
       amount_minted:
@@ -32526,7 +32521,6 @@ definitions:
             sequence_id:
               type: integer
               format: int32
-              title: option (gogoproto.goproto_getters) = false;
             end_time:
               type: string
               format: date-time
@@ -32547,7 +32541,6 @@ definitions:
               properties:
                 amount:
                   type: string
-                  title: mint_period in seconds
                 step_duration:
                   type: string
                 amount_multiplier:
@@ -32578,7 +32571,6 @@ definitions:
                 sequence_id:
                   type: integer
                   format: int32
-                  title: option (gogoproto.goproto_getters) = false;
                 end_time:
                   type: string
                   format: date-time
@@ -32599,7 +32591,6 @@ definitions:
                   properties:
                     amount:
                       type: string
-                      title: mint_period in seconds
                     step_duration:
                       type: string
                     amount_multiplier:
@@ -32611,7 +32602,7 @@ definitions:
       minter_state:
         type: object
         properties:
-          position:
+          sequence_id:
             type: integer
             format: int32
           amount_minted:
@@ -32628,7 +32619,7 @@ definitions:
         items:
           type: object
           properties:
-            position:
+            sequence_id:
               type: integer
               format: int32
             amount_minted:

@@ -65,23 +65,23 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO 
 	minterState := k.GetMinterState(ctx)
 	params := k.GetParams(ctx)
 
-	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(&params, &minterState)
+	currentMinter, previousMinter := getCurrentAndPreviousMinter(&params, &minterState)
 
-	if currentPeriod == nil {
-		k.Logger(ctx).Error("minter current period not found error", "SequenceId", minterState.Position)
-		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.Position)
+	if currentMinter == nil {
+		k.Logger(ctx).Error("minter current sequence id not found error", "SequenceId", minterState.SequenceId)
+		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.SequenceId)
 	}
 
 	var startTime time.Time
-	if previousPeriod == nil {
+	if previousMinter == nil {
 		startTime = params.StartTime
 	} else {
-		startTime = *previousPeriod.EndTime
+		startTime = *previousMinter.EndTime
 	}
 
 	supply := k.bankKeeper.GetSupply(ctx, params.MintDenom)
-	result := currentPeriod.CalculateInfation(supply.Amount, startTime, ctx.BlockHeader().Time)
-	k.Logger(ctx).Debug("get current inflation", "currentPeriod", currentPeriod, "previousPeriod", previousPeriod, "startTime",
+	result := currentMinter.CalculateInfation(supply.Amount, startTime, ctx.BlockHeader().Time)
+	k.Logger(ctx).Debug("get current inflation", "currentMinter", currentMinter, "previousMinter", previousMinter, "startTime",
 		startTime, "supply", supply, "blockTime", ctx.BlockHeader().Time, "result", result)
 	return result, nil
 }

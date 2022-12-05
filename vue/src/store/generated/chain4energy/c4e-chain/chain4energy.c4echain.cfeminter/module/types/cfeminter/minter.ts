@@ -6,7 +6,6 @@ import { Writer, Reader } from "protobufjs/minimal";
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
 
 export interface Minter {
-  /** option (gogoproto.goproto_getters) = false; */
   sequence_id: number;
   end_time: Date | undefined;
   /**
@@ -25,14 +24,13 @@ export interface LinearMinting {
 }
 
 export interface ExponentialStepMinting {
-  /** mint_period in seconds */
   amount: string;
   step_duration: Duration | undefined;
   amount_multiplier: string;
 }
 
 export interface MinterState {
-  position: number;
+  sequence_id: number;
   amount_minted: string;
   remainder_to_mint: string;
   last_mint_block_time: Date | undefined;
@@ -361,7 +359,7 @@ export const ExponentialStepMinting = {
 };
 
 const baseMinterState: object = {
-  position: 0,
+  sequence_id: 0,
   amount_minted: "",
   remainder_to_mint: "",
   remainder_from_previous_period: "",
@@ -369,8 +367,8 @@ const baseMinterState: object = {
 
 export const MinterState = {
   encode(message: MinterState, writer: Writer = Writer.create()): Writer {
-    if (message.position !== 0) {
-      writer.uint32(8).int32(message.position);
+    if (message.sequence_id !== 0) {
+      writer.uint32(8).int32(message.sequence_id);
     }
     if (message.amount_minted !== "") {
       writer.uint32(18).string(message.amount_minted);
@@ -398,7 +396,7 @@ export const MinterState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.position = reader.int32();
+          message.sequence_id = reader.int32();
           break;
         case 2:
           message.amount_minted = reader.string();
@@ -424,10 +422,10 @@ export const MinterState = {
 
   fromJSON(object: any): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (object.position !== undefined && object.position !== null) {
-      message.position = Number(object.position);
+    if (object.sequence_id !== undefined && object.sequence_id !== null) {
+      message.sequence_id = Number(object.sequence_id);
     } else {
-      message.position = 0;
+      message.sequence_id = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = String(object.amount_minted);
@@ -467,7 +465,8 @@ export const MinterState = {
 
   toJSON(message: MinterState): unknown {
     const obj: any = {};
-    message.position !== undefined && (obj.position = message.position);
+    message.sequence_id !== undefined &&
+      (obj.sequence_id = message.sequence_id);
     message.amount_minted !== undefined &&
       (obj.amount_minted = message.amount_minted);
     message.remainder_to_mint !== undefined &&
@@ -485,10 +484,10 @@ export const MinterState = {
 
   fromPartial(object: DeepPartial<MinterState>): MinterState {
     const message = { ...baseMinterState } as MinterState;
-    if (object.position !== undefined && object.position !== null) {
-      message.position = object.position;
+    if (object.sequence_id !== undefined && object.sequence_id !== null) {
+      message.sequence_id = object.sequence_id;
     } else {
-      message.position = 0;
+      message.sequence_id = 0;
     }
     if (object.amount_minted !== undefined && object.amount_minted !== null) {
       message.amount_minted = object.amount_minted;

@@ -34,7 +34,7 @@ func (m *C4eMinterUtils) SetMinterState(ctx sdk.Context, SequenceId int32, amoun
 	remainderToMint sdk.Dec, lastMintBlockTime time.Time, remainderFromPreviousPeriod sdk.Dec) {
 
 	minterState := cfemintertypes.MinterState{
-		Position:                    SequenceId,
+		SequenceId:                  SequenceId,
 		AmountMinted:                amountMinted,
 		RemainderToMint:             remainderToMint,
 		LastMintBlockTime:           lastMintBlockTime,
@@ -46,7 +46,7 @@ func (m *C4eMinterUtils) SetMinterState(ctx sdk.Context, SequenceId int32, amoun
 func (m *C4eMinterUtils) VerifyMinterState(ctx sdk.Context, expectedMinterStateSequenceId int32, expectedMinterStateAmountMinted sdk.Int,
 	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousPeriod sdk.Dec) {
 	expectedMinterState := cfemintertypes.MinterState{
-		Position:                    expectedMinterStateSequenceId,
+		SequenceId:                  expectedMinterStateSequenceId,
 		AmountMinted:                expectedMinterStateAmountMinted,
 		RemainderToMint:             expectedMinterStateRemainderToMint,
 		LastMintBlockTime:           expectedMinterStateLastMintBlockTime,
