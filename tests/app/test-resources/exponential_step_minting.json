@@ -5,7 +5,7 @@
     {
       "exponential_step_minting": {
         "amount": "160000000000000",
-        "step_duration": "31536000s",
+        "step_duration": "1h",
         "amount_multiplier": "0.5"
       },
       "sequence_id": 1,

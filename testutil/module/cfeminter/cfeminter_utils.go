@@ -30,11 +30,11 @@ func NewC4eMinterUtils(t *testing.T, helperCfeminterKeeper *cfemintermodulekeepe
 		bankUtils: bankUtils}
 }
 
-func (m *C4eMinterUtils) SetMinterState(ctx sdk.Context, SequenceId int32, amountMinted sdk.Int,
+func (m *C4eMinterUtils) SetMinterState(ctx sdk.Context, sequenceId int32, amountMinted sdk.Int,
 	remainderToMint sdk.Dec, lastMintBlockTime time.Time, remainderFromPreviousPeriod sdk.Dec) {
 
 	minterState := cfemintertypes.MinterState{
-		SequenceId:                  SequenceId,
+		SequenceId:                  sequenceId,
 		AmountMinted:                amountMinted,
 		RemainderToMint:             remainderToMint,
 		LastMintBlockTime:           lastMintBlockTime,
@@ -91,7 +91,7 @@ func (m *C4eMinterUtils) ExportGenesis(ctx sdk.Context, expected cfemintertypes.
 	require.NotNil(m.t, got)
 
 	require.EqualValues(m.t, expected.Params.MintDenom, got.Params.MintDenom)
-	CompareMinters(m.t, expected.Params, got.Params)
+	CompareMinterParams(m.t, expected.Params, got.Params)
 	CompareMinterStates(m.t, expected.MinterState, got.MinterState)
 	require.EqualValues(m.t, len(expected.StateHistory), len(got.StateHistory))
 
@@ -128,9 +128,9 @@ func NewContextC4eMinterUtils(t *testing.T, testContext commontestutils.TestCont
 	return &ContextC4eMinterUtils{C4eMinterUtils: c4eMinterUtils, testContext: testContext}
 }
 
-func (m *ContextC4eMinterUtils) SetMinterState(SequenceId int32, amountMinted sdk.Int,
+func (m *ContextC4eMinterUtils) SetMinterState(sequenceId int32, amountMinted sdk.Int,
 	remainderToMint sdk.Dec, lastMintBlockTime time.Time, remainderFromPreviousPeriod sdk.Dec) {
-	m.C4eMinterUtils.SetMinterState(m.testContext.GetContext(), SequenceId, amountMinted, remainderToMint, lastMintBlockTime, remainderFromPreviousPeriod)
+	m.C4eMinterUtils.SetMinterState(m.testContext.GetContext(), sequenceId, amountMinted, remainderToMint, lastMintBlockTime, remainderFromPreviousPeriod)
 }
 
 func (m *ContextC4eMinterUtils) Mint(expectedMintedAmount sdk.Int, expectedMinterStateSequenceId int32, expectedMinterStateAmountMinted sdk.Int,

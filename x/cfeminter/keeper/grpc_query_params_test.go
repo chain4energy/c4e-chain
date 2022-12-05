@@ -23,5 +23,5 @@ func TestParamsQuery(t *testing.T) {
 	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})
 	require.NoError(t, err)
 	require.EqualValues(t, params.MintDenom, response.Params.MintDenom)
-	testminter.CompareMinters(t, params, response.Params)
+	testminter.CompareMinterParams(t, params, response.Params)
 }

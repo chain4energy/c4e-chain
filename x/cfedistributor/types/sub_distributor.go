@@ -154,9 +154,9 @@ func isAccountPositionValidatable(accType string) bool {
 	return accType == INTERNAL_ACCOUNT || accType == MAIN
 }
 
-func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, SequenceId int, occuranceType string) error {
+func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, position int, occuranceType string) error {
 	id := getId(account)
-	currentPosition := SequenceId + 1
+	currentPosition := position + 1
 	if lastOccurrenceIndex[id] == currentPosition {
 		return fmt.Errorf("same %s account cannot occur twice within one subdistributor, subdistributor name: %s",
 			id, subDistributorName)

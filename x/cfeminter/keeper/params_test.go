@@ -18,7 +18,7 @@ func TestGetParams(t *testing.T) {
 
 	getParams := k.GetParams(ctx)
 	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinters(t, params, getParams)
+	testminter.CompareMinterParams(t, params, getParams)
 }
 
 func TestGetParams2(t *testing.T) {
@@ -30,5 +30,5 @@ func TestGetParams2(t *testing.T) {
 
 	getParams := k.GetParams(ctx)
 	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinters(t, params, getParams)
+	testminter.CompareMinterParams(t, params, getParams)
 }
