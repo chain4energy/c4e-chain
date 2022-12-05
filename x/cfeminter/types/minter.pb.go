@@ -248,7 +248,7 @@ func (m *MinterState) GetLastMintBlockTime() time.Time {
 }
 
 func init() {
-	proto.RegisterType((*Minter)(nil), "chain4energy.c4echain.cfeminter.Minter")
+	proto.RegisterType((*Minter)(nil), "chain4energy.c4echain.cfeminter.Minters")
 	proto.RegisterType((*LinearMinting)(nil), "chain4energy.c4echain.cfeminter.LinearMinting")
 	proto.RegisterType((*ExponentialStepMinting)(nil), "chain4energy.c4echain.cfeminter.ExponentialStepMinting")
 	proto.RegisterType((*MinterState)(nil), "chain4energy.c4echain.cfeminter.MinterState")
@@ -631,10 +631,10 @@ func (m *Minter) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Minter: wiretype end group for non-group")
+			return fmt.Errorf("proto: Minters: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Minter: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Minters: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

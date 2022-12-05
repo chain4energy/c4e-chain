@@ -80,7 +80,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO 
 	}
 
 	supply := k.bankKeeper.GetSupply(ctx, params.MintDenom)
-	result := currentMinter.CalculateInfation(supply.Amount, startTime, ctx.BlockHeader().Time)
+	result := currentMinter.CalculateInflation(supply.Amount, startTime, ctx.BlockHeader().Time)
 	k.Logger(ctx).Debug("get current inflation", "currentMinter", currentMinter, "previousMinter", previousMinter, "startTime",
 		startTime, "supply", supply, "blockTime", ctx.BlockHeader().Time, "result", result)
 	return result, nil

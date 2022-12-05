@@ -345,7 +345,7 @@ func TestCointainsIdTrue(t *testing.T) {
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
 	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
-	require.True(t, params.ContainsId(3))
+	require.True(t, params.ContainsMinter(3))
 
 }
 
@@ -363,7 +363,7 @@ func TestCointainsIdFalse(t *testing.T) {
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
 	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
-	require.False(t, params.ContainsId(6))
+	require.False(t, params.ContainsMinter(6))
 
 }
 
@@ -398,10 +398,10 @@ func TestLinearMintingInfation(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 
-	inflation := minter1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime.Add(-1000))
+	inflation := minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime.Add(-1000))
 	require.EqualValues(t, sdk.ZeroDec(), inflation)
 
-	inflation = minter1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
 	expected, _ := sdk.NewDecFromStr("0.1")
 	require.EqualValues(t, expected, inflation)
 
@@ -409,7 +409,7 @@ func TestLinearMintingInfation(t *testing.T) {
 	endTime = startTime.Add(duration)
 	minter1.EndTime = &endTime
 
-	inflation = minter1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
@@ -417,7 +417,7 @@ func TestLinearMintingInfation(t *testing.T) {
 	endTime = startTime.Add(duration)
 	minter1.EndTime = &endTime
 
-	inflation = minter1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
 	expected, _ = sdk.NewDecFromStr("0.02")
 	require.EqualValues(t, expected, inflation)
 }
@@ -429,11 +429,11 @@ func TestNoMintingInfation(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 
-	inflation := minter1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime.Add(-1000))
+	inflation := minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime.Add(-1000))
 	expected := sdk.ZeroDec()
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
 	expected = sdk.ZeroDec()
 	require.EqualValues(t, expected, inflation)
 
@@ -441,14 +441,14 @@ func TestNoMintingInfation(t *testing.T) {
 	endTime = startTime.Add(duration)
 	minter1.EndTime = &endTime
 
-	inflation = minter1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
 	require.EqualValues(t, expected, inflation)
 
 	duration = time.Hour * 24 * 365 * 5
 	endTime = startTime.Add(duration)
 	minter1.EndTime = &endTime
 
-	inflation = minter1.CalculateInfation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
 	require.EqualValues(t, expected, inflation)
 }
 
@@ -682,46 +682,46 @@ func TestExponentialStepMintingInfationNotLimted(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	minter := types.Minter{SequenceId: 1, EndTime: nil, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &exponentialStepMinting}
 
-	inflation := minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(-1000))
+	inflation := minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(-1000))
 	require.EqualValues(t, sdk.ZeroDec(), inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime)
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime)
 	expected, _ := sdk.NewDecFromStr("1")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(80000000000000), startTime, startTime.Add(Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(80000000000000), startTime, startTime.Add(Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year-1))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year-1))
 	expected, _ = sdk.NewDecFromStr("1")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(6*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(6*Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(8*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(8*Year))
 	expected, _ = sdk.NewDecFromStr("0.25")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(12*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(12*Year))
 	expected, _ = sdk.NewDecFromStr("0.125")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(16*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(16*Year))
 	expected, _ = sdk.NewDecFromStr("0.0625")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(20*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(20*Year))
 	expected, _ = sdk.NewDecFromStr("0.03125")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(24*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(24*Year))
 	expected, _ = sdk.NewDecFromStr("0.015625")
 	require.EqualValues(t, expected, inflation)
 }
@@ -732,35 +732,35 @@ func TestExponentialStepMintingInfationLimted(t *testing.T) {
 	endTime := startTime.Add(10 * Year)
 	minter := types.Minter{SequenceId: 1, EndTime: &endTime, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &exponentialStepMinting}
 
-	inflation := minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime)
+	inflation := minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime)
 	expected, _ := sdk.NewDecFromStr("1")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(80000000000000), startTime, startTime.Add(Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(80000000000000), startTime, startTime.Add(Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year-1))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year-1))
 	expected, _ = sdk.NewDecFromStr("1")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(6*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(6*Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(8*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(8*Year))
 	expected, _ = sdk.NewDecFromStr("0.25")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(12*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(12*Year))
 	expected, _ = sdk.NewDecFromStr("0")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInfation(sdk.NewInt(40000000000000), startTime, startTime.Add(24*Year))
+	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(24*Year))
 	expected, _ = sdk.NewDecFromStr("0")
 	require.EqualValues(t, expected, inflation)
 }

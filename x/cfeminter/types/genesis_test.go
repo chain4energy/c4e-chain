@@ -17,7 +17,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		errorMassage string
 	}{
 		{
-			desc: "no denom param",
+			desc: "no params",
 			genState: &types.GenesisState{
 				MinterState: types.MinterState{
 					SequenceId:                  2,

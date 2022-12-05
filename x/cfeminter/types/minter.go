@@ -39,7 +39,7 @@ func (params Params) ValidateMinters() error {
 			return err
 		}
 
-		err = params.validateEndTimeValue(minter, i, lastPos)
+		err = params.validateMintersEndTimeValue(minter, i, lastPos)
 		if err != nil {
 			return err
 		}
@@ -77,7 +77,7 @@ func (params Params) validateEndTimeExistance(minter *Minter, SequenceId int, la
 	return nil
 }
 
-func (params Params) validateEndTimeValue(minter *Minter, SequenceId int, lastPos int) error {
+func (params Params) validateMintersEndTimeValue(minter *Minter, SequenceId int, lastPos int) error {
 	if lastPos > 0 {
 		if SequenceId == 0 {
 			if minter.EndTime.Before(params.StartTime) || minter.EndTime.Equal(params.StartTime) {
@@ -93,9 +93,9 @@ func (params Params) validateEndTimeValue(minter *Minter, SequenceId int, lastPo
 	return nil
 }
 
-func (params Params) ContainsId(id int32) bool {
+func (params Params) ContainsMinter(sequenceId int32) bool {
 	for _, minter := range params.Minters {
-		if id == minter.SequenceId {
+		if sequenceId == minter.SequenceId {
 			return true
 		}
 	}
@@ -147,7 +147,7 @@ func (m Minter) Validate() error {
 	return nil
 }
 
-func (m *Minter) CalculateInfation(totalSupply sdk.Int, startTime time.Time, blockTime time.Time) sdk.Dec {
+func (m *Minter) CalculateInflation(totalSupply sdk.Int, startTime time.Time, blockTime time.Time) sdk.Dec {
 	if startTime.After(blockTime) {
 		return sdk.ZeroDec()
 	}

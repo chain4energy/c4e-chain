@@ -1,8 +1,7 @@
 package keeper
 
 import (
-	"strconv"
-
+	"encoding/binary"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -28,10 +27,11 @@ func (k Keeper) SetMinterState(ctx sdk.Context, minter types.MinterState) {
 }
 
 // get the vesting types
-func (k Keeper) GetMinterStateHistory(ctx sdk.Context, SequenceId int32) (state types.MinterState, found bool) {
+func (k Keeper) GetMinterStateHistory(ctx sdk.Context, sequenceId int32) (state types.MinterState, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
-
-	b := store.Get([]byte(strconv.FormatInt(int64(SequenceId), 10)))
+	bs := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bs, uint32(sequenceId))
+	b := store.Get(bs)
 	if b == nil {
 		found = false
 		return
@@ -45,7 +45,9 @@ func (k Keeper) GetMinterStateHistory(ctx sdk.Context, SequenceId int32) (state 
 func (k Keeper) SetMinterStateHistory(ctx sdk.Context, state types.MinterState) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
 	av := k.cdc.MustMarshal(&state)
-	store.Set([]byte(strconv.FormatInt(int64(state.SequenceId), 10)), av)
+	bs := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bs, uint32(state.SequenceId))
+	store.Set(bs, av)
 }
 
 // GetAllMinterStateHistory returns all historical minter states for ended Minters

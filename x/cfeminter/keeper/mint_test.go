@@ -50,20 +50,20 @@ func TestMintSecondPeriod(t *testing.T) {
 
 	testHelper.C4eMinterUtils.SetMinterState(2, sdk.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
-	Minterstart := startTime.Add(PeriodDuration)
+	minterStart := startTime.Add(PeriodDuration)
 
-	testHelper.SetContextBlockTime(Minterstart)
-	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 2, sdk.ZeroInt(), sdk.ZeroDec(), Minterstart, sdk.ZeroDec(), sdk.ZeroInt())
+	testHelper.SetContextBlockTime(minterStart)
+	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 2, sdk.ZeroInt(), sdk.ZeroDec(), minterStart, sdk.ZeroDec(), sdk.ZeroInt())
 
-	newTime := Minterstart.Add(PeriodDuration / 4)
+	newTime := minterStart.Add(PeriodDuration / 4)
 	testHelper.SetContextBlockTime(newTime)
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(25000), 2, sdk.NewInt(25000), sdk.ZeroDec(), newTime, sdk.ZeroDec(), sdk.NewInt(25000))
 
-	newTime = Minterstart.Add(PeriodDuration * 3 / 4)
+	newTime = minterStart.Add(PeriodDuration * 3 / 4)
 	testHelper.SetContextBlockTime(newTime)
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(50000), 2, sdk.NewInt(75000), sdk.ZeroDec(), newTime, sdk.ZeroDec(), sdk.NewInt(75000))
 
-	newTime = Minterstart.Add(PeriodDuration)
+	newTime = minterStart.Add(PeriodDuration)
 	testHelper.SetContextBlockTime(newTime)
 	expectedHist := types.MinterState{
 		SequenceId:                  2,
@@ -132,19 +132,19 @@ func TestMintSecondPeriodWithRemaining(t *testing.T) {
 
 	testHelper.C4eMinterUtils.SetMinterState(2, sdk.NewInt(0), sdk.ZeroDec(), startTime, sdk.MustNewDecFromStr("0.5"))
 
-	Minterstart := startTime.Add(PeriodDuration)
-	testHelper.SetContextBlockTime(Minterstart)
-	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 2, sdk.NewInt(0), sdk.MustNewDecFromStr("0.5"), Minterstart, sdk.MustNewDecFromStr("0.5"), sdk.ZeroInt())
+	minterStart := startTime.Add(PeriodDuration)
+	testHelper.SetContextBlockTime(minterStart)
+	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 2, sdk.NewInt(0), sdk.MustNewDecFromStr("0.5"), minterStart, sdk.MustNewDecFromStr("0.5"), sdk.ZeroInt())
 
-	newTime := Minterstart.Add(PeriodDuration / 3)
+	newTime := minterStart.Add(PeriodDuration / 3)
 	testHelper.SetContextBlockTime(newTime)
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(33333), 2, sdk.NewInt(33333), sdk.MustNewDecFromStr("0.833333333333333333"), newTime, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(33333))
 
-	newTime = Minterstart.Add(PeriodDuration * 2 / 3)
+	newTime = minterStart.Add(PeriodDuration * 2 / 3)
 	testHelper.SetContextBlockTime(newTime)
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(33334), 2, sdk.NewInt(66667), sdk.MustNewDecFromStr("0.166666666666666666"), newTime, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(66667))
 
-	newTime = Minterstart.Add(PeriodDuration)
+	newTime = minterStart.Add(PeriodDuration)
 	testHelper.SetContextBlockTime(newTime)
 	expectedHist := types.MinterState{
 		SequenceId:                  2,
@@ -223,7 +223,7 @@ func TestMintWithExponentialStepMintingOnGenesisStartInTheFuture(t *testing.T) {
 	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec(), sdk.ZeroInt())
 }
 
-func TestMintWithExponentialStepMintingOnGenesisStartInTheFutureXXXX(t *testing.T) {
+func TestMintWithExponentialStepMintingMinterStateAmountTooBig(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
 	testHelper := prepareApp(t, startTime.Add(time.Hour), startTime.Add(time.Hour), createExponentialStepMinting())

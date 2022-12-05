@@ -8,13 +8,14 @@ import (
 
 // GetParams get all parameters as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	minter := k.Minter(ctx)
+	minters := k.Minters(ctx)
 	startTime := k.StartTime(ctx)
-	return types.NewParams(k.MintDenom(ctx), startTime, minter)
+	return types.NewParams(k.MintDenom(ctx), startTime, minters)
 }
 
 // SetParams set the params
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+
 	k.paramstore.SetParamSet(ctx, &params)
 }
 
@@ -25,7 +26,7 @@ func (k Keeper) MintDenom(ctx sdk.Context) (res string) {
 }
 
 // MintDenom returns the denom param
-func (k Keeper) Minter(ctx sdk.Context) (res []*types.Minter) {
+func (k Keeper) Minters(ctx sdk.Context) (res []*types.Minter) {
 	k.paramstore.Get(ctx, types.KeyMinters, &res)
 	return
 }
