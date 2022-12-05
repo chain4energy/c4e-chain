@@ -46,6 +46,8 @@ func TestGenesisState_Validate(t *testing.T) {
 		invalidVestingTypesEmptyNameTest(),
 		invalidVestingTypesNegativeLockupPeriodTest(),
 		invalidVestingTypesNegativeVestingPeriodTest(),
+		validVestingTypesFreeEquals1(),
+		validVestingTypesFreeEquals0(),
 		invalidVestingTypesFreeGreaterThan1(),
 		invalidVestingTypesFreeLowerThan0(),
 		// this line is used by starport scaffolding # types/genesis/testcase
@@ -514,5 +516,31 @@ func invalidVestingTypesFreeLowerThan0() TcData {
 		},
 		valid:        false,
 		errorMassage: "Free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
+	}
+}
+
+func validVestingTypesFreeEquals1() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("1")
+	return TcData{
+		desc: "valid vestingTypes initial bonus equals 1",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid: true,
+	}
+}
+
+func validVestingTypesFreeEquals0() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("0")
+	return TcData{
+		desc: "valid vestingTypes initial bonus equals 0",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid: true,
 	}
 }

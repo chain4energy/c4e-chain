@@ -222,11 +222,11 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr
 	}
 	vestingPool.Sent = vestingPool.Sent.Add(amount)
 	vt, vErr := k.GetVestingType(ctx, vestingPool.VestingType)
+	if vErr != nil {
+		k.Logger(ctx).Error("send to new vesting account get vesting type error", "fromAddr", fromAddr, "vestingPool", vestingPool, "error", err.Error())
+		return withdrawn, sdkerrors.Wrap(types.ErrGetVestingType, sdkerrors.Wrapf(err, "send to new vesting account - from addr: %s, vestingType %s", fromAddr, vestingPool.VestingType).Error())
+	}
 	if restartVesting {
-		if vErr != nil {
-			k.Logger(ctx).Error("send to new vesting account get vesting type error", "fromAddr", fromAddr, "vestingPool", vestingPool, "error", err.Error())
-			return withdrawn, sdkerrors.Wrap(types.ErrGetVestingType, sdkerrors.Wrapf(err, "send to new vesting account - from addr: %s, vestingType %s", fromAddr, vestingPool.VestingType).Error())
-		}
 		err = k.newVestingAccount(ctx, toAddr, amount, vt.Free,
 			ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod))
 	} else {
@@ -326,7 +326,7 @@ func CalculateWithdrawable(current time.Time, vestingPool types.VestingPool) sdk
 	return sdk.ZeroInt()
 }
 
-func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount sdk.Int, bonusPercentage sdk.Dec,
+func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount sdk.Int, free sdk.Dec,
 	lockEnd time.Time,
 	vestingEnd time.Time) error {
 	denom := k.GetParams(ctx).Denom
@@ -364,7 +364,7 @@ func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount sdk.
 	}
 
 	decimalAmount := amount.ToDec()
-	originalVestingAmount := decimalAmount.Sub(decimalAmount.Mul(bonusPercentage)).TruncateInt()
+	originalVestingAmount := decimalAmount.Sub(decimalAmount.Mul(free)).TruncateInt()
 	originalVestingCoin := sdk.NewCoin(denom, originalVestingAmount)
 	originalVesting := sdk.NewCoins(originalVestingCoin)
 
