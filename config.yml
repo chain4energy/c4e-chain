@@ -108,8 +108,10 @@ genesis:
     cfeminter:
       params:
         mint_denom: "uc4e"
-        start_time: "2022-07-05T00:00:00.00000000Z"
-        minters:
+
+        minter_config:
+          start_time: "2022-07-05T00:00:00.00000000Z"
+          minters:
           - sequence_id: 1
             type: "EXPONENTIAL_STEP_MINTING"
             exponential_step_minting:
