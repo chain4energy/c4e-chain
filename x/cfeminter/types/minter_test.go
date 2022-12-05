@@ -88,9 +88,9 @@ func TestValidateMinterPariodsOrder(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -109,9 +109,9 @@ func TestValidateMinterPariodsOrderInitialyNotOrdered(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -130,9 +130,9 @@ func TestValidateMinterPariodsOrderInitialyNotFromOne(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 5, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 6, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 7, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -151,9 +151,9 @@ func TestValidateMinterPariodsOrderWrongFirstId(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 0, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -172,9 +172,9 @@ func TestValidateMinterPariodsOrderWrongNotIncrementByOne(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 3, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 4, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -190,6 +190,7 @@ func TestValidateMinterNoMinters(t *testing.T) {
 		StartTime: startTime,
 		Minters:   types.Minters{},
 	}
+
 	params := types.Params{MintDenom: customDenom, MinterConfig: minterConfig}
 	require.EqualError(t, params.Validate(), "no minters defined")
 }
@@ -204,8 +205,8 @@ func TestValidateMinterLastPeriodWithEndDate(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minters := []*types.Minter{&minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -221,8 +222,8 @@ func TestValidateMinterLastPeriodWithEndDateOnePeriod(t *testing.T) {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-
 	minters := []*types.Minter{&minter1}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -241,9 +242,9 @@ func TestValidateMinterFirstPeriodWrongEnd(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 4, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -262,9 +263,9 @@ func TestValidateMinterNextPeriodWrongEnd(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 4, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -283,9 +284,9 @@ func TestValidateMinterNoMintigTypeWithLinearMinting(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING, LinearMinting: &LinearMinting2}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -303,9 +304,9 @@ func TestValidateMinterTimeLineraMinterTypeWithNoLinearMintingDefinition(t *test
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -322,9 +323,9 @@ func TestValidateMinterTimeLineraMinterTypeWithNoEndTimeInNotLastPeriod(t *testi
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: nil, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -341,8 +342,8 @@ func TestValidateMinterTimeLineraMinterTypeWithNoEndTime(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: nil, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-
 	minters := []*types.Minter{&minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -361,9 +362,9 @@ func TestValidateMinterUnknownType(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: "Unknown"}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -383,9 +384,9 @@ func TestValidateMinterTimeLinearAmountLessThanZero(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -405,9 +406,9 @@ func TestCointainsIdTrue(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -427,9 +428,9 @@ func TestCointainsIdFalse(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -732,9 +733,9 @@ func TestValidateExponentialStepMintingAmountBelowZero(t *testing.T) {
 	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(-160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &exponentialStepMinting}
-
 	minter2 := types.Minter{SequenceId: 2, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
@@ -750,9 +751,9 @@ func TestValidateExponentialStepMinterLessThanZeror(t *testing.T) {
 	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(140000000000000), StepDuration: -NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &exponentialStepMinting}
-
 	minter2 := types.Minter{SequenceId: 2, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter1, &minter2}
+
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,

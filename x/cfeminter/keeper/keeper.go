@@ -65,7 +65,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO 
 	minterState := k.GetMinterState(ctx)
 	params := k.GetParams(ctx)
 
-	currentMinter, previousMinter := getCurrentAndPreviousMinter(&params, &minterState)
+	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.MinterConfig, &minterState)
 
 	if currentMinter == nil {
 		k.Logger(ctx).Error("minter current sequence id not found error", "SequenceId", minterState.SequenceId)

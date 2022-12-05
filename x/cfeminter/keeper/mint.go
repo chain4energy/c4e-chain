@@ -28,7 +28,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int, error) {
 	minterState := k.GetMinterState(ctx)
 
-	currentMinter, previousMinter := getCurrentAndPreviousMinter(params, &minterState)
+	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.MinterConfig, &minterState)
 
 	if currentMinter == nil {
 		k.Logger(ctx).Error("mint - current minter not found error", "lev", level, "SequenceId", minterState.SequenceId)
@@ -102,9 +102,9 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 	return result, nil
 }
 
-func getCurrentAndPreviousMinter(params *types.Params, state *types.MinterState) (currentMinter *types.Minter, previousMinter *types.Minter) {
+func getCurrentAndPreviousMinter(minterConfig *types.MinterConfig, state *types.MinterState) (currentMinter *types.Minter, previousMinter *types.Minter) {
 	currentId := state.SequenceId
-	for _, minter := range params.MinterConfig.Minters {
+	for _, minter := range minterConfig.Minters {
 		if minter.SequenceId == currentId {
 			currentMinter = minter
 		}
