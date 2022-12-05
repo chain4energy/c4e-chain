@@ -20,167 +20,79 @@ The purpose of `cfeminter` module is to provide token emission mechanism.
 ### Token emission mechanism
 
 Token emission mechanism mints calculated amount of tokens per each block. Token amount is calculated according to cfeminter module configuration params. 
-Tokens minting process is divided into Minters where each period has fully separated minting rules. Those Minters rules are difined within cfeminter module configuration params.
-Simply, mintining process configuration is a list of ordered minting Minters, where each period has its own start and end time (end time for last period is not required, in that case last minting period works infinitely).
+Tokens minting process is divided into separate minters where each minter has different minting rules. Those minting rules are difined within cfeminter module configuration params.
+Simply, mintining process configuration is a list of ordered minters, where each minter has its own start and end time (end time for last minter is not required, in that case last minter works infinitely).
 
-### Miniting Minters
+### Minters 
 
-Minting period is a period of time when configured minting rules apply. Ordered list of minting Minters deifnes whole token emmision process.
-End time of one period is a start time of the next period on the Minters list.
-Each minting pariond has minter type assigned. 
-Last minting period on the list must be defined to work indefinitely. (must have no end time)
+Minting period is a period of time when configured minting rules apply. Ordered list of minters defines whole token emission process.
+End time of one minter is a start time of the next minter on the minters list.
+Each minter has its own type assigned. 
+Last minter on the list must be defined to work indefinitely. (must have no end time)
 
 ### Miniter type
 
-Minter type defines general rules of token emission. Each minter type has its specific set of parameters modifying token emission. Parameters are set per minting period.
-Currently cfeminter module suppoerts following minter types:
+Minter type defines general rules of token emission. Each minter type has its specific set of parameters modifying token emission. Parameters are set per minter. 
+Currently, cfeminter module supports following minter types:
 - no miniting
-- time linear minter
-- periodic reduction minter
+- linear minting
+- exponential step minting
 
 #### No minitng
 
 No minting is simple minter type that mints nothing.
 This minter type has no parameters.
 
-#### time linear minter
+#### linear minting
 
-Time linear minter is block time based minter type. It mints configured amount of tokens within minting period lineary.
-This minter requires period with end time since given amount of token needs to be minted in finite time period. So this minter type cannot be configured as a type of last period.
+Linear minting is block time based minter type. It mints configured amount of tokens within minter linearly.
+This minting type requires minter with end time since given amount of token needs to be minted in finite time period. So this minter type cannot be configured as a type of last period.
 
 Minter type parameters:
 * amount - amount of tokens to mint within minter period
 
-#### periodic reduction minter
+#### exponential step minting
 
-Periodic reduction minter is block time based minter type. It mints configured amount of tokens within minting period, where it divides this period into smaller sub Minters of equal lenght.
-Then within one sub period expected amount is minted, lineary. Expected amount of subperiod minted tokens is equal to tokens minted by prevoius subperiod multiplied by configured factor.
-For example initial period amount is 40 milions, multiplying factor set to 0.5 and periond length is one year, then:
-* 1st subperiod (1st year) mints 40 millions lineary 
-* 2nd subperiod (2nd year) mints 20 millions lineary
-* 3rd subperiod (3rd year) mints 10 millions lineary
-* 4th subperiod (4th year) mints 5 millions lineary
+Exponential step minting is block time based minter type. It mints configured amount of tokens within minter, where it divides this minter into smaller subminters of equal lenght.
+Then within subminter expected amount is minted, lineary. Expected amount of subminter minted tokens is equal to tokens minted by prevoius subminter multiplied by configured factor.
+For example initial minter amount is 40 milions, multiplying factor set to 0.5 and step duration is four years, then:
+* 1st subminter (1st year) mints 40 millions linearly 
+* 2nd subminter (2nd year) mints 20 millions linearly
+* 3rd subminter (3rd year) mints 10 millions linearly
+* 4th subminter (4th year) mints 5 millions linearly
 and so on.
 
 This minter can mint infinitely.
 
 Minter type parameters: //TODO better params names
-* mint period - period of time mint amount is emitted
-* mint amount - amount to mint during mint period
-* reduction period length - defines how many mint Minters are in subperiod (subperiod = mint period * reduction_period_length)
-* reduction factor - amount multiplying factor;
+* step duration - period of time mint amount is emitted
+* amount - amount to mint during mint period
+* amount multiplier - amount multiplying factor;
 
-#### Examples
+## Examples
 
-1. Four years halving minting that starts with 10 millions of tokens yearly
+### Four years halving minting that starts with 40 million tokens and step duration set at 4 years
 
 Minter configration:
 
 * minting start: now
 * Amount of minter Minters: 1
 * Minter period 1:
-    * period end: null
-    * minter type: periodic reduction minter
-    * periodic reduction minter parameters:
-        * mint_period: 1 year
-        * mint_amount: 10 millions
-        * reduction_period_length: 4
-        * reduction_factor: 0.5
+    * end time: null
+    * type: exponential step minting
+    * exponential step minting parameters:
+        * step_duration: 4 years
+        * amount: 40 millions
+        * amount_multiplier: 0.5
 
 Result:
-* 1st 4 years mints 10 millions yearly 
-* 2nd 4 years mints 5 millions yearly 
-* 3rd 4 years mints 2.5 millions yearly
+* 1st 4 years mints 40 millions 
+* 2nd 4 years mints 20 millions
+* 3rd 4 years mints 10 millions
 and so on
 
-2. Linear minting of 100 millions of token during period of 10 years, next no emission
-
-Minter configration:
-
-* minting start: now
-* Amount of minter Minters: 2
-* Minter period 1:
-    * period end: 10 years from now
-    * minter type: time linaer minter
-    * periodic reduction minter parameters:
-        * amount: 100 millions
-* Minter period 2:
-    * period end: null
-    * minter type: no minting
-
-Result:
-* 10 millions yearly for 10 years
-
-## Parameters
-
-The Chain4Energy minter module contains the following configurations parameters:
-
-| Key                  | Type                        | Description                     |
-| -------------------- | --------------------------- | ------------------------------- |
-| mintDenom     | string | Denom of minting token |
-| minter     | Minter | Token emission configuration |
-
-### Minter type
-
-| Param                | Type                        | Description                     |
-| -------------------- | --------------------------- | ------------------------------- |
-| start     | Time | Token emission start time |
-| Minters  | List of MintingPeriod | list of minting Minters |
-
-### MintingPeriod type
-
-| Param       | Type               | Description                                                             |
-| ----------- | ------------------ | ----------------------------------------------------------------------- |
-| SequenceId    | int32       | Minter period ordering SequenceId |
-| period_end     | Time | Minter period end time |
-| types     | Enum string | Minter period type. Allowed values:<br>- NO_MINTING<br>- LINEAR_MINTING<br>- EXPONENTIAL_STEP_MINTING;|
-| LINEAR_MINTING  | LinearMinting    | Time linear minter configuration|
-| EXPONENTIAL_STEP_MINTING | ExponentialStepMinting | Periodic reduction minter configuration |
-
-### LinearMinting type
-
-| Param   | Type         | Description              |
-| ------- | ------------ | ------------------------ |
-| amount    | sdk.Int       | An smount to mint lieary during the period |
-
-### ExponentialStepMinting type
-
-| Param   | Type | Description                    |
-| ------- | ---- | ------------------------------ |
-| mint_period | int32  | period of time of "mint_amount" token emission |
-| mint_amount | sdk.Int   | amount to mint during "mint_period" |
-| reduction_period_length | int32  | defines how many mint Minters are in subperiod (see **[periodic reduction minter](#periodic-reduction-minter)**) (subperiod = mint period * reduction_period_length) |
-| reduction_factor | sdk.Dec   | amount multiplying factor |
-
-### Example params
-
-#### periodic reduction minter
-
-Periodic reduction minter is block time based minter type. It mints configured amount of tokens within minting period, where it divides this period into smaller sub Minters of equal lenght.
-Then within one sub period expected amount is minted, lineary. Expected amount of subperiod minted tokens is equal to tokens minted by prevoius subperiod multiplied by configured factor.
-For example initial period amount is 40 milions, multiplying factor set to 0.5 and periond length is one year, then:
-* 1st subperiod (1st year) mints 40 millions lineary 
-* 2nd subperiod (2nd year) mints 20 millions lineary
-* 3rd subperiod (3rd year) mints 10 millions lineary
-* 4th subperiod (4th year) mints 5 millions lineary
-and so on.
-
-This minter can mint infinitely.
-
-Minter type parameters: //TODO better params names
-* mint period - period of time mint amount is emitted
-* mint amount - amount to mint during mint period
-* reduction period length - defines how many mint Minters are in subperiod (subperiod = mint period * reduction_period_length)
-* reduction factor - amount multiplying factor;
-
-#### Examples
-
-See the configuration params for **[examples](#examples)** from **[Concept](#concepts)** section
-
-1. Four years halving minting that starts with 10 millions of tokens yearly
-
+#### JSON representation:
 ```json
-
 {
   "params": {
     "mint_denom": "uc4e",
@@ -189,27 +101,41 @@ See the configuration params for **[examples](#examples)** from **[Concept](#con
       "Minters": [
         {
           "SequenceId": 1,
-          "period_end": null,
+          "end_time": null,
           "type": "EXPONENTIAL_STEP_MINTING",
           "LINEAR_MINTING": null,
           "EXPONENTIAL_STEP_MINTING": {
-            "mint_period": 31536000,
-            "mint_amount": "10000000000000",
-            "reduction_period_length": 4,
-            "reduction_factor": "0.500000000000000000"
+            "step_duration": "126144000s",
+            "amount": 40000000000000,
+            "amount_multiplier": "0.500000000000000000"
           }
         }
       ]
     }
   }
 }
-
 ```
 
-2. Linear minting of 100 millions of token during period of 10 years, next no emission
+### Linear minting of 100 millions of token during period of 10 years, next no emission
 
+Minter configration:
+
+* minting start: now
+* Amount of minter Minters: 2
+* Minter period 1:
+    * end time: 10 years from now
+    * type: linear minting
+    * linear minting parameters:
+        * amount: 100 millions
+* Minter period 2:
+    * end time: null
+    * type: no minting
+
+Result:
+* 10 millions yearly for 10 years
+
+#### JSON representation:
 ```json
-
 {
   "params": {
     "mint_denom": "uc4e",
@@ -218,16 +144,16 @@ See the configuration params for **[examples](#examples)** from **[Concept](#con
       "Minters": [
         {
           "SequenceId": 1,
-          "period_end": "2023-07-05T00:00:00Z",
-          "type": "EXPONENTIAL_STEP_MINTING",
+          "end_time": "2023-07-05T00:00:00Z",
+          "type": "LINEAR_MINTING",
           "LINEAR_MINTING": {
-            "amount": "100000000000000",
+            "amount": 100000000000000
           },
           "EXPONENTIAL_STEP_MINTING": null
         },
         {
-          "SequenceId": 1,
-          "period_end": null,
+          "SequenceId": 2,
+          "end_time": null,
           "type": "NO_MINTING",
           "LINEAR_MINTING": null,
           "EXPONENTIAL_STEP_MINTING": null
@@ -238,6 +164,58 @@ See the configuration params for **[examples](#examples)** from **[Concept](#con
 }
 
 ```
+## Parameters
+
+The Chain4Energy minter module contains the following configurations parameters:
+
+| Key          | Type         | Description                     |
+|--------------|--------------| ------------------------------- |
+| mintDenom    | string       | Denom of minting token |
+| minterConfig | MinterConfig | Token emission configuration |
+
+### MinterConfig type
+
+| Param     | Type            | Description               |
+|-----------|-----------------|---------------------------|
+| startTime | Time            | Token emission start time |
+| minters   | List of Minters | list of minters           |
+
+### Minter type
+
+| Param                  | Type               | Description                                                                                             |
+|------------------------| ------------------ |---------------------------------------------------------------------------------------------------------|
+| SequenceId             | int32       | Minter ordering id                                                                                      |
+| endTime                | Time | Minter end time                                                                                         |
+| type                   | Enum string | Minter period type. Allowed values:<br>- NO_MINTING<br>- LINEAR_MINTING <br>- EXPONENTIAL_STEP_MINTING; |
+| linearMinting          | LinearMinting    | Linear minting configuration                                                                            |
+| exponentialStepMinting | ExponentialStepMinting | Exponential step minting configuration                                                                  |
+
+### LinearMinting type
+
+| Param   | Type         | Description                                |
+| ------- | ------------ |--------------------------------------------|
+| amount    | sdk.Int       | An amount to mint lieary during the period |
+
+### ExponentialStepMinting type
+
+| Param            | Type | Description                    |
+|------------------| ---- | ------------------------------ |
+| stepDuration     | int32  | period of time of token emission |
+| amount           | sdk.Int   | amount to mint during "stepDuration" |
+| amountMultiplier | sdk.Dec   | amount multiplying factor |
+
+### Example params
+
+
+#### Examples
+
+See the configuration params for **[examples](#examples)** from **[Concept](#concepts)** section
+
+1. Four years halving minting that starts with 10 millions of tokens yearly
+
+2. Linear minting of 100 millions of token during period of 10 years, next no emission
+
+
 
 ## State
 
@@ -262,7 +240,6 @@ Module state contains followng data:
 ### Example state
 
 ```json
-
 {
   "minter_state": {
     "SequenceId": 1,
@@ -273,7 +250,6 @@ Module state contains followng data:
   },
   "state_history": []
 }
-
 ```
 
 ## Events
@@ -314,10 +290,9 @@ See example reponse:
           "type": "EXPONENTIAL_STEP_MINTING",
           "LINEAR_MINTING": null,
           "EXPONENTIAL_STEP_MINTING": {
-            "mint_period": 31536000,
-            "mint_amount": "40000000000000",
-            "reduction_period_length": 4,
-            "reduction_factor": "0.500000000000000000"
+            "step_duration": "31536000s",
+            "amount": "40000000000000",
+            "amount_multiplier": "0.500000000000000000"
           }
         }
       ]
