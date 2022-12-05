@@ -145,7 +145,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state current SequenceId not found in minters",
+			errorMassage: "minter state current sequence id not found in minters",
 		},
 		{
 			desc: "valid genesis state with history",

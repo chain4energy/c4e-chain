@@ -122,7 +122,7 @@ func TestStepDurationNotFound(t *testing.T) {
 
 	newTime := startTime.Add(10)
 	testHelper.SetContextBlockTime(newTime)
-	testHelper.C4eMinterUtils.MintError("minter - mint - current period for SequenceId 9 not found: not found")
+	testHelper.C4eMinterUtils.MintError("minter - mint - current minter for sequence id 9 not found: not found")
 }
 
 func TestMintSecondPeriodWithRemaining(t *testing.T) {

@@ -240,10 +240,10 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 
 func (m ExponentialStepMinting) validate(id int32) error {
 	if m.Amount.IsNegative() {
-		return fmt.Errorf("minter id: %d - ExponentialStepMinting Amount cannot be less than 0", id)
+		return fmt.Errorf("minter sequence id: %d - ExponentialStepMinting Amount cannot be less than 0", id)
 	}
 	if m.StepDuration <= 0 {
-		return fmt.Errorf("minter id: %d - ExponentialStepMinting StepDuration must be bigger than 0", id)
+		return fmt.Errorf("minter sequence id: %d - ExponentialStepMinting StepDuration must be bigger than 0", id)
 	}
 
 	return nil
