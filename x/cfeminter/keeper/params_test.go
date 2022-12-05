@@ -18,38 +18,41 @@ func TestGetDefaultParams(t *testing.T) {
 
 	getParams := k.GetParams(ctx)
 	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinterParams(t, params, getParams)
+	testminter.CompareMinterConfigs(t, params.MinterConfig, getParams.MinterConfig)
 }
 
 func TestGetParams(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	params.MintDenom = "dfda"
-	params.StartTime = time.Now().Add(time.Hour)
-	params.Minters = createLinearMintings(time.Now())
+	params.MinterConfig = &types.MinterConfig{
+		StartTime: time.Now().Add(time.Hour),
+		Minters:   createLinearMintings(time.Now()),
+	}
 	k.SetParams(ctx, params)
 
 	getParams := k.GetParams(ctx)
 	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinterParams(t, params, getParams)
+	testminter.CompareMinterConfigs(t, params.MinterConfig, getParams.MinterConfig)
 }
 
 func TestSetParamsNoDenom(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	params.MintDenom = ""
-	params.StartTime = time.Now().Add(time.Hour)
-	params.Minters = createLinearMintings(time.Now())
 	require.PanicsWithValue(t, "value from ParamSetPair is invalid: denom cannot be empty", func() { k.SetParams(ctx, params) })
 }
 
 func TestSetParamsWrongMinterEndTime(t *testing.T) {
 	k, ctx := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
+	minters := createLinearMintings(time.Now())
 	timeNow := time.Now()
-	params.Minters = createLinearMintings(time.Now())
-	params.Minters[0].EndTime = &timeNow
-	params.MintDenom = "abc"
-	params.StartTime = timeNow.Add(time.Hour)
+	minters[0].EndTime = &timeNow
+	params.MinterConfig = &types.MinterConfig{
+		StartTime: time.Now().Add(time.Hour),
+		Minters:   minters,
+	}
+
 	require.PanicsWithValue(t, "value from ParamSetPair is invalid: first minter end must be bigger than minter start", func() { k.SetParams(ctx, params) })
 }

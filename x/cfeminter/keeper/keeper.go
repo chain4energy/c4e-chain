@@ -74,7 +74,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO 
 
 	var startTime time.Time
 	if previousMinter == nil {
-		startTime = params.StartTime
+		startTime = params.MinterConfig.StartTime
 	} else {
 		startTime = *previousMinter.EndTime
 	}

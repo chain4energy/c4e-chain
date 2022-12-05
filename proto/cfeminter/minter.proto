@@ -7,6 +7,14 @@ import "google/protobuf/duration.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 
+message MinterConfig {
+  google.protobuf.Timestamp start_time = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  repeated Minter minters = 3;
+}
+
 message Minter {
   int32 sequence_id = 1;
   google.protobuf.Timestamp end_time = 2 [(gogoproto.stdtime) = true];

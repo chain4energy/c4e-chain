@@ -16,12 +16,12 @@ func TestParamsQuery(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
 	params.MintDenom = "denom"
-	params.Minters = createLinearMintings(time.Now())
+	params.MinterConfig.Minters = createLinearMintings(time.Now())
 
 	keeper.SetParams(ctx, params)
 
 	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})
 	require.NoError(t, err)
 	require.EqualValues(t, params.MintDenom, response.Params.MintDenom)
-	testminter.CompareMinterParams(t, params, response.Params)
+	testminter.CompareMinterConfigs(t, params.MinterConfig, response.Params.MinterConfig)
 }

@@ -212,41 +212,44 @@ paths:
                 properties:
                   mint_denom:
                     type: string
-                  start_time:
-                    type: string
-                    format: date-time
-                  minters:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        sequence_id:
-                          type: integer
-                          format: int32
-                        end_time:
-                          type: string
-                          format: date-time
-                        type:
-                          type: string
-                          title: |-
-                            types:
-                              NO_MINTING;
-                              LINEAR_MINTING;
-                              EXPONENTIAL_STEP_MINTING;
-                        linear_minting:
+                  minter_config:
+                    type: object
+                    properties:
+                      start_time:
+                        type: string
+                        format: date-time
+                      minters:
+                        type: array
+                        items:
                           type: object
                           properties:
-                            amount:
+                            sequence_id:
+                              type: integer
+                              format: int32
+                            end_time:
                               type: string
-                        exponential_step_minting:
-                          type: object
-                          properties:
-                            amount:
+                              format: date-time
+                            type:
                               type: string
-                            step_duration:
-                              type: string
-                            amount_multiplier:
-                              type: string
+                              title: |-
+                                types:
+                                  NO_MINTING;
+                                  LINEAR_MINTING;
+                                  EXPONENTIAL_STEP_MINTING;
+                            linear_minting:
+                              type: object
+                              properties:
+                                amount:
+                                  type: string
+                            exponential_step_minting:
+                              type: object
+                              properties:
+                                amount:
+                                  type: string
+                                step_duration:
+                                  type: string
+                                amount_multiplier:
+                                  type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -32490,26 +32493,9 @@ definitions:
             type: string
           amount_multiplier:
             type: string
-  chain4energy.c4echain.cfeminter.MinterState:
+  chain4energy.c4echain.cfeminter.MinterConfig:
     type: object
     properties:
-      sequence_id:
-        type: integer
-        format: int32
-      amount_minted:
-        type: string
-      remainder_to_mint:
-        type: string
-      last_mint_block_time:
-        type: string
-        format: date-time
-      remainder_from_previous_period:
-        type: string
-  chain4energy.c4echain.cfeminter.Params:
-    type: object
-    properties:
-      mint_denom:
-        type: string
       start_time:
         type: string
         format: date-time
@@ -32545,21 +32531,29 @@ definitions:
                   type: string
                 amount_multiplier:
                   type: string
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeminter.QueryInflationResponse:
+  chain4energy.c4echain.cfeminter.MinterState:
     type: object
     properties:
-      inflation:
+      sequence_id:
+        type: integer
+        format: int32
+      amount_minted:
         type: string
-  chain4energy.c4echain.cfeminter.QueryParamsResponse:
+      remainder_to_mint:
+        type: string
+      last_mint_block_time:
+        type: string
+        format: date-time
+      remainder_from_previous_period:
+        type: string
+  chain4energy.c4echain.cfeminter.Params:
     type: object
     properties:
-      params:
-        description: params holds all the parameters of this module.
+      mint_denom:
+        type: string
+      minter_config:
         type: object
         properties:
-          mint_denom:
-            type: string
           start_time:
             type: string
             format: date-time
@@ -32595,6 +32589,59 @@ definitions:
                       type: string
                     amount_multiplier:
                       type: string
+    description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfeminter.QueryInflationResponse:
+    type: object
+    properties:
+      inflation:
+        type: string
+  chain4energy.c4echain.cfeminter.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of this module.
+        type: object
+        properties:
+          mint_denom:
+            type: string
+          minter_config:
+            type: object
+            properties:
+              start_time:
+                type: string
+                format: date-time
+              minters:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    sequence_id:
+                      type: integer
+                      format: int32
+                    end_time:
+                      type: string
+                      format: date-time
+                    type:
+                      type: string
+                      title: |-
+                        types:
+                          NO_MINTING;
+                          LINEAR_MINTING;
+                          EXPONENTIAL_STEP_MINTING;
+                    linear_minting:
+                      type: object
+                      properties:
+                        amount:
+                          type: string
+                    exponential_step_minting:
+                      type: object
+                      properties:
+                        amount:
+                          type: string
+                        step_duration:
+                          type: string
+                        amount_multiplier:
+                          type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfeminter.QueryStateResponse:
     type: object

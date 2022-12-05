@@ -42,7 +42,7 @@ func (gs GenesisState) Validate() error {
 		return err
 	}
 
-	if !gs.Params.ContainsMinter(minterState.SequenceId) {
+	if !gs.Params.MinterConfig.ContainsMinter(minterState.SequenceId) {
 		return fmt.Errorf("minter state current sequence id not found in minters")
 	}
 	return nil

@@ -19,7 +19,7 @@ const ( // MintingPeriod types
 
 type Minters []*Minter
 
-func (params Params) ValidateMinters() error {
+func (params MinterConfig) ValidateMinters() error {
 	sort.Sort(BySequenceId(params.Minters))
 	if len(params.Minters) < 1 {
 		return fmt.Errorf("no minters defined")
@@ -52,7 +52,7 @@ func (params Params) ValidateMinters() error {
 	return nil
 }
 
-func (params Params) validateMinterOrderingId(minter *Minter, id int32) (int32, error) {
+func (params MinterConfig) validateMinterOrderingId(minter *Minter, id int32) (int32, error) {
 	if id == 0 {
 		if minter.SequenceId <= id {
 			return 0, fmt.Errorf("first minter sequence id must be bigger than 0, but is %d", minter.SequenceId)
@@ -67,7 +67,7 @@ func (params Params) validateMinterOrderingId(minter *Minter, id int32) (int32, 
 	return id, nil
 }
 
-func (params Params) validateEndTimeExistance(minter *Minter, SequenceId int, lastPos int) error {
+func (params MinterConfig) validateEndTimeExistance(minter *Minter, SequenceId int, lastPos int) error {
 	if SequenceId == lastPos && minter.EndTime != nil {
 		return fmt.Errorf("last minter cannot have EndTime set, but is set to %s", minter.EndTime)
 	}
@@ -77,7 +77,7 @@ func (params Params) validateEndTimeExistance(minter *Minter, SequenceId int, la
 	return nil
 }
 
-func (params Params) validateMintersEndTimeValue(minter *Minter, SequenceId int, lastPos int) error {
+func (params MinterConfig) validateMintersEndTimeValue(minter *Minter, SequenceId int, lastPos int) error {
 	if lastPos > 0 {
 		if SequenceId == 0 {
 			if minter.EndTime.Before(params.StartTime) || minter.EndTime.Equal(params.StartTime) {
@@ -93,7 +93,7 @@ func (params Params) validateMintersEndTimeValue(minter *Minter, SequenceId int,
 	return nil
 }
 
-func (params Params) ContainsMinter(sequenceId int32) bool {
+func (params MinterConfig) ContainsMinter(sequenceId int32) bool {
 	for _, minter := range params.Minters {
 		if sequenceId == minter.SequenceId {
 			return true

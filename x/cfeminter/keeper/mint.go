@@ -13,8 +13,8 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	lastBlockTime := ctx.BlockTime()
 	params := k.GetParams(ctx)
 
-	if lastBlockTime.Before(params.StartTime) {
-		k.Logger(ctx).Info("minter start in the future", "minterStart", params.StartTime, "currentBlockTime", lastBlockTime)
+	if lastBlockTime.Before(params.MinterConfig.StartTime) {
+		k.Logger(ctx).Info("minter start in the future", "minterStart", params.MinterConfig.StartTime, "currentBlockTime", lastBlockTime)
 		return sdk.ZeroInt(), nil
 	}
 	if lastBlockTimeForMinter.After(lastBlockTime) || lastBlockTimeForMinter.Equal(lastBlockTime) {
@@ -37,7 +37,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 
 	var startTime time.Time
 	if previousMinter == nil {
-		startTime = params.StartTime
+		startTime = params.MinterConfig.StartTime
 	} else {
 		startTime = *previousMinter.EndTime
 	}
@@ -104,7 +104,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 
 func getCurrentAndPreviousMinter(params *types.Params, state *types.MinterState) (currentMinter *types.Minter, previousMinter *types.Minter) {
 	currentId := state.SequenceId
-	for _, minter := range params.Minters {
+	for _, minter := range params.MinterConfig.Minters {
 		if minter.SequenceId == currentId {
 			currentMinter = minter
 		}

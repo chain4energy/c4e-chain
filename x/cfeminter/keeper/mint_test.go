@@ -237,8 +237,8 @@ func prepareApp(t *testing.T, initialBlockTime time.Time, mintingStartTime time.
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, initialBlockTime)
 	params := types.DefaultParams()
 	params.MintDenom = commontestutils.DefaultTestDenom
-	params.StartTime = mintingStartTime
-	params.Minters = minters
+	params.MinterConfig.StartTime = mintingStartTime
+	params.MinterConfig.Minters = minters
 
 	k := testHelper.App.CfeminterKeeper
 	k.SetParams(testHelper.Context, params)

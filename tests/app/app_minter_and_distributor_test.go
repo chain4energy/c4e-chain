@@ -59,7 +59,7 @@ func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults tes
 	var distributorParams = testResources.CfeDistributorParams
 	var minterParams = testResources.CfeMinterrParams
 
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, minterParams.StartTime)
+	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, minterParams.MinterConfig.StartTime)
 	testHelper.C4eMinterUtils.SetParams(minterParams)
 	testHelper.C4eDistributorUtils.SetParams(distributorParams)
 

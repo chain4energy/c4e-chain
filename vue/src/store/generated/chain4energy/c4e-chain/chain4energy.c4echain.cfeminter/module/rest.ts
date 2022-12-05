@@ -30,6 +30,12 @@ export interface CfeminterMinter {
   exponential_step_minting?: CfeminterExponentialStepMinting;
 }
 
+export interface CfeminterMinterConfig {
+  /** @format date-time */
+  start_time?: string;
+  minters?: CfeminterMinter[];
+}
+
 export interface CfeminterMinterState {
   /** @format int32 */
   sequence_id?: number;
@@ -46,10 +52,7 @@ export interface CfeminterMinterState {
  */
 export interface CfeminterParams {
   mint_denom?: string;
-
-  /** @format date-time */
-  start_time?: string;
-  minters?: CfeminterMinter[];
+  minter_config?: CfeminterMinterConfig;
 }
 
 export interface CfeminterQueryInflationResponse {

@@ -1,6 +1,5 @@
 /* eslint-disable */
-import { Timestamp } from "../google/protobuf/timestamp";
-import { Minter } from "../cfeminter/minter";
+import { MinterConfig } from "../cfeminter/minter";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
@@ -8,8 +7,7 @@ export const protobufPackage = "chain4energy.c4echain.cfeminter";
 /** Params defines the parameters for the module. */
 export interface Params {
   mint_denom: string;
-  start_time: Date | undefined;
-  minters: Minter[];
+  minter_config: MinterConfig | undefined;
 }
 
 const baseParams: object = { mint_denom: "" };
@@ -19,14 +17,11 @@ export const Params = {
     if (message.mint_denom !== "") {
       writer.uint32(10).string(message.mint_denom);
     }
-    if (message.start_time !== undefined) {
-      Timestamp.encode(
-        toTimestamp(message.start_time),
+    if (message.minter_config !== undefined) {
+      MinterConfig.encode(
+        message.minter_config,
         writer.uint32(18).fork()
       ).ldelim();
-    }
-    for (const v of message.minters) {
-      Minter.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -35,7 +30,6 @@ export const Params = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseParams } as Params;
-    message.minters = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -43,12 +37,7 @@ export const Params = {
           message.mint_denom = reader.string();
           break;
         case 2:
-          message.start_time = fromTimestamp(
-            Timestamp.decode(reader, reader.uint32())
-          );
-          break;
-        case 3:
-          message.minters.push(Minter.decode(reader, reader.uint32()));
+          message.minter_config = MinterConfig.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -60,21 +49,15 @@ export const Params = {
 
   fromJSON(object: any): Params {
     const message = { ...baseParams } as Params;
-    message.minters = [];
     if (object.mint_denom !== undefined && object.mint_denom !== null) {
       message.mint_denom = String(object.mint_denom);
     } else {
       message.mint_denom = "";
     }
-    if (object.start_time !== undefined && object.start_time !== null) {
-      message.start_time = fromJsonTimestamp(object.start_time);
+    if (object.minter_config !== undefined && object.minter_config !== null) {
+      message.minter_config = MinterConfig.fromJSON(object.minter_config);
     } else {
-      message.start_time = undefined;
-    }
-    if (object.minters !== undefined && object.minters !== null) {
-      for (const e of object.minters) {
-        message.minters.push(Minter.fromJSON(e));
-      }
+      message.minter_config = undefined;
     }
     return message;
   },
@@ -82,38 +65,24 @@ export const Params = {
   toJSON(message: Params): unknown {
     const obj: any = {};
     message.mint_denom !== undefined && (obj.mint_denom = message.mint_denom);
-    message.start_time !== undefined &&
-      (obj.start_time =
-        message.start_time !== undefined
-          ? message.start_time.toISOString()
-          : null);
-    if (message.minters) {
-      obj.minters = message.minters.map((e) =>
-        e ? Minter.toJSON(e) : undefined
-      );
-    } else {
-      obj.minters = [];
-    }
+    message.minter_config !== undefined &&
+      (obj.minter_config = message.minter_config
+        ? MinterConfig.toJSON(message.minter_config)
+        : undefined);
     return obj;
   },
 
   fromPartial(object: DeepPartial<Params>): Params {
     const message = { ...baseParams } as Params;
-    message.minters = [];
     if (object.mint_denom !== undefined && object.mint_denom !== null) {
       message.mint_denom = object.mint_denom;
     } else {
       message.mint_denom = "";
     }
-    if (object.start_time !== undefined && object.start_time !== null) {
-      message.start_time = object.start_time;
+    if (object.minter_config !== undefined && object.minter_config !== null) {
+      message.minter_config = MinterConfig.fromPartial(object.minter_config);
     } else {
-      message.start_time = undefined;
-    }
-    if (object.minters !== undefined && object.minters !== null) {
-      for (const e of object.minters) {
-        message.minters.push(Minter.fromPartial(e));
-      }
+      message.minter_config = undefined;
     }
     return message;
   },
@@ -129,25 +98,3 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = date.getTime() / 1_000;
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = t.seconds * 1_000;
-  millis += t.nanos / 1_000_000;
-  return new Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}

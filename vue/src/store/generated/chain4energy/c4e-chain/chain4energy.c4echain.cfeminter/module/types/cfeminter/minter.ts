@@ -5,6 +5,11 @@ import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
 
+export interface MinterConfig {
+  start_time: Date | undefined;
+  minters: Minter[];
+}
+
 export interface Minter {
   sequence_id: number;
   end_time: Date | undefined;
@@ -36,6 +41,96 @@ export interface MinterState {
   last_mint_block_time: Date | undefined;
   remainder_from_previous_period: string;
 }
+
+const baseMinterConfig: object = {};
+
+export const MinterConfig = {
+  encode(message: MinterConfig, writer: Writer = Writer.create()): Writer {
+    if (message.start_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.start_time),
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    for (const v of message.minters) {
+      Minter.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MinterConfig {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMinterConfig } as MinterConfig;
+    message.minters = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 2:
+          message.start_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 3:
+          message.minters.push(Minter.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MinterConfig {
+    const message = { ...baseMinterConfig } as MinterConfig;
+    message.minters = [];
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.start_time = fromJsonTimestamp(object.start_time);
+    } else {
+      message.start_time = undefined;
+    }
+    if (object.minters !== undefined && object.minters !== null) {
+      for (const e of object.minters) {
+        message.minters.push(Minter.fromJSON(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: MinterConfig): unknown {
+    const obj: any = {};
+    message.start_time !== undefined &&
+      (obj.start_time =
+        message.start_time !== undefined
+          ? message.start_time.toISOString()
+          : null);
+    if (message.minters) {
+      obj.minters = message.minters.map((e) =>
+        e ? Minter.toJSON(e) : undefined
+      );
+    } else {
+      obj.minters = [];
+    }
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MinterConfig>): MinterConfig {
+    const message = { ...baseMinterConfig } as MinterConfig;
+    message.minters = [];
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.start_time = object.start_time;
+    } else {
+      message.start_time = undefined;
+    }
+    if (object.minters !== undefined && object.minters !== null) {
+      for (const e of object.minters) {
+        message.minters.push(Minter.fromPartial(e));
+      }
+    }
+    return message;
+  },
+};
 
 const baseMinter: object = { sequence_id: 0, type: "" };
 

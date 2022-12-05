@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CompareMinterParams(t *testing.T, m1 types.Params, m2 types.Params) {
+func CompareMinterConfigs(t *testing.T, m1 *types.MinterConfig, m2 *types.MinterConfig) {
 	require.True(t, m1.StartTime.Equal(m2.StartTime))
 	for i, p1 := range m1.Minters {
 		p2 := m2.Minters[i]

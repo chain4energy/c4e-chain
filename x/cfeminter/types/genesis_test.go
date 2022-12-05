@@ -34,7 +34,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "no minters in params",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", time.Now(), []*types.Minter{}),
+				Params: types.NewParams("myc4e", &types.MinterConfig{StartTime: time.Now(), Minters: types.Minters{}}),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
@@ -55,7 +55,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
@@ -70,7 +70,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid genesis state - wrong minter",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", time.Now(), createNotOkMinters()),
+				Params: types.NewParams("myc4e", createNotOkMinterConfig()),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
@@ -86,7 +86,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid genesis state - wrong minter state - amount",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(-123),
@@ -102,7 +102,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid genesis state - wrong minter state - reminder to mint",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
@@ -118,7 +118,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid genesis state - wrong minter state - remainder from previous minter",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
@@ -134,7 +134,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid genesis state - wrong minter state SequenceId",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
 				MinterState: types.MinterState{
 					SequenceId:                  6,
 					AmountMinted:                sdk.NewInt(123),
@@ -150,7 +150,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state with history",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", time.Now(), createOkMinters()),
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
@@ -195,7 +195,7 @@ func createHistory() []*types.MinterState {
 	return append(history, &state1, &state2)
 }
 
-func createOkMinters() []*types.Minter {
+func createOkMinterConfig() *types.MinterConfig {
 	startTime := time.Now()
 
 	endTime1 := startTime.Add(PeriodDuration)
@@ -209,10 +209,13 @@ func createOkMinters() []*types.Minter {
 
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
-	return minters
+	return &types.MinterConfig{
+		StartTime: startTime,
+		Minters:   minters,
+	}
 }
 
-func createNotOkMinters() []*types.Minter {
+func createNotOkMinterConfig() *types.MinterConfig {
 	startTime := time.Now()
 
 	endTime1 := startTime.Add(PeriodDuration)
@@ -227,5 +230,8 @@ func createNotOkMinters() []*types.Minter {
 	minter3 := types.Minter{SequenceId: 5, Type: types.NO_MINTING}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
 
-	return minters
+	return &types.MinterConfig{
+		StartTime: startTime,
+		Minters:   minters,
+	}
 }

@@ -91,7 +91,7 @@ func (m *C4eMinterUtils) ExportGenesis(ctx sdk.Context, expected cfemintertypes.
 	require.NotNil(m.t, got)
 
 	require.EqualValues(m.t, expected.Params.MintDenom, got.Params.MintDenom)
-	CompareMinterParams(m.t, expected.Params, got.Params)
+	CompareMinterConfigs(m.t, expected.Params.MinterConfig, got.Params.MinterConfig)
 	CompareMinterStates(m.t, expected.MinterState, got.MinterState)
 	require.EqualValues(m.t, len(expected.StateHistory), len(got.StateHistory))
 
