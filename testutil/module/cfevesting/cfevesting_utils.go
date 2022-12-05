@@ -319,7 +319,7 @@ func (h *C4eVestingUtils) SetVestingTypes(ctx sdk.Context, vestingTypes cfevesti
 	h.helperCfevestingKeeper.SetVestingTypes(ctx, vestingTypes)
 }
 
-func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount, expectedLocked sdk.Int, restartVesting bool) {
+func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount sdk.Int, restartVesting bool, expectedLocked sdk.Int) {
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
@@ -452,8 +452,8 @@ func (h *ContextC4eVestingUtils) SetVestingTypes(vestingTypes cfevestingtypes.Ve
 	h.C4eVestingUtils.SetVestingTypes(h.testContext.GetContext(), vestingTypes)
 }
 
-func (h *ContextC4eVestingUtils) MessageSendToVestingAccount(fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount, expectedLocked sdk.Int, restartVesting bool) {
-	h.C4eVestingUtils.MessageSendToVestingAccount(h.testContext.GetContext(), fromAddress, vestingAccAddress, vestingPoolName, amount, expectedLocked, restartVesting)
+func (h *ContextC4eVestingUtils) MessageSendToVestingAccount(fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount sdk.Int, restartVesting bool, expectedLocked sdk.Int) {
+	h.C4eVestingUtils.MessageSendToVestingAccount(h.testContext.GetContext(), fromAddress, vestingAccAddress, vestingPoolName, amount, restartVesting, expectedLocked)
 }
 
 func (h *ContextC4eVestingUtils) MessageSendToVestingAccountError(fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount sdk.Int, restartVesting bool, errorMessage string) {
