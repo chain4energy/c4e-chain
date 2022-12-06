@@ -1,6 +1,7 @@
 package v110
 
 import (
+	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -26,25 +27,44 @@ func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *pa
 	newMinterConfig.StartTime = oldMinterConfig.Start
 	var newMinters []*types.Minter
 	for _, oldMinter := range oldMinterConfig.Periods {
-		var linearMinting types.LinearMinting
-		var exponentialStepMinting types.ExponentialStepMinting
+		var linearMinting *types.LinearMinting
+		var exponentialStepMinting *types.ExponentialStepMinting
 
 		if oldMinter.TimeLinearMinter != nil {
-			linearMinting.Amount = oldMinter.TimeLinearMinter.Amount
+			linearMinting = &types.LinearMinting{
+				Amount: oldMinter.TimeLinearMinter.Amount,
+			}
 		}
 		periodicReductionMinter := oldMinter.PeriodicReductionMinter
 		if periodicReductionMinter != nil {
-			exponentialStepMinting.Amount = periodicReductionMinter.MintAmount.MulRaw(int64(periodicReductionMinter.ReductionPeriodLength))
-			exponentialStepMinting.StepDuration = time.Duration(oldMinter.PeriodicReductionMinter.MintPeriod * 1000000000 * periodicReductionMinter.ReductionPeriodLength)
-			exponentialStepMinting.AmountMultiplier = oldMinter.PeriodicReductionMinter.ReductionFactor
+			exponentialStepMinting = &types.ExponentialStepMinting{
+				Amount:           periodicReductionMinter.MintAmount.MulRaw(int64(periodicReductionMinter.ReductionPeriodLength)),
+				StepDuration:     time.Duration(oldMinter.PeriodicReductionMinter.MintPeriod*periodicReductionMinter.ReductionPeriodLength) * time.Second,
+				AmountMultiplier: oldMinter.PeriodicReductionMinter.ReductionFactor,
+			}
+		}
+
+		var newType string
+		switch oldMinter.Type {
+		case "TIME_LINEAR_MINTER":
+			newType = "LINEAR_MINTING"
+			break
+		case "PERIODIC_REDUCTION_MINTER":
+			newType = "EXPONENTIAL_STEP_MINTING"
+			break
+		case "NO_MINTING":
+			newType = "NO_MINTING"
+			break
+		default:
+			return fmt.Errorf("wrong minting period type")
 		}
 
 		newMinter := types.Minter{
 			SequenceId:             uint32(oldMinter.Position),
 			EndTime:                oldMinter.PeriodEnd,
-			Type:                   oldMinter.Type,
-			LinearMinting:          &linearMinting,
-			ExponentialStepMinting: &exponentialStepMinting,
+			Type:                   newType,
+			LinearMinting:          linearMinting,
+			ExponentialStepMinting: exponentialStepMinting,
 		}
 		if err := newMinter.Validate(); err != nil {
 			return err
