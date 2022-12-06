@@ -176,3 +176,7 @@ func (m *ContextC4eMinterUtils) VerifyMinterHistory(expectedMinterStateHistory .
 func (m *ContextC4eMinterUtils) SetParams(params cfemintertypes.Params) {
 	m.C4eMinterUtils.SetParams(m.testContext.GetContext(), params)
 }
+
+func (h *C4eMinterUtils) GetC4eMinterKeeper() *cfemintermodulekeeper.Keeper {
+	return h.helperCfeminterKeeper
+}

@@ -34,7 +34,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "no minters in params",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", &types.MinterConfig{StartTime: time.Now(), Minters: types.Minters{}}),
+				Params: types.NewParams("myc4e", &types.MinterConfig{StartTime: time.Now(), Minters: []*types.Minter{}}),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),

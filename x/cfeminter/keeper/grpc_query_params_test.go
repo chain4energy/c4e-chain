@@ -12,7 +12,7 @@ import (
 )
 
 func TestParamsQuery(t *testing.T) {
-	keeper, ctx := testkeeper.CfeminterKeeper(t)
+	keeper, ctx, _ := testkeeper.CfeminterKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
 	params.MintDenom = "denom"

@@ -11,7 +11,7 @@ import (
 )
 
 func TestGetMinterState(t *testing.T) {
-	k, ctx := testkeeper.CfeminterKeeper(t)
+	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 
 	minterState := types.MinterState{
 		SequenceId:                  7,

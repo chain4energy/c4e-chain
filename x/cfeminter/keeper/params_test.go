@@ -11,7 +11,7 @@ import (
 )
 
 func TestGetDefaultParams(t *testing.T) {
-	k, ctx := testkeeper.CfeminterKeeper(t)
+	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 
 	k.SetParams(ctx, params)
@@ -22,7 +22,7 @@ func TestGetDefaultParams(t *testing.T) {
 }
 
 func TestGetParams(t *testing.T) {
-	k, ctx := testkeeper.CfeminterKeeper(t)
+	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	params.MintDenom = "dfda"
 	params.MinterConfig = &types.MinterConfig{
@@ -37,14 +37,14 @@ func TestGetParams(t *testing.T) {
 }
 
 func TestSetParamsNoDenom(t *testing.T) {
-	k, ctx := testkeeper.CfeminterKeeper(t)
+	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	params.MintDenom = ""
 	require.PanicsWithValue(t, "value from ParamSetPair is invalid: denom cannot be empty", func() { k.SetParams(ctx, params) })
 }
 
 func TestSetParamsWrongMinterEndTime(t *testing.T) {
-	k, ctx := testkeeper.CfeminterKeeper(t)
+	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	minters := createLinearMintings(time.Now())
 	timeNow := time.Now()
