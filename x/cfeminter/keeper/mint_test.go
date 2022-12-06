@@ -254,8 +254,8 @@ func createLinearMintings(startTime time.Time) []*types.Minter {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }
 
@@ -265,14 +265,13 @@ func createExponentialStepMintingWithRemainingPassing(startTime time.Time) []*ty
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	pminter := types.ExponentialStepMinting{Amount: sdk.NewInt(4000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(4000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	linearMinting := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
-
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &pminter}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &exponentialStepMinting}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &linearMinting}
 	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }
 

@@ -1,7 +1,7 @@
-package v101
+package v110
 
 import (
-	v100cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v100"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -10,13 +10,13 @@ import (
 )
 
 // getAllV100AccountVestingPoolsAndDelete returns all old version AccountVestingPools and deletes them from the KVStore
-func getAllV100AccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (list []v100cfevesting.AccountVestingPools, err error) {
-	prefixStore := prefix.NewStore(store, v100cfevesting.AccountVestingPoolsKeyPrefix)
+func getAllV100AccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (list []v101.AccountVestingPools, err error) {
+	prefixStore := prefix.NewStore(store, v101.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val v100cfevesting.AccountVestingPools
+		var val v101.AccountVestingPools
 		err := cdc.Unmarshal(iterator.Value(), &val)
 		if err != nil {
 			return nil, err
@@ -27,7 +27,7 @@ func getAllV100AccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryC
 	return
 }
 
-func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccPools []v100cfevesting.AccountVestingPools) error {
+func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccPools []v101.AccountVestingPools) error {
 	prefixStore := prefix.NewStore(store, types.AccountVestingPoolsKeyPrefix)
 	for _, oldAccPool := range oldAccPools {
 		oldPools := oldAccPool.VestingPools
@@ -61,7 +61,7 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 }
 
 func getV100VestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vestingTypes types.VestingTypes, err error) {
-	b := store.Get(v100cfevesting.VestingTypesKey)
+	b := store.Get(v101.VestingTypesKey)
 	if b == nil {
 		return vestingTypes, nil
 	}
@@ -70,7 +70,7 @@ func getV100VestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (ves
 	if err != nil {
 		return vestingTypes, err
 	}
-	store.Delete(v100cfevesting.VestingTypesKey)
+	store.Delete(v101.VestingTypesKey)
 	return
 }
 

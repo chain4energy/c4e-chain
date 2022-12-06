@@ -188,7 +188,7 @@ func TestValidateMinterNoMinters(t *testing.T) {
 
 	minterConfig := &types.MinterConfig{
 		StartTime: startTime,
-		Minters:   types.Minters{},
+		Minters:   []*types.Minter{},
 	}
 
 	params := types.Params{MintDenom: customDenom, MinterConfig: minterConfig}

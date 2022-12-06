@@ -17,8 +17,6 @@ const ( // MintingPeriod types
 	EXPONENTIAL_STEP_MINTING string = "EXPONENTIAL_STEP_MINTING"
 )
 
-type Minters []*Minter
-
 func (params MinterConfig) ValidateMinters() error {
 	sort.Sort(BySequenceId(params.Minters))
 	if len(params.Minters) < 1 {
