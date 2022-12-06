@@ -2,6 +2,9 @@ package common
 
 import (
 	"context"
+	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"encoding/json"
 	"github.com/stretchr/testify/require"
@@ -46,4 +49,10 @@ func ValidateManyInvariants(t *testing.T, ctx sdk.Context, invariants []sdk.Inva
 		msg, failed := invariants[i](ctx)
 		require.False(t, failed, "Invariant failed - "+msg)
 	}
+}
+
+type AdditionalKeeperData struct {
+	Cdc      *codec.ProtoCodec
+	StoreKey *storetypes.KVStoreKey
+	Subspace typesparams.Subspace
 }

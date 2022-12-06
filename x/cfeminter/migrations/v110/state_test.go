@@ -1,10 +1,11 @@
 package v110_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/common"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	v101 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
 	v110 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v110"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -15,51 +16,56 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func TestMigrationStatesBurnFalse(t *testing.T) {
-	testUtil, ctx, _ := testkeeper.CfeminterKeeperTestUtilWithCdc(t)
-
+func TestMigrationCorrectMinterState(t *testing.T) {
+	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
 	state := createV101MinterState(1, sdk.ZeroDec(), sdk.ZeroDec(), time.Now(), sdk.NewInt(10000))
-	setOldState(ctx, testUtil.StoreKey, testUtil.Cdc, state)
-	MigrateStoreV100ToV101(t, testUtil, ctx, false)
+	setV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, state)
+	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, "")
 }
 
-func setOldState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, state v101.MinterState) {
-	store := ctx.KVStore(storeKey)
-	b := cdc.MustMarshal(&state)
-	store.Set(types.MinterStateKey, b)
+func TestMigrationWrongMinterStateNegativeAmount(t *testing.T) {
+	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
+	state := createV101MinterState(1, sdk.ZeroDec(), sdk.ZeroDec(), time.Now(), sdk.NewInt(-10000))
+	setV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, state)
+	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, "minter state amount cannot be less than 0")
+}
+
+func TestMigrationWrongMinterStateNegativeRemainder(t *testing.T) {
+	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
+	state := createV101MinterState(1, sdk.MustNewDecFromStr("-100"), sdk.ZeroDec(), time.Now(), sdk.NewInt(10000))
+	setV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, state)
+	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, "minter remainder to mint amount cannot be less than 0")
+}
+
+func TestMigrationWrongMinterStateNegativePreviousRemainder(t *testing.T) {
+	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
+	state := createV101MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("-100"), time.Now(), sdk.NewInt(10000))
+	setV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, state)
+	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, "minter remainder from previous period amount cannot be less than 0")
 }
 
 func MigrateStoreV100ToV101(
 	t *testing.T,
-	testUtil *testkeeper.ExtendedC4eMinterKeeperUtils,
 	ctx sdk.Context,
-	wantError bool,
+	keeper keeper.Keeper,
+	keeperData *common.AdditionalKeeperData,
+	errorMessage string,
 ) {
+	oldState := getV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc)
+	err := v110.MigrateStore(ctx, keeperData.StoreKey, keeperData.Cdc)
 
-	store := prefix.NewStore(ctx.KVStore(testUtil.StoreKey), v101.MinterStateKey)
-	oldStates := GetV101MinterState(store, testUtil.Cdc)
-
-	err := v110.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)
-	if wantError {
-		require.Error(t, err)
+	if len(errorMessage) > 0 {
+		require.Equal(t, err.Error(), errorMessage)
 		return
 	}
 	require.NoError(t, err)
 
-	newStates := testUtil.GetC4eMinterKeeper().GetMinterState(ctx)
-
-	require.EqualValues(t, newStates, oldStates)
-
-}
-
-func GetV101MinterState(store storetypes.KVStore, cdc codec.BinaryCodec) (minterState v101.MinterState) {
-	b := store.Get(types.MinterStateKey)
-	if b == nil {
-		panic("stored minter state should not have been nil")
-	}
-
-	cdc.MustUnmarshal(b, &minterState)
-	return
+	newState := keeper.GetMinterState(ctx)
+	require.Equal(t, newState.AmountMinted, oldState.AmountMinted)
+	require.Equal(t, newState.RemainderFromPreviousPeriod, oldState.RemainderFromPreviousPeriod)
+	require.Equal(t, newState.RemainderToMint, oldState.RemainderToMint)
+	require.Equal(t, newState.LastMintBlockTime, oldState.LastMintBlockTime)
+	require.EqualValues(t, newState.SequenceId, oldState.Position)
 }
 
 func createV101MinterState(
@@ -76,4 +82,21 @@ func createV101MinterState(
 		LastMintBlockTime:           lastMintBlockTime,
 		AmountMinted:                amountMinted,
 	}
+}
+
+func setV101MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, state v101.MinterState) {
+	store := ctx.KVStore(storeKey)
+	b := cdc.MustMarshal(&state)
+	store.Set(types.MinterStateKey, b)
+}
+
+func getV101MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterState v101.MinterState) {
+	store := ctx.KVStore(storeKey)
+	b := store.Get(types.MinterStateKey)
+	if b == nil {
+		panic("stored minter state should not have been nil")
+	}
+
+	cdc.MustUnmarshal(b, &minterState)
+	return
 }
