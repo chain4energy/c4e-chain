@@ -26,7 +26,7 @@ func (params MinterConfig) ValidateMinters() error {
 	}
 
 	lastPos := len(params.Minters) - 1
-	id := int32(0)
+	id := uint32(0)
 	for i, minter := range params.Minters {
 		minterId, err := params.validateMinterOrderingId(minter, id)
 		if err != nil {
@@ -52,7 +52,7 @@ func (params MinterConfig) ValidateMinters() error {
 	return nil
 }
 
-func (params MinterConfig) validateMinterOrderingId(minter *Minter, id int32) (int32, error) {
+func (params MinterConfig) validateMinterOrderingId(minter *Minter, id uint32) (uint32, error) {
 	if id == 0 {
 		if minter.SequenceId <= id {
 			return 0, fmt.Errorf("first minter sequence id must be bigger than 0, but is %d", minter.SequenceId)
@@ -93,7 +93,7 @@ func (params MinterConfig) validateMintersEndTimeValue(minter *Minter, SequenceI
 	return nil
 }
 
-func (params MinterConfig) ContainsMinter(sequenceId int32) bool {
+func (params MinterConfig) ContainsMinter(sequenceId uint32) bool {
 	for _, minter := range params.Minters {
 		if sequenceId == minter.SequenceId {
 			return true
@@ -184,7 +184,7 @@ func (m *LinearMinting) amountToMint(Minterstart time.Time, EndTime time.Time, b
 	return amount.MulInt64(passedTime).QuoInt64(period)
 }
 
-func (m LinearMinting) validate(id int32) error {
+func (m LinearMinting) validate(id uint32) error {
 	if m.Amount.IsNegative() {
 		return fmt.Errorf("minter sequence id: %d - LinearMinting amount cannot be less than 0", id)
 
@@ -238,7 +238,7 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 
 }
 
-func (m ExponentialStepMinting) validate(id int32) error {
+func (m ExponentialStepMinting) validate(id uint32) error {
 	if m.Amount.IsNegative() {
 		return fmt.Errorf("minter sequence id: %d - ExponentialStepMinting Amount cannot be less than 0", id)
 	}

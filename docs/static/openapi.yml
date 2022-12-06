@@ -225,7 +225,7 @@ paths:
                           properties:
                             sequence_id:
                               type: integer
-                              format: int32
+                              format: int64
                             end_time:
                               type: string
                               format: date-time
@@ -288,7 +288,7 @@ paths:
                 properties:
                   sequence_id:
                     type: integer
-                    format: int32
+                    format: int64
                   amount_minted:
                     type: string
                   remainder_to_mint:
@@ -305,7 +305,7 @@ paths:
                   properties:
                     sequence_id:
                       type: integer
-                      format: int32
+                      format: int64
                     amount_minted:
                       type: string
                     remainder_to_mint:
@@ -32468,7 +32468,7 @@ definitions:
     properties:
       sequence_id:
         type: integer
-        format: int32
+        format: int64
       end_time:
         type: string
         format: date-time
@@ -32506,7 +32506,7 @@ definitions:
           properties:
             sequence_id:
               type: integer
-              format: int32
+              format: int64
             end_time:
               type: string
               format: date-time
@@ -32536,7 +32536,7 @@ definitions:
     properties:
       sequence_id:
         type: integer
-        format: int32
+        format: int64
       amount_minted:
         type: string
       remainder_to_mint:
@@ -32564,7 +32564,7 @@ definitions:
               properties:
                 sequence_id:
                   type: integer
-                  format: int32
+                  format: int64
                 end_time:
                   type: string
                   format: date-time
@@ -32617,7 +32617,7 @@ definitions:
                   properties:
                     sequence_id:
                       type: integer
-                      format: int32
+                      format: int64
                     end_time:
                       type: string
                       format: date-time
@@ -32651,7 +32651,7 @@ definitions:
         properties:
           sequence_id:
             type: integer
-            format: int32
+            format: int64
           amount_minted:
             type: string
           remainder_to_mint:
@@ -32668,7 +32668,7 @@ definitions:
           properties:
             sequence_id:
               type: integer
-              format: int32
+              format: int64
             amount_minted:
               type: string
             remainder_to_mint:

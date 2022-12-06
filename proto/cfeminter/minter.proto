@@ -16,7 +16,7 @@ message MinterConfig {
 }
 
 message Minter {
-  int32 sequence_id = 1;
+  uint32 sequence_id = 1;
   google.protobuf.Timestamp end_time = 2 [(gogoproto.stdtime) = true];
   // types:
   //   NO_MINTING;
@@ -38,7 +38,7 @@ message ExponentialStepMinting {
 }
 
 message MinterState {
-  int32 sequence_id = 1;
+  uint32 sequence_id = 1;
   string amount_minted = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false

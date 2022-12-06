@@ -20,7 +20,7 @@ export interface CfeminterLinearMinting {
 }
 
 export interface CfeminterMinter {
-  /** @format int32 */
+  /** @format int64 */
   sequence_id?: number;
 
   /** @format date-time */
@@ -37,7 +37,7 @@ export interface CfeminterMinterConfig {
 }
 
 export interface CfeminterMinterState {
-  /** @format int32 */
+  /** @format int64 */
   sequence_id?: number;
   amount_minted?: string;
   remainder_to_mint?: string;

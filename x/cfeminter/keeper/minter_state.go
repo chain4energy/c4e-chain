@@ -27,10 +27,10 @@ func (k Keeper) SetMinterState(ctx sdk.Context, minter types.MinterState) {
 }
 
 // get the vesting types
-func (k Keeper) GetMinterStateHistory(ctx sdk.Context, sequenceId int32) (state types.MinterState, found bool) {
+func (k Keeper) GetMinterStateHistory(ctx sdk.Context, sequenceId uint32) (state types.MinterState, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
 	bs := make([]byte, 4)
-	binary.LittleEndian.PutUint32(bs, uint32(sequenceId))
+	binary.LittleEndian.PutUint32(bs, sequenceId)
 	b := store.Get(bs)
 	if b == nil {
 		found = false
@@ -46,7 +46,7 @@ func (k Keeper) SetMinterStateHistory(ctx sdk.Context, state types.MinterState) 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
 	av := k.cdc.MustMarshal(&state)
 	bs := make([]byte, 4)
-	binary.LittleEndian.PutUint32(bs, uint32(state.SequenceId))
+	binary.LittleEndian.PutUint32(bs, state.SequenceId)
 	store.Set(bs, av)
 }
 

@@ -1,7 +1,7 @@
 package e2e
 
 import (
-	testResources "github.com/chain4energy/c4e-chain/tests/app/test-resources"
+	testgenesis "github.com/chain4energy/c4e-chain/tests/app/genesis"
 	"testing"
 	"time"
 
@@ -56,8 +56,8 @@ func TestMinterWithDistributor(t *testing.T) {
 }
 
 func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults testResult) {
-	var distributorParams = testResources.CfeDistributorParams
-	var minterParams = testResources.CfeMinterrParams
+	var distributorParams = testgenesis.CfeDistributorParams
+	var minterParams = testgenesis.CfeMinterrParams
 
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, minterParams.MinterConfig.StartTime)
 	testHelper.C4eMinterUtils.SetParams(minterParams)
@@ -69,10 +69,10 @@ func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults tes
 		testHelper.EndBlocker(abci.RequestEndBlock{})
 	}
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(testResources.DevelopmentFundAddr, expectedResults.developmentFundCoinsInt)
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(testgenesis.DevelopmentFundAddr, expectedResults.developmentFundCoinsInt)
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(distributortypes.GovernanceBoosterCollector, expectedResults.governanceBoosterCoinInt)
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(distributortypes.GreenEnergyBoosterCollector, expectedResults.greenEnergyBoosterCoinInt)
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(testResources.LpAccountAddr, expectedResults.lpProviders)
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(testgenesis.LpAccountAddr, expectedResults.lpProviders)
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(expectedResults.totalSupply.Add(testHelper.InitialValidatorsCoin.Amount))
 }

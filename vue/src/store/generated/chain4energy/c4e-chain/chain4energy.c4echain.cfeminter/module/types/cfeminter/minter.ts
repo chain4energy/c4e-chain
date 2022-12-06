@@ -137,7 +137,7 @@ const baseMinter: object = { sequence_id: 0, type: "" };
 export const Minter = {
   encode(message: Minter, writer: Writer = Writer.create()): Writer {
     if (message.sequence_id !== 0) {
-      writer.uint32(8).int32(message.sequence_id);
+      writer.uint32(8).uint32(message.sequence_id);
     }
     if (message.end_time !== undefined) {
       Timestamp.encode(
@@ -171,7 +171,7 @@ export const Minter = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.sequence_id = reader.int32();
+          message.sequence_id = reader.uint32();
           break;
         case 2:
           message.end_time = fromTimestamp(
@@ -463,7 +463,7 @@ const baseMinterState: object = {
 export const MinterState = {
   encode(message: MinterState, writer: Writer = Writer.create()): Writer {
     if (message.sequence_id !== 0) {
-      writer.uint32(8).int32(message.sequence_id);
+      writer.uint32(8).uint32(message.sequence_id);
     }
     if (message.amount_minted !== "") {
       writer.uint32(18).string(message.amount_minted);
@@ -491,7 +491,7 @@ export const MinterState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.sequence_id = reader.int32();
+          message.sequence_id = reader.uint32();
           break;
         case 2:
           message.amount_minted = reader.string();

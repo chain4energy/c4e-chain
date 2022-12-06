@@ -1,4 +1,4 @@
-package test_resources
+package genesis
 
 import (
 	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
