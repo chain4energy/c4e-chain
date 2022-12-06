@@ -9,7 +9,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-// MigrateParams performs in-place store migrations from v1.0.0 to v1.0.1.
+// MigrateParams performs in-place store migrations from v1.0.1 to v1.1.0.
 // The migration includes:
 // - SubDistributor params structure changed.
 // - BurnShare and Share now must be set between 0 and 1, not 0 and 100.

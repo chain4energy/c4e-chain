@@ -11,9 +11,8 @@ import (
 	"time"
 )
 
-// MigrateParams performs in-place store migrations from v1.0.0 to v1.0.1. The
-// migration includes:
-//
+// MigrateParams performs in-place store migrations from v1.0.1 to v1.1.0
+// The migration includes:
 // - SubDistributor params structure changed.
 // - BurnShare and Share now must be set between 0 and 1, not 0 and 100.
 func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *paramtypes.Subspace) error {

@@ -111,9 +111,8 @@ func migrateVestingPools(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return setNewAccountVestingPools(store, cdc, oldAccountVestingPools)
 }
 
-// MigrateStore performs in-place store migrations from v1.0.0 to v1.0.1. The
-// migration includes:
-//
+// MigrateStore performs in-place store migrations from v1.0.1 to v1.1.0
+// The migration includes:
 // - Vesting pools structure changed.
 // - Vesting types changed to map
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
