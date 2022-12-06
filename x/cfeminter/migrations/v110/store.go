@@ -2,6 +2,7 @@ package v110
 
 import (
 	"encoding/binary"
+	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,7 +14,7 @@ import (
 func getV101MinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (minterState v101.MinterState, err error) {
 	b := store.Get(v101.MinterStateKey)
 	if b == nil {
-		return minterState, nil
+		return minterState, fmt.Errorf("stored minter state should not have been nil")
 	}
 
 	err = cdc.Unmarshal(b, &minterState)
@@ -104,8 +105,9 @@ func migrateMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec) error {
 
 // MigrateStore performs in-place store migrations from v1.0.1 to v1.1.0
 // The migration includes:
-// - SubDistributor State rename CoinStates to Remains.
-// - If burn is set to true state account must be nil
+// - MinterState change type of Position from int32 to uint32.
+// - MinterState rename Position to SequenceId.
+// - History of minter states in KvStore is now identified by SequenceId and its key is set in different way
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	if err := migrateMinterStateHistory(store, cdc); err != nil {

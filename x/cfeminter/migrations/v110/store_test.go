@@ -6,8 +6,10 @@ import (
 	v101 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
 	v110 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v110"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/stretchr/testify/require"
+	"strconv"
 	"testing"
 	"time"
 
@@ -44,6 +46,44 @@ func TestMigrationWrongMinterStateNegativePreviousRemainder(t *testing.T) {
 	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, "minter remainder from previous period amount cannot be less than 0")
 }
 
+func TestMigrationNoMinterStates(t *testing.T) {
+	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
+	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, "stored minter state should not have been nil")
+}
+
+func TestMigrationMinterStateHistory(t *testing.T) {
+	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
+	stateHistory := []v101.MinterState{
+		createV101MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000)),
+		createV101MinterState(2, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10001)),
+	}
+	minterState := createV101MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000))
+	setV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, minterState)
+	setOldMinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc, stateHistory)
+	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, "")
+}
+
+func TestMigrationWrongMinterStateHistory(t *testing.T) {
+	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
+	stateHistory := []v101.MinterState{
+		createV101MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("-100"), time.Now(), sdk.NewInt(10000)),
+		createV101MinterState(2, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10001)),
+	}
+	minterState := createV101MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000))
+	setV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, minterState)
+	setOldMinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc, stateHistory)
+	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, "minter remainder from previous period amount cannot be less than 0")
+}
+
+func TestMigrationNoStateHistory(t *testing.T) {
+	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
+	stateHistory := []v101.MinterState{}
+	minterState := createV101MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000))
+	setV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, minterState)
+	setOldMinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc, stateHistory)
+	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, "")
+}
+
 func MigrateStoreV100ToV101(
 	t *testing.T,
 	ctx sdk.Context,
@@ -52,9 +92,11 @@ func MigrateStoreV100ToV101(
 	errorMessage string,
 ) {
 	oldState := getV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc)
+	oldMinterHistory := getV101MinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc)
 	err := v110.MigrateStore(ctx, keeperData.StoreKey, keeperData.Cdc)
 
 	if len(errorMessage) > 0 {
+		require.Error(t, err)
 		require.Equal(t, err.Error(), errorMessage)
 		return
 	}
@@ -66,6 +108,17 @@ func MigrateStoreV100ToV101(
 	require.Equal(t, newState.RemainderToMint, oldState.RemainderToMint)
 	require.Equal(t, newState.LastMintBlockTime, oldState.LastMintBlockTime)
 	require.EqualValues(t, newState.SequenceId, oldState.Position)
+
+	newMinterStateHistory := keeper.GetAllMinterStateHistory(ctx)
+	require.Equal(t, len(oldMinterHistory), len(newMinterStateHistory))
+	for i, oldMinterHistory := range oldMinterHistory {
+		require.Equal(t, newMinterStateHistory[i].AmountMinted, oldMinterHistory.AmountMinted)
+		require.Equal(t, newMinterStateHistory[i].RemainderFromPreviousPeriod, oldMinterHistory.RemainderFromPreviousPeriod)
+		require.Equal(t, newMinterStateHistory[i].RemainderToMint, oldMinterHistory.RemainderToMint)
+		require.Equal(t, newMinterStateHistory[i].LastMintBlockTime, oldMinterHistory.LastMintBlockTime)
+		require.EqualValues(t, newMinterStateHistory[i].SequenceId, oldMinterHistory.Position)
+	}
+
 }
 
 func createV101MinterState(
@@ -93,10 +146,31 @@ func setV101MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec
 func getV101MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterState v101.MinterState) {
 	store := ctx.KVStore(storeKey)
 	b := store.Get(types.MinterStateKey)
-	if b == nil {
-		panic("stored minter state should not have been nil")
-	}
-
 	cdc.MustUnmarshal(b, &minterState)
 	return
+}
+
+func getV101MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterStateList []v101.MinterState) {
+	store := ctx.KVStore(storeKey)
+	prefixStore := prefix.NewStore(store, v101.MinterStateHistoryKeyPrefix)
+	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val v101.MinterState
+		cdc.MustUnmarshal(iterator.Value(), &val)
+		minterStateList = append(minterStateList, val)
+	}
+
+	return
+}
+
+func setOldMinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, minterStateList []v101.MinterState) {
+	store := ctx.KVStore(storeKey)
+	prefixStore := prefix.NewStore(store, types.MinterStateHistoryKeyPrefix)
+	for _, V101MinterState := range minterStateList {
+		av := cdc.MustMarshal(&V101MinterState)
+		prefixStore.Set([]byte(strconv.FormatInt(int64(V101MinterState.Position), 10)), av)
+	}
 }
