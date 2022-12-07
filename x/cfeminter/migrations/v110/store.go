@@ -11,33 +11,33 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func getV101MinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (minterState v101.MinterState, err error) {
+func getOldMinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMinterState v101.MinterState, err error) {
 	b := store.Get(v101.MinterStateKey)
 	if b == nil {
-		return minterState, fmt.Errorf("stored minter state should not have been nil")
+		return oldMinterState, fmt.Errorf("stored minter state should not have been nil")
 	}
 
-	err = cdc.Unmarshal(b, &minterState)
+	err = cdc.Unmarshal(b, &oldMinterState)
 	if err != nil {
-		return minterState, err
+		return oldMinterState, err
 	}
 	store.Delete(v101.MinterStateKey)
 	return
 }
 
-func setNewMinterState(store sdk.KVStore, cdc codec.BinaryCodec, oldState v101.MinterState) error {
-	newState := types.MinterState{
-		SequenceId:                  uint32(oldState.Position),
-		AmountMinted:                oldState.AmountMinted,
-		LastMintBlockTime:           oldState.LastMintBlockTime,
-		RemainderFromPreviousPeriod: oldState.RemainderFromPreviousPeriod,
-		RemainderToMint:             oldState.RemainderToMint,
+func setNewMinterState(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterState v101.MinterState) error {
+	newMinterState := types.MinterState{
+		SequenceId:                  uint32(oldMinterState.Position),
+		AmountMinted:                oldMinterState.AmountMinted,
+		LastMintBlockTime:           oldMinterState.LastMintBlockTime,
+		RemainderFromPreviousPeriod: oldMinterState.RemainderFromPreviousPeriod,
+		RemainderToMint:             oldMinterState.RemainderToMint,
 	}
-	err := newState.Validate()
+	err := newMinterState.Validate()
 	if err != nil {
 		return err
 	}
-	av, err := cdc.Marshal(&newState)
+	av, err := cdc.Marshal(&newMinterState)
 	if err != nil {
 		return err
 	}
@@ -46,14 +46,14 @@ func setNewMinterState(store sdk.KVStore, cdc codec.BinaryCodec, oldState v101.M
 }
 
 func migrateMinterState(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	oldMinterState, err := getV101MinterStateAndDelete(store, cdc)
+	oldMinterState, err := getOldMinterStateAndDelete(store, cdc)
 	if err != nil {
 		return err
 	}
 	return setNewMinterState(store, cdc, oldMinterState)
 }
 
-func getV101MinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (minterStateList []v101.MinterState, err error) {
+func getOldMinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMinterStateHistoryList []*v101.MinterState, err error) {
 	prefixStore := prefix.NewStore(store, v101.MinterStateHistoryKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 
@@ -62,33 +62,33 @@ func getV101MinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec
 	for ; iterator.Valid(); iterator.Next() {
 		var val v101.MinterState
 		cdc.MustUnmarshal(iterator.Value(), &val)
-		minterStateList = append(minterStateList, val)
+		oldMinterStateHistoryList = append(oldMinterStateHistoryList, &val)
 		prefixStore.Delete(iterator.Key())
 	}
 
 	return
 }
 
-func setNewMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec, minterStateList []v101.MinterState) error {
+func setNewMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterStateHistory []*v101.MinterState) error {
 	prefixStore := prefix.NewStore(store, types.MinterStateHistoryKeyPrefix)
-	for _, V101MinterState := range minterStateList {
-		newState := types.MinterState{
-			SequenceId:                  uint32(V101MinterState.Position),
-			AmountMinted:                V101MinterState.AmountMinted,
-			LastMintBlockTime:           V101MinterState.LastMintBlockTime,
-			RemainderFromPreviousPeriod: V101MinterState.RemainderFromPreviousPeriod,
-			RemainderToMint:             V101MinterState.RemainderToMint,
+	for _, oldMinterState := range oldMinterStateHistory {
+		newMinterState := types.MinterState{
+			SequenceId:                  uint32(oldMinterState.Position),
+			AmountMinted:                oldMinterState.AmountMinted,
+			LastMintBlockTime:           oldMinterState.LastMintBlockTime,
+			RemainderFromPreviousPeriod: oldMinterState.RemainderFromPreviousPeriod,
+			RemainderToMint:             oldMinterState.RemainderToMint,
 		}
-		err := newState.Validate()
+		err := newMinterState.Validate()
 		if err != nil {
 			return err
 		}
-		av, err := cdc.Marshal(&newState)
+		av, err := cdc.Marshal(&newMinterState)
 		if err != nil {
 			return err
 		}
 		bs := make([]byte, 4)
-		binary.LittleEndian.PutUint32(bs, newState.SequenceId)
+		binary.LittleEndian.PutUint32(bs, newMinterState.SequenceId)
 		prefixStore.Set(bs, av)
 	}
 
@@ -96,7 +96,7 @@ func setNewMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec, minterSt
 }
 
 func migrateMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	oldMinterState, err := getV101MinterStateHistoryAndDelete(store, cdc)
+	oldMinterState, err := getOldMinterStateHistoryAndDelete(store, cdc)
 	if err != nil {
 		return err
 	}

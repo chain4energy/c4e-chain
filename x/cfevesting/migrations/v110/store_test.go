@@ -24,11 +24,11 @@ import (
 func TestMigrationManyAccountVestingPoolsWithManyPools(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[1].String(), 10)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[2].String(), 10)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[1].String(), 10)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[2].String(), 10)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
 	MigrateV101ToV110(t, testUtil, ctx)
 }
 
@@ -40,18 +40,18 @@ func TestMigrationNoAccountVestingPoolsAndNoVestingTypes(t *testing.T) {
 func TestMigrationManyAccountVestingPoolsWithNoPools(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[0].String(), 0)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[1].String(), 0)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[2].String(), 0)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[3].String(), 0)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[4].String(), 0)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 0)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[1].String(), 0)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[2].String(), 0)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[3].String(), 0)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[4].String(), 0)
 	MigrateV101ToV110(t, testUtil, ctx)
 }
 
 func TestMigrationOneAccountVestingPoolsWithOnePool(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[0].String(), 1)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 1)
 	MigrateV101ToV110(t, testUtil, ctx)
 
 }
@@ -59,14 +59,14 @@ func TestMigrationOneAccountVestingPoolsWithOnePool(t *testing.T) {
 func TestMigrationOneVestingType(t *testing.T) {
 	vts := testutils.GenerateVestingTypes(1, 1)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
+	setOldVestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
 	MigrateV101ToV110(t, testUtil, ctx)
 }
 
 func TestMigrationManyVestingType(t *testing.T) {
 	vts := testutils.GenerateVestingTypes(10, 1)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
+	setOldVestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
 	MigrateV101ToV110(t, testUtil, ctx)
 }
 
@@ -74,55 +74,55 @@ func TestMigrationAccountVestingPoolsAndVestingTypes(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(5, 0)
 	vts := testutils.GenerateVestingTypes(10, 1)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[1].String(), 10)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[2].String(), 10)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
-	SetupV101AccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
-	setV100VestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[1].String(), 10)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[2].String(), 10)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
+	SetupOldAccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
+	setOldVestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
 	MigrateV101ToV110(t, testUtil, ctx)
 }
 
 func TestMigrationWrongSentAmount(t *testing.T) {
 	accounts, _ := commontestutils.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[0].String(), 10)
-	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[1].String(), 10)
-	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[2].String(), 10)
-	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[3].String(), 10)
-	SetupV100AccountVestingPoolsWrongSent(testUtil, ctx, accounts[4].String(), 10)
+	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[0].String(), 10)
+	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[1].String(), 10)
+	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[2].String(), 10)
+	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[3].String(), 10)
+	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[4].String(), 10)
 	MigrateV101ToV110(t, testUtil, ctx)
 }
 
-func SetupV101AccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v101.AccountVestingPools {
-	accountVestingPools := GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
+func SetupOldAccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v101.AccountVestingPools {
+	accountVestingPools := GenerateOneOldAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
 	accountVestingPools.Address = address
-	SetV100AccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
+	setOldAccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
 	return accountVestingPools
 }
 
-func SetupV100AccountVestingPoolsWrongSent(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v101.AccountVestingPools {
-	accountVestingPools := GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
+func SetupOldAccountVestingPoolsWrongSent(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v101.AccountVestingPools {
+	accountVestingPools := GenerateOneOldAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
 	accountVestingPools.Address = address
 	for _, vesting := range accountVestingPools.VestingPools {
 		vesting.Sent = sdk.NewInt(100)
 	}
-	SetV100AccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
+	setOldAccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
 	return accountVestingPools
 }
 
-func SetV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, accountVestingPools v101.AccountVestingPools) {
+func setOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, accountVestingPools v101.AccountVestingPools) {
 	store := prefix.NewStore(ctx.KVStore(storeKey), v101.AccountVestingPoolsKeyPrefix)
 	av := cdc.MustMarshal(&accountVestingPools)
 	store.Set([]byte(accountVestingPools.Address), av)
 }
 
 func MigrateV101ToV110(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context) {
-	oldAccPools := getAllV100AccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc)
-	oldVestingTypes := getAllV100VestingType(ctx, testUtil.StoreKey, testUtil.Cdc)
+	oldAccPools := getAllOldAccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc)
+	oldVestingTypes := getAllOldVestingType(ctx, testUtil.StoreKey, testUtil.Cdc)
 	err := v110.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)
 	require.NoError(t, err)
-	require.EqualValues(t, 0, len(getAllV100VestingType(ctx, testUtil.StoreKey, testUtil.Cdc).VestingTypes))
+	require.EqualValues(t, 0, len(getAllOldVestingType(ctx, testUtil.StoreKey, testUtil.Cdc).VestingTypes))
 
 	newAccPools := testUtil.GetC4eVestingKeeper().GetAllAccountVestingPools(ctx)
 	newVestingTypes := testUtil.GetC4eVestingKeeper().GetAllVestingTypes(ctx)
@@ -147,7 +147,7 @@ func MigrateV101ToV110(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 	require.ElementsMatch(t, oldVestingTypes.VestingTypes, newVestingTypes.VestingTypes)
 }
 
-func getAllV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v101.AccountVestingPools) {
+func getAllOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v101.AccountVestingPools) {
 	prefixStore := prefix.NewStore(ctx.KVStore(storeKey), v101.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
@@ -160,18 +160,18 @@ func getAllV100AccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey
 	return
 }
 
-func GenerateOneV100AccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPoolsPerAccount int,
+func GenerateOneOldAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPoolsPerAccount int,
 	accountId int, vestingStartId int) v101.AccountVestingPools {
-	return *GenerateV100AccountVestingPoolsWithRandomVestingPools(1, numberOfVestingPoolsPerAccount, accountId, vestingStartId)[0]
+	return *GenerateOldAccountVestingPoolsWithRandomVestingPools(1, numberOfVestingPoolsPerAccount, accountId, vestingStartId)[0]
 }
 
-func GenerateV100AccountVestingPoolsWithRandomVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
+func GenerateOldAccountVestingPoolsWithRandomVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
 	accountStartId int, vestingStartId int) []*v101.AccountVestingPools {
-	return generateV100AccountVestingPools(numberOfAccounts, numberOfVestingPoolsPerAccount,
-		accountStartId, vestingStartId, generateRandomV100VestingPool)
+	return generateOldAccountVestingPools(numberOfAccounts, numberOfVestingPoolsPerAccount,
+		accountStartId, vestingStartId, generateRandomOldVestingPool)
 }
 
-func generateV100AccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
+func generateOldAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
 	accountStartId int, vestingStartId int, generateVesting func(accuntId int, vestingId int) v101.VestingPool) []*v101.AccountVestingPools {
 	accountVestingPoolsArr := []*v101.AccountVestingPools{}
 	accountsAddresses, _ := commontestutils.CreateAccounts(2*numberOfAccounts, 0)
@@ -195,7 +195,7 @@ func generateV100AccountVestingPools(numberOfAccounts int, numberOfVestingPoolsP
 	return accountVestingPoolsArr
 }
 
-func generateRandomV100VestingPool(accuntId int, vestingId int) v101.VestingPool {
+func generateRandomOldVestingPool(accuntId int, vestingId int) v101.VestingPool {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	vested := int(helpers.RandIntBetweenWith0(r, 1, 10000000))
 	withdrawn := r.Intn(vested)
@@ -219,13 +219,13 @@ func generateRandomV100VestingPool(accuntId int, vestingId int) v101.VestingPool
 	}
 }
 
-func setV100VestingTypes(ctx sdk.Context, vestingTypes types.VestingTypes, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) {
+func setOldVestingTypes(ctx sdk.Context, vestingTypes types.VestingTypes, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) {
 	store := ctx.KVStore(storeKey)
 	b := cdc.MustMarshal(&vestingTypes)
 	store.Set(v101.VestingTypesKey, b)
 }
 
-func getAllV100VestingType(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (vestingTypes types.VestingTypes) {
+func getAllOldVestingType(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (vestingTypes types.VestingTypes) {
 	store := ctx.KVStore(storeKey)
 	b := store.Get(v101.VestingTypesKey)
 	if b == nil {
@@ -234,5 +234,4 @@ func getAllV100VestingType(ctx sdk.Context, storeKey storetypes.StoreKey, cdc co
 
 	cdc.MustUnmarshal(b, &vestingTypes)
 	return
-
 }

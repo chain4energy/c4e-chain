@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func getAllV100SubDistributorStatesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (list []v101.State, err error) {
+func getAllOldSubDistributorStatesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (states []v101.State, err error) {
 	prefixStore := prefix.NewStore(store, v101.RemainsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
@@ -20,7 +20,7 @@ func getAllV100SubDistributorStatesAndDelete(store sdk.KVStore, cdc codec.Binary
 		if err != nil {
 			return nil, err
 		}
-		list = append(list, val)
+		states = append(states, val)
 		prefixStore.Delete(iterator.Key())
 	}
 	return
@@ -58,8 +58,8 @@ func setNewSubDistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldSta
 	return nil
 }
 
-func migrateSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	oldDistributorStates, err := getAllV100SubDistributorStatesAndDelete(store, cdc)
+func migrateSubDistributorStates(store sdk.KVStore, cdc codec.BinaryCodec) error {
+	oldDistributorStates, err := getAllOldSubDistributorStatesAndDelete(store, cdc)
 	if err != nil {
 		return err
 	}
@@ -72,5 +72,5 @@ func migrateSubdistributorStates(store sdk.KVStore, cdc codec.BinaryCodec) error
 // - If burn is set to true state account must be nil
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
-	return migrateSubdistributorStates(store, cdc)
+	return migrateSubDistributorStates(store, cdc)
 }

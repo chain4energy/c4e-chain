@@ -16,5 +16,5 @@ func (k Keeper) State(goCtx context.Context, req *types.QueryStateRequest) (*typ
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	return &types.QueryStateResponse{MinterState: k.GetMinterState(ctx), StateHistory: k.ConvertMinterStateHistory(ctx)}, nil
+	return &types.QueryStateResponse{MinterState: k.GetMinterState(ctx), StateHistory: k.GetAllMinterStateHistory(ctx)}, nil
 }

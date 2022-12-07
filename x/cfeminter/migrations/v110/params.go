@@ -5,7 +5,6 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"time"
@@ -15,7 +14,7 @@ import (
 // The migration includes:
 // - Cfeminter params structure changed
 // - Remove ReductionPeriodLength from PeriodicReducstionMinter
-func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *paramtypes.Subspace) error {
+func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 	var oldMinterConfig v101.Minter
 	oldMinterConfigRaw := paramStore.GetRaw(ctx, v101.KeyMinter)
 	if err := codec.NewLegacyAmino().UnmarshalJSON(oldMinterConfigRaw, &oldMinterConfig); err != nil {
@@ -71,10 +70,10 @@ func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *pa
 		newMinters = append(newMinters, &newMinter)
 	}
 	newMinterConfig.Minters = newMinters
-	err := newMinterConfig.ValidateMinters()
-	if err != nil {
+	if err := newMinterConfig.ValidateMinters(); err != nil {
 		return err
 	}
 	paramStore.Set(ctx, types.KeyMinterConfig, newMinterConfig)
+
 	return nil
 }

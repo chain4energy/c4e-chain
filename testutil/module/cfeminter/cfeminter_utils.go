@@ -60,7 +60,7 @@ func (m *C4eMinterUtils) VerifyMinterHistory(ctx sdk.Context, expectedMinterStat
 	require.EqualValues(m.t, len(expectedMinterStateHistory), len(history))
 	for i, ms := range expectedMinterStateHistory {
 		histMS := history[i]
-		CompareMinterStates(m.t, ms, histMS)
+		CompareMinterStates(m.t, ms, *histMS)
 	}
 }
 

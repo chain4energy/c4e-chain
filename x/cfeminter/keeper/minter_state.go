@@ -51,7 +51,7 @@ func (k Keeper) SetMinterStateHistory(ctx sdk.Context, state types.MinterState) 
 }
 
 // GetAllMinterStateHistory returns all historical minter states for ended MinterConfig
-func (k Keeper) GetAllMinterStateHistory(ctx sdk.Context) (list []types.MinterState) {
+func (k Keeper) GetAllMinterStateHistory(ctx sdk.Context) (list []*types.MinterState) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MinterStateHistoryKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -60,21 +60,8 @@ func (k Keeper) GetAllMinterStateHistory(ctx sdk.Context) (list []types.MinterSt
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.MinterState
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
+		list = append(list, &val)
 	}
 
 	return
-}
-
-func (k Keeper) ConvertMinterStateHistory(ctx sdk.Context) (list []*types.MinterState) {
-	history := make([]*types.MinterState, 0)
-	stateHistory := k.GetAllMinterStateHistory(ctx)
-	if len(stateHistory) > 0 {
-
-		for i := 0; i < len(stateHistory); i++ {
-			history = append(history, &stateHistory[i])
-
-		}
-	}
-	return history
 }

@@ -2,8 +2,8 @@ package v110_test
 
 import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
-	v101cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
-	v110cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/stretchr/testify/require"
 	"strconv"
@@ -19,17 +19,17 @@ import (
 func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
 
-	subDistributorSourceMain := createV101SubDistributor(types.MODULE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID")
+	subDistributorSourceMain := createOldSubDistributor(types.MODULE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID")
 	subDistributorSourceMain.Sources = subDistributorSourceMain.Sources[:1]
 
-	subDistributorShareMain := createV101SubDistributor(types.BASE_ACCOUNT, types.MODULE_ACCOUNT, types.MAIN, "CUSTOM_ID")
+	subDistributorShareMain := createOldSubDistributor(types.BASE_ACCOUNT, types.MODULE_ACCOUNT, types.MAIN, "CUSTOM_ID")
 	subDistributorShareMain.Destination.Share = subDistributorShareMain.Destination.Share[:1]
 
-	oldSubDistributors := []v101cfedistributor.SubDistributor{
-		createV101SubDistributor(types.MODULE_ACCOUNT, types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, "CUSTOM_ID"),
-		createV101SubDistributor(types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, types.BASE_ACCOUNT, "CUSTOM_ID"),
-		createV101SubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createV101SubDistributor(types.MAIN, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+	oldSubDistributors := []v101.SubDistributor{
+		createOldSubDistributor(types.MODULE_ACCOUNT, types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, types.BASE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.MAIN, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 		subDistributorShareMain,
 		subDistributorSourceMain,
 	}
@@ -39,10 +39,10 @@ func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
 
 func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	oldSubDistributors := []v101cfedistributor.SubDistributor{
-		createV101SubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createV101SubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createV101SubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+	oldSubDistributors := []v101.SubDistributor{
+		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
@@ -51,10 +51,10 @@ func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
 
 func TestMigrationSubDistributorsDuplicates(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	oldSubDistributors := []v101cfedistributor.SubDistributor{
-		createV101SubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createV101SubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createV101SubDistributor(types.BASE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID"),
+	oldSubDistributors := []v101.SubDistributor{
+		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID"),
 	}
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
 	MigrateParamsV101ToV110(t, ctx, testUtil, true)
@@ -62,17 +62,17 @@ func TestMigrationSubDistributorsDuplicates(t *testing.T) {
 
 func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	oldSubDistributors := []v101cfedistributor.SubDistributor{
-		createV101SubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createV101SubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createV101SubDistributor(types.BASE_ACCOUNT, "WRONG_ACCOUNT_TYPE", types.MODULE_ACCOUNT, "CUSTOM_ID"),
+	oldSubDistributors := []v101.SubDistributor{
+		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.BASE_ACCOUNT, "WRONG_ACCOUNT_TYPE", types.MODULE_ACCOUNT, "CUSTOM_ID"),
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
 	MigrateParamsV101ToV110(t, ctx, testUtil, true)
 }
 
-func setV101Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v101cfedistributor.SubDistributor) {
+func setV101Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v101.SubDistributor) {
 	store := newStore(ctx, testUtil)
 	bz, err := codec.NewLegacyAmino().MarshalJSON(subdistributors)
 	require.NoError(t, err)
@@ -89,13 +89,13 @@ func MigrateParamsV101ToV110(
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
 	wantError bool,
 ) {
-	var oldSubDistributors []v101cfedistributor.SubDistributor
+	var oldSubDistributors []v101.SubDistributor
 	store := newStore(ctx, testUtil)
 	distributors := store.Get(types.KeySubDistributors)
 	err := codec.NewLegacyAmino().UnmarshalJSON(distributors, &oldSubDistributors)
 	require.NoError(t, err)
 
-	err = v110cfedistributor.MigrateParams(ctx, testUtil.StoreKey, &testUtil.Subspace)
+	err = v110.MigrateParams(ctx, &testUtil.Subspace)
 	if wantError {
 		require.Error(t, err)
 		return
@@ -128,32 +128,32 @@ func MigrateParamsV101ToV110(
 	}
 }
 
-func createV101SubDistributor(
+func createOldSubDistributor(
 	destinationType string,
 	sourceType string,
 	destinationShareType string,
 	id string,
-) v101cfedistributor.SubDistributor {
-	var sources []*v101cfedistributor.Account
-	mainAcc := v101cfedistributor.Account{
+) v101.SubDistributor {
+	var sources []*v101.Account
+	mainAcc := v101.Account{
 		Id:   id,
 		Type: sourceType,
 	}
 	sources = append(sources, &mainAcc)
 	for i := 0; i < 5; i++ {
-		randomAccount := v101cfedistributor.Account{
+		randomAccount := v101.Account{
 			Id:   id + "custom_siffix_" + strconv.Itoa(i),
 			Type: sourceType,
 		}
 		sources = append(sources, &randomAccount)
 	}
 
-	var shares []*v101cfedistributor.Share
+	var shares []*v101.Share
 
 	for i := 0; i < 5; i++ {
-		share := v101cfedistributor.Share{
+		share := v101.Share{
 			Name: helpers.RandStringOfLength(10),
-			Account: v101cfedistributor.Account{
+			Account: v101.Account{
 				Id:   id + "custom_siffix_" + strconv.Itoa(i),
 				Type: destinationShareType,
 			},
@@ -162,14 +162,14 @@ func createV101SubDistributor(
 		shares = append(shares, &share)
 	}
 
-	return v101cfedistributor.SubDistributor{
+	return v101.SubDistributor{
 		Name: helpers.RandStringOfLength(10),
-		Destination: v101cfedistributor.Destination{
-			Account: v101cfedistributor.Account{
+		Destination: v101.Destination{
+			Account: v101.Account{
 				Id:   id,
 				Type: destinationType,
 			},
-			BurnShare: &v101cfedistributor.BurnShare{
+			BurnShare: &v101.BurnShare{
 				Percent: sdk.NewDec(25),
 			},
 			Share: shares,

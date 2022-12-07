@@ -169,7 +169,7 @@ func MigrateParamsV100ToV101(
 ) {
 	oldMinterConfig := getV101MinterConfig(ctx, keeperData)
 
-	err := v110.MigrateParams(ctx, keeperData.StoreKey, &keeperData.Subspace)
+	err := v110.MigrateParams(ctx, &keeperData.Subspace)
 	if len(errorMessage) > 0 {
 		require.Equal(t, err.Error(), errorMessage)
 		return
