@@ -100,14 +100,14 @@ func (params MinterConfig) ContainsMinter(sequenceId uint32) bool {
 	return false
 }
 
-func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, startTime time.Time, blockTime time.Time) sdk.Dec {
+func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, minterStart time.Time, blockTime time.Time) sdk.Dec {
 	switch m.Type {
 	case NO_MINTING:
 		return sdk.ZeroDec()
 	case LINEAR_MINTING:
-		return m.LinearMinting.amountToMint(startTime, *m.EndTime, blockTime)
+		return m.LinearMinting.amountToMint(minterStart, *m.EndTime, blockTime)
 	case EXPONENTIAL_STEP_MINTING:
-		return m.ExponentialStepMinting.amountToMint(logger, startTime, m.EndTime, blockTime)
+		return m.ExponentialStepMinting.amountToMint(logger, minterStart, m.EndTime, blockTime)
 	default:
 		return sdk.ZeroDec()
 	}
@@ -153,9 +153,9 @@ func (m *Minter) CalculateInflation(totalSupply sdk.Int, startTime time.Time, bl
 	case NO_MINTING:
 		return sdk.ZeroDec()
 	case LINEAR_MINTING:
-		return m.LinearMinting.calculateInfation(totalSupply, startTime, *m.EndTime)
+		return m.LinearMinting.calculateInflation(totalSupply, startTime, *m.EndTime)
 	case EXPONENTIAL_STEP_MINTING:
-		return m.ExponentialStepMinting.calculateInfation(totalSupply, startTime, m.EndTime, blockTime)
+		return m.ExponentialStepMinting.calculateInflation(totalSupply, startTime, m.EndTime, blockTime)
 	default:
 		return sdk.ZeroDec()
 	}
@@ -167,17 +167,17 @@ func (a BySequenceId) Len() int           { return len(a) }
 func (a BySequenceId) Less(i, j int) bool { return a[i].SequenceId < a[j].SequenceId }
 func (a BySequenceId) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
-func (m *LinearMinting) amountToMint(Minterstart time.Time, EndTime time.Time, blockTime time.Time) sdk.Dec {
+func (m *LinearMinting) amountToMint(minterStart time.Time, EndTime time.Time, blockTime time.Time) sdk.Dec {
 	if blockTime.After(EndTime) {
 		return sdk.NewDecFromInt(m.Amount)
 	}
-	if blockTime.Before(Minterstart) {
+	if blockTime.Before(minterStart) {
 		return sdk.ZeroDec()
 	}
 	amount := sdk.NewDecFromInt(m.Amount)
 
-	passedTime := blockTime.UnixMilli() - Minterstart.UnixMilli()
-	period := EndTime.UnixMilli() - Minterstart.UnixMilli()
+	passedTime := blockTime.UnixMilli() - minterStart.UnixMilli()
+	period := EndTime.UnixMilli() - minterStart.UnixMilli()
 
 	return amount.MulInt64(passedTime).QuoInt64(period)
 }
@@ -190,14 +190,14 @@ func (m LinearMinting) validate(id uint32) error {
 	return nil
 }
 
-func (m *LinearMinting) calculateInfation(totalSupply sdk.Int, Minterstart time.Time, EndTime time.Time) sdk.Dec {
+func (m *LinearMinting) calculateInflation(totalSupply sdk.Int, minterStart time.Time, EndTime time.Time) sdk.Dec {
 	if totalSupply.LTE(sdk.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
 
 	amount := m.Amount
 
-	periodDuration := EndTime.Sub(Minterstart)
+	periodDuration := EndTime.Sub(minterStart)
 	mintedYearly := sdk.NewDecFromInt(amount).MulInt64(int64(year)).QuoInt64(int64(periodDuration))
 	return mintedYearly.QuoInt(totalSupply)
 
@@ -224,14 +224,14 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 	currentEpochPassedTime := now.Sub(currentEpochStart)
 	currentEpochAmount := epochAmount
 
-	logger.Debug("PRMinterMint", "blockTime", blockTime, "now", now, "passedTime", passedTime, "epoch", epoch, "numOfPassedEpochs", numOfPassedEpochs,
+	logger.Debug("ESMintingMint", "blockTime", blockTime, "now", now, "passedTime", passedTime, "epoch", epoch, "numOfPassedEpochs", numOfPassedEpochs,
 		"Amount", m.Amount, "epochAmount", epochAmount, "amountToMint", amountToMint, "currentEpochStart", currentEpochStart,
 		"currentEpochPassedTime", currentEpochPassedTime, "currentEpochAmount", currentEpochAmount)
 	if numOfPassedEpochs > 0 {
 		currentEpochAmount = currentEpochAmount.Mul(m.AmountMultiplier)
 	}
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
-	logger.Debug("PRMinterMintCon", "AmountMultiplier", m.AmountMultiplier, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
+	logger.Debug("ESMintingMintCon", "AmountMultiplier", m.AmountMultiplier, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
 	return amountToMint.Add(currentEpochAmountToMint)
 
 }
@@ -247,7 +247,7 @@ func (m ExponentialStepMinting) validate(id uint32) error {
 	return nil
 }
 
-func (m *ExponentialStepMinting) calculateInfation(totalSupply sdk.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
+func (m *ExponentialStepMinting) calculateInflation(totalSupply sdk.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
 	if totalSupply.LTE(sdk.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
