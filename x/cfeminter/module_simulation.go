@@ -31,7 +31,7 @@ const SecondsInYear = int32(3600 * 24 * 365)
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	randAmount := helpers.RandomInt(simState.Rand, 40000000000000)
-	randStepDuration := helpers.RandomInt(simState.Rand, 31536000)
+	randStepDuration := helpers.RandomInt(simState.Rand, int(31536000*time.Second*4))
 	randomIntBetween := helpers.RandIntBetween(simState.Rand, 1, 100)
 	amountMultiplierFloat := float64(randomIntBetween) / float64(100)
 	randAmountMultiplierFactor := fmt.Sprintf("%f", amountMultiplierFloat)
