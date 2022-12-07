@@ -25,7 +25,7 @@ func TestGetParams(t *testing.T) {
 	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	params.MintDenom = "dfda"
-	params.MinterConfig = &types.MinterConfig{
+	params.MinterConfig = types.MinterConfig{
 		StartTime: time.Now().Add(time.Hour),
 		Minters:   createLinearMintings(time.Now()),
 	}
@@ -49,7 +49,7 @@ func TestSetParamsWrongMinterEndTime(t *testing.T) {
 	minters := createLinearMintings(time.Now())
 	timeNow := time.Now()
 	minters[0].EndTime = &timeNow
-	params.MinterConfig = &types.MinterConfig{
+	params.MinterConfig = types.MinterConfig{
 		StartTime: time.Now().Add(time.Hour),
 		Minters:   minters,
 	}

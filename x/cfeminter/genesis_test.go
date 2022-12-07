@@ -19,7 +19,7 @@ func TestGenesis(t *testing.T) {
 	layout := "2006-01-02T15:04:05.000Z"
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
-	minterConfig := &types.MinterConfig{
+	minterConfig := types.MinterConfig{
 		StartTime: time.Now(),
 		Minters:   createMinter(time.Now()),
 	}
@@ -46,7 +46,7 @@ func TestGenesisWithHistory(t *testing.T) {
 	layout := "2006-01-02T15:04:05.000Z"
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
-	minterConfig := &types.MinterConfig{
+	minterConfig := types.MinterConfig{
 		StartTime: time.Now(),
 		Minters:   createMinter(time.Now()),
 	}

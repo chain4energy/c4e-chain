@@ -11,5 +11,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 message Params {
   option (gogoproto.goproto_stringer) = false;
   string mint_denom = 1;
-  MinterConfig minter_config = 2;
+  MinterConfig minter_config = 2 [
+    (gogoproto.nullable) = false
+  ];
 }

@@ -31,13 +31,13 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params instance
-func NewParams(denom string, minterConfig *MinterConfig) Params {
+func NewParams(denom string, minterConfig MinterConfig) Params {
 	return Params{MintDenom: denom, MinterConfig: minterConfig}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	return NewParams(DefaultMintDenom, &DefaultMinters)
+	return NewParams(DefaultMintDenom, DefaultMinters)
 }
 
 // ParamSetPairs get the params.ParamSet
@@ -82,7 +82,7 @@ func validateDenom(v interface{}) error {
 
 // validateMinters validates Minters
 func validateMinters(v interface{}) error {
-	minterConfig, ok := v.(*MinterConfig)
+	minterConfig, ok := v.(MinterConfig)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", minterConfig)
 	}

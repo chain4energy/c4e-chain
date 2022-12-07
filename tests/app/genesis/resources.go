@@ -105,7 +105,7 @@ var CfeDistributorParams = distributortypes.Params{
 
 var CfeMinterrParams = mintertypes.Params{
 	MintDenom: "uc4e",
-	MinterConfig: &mintertypes.MinterConfig{
+	MinterConfig: mintertypes.MinterConfig{
 		StartTime: time.Now(),
 		Minters: []*mintertypes.Minter{
 			{
