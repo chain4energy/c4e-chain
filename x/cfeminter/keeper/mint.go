@@ -102,7 +102,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 	return result, nil
 }
 
-func getCurrentAndPreviousMinter(minterConfig *types.MinterConfig, state *types.MinterState) (currentMinter *types.Minter, previousMinter *types.Minter) {
+func getCurrentAndPreviousMinter(minterConfig types.MinterConfig, state *types.MinterState) (currentMinter *types.Minter, previousMinter *types.Minter) {
 	currentId := state.SequenceId
 	for _, minter := range minterConfig.Minters {
 		if minter.SequenceId == currentId {

@@ -31,7 +31,7 @@ func TestOneYearLinear(t *testing.T) {
 		Minters:   minters,
 	}
 	genesisState := types.GenesisState{
-		Params:      types.NewParams(commontestutils.DefaultTestDenom, &minterConfig),
+		Params:      types.NewParams(commontestutils.DefaultTestDenom, minterConfig),
 		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.ZeroInt(), LastMintBlockTime: testHelper.InitTime},
 	}
 
@@ -90,7 +90,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 		Minters:   minters,
 	}
 	genesisState := types.GenesisState{
-		Params:      types.NewParams(commontestutils.DefaultTestDenom, &minterConfig),
+		Params:      types.NewParams(commontestutils.DefaultTestDenom, minterConfig),
 		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
 	}
 
@@ -156,7 +156,7 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 		Minters:   minters,
 	}
 	genesisState := types.GenesisState{
-		Params:      types.NewParams(commontestutils.DefaultTestDenom, &minterConfig),
+		Params:      types.NewParams(commontestutils.DefaultTestDenom, minterConfig),
 		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
 	}
 
@@ -220,7 +220,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 		Minters:   minters,
 	}
 	genesisState := types.GenesisState{
-		Params:      types.NewParams(commontestutils.DefaultTestDenom, &minterConfig),
+		Params:      types.NewParams(commontestutils.DefaultTestDenom, minterConfig),
 		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
 	}
 

@@ -51,7 +51,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		},
 	}
 
-	minterConfig := &types.MinterConfig{
+	minterConfig := types.MinterConfig{
 		StartTime: now,
 		Minters:   minters,
 	}

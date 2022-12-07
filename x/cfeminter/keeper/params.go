@@ -8,7 +8,7 @@ import (
 // GetParams get all parameters as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	minters := k.MinterConfig(ctx)
-	return types.NewParams(k.MintDenom(ctx), &minters)
+	return types.NewParams(k.MintDenom(ctx), minters)
 }
 
 // SetParams set the params
