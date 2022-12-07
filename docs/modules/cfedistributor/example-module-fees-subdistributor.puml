@@ -1,0 +1,9 @@
+@startuml
+"fictional_module_fee_collector\r<<module account>>" --> ===B1===
+
+===B1=== -->[module fees subdistributor] ===B2===
+
+===B2=== -->[50% share] "validators_rewards\r<<module account>>"
+===B2=== -->[30% share] "c4edwijhdhwqu43efvc3543ec34c2erc342dw\r<<base account>>"
+===B2=== -->[20% share] "incentive_boosters\r<<internal account>>"
+@enduml

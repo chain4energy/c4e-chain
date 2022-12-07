@@ -28,6 +28,7 @@ func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *VestingTypes) []Gene
 			LockupPeriodUnit:  string(lockupPeriodUnit),
 			VestingPeriod:     vestingPeriod,
 			VestingPeriodUnit: string(vestingPeriodUnit),
+			Free:              vestingType.Free,
 		}
 		gVestingTypes = append(gVestingTypes, gvt)
 	}

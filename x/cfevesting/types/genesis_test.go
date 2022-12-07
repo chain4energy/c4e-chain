@@ -46,6 +46,10 @@ func TestGenesisState_Validate(t *testing.T) {
 		invalidVestingTypesEmptyNameTest(),
 		invalidVestingTypesNegativeLockupPeriodTest(),
 		invalidVestingTypesNegativeVestingPeriodTest(),
+		validVestingTypesFreeEquals1(),
+		validVestingTypesFreeEquals0(),
+		invalidVestingTypesFreeGreaterThan1(),
+		invalidVestingTypesFreeLowerThan0(),
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -417,7 +421,7 @@ func invalidVestingTypesWrongLockupPeriodUnitTest() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "LockupPeriodUnit of veting type: "+vestingTypes[7].Name+" error: Unknown PeriodUnit: " + vestingTypes[7].LockupPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
+		errorMassage: "LockupPeriodUnit of veting type: " + vestingTypes[7].Name + " error: Unknown PeriodUnit: " + vestingTypes[7].LockupPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
 	}
 }
 
@@ -431,7 +435,7 @@ func invalidVestingTypesWrongVestingPeriodUnitTest() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "VestingPeriodUnit of veting type: "+vestingTypes[7].Name+" error: Unknown PeriodUnit: " + vestingTypes[7].VestingPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
+		errorMassage: "VestingPeriodUnit of veting type: " + vestingTypes[7].Name + " error: Unknown PeriodUnit: " + vestingTypes[7].VestingPeriodUnit + ": invalid type" + getWrongUnitMessageCodeLineInfo(),
 	}
 }
 
@@ -445,7 +449,7 @@ func invalidVestingTypesNegativeLockupPeriodTest() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "LockupPeriod of veting type: "+vestingTypes[7].Name+" less than 0",
+		errorMassage: "LockupPeriod of veting type: " + vestingTypes[7].Name + " less than 0",
 	}
 }
 
@@ -459,7 +463,7 @@ func invalidVestingTypesNegativeVestingPeriodTest() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "VestingPeriod of veting type: "+vestingTypes[7].Name+" less than 0",
+		errorMassage: "VestingPeriod of veting type: " + vestingTypes[7].Name + " less than 0",
 	}
 }
 
@@ -482,7 +486,61 @@ func getWrongUnitMessageCodeLineInfo() string {
 	unit := types.PeriodUnit("unit")
 	_, err := types.DurationFromUnits(unit, 0)
 	err = fmt.Errorf("%w", err)
-	startLen := len("Unknown PeriodUnit: "+unit+": invalid type")
+	startLen := len("Unknown PeriodUnit: " + unit + ": invalid type")
 	errLen := len(err.Error())
 	return err.Error()[startLen:errLen]
+}
+
+func invalidVestingTypesFreeGreaterThan1() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("1.1")
+	return TcData{
+		desc: "invalid vestingTypes initial bonus greater than 100",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid:        false,
+		errorMassage: "Free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
+	}
+}
+
+func invalidVestingTypesFreeLowerThan0() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("-1")
+	return TcData{
+		desc: "invalid vestingTypes initial bonus lower than 100",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid:        false,
+		errorMassage: "Free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
+	}
+}
+
+func validVestingTypesFreeEquals1() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("1")
+	return TcData{
+		desc: "valid vestingTypes initial bonus equals 1",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid: true,
+	}
+}
+
+func validVestingTypesFreeEquals0() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("0")
+	return TcData{
+		desc: "valid vestingTypes initial bonus equals 0",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid: true,
+	}
 }

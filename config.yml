@@ -30,7 +30,7 @@ init:
       prometheus-retention-time: "60"
 
   #      enable-hostname-label: true
-#      enable-hostname: true
+  #      enable-hostname: true
   config:
     log_level: "debug"
     log_format: "plain"
@@ -109,26 +109,25 @@ genesis:
     cfeminter:
       params:
         mint_denom: "uc4e"
-        minter:
-          start: "2022-07-05T00:00:00.00000000Z"
-          periods:
-            - position: 1
-              type: "PERIODIC_REDUCTION_MINTER"
-              periodic_reduction_minter:
-                mint_period: 31536000 # year - 365*24*3600
-                mint_amount: "40000000000000"
-                reduction_period_length: 4
-                reduction_factor: "0.5"
-            # - position: 1
+        minter_config:
+          start_time: "2022-07-05T00:00:00.00000000Z"
+          minters:
+          - sequence_id: 1
+            type: "EXPONENTIAL_STEP_MINTING"
+            exponential_step_minting:
+              step_duration: "126144000s" # 4 years - 365*24*3600*4
+              amount: "160000000000000"
+              amount_multiplier: "0.5"
+            # - SequenceId: 1
             #   period_end: "2024-03-30T00:00:00.00000000Z"
             #   type: "TIME_LINEAR_MINTER"
             #   time_linear_minter:
             #     amount: "40000000000000"
-            # - position: 2
+            # - SequenceId: 2
             #   type: "NO_MINTING"
 
       minter_state:
-        position: 1
+        sequence_id: 1
         amount_minted: "0"
     cfedistributor:
       params:
@@ -185,8 +184,6 @@ genesis:
                 destination:
                   id: "governance_booster_collector"
                   type: MODULE_ACCOUNT
-
-
     cfevesting:
       params:
         denom: "uc4e"
@@ -196,36 +193,43 @@ genesis:
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "minute"
+          free: "0"
         - name: "Mid vesting with lockup"
           lockup_period: 150
           lockup_period_unit: "minute"
           vesting_period: 150
           vesting_period_unit: "hour"
+          free: "0"
         - name: "Long vesting with lockup"
           lockup_period: 600
           lockup_period_unit: "hour"
           vesting_period: 70
           vesting_period_unit: "day"
+          free: "0"
         - name: "Mid vesting delegable"
           lockup_period: 0
           lockup_period_unit: "minute"
           vesting_period: 200
           vesting_period_unit: "hour"
+          free: "0"
         - name: "Long vesting delegable"
           lockup_period: 0
           lockup_period_unit: "minute"
           vesting_period: 100
           vesting_period_unit: "day"
+          free: "0"
         - name: "Advisors pool"
           lockup_period: 5
           lockup_period_unit: "minute"
           vesting_period: 5
           vesting_period_unit: "day"
+          free: "0"
         - name: "Validators pool"
           lockup_period: 10
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "day"
+          free: "0.05"
       account_vesting_pools:
         - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
           # delegable_address: ""

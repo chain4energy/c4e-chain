@@ -10,26 +10,49 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetParams(t *testing.T) {
-	k, ctx := testkeeper.CfeminterKeeper(t)
+func TestGetDefaultParams(t *testing.T) {
+	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 
 	k.SetParams(ctx, params)
 
 	getParams := k.GetParams(ctx)
 	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinters(t, params.Minter, getParams.Minter)
+	testminter.CompareMinterConfigs(t, params.MinterConfig, getParams.MinterConfig)
 }
 
-func TestGetParams2(t *testing.T) {
-	k, ctx := testkeeper.CfeminterKeeper(t)
+func TestGetParams(t *testing.T) {
+	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	params.MintDenom = "dfda"
-	params.Minter = createLinearMinters(time.Now())
+	params.MinterConfig = &types.MinterConfig{
+		StartTime: time.Now().Add(time.Hour),
+		Minters:   createLinearMintings(time.Now()),
+	}
 	k.SetParams(ctx, params)
 
 	getParams := k.GetParams(ctx)
 	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinters(t, params.Minter, getParams.Minter)
+	testminter.CompareMinterConfigs(t, params.MinterConfig, getParams.MinterConfig)
+}
 
+func TestSetParamsNoDenom(t *testing.T) {
+	k, ctx, _ := testkeeper.CfeminterKeeper(t)
+	params := types.DefaultParams()
+	params.MintDenom = ""
+	require.PanicsWithValue(t, "value from ParamSetPair is invalid: denom cannot be empty", func() { k.SetParams(ctx, params) })
+}
+
+func TestSetParamsWrongMinterEndTime(t *testing.T) {
+	k, ctx, _ := testkeeper.CfeminterKeeper(t)
+	params := types.DefaultParams()
+	minters := createLinearMintings(time.Now())
+	timeNow := time.Now()
+	minters[0].EndTime = &timeNow
+	params.MinterConfig = &types.MinterConfig{
+		StartTime: time.Now().Add(time.Hour),
+		Minters:   minters,
+	}
+
+	require.PanicsWithValue(t, "value from ParamSetPair is invalid: first minter end must be bigger than minter start", func() { k.SetParams(ctx, params) })
 }

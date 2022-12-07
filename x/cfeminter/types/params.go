@@ -9,10 +9,18 @@ import (
 )
 
 var (
-	KeyMintDenom            = []byte("MintDenom")
-	KeyMinter               = []byte("Minter")
-	DefaultMintDenom string = "uc4e"
-	DefaultMinter    Minter = Minter{Start: time.Now(), Periods: []*MintingPeriod{{Position: 1, Type: NO_MINTING}}}
+	KeyMintDenom     = []byte("MintDenom")
+	KeyMinterConfig  = []byte("MinterConfig")
+	DefaultMintDenom = "uc4e"
+	DefaultMinters   = MinterConfig{
+		StartTime: time.Now(),
+		Minters: []*Minter{
+			{
+				SequenceId: 1,
+				Type:       NO_MINTING,
+			},
+		},
+	}
 ) //
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -23,37 +31,38 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params instance
-func NewParams(denom string, minter Minter) Params {
-	return Params{MintDenom: denom, Minter: minter}
+func NewParams(denom string, minterConfig *MinterConfig) Params {
+	return Params{MintDenom: denom, MinterConfig: minterConfig}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	return NewParams(DefaultMintDenom, DefaultMinter)
+	return NewParams(DefaultMintDenom, &DefaultMinters)
 }
 
 // ParamSetPairs get the params.ParamSet
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
+func (params *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyMintDenom, &p.MintDenom, validateDenom),
-		paramtypes.NewParamSetPair(KeyMinter, &p.Minter, validateMinter),
+		paramtypes.NewParamSetPair(KeyMintDenom, &params.MintDenom, validateDenom),
+		paramtypes.NewParamSetPair(KeyMinterConfig, &params.MinterConfig, validateMinters),
 	}
 }
 
 // Validate validates the set of params
-func (p Params) Validate() error {
-	if err := validateDenom(p.MintDenom); err != nil {
+func (params Params) Validate() error {
+	if err := validateDenom(params.MintDenom); err != nil {
 		return err
 	}
-	if err := validateMinter(p.Minter); err != nil {
+	if err := validateMinters(params.MinterConfig); err != nil {
 		return err
 	}
+
 	return nil
 }
 
 // String implements the Stringer interface.
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
+func (params Params) String() string {
+	out, _ := yaml.Marshal(params)
 	return string(out)
 }
 
@@ -71,11 +80,16 @@ func validateDenom(v interface{}) error {
 	return nil
 }
 
-// validateDenom validates the Denom param
-func validateMinter(v interface{}) error {
-	minter, ok := v.(Minter)
+// validateMinters validates Minters
+func validateMinters(v interface{}) error {
+	minterConfig, ok := v.(*MinterConfig)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", v)
+		return fmt.Errorf("invalid parameter type: %T", minterConfig)
 	}
-	return minter.Validate()
+	err := minterConfig.ValidateMinters()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

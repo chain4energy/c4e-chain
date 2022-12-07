@@ -1,29 +1,27 @@
-package v101
+package v110
 
 import (
-	v100cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v100"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-//MigrateParams performs in-place store migrations from v1.0.0 to v1.0.1. The
-//migration includes:
-//
-//- SubDistributor params structure changed.
-//- BurnShare and Share now must be set between 0 and 1, not 0 and 100.
-func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, paramStore *paramtypes.Subspace) error {
-	var oldSubdistributors []v100cfedistributor.SubDistributor
-	oldSubdistributorsRaw := paramStore.GetRaw(ctx, types.KeySubDistributors)
-	if err := codec.NewLegacyAmino().UnmarshalJSON(oldSubdistributorsRaw, &oldSubdistributors); err != nil {
+// MigrateParams performs in-place store migrations from v1.0.1 to v1.1.0.
+// The migration includes:
+// - SubDistributor params structure changed.
+// - BurnShare and Share now must be set between 0 and 1, not 0 and 100.
+func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
+	var oldSubDistributors []v101.SubDistributor
+	oldSubDistributorsRaw := paramStore.GetRaw(ctx, types.KeySubDistributors)
+	if err := codec.NewLegacyAmino().UnmarshalJSON(oldSubDistributorsRaw, &oldSubDistributors); err != nil {
 		panic(err)
 	}
 
 	var newSubDistributors []types.SubDistributor
 
-	for _, oldSubDistributor := range oldSubdistributors {
+	for _, oldSubDistributor := range oldSubDistributors {
 		var newShares []*types.DestinationShare
 		for _, oldShare := range oldSubDistributor.Destination.Share {
 			newShare := types.DestinationShare{

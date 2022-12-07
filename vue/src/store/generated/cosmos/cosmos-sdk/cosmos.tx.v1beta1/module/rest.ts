@@ -794,7 +794,7 @@ export interface V1Beta1SignerInfo {
   /**
    * public_key is the public key of the signer. It is optional for accounts
    * that already exist in state. If unset, the verifier can use the required \
-   * signer address for this position and lookup the public key.
+   * signer address for this SequenceId and lookup the public key.
    */
   public_key?: ProtobufAny;
 
@@ -867,7 +867,7 @@ export interface V1Beta1Tx {
   /**
    * signatures is a list of signatures that matches the length and order of
    * AuthInfo's signer_infos to allow connecting signature meta information like
-   * public key and signing mode by position.
+   * public key and signing mode by SequenceId.
    */
   signatures?: string[];
 }

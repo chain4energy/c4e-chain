@@ -3,47 +3,56 @@ package chain4energy.c4echain.cfeminter;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-
+import "google/protobuf/duration.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 
-message Minter {
-
-  google.protobuf.Timestamp start = 1 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  repeated MintingPeriod periods = 2; 
-
+message MinterConfig {
+  google.protobuf.Timestamp start_time = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  repeated Minter minters = 3;
 }
 
-message MintingPeriod {
-
-  int32 position = 1;
-  google.protobuf.Timestamp period_end = 2 [(gogoproto.stdtime) = true];
+message Minter {
+  uint32 sequence_id = 1;
+  google.protobuf.Timestamp end_time = 2 [(gogoproto.stdtime) = true];
   // types:
   //   NO_MINTING;
-  //   TIME_LINEAR_MINTER;
-  //   PERIODIC_REDUCTION_MINTER;
+  //   LINEAR_MINTING;
+  //   EXPONENTIAL_STEP_MINTING;
   string type = 3;
-  TimeLinearMinter time_linear_minter = 4;
-  PeriodicReductionMinter periodic_reduction_minter = 5;
-
+  LinearMinting linear_minting = 4;
+  ExponentialStepMinting exponential_step_minting = 5;
 }
 
-message TimeLinearMinter {
+message LinearMinting {
   string amount = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }
 
-message PeriodicReductionMinter {
-  // mint_period in seconds
-  int32 mint_period = 1; 
-  string mint_amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  int32 reduction_period_length = 3;
-  string reduction_factor = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+message ExponentialStepMinting {
+  string amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  google.protobuf.Duration step_duration = 1 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  string amount_multiplier = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
 }
 
 message MinterState {
-  int32 position = 1;
-  string amount_minted = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  string remainder_to_mint = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-  google.protobuf.Timestamp last_mint_block_time = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  string remainder_from_previous_period = 5 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  uint32 sequence_id = 1;
+  string amount_minted = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string remainder_to_mint = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  google.protobuf.Timestamp last_mint_block_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  string remainder_from_previous_period = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
 }

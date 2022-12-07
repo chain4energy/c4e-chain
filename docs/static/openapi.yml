@@ -211,21 +211,21 @@ paths:
                 properties:
                   mint_denom:
                     type: string
-                  minter:
+                  minter_config:
                     type: object
                     properties:
-                      start:
+                      start_time:
                         type: string
                         format: date-time
-                      periods:
+                      minters:
                         type: array
                         items:
                           type: object
                           properties:
-                            position:
+                            sequence_id:
                               type: integer
-                              format: int32
-                            period_end:
+                              format: int64
+                            end_time:
                               type: string
                               format: date-time
                             type:
@@ -233,26 +233,21 @@ paths:
                               title: |-
                                 types:
                                   NO_MINTING;
-                                  TIME_LINEAR_MINTER;
-                                  PERIODIC_REDUCTION_MINTER;
-                            time_linear_minter:
+                                  LINEAR_MINTING;
+                                  EXPONENTIAL_STEP_MINTING;
+                            linear_minting:
                               type: object
                               properties:
                                 amount:
                                   type: string
-                            periodic_reduction_minter:
+                            exponential_step_minting:
                               type: object
                               properties:
-                                mint_period:
-                                  type: integer
-                                  format: int32
-                                  title: mint_period in seconds
-                                mint_amount:
+                                amount:
                                   type: string
-                                reduction_period_length:
-                                  type: integer
-                                  format: int32
-                                reduction_factor:
+                                step_duration:
+                                  type: string
+                                amount_multiplier:
                                   type: string
                 description: Params defines the parameters for the module.
             description: >-
@@ -291,9 +286,9 @@ paths:
               minter_state:
                 type: object
                 properties:
-                  position:
+                  sequence_id:
                     type: integer
-                    format: int32
+                    format: int64
                   amount_minted:
                     type: string
                   remainder_to_mint:
@@ -308,9 +303,9 @@ paths:
                 items:
                   type: object
                   properties:
-                    position:
+                    sequence_id:
                       type: integer
-                      format: int32
+                      format: int64
                     amount_minted:
                       type: string
                     remainder_to_mint:
@@ -1084,8 +1079,6 @@ paths:
           schema:
             type: object
             properties:
-              delegable_address:
-                type: string
               vesting_pools:
                 type: array
                 items:
@@ -1344,6 +1337,14 @@ paths:
                       title: period of veesting coins from lockup period end
                     vesting_period_unit:
                       type: string
+                    free:
+                      type: string
+                      title: |-
+                        units to select:
+                         days
+                         hours
+                         minutes
+                         seconds
         default:
           description: An unexpected error response.
           schema:
@@ -32456,21 +32457,65 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
+  chain4energy.c4echain.cfeminter.ExponentialStepMinting:
+    type: object
+    properties:
+      amount:
+        type: string
+      step_duration:
+        type: string
+      amount_multiplier:
+        type: string
+  chain4energy.c4echain.cfeminter.LinearMinting:
+    type: object
+    properties:
+      amount:
+        type: string
   chain4energy.c4echain.cfeminter.Minter:
     type: object
     properties:
-      start:
+      sequence_id:
+        type: integer
+        format: int64
+      end_time:
         type: string
         format: date-time
-      periods:
+      type:
+        type: string
+        title: |-
+          types:
+            NO_MINTING;
+            LINEAR_MINTING;
+            EXPONENTIAL_STEP_MINTING;
+      linear_minting:
+        type: object
+        properties:
+          amount:
+            type: string
+      exponential_step_minting:
+        type: object
+        properties:
+          amount:
+            type: string
+          step_duration:
+            type: string
+          amount_multiplier:
+            type: string
+  chain4energy.c4echain.cfeminter.MinterConfig:
+    type: object
+    properties:
+      start_time:
+        type: string
+        format: date-time
+      minters:
         type: array
         items:
           type: object
           properties:
-            position:
+            sequence_id:
               type: integer
-              format: int32
-            period_end:
+              format: int64
+            end_time:
               type: string
               format: date-time
             type:
@@ -32478,33 +32523,28 @@ definitions:
               title: |-
                 types:
                   NO_MINTING;
-                  TIME_LINEAR_MINTER;
-                  PERIODIC_REDUCTION_MINTER;
-            time_linear_minter:
+                  LINEAR_MINTING;
+                  EXPONENTIAL_STEP_MINTING;
+            linear_minting:
               type: object
               properties:
                 amount:
                   type: string
-            periodic_reduction_minter:
+            exponential_step_minting:
               type: object
               properties:
-                mint_period:
-                  type: integer
-                  format: int32
-                  title: mint_period in seconds
-                mint_amount:
+                amount:
                   type: string
-                reduction_period_length:
-                  type: integer
-                  format: int32
-                reduction_factor:
+                step_duration:
+                  type: string
+                amount_multiplier:
                   type: string
   chain4energy.c4echain.cfeminter.MinterState:
     type: object
     properties:
-      position:
+      sequence_id:
         type: integer
-        format: int32
+        format: int64
       amount_minted:
         type: string
       remainder_to_mint:
@@ -32514,61 +32554,26 @@ definitions:
         format: date-time
       remainder_from_previous_period:
         type: string
-  chain4energy.c4echain.cfeminter.MintingPeriod:
-    type: object
-    properties:
-      position:
-        type: integer
-        format: int32
-      period_end:
-        type: string
-        format: date-time
-      type:
-        type: string
-        title: |-
-          types:
-            NO_MINTING;
-            TIME_LINEAR_MINTER;
-            PERIODIC_REDUCTION_MINTER;
-      time_linear_minter:
-        type: object
-        properties:
-          amount:
-            type: string
-      periodic_reduction_minter:
-        type: object
-        properties:
-          mint_period:
-            type: integer
-            format: int32
-            title: mint_period in seconds
-          mint_amount:
-            type: string
-          reduction_period_length:
-            type: integer
-            format: int32
-          reduction_factor:
-            type: string
   chain4energy.c4echain.cfeminter.Params:
     type: object
     properties:
       mint_denom:
         type: string
-      minter:
+      minter_config:
         type: object
         properties:
-          start:
+          start_time:
             type: string
             format: date-time
-          periods:
+          minters:
             type: array
             items:
               type: object
               properties:
-                position:
+                sequence_id:
                   type: integer
-                  format: int32
-                period_end:
+                  format: int64
+                end_time:
                   type: string
                   format: date-time
                 type:
@@ -32576,42 +32581,23 @@ definitions:
                   title: |-
                     types:
                       NO_MINTING;
-                      TIME_LINEAR_MINTER;
-                      PERIODIC_REDUCTION_MINTER;
-                time_linear_minter:
+                      LINEAR_MINTING;
+                      EXPONENTIAL_STEP_MINTING;
+                linear_minting:
                   type: object
                   properties:
                     amount:
                       type: string
-                periodic_reduction_minter:
+                exponential_step_minting:
                   type: object
                   properties:
-                    mint_period:
-                      type: integer
-                      format: int32
-                      title: mint_period in seconds
-                    mint_amount:
+                    amount:
                       type: string
-                    reduction_period_length:
-                      type: integer
-                      format: int32
-                    reduction_factor:
+                    step_duration:
+                      type: string
+                    amount_multiplier:
                       type: string
     description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeminter.PeriodicReductionMinter:
-    type: object
-    properties:
-      mint_period:
-        type: integer
-        format: int32
-        title: mint_period in seconds
-      mint_amount:
-        type: string
-      reduction_period_length:
-        type: integer
-        format: int32
-      reduction_factor:
-        type: string
   chain4energy.c4echain.cfeminter.QueryInflationResponse:
     type: object
     properties:
@@ -32625,21 +32611,21 @@ definitions:
         properties:
           mint_denom:
             type: string
-          minter:
+          minter_config:
             type: object
             properties:
-              start:
+              start_time:
                 type: string
                 format: date-time
-              periods:
+              minters:
                 type: array
                 items:
                   type: object
                   properties:
-                    position:
+                    sequence_id:
                       type: integer
-                      format: int32
-                    period_end:
+                      format: int64
+                    end_time:
                       type: string
                       format: date-time
                     type:
@@ -32647,26 +32633,21 @@ definitions:
                       title: |-
                         types:
                           NO_MINTING;
-                          TIME_LINEAR_MINTER;
-                          PERIODIC_REDUCTION_MINTER;
-                    time_linear_minter:
+                          LINEAR_MINTING;
+                          EXPONENTIAL_STEP_MINTING;
+                    linear_minting:
                       type: object
                       properties:
                         amount:
                           type: string
-                    periodic_reduction_minter:
+                    exponential_step_minting:
                       type: object
                       properties:
-                        mint_period:
-                          type: integer
-                          format: int32
-                          title: mint_period in seconds
-                        mint_amount:
+                        amount:
                           type: string
-                        reduction_period_length:
-                          type: integer
-                          format: int32
-                        reduction_factor:
+                        step_duration:
+                          type: string
+                        amount_multiplier:
                           type: string
         description: Params defines the parameters for the module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
@@ -32676,9 +32657,9 @@ definitions:
       minter_state:
         type: object
         properties:
-          position:
+          sequence_id:
             type: integer
-            format: int32
+            format: int64
           amount_minted:
             type: string
           remainder_to_mint:
@@ -32693,9 +32674,9 @@ definitions:
         items:
           type: object
           properties:
-            position:
+            sequence_id:
               type: integer
-              format: int32
+              format: int64
             amount_minted:
               type: string
             remainder_to_mint:
@@ -32705,11 +32686,6 @@ definitions:
               format: date-time
             remainder_from_previous_period:
               type: string
-  chain4energy.c4echain.cfeminter.TimeLinearMinter:
-    type: object
-    properties:
-      amount:
-        type: string
   chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
     type: object
     properties:
@@ -32802,6 +32778,14 @@ definitions:
         title: period of veesting coins from lockup period end
       vesting_period_unit:
         type: string
+      free:
+        type: string
+        title: |-
+          units to select:
+           days
+           hours
+           minutes
+           seconds
   chain4energy.c4echain.cfevesting.MsgCreateVestingAccountResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgCreateVestingPoolResponse:
@@ -32832,8 +32816,6 @@ definitions:
   chain4energy.c4echain.cfevesting.QueryVestingPoolsResponse:
     type: object
     properties:
-      delegable_address:
-        type: string
       vesting_pools:
         type: array
         items:
@@ -32893,6 +32875,14 @@ definitions:
               title: period of veesting coins from lockup period end
             vesting_period_unit:
               type: string
+            free:
+              type: string
+              title: |-
+                units to select:
+                 days
+                 hours
+                 minutes
+                 seconds
   chain4energy.c4echain.cfevesting.QueryVestingsSummaryResponse:
     type: object
     properties:

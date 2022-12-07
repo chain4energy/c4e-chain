@@ -1,7 +1,7 @@
-package v101
+package v110
 
 import (
-	v100cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v100"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -9,25 +9,25 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// getAllV100AccountVestingPoolsAndDelete returns all old version AccountVestingPools and deletes them from the KVStore
-func getAllV100AccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (list []v100cfevesting.AccountVestingPools, err error) {
-	prefixStore := prefix.NewStore(store, v100cfevesting.AccountVestingPoolsKeyPrefix)
+// getAllOldAccountVestingPoolsAndDelete returns all old version AccountVestingPools and deletes them from the KVStore
+func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldAccPools []v101.AccountVestingPools, err error) {
+	prefixStore := prefix.NewStore(store, v101.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val v100cfevesting.AccountVestingPools
+		var val v101.AccountVestingPools
 		err := cdc.Unmarshal(iterator.Value(), &val)
 		if err != nil {
 			return nil, err
 		}
-		list = append(list, val)
+		oldAccPools = append(oldAccPools, val)
 		prefixStore.Delete(iterator.Key())
 	}
 	return
 }
 
-func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccPools []v100cfevesting.AccountVestingPools) error {
+func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccPools []v101.AccountVestingPools) error {
 	prefixStore := prefix.NewStore(store, types.AccountVestingPoolsKeyPrefix)
 	for _, oldAccPool := range oldAccPools {
 		oldPools := oldAccPool.VestingPools
@@ -60,8 +60,8 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 	return nil
 }
 
-func getV100VestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vestingTypes types.VestingTypes, err error) {
-	b := store.Get(v100cfevesting.VestingTypesKey)
+func getOldVestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vestingTypes v101.VestingTypes, err error) {
+	b := store.Get(v101.VestingTypesKey)
 	if b == nil {
 		return vestingTypes, nil
 	}
@@ -70,13 +70,22 @@ func getV100VestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (ves
 	if err != nil {
 		return vestingTypes, err
 	}
-	store.Delete(v100cfevesting.VestingTypesKey)
+	store.Delete(v101.VestingTypesKey)
 	return
 }
 
-func SetVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes types.VestingTypes) error {
+func setNewVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes v101.VestingTypes) error {
 	for _, vt := range vestingTypes.VestingTypes {
-		err := SetVestingType(store, cdc, *vt)
+		newVestingType := types.VestingType{
+			Name:          vt.Name,
+			VestingPeriod: vt.VestingPeriod,
+			LockupPeriod:  vt.LockupPeriod,
+			Free:          sdk.ZeroDec(),
+		}
+		if vt.Name == "Validators" {
+			newVestingType.Free = sdk.MustNewDecFromStr("0.05")
+		}
+		err := setNewVestingType(store, cdc, newVestingType)
 		if err != nil {
 			return err
 		}
@@ -85,35 +94,34 @@ func SetVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes type
 }
 
 // set the vesting type
-func SetVestingType(store sdk.KVStore, cdc codec.BinaryCodec, vestingType types.VestingType) error {
+func setNewVestingType(store sdk.KVStore, cdc codec.BinaryCodec, newVestingType types.VestingType) error {
 	pStore := prefix.NewStore(store, types.VestingTypesKeyPrefix)
-	av, err := cdc.Marshal(&vestingType)
+	av, err := cdc.Marshal(&newVestingType)
 	if err != nil {
 		return err
 	}
-	pStore.Set([]byte(vestingType.Name), av)
+	pStore.Set([]byte(newVestingType.Name), av)
 	return nil
 }
 
 func migrateVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	oldAccountVestingPools, err := getV100VestingTypesAndDelete(store, cdc)
+	oldAccountVestingPools, err := getOldVestingTypesAndDelete(store, cdc)
 	if err != nil {
 		return err
 	}
-	return SetVestingTypes(store, cdc, oldAccountVestingPools)
+	return setNewVestingTypes(store, cdc, oldAccountVestingPools)
 }
 
 func migrateVestingPools(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	oldAccountVestingPools, err := getAllV100AccountVestingPoolsAndDelete(store, cdc)
+	oldAccountVestingPools, err := getAllOldAccountVestingPoolsAndDelete(store, cdc)
 	if err != nil {
 		return err
 	}
 	return setNewAccountVestingPools(store, cdc, oldAccountVestingPools)
 }
 
-// MigrateStore performs in-place store migrations from v1.0.0 to v1.0.1. The
-// migration includes:
-//
+// MigrateStore performs in-place store migrations from v1.0.1 to v1.1.0
+// The migration includes:
 // - Vesting pools structure changed.
 // - Vesting types changed to map
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {

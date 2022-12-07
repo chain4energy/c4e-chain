@@ -1,0 +1,8 @@
+@startuml
+"incentive_boosters\r<<internal account>>" --> ===B1===
+
+===B1=== -->[boosters subdistributor] ===B2===
+
+===B2=== -->[65% share] "governance_booster\r<<module account>>"
+===B2=== -->[35% share] "weekend_booster\r<<module account>>"
+@enduml
