@@ -19,6 +19,7 @@ export interface CfevestingGenesisVestingType {
   /** @format int64 */
   vesting_period?: string;
   vesting_period_unit?: string;
+  free?: string;
 }
 
 export type CfevestingMsgCreateVestingAccountResponse = object;

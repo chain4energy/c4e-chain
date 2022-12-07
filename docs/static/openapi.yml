@@ -1337,6 +1337,14 @@ paths:
                       title: period of veesting coins from lockup period end
                     vesting_period_unit:
                       type: string
+                    free:
+                      type: string
+                      title: |-
+                        units to select:
+                         days
+                         hours
+                         minutes
+                         seconds
         default:
           description: An unexpected error response.
           schema:
@@ -32770,6 +32778,14 @@ definitions:
         title: period of veesting coins from lockup period end
       vesting_period_unit:
         type: string
+      free:
+        type: string
+        title: |-
+          units to select:
+           days
+           hours
+           minutes
+           seconds
   chain4energy.c4echain.cfevesting.MsgCreateVestingAccountResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgCreateVestingPoolResponse:
@@ -32859,6 +32875,14 @@ definitions:
               title: period of veesting coins from lockup period end
             vesting_period_unit:
               type: string
+            free:
+              type: string
+              title: |-
+                units to select:
+                 days
+                 hours
+                 minutes
+                 seconds
   chain4energy.c4echain.cfevesting.QueryVestingsSummaryResponse:
     type: object
     properties:

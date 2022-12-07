@@ -18,10 +18,9 @@ message GenesisState {
   repeated VestingAccount vesting_account_list = 4 [(gogoproto.nullable) = false];
   uint64 vesting_account_count = 5;
   // this line is used by starport scaffolding # genesis/proto/state
- }
+}
 
 message GenesisVestingType {
-  
   // vesting type name
   string name = 1; 
   // period of locked coins from vesting start
@@ -29,8 +28,11 @@ message GenesisVestingType {
   string lockup_period_unit = 3; 
   // period of veesting coins from lockup period end
   int64 vesting_period = 4; 
-  string vesting_period_unit = 5; 
-  
+  string vesting_period_unit = 5;
+  string free = 6 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
   // units to select:
   // days
   // hours

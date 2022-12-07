@@ -60,7 +60,7 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 	return nil
 }
 
-func getOldVestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vestingTypes types.VestingTypes, err error) {
+func getOldVestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vestingTypes v101.VestingTypes, err error) {
 	b := store.Get(v101.VestingTypesKey)
 	if b == nil {
 		return vestingTypes, nil
@@ -74,9 +74,18 @@ func getOldVestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vest
 	return
 }
 
-func setNewVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, newVestingTypes types.VestingTypes) error {
-	for _, vt := range newVestingTypes.VestingTypes {
-		err := setNewVestingType(store, cdc, *vt)
+func setNewVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes v101.VestingTypes) error {
+	for _, vt := range vestingTypes.VestingTypes {
+		newVestingType := types.VestingType{
+			Name:          vt.Name,
+			VestingPeriod: vt.VestingPeriod,
+			LockupPeriod:  vt.LockupPeriod,
+			Free:          sdk.ZeroDec(),
+		}
+		if vt.Name == "Validators" {
+			newVestingType.Free = sdk.MustNewDecFromStr("0.05")
+		}
+		err := setNewVestingType(store, cdc, newVestingType)
 		if err != nil {
 			return err
 		}

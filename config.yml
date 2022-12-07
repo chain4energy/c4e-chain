@@ -105,10 +105,10 @@ genesis:
             amount: "10000000"
       voting_params:
         voting_period: "10s"
+
     cfeminter:
       params:
         mint_denom: "uc4e"
-
         minter_config:
           start_time: "2022-07-05T00:00:00.00000000Z"
           minters:
@@ -132,60 +132,58 @@ genesis:
     cfedistributor:
       params:
         sub_distributors:
-          - name: tx_fee_distributor
-            sources:
-              - id: fee_collector
-                type: MODULE_ACCOUNT
-            destinations:
-              primary_share:
-                id: "c4e_distributor"
-                type: MAIN
-              burn_share: "0"
+        - name: tx_fee_distributor
+          sources:
+            - id: fee_collector
+              type: MODULE_ACCOUNT
+          destinations:
+            primary_share:
+              id: "c4e_distributor"
+              type: MAIN
+            burn_share: "0"
 
-          - name: inflation_and_fee_distributor
-            sources:
-              - id: c4e_distributor
-                type: MAIN
-            destinations:
-              primary_share:
-                id: "validators_rewards_collector"
-                type: MODULE_ACCOUNT
-              burn_share: "0.05"
-              shares:
-                - name: development_fund
-                  share: "0.05"
-                  destination:
-                    #Proper development fund account
-                    id: "c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl"
-                    type: BASE_ACCOUNT
-                - name: usage_incentives
-                  share: "0.35"
-                  destination:
-                    id: "usage_incentives_collector"
-                    type: INTERNAL_ACCOUNT
-          - name: usage_incentives_distributor
-            sources:
-              - id: usage_incentives_collector
-                type: INTERNAL_ACCOUNT
-            destinations:
-              burn_share: "0"
-              primary_share:
-                #LP Providers proper address
-                id: "c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph"
-                type: BASE_ACCOUNT
-              shares:
-                - name: green_energy_booster
-                  share: "0.34"
-                  destination:
-                    id: "green_energy_booster_collector"
-                    type: MODULE_ACCOUNT
-                - name: governance_booster
-                  share: "0.33"
-                  destination:
-                    id: "governance_booster_collector"
-                    type: MODULE_ACCOUNT
-
-
+        - name: inflation_and_fee_distributor
+          sources:
+            - id: c4e_distributor
+              type: MAIN
+          destinations:
+            primary_share:
+              id: "validators_rewards_collector"
+              type: MODULE_ACCOUNT
+            burn_share: "0.05"
+            shares:
+              - name: development_fund
+                share: "0.05"
+                destination:
+                  #Proper development fund account
+                  id: "c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl"
+                  type: BASE_ACCOUNT
+              - name: usage_incentives
+                share: "0.35"
+                destination:
+                  id: "usage_incentives_collector"
+                  type: INTERNAL_ACCOUNT
+        - name: usage_incentives_distributor
+          sources:
+            - id: usage_incentives_collector
+              type: INTERNAL_ACCOUNT
+          destinations:
+            burn_share: "0"
+            primary_share:
+              #LP Providers proper address
+              id: "c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph"
+              type: BASE_ACCOUNT
+            shares:
+              - name: green_energy_booster
+                share: "0.34"
+                destination:
+                  id: "green_energy_booster_collector"
+                  type: MODULE_ACCOUNT
+              - name: governance_booster
+                share: "0.33"
+                destination:
+                  id: "governance_booster_collector"
+                  type: MODULE_ACCOUNT
     cfevesting:
       params:
         denom: "uc4e"
@@ -195,36 +193,43 @@ genesis:
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "minute"
+          free: "0"
         - name: "Mid vesting with lockup"
           lockup_period: 150
           lockup_period_unit: "minute"
           vesting_period: 150
           vesting_period_unit: "hour"
+          free: "0"
         - name: "Long vesting with lockup"
           lockup_period: 600
           lockup_period_unit: "hour"
           vesting_period: 70
           vesting_period_unit: "day"
+          free: "0"
         - name: "Mid vesting delegable"
           lockup_period: 0
           lockup_period_unit: "minute"
           vesting_period: 200
           vesting_period_unit: "hour"
+          free: "0"
         - name: "Long vesting delegable"
           lockup_period: 0
           lockup_period_unit: "minute"
           vesting_period: 100
           vesting_period_unit: "day"
+          free: "0"
         - name: "Advisors pool"
           lockup_period: 5
           lockup_period_unit: "minute"
           vesting_period: 5
           vesting_period_unit: "day"
+          free: "0"
         - name: "Validators pool"
           lockup_period: 10
           lockup_period_unit: "minute"
           vesting_period: 10
           vesting_period_unit: "day"
+          free: "0.05"
       account_vesting_pools:
         - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
           # delegable_address: ""
