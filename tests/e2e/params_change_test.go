@@ -26,7 +26,7 @@ func TestParamsChangeSuite(t *testing.T) {
 }
 
 func (s *ParamsSetupSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(false, false)
+	s.BaseSetupSuite.SetupSuite(true, false)
 }
 
 func (s *ParamsSetupSuite) TestMinterAndDistributorParamsChangeProposal() {
@@ -34,21 +34,21 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorParamsChangeProposal() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	periodEnd := time.Now().Add(10 * time.Minute).UTC()
-	newMinter := cfemintertypes.Minter{
-		Start: time.Now().UTC(),
-		Periods: []*cfemintertypes.MintingPeriod{
+	endTime := time.Now().Add(10 * time.Minute).UTC()
+	newMinter := cfemintertypes.MinterConfig{
+		StartTime: time.Now().UTC(),
+		Minters: []*cfemintertypes.Minter{
 			{
-				Position: 1,
-				Type:     cfemintertypes.TIME_LINEAR_MINTER,
-				TimeLinearMinter: &cfemintertypes.TimeLinearMinter{
+				SequenceId: 1,
+				Type:       cfemintertypes.LINEAR_MINTING,
+				LinearMinting: &cfemintertypes.LinearMinting{
 					Amount: sdk.NewInt(100000),
 				},
-				PeriodEnd: &periodEnd,
+				EndTime: &endTime,
 			},
 			{
-				Position: 2,
-				Type:     cfemintertypes.NO_MINTING,
+				SequenceId: 2,
+				Type:       cfemintertypes.NO_MINTING,
 			},
 		},
 	}
@@ -85,12 +85,12 @@ func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	newMinter := cfemintertypes.Minter{
-		Start: time.Now().UTC(),
-		Periods: []*cfemintertypes.MintingPeriod{
+	newMinter := cfemintertypes.MinterConfig{
+		StartTime: time.Now().UTC(),
+		Minters: []*cfemintertypes.Minter{
 			{
-				Position: 1,
-				Type:     cfemintertypes.NO_MINTING,
+				SequenceId: 1,
+				Type:       cfemintertypes.NO_MINTING,
 			},
 		},
 	}
@@ -175,8 +175,8 @@ func (s *ParamsSetupSuite) cfedistributorParamsChange(node *chain.NodeConfig, ch
 	)
 }
 
-func (s *ParamsSetupSuite) cfeminterParamsChange(node *chain.NodeConfig, chainConfig *chain.Config, newDenom string, newMinter cfemintertypes.Minter) {
-	newMinterJSON, err := json.Marshal(newMinter)
+func (s *ParamsSetupSuite) cfeminterParamsChange(node *chain.NodeConfig, chainConfig *chain.Config, newDenom string, newMinterConfig cfemintertypes.MinterConfig) {
+	newMinterJSON, err := json.Marshal(newMinterConfig)
 	s.NoError(err)
 	newDenomJSON, err := json.Marshal(newDenom)
 	s.NoError(err)
@@ -187,7 +187,7 @@ func (s *ParamsSetupSuite) cfeminterParamsChange(node *chain.NodeConfig, chainCo
 		Changes: paramsutils.ParamChangesJSON{
 			paramsutils.ParamChangeJSON{
 				Subspace: cfemintertypes.ModuleName,
-				Key:      string(cfemintertypes.KeyMinter),
+				Key:      string(cfemintertypes.KeyMinterConfig),
 				Value:    newMinterJSON,
 			},
 			paramsutils.ParamChangeJSON{
@@ -212,7 +212,7 @@ func (s *ParamsSetupSuite) cfeminterParamsChange(node *chain.NodeConfig, chainCo
 	s.Eventually(
 		func() bool {
 			return node.ValidateParams(newDenomJSON, cfemintertypes.ModuleName, string(cfemintertypes.KeyMintDenom)) &&
-				node.ValidateParams(newMinterJSON, cfemintertypes.ModuleName, string(cfemintertypes.KeyMinter))
+				node.ValidateParams(newMinterJSON, cfemintertypes.ModuleName, string(cfemintertypes.KeyMinterConfig))
 		},
 		time.Minute,
 		time.Second*5,

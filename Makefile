@@ -140,7 +140,7 @@ open-memory-profiler-result:
 
 PACKAGES_E2E=./tests/e2e
 BUILDDIR ?= $(CURDIR)/build
-E2E_UPGRADE_VERSION="v1.0.1"
+E2E_UPGRADE_VERSION="v1.1.0"
 E2E_SCRIPT_NAME=chain
 
 test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change
