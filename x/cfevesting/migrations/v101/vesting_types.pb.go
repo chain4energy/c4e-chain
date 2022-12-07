@@ -135,8 +135,8 @@ func (m *VestingType) GetVestingPeriod() time.Duration {
 }
 
 func init() {
-	proto.RegisterType((*VestingTypes)(nil), "chain4energy.c4echain.cfevesting.VestingTypes")
-	proto.RegisterType((*VestingType)(nil), "chain4energy.c4echain.cfevesting.VestingType")
+	proto.RegisterType((*VestingTypes)(nil), "chain4energy.c4echain.cfevesting.v101.VestingTypes")
+	proto.RegisterType((*VestingType)(nil), "chain4energy.c4echain.cfevesting.v101.VestingType")
 }
 
 func init() { proto.RegisterFile("cfevesting/vesting_types.proto", fileDescriptor_67b318d31cacf480) }
