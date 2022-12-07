@@ -38,6 +38,11 @@ paths:
                             items:
                               type: string
                               format: uint64
+                          claimedMissions:
+                            type: array
+                            items:
+                              type: string
+                              format: uint64
               pagination:
                 type: object
                 properties:
@@ -341,6 +346,11 @@ paths:
                           items:
                             type: string
                             format: uint64
+                        claimedMissions:
+                          type: array
+                          items:
+                            type: string
+                            format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -548,8 +558,6 @@ paths:
                 items:
                   type: object
                   properties:
-                    enabled:
-                      type: boolean
                     campaign_id:
                       type: string
                       format: uint64
@@ -840,8 +848,6 @@ paths:
               initialClaim:
                 type: object
                 properties:
-                  enabled:
-                    type: boolean
                   campaign_id:
                     type: string
                     format: uint64
@@ -1055,6 +1061,8 @@ paths:
                 description: params holds all the parameters of this module.
                 type: object
                 properties:
+                  denom:
+                    type: string
                   campaigns:
                     type: array
                     items:
@@ -33606,6 +33614,11 @@ definitions:
         items:
           type: string
           format: uint64
+      claimedMissions:
+        type: array
+        items:
+          type: string
+          format: uint64
   chain4energy.c4echain.cfeairdrop.ClaimRecord:
     type: object
     properties:
@@ -33628,11 +33641,14 @@ definitions:
               items:
                 type: string
                 format: uint64
+            claimedMissions:
+              type: array
+              items:
+                type: string
+                format: uint64
   chain4energy.c4echain.cfeairdrop.InitialClaim:
     type: object
     properties:
-      enabled:
-        type: boolean
       campaign_id:
         type: string
         format: uint64
@@ -33654,9 +33670,13 @@ definitions:
         type: string
   chain4energy.c4echain.cfeairdrop.MsgClaimResponse:
     type: object
+  chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaignResponse:
+    type: object
   chain4energy.c4echain.cfeairdrop.Params:
     type: object
     properties:
+      denom:
+        type: string
       campaigns:
         type: array
         items:
@@ -33709,6 +33729,11 @@ definitions:
                     items:
                       type: string
                       format: uint64
+                  claimedMissions:
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
       pagination:
         type: object
         properties:
@@ -33742,8 +33767,6 @@ definitions:
         items:
           type: object
           properties:
-            enabled:
-              type: boolean
             campaign_id:
               type: string
               format: uint64
@@ -33843,14 +33866,17 @@ definitions:
                   items:
                     type: string
                     format: uint64
+                claimedMissions:
+                  type: array
+                  items:
+                    type: string
+                    format: uint64
   chain4energy.c4echain.cfeairdrop.QueryGetInitialClaimResponse:
     type: object
     properties:
       initialClaim:
         type: object
         properties:
-          enabled:
-            type: boolean
           campaign_id:
             type: string
             format: uint64
@@ -33880,6 +33906,8 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
         properties:
+          denom:
+            type: string
           campaigns:
             type: array
             items:

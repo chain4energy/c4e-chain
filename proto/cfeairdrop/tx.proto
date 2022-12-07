@@ -1,5 +1,8 @@
 syntax = "proto3";
 package chain4energy.c4echain.cfeairdrop;
+import "google/protobuf/duration.proto";
+import "gogoproto/gogo.proto";
+
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -7,7 +10,8 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc Claim(MsgClaim) returns (MsgClaimResponse);
+  rpc Claim(MsgClaim) returns (MsgClaimResponse);
+  rpc CreateAirdropCampaign(MsgCreateAirdropCampaign) returns (MsgCreateAirdropCampaignResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -18,6 +22,19 @@ message MsgClaim {
 }
 
 message MsgClaimResponse {
+}
+
+message MsgCreateAirdropCampaign {
+  string creator = 1;
+  string owner = 2;
+  string name = 3;
+  google.protobuf.Duration  campaign_duration = 4 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  google.protobuf.Duration lockup_period = 5 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  google.protobuf.Duration vesting_period = 6 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  string description = 7;
+}
+
+message MsgCreateAirdropCampaignResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

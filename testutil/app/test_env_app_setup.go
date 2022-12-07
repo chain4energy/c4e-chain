@@ -7,10 +7,10 @@ import (
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
+	testcfeairdrop "github.com/chain4energy/c4e-chain/testutil/module/cfeairdrop"
 	testcfedistributor "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	testcfeminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	testcfevesting "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
-	testcfeairdrop "github.com/chain4energy/c4e-chain/testutil/module/cfeairdrop"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -67,7 +67,7 @@ type TestHelper struct {
 	BankUtils             *testcommon.ContextBankUtils
 	AuthUtils             *testcommon.ContextAuthUtils
 	StakingUtils          *testcommon.ContextStakingUtils
-	GovUtils			  *testcommon.ContextGovUtils
+	GovUtils              *testcommon.ContextGovUtils
 	C4eVestingUtils       *testcfevesting.ContextC4eVestingUtils
 	C4eMinterUtils        *testcfeminter.ContextC4eMinterUtils
 	C4eDistributorUtils   *testcfedistributor.ContextC4eDistributorUtils

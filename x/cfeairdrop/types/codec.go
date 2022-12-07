@@ -11,6 +11,7 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgClaim{}, "cfeairdrop/Claim", nil)
+	cdc.RegisterConcrete(&MsgCreateAirdropCampaign{}, "cfeairdrop/CreateAirdropCampaign", nil)
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(&AirdropVestingAccount{}, "c4e/AirdropVestingAccount", nil)
 }
@@ -18,6 +19,9 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgClaim{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgCreateAirdropCampaign{},
 	)
 	// this line is used by starport scaffolding # 3
 

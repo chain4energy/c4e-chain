@@ -34,7 +34,7 @@ func TestCreateAirdropAccount(t *testing.T) {
 		startTimeUnix,
 		endTimeUnix, true,
 	)
-	
+
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount)
 	testHelper.SetContextBlockTime(commontestutils.TestEnvTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.QuoRaw(2))
@@ -93,7 +93,7 @@ func TestCreateAirdropAccountBlockedAddress(t *testing.T) {
 	endTime := commontestutils.TestEnvTime.Add(24 * 100 * time.Hour)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
-	blockedAccounts :=  testHelper.App.ModuleAccountAddrs()
+	blockedAccounts := testHelper.App.ModuleAccountAddrs()
 	blockedAccounts[acountsAddresses[0].String()] = true
 	testHelper.App.BankKeeper = bankkeeper.NewBaseKeeper(
 		testHelper.App.AppCodec(), testHelper.App.GetKey(banktypes.StoreKey), testHelper.App.AccountKeeper, testHelper.App.GetSubspace(banktypes.ModuleName), blockedAccounts,
@@ -118,7 +118,7 @@ func TestCreateAirdropAccountBlockedAddress(t *testing.T) {
 	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
 		amount,
 		startTimeUnix,
-		endTimeUnix, true, 
+		endTimeUnix, true,
 		fmt.Sprintf("send to airdrop account - account address: %s is not allowed to receive funds error: unauthorized", acountsAddresses[0]),
 		false,
 	)
@@ -166,7 +166,7 @@ func TestCreateAirdropAccountWrongAccountType(t *testing.T) {
 		endTimeUnix, true, "send to airdrop account - expected AirdropVestingAccount, got: *types.BaseAccount: invalid account type",
 		false,
 	)
-	
+
 	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
 		amount,
 		startTimeUnix,
@@ -200,7 +200,7 @@ func TestCreateAirdropAccountSendError(t *testing.T) {
 		endTimeUnix, true, "send to airdrop account - send coins to airdrop account error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 1001uc4e): 1000uc4e is smaller than 1001uc4e: insufficient funds: failed to send coins",
 		true,
 	)
-	
+
 	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
 		amount.AddRaw(1),
 		startTimeUnix,

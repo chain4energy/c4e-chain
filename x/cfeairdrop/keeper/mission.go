@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
+
 // TODO tests when campaigns in params are nil
 
 // SetMission set a specific mission in the store from its index
@@ -167,7 +168,7 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig 
 
 	claimableAmount := claimRecord.ClaimableFromMission(mission)
 	// TODO initial mission claim should have not waight but get whats left from ther missions
-	
+
 	claimable := sdk.NewCoins(sdk.NewCoin(k.Denom(ctx), claimableAmount))
 
 	// calculate claimable after decay factor

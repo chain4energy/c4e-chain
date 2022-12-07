@@ -10,6 +10,7 @@ export interface CampaignRecord {
   campaign_id: number;
   claimable: string;
   completedMissions: number[];
+  claimedMissions: number[];
 }
 
 export interface ClaimRecord {
@@ -31,7 +32,6 @@ export interface Campaign {
 }
 
 export interface InitialClaim {
-  enabled: boolean;
   campaign_id: number;
   mission_id: number;
 }
@@ -47,6 +47,7 @@ const baseCampaignRecord: object = {
   campaign_id: 0,
   claimable: "",
   completedMissions: 0,
+  claimedMissions: 0,
 };
 
 export const CampaignRecord = {
@@ -62,6 +63,11 @@ export const CampaignRecord = {
       writer.uint64(v);
     }
     writer.ldelim();
+    writer.uint32(42).fork();
+    for (const v of message.claimedMissions) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
     return writer;
   },
 
@@ -70,6 +76,7 @@ export const CampaignRecord = {
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseCampaignRecord } as CampaignRecord;
     message.completedMissions = [];
+    message.claimedMissions = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -93,6 +100,18 @@ export const CampaignRecord = {
             );
           }
           break;
+        case 5:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.claimedMissions.push(
+                longToNumber(reader.uint64() as Long)
+              );
+            }
+          } else {
+            message.claimedMissions.push(longToNumber(reader.uint64() as Long));
+          }
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -104,6 +123,7 @@ export const CampaignRecord = {
   fromJSON(object: any): CampaignRecord {
     const message = { ...baseCampaignRecord } as CampaignRecord;
     message.completedMissions = [];
+    message.claimedMissions = [];
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
       message.campaign_id = Number(object.campaign_id);
     } else {
@@ -122,6 +142,14 @@ export const CampaignRecord = {
         message.completedMissions.push(Number(e));
       }
     }
+    if (
+      object.claimedMissions !== undefined &&
+      object.claimedMissions !== null
+    ) {
+      for (const e of object.claimedMissions) {
+        message.claimedMissions.push(Number(e));
+      }
+    }
     return message;
   },
 
@@ -135,12 +163,18 @@ export const CampaignRecord = {
     } else {
       obj.completedMissions = [];
     }
+    if (message.claimedMissions) {
+      obj.claimedMissions = message.claimedMissions.map((e) => e);
+    } else {
+      obj.claimedMissions = [];
+    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<CampaignRecord>): CampaignRecord {
     const message = { ...baseCampaignRecord } as CampaignRecord;
     message.completedMissions = [];
+    message.claimedMissions = [];
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
       message.campaign_id = object.campaign_id;
     } else {
@@ -157,6 +191,14 @@ export const CampaignRecord = {
     ) {
       for (const e of object.completedMissions) {
         message.completedMissions.push(e);
+      }
+    }
+    if (
+      object.claimedMissions !== undefined &&
+      object.claimedMissions !== null
+    ) {
+      for (const e of object.claimedMissions) {
+        message.claimedMissions.push(e);
       }
     }
     return message;
@@ -458,17 +500,10 @@ export const Campaign = {
   },
 };
 
-const baseInitialClaim: object = {
-  enabled: false,
-  campaign_id: 0,
-  mission_id: 0,
-};
+const baseInitialClaim: object = { campaign_id: 0, mission_id: 0 };
 
 export const InitialClaim = {
   encode(message: InitialClaim, writer: Writer = Writer.create()): Writer {
-    if (message.enabled === true) {
-      writer.uint32(8).bool(message.enabled);
-    }
     if (message.campaign_id !== 0) {
       writer.uint32(16).uint64(message.campaign_id);
     }
@@ -485,9 +520,6 @@ export const InitialClaim = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.enabled = reader.bool();
-          break;
         case 2:
           message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
@@ -504,11 +536,6 @@ export const InitialClaim = {
 
   fromJSON(object: any): InitialClaim {
     const message = { ...baseInitialClaim } as InitialClaim;
-    if (object.enabled !== undefined && object.enabled !== null) {
-      message.enabled = Boolean(object.enabled);
-    } else {
-      message.enabled = false;
-    }
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
       message.campaign_id = Number(object.campaign_id);
     } else {
@@ -524,7 +551,6 @@ export const InitialClaim = {
 
   toJSON(message: InitialClaim): unknown {
     const obj: any = {};
-    message.enabled !== undefined && (obj.enabled = message.enabled);
     message.campaign_id !== undefined &&
       (obj.campaign_id = message.campaign_id);
     message.mission_id !== undefined && (obj.mission_id = message.mission_id);
@@ -533,11 +559,6 @@ export const InitialClaim = {
 
   fromPartial(object: DeepPartial<InitialClaim>): InitialClaim {
     const message = { ...baseInitialClaim } as InitialClaim;
-    if (object.enabled !== undefined && object.enabled !== null) {
-      message.enabled = object.enabled;
-    } else {
-      message.enabled = false;
-    }
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
       message.campaign_id = object.campaign_id;
     } else {

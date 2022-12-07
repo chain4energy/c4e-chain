@@ -131,7 +131,6 @@ func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
 
 }
 
-
 func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
@@ -142,7 +141,6 @@ func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	}
 	campaignId := uint64(23)
 	testUtil.AddCampaignRecords(ctx, srcAddr, campaignId, campaignRecordsData)
-
 
 	campaignRecordsData = map[string]sdk.Int{}
 	for i, addr := range acountsAddresses {
@@ -163,8 +161,8 @@ func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	campaignId := uint64(23)
 	testUtil.AddCampaignRecords(ctx, srcAddr, campaignId, campaignRecordsData)
 
-	testUtil.AddCampaignRecordsError(ctx, srcAddr, campaignId, map[string]sdk.Int{acountsAddresses[5].String(): campaignRecordsData[acountsAddresses[5].String()]}, 
-			fmt.Sprintf("campaignId 23 already exists for address: %s: entity already exists", acountsAddresses[5]), true)
+	testUtil.AddCampaignRecordsError(ctx, srcAddr, campaignId, map[string]sdk.Int{acountsAddresses[5].String(): campaignRecordsData[acountsAddresses[5].String()]},
+		fmt.Sprintf("campaignId 23 already exists for address: %s: entity already exists", acountsAddresses[5]), true)
 }
 
 func TestAddCampaignRecordsSendError(t *testing.T) {
@@ -177,6 +175,6 @@ func TestAddCampaignRecordsSendError(t *testing.T) {
 	}
 	campaignId := uint64(23)
 
-	testUtil.AddCampaignRecordsError(ctx, srcAddr, campaignId, map[string]sdk.Int{acountsAddresses[5].String(): campaignRecordsData[acountsAddresses[5].String()]}, 
+	testUtil.AddCampaignRecordsError(ctx, srcAddr, campaignId, map[string]sdk.Int{acountsAddresses[5].String(): campaignRecordsData[acountsAddresses[5].String()]},
 		"0uc4e is smaller than 105uc4e: insufficient funds", false)
 }

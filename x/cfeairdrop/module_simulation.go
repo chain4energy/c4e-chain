@@ -28,6 +28,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgClaim int = 100
 
+	opWeightMsgCreateAirdropCampaign = "op_weight_msg_create_airdrop_campaign"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateAirdropCampaign int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -71,6 +75,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgClaim,
 		cfeairdropsimulation.SimulateMsgClaim(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCreateAirdropCampaign int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateAirdropCampaign, &weightMsgCreateAirdropCampaign, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateAirdropCampaign = defaultWeightMsgCreateAirdropCampaign
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateAirdropCampaign,
+		cfeairdropsimulation.SimulateMsgCreateAirdropCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

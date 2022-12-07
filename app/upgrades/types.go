@@ -1,13 +1,13 @@
 package upgrades
 
 import (
+	cfeairdropkeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	cfeairdropkeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 )
 
 // BaseAppParamManager defines an interrace that BaseApp is expected to fullfil

@@ -7,7 +7,7 @@ import (
 )
 
 type MissionDelegationHooks struct {
-	k          Keeper
+	k Keeper
 }
 
 func (h MissionDelegationHooks) AfterUnbondingInitiated(ctx sdk.Context, id uint64) error {
@@ -26,12 +26,12 @@ func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr
 
 	missions := h.k.GetAllMission(ctx)
 	for _, mission := range missions {
-			// TODO error handling
+		// TODO error handling
 		if mission.MissionId == uint64(types.DELEGATION) {
 			_ = h.k.CompleteMission(ctx, mission.CampaignId, mission.MissionId, delAddr.String(), true)
 		}
 	}
-	
+
 }
 
 // AfterValidatorCreated implements StakingHooks

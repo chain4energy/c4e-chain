@@ -26,7 +26,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Period defines a length of time and amount of coins that will vest.
+//Period defines a length of time and amount of coins that will vest.
 type ContinuousVestingPeriod struct {
 	StartTime int64                                    `protobuf:"varint,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	EndTime   int64                                    `protobuf:"varint,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`

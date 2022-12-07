@@ -1,30 +1,29 @@
-package types_test
+package types
 
 import (
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgClaim_ValidateBasic(t *testing.T) {
+func TestMsgCreateAirdropCampaign_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  types.MsgClaim
+		msg  MsgCreateAirdropCampaign
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: types.MsgClaim{
-				Claimer: "invalid_address",
+			msg: MsgCreateAirdropCampaign{
+				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: types.MsgClaim{
-				Claimer: sample.AccAddress(),
+			msg: MsgCreateAirdropCampaign{
+				Creator: sample.AccAddress(),
 			},
 		},
 	}

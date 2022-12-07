@@ -16,6 +16,5 @@ var (
 	ErrInvalidAccountType              = sdkerrors.Register(C4eCodespace, 6, "invalid account type")
 	ErrParsing                         = sdkerrors.Register(C4eCodespace, 7, "failed to parse")
 	ErrParam                           = sdkerrors.Register(C4eCodespace, 8, "wrong param value")
-	ErrNotExists                  	   = sdkerrors.Register(C4eCodespace, 9, "entity does not exist")
-
+	ErrNotExists                       = sdkerrors.Register(C4eCodespace, 9, "entity does not exist")
 )

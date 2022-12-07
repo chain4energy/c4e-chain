@@ -11,7 +11,6 @@ import (
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 )
 
 func TestSinglePeriod(t *testing.T) {
@@ -30,10 +29,10 @@ func TestSinglePeriod(t *testing.T) {
 	for i := -10; i <= 150; i++ {
 		var checkTime time.Time
 		var vested sdk.Coins
-		checkTime = startTime.Add(time.Duration(i * 100) * time.Hour)
+		checkTime = startTime.Add(time.Duration(i*100) * time.Hour)
 		if i <= 0 {
 			vested = sdk.NewCoins()
-		} else if i >=100 {
+		} else if i >= 100 {
 			vested = sdk.NewCoins(periods[0].Amount...)
 		} else {
 			vested = sdk.NewCoins(sdk.NewCoin(periods[0].Amount[0].Denom, periods[0].Amount[0].Amount))
@@ -46,7 +45,7 @@ func TestSinglePeriod(t *testing.T) {
 		require.True(t, acc.DelegatedVesting.IsZero())
 	}
 
-	checkTime := startTime.Add(time.Duration(30 * 100) * time.Hour)
+	checkTime := startTime.Add(time.Duration(30*100) * time.Hour)
 	vested := sdk.NewCoins(sdk.NewCoin(periods[0].Amount[0].Denom, periods[0].Amount[0].Amount))
 	vested[0].Amount = vested[0].Amount.MulRaw(int64(30)).QuoRaw(100)
 	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(10000000))), sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(5000000))))
@@ -57,7 +56,7 @@ func TestSinglePeriod(t *testing.T) {
 	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(5000000)))))
 	require.True(t, acc.DelegatedFree.IsZero())
 
-	checkTime = startTime.Add(time.Duration(40 * 100) * time.Hour)
+	checkTime = startTime.Add(time.Duration(40*100) * time.Hour)
 	vested = sdk.NewCoins(sdk.NewCoin(periods[0].Amount[0].Denom, periods[0].Amount[0].Amount))
 	vested[0].Amount = vested[0].Amount.MulRaw(int64(40)).QuoRaw(100)
 	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(5000000))), sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(3000000))))
@@ -68,7 +67,7 @@ func TestSinglePeriod(t *testing.T) {
 	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(6000000)))))
 	require.True(t, acc.DelegatedFree.IsEqual(sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(2000000)))))
 
-	checkTime = startTime.Add(time.Duration(50 * 100) * time.Hour)
+	checkTime = startTime.Add(time.Duration(50*100) * time.Hour)
 	vested = sdk.NewCoins(sdk.NewCoin(periods[0].Amount[0].Denom, periods[0].Amount[0].Amount))
 	vested[0].Amount = vested[0].Amount.MulRaw(int64(50)).QuoRaw(100)
 	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(2000000))), sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(2000000))))
@@ -77,19 +76,18 @@ func TestSinglePeriod(t *testing.T) {
 	require.True(t, acc.LockedCoins(checkTime).IsZero())
 	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(6000000)))))
 	require.True(t, acc.DelegatedFree.IsEqual(sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(4000000)))))
-	
 
 }
 
 func TestMultiplePeriods(t *testing.T) {
 	shift := 50
-	timeShift := time.Duration(shift * 100) * time.Hour
+	timeShift := time.Duration(shift*100) * time.Hour
 	p1StartTime := time.Now()
 	p1EndTime := time.Now().Add(100 * 100 * time.Hour)
 	p2StartTime := p1StartTime.Add(timeShift)
 	p2EndTime := p1EndTime.Add(timeShift)
-	p3StartTime := p1StartTime.Add(2*timeShift)
-	p3EndTime := p1EndTime.Add(2*timeShift)
+	p3StartTime := p1StartTime.Add(2 * timeShift)
+	p3EndTime := p1EndTime.Add(2 * timeShift)
 	periods := types.ContinuousVestingPeriods{
 		{
 			Amount:    sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(10000000))),
@@ -113,28 +111,28 @@ func TestMultiplePeriods(t *testing.T) {
 	for i := -10; i <= 150; i++ {
 		var checkTime time.Time
 		var vested sdk.Coins
-		checkTime = p1StartTime.Add(time.Duration(i * 100) * time.Hour)
-		if i >=100 {
+		checkTime = p1StartTime.Add(time.Duration(i*100) * time.Hour)
+		if i >= 100 {
 			vested = vested.Add(periods[0].Amount...)
-		} else if i > 0{
+		} else if i > 0 {
 			periodVested := sdk.NewCoins(sdk.NewCoin(periods[0].Amount[0].Denom, periods[0].Amount[0].Amount))
 			periodVested[0].Amount = periodVested[0].Amount.MulRaw(int64(i)).QuoRaw(100)
 			vested = vested.Add(periodVested...)
 		}
 
-		if i >=100 + shift {
+		if i >= 100+shift {
 			vested = vested.Add(periods[1].Amount...)
-		} else if i > shift{
+		} else if i > shift {
 			periodVested := sdk.NewCoins(sdk.NewCoin(periods[1].Amount[0].Denom, periods[1].Amount[0].Amount))
-			periodVested[0].Amount = periodVested[0].Amount.MulRaw(int64(i-shift)).QuoRaw(100)
+			periodVested[0].Amount = periodVested[0].Amount.MulRaw(int64(i - shift)).QuoRaw(100)
 			vested = vested.Add(periodVested...)
 		}
 
-		if i >=100 + 2*shift {
+		if i >= 100+2*shift {
 			vested = vested.Add(periods[2].Amount...)
-		} else if i > 2*shift{
+		} else if i > 2*shift {
 			periodVested := sdk.NewCoins(sdk.NewCoin(periods[2].Amount[0].Denom, periods[2].Amount[0].Amount))
-			periodVested[0].Amount = periodVested[0].Amount.MulRaw(int64(i-2*shift)).QuoRaw(100)
+			periodVested[0].Amount = periodVested[0].Amount.MulRaw(int64(i - 2*shift)).QuoRaw(100)
 			vested = vested.Add(periodVested...)
 		}
 

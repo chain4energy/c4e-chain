@@ -11,7 +11,7 @@ var _ sdk.Msg = &MsgClaim{}
 
 func NewMsgClaim(claimer string, campaignId string, missionId string) *MsgClaim {
 	return &MsgClaim{
-		Claimer:   claimer,
+		Claimer:    claimer,
 		CampaignId: campaignId,
 		MissionId:  missionId,
 	}
