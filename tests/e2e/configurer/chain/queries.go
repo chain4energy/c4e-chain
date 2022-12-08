@@ -163,7 +163,7 @@ func (n *NodeConfig) QueryListSnapshots() ([]*tmabcitypes.Snapshot, error) {
 }
 
 func (n *NodeConfig) QueryVestingPools(address string) []*cfevestingmoduletypes.VestingPoolInfo {
-	path := "/c4e/vesting/vesting_pools/" + address
+	path := "/c4e/vesting/v1beta1/vesting_pools/" + address
 
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)
@@ -175,7 +175,7 @@ func (n *NodeConfig) QueryVestingPools(address string) []*cfevestingmoduletypes.
 }
 
 func (n *NodeConfig) QueryVestingTypes() []cfevestingmoduletypes.GenesisVestingType {
-	path := "/c4e/vesting/vesting_type"
+	path := "/c4e/vesting/v1beta1/vesting_type"
 
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)
