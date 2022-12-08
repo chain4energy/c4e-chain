@@ -18,21 +18,21 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/c4e/vesting/params";
+    option (google.api.http).get = "/c4e/vesting/v1beta1/params";
   }
   // Queries a list of VestingType items.
 	rpc VestingType(QueryVestingTypeRequest) returns (QueryVestingTypeResponse) {
-		option (google.api.http).get = "/c4e/vesting/vesting_type";
+		option (google.api.http).get = "/c4e/vesting/v1beta1/vesting_type";
 	}
 
 // Queries a list of Vesting items.
 	rpc VestingPools(QueryVestingPoolsRequest) returns (QueryVestingPoolsResponse) {
-		option (google.api.http).get = "/c4e/vesting/vesting_pools/{address}";
+		option (google.api.http).get = "/c4e/vesting/v1beta1/vesting_pools/{address}";
 	}
 
 // Queries a summary of the entire vesting.
 	rpc VestingsSummary(QueryVestingsSummaryRequest) returns (QueryVestingsSummaryResponse) {
-		option (google.api.http).get = "/c4e/vesting/summary";
+		option (google.api.http).get = "/c4e/vesting/v1beta1/summary";
 	}
 
 // this line is used by starport scaffolding # 2

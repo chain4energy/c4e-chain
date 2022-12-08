@@ -293,11 +293,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/distributor/params
+   * @request GET:/c4e/distributor/v1beta1/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfedistributorQueryParamsResponse, RpcStatus>({
-      path: `/c4e/distributor/params`,
+      path: `/c4e/distributor/v1beta1/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -309,11 +309,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryStates
    * @summary Queries a list of States items.
-   * @request GET:/c4e/distributor/states
+   * @request GET:/c4e/distributor/v1beta1/states
    */
   queryStates = (params: RequestParams = {}) =>
     this.request<CfedistributorQueryStatesResponse, RpcStatus>({
-      path: `/c4e/distributor/states`,
+      path: `/c4e/distributor/v1beta1/states`,
       method: "GET",
       format: "json",
       ...params,

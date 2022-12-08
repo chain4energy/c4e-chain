@@ -340,21 +340,6 @@ export default {
 		},
 		
 		
-		async sendMsgCreateAccount({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateAccount(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateAccount:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgCreateAccount:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		async sendMsgStoreSignature({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -385,20 +370,22 @@ export default {
 				}
 			}
 		},
-		
-		async MsgCreateAccount({ rootGetters }, { value }) {
+		async sendMsgCreateAccount({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateAccount(value)
-				return msg
+				const msg = await txClient.msgPublishReferencePayloadLink(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateAccount:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgCreateAccount:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
+		
 		async MsgStoreSignature({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -413,6 +400,19 @@ export default {
 			}
 		},
 		async MsgPublishReferencePayloadLink({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgPublishReferencePayloadLink(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgPublishReferencePayloadLink:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgCreateAccount({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
 				const msg = await txClient.msgPublishReferencePayloadLink(value)
