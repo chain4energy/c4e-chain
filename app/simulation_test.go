@@ -109,15 +109,6 @@ func BenchmarkSimTest(b *testing.B) {
 }
 
 func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *App, simParams simulation.Params) {
-	config, db, dir, _, _, err := simapp.SetupSimulation(dirPrevix, dbName)
-	require.NoError(tb, err, "simulation setup failed")
-
-	tb.Cleanup(func() {
-		db.Close()
-		err = os.RemoveAll(dir)
-		require.NoError(tb, err)
-	})
-
 	app, _, config, db := BaseSimulationSetup(tb, dirPrevix, dbName)
 
 	_, simParams, simErr := simulation.SimulateFromSeed(
@@ -132,7 +123,7 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 		app.AppCodec(),
 	)
 
-	err = simapp.CheckExportSimulation(app, config, simParams)
+	err := simapp.CheckExportSimulation(app, config, simParams)
 	require.NoError(tb, err)
 	require.NoError(tb, simErr)
 	if config.Commit {

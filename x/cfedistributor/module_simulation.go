@@ -1,6 +1,8 @@
 package cfedistributor
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 
@@ -36,9 +38,12 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	var subdistributors []types.SubDistributor
 	randDistinationType := RandomCollectorName(simState.Rand)
 	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(randDistinationType))
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationToPassAcoutSubDistr(randDistinationType))
+	if randDistinationType != subdistributortestutils.MainCollector {
+		subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationToPassAcoutSubDistr(randDistinationType))
+	}
 	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationSubDistributor(randDistinationType, true))
-
+	str, _ := json.Marshal(subdistributors)
+	fmt.Println(string(str))
 	genesisState.Params.SubDistributors = subdistributors
 	cfedistributorGenesis := types.GenesisState{
 		Params: types.NewParams(subdistributors),
