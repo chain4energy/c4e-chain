@@ -2,8 +2,14 @@ package cfedistributor
 
 import (
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/x/cfedistributor"
@@ -183,4 +189,28 @@ func (h *C4eDistributorUtils) InitGenesisError(ctx sdk.Context, genState cfedist
 		func() {
 			cfedistributor.InitGenesis(ctx, *h.helperCfedistributorKeeper, genState, h.helperAccountKeeper)
 		}, "")
+}
+
+var TestMaccPerms = map[string][]string{
+	authtypes.FeeCollectorName:       {authtypes.Burner},
+	distrtypes.ModuleName:            nil,
+	stakingtypes.BondedPoolName:      {authtypes.Burner, authtypes.Staking},
+	stakingtypes.NotBondedPoolName:   {authtypes.Burner, authtypes.Staking},
+	govtypes.ModuleName:              {authtypes.Burner},
+	ibctransfertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+	cfevestingmoduletypes.ModuleName: nil,
+	cfemintermoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+	// this line is used by starport scaffolding # stargate/app/maccPerms
+	cfedistributortypes.DistributorMainAccount:      {authtypes.Burner},
+	cfedistributortypes.ValidatorsRewardsCollector:  nil,
+	cfedistributortypes.GreenEnergyBoosterCollector: nil,
+	cfedistributortypes.GovernanceBoosterCollector:  nil,
+
+	"CUSTOM_ID":                 nil,
+	"CUSTOM_ID_custom_siffix_0": nil,
+	"CUSTOM_ID_custom_siffix_1": nil,
+	"CUSTOM_ID_custom_siffix_2": nil,
+	"CUSTOM_ID_custom_siffix_3": nil,
+	"CUSTOM_ID_custom_siffix_4": nil,
+	"CUSTOM_ID_custom_siffix_5": nil,
 }

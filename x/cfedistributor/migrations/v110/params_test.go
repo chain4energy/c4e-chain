@@ -1,6 +1,7 @@
 package v110_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
@@ -72,6 +73,16 @@ func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
 	MigrateParamsV101ToV110(t, ctx, testUtil, true)
 }
 
+func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
+	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
+	oldSubDistributors := []v101.SubDistributor{
+		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "WRONG_CUSTOM_ID"),
+	}
+
+	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV101ToV110(t, ctx, testUtil, true)
+}
+
 func setV101Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v101.SubDistributor) {
 	store := newStore(ctx, testUtil)
 	bz, err := codec.NewLegacyAmino().MarshalJSON(subdistributors)
@@ -89,6 +100,7 @@ func MigrateParamsV101ToV110(
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
 	wantError bool,
 ) {
+	types.SetMaccPerms(cfedistributor.TestMaccPerms)
 	var oldSubDistributors []v101.SubDistributor
 	store := newStore(ctx, testUtil)
 	distributors := store.Get(types.KeySubDistributors)
@@ -142,7 +154,7 @@ func createOldSubDistributor(
 	sources = append(sources, &mainAcc)
 	for i := 0; i < 5; i++ {
 		randomAccount := v101.Account{
-			Id:   id + "custom_siffix_" + strconv.Itoa(i),
+			Id:   id + "_custom_siffix_" + strconv.Itoa(i),
 			Type: sourceType,
 		}
 		sources = append(sources, &randomAccount)
@@ -154,7 +166,7 @@ func createOldSubDistributor(
 		share := v101.Share{
 			Name: helpers.RandStringOfLength(10),
 			Account: v101.Account{
-				Id:   id + "custom_siffix_" + strconv.Itoa(i),
+				Id:   id + "_custom_siffix_" + strconv.Itoa(i),
 				Type: destinationShareType,
 			},
 			Percent: sdk.NewDec(5),
