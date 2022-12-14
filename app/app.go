@@ -208,7 +208,7 @@ func init() {
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, "."+HomeName)
-	cfedistributormoduletypes.SetMaccPerms(maccPerms)
+	cfedistributormoduletypes.SetMaccPerms(maccPerms) // TODO: workaround, change the way maccPerms is passed when switching to the new way of storing parameters
 }
 
 // App extends an ABCI application, but with most of its parameters exported.
