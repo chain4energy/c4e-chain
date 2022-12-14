@@ -24,7 +24,7 @@ run_simulation(){
         simulationResultFileError=$simulationResultFile."ERROR"
         mv "$simulationResultFile" "$simulationResultFileError"
         echo "Error while running simulation"
-        curl -F file=@"$simulationResultFileError" -F "initial_comment=$START_TIME" -F channels=C049DAHR884 -H "Authorization: Bearer $SLACK_BOT_BEARER_TOKEN" https://slack.com/api/files.upload
+        curl -F file=@"$simulationResultFileError" -F "initial_comment=Error while running simulation $i at $START_TIME" -F channels=C049DAHR884 -H "Authorization: Bearer $SLACK_BOT_BEARER_TOKEN" https://slack.com/api/files.upload
     fi
     done
 }
@@ -36,6 +36,6 @@ done
 
 while true
   do
-    git pull
-    sleep 100 # 1 hour
+    git pull &
+    sleep 3600 # 1 hour
 done
