@@ -1,7 +1,7 @@
 package types_test
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
+	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,41 +10,32 @@ import (
 )
 
 func TestCheckAccountType(t *testing.T) {
-	types.SetMaccPerms(cfedistributor.TestMaccPerms)
+	cfedistributortestutils.SetTestMaccPerms()
 	tests := []struct {
 		name         string
 		account      types.Account
-		want         bool
 		errorMessage string
 	}{
-		{"Check base account", types.Account{Id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n", Type: types.BASE_ACCOUNT}, false, ""},
-		{"Check module account - account doesn't exist in maccPerms", types.Account{Id: "sample", Type: types.MODULE_ACCOUNT}, true, "module account \"sample\" doesn't exist in maccPerms"},
-		{"Check module account - account exists in maccPerms", types.Account{Id: "CUSTOM_ID", Type: types.MODULE_ACCOUNT}, false, ""},
-		{"Check internal account", types.Account{Id: "sample", Type: types.INTERNAL_ACCOUNT}, false, ""},
-		{"Check main account", types.Account{Id: "sample", Type: types.MAIN}, false, ""},
-		{"Check wrong account", types.Account{Id: "test", Type: "wrong_type"}, true, "account \"test\" is of the wrong type: wrong_type"},
+		{"Check base account", types.Account{Id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n", Type: types.BASE_ACCOUNT}, ""},
+		{"Check module account - account doesn't exist in maccPerms", types.Account{Id: "sample", Type: types.MODULE_ACCOUNT}, "module account \"sample\" doesn't exist in maccPerms"},
+		{"Check module account - account exists in maccPerms", types.Account{Id: "CUSTOM_ID", Type: types.MODULE_ACCOUNT}, ""},
+		{"Check internal account", types.Account{Id: "sample", Type: types.INTERNAL_ACCOUNT}, ""},
+		{"Check main account", types.Account{Id: "sample", Type: types.MAIN}, ""},
+		{"Check wrong account", types.Account{Id: "test", Type: "wrong_type"}, "account \"test\" is of the wrong type: wrong_type"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.account.Validate()
-			if tt.want {
-				if err == nil {
-					t.Errorf("Wanted error got nil")
-				}
-				if err.Error() != tt.errorMessage {
-					t.Errorf("Wanted error: %s , got %s", tt.errorMessage, err.Error())
-				}
-			} else {
-				if err != nil {
-					t.Errorf("Didn't want error got %v", err.Error())
-				}
+			if len(tt.errorMessage) > 0 {
+				require.Equal(t, err.Error(), tt.errorMessage)
+				return
 			}
+			require.NoError(t, err)
 		})
 	}
 }
 
 func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
-
 	shareEqual30 := types.DestinationShare{
 		Name:        "1",
 		Share:       sdk.MustNewDecFromStr("0.30"),
@@ -134,7 +125,6 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 }
 
 func TestValidateOrderOfMainSubDistributors(t *testing.T) {
-
 	var zeroSubDistributors []types.SubDistributor
 
 	onlyOneMainSubdistributor := []types.SubDistributor{
@@ -166,24 +156,23 @@ func TestValidateOrderOfMainSubDistributors(t *testing.T) {
 	tests := []struct {
 		name            string
 		subDistributors []types.SubDistributor
-		wantError       bool
+		errorMessage    string
 	}{
-		{"only one main subdistributor", onlyOneMainSubdistributor, false},
-		{"zero sub distributors", zeroSubDistributors, true},
-		{"wrong order destination main at the end", destinationMainAtTheEnd, true},
-		{"correct order source main at the end", sourceMainAtTheEnd, false},
-		{"wrong order destination main share at the end", destinationShareMainAtTheEnd, true},
-		{"correct order destination main share, source main at the end", destinationShareSourceMainAtTheEnd, false},
+		{"only one main subdistributor", onlyOneMainSubdistributor, ""},
+		{"zero sub distributors", zeroSubDistributors, "there must be at least one subdistributor with the source main type"},
+		{"wrong order destination main at the end", destinationMainAtTheEnd, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: MAIN"},
+		{"correct order source main at the end", sourceMainAtTheEnd, ""},
+		{"wrong order destination main share at the end", destinationShareMainAtTheEnd, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: MAIN"},
+		{"correct order destination main share, source main at the end", destinationShareSourceMainAtTheEnd, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			err := types.ValidateSubDistributors(tt.subDistributors)
-			if tt.wantError == true && err == nil {
-				t.Errorf("TestValidateOrderOfMainSubDistributors() wanted error got nil")
-			} else if tt.wantError == false && err != nil {
-				t.Errorf("TestValidateOrderOfMainSubDistributors() error: %v", err.Error())
+			if len(tt.errorMessage) > 0 {
+				require.Equal(t, err.Error(), tt.errorMessage)
+				return
 			}
+			require.NoError(t, err)
 		})
 	}
 }
@@ -232,30 +221,30 @@ func TestValidateOrderOfInternalSubDistributors(t *testing.T) {
 	tests := []struct {
 		name            string
 		subDistributors []types.SubDistributor
-		wantError       bool
+		errorMessage    string
 	}{
-		{"only one internal subdistributor", onlyOneInternalSubdistributor, true},
-		{"wrong order destination main at the end", destinationAtTheEnd, true},
-		{"wrong order destination internal at the end", destinationInternalAtTheEnd, true},
-		{"correct order source main at the end", sourceInternalAtTheEnd, false},
-		{"wrong order destination internal share at the end", destinationInternalShareAtTheEnd, true},
-		{"correct order destination internal share, source internal at the end, source main at the end", destinationShareSourceInternalAtTheEndSource, false},
-		{"correct order destination internal share, source internal at the end but no main source", destinationShareSourceInternalAtTheEndNoSource, true},
+		{"only one internal subdistributor", onlyOneInternalSubdistributor, "there must be at least one subdistributor with the source main type"},
+		{"wrong order destination main at the end", destinationAtTheEnd, "there must be at least one subdistributor with the source main type"},
+		{"wrong order destination internal at the end", destinationInternalAtTheEnd, "there must be at least one subdistributor with the source main type"},
+		{"correct order source main at the end", sourceInternalAtTheEnd, ""},
+		{"wrong order destination internal share at the end", destinationInternalShareAtTheEnd, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: INTERNAL_ACCOUNT-CUSTOM_ID-INTERNAL_ACCOUNT"},
+		{"correct order destination internal share, source internal at the end, source main at the end", destinationShareSourceInternalAtTheEndSource, ""},
+		{"correct order destination internal share, source internal at the end but no main source", destinationShareSourceInternalAtTheEndNoSource, "there must be at least one subdistributor with the source main type"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := types.ValidateSubDistributors(tt.subDistributors)
-			if tt.wantError == true && err == nil {
-				t.Errorf("TestValidateOrderOfInternalSubDistributors() wanted error got nil")
-
-			} else if tt.wantError == false && err != nil {
-				t.Errorf("TestValidateOrderOfInternalSubDistributors() error: %v", err.Error())
+			if len(tt.errorMessage) > 0 {
+				require.Equal(t, err.Error(), tt.errorMessage)
+				return
 			}
+			require.NoError(t, err)
 		})
 	}
 }
 
 func TestValidateUniquenessOfNames(t *testing.T) {
+
 	twoSubdistributorsUniqueNames := []types.SubDistributor{
 		CreateSubDistributor(MAIN_DESTINATION),
 		CreateSubDistributor(MAIN_DESTINATION_SHARE),
@@ -280,20 +269,53 @@ func TestValidateUniquenessOfNames(t *testing.T) {
 	tests := []struct {
 		name            string
 		subDistributors []types.SubDistributor
-		wantError       bool
+		errorMessage    string
 	}{
-		{"two subdistributors have unique names", twoSubdistributorsUniqueNames, false},
-		{"two subdistributors have same names", twoSubdistributorsSameNames, true},
-		{"two subdistributors have same share names", twoSubdistributorsSameShareNames, true},
+		{"two subdistributors have unique names", twoSubdistributorsUniqueNames, ""},
+		{"two subdistributors have same names", twoSubdistributorsSameNames, "subdistributor names must be unique, subdistributor name: " + twoSubdistributorsSameNames[1].Name},
+		{"two subdistributors have same share names", twoSubdistributorsSameShareNames, "subdistributor names must be unique, subdistributor name: " + twoSubdistributorsSameShareNames[1].Name},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := types.ValidateSubDistributors(tt.subDistributors)
-			if tt.wantError == true && err == nil {
-				t.Errorf("TestValidateUniquenessOfNames() wanted error got nil")
-			} else if tt.wantError == false && err != nil {
-				t.Errorf("TestValidateUniquenessOfNames() error: %v", err.Error())
+			if len(tt.errorMessage) > 0 {
+				require.Equal(t, err.Error(), tt.errorMessage)
+				return
 			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestValidateCorrectModuleAccountInsideSubdistributor(t *testing.T) {
+	cfedistributortestutils.SetTestMaccPerms()
+	correctPrimaryShareModuleAccount := createSubDistributor(types.MODULE_ACCOUNT, types.BASE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, false)
+	correctSourceModuleAccount := createSubDistributor(types.BASE_ACCOUNT, types.MODULE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, false)
+	correctShareModuleAccount := createSubDistributor(types.BASE_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, CUSTOM_ID, false)
+	wrongPrimaryShareModuleAccount := createSubDistributor(types.MODULE_ACCOUNT, types.BASE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, true)
+	wrongSourceModuleAccount := createSubDistributor(types.BASE_ACCOUNT, types.MODULE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, true)
+	wrongShareModuleAccount := createSubDistributor(types.BASE_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, CUSTOM_ID, true)
+
+	tests := []struct {
+		name            string
+		subDistributors types.SubDistributor
+		errorMessage    string
+	}{
+		{"correct primary share module account", correctPrimaryShareModuleAccount, ""},
+		{"correct source module account", correctSourceModuleAccount, ""},
+		{"correct share module account", correctShareModuleAccount, ""},
+		{"wrong primary share module account", wrongPrimaryShareModuleAccount, "module account \"CUSTOM_ID-mainDst\" doesn't exist in maccPerms"},
+		{"wrong source module account", wrongSourceModuleAccount, "module account \"CUSTOM_ID-src\" doesn't exist in maccPerms"},
+		{"wrong share module account", wrongShareModuleAccount, "module account \"CUSTOM_ID-shareDst\" doesn't exist in maccPerms"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.subDistributors.Validate()
+			if len(tt.errorMessage) > 0 {
+				require.Equal(t, tt.errorMessage, err.Error())
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }
@@ -331,8 +353,11 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 		for i := 0; i < 5; i++ {
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(MAIN_SOURCE))
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(INTERNAL_SOURCE))
-			expectedError := "same " + types.GetId(&types.Account{Type: accType, Id: CUSTOM_ID}) +
-				" account cannot occur twice within one subdistributor, subdistributor name: " + subDistributorCases[i][0].Name
+			accId := accType + "-" + CUSTOM_ID
+			if accType == types.MAIN {
+				accId = accType
+			}
+			expectedError := "same " + accId + " account cannot occur twice within one subdistributor, subdistributor name: " + subDistributorCases[i][0].Name
 
 			tests = append(tests, test{expectedError, subDistributorCases[i]})
 		}
@@ -341,9 +366,6 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.expectedError, func(t *testing.T) {
 			err := types.ValidateSubDistributors(tt.subDistributors)
-			if err == nil {
-				t.Errorf("TestValidateUniquenessOfSubdistributors() wanted error got nil")
-			}
 			require.EqualValues(t, tt.expectedError, err.Error())
 		})
 	}
@@ -360,7 +382,7 @@ func TestValidateUniquenessOfPrimaryShareNames(t *testing.T) {
 		subDistributor1 := createSubDistributor(CUSTOM_ACCOUNT, CUSTOM_ACCOUNT_2, accType, CUSTOM_ID, false)
 		subDistributor2 := createSubDistributor(CUSTOM_ACCOUNT, CUSTOM_ACCOUNT_2, accType, CUSTOM_ID, false)
 
-		nameWithPrefix := subDistributor2.Name + types.PrimaryShareNameSuffix
+		nameWithPrefix := subDistributor2.Name + "_primary"
 		subDistributor2.Destinations.Shares[0].Name = nameWithPrefix
 
 		subDistributors := []types.SubDistributor{
@@ -377,9 +399,6 @@ func TestValidateUniquenessOfPrimaryShareNames(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.expectedError, func(t *testing.T) {
 			err := types.ValidateSubDistributors(tt.subDistributors)
-			if err == nil {
-				t.Errorf("TestValidateUniquenessOfPrimaryShareNames() wanted error got nil")
-			}
 			require.EqualValues(t, tt.expectedError, err.Error())
 		})
 	}
@@ -390,7 +409,7 @@ var AccountTypes = []string{types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, types.
 const (
 	CUSTOM_ACCOUNT             = "CUSTOM_ACCOUNT"
 	CUSTOM_ACCOUNT_2           = "CUSTOM_ACCOUNT-2"
-	CUSTOM_ID                  = "custom_id"
+	CUSTOM_ID                  = "CUSTOM_ID"
 	MAIN_SOURCE                = "MAIN_SOURCE"
 	MAIN_DESTINATION           = "MAIN_DESTINATION"
 	MAIN_DESTINATION_SHARE     = "MAIN_DESTINATION_SHARE"
@@ -418,7 +437,7 @@ func CreateSubDistributor(accType string) types.SubDistributor {
 }
 
 func createSubDistributor(
-	destinationType string,
+	primaryShareType string,
 	sourceType string,
 	destinationShareType string,
 	Id string,
@@ -428,8 +447,8 @@ func createSubDistributor(
 		Name: helpers.RandStringOfLength(10),
 		Destinations: types.Destinations{
 			PrimaryShare: types.Account{
-				Id:   Id + GetIdSuffix("mainDst", destinationType, addIdSuffix),
-				Type: destinationType,
+				Id:   Id + GetIdSuffix("mainDst", primaryShareType, addIdSuffix),
+				Type: primaryShareType,
 			},
 			BurnShare: sdk.ZeroDec(),
 			Shares: []*types.DestinationShare{

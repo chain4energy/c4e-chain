@@ -7,7 +7,7 @@ import (
 )
 
 const maxShareSum = 1
-const PrimaryShareNameSuffix = "_primary"
+const primaryShareNameSuffix = "_primary"
 
 func (s SubDistributor) Validate() error {
 	if s.Destinations.CheckPercentShareSumIsBetween0And1() {
@@ -37,7 +37,7 @@ func (s SubDistributor) Validate() error {
 }
 
 func (s SubDistributor) GetPrimaryShareName() string {
-	return s.Name + PrimaryShareNameSuffix
+	return s.Name + primaryShareNameSuffix
 }
 
 func (destination Destinations) CheckPercentShareSumIsBetween0And1() bool {
@@ -150,7 +150,7 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 	return nil
 }
 
-func GetId(account *Account) string {
+func getId(account *Account) string {
 	if account.Type == MAIN {
 		return MAIN
 	}
@@ -162,7 +162,7 @@ func isAccountPositionValidatable(accType string) bool {
 }
 
 func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, position int, occuranceType string) error {
-	id := GetId(account)
+	id := getId(account)
 	currentPosition := position + 1
 	if lastOccurrenceIndex[id] == currentPosition {
 		return fmt.Errorf("same %s account cannot occur twice within one subdistributor, subdistributor name: %s",
@@ -185,6 +185,6 @@ func validateUniquenessOfNames(subDistributorName string, nameOccured *map[strin
 }
 
 func accountExistInMacPerms(accountId string) bool {
-	_, found := GetMaccPerms()[accountId]
+	_, found := maccPerms[accountId]
 	return found
 }

@@ -15,10 +15,6 @@ func SetMaccPerms(perms map[string][]string) {
 	maccPerms = perms
 }
 
-func GetMaccPerms() map[string][]string {
-	return maccPerms
-}
-
 var (
 	KeySubDistributors     = []byte("SubDistributors")
 	DefaultSubDistributors = []SubDistributor{

@@ -1,7 +1,7 @@
 package types_test
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
+	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestGenesisState_Validate(t *testing.T) {
-	types.SetMaccPerms(cfedistributor.TestMaccPerms)
+	cfedistributortestutils.SetTestMaccPerms()
 	for _, tc := range []struct {
 		desc     string
 		genState *types.GenesisState
@@ -30,7 +30,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-
 			err := tc.genState.Validate()
 			if tc.valid {
 				require.NoError(t, err)
