@@ -10,7 +10,7 @@ Apache-2.0](https://img.shields.io/github/license/chain4energy/c4e-chain?.svg?st
 
 ![Banner!](https://i.ibb.co/xSf0KDj/c4e-logo-light.png)
 
-Chain4Energy (C4E) is a sovereign global decentralized blockchain ecosystem. The Energy Marketplace which enables institutions and individuals to seamlessly participate in the renewable energy market accessing and offering a wide range of renewable energy solutions and services.
+Chain4Energy (C4E) is a sovereign global decentralized blockchain built on Cosmos SDK. The Decentralized Energy Marketplace which enables institutions and individuals to seamlessly participate in the renewable energy market accessing and offering a wide range of renewable energy solutions and services.
 Chain4Energy brings the energy industry to Web 3 by responding to the requirements and needs of all participants and enabling the effective creation and distribution of value. Blockchain removes delays, gets the right information to the right place, and eliminates the possibility of fraud and manipulation. It also enables P2P energy trading (without intermediaries), and thus effectively, between energy market participants.
 
 ![Banner!](./assets/banner.jpg)
@@ -18,7 +18,7 @@ Chain4Energy brings the energy industry to Web 3 by responding to the requiremen
 ## Documentation
 
 For the most up to date documentation please visit
-[docs.chain4energy.org](https://docs.chain4energy.org/)
+[docs.c4e.io](https://docs.c4e.io)
 
 ## Other Resources
 
