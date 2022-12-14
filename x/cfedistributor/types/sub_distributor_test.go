@@ -366,6 +366,9 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.expectedError, func(t *testing.T) {
 			err := types.ValidateSubDistributors(tt.subDistributors)
+			if err == nil {
+				t.Errorf("TestValidateUniquenessOfSubdistributors() wanted error got nil")
+			}
 			require.EqualValues(t, tt.expectedError, err.Error())
 		})
 	}
@@ -399,6 +402,9 @@ func TestValidateUniquenessOfPrimaryShareNames(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.expectedError, func(t *testing.T) {
 			err := types.ValidateSubDistributors(tt.subDistributors)
+			if err == nil {
+				t.Errorf("TestValidateUniquenessOfPrimaryShareNames() wanted error got nil")
+			}
 			require.EqualValues(t, tt.expectedError, err.Error())
 		})
 	}
