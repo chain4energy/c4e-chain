@@ -35,19 +35,18 @@ func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
 		subDistributorSourceMain,
 	}
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, false)
+	MigrateParamsV101ToV110(t, ctx, testUtil, "")
 }
 
 func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
 	oldSubDistributors := []v101.SubDistributor{
 		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.MAIN, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true)
+	MigrateParamsV101ToV110(t, ctx, testUtil, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: MAIN")
 }
 
 func TestMigrationSubDistributorsDuplicates(t *testing.T) {
@@ -58,7 +57,7 @@ func TestMigrationSubDistributorsDuplicates(t *testing.T) {
 		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID"),
 	}
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true)
+	MigrateParamsV101ToV110(t, ctx, testUtil, "same MAIN account cannot occur twice within one subdistributor, subdistributor name: "+oldSubDistributors[2].Name)
 }
 
 func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
@@ -70,7 +69,7 @@ func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true)
+	MigrateParamsV101ToV110(t, ctx, testUtil, "account \"CUSTOM_ID\" is of the wrong type: WRONG_ACCOUNT_TYPE")
 }
 
 func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
@@ -80,7 +79,7 @@ func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true)
+	MigrateParamsV101ToV110(t, ctx, testUtil, "module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
 }
 
 func setV101Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v101.SubDistributor) {
@@ -98,9 +97,9 @@ func MigrateParamsV101ToV110(
 	t *testing.T,
 	ctx sdk.Context,
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
-	wantError bool,
+	errorMessage string,
 ) {
-	types.SetMaccPerms(cfedistributor.TestMaccPerms)
+	types.SetMaccPerms(cfedistributor.GetTestMaccPerms())
 	var oldSubDistributors []v101.SubDistributor
 	store := newStore(ctx, testUtil)
 	distributors := store.Get(types.KeySubDistributors)
@@ -108,8 +107,8 @@ func MigrateParamsV101ToV110(
 	require.NoError(t, err)
 
 	err = v110.MigrateParams(ctx, &testUtil.Subspace)
-	if wantError {
-		require.Error(t, err)
+	if len(errorMessage) > 0 {
+		require.Equal(t, err.Error(), errorMessage)
 		return
 	}
 	require.NoError(t, err)

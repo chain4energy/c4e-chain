@@ -75,7 +75,7 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, Additional
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
-	types.SetMaccPerms(cfedistributortestutils.TestMaccPerms)
+	cfedistributortestutils.SetTestMaccPerms()
 
 	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())
