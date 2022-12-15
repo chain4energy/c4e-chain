@@ -157,7 +157,7 @@ test-e2e-vesting: e2e-setup
 test-e2e-params-change: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestParamsChangeSuite
 
-SPECIFIC_TEST_NAME=TestMinterAndDistributorParamsChangeProposal
+SPECIFIC_TEST_NAME=TestMinterAndDistributorParamsChangeMainnetConfiguration
 test-e2e-run-specific-test: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 

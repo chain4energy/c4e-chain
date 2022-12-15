@@ -14,33 +14,75 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type Params struct {
+	Key      string `json:"key"`
+	Subspace string `json:"subspace"`
+	Value    string `json:"value"`
+}
+
 // QueryParams extracts the params for a given subspace and key. This is done generically via json to avoid having to
 // specify the QueryParamResponse type (which may not exist for all params).
-func (n *NodeConfig) QueryParams(subspace, key string, result any) {
+func (n *NodeConfig) QueryParams(subspace, key string, moduleParams *Params) {
 	cmd := []string{"c4ed", "query", "params", "subspace", subspace, key, "--output=json"}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
 
-	err = json.Unmarshal(out.Bytes(), &result)
+	err = json.Unmarshal(out.Bytes(), &moduleParams)
 
 	require.NoError(n.t, err)
 }
 
 func (n *NodeConfig) ValidateParams(oldParams []byte, subspace, key string) bool {
-	type Params struct {
-		Key      string `json:"key"`
-		Subspace string `json:"subspace"`
-		Value    string `json:"value"`
-	}
-
 	var moduleParams Params
-
 	n.QueryParams(subspace, key, &moduleParams)
+
 	return moduleParams.Value == string(oldParams)
 }
 
 func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
+	n.LogActionF("submitting param change proposal %s", proposalJson)
+	wd, err := os.Getwd()
+	require.NoError(n.t, err)
+	localProposalFile := wd + "/scripts/param_change_proposal.json"
+	f, err := os.Create(localProposalFile)
+	require.NoError(n.t, err)
+	_, err = f.WriteString(proposalJson)
+	require.NoError(n.t, err)
+	err = f.Close()
+	require.NoError(n.t, err)
+
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+
+	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	err = os.Remove(localProposalFile)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully submitted param change proposal")
+}
+
+func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, errorMessage string) {
+	n.LogActionF("submitting param change proposal %s", proposalJson)
+	wd, err := os.Getwd()
+	require.NoError(n.t, err)
+	localProposalFile := wd + "/scripts/param_change_proposal.json"
+	f, err := os.Create(localProposalFile)
+	require.NoError(n.t, err)
+	_, err = f.WriteString(proposalJson)
+	require.NoError(n.t, err)
+	err = f.Close()
+	require.NoError(n.t, err)
+
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+
+	_, _, err = n.containerManager.ExecTxCmdWithSuccessString(n.t, n.chainId, n.Name, cmd, errorMessage)
+	require.NoError(n.t, err)
+	err = os.Remove(localProposalFile)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) SubmitParamChangeProposalRequireError(proposalJson, from string) {
 	n.LogActionF("submitting param change proposal %s", proposalJson)
 	wd, err := os.Getwd()
 	require.NoError(n.t, err)

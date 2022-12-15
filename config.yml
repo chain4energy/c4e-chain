@@ -112,19 +112,19 @@ genesis:
         minter_config:
           start_time: "2022-07-05T00:00:00.00000000Z"
           minters:
-          - sequence_id: 1
-            type: "EXPONENTIAL_STEP_MINTING"
-            exponential_step_minting:
-              step_duration: "126144000s" # 4 years - 365*24*3600*4
-              amount: "160000000000000"
-              amount_multiplier: "0.5"
-            # - SequenceId: 1
-            #   period_end: "2024-03-30T00:00:00.00000000Z"
-            #   type: "TIME_LINEAR_MINTER"
-            #   time_linear_minter:
-            #     amount: "40000000000000"
-            # - SequenceId: 2
-            #   type: "NO_MINTING"
+            - sequence_id: 1
+              type: "EXPONENTIAL_STEP_MINTING"
+              exponential_step_minting:
+                step_duration: "126144000s" # 4 years - 365*24*3600*4
+                amount: "160000000000000"
+                amount_multiplier: "0.5"
+              # - SequenceId: 1
+              #   period_end: "2024-03-30T00:00:00.00000000Z"
+              #   type: "TIME_LINEAR_MINTER"
+              #   time_linear_minter:
+              #     amount: "40000000000000"
+              # - SequenceId: 2
+              #   type: "NO_MINTING"
 
       minter_state:
         sequence_id: 1
@@ -132,58 +132,58 @@ genesis:
     cfedistributor:
       params:
         sub_distributors:
-        - name: tx_fee_distributor
-          sources:
-            - id: fee_collector
-              type: MODULE_ACCOUNT
-          destinations:
-            primary_share:
-              id: "c4e_distributor"
-              type: MAIN
-            burn_share: "0"
+          - name: tx_fee_distributor
+            sources:
+              - id: fee_collector
+                type: MODULE_ACCOUNT
+            destinations:
+              primary_share:
+                id: "c4e_distributor"
+                type: MAIN
+              burn_share: "0"
 
-        - name: inflation_and_fee_distributor
-          sources:
-            - id: c4e_distributor
-              type: MAIN
-          destinations:
-            primary_share:
-              id: "validators_rewards_collector"
-              type: MODULE_ACCOUNT
-            burn_share: "0.05"
-            shares:
-              - name: development_fund
-                share: "0.05"
-                destination:
-                  #Proper development fund account
-                  id: "c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl"
-                  type: BASE_ACCOUNT
-              - name: usage_incentives
-                share: "0.35"
-                destination:
-                  id: "usage_incentives_collector"
-                  type: INTERNAL_ACCOUNT
-        - name: usage_incentives_distributor
-          sources:
-            - id: usage_incentives_collector
-              type: INTERNAL_ACCOUNT
-          destinations:
-            burn_share: "0"
-            primary_share:
-              #LP Providers proper address
-              id: "c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph"
-              type: BASE_ACCOUNT
-            shares:
-              - name: green_energy_booster
-                share: "0.34"
-                destination:
-                  id: "green_energy_booster_collector"
-                  type: MODULE_ACCOUNT
-              - name: governance_booster
-                share: "0.33"
-                destination:
-                  id: "governance_booster_collector"
-                  type: MODULE_ACCOUNT
+          - name: inflation_and_fee_distributor
+            sources:
+              - id: c4e_distributor
+                type: MAIN
+            destinations:
+              primary_share:
+                id: "validators_rewards_collector"
+                type: MODULE_ACCOUNT
+              burn_share: "0.05"
+              shares:
+                - name: development_fund
+                  share: "0.05"
+                  destination:
+                    #Proper development fund account
+                    id: "c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl"
+                    type: BASE_ACCOUNT
+                - name: usage_incentives
+                  share: "0.35"
+                  destination:
+                    id: "usage_incentives_collector" #c4e17uu8ruy0jc3rjdypdeq6c8uqzv9jqgzvx292ra
+                    type: INTERNAL_ACCOUNT
+          - name: usage_incentives_distributor
+            sources:
+              - id: usage_incentives_collector #c4e17uu8ruy0jc3rjdypdeq6c8uqzv9jqgzvx292ra
+                type: INTERNAL_ACCOUNT
+            destinations:
+              burn_share: "0"
+              primary_share:
+                #LP Providers proper address
+                id: "c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph"
+                type: BASE_ACCOUNT
+              shares:
+                - name: green_energy_booster
+                  share: "0.34"
+                  destination:
+                    id: "green_energy_booster_collector" #c4e16r2tvpquak29tq3jpc5872upz9mvtr8aal58zk
+                    type: MODULE_ACCOUNT
+                - name: governance_booster
+                  share: "0.33"
+                  destination:
+                    id: "governance_booster_collector" #c4e17hjqm36lerxsgvz6a0e6r08yjl2e9fdr059nw2
+                    type: MODULE_ACCOUNT
     cfevesting:
       params:
         denom: "uc4e"
