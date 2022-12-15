@@ -73,13 +73,13 @@ func MigrateStoreV101ToV110(
 	t *testing.T,
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
 	ctx sdk.Context,
-	wantError bool,
+	expectError bool,
 ) {
 	store := prefix.NewStore(ctx.KVStore(testUtil.StoreKey), v101.RemainsKeyPrefix)
 	oldStates := GetAllV101States(store, testUtil.Cdc)
 
 	err := v110.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)
-	if wantError {
+	if expectError {
 		require.Error(t, err)
 		return
 	}

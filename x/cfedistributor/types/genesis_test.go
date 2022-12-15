@@ -11,31 +11,31 @@ import (
 func TestGenesisState_Validate(t *testing.T) {
 	cfedistributortestutils.SetTestMaccPerms()
 	for _, tc := range []struct {
-		desc     string
-		genState *types.GenesisState
-		valid    bool
+		desc        string
+		genState    *types.GenesisState
+		expectError bool
 	}{
 		{
-			desc:     "default is valid",
-			genState: types.DefaultGenesis(),
-			valid:    true,
+			desc:        "default is valid",
+			genState:    types.DefaultGenesis(),
+			expectError: false,
 		},
 		{
-			desc:     "invalid genesis state - there must be at least one subdistributor with the source main type",
+			desc:     "invalid genesis state - there must be at least one  subdistributor with the source main type",
 			genState: &types.GenesisState{
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
-			valid: false,
+			expectError: true,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			err := tc.genState.Validate()
-			if tc.valid {
-				require.NoError(t, err)
-			} else {
+			if tc.expectError {
 				require.Error(t, err)
+				return
 			}
+			require.NoError(t, err)
 		})
 	}
 }
