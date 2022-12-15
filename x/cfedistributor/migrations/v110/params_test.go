@@ -1,13 +1,14 @@
 package v110_test
 
 import (
+	"strconv"
+
 	"github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
+	v101 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
+	v110 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/stretchr/testify/require"
-	"strconv"
 
 	"testing"
 
@@ -35,7 +36,7 @@ func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
 		subDistributorSourceMain,
 	}
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, "")
+	MigrateParamsV101ToV110(t, ctx, testUtil, false, "")
 }
 
 func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
@@ -46,7 +47,7 @@ func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: MAIN")
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: MAIN")
 }
 
 func TestMigrationSubDistributorsDuplicates(t *testing.T) {
@@ -57,7 +58,7 @@ func TestMigrationSubDistributorsDuplicates(t *testing.T) {
 		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID"),
 	}
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, "same MAIN account cannot occur twice within one subdistributor, subdistributor name: "+oldSubDistributors[2].Name)
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "same MAIN account cannot occur twice within one subdistributor, subdistributor name: "+oldSubDistributors[2].Name)
 }
 
 func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
@@ -69,7 +70,7 @@ func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, "account \"CUSTOM_ID\" is of the wrong type: WRONG_ACCOUNT_TYPE")
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "account \"CUSTOM_ID\" is of the wrong type: WRONG_ACCOUNT_TYPE")
 }
 
 func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
@@ -79,7 +80,7 @@ func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, "module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
 }
 
 func setV101Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v101.SubDistributor) {
@@ -97,7 +98,7 @@ func MigrateParamsV101ToV110(
 	t *testing.T,
 	ctx sdk.Context,
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
-	errorMessage string,
+	expectError bool, errorMessage string,
 ) {
 	types.SetMaccPerms(cfedistributor.GetTestMaccPerms())
 	var oldSubDistributors []v101.SubDistributor
@@ -107,8 +108,8 @@ func MigrateParamsV101ToV110(
 	require.NoError(t, err)
 
 	err = v110.MigrateParams(ctx, &testUtil.Subspace)
-	if len(errorMessage) > 0 {
-		require.Equal(t, err.Error(), errorMessage)
+	if expectError {
+		require.EqualError(t, err, errorMessage)
 		return
 	}
 	require.NoError(t, err)
