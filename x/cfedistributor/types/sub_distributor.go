@@ -6,12 +6,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-const maxShareSum = 1
+const maxShare = 1
 const primaryShareNameSuffix = "_primary"
 
 func (s SubDistributor) Validate() error {
-	if s.Destinations.CheckPercentShareSumIsBetween0And1() {
-		return fmt.Errorf("share sum must be between 0 and 1")
+	if err := s.Destinations.Validate(s.GetPrimaryShareName()); err != nil {
+		return err
 	}
 
 	if err := s.Destinations.PrimaryShare.Validate(); err != nil {
@@ -24,15 +24,6 @@ func (s SubDistributor) Validate() error {
 		}
 	}
 
-	for _, share := range s.Destinations.Shares {
-		if err := share.Destination.Validate(); err != nil {
-			return err
-		}
-		if share.Name == s.GetPrimaryShareName() {
-			return fmt.Errorf("share name: %s is reserved for primary share", share.Name)
-		}
-	}
-
 	return nil
 }
 
@@ -40,7 +31,28 @@ func (s SubDistributor) GetPrimaryShareName() string {
 	return s.Name + primaryShareNameSuffix
 }
 
-func (destination Destinations) CheckPercentShareSumIsBetween0And1() bool {
+func (destination Destinations) Validate(primaryShareName string) error {
+	if destination.BurnShare.IsNil() {
+		return fmt.Errorf("burn share is nil")
+	}
+	if destination.BurnShare.GTE(sdk.NewDec(maxShare)) || destination.BurnShare.IsNegative() {
+		return fmt.Errorf("burn share < 0")
+	}
+
+	for _, destinationShare := range destination.Shares {
+		if err := destinationShare.Validate(primaryShareName); err != nil {
+			return err
+		}
+	}
+
+	if destination.checkPercentShareSumIsBetween0And1() {
+		return fmt.Errorf("share sum must be between 0 and 1")
+	}
+
+	return nil
+}
+
+func (destination Destinations) checkPercentShareSumIsBetween0And1() bool {
 	shares := destination.Shares
 	shareSum := sdk.ZeroDec()
 	for _, share := range shares {
@@ -51,7 +63,22 @@ func (destination Destinations) CheckPercentShareSumIsBetween0And1() bool {
 		shareSum = shareSum.Add(destination.BurnShare)
 	}
 
-	return shareSum.GTE(sdk.NewDec(maxShareSum)) || shareSum.IsNegative()
+	return shareSum.GTE(sdk.NewDec(maxShare)) || shareSum.IsNegative()
+}
+
+func (destinationShare DestinationShare) Validate(primaryShareName string) error {
+	if destinationShare.Share.GTE(sdk.NewDec(maxShare)) || destinationShare.Share.IsNegative() {
+		return fmt.Errorf("destiantion share < 0")
+	}
+
+	if err := destinationShare.Destination.Validate(); err != nil {
+		return err
+	}
+	if destinationShare.Name == primaryShareName {
+		return fmt.Errorf("share name: %s is reserved for primary share", destinationShare.Name)
+	}
+
+	return nil
 }
 
 func (s State) StateIdString() string {
@@ -119,6 +146,7 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.PrimaryShare, i, DESTINATION); err != nil {
 			return err
 		}
+
 		if err = validateUniquenessOfNames(subDistributors[i].GetPrimaryShareName(), &shareNameOccured); err != nil {
 			return err
 		}
@@ -188,3 +216,13 @@ func accountExistInMacPerms(accountId string) bool {
 	_, found := maccPerms[accountId]
 	return found
 }
+
+//
+//Name nie może być  "",
+//Source musi być co najmniej jeden i żaden nie może być nullem
+//Destinations ma jeden
+//Shares może być puste ale nie moze mieć nuli
+//Name nie pusty,
+//Burn share i share między 0 i 1 osobno
+// wszystkie inty i dec sprawdzać czy isNil
+// mintery czy null w tablicy

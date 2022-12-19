@@ -86,7 +86,7 @@ func validateMinters(v interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", minterConfig)
 	}
-	err := minterConfig.ValidateMinters()
+	err := minterConfig.ValidateMinterConfig()
 	if err != nil {
 		return err
 	}

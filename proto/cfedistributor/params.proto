@@ -9,6 +9,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-  repeated SubDistributor sub_distributors = 1         [(gogoproto.nullable) = false];
-
+  repeated SubDistributor sub_distributors = 1 [
+    (gogoproto.nullable) = false
+  ];
 }

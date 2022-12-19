@@ -163,6 +163,54 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			valid: true,
 		},
+		{
+			desc: "invalid genesis state - wrong minter state - RemainderFromPreviousPeriod is nil",
+			genState: &types.GenesisState{
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
+				MinterState: types.MinterState{
+					SequenceId:                  2,
+					AmountMinted:                sdk.NewInt(100),
+					RemainderToMint:             sdk.MustNewDecFromStr("324.543"),
+					LastMintBlockTime:           time.Now(),
+					RemainderFromPreviousPeriod: sdk.Dec{},
+				},
+				// this line is used by starport scaffolding # types/genesis/validField
+			},
+			valid:        false,
+			errorMassage: "minter state reminder from previous period cannot be nil",
+		},
+		{
+			desc: "invalid genesis state - wrong minter state - RemainderToMint is nil",
+			genState: &types.GenesisState{
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
+				MinterState: types.MinterState{
+					SequenceId:                  2,
+					AmountMinted:                sdk.NewInt(100),
+					RemainderToMint:             sdk.Dec{},
+					LastMintBlockTime:           time.Now(),
+					RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("324.543"),
+				},
+				// this line is used by starport scaffolding # types/genesis/validField
+			},
+			valid:        false,
+			errorMassage: "minter state reminder to mint cannot be nil",
+		},
+		{
+			desc: "invalid genesis state - wrong minter state - AmountMinted is nil",
+			genState: &types.GenesisState{
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
+				MinterState: types.MinterState{
+					SequenceId:                  2,
+					AmountMinted:                sdk.Int{},
+					RemainderToMint:             sdk.MustNewDecFromStr("324.543"),
+					LastMintBlockTime:           time.Now(),
+					RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("324.543"),
+				},
+				// this line is used by starport scaffolding # types/genesis/validField
+			},
+			valid:        false,
+			errorMassage: "minter state amount cannot be nil",
+		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {

@@ -17,12 +17,18 @@ const ( // MintingPeriod types
 	EXPONENTIAL_STEP_MINTING string = "EXPONENTIAL_STEP_MINTING"
 )
 
-func (params MinterConfig) ValidateMinters() error {
-	sort.Sort(BySequenceId(params.Minters))
+func (params MinterConfig) ValidateMinterConfig() error {
 	if len(params.Minters) < 1 {
 		return fmt.Errorf("no minters defined")
 	}
 
+	for _, minter := range params.Minters {
+		if minter == nil {
+			return fmt.Errorf("minter cannot be nil")
+		}
+	}
+
+	sort.Sort(BySequenceId(params.Minters))
 	lastPos := len(params.Minters) - 1
 	id := uint32(0)
 	for i, minter := range params.Minters {
@@ -183,6 +189,10 @@ func (m *LinearMinting) amountToMint(minterStart time.Time, EndTime time.Time, b
 }
 
 func (m LinearMinting) validate(id uint32) error {
+	if m.Amount.IsNil() {
+		return fmt.Errorf("minter sequence id: %d - LinearMinting amount cannot be nil", id)
+	}
+
 	if m.Amount.IsNegative() {
 		return fmt.Errorf("minter sequence id: %d - LinearMinting amount cannot be less than 0", id)
 
@@ -237,9 +247,22 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 }
 
 func (m ExponentialStepMinting) validate(id uint32) error {
-	if m.Amount.IsNegative() {
-		return fmt.Errorf("minter sequence id: %d - ExponentialStepMinting Amount cannot be less than 0", id)
+	if m.Amount.IsNil() {
+		return fmt.Errorf("minter sequence id: %d - ExponentialStepMinting amount cannot be nil", id)
 	}
+
+	if m.Amount.IsNegative() {
+		return fmt.Errorf("minter sequence id: %d - ExponentialStepMinting amount cannot be less than 0", id)
+	}
+
+	if m.AmountMultiplier.IsNil() {
+		return fmt.Errorf("minter sequence id: %d - ExponentialStepMinting AmountMultiplier cannot be nil", id)
+	}
+
+	if m.AmountMultiplier.IsNegative() {
+		return fmt.Errorf("minter sequence id: %d - ExponentialStepMinting AmountMultiplier cannot be less than 0", id)
+	}
+
 	if m.StepDuration <= 0 {
 		return fmt.Errorf("minter sequence id: %d - ExponentialStepMinting StepDuration must be bigger than 0", id)
 	}
@@ -270,22 +293,35 @@ func (m *ExponentialStepMinting) calculateInflation(totalSupply sdk.Int, startTi
 	if numOfPassedEpochs > 0 {
 		epochAmount = epochAmount.Mul(m.AmountMultiplier)
 	}
+
 	mintedYearly := epochAmount.MulInt64(int64(year)).QuoInt64(epoch)
 	return mintedYearly.QuoInt(totalSupply)
 }
 
 func (m MinterState) Validate() error {
+	if m.AmountMinted.IsNil() {
+		return fmt.Errorf("minter state amount cannot be nil")
+	}
+
 	if m.AmountMinted.IsNegative() {
 		return fmt.Errorf("minter state amount cannot be less than 0")
-
 	}
+
+	if m.RemainderFromPreviousPeriod.IsNil() {
+		return fmt.Errorf("minter state reminder from previous period cannot be nil")
+	}
+
 	if m.RemainderFromPreviousPeriod.IsNegative() {
 		return fmt.Errorf("minter remainder from previous period amount cannot be less than 0")
-
 	}
+
+	if m.RemainderToMint.IsNil() {
+		return fmt.Errorf("minter state reminder to mint cannot be nil")
+	}
+
 	if m.RemainderToMint.IsNegative() {
 		return fmt.Errorf("minter remainder to mint amount cannot be less than 0")
-
 	}
+
 	return nil
 }

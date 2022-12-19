@@ -17,7 +17,9 @@ message MinterConfig {
 
 message Minter {
   uint32 sequence_id = 1;
-  google.protobuf.Timestamp end_time = 2 [(gogoproto.stdtime) = true];
+  google.protobuf.Timestamp end_time = 2 [
+    (gogoproto.stdtime) = true
+  ];
   // types:
   //   NO_MINTING;
   //   LINEAR_MINTING;
@@ -28,13 +30,25 @@ message Minter {
 }
 
 message LinearMinting {
-  string amount = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string amount = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
 }
 
 message ExponentialStepMinting {
-  string amount = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-  google.protobuf.Duration step_duration = 1 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
-  string amount_multiplier = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  google.protobuf.Duration step_duration = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
+  string amount_multiplier = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
 }
 
 message MinterState {
