@@ -36,7 +36,9 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	var subdistributors []types.SubDistributor
 	randDistinationType := RandomCollectorName(simState.Rand)
 	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(randDistinationType))
-	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationToPassAcoutSubDistr(randDistinationType))
+	if randDistinationType != subdistributortestutils.MainCollector {
+		subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationToPassAcoutSubDistr(randDistinationType))
+	}
 	subdistributors = append(subdistributors, subdistributortestutils.PrepareInflationSubDistributor(randDistinationType, true))
 
 	genesisState.Params.SubDistributors = subdistributors

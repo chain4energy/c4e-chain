@@ -9,6 +9,12 @@ import (
 
 var _ paramtypes.ParamSet = (*Params)(nil)
 
+var maccPerms map[string][]string
+
+func SetMaccPerms(perms map[string][]string) {
+	maccPerms = perms
+}
+
 var (
 	KeySubDistributors     = []byte("SubDistributors")
 	DefaultSubDistributors = []SubDistributor{

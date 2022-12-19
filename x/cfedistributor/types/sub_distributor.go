@@ -10,20 +10,23 @@ const maxShareSum = 1
 const primaryShareNameSuffix = "_primary"
 
 func (s SubDistributor) Validate() error {
-
 	if s.Destinations.CheckPercentShareSumIsBetween0And1() {
 		return fmt.Errorf("share sum must be between 0 and 1")
 	}
 
+	if err := s.Destinations.PrimaryShare.Validate(); err != nil {
+		return err
+	}
+
 	for _, source := range s.Sources {
-		if !source.Validate() {
-			return fmt.Errorf("the source account is of the wrong type: %s", source.String())
+		if err := source.Validate(); err != nil {
+			return err
 		}
 	}
 
 	for _, share := range s.Destinations.Shares {
-		if !share.Destination.Validate() {
-			return fmt.Errorf("the destination account is of the wrong type: %s", share.Destination.String())
+		if err := share.Destination.Validate(); err != nil {
+			return err
 		}
 		if share.Name == s.GetPrimaryShareName() {
 			return fmt.Errorf("share name: %s is reserved for primary share", share.Name)
@@ -52,7 +55,6 @@ func (destination Destinations) CheckPercentShareSumIsBetween0And1() bool {
 }
 
 func (s State) StateIdString() string {
-
 	if s.Burn {
 		return BURN
 	} else if s.Account != nil && s.Account.Type == MAIN {
@@ -77,12 +79,17 @@ const (
 	SOURCE          = "SOURCE"
 )
 
-func (account Account) Validate() bool {
+func (account Account) Validate() error {
 	switch account.Type {
-	case INTERNAL_ACCOUNT, MODULE_ACCOUNT, MAIN, BASE_ACCOUNT:
-		return true
+	case INTERNAL_ACCOUNT, MAIN, BASE_ACCOUNT:
+		return nil
+	case MODULE_ACCOUNT:
+		if !accountExistInMacPerms(account.Id) {
+			return fmt.Errorf("module account \"%s\" doesn't exist in maccPerms", account.Id)
+		}
+		return nil
 	default:
-		return false
+		return fmt.Errorf("account \"%s\" is of the wrong type: %s", account.Id, account.Type)
 	}
 }
 
@@ -175,4 +182,9 @@ func validateUniquenessOfNames(subDistributorName string, nameOccured *map[strin
 	(*nameOccured)[subDistributorName] = true
 
 	return nil
+}
+
+func accountExistInMacPerms(accountId string) bool {
+	_, found := maccPerms[accountId]
+	return found
 }

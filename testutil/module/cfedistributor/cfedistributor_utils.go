@@ -1,9 +1,9 @@
 package cfedistributor
 
 import (
+	c4eapp "github.com/chain4energy/c4e-chain/app"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/x/cfedistributor"
@@ -183,4 +183,19 @@ func (h *C4eDistributorUtils) InitGenesisError(ctx sdk.Context, genState cfedist
 		func() {
 			cfedistributor.InitGenesis(ctx, *h.helperCfedistributorKeeper, genState, h.helperAccountKeeper)
 		}, "")
+}
+
+func GetTestMaccPerms() map[string][]string {
+	maccPerms := c4eapp.GetMaccPerms()
+	maccPerms["CUSTOM_ID"] = nil
+	maccPerms["CUSTOM_ID_custom_siffix_0"] = nil
+	maccPerms["CUSTOM_ID_custom_siffix_1"] = nil
+	maccPerms["CUSTOM_ID_custom_siffix_2"] = nil
+	maccPerms["CUSTOM_ID_custom_siffix_3"] = nil
+	maccPerms["CUSTOM_ID_custom_siffix_4"] = nil
+	return maccPerms
+}
+
+func SetTestMaccPerms() {
+	cfedistributortypes.SetMaccPerms(GetTestMaccPerms())
 }

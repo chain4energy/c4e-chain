@@ -122,7 +122,7 @@ var MainnetMinterConfigLong = cfemintertypes.MinterConfig{
 	},
 }
 var timeNow = time.Now()
-var minterConfigShortEndTime = timeNow.Add(time.Minute*4 + time.Second).UTC()
+var minterConfigShortEndTime = timeNow.Add(time.Second * 48).UTC()
 var MainnetMinterConfigShort = cfemintertypes.MinterConfig{
 	StartTime: time.Now().UTC(),
 	Minters: []*cfemintertypes.Minter{
@@ -130,11 +130,9 @@ var MainnetMinterConfigShort = cfemintertypes.MinterConfig{
 			SequenceId: 1,
 			Type:       cfemintertypes.EXPONENTIAL_STEP_MINTING,
 			ExponentialStepMinting: &cfemintertypes.ExponentialStepMinting{
-				//	160000000000000 + 160000000000000/2 + 160000000000000/4 + 160000000000000/8 = 300000000000000
-
 				Amount:           sdk.NewInt(160000000000000),
 				AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
-				StepDuration:     time.Second * 60,
+				StepDuration:     time.Second * 12,
 			},
 			EndTime: &minterConfigShortEndTime,
 		},

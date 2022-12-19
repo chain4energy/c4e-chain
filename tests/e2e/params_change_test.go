@@ -91,16 +91,14 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorMainnetShort() {
 	totalSupplyBefore, err := node.QuerySupplyOf(appparams.CoinDenom)
 	fmt.Println(totalSupplyBefore)
 	greenEnergyBoosterAddress := helpers.GetModuleAccountAddress(cfedistributortypes.GreenEnergyBoosterCollector)
-	//greenEnergyBoosterBalanceBefore, err := node.QueryBalances(greenEnergyBoosterAddress)
-	// minted after 4 full periods 300000000000000
-	s.cfeminterParamsChange(node, chainA, newDenom, helpers.MainnetMinterConfigShort)
 	s.cfedistributorParamsChange(node, chainA, helpers.MainnetSubdistributors)
-	time.Sleep(time.Minute * 6)
+	s.cfeminterParamsChange(node, chainA, newDenom, helpers.MainnetMinterConfigShort)
+	time.Sleep(time.Minute * 1)
 	totalSupplyAfter, err := node.QuerySupplyOf(newDenom)
-	s.Equal(sdk.NewInt(299999999051333), totalSupplyAfter)
+	fmt.Println(totalSupplyAfter)
+	s.Greater(totalSupplyAfter.Int64(), int64(299999999900000))
 	greenEnergyBoosterBalanceAfter, err := node.QueryBalances(greenEnergyBoosterAddress)
-	s.Equal(sdk.NewInt(299999999051333), greenEnergyBoosterBalanceAfter.AmountOf(newDenom))
-
+	s.Equal(sdk.NewDec(totalSupplyAfter.Int64()).Mul(sdk.MustNewDecFromStr("0.35")).Mul(sdk.MustNewDecFromStr("0.34")).TruncateInt(), greenEnergyBoosterBalanceAfter.AmountOf(newDenom))
 }
 
 func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {
@@ -328,12 +326,12 @@ func (s *ParamsSetupSuite) TestCfeminterNoMinters() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
-	//emptyMinters := make([]*cfemintertypes.Minter, 0)
+
 	newMinterConfig := cfemintertypes.MinterConfig{
 		StartTime: time.Now().UTC(),
 	}
 	newMinterConfig.Minters = make([]*cfemintertypes.Minter, 1)
-	fmt.Println(newMinterConfig)
+
 	newDenomJSON, err := json.Marshal("newDenom")
 	newMinterJSON, err := json.Marshal(newMinterConfig)
 
@@ -360,6 +358,33 @@ func (s *ParamsSetupSuite) TestCfeminterNoMinters() {
 	}
 
 	proposalJSON, err := json.Marshal(proposal)
-	node.SubmitParamChangeNotValidProposal(string(proposalJSON), initialization.ValidatorWalletName, "")
+	node.SubmitParamChangeNotValidProposal(string(proposalJSON), initialization.ValidatorWalletName, "invalid parameter value: no minters defined")
+	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
+}
+
+func (s *ParamsSetupSuite) TestCfedistributorNoSubdistributors() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
+
+	newSubDistributors := []cfedistributortypes.SubDistributor{}
+	newSubDistributorsJSON, err := json.Marshal(newSubDistributors)
+
+	s.NoError(err)
+	proposal := paramsutils.ParamChangeProposalJSON{
+		Title:       "CfeDistributor module params change",
+		Description: "Change cfedistributor params",
+		Changes: paramsutils.ParamChangesJSON{
+			paramsutils.ParamChangeJSON{
+				Subspace: cfedistributortypes.ModuleName,
+				Key:      string(cfedistributortypes.KeySubDistributors),
+				Value:    newSubDistributorsJSON,
+			},
+		},
+		Deposit: sdk.NewCoin(appparams.CoinDenom, config.MinDepositValue).String(),
+	}
+
+	proposalJSON, err := json.Marshal(proposal)
+	node.SubmitParamChangeNotValidProposal(string(proposalJSON), initialization.ValidatorWalletName, "invalid parameter value: there must be at least one subdistributor with the source main type")
 	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
 }

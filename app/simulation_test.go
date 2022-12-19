@@ -27,6 +27,9 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 	"os"
+	"reflect"
+	"regexp"
+	"runtime"
 	"testing"
 )
 
@@ -39,6 +42,8 @@ type StoreKeysPrefixes struct {
 	B        sdk.StoreKey
 	Prefixes [][]byte
 }
+
+var RegexExcludedOperations = regexp.MustCompile(`authz`)
 
 // BenchmarkSimulation run the chain simulation
 // Running as go benchmark test:
@@ -109,16 +114,16 @@ func BenchmarkSimTest(b *testing.B) {
 }
 
 func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *App, simParams simulation.Params) {
-	config, db, dir, _, _, err := simapp.SetupSimulation(dirPrevix, dbName)
-	require.NoError(tb, err, "simulation setup failed")
-
-	tb.Cleanup(func() {
-		db.Close()
-		err = os.RemoveAll(dir)
-		require.NoError(tb, err)
-	})
-
 	app, _, config, db := BaseSimulationSetup(tb, dirPrevix, dbName)
+	weightedOperations := simapp.SimulationOperations(app, app.AppCodec(), config)
+
+	for i, operation := range weightedOperations {
+		operationName := runtime.FuncForPC(reflect.ValueOf(operation.Op()).Pointer()).Name()
+		if RegexExcludedOperations.MatchString(operationName) {
+			weightedOperations = append(weightedOperations[:i], weightedOperations[i+1:]...)
+			fmt.Println("Excluded operation: " + operationName)
+		}
+	}
 
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		tb,
@@ -126,13 +131,13 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 		app.GetBaseApp(),
 		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
 		simulationtypes.RandomAccounts,
-		simapp.SimulationOperations(app, app.AppCodec(), config),
+		weightedOperations,
 		app.ModuleAccountAddrs(),
 		config,
 		app.AppCodec(),
 	)
 
-	err = simapp.CheckExportSimulation(app, config, simParams)
+	err := simapp.CheckExportSimulation(app, config, simParams)
 	require.NoError(tb, err)
 	require.NoError(tb, simErr)
 	if config.Commit {

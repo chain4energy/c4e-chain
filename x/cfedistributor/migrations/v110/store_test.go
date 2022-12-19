@@ -23,7 +23,7 @@ func TestMigrationStatesBurnFalse(t *testing.T) {
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
 	}
 	setV101States(ctx, testUtil.StoreKey, testUtil.Cdc, states)
-	MigrateStoreV101ToV110(t, testUtil, ctx, false)
+	MigrateStoreV101ToV110(t, testUtil, ctx)
 }
 
 func TestMigrationStatesBurnTrue(t *testing.T) {
@@ -35,7 +35,7 @@ func TestMigrationStatesBurnTrue(t *testing.T) {
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
 	}
 	setV101States(ctx, testUtil.StoreKey, testUtil.Cdc, states)
-	MigrateStoreV101ToV110(t, testUtil, ctx, false)
+	MigrateStoreV101ToV110(t, testUtil, ctx)
 }
 
 func TestMigrationStatesBurnTrueAndFalse(t *testing.T) {
@@ -50,7 +50,7 @@ func TestMigrationStatesBurnTrueAndFalse(t *testing.T) {
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
 	}
 	setV101States(ctx, testUtil.StoreKey, testUtil.Cdc, states)
-	MigrateStoreV101ToV110(t, testUtil, ctx, false)
+	MigrateStoreV101ToV110(t, testUtil, ctx)
 }
 
 func setV101States(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, states []v101.State) {
@@ -73,16 +73,11 @@ func MigrateStoreV101ToV110(
 	t *testing.T,
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
 	ctx sdk.Context,
-	wantError bool,
 ) {
 	store := prefix.NewStore(ctx.KVStore(testUtil.StoreKey), v101.RemainsKeyPrefix)
 	oldStates := GetAllV101States(store, testUtil.Cdc)
 
 	err := v110.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)
-	if wantError {
-		require.Error(t, err)
-		return
-	}
 	require.NoError(t, err)
 
 	newStates := testUtil.GetC4eDistributorKeeper().GetAllStates(ctx)
