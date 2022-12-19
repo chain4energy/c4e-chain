@@ -18,10 +18,10 @@ const ( // MintingPeriod types
 )
 
 func (params MinterConfig) ValidateMinters() error {
-	sort.Sort(BySequenceId(params.Minters))
-	if len(params.Minters) < 1 {
+	if len(params.Minters) < 1 || params.Minters[0] == nil {
 		return fmt.Errorf("no minters defined")
 	}
+	sort.Sort(BySequenceId(params.Minters))
 
 	lastPos := len(params.Minters) - 1
 	id := uint32(0)
