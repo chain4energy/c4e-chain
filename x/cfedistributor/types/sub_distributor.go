@@ -10,15 +10,25 @@ const maxShare = 1
 const primaryShareNameSuffix = "_primary"
 
 func (s SubDistributor) Validate() error {
+	if s.Name == "" {
+		return fmt.Errorf("subdistributor name cannot be empty")
+	}
+	if &s.Destinations == nil {
+		return fmt.Errorf("subdistributor destinaions cannot be nil")
+	}
 	if err := s.Destinations.Validate(s.GetPrimaryShareName()); err != nil {
 		return err
 	}
-
 	if err := s.Destinations.PrimaryShare.Validate(); err != nil {
 		return err
 	}
-
+	if len(s.Sources) < 1 {
+		return fmt.Errorf("subdistributor must have at least one source")
+	}
 	for _, source := range s.Sources {
+		if source == nil {
+			return fmt.Errorf("source cannot be nil")
+		}
 		if err := source.Validate(); err != nil {
 			return err
 		}
@@ -31,53 +41,59 @@ func (s SubDistributor) GetPrimaryShareName() string {
 	return s.Name + primaryShareNameSuffix
 }
 
-func (destination Destinations) Validate(primaryShareName string) error {
-	if destination.BurnShare.IsNil() {
-		return fmt.Errorf("burn share is nil")
+func (destinations Destinations) Validate(primaryShareName string) error {
+	if destinations.BurnShare.IsNil() {
+		return fmt.Errorf("burn share cannot be nil")
 	}
-	if destination.BurnShare.GTE(sdk.NewDec(maxShare)) || destination.BurnShare.IsNegative() {
-		return fmt.Errorf("burn share < 0")
+	if destinations.BurnShare.GTE(sdk.NewDec(maxShare)) || destinations.BurnShare.IsNegative() {
+		return fmt.Errorf("burn share must be between 0 and 1")
 	}
 
-	for _, destinationShare := range destination.Shares {
+	for _, destinationShare := range destinations.Shares {
 		if err := destinationShare.Validate(primaryShareName); err != nil {
 			return err
 		}
 	}
 
-	if destination.checkPercentShareSumIsBetween0And1() {
+	if err := destinations.CheckPercentShareSumIsBetween0And1(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (destinations Destinations) CheckPercentShareSumIsBetween0And1() error {
+	shareSum := destinations.BurnShare
+
+	for _, share := range destinations.Shares {
+		shareSum = shareSum.Add(share.Share)
+	}
+
+	if shareSum.GTE(sdk.NewDec(maxShare)) || shareSum.IsNegative() {
 		return fmt.Errorf("share sum must be between 0 and 1")
 	}
 
 	return nil
 }
 
-func (destination Destinations) checkPercentShareSumIsBetween0And1() bool {
-	shares := destination.Shares
-	shareSum := sdk.ZeroDec()
-	for _, share := range shares {
-		shareSum = shareSum.Add(share.Share)
+func (destinationShare *DestinationShare) Validate(primaryShareName string) error {
+	if destinationShare == nil {
+		return fmt.Errorf("destination share cannot be nil")
 	}
-
-	if destination.BurnShare != sdk.ZeroDec() {
-		shareSum = shareSum.Add(destination.BurnShare)
+	if destinationShare.Share.IsNil() {
+		return fmt.Errorf("share cannot be nil")
 	}
-
-	return shareSum.GTE(sdk.NewDec(maxShare)) || shareSum.IsNegative()
-}
-
-func (destinationShare DestinationShare) Validate(primaryShareName string) error {
 	if destinationShare.Share.GTE(sdk.NewDec(maxShare)) || destinationShare.Share.IsNegative() {
-		return fmt.Errorf("destiantion share < 0")
+		return fmt.Errorf("share must be between 0 and 1")
 	}
-
 	if err := destinationShare.Destination.Validate(); err != nil {
 		return err
+	}
+	if destinationShare.Name == "" {
+		return fmt.Errorf("destination share name cannot be empty")
 	}
 	if destinationShare.Name == primaryShareName {
 		return fmt.Errorf("share name: %s is reserved for primary share", destinationShare.Name)
 	}
-
 	return nil
 }
 

@@ -95,6 +95,7 @@ func TestValidateMinterPariodsOrder(t *testing.T) {
 		StartTime: startTime,
 		Minters:   minters,
 	}
+
 	params := types.Params{MintDenom: customDenom, MinterConfig: minterConfig}
 	require.NoError(t, params.Validate())
 }
@@ -116,6 +117,7 @@ func TestValidateMinterPariodsOrderInitialyNotOrdered(t *testing.T) {
 		StartTime: startTime,
 		Minters:   minters,
 	}
+
 	params := types.Params{MintDenom: customDenom, MinterConfig: minterConfig}
 	require.NoError(t, params.Validate())
 }
@@ -137,6 +139,7 @@ func TestValidateMinterPariodsOrderInitialyNotFromOne(t *testing.T) {
 		StartTime: startTime,
 		Minters:   minters,
 	}
+
 	params := types.Params{MintDenom: customDenom, MinterConfig: minterConfig}
 	require.NoError(t, params.Validate())
 }
@@ -158,6 +161,7 @@ func TestValidateMinterPariodsOrderWrongFirstId(t *testing.T) {
 		StartTime: startTime,
 		Minters:   minters,
 	}
+
 	params := types.Params{MintDenom: customDenom, MinterConfig: minterConfig}
 	require.EqualError(t, params.Validate(), "first minter sequence id must be bigger than 0, but is 0")
 }
@@ -778,7 +782,6 @@ func TestUnlimitedExponentialStepMinting(t *testing.T) {
 
 	amount = minter.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year).Add(250*Year))
 	require.EqualValues(t, sdk.MustNewDecFromStr("320000000000000.000001204782431465"), amount)
-
 }
 
 func TestLimitedExponentialStepMinting(t *testing.T) {
@@ -816,7 +819,6 @@ func TestLimitedExponentialStepMinting(t *testing.T) {
 
 	amount = minter.AmountToMint(log.TestingLogger(), &minterState, startTime, startTime.Add(16*Year))
 	require.EqualValues(t, sdk.NewDec(220000000000000), amount)
-
 }
 
 func TestValidateExponentialStepMintingMinterNotSet(t *testing.T) {
@@ -856,7 +858,7 @@ func TestValidateExponentialStepMintingAmountBelowZero(t *testing.T) {
 	}
 
 	params := types.Params{MintDenom: customDenom, MinterConfig: minterConfig}
-	require.EqualError(t, params.Validate(), "minter sequence id: 1 - ExponentialStepMinting Amount cannot be less than 0")
+	require.EqualError(t, params.Validate(), "minter sequence id: 1 - ExponentialStepMinting amount cannot be less than 0")
 }
 
 func TestValidateExponentialStepMinterLessThanZeror(t *testing.T) {

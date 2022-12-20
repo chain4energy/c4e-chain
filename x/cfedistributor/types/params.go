@@ -76,21 +76,6 @@ func (p Params) String() string {
 // validateSubDistributors validates the SubDistributors param
 func validateSubDistributors(v interface{}) error {
 	subDistributors, ok := v.([]SubDistributor)
-	fmt.Println("SUBDISTRIBUTORS PRINT")
-	fmt.Println(subDistributors)
-	fmt.Println(len(subDistributors))
-	fmt.Println(&subDistributors == nil)
-	fmt.Println(subDistributors)
-	fmt.Println(&subDistributors[0])
-	fmt.Println(subDistributors[0])
-	fmt.Println(subDistributors[1].Name)
-	fmt.Println(subDistributors[1].Name == "")
-	fmt.Println(subDistributors[1].Destinations)
-	fmt.Println(subDistributors[1].Destinations.BurnShare)
-	fmt.Println(subDistributors[1].Sources)
-	//if subDistributors[0] == nil {
-	//
-	//}
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", v)
 	}

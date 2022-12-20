@@ -17,7 +17,7 @@ const ( // MintingPeriod types
 	EXPONENTIAL_STEP_MINTING string = "EXPONENTIAL_STEP_MINTING"
 )
 
-func (params MinterConfig) ValidateMinterConfig() error {
+func (params MinterConfig) Validate() error {
 	if len(params.Minters) < 1 {
 		return fmt.Errorf("no minters defined")
 	}
@@ -71,24 +71,24 @@ func (params MinterConfig) validateMinterOrderingId(minter *Minter, id uint32) (
 	return id, nil
 }
 
-func (params MinterConfig) validateEndTimeExistance(minter *Minter, SequenceId int, lastPos int) error {
-	if SequenceId == lastPos && minter.EndTime != nil {
+func (params MinterConfig) validateEndTimeExistance(minter *Minter, sequenceId int, lastPos int) error {
+	if sequenceId == lastPos && minter.EndTime != nil {
 		return fmt.Errorf("last minter cannot have EndTime set, but is set to %s", minter.EndTime)
 	}
-	if SequenceId < lastPos && minter.EndTime == nil {
+	if sequenceId < lastPos && minter.EndTime == nil {
 		return fmt.Errorf("only last minter can have EndTime empty")
 	}
 	return nil
 }
 
-func (params MinterConfig) validateMintersEndTimeValue(minter *Minter, SequenceId int, lastPos int) error {
+func (params MinterConfig) validateMintersEndTimeValue(minter *Minter, sequenceId int, lastPos int) error {
 	if lastPos > 0 {
-		if SequenceId == 0 {
+		if sequenceId == 0 {
 			if minter.EndTime.Before(params.StartTime) || minter.EndTime.Equal(params.StartTime) {
 				return fmt.Errorf("first minter end must be bigger than minter start")
 			}
-		} else if SequenceId < lastPos {
-			prev := SequenceId - 1
+		} else if sequenceId < lastPos {
+			prev := sequenceId - 1
 			if minter.EndTime.Before(*params.Minters[prev].EndTime) || minter.EndTime.Equal(*params.Minters[prev].EndTime) {
 				return fmt.Errorf("minter with sequence id %d mast have EndTime bigger than minter with sequence id %d", minter.SequenceId, params.Minters[prev].SequenceId)
 			}
@@ -200,17 +200,16 @@ func (m LinearMinting) validate(id uint32) error {
 	return nil
 }
 
-func (m *LinearMinting) calculateInflation(totalSupply sdk.Int, minterStart time.Time, EndTime time.Time) sdk.Dec {
+func (m *LinearMinting) calculateInflation(totalSupply sdk.Int, minterStart time.Time, endTime time.Time) sdk.Dec {
 	if totalSupply.LTE(sdk.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
 
 	amount := m.Amount
 
-	periodDuration := EndTime.Sub(minterStart)
+	periodDuration := endTime.Sub(minterStart)
 	mintedYearly := sdk.NewDecFromInt(amount).MulInt64(int64(year)).QuoInt64(int64(periodDuration))
 	return mintedYearly.QuoInt(totalSupply)
-
 }
 
 func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
@@ -240,10 +239,10 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 	if numOfPassedEpochs > 0 {
 		currentEpochAmount = currentEpochAmount.Mul(m.AmountMultiplier)
 	}
+
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
 	logger.Debug("ESMintingMintCon", "AmountMultiplier", m.AmountMultiplier, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
 	return amountToMint.Add(currentEpochAmountToMint)
-
 }
 
 func (m ExponentialStepMinting) validate(id uint32) error {

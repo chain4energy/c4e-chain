@@ -9,6 +9,11 @@ import (
 	"testing"
 )
 
+var baseAccount = types.Account{
+	Id:   "abc",
+	Type: types.BASE_ACCOUNT,
+}
+
 func TestCheckAccountType(t *testing.T) {
 	cfedistributortestutils.SetTestMaccPerms()
 	tests := []struct {
@@ -27,6 +32,33 @@ func TestCheckAccountType(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.account.Validate()
+			if tt.expectError {
+				require.EqualError(t, err, tt.errorMessage)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestValidateIfFieldsAreNotSetToNil(t *testing.T) {
+	twoSubdistributorsUniqueNames := []types.SubDistributor{
+		CreateSubDistributor(MAIN_DESTINATION),
+		CreateSubDistributor(MAIN_DESTINATION_SHARE),
+		CreateSubDistributor(MAIN_SOURCE),
+	}
+
+	tests := []struct {
+		name            string
+		subDistributors []types.SubDistributor
+		expectError     bool
+		errorMessage    string
+	}{
+		{"two subdistributors have unique names", twoSubdistributorsUniqueNames, false, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := types.ValidateSubDistributors(tt.subDistributors)
 			if tt.expectError {
 				require.EqualError(t, err, tt.errorMessage)
 				return
@@ -102,9 +134,9 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 	sharesEqualMinus10 = append(sharesEqual101, &shareEqual30)
 
 	tests := []struct {
-		name           string
-		destination    types.Destinations
-		expectedResult bool
+		name        string
+		destination types.Destinations
+		expectError bool
 	}{
 
 		{"Share equal 30", types.Destinations{PrimaryShare: types.Account{}, Shares: sharesEqual30, BurnShare: sdk.ZeroDec()}, false},
@@ -118,9 +150,176 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.destination.checkPercentShareSumIsBetween0And1(); got != tt.expectedResult {
-				t.Errorf("CheckPercentShareSumIsBetween0And100() = %v, want %v", got, tt.expectedResult)
+			err := tt.destination.CheckPercentShareSumIsBetween0And1()
+			if tt.expectError {
+				require.EqualError(t, err, "share sum must be between 0 and 1")
+				return
 			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestValidateDestinationsShareSum(t *testing.T) {
+	shareEqual10 := &types.DestinationShare{
+		Name:        "1",
+		Share:       sdk.MustNewDecFromStr("0.10"),
+		Destination: baseAccount,
+	}
+
+	shareEqual110 := &types.DestinationShare{
+		Name:        "1",
+		Share:       sdk.MustNewDecFromStr("1"),
+		Destination: baseAccount,
+	}
+
+	var sharesEqual30 []*types.DestinationShare
+	sharesEqual30 = append(sharesEqual30, shareEqual10)
+
+	var sharesEqual110 []*types.DestinationShare
+	sharesEqual110 = append(sharesEqual110, shareEqual10)
+	sharesEqual110 = append(sharesEqual110, shareEqual110)
+
+	tests := []struct {
+		name         string
+		destination  types.Destinations
+		expectError  bool
+		errorMessage string
+	}{
+
+		{"Share equal 30", types.Destinations{PrimaryShare: baseAccount, Shares: sharesEqual30, BurnShare: sdk.ZeroDec()}, false, ""},
+		{"Share sum equal 110", types.Destinations{PrimaryShare: baseAccount, Shares: sharesEqual110, BurnShare: sdk.ZeroDec()}, true, "share must be between 0 and 1"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.destination.Validate("abc")
+			if tt.expectError {
+				require.EqualError(t, err, tt.errorMessage)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestValidateDestinationsShares(t *testing.T) {
+	primaryShareName := "primary_name"
+	corectShares := []*types.DestinationShare{
+		{
+			Name:        "Name",
+			Share:       sdk.MustNewDecFromStr("0.10"),
+			Destination: baseAccount,
+		},
+	}
+
+	sharesEmptyName := []*types.DestinationShare{
+		{
+			Name:        "",
+			Share:       sdk.MustNewDecFromStr("0.10"),
+			Destination: baseAccount,
+		},
+	}
+
+	sharesShareIsNil := []*types.DestinationShare{
+		{
+			Name:        "abc",
+			Share:       sdk.Dec{},
+			Destination: baseAccount,
+		},
+	}
+
+	sharesWrongDestinationAccount := []*types.DestinationShare{
+		{
+			Name:        "123",
+			Share:       sdk.MustNewDecFromStr("0.10"),
+			Destination: types.Account{Id: "WrongTypeAccount", Type: "WrongType"},
+		},
+	}
+
+	sharesShareIsLessThan0 := []*types.DestinationShare{
+		{
+			Name:        "123",
+			Share:       sdk.MustNewDecFromStr("-0.10"),
+			Destination: baseAccount,
+		},
+	}
+
+	sharesShareIsMoreThan1 := []*types.DestinationShare{
+		{
+			Name:        "123",
+			Share:       sdk.MustNewDecFromStr("1.1"),
+			Destination: baseAccount,
+		},
+	}
+
+	sharesPrimaryShareName := []*types.DestinationShare{
+		{
+			Name:        primaryShareName,
+			Share:       sdk.MustNewDecFromStr("0.5"),
+			Destination: baseAccount,
+		},
+	}
+
+	tests := []struct {
+		name         string
+		destination  types.Destinations
+		expectError  bool
+		errorMessage string
+	}{
+
+		{"DestinationShare empty name", types.Destinations{PrimaryShare: baseAccount, Shares: sharesEmptyName, BurnShare: sdk.ZeroDec()}, true, "destination share name cannot be empty"},
+		{"DestinationShare share is nil", types.Destinations{PrimaryShare: baseAccount, Shares: sharesShareIsNil, BurnShare: sdk.ZeroDec()}, true, "share cannot be nil"},
+		{"DestinationShare destination is of wrong type", types.Destinations{PrimaryShare: baseAccount, Shares: sharesWrongDestinationAccount, BurnShare: sdk.ZeroDec()}, true, "account \"WrongTypeAccount\" is of the wrong type: WrongType"},
+		{"Share is less than 0", types.Destinations{PrimaryShare: baseAccount, Shares: sharesShareIsLessThan0, BurnShare: sdk.ZeroDec()}, true, "share must be between 0 and 1"},
+		{"Share is less more than 1", types.Destinations{PrimaryShare: baseAccount, Shares: sharesShareIsMoreThan1, BurnShare: sdk.ZeroDec()}, true, "share must be between 0 and 1"},
+		{"Burn share is nil", types.Destinations{PrimaryShare: baseAccount, Shares: corectShares, BurnShare: sdk.Dec{}}, true, "burn share cannot be nil"},
+		{"BurnShare is higher than 1", types.Destinations{PrimaryShare: baseAccount, Shares: corectShares, BurnShare: sdk.MustNewDecFromStr("1.1")}, true, "burn share must be between 0 and 1"},
+		{"BurnShare is less than 0", types.Destinations{PrimaryShare: baseAccount, Shares: corectShares, BurnShare: sdk.MustNewDecFromStr("-1")}, true, "burn share must be between 0 and 1"},
+		{"Share name reserved for primary share", types.Destinations{PrimaryShare: baseAccount, Shares: sharesPrimaryShareName, BurnShare: sdk.ZeroDec()}, true, "share name: " + primaryShareName + " is reserved for primary share"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.destination.Validate(primaryShareName)
+			if tt.expectError {
+				require.EqualError(t, err, tt.errorMessage)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestValidateSubDistributor(t *testing.T) {
+	subdistributorCorrect := CreateSubDistributor(MAIN_SOURCE)
+
+	subdistributorNoName := CreateSubDistributor(MAIN_SOURCE)
+	subdistributorNoName.Name = ""
+
+	subdistributorNoSources := CreateSubDistributor(MAIN_SOURCE)
+	subdistributorNoSources.Sources = []*types.Account{}
+
+	subdistributorNilSource := CreateSubDistributor(MAIN_SOURCE)
+	subdistributorNilSource.Sources[0] = nil
+
+	tests := []struct {
+		name           string
+		subDistributor types.SubDistributor
+		expectError    bool
+		errorMessage   string
+	}{
+		{"correct subdistributor", subdistributorCorrect, false, ""},
+		{"subdistributor has no name", subdistributorNoName, true, "subdistributor name cannot be empty"},
+		{"subdistributor has no sources", subdistributorNoSources, true, "subdistributor must have at least one source"},
+		{"subdistributor has source with nil type", subdistributorNilSource, true, "source cannot be nil"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.subDistributor.Validate()
+			if tt.expectError {
+				require.EqualError(t, err, tt.errorMessage)
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }

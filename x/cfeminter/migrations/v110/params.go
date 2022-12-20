@@ -70,7 +70,7 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 		newMinters = append(newMinters, &newMinter)
 	}
 	newMinterConfig.Minters = newMinters
-	if err := newMinterConfig.ValidateMinterConfig(); err != nil {
+	if err := newMinterConfig.Validate(); err != nil {
 		return err
 	}
 	paramStore.Set(ctx, types.KeyMinterConfig, newMinterConfig)
