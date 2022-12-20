@@ -150,7 +150,7 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := tt.destination.CheckPercentShareSumIsBetween0And1()
+			err := tt.destination.CheckIfSharesSumIsBetween0And1()
 			if tt.expectError {
 				require.EqualError(t, err, "share sum must be between 0 and 1")
 				return

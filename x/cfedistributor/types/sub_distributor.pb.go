@@ -91,56 +91,56 @@ type SubDistributor struct {
 	Destinations Destinations `protobuf:"bytes,3,opt,name=destinations,proto3" json:"destinations"`
 }
 
-func (m *SubDistributor) Reset()         { *m = SubDistributor{} }
-func (m *SubDistributor) String() string { return proto.CompactTextString(m) }
-func (*SubDistributor) ProtoMessage()    {}
+func (subdistributor *SubDistributor) Reset()         { *subdistributor = SubDistributor{} }
+func (subdistributor *SubDistributor) String() string { return proto.CompactTextString(subdistributor) }
+func (*SubDistributor) ProtoMessage()                 {}
 func (*SubDistributor) Descriptor() ([]byte, []int) {
 	return fileDescriptor_a3327e9698cb0367, []int{1}
 }
-func (m *SubDistributor) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
+func (subdistributor *SubDistributor) XXX_Unmarshal(b []byte) error {
+	return subdistributor.Unmarshal(b)
 }
-func (m *SubDistributor) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (subdistributor *SubDistributor) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SubDistributor.Marshal(b, m, deterministic)
+		return xxx_messageInfo_SubDistributor.Marshal(b, subdistributor, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
+		n, err := subdistributor.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (m *SubDistributor) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SubDistributor.Merge(m, src)
+func (subdistributor *SubDistributor) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubDistributor.Merge(subdistributor, src)
 }
-func (m *SubDistributor) XXX_Size() int {
-	return m.Size()
+func (subdistributor *SubDistributor) XXX_Size() int {
+	return subdistributor.Size()
 }
-func (m *SubDistributor) XXX_DiscardUnknown() {
-	xxx_messageInfo_SubDistributor.DiscardUnknown(m)
+func (subdistributor *SubDistributor) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubDistributor.DiscardUnknown(subdistributor)
 }
 
 var xxx_messageInfo_SubDistributor proto.InternalMessageInfo
 
-func (m *SubDistributor) GetName() string {
-	if m != nil {
-		return m.Name
+func (subdistributor *SubDistributor) GetName() string {
+	if subdistributor != nil {
+		return subdistributor.Name
 	}
 	return ""
 }
 
-func (m *SubDistributor) GetSources() []*Account {
-	if m != nil {
-		return m.Sources
+func (subdistributor *SubDistributor) GetSources() []*Account {
+	if subdistributor != nil {
+		return subdistributor.Sources
 	}
 	return nil
 }
 
-func (m *SubDistributor) GetDestinations() Destinations {
-	if m != nil {
-		return m.Destinations
+func (subdistributor *SubDistributor) GetDestinations() Destinations {
+	if subdistributor != nil {
+		return subdistributor.Destinations
 	}
 	return Destinations{}
 }
@@ -412,28 +412,28 @@ func (m *State) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *SubDistributor) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+func (subdistributor *SubDistributor) Marshal() (dAtA []byte, err error) {
+	size := subdistributor.Size()
 	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	n, err := subdistributor.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
 	return dAtA[:n], nil
 }
 
-func (m *SubDistributor) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
+func (subdistributor *SubDistributor) MarshalTo(dAtA []byte) (int, error) {
+	size := subdistributor.Size()
+	return subdistributor.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SubDistributor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (subdistributor *SubDistributor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.Destinations.MarshalToSizedBuffer(dAtA[:i])
+		size, err := subdistributor.Destinations.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -442,10 +442,10 @@ func (m *SubDistributor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x1a
-	if len(m.Sources) > 0 {
-		for iNdEx := len(m.Sources) - 1; iNdEx >= 0; iNdEx-- {
+	if len(subdistributor.Sources) > 0 {
+		for iNdEx := len(subdistributor.Sources) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Sources[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := subdistributor.Sources[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -456,10 +456,10 @@ func (m *SubDistributor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Name) > 0 {
-		i -= len(m.Name)
-		copy(dAtA[i:], m.Name)
-		i = encodeVarintSubDistributor(dAtA, i, uint64(len(m.Name)))
+	if len(subdistributor.Name) > 0 {
+		i -= len(subdistributor.Name)
+		copy(dAtA[i:], subdistributor.Name)
+		i = encodeVarintSubDistributor(dAtA, i, uint64(len(subdistributor.Name)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -643,23 +643,23 @@ func (m *State) Size() (n int) {
 	return n
 }
 
-func (m *SubDistributor) Size() (n int) {
-	if m == nil {
+func (subdistributor *SubDistributor) Size() (n int) {
+	if subdistributor == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Name)
+	l = len(subdistributor.Name)
 	if l > 0 {
 		n += 1 + l + sovSubDistributor(uint64(l))
 	}
-	if len(m.Sources) > 0 {
-		for _, e := range m.Sources {
+	if len(subdistributor.Sources) > 0 {
+		for _, e := range subdistributor.Sources {
 			l = e.Size()
 			n += 1 + l + sovSubDistributor(uint64(l))
 		}
 	}
-	l = m.Destinations.Size()
+	l = subdistributor.Destinations.Size()
 	n += 1 + l + sovSubDistributor(uint64(l))
 	return n
 }
@@ -863,7 +863,7 @@ func (m *State) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SubDistributor) Unmarshal(dAtA []byte) error {
+func (subdistributor *SubDistributor) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -922,7 +922,7 @@ func (m *SubDistributor) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Name = string(dAtA[iNdEx:postIndex])
+			subdistributor.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -953,8 +953,8 @@ func (m *SubDistributor) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Sources = append(m.Sources, &Account{})
-			if err := m.Sources[len(m.Sources)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			subdistributor.Sources = append(subdistributor.Sources, &Account{})
+			if err := subdistributor.Sources[len(subdistributor.Sources)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -987,7 +987,7 @@ func (m *SubDistributor) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Destinations.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := subdistributor.Destinations.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

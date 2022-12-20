@@ -9,20 +9,20 @@ import (
 const maxShare = 1
 const primaryShareNameSuffix = "_primary"
 
-func (s SubDistributor) Validate() error {
-	if s.Name == "" {
+func (subdistributor SubDistributor) Validate() error {
+	if subdistributor.Name == "" {
 		return fmt.Errorf("subdistributor name cannot be empty")
 	}
-	if err := s.Destinations.Validate(s.GetPrimaryShareName()); err != nil {
+	if err := subdistributor.Destinations.Validate(subdistributor.GetPrimaryShareName()); err != nil {
 		return err
 	}
-	if err := s.Destinations.PrimaryShare.Validate(); err != nil {
+	if err := subdistributor.Destinations.PrimaryShare.Validate(); err != nil {
 		return err
 	}
-	if len(s.Sources) < 1 {
+	if len(subdistributor.Sources) < 1 {
 		return fmt.Errorf("subdistributor must have at least one source")
 	}
-	for _, source := range s.Sources {
+	for _, source := range subdistributor.Sources {
 		if source == nil {
 			return fmt.Errorf("source cannot be nil")
 		}
@@ -34,8 +34,8 @@ func (s SubDistributor) Validate() error {
 	return nil
 }
 
-func (s SubDistributor) GetPrimaryShareName() string {
-	return s.Name + primaryShareNameSuffix
+func (subdistributor SubDistributor) GetPrimaryShareName() string {
+	return subdistributor.Name + primaryShareNameSuffix
 }
 
 func (destinations Destinations) Validate(primaryShareName string) error {
@@ -49,19 +49,19 @@ func (destinations Destinations) Validate(primaryShareName string) error {
 		return fmt.Errorf("burn share must be between 0 and 1")
 	}
 
-	for _, destinationShare := range destinations.Shares {
-		if err := destinationShare.Validate(primaryShareName); err != nil {
+	for _, shares := range destinations.Shares {
+		if err := shares.Validate(primaryShareName); err != nil {
 			return err
 		}
 	}
 
-	if err := destinations.CheckPercentShareSumIsBetween0And1(); err != nil {
+	if err := destinations.CheckIfSharesSumIsBetween0And1(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (destinations Destinations) CheckPercentShareSumIsBetween0And1() error {
+func (destinations Destinations) CheckIfSharesSumIsBetween0And1() error {
 	shareSum := destinations.BurnShare
 
 	for _, share := range destinations.Shares {
