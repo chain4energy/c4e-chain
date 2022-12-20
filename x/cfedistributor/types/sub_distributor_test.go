@@ -301,6 +301,9 @@ func TestValidateSubDistributor(t *testing.T) {
 	subdistributorNilSource := CreateSubDistributor(MAIN_SOURCE)
 	subdistributorNilSource.Sources[0] = nil
 
+	subdistributorEmptyDestinations := CreateSubDistributor(MAIN_SOURCE)
+	subdistributorEmptyDestinations.Destinations = types.Destinations{}
+
 	tests := []struct {
 		name           string
 		subDistributor types.SubDistributor
@@ -311,6 +314,7 @@ func TestValidateSubDistributor(t *testing.T) {
 		{"subdistributor has no name", subdistributorNoName, true, "subdistributor name cannot be empty"},
 		{"subdistributor has no sources", subdistributorNoSources, true, "subdistributor must have at least one source"},
 		{"subdistributor has source with nil type", subdistributorNilSource, true, "source cannot be nil"},
+		{"subdistributor has empty destinations", subdistributorEmptyDestinations, true, "destinations cannot be empty"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

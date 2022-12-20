@@ -2,8 +2,8 @@ package types
 
 import (
 	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"reflect"
 )
 
 const maxShare = 1
@@ -12,9 +12,6 @@ const primaryShareNameSuffix = "_primary"
 func (s SubDistributor) Validate() error {
 	if s.Name == "" {
 		return fmt.Errorf("subdistributor name cannot be empty")
-	}
-	if &s.Destinations == nil {
-		return fmt.Errorf("subdistributor destinaions cannot be nil")
 	}
 	if err := s.Destinations.Validate(s.GetPrimaryShareName()); err != nil {
 		return err
@@ -42,6 +39,9 @@ func (s SubDistributor) GetPrimaryShareName() string {
 }
 
 func (destinations Destinations) Validate(primaryShareName string) error {
+	if reflect.ValueOf(destinations).IsZero() {
+		return fmt.Errorf("destinations cannot be empty")
+	}
 	if destinations.BurnShare.IsNil() {
 		return fmt.Errorf("burn share cannot be nil")
 	}
@@ -71,7 +71,6 @@ func (destinations Destinations) CheckPercentShareSumIsBetween0And1() error {
 	if shareSum.GTE(sdk.NewDec(maxShare)) || shareSum.IsNegative() {
 		return fmt.Errorf("share sum must be between 0 and 1")
 	}
-
 	return nil
 }
 
@@ -232,13 +231,3 @@ func accountExistInMacPerms(accountId string) bool {
 	_, found := maccPerms[accountId]
 	return found
 }
-
-//
-//Name nie może być  "",
-//Source musi być co najmniej jeden i żaden nie może być nullem
-//Destinations ma jeden
-//Shares może być puste ale nie moze mieć nuli
-//Name nie pusty,
-//Burn share i share między 0 i 1 osobno
-// wszystkie inty i dec sprawdzać czy isNil
-// mintery czy null w tablicy
