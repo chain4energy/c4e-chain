@@ -80,7 +80,7 @@ func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[0].Name+" destinations validation error: destination share "+oldSubDistributors[0].Destination.Share[0].Name+" validation error: module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[0].Name+" destinations validation error: destination share "+oldSubDistributors[0].Destination.Share[0].Name+" validation error: destination account validation error: module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
 }
 
 func setV101Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v101.SubDistributor) {
@@ -100,7 +100,7 @@ func MigrateParamsV101ToV110(
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
 	expectError bool, errorMessage string,
 ) {
-	types.SetMaccPerms(cfedistributortestutils.GetTestMaccPerms())
+	cfedistributortestutils.SetTestMaccPerms()
 	var oldSubDistributors []v101.SubDistributor
 	store := newStore(ctx, testUtil)
 	distributors := store.Get(types.KeySubDistributors)
@@ -148,13 +148,13 @@ func createOldSubDistributor(
 ) v101.SubDistributor {
 	var sources []*v101.Account
 	mainAcc := v101.Account{
-		Id:   cfedistributortestutils.GetCorrectAccountId(id, "", sourceType),
+		Id:   cfedistributortestutils.GetAccountTestId(id, "", sourceType),
 		Type: sourceType,
 	}
 	sources = append(sources, &mainAcc)
 	for i := 0; i < 5; i++ {
 		randomAccount := v101.Account{
-			Id:   cfedistributortestutils.GetCorrectAccountId(id+"_custom_siffix_"+strconv.Itoa(i), "", sourceType),
+			Id:   cfedistributortestutils.GetAccountTestId(id+"_custom_siffix_"+strconv.Itoa(i), "", sourceType),
 			Type: sourceType,
 		}
 		sources = append(sources, &randomAccount)
@@ -166,7 +166,7 @@ func createOldSubDistributor(
 		share := v101.Share{
 			Name: helpers.RandStringOfLength(10),
 			Account: v101.Account{
-				Id:   cfedistributortestutils.GetCorrectAccountId(id+"_custom_siffix_"+strconv.Itoa(i), "", destinationShareType),
+				Id:   cfedistributortestutils.GetAccountTestId(id+"_custom_siffix_"+strconv.Itoa(i), "", destinationShareType),
 				Type: destinationShareType,
 			},
 			Percent: sdk.NewDec(5),
@@ -178,7 +178,7 @@ func createOldSubDistributor(
 		Name: helpers.RandStringOfLength(10),
 		Destination: v101.Destination{
 			Account: v101.Account{
-				Id:   cfedistributortestutils.GetCorrectAccountId(id, "", destinationType),
+				Id:   cfedistributortestutils.GetAccountTestId(id, "", destinationType),
 				Type: destinationType,
 			},
 			BurnShare: &v101.BurnShare{

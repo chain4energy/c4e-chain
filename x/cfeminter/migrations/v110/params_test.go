@@ -121,7 +121,7 @@ func TestMigrationWrongExponentialStepMinting(t *testing.T) {
 		createV100MinterPeriod(2, nil, "NO_MINTING", nil, nil),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter sequence id: 1 - ExponentialStepMinting StepDuration must be bigger than 0")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: EXPONENTIAL_STEP_MINTING error: stepDuration must be bigger than 0")
 }
 
 func TestMigrationWrongLinearMinting(t *testing.T) {
@@ -134,7 +134,7 @@ func TestMigrationWrongLinearMinting(t *testing.T) {
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter sequence id: 1 - LinearMinting amount cannot be less than 0")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: LINEAR_MINTING error: amount cannot be less than 0")
 }
 
 func setV101MinterConfig(t *testing.T, ctx sdk.Context, keeperData *common.AdditionalKeeperData, startTime time.Time, mintingPeriods []*v101.MintingPeriod) {

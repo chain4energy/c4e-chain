@@ -97,7 +97,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state amount cannot be less than 0",
+			errorMassage: "minter state validation error: amountMinted cannot be less than 0",
 		},
 		{
 			desc: "invalid genesis state - wrong minter state - reminder to mint",
@@ -113,7 +113,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter remainder to mint amount cannot be less than 0",
+			errorMassage: "minter state validation error: remainderToMint cannot be less than 0",
 		},
 		{
 			desc: "invalid genesis state - wrong minter state - remainder from previous minter",
@@ -129,7 +129,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter remainder from previous period amount cannot be less than 0",
+			errorMassage: "minter state validation error: remainderFromPreviousPeriod cannot be less than 0",
 		},
 		{
 			desc: "invalid genesis state - wrong minter state SequenceId",
@@ -145,7 +145,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state current sequence id not found in minters",
+			errorMassage: "cfeminter genesis validation error: minter state sequence id 6 not found in minters",
 		},
 		{
 			desc: "valid genesis state with history",
@@ -177,7 +177,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state reminder from previous period cannot be nil",
+			errorMassage: "minter state validation error: remainderFromPreviousPeriod cannot be nil",
 		},
 		{
 			desc: "invalid genesis state - wrong minter state - RemainderToMint is nil",
@@ -193,7 +193,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state reminder to mint cannot be nil",
+			errorMassage: "minter state validation error: remainderToMint cannot be nil",
 		},
 		{
 			desc: "invalid genesis state - wrong minter state - AmountMinted is nil",
@@ -209,7 +209,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state amount cannot be nil",
+			errorMassage: "minter state validation error: amountMinted cannot be nil",
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {

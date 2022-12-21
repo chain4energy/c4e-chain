@@ -286,7 +286,7 @@ func TestValidateDestinationsShares(t *testing.T) {
 		{
 			"DestinationShare destination is of wrong type",
 			types.Destinations{PrimaryShare: mainAccount, Shares: sharesWrongDestinationAccount, BurnShare: sdk.ZeroDec()},
-			true, "destination share ShareName validation error: account \"WrongTypeAccount\" is of the wrong type: WrongType",
+			true, "destination share ShareName validation error: destination account validation error: account \"WrongTypeAccount\" is of the wrong type: WrongType",
 		},
 		{
 			"Share is less than 0",
@@ -562,7 +562,7 @@ func TestValidateCorrectModuleAccountInsideSubdistributor(t *testing.T) {
 		{"wrong source module account", wrongSourceModuleAccount, true,
 			"subdistributor " + wrongSourceModuleAccount.Name + " source with id \"" + wrongSourceModuleAccount.Sources[0].Id + "\" validation error: module account \"CUSTOM_ID-src\" doesn't exist in maccPerms"},
 		{"wrong share module account", wrongShareModuleAccount, true,
-			"subdistributor " + wrongShareModuleAccount.Name + " destinations validation error: destination share " + wrongShareModuleAccount.Destinations.Shares[0].Name + " validation error: module account \"CUSTOM_ID-shareDst\" doesn't exist in maccPerms"},
+			"subdistributor " + wrongShareModuleAccount.Name + " destinations validation error: destination share " + wrongShareModuleAccount.Destinations.Shares[0].Name + " validation error: destination account validation error: module account \"CUSTOM_ID-shareDst\" doesn't exist in maccPerms"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -803,7 +803,7 @@ func createSubDistributor(
 		Name: helpers.RandStringOfLength(10),
 		Destinations: types.Destinations{
 			PrimaryShare: types.Account{
-				Id:   cfedistributortestutils.GetCorrectAccountId(id, getAccountSuffix("-mainDst", addIdSuffix), primaryShareType),
+				Id:   cfedistributortestutils.GetAccountTestId(id, getAccountSuffix("-mainDst", addIdSuffix), primaryShareType),
 				Type: primaryShareType,
 			},
 			BurnShare: sdk.ZeroDec(),
@@ -811,7 +811,7 @@ func createSubDistributor(
 				{
 					Name: helpers.RandStringOfLength(10),
 					Destination: types.Account{
-						Id:   cfedistributortestutils.GetCorrectAccountId(id, getAccountSuffix("-shareDst", addIdSuffix), destinationShareType),
+						Id:   cfedistributortestutils.GetAccountTestId(id, getAccountSuffix("-shareDst", addIdSuffix), destinationShareType),
 						Type: destinationShareType,
 					},
 					Share: sdk.ZeroDec(),
@@ -820,7 +820,7 @@ func createSubDistributor(
 		},
 		Sources: []*types.Account{
 			{
-				Id:   cfedistributortestutils.GetCorrectAccountId(id, getAccountSuffix("-src", addIdSuffix), sourceType),
+				Id:   cfedistributortestutils.GetAccountTestId(id, getAccountSuffix("-src", addIdSuffix), sourceType),
 				Type: sourceType,
 			},
 		},

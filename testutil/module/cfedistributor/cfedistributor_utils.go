@@ -200,7 +200,7 @@ func SetTestMaccPerms() {
 	cfedistributortypes.SetMaccPerms(GetTestMaccPerms())
 }
 
-func GetCorrectAccountId(id, suffix, accType string) string {
+func GetAccountTestId(id, suffix, accType string) string {
 	if accType == cfedistributortypes.BASE_ACCOUNT {
 		return commontestutils.CreateRandomAccAddress()
 	}

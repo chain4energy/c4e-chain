@@ -87,7 +87,7 @@ func (destinationShare *DestinationShare) Validate(primaryShareName string) erro
 		return fmt.Errorf("share must be between 0 and 1")
 	}
 	if err := destinationShare.Destination.Validate(); err != nil {
-		return err
+		return fmt.Errorf("destination account validation error: %w", err)
 	}
 	return nil
 }
