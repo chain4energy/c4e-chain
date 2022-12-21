@@ -1,4 +1,4 @@
-package cfedistributor
+package cfedistributorutils
 
 import (
 	c4eapp "github.com/chain4energy/c4e-chain/app"
@@ -198,4 +198,14 @@ func GetTestMaccPerms() map[string][]string {
 
 func SetTestMaccPerms() {
 	cfedistributortypes.SetMaccPerms(GetTestMaccPerms())
+}
+
+func GetCorrectAccountId(id, suffix, accType string) string {
+	if accType == cfedistributortypes.BASE_ACCOUNT {
+		return commontestutils.CreateRandomAccAddress()
+	}
+	if accType == cfedistributortypes.INTERNAL_ACCOUNT || accType == cfedistributortypes.MAIN {
+		return id + "-" + accType
+	}
+	return id + suffix
 }

@@ -9,9 +9,9 @@ import (
 	"testing"
 )
 
-var baseAccount = types.Account{
+var mainAccount = types.Account{
 	Id:   "abc",
-	Type: types.BASE_ACCOUNT,
+	Type: types.MAIN,
 }
 
 func TestCheckAccountType(t *testing.T) {
@@ -23,9 +23,11 @@ func TestCheckAccountType(t *testing.T) {
 		errorMessage string
 	}{
 		{"Check base account", types.Account{Id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n", Type: types.BASE_ACCOUNT}, false, ""},
+		{"Check base account - wrong acc address", types.Account{Id: "not_valid_bech32", Type: types.BASE_ACCOUNT}, true, "base account id \"not_valid_bech32\" is not a valid bech32 address"},
 		{"Check module account - account doesn't exist in maccPerms", types.Account{Id: "sample", Type: types.MODULE_ACCOUNT}, true, "module account \"sample\" doesn't exist in maccPerms"},
 		{"Check module account - account exists in maccPerms", types.Account{Id: "CUSTOM_ID", Type: types.MODULE_ACCOUNT}, false, ""},
 		{"Check internal account", types.Account{Id: "sample", Type: types.INTERNAL_ACCOUNT}, false, ""},
+		{"Check internal account - empty id", types.Account{Id: "", Type: types.INTERNAL_ACCOUNT}, true, "internal account id cannot be empty"},
 		{"Check main account", types.Account{Id: "sample", Type: types.MAIN}, false, ""},
 		{"Check wrong account", types.Account{Id: "test", Type: "wrong_type"}, true, "account \"test\" is of the wrong type: wrong_type"},
 	}
@@ -162,15 +164,15 @@ func TestCheckPercentShareSumIsGTEThen100(t *testing.T) {
 
 func TestValidateDestinationsShareSum(t *testing.T) {
 	shareEqual10 := &types.DestinationShare{
-		Name:        "1",
+		Name:        "shareName",
 		Share:       sdk.MustNewDecFromStr("0.10"),
-		Destination: baseAccount,
+		Destination: mainAccount,
 	}
 
 	shareEqual110 := &types.DestinationShare{
-		Name:        "1",
+		Name:        "shareName",
 		Share:       sdk.MustNewDecFromStr("1"),
-		Destination: baseAccount,
+		Destination: mainAccount,
 	}
 
 	var sharesEqual30 []*types.DestinationShare
@@ -187,8 +189,12 @@ func TestValidateDestinationsShareSum(t *testing.T) {
 		errorMessage string
 	}{
 
-		{"Share equal 30", types.Destinations{PrimaryShare: baseAccount, Shares: sharesEqual30, BurnShare: sdk.ZeroDec()}, false, ""},
-		{"Share sum equal 110", types.Destinations{PrimaryShare: baseAccount, Shares: sharesEqual110, BurnShare: sdk.ZeroDec()}, true, "share must be between 0 and 1"},
+		{"Share equal 30", types.Destinations{PrimaryShare: mainAccount, Shares: sharesEqual30, BurnShare: sdk.ZeroDec()}, false, ""},
+		{
+			"Share sum equal 110",
+			types.Destinations{PrimaryShare: mainAccount, Shares: sharesEqual110, BurnShare: sdk.ZeroDec()},
+			true, "destination share shareName validation error: share must be between 0 and 1",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -206,9 +212,9 @@ func TestValidateDestinationsShares(t *testing.T) {
 	primaryShareName := "primary_name"
 	corectShares := []*types.DestinationShare{
 		{
-			Name:        "Name",
+			Name:        "ShareName",
 			Share:       sdk.MustNewDecFromStr("0.10"),
-			Destination: baseAccount,
+			Destination: mainAccount,
 		},
 	}
 
@@ -216,21 +222,21 @@ func TestValidateDestinationsShares(t *testing.T) {
 		{
 			Name:        "",
 			Share:       sdk.MustNewDecFromStr("0.10"),
-			Destination: baseAccount,
+			Destination: mainAccount,
 		},
 	}
 
 	sharesShareIsNil := []*types.DestinationShare{
 		{
-			Name:        "abc",
+			Name:        "ShareName",
 			Share:       sdk.Dec{},
-			Destination: baseAccount,
+			Destination: mainAccount,
 		},
 	}
 
 	sharesWrongDestinationAccount := []*types.DestinationShare{
 		{
-			Name:        "123",
+			Name:        "ShareName",
 			Share:       sdk.MustNewDecFromStr("0.10"),
 			Destination: types.Account{Id: "WrongTypeAccount", Type: "WrongType"},
 		},
@@ -238,17 +244,17 @@ func TestValidateDestinationsShares(t *testing.T) {
 
 	sharesShareIsLessThan0 := []*types.DestinationShare{
 		{
-			Name:        "123",
+			Name:        "ShareName",
 			Share:       sdk.MustNewDecFromStr("-0.10"),
-			Destination: baseAccount,
+			Destination: mainAccount,
 		},
 	}
 
 	sharesShareIsMoreThan1 := []*types.DestinationShare{
 		{
-			Name:        "123",
+			Name:        "ShareName",
 			Share:       sdk.MustNewDecFromStr("1.1"),
-			Destination: baseAccount,
+			Destination: mainAccount,
 		},
 	}
 
@@ -256,7 +262,7 @@ func TestValidateDestinationsShares(t *testing.T) {
 		{
 			Name:        primaryShareName,
 			Share:       sdk.MustNewDecFromStr("0.5"),
-			Destination: baseAccount,
+			Destination: mainAccount,
 		},
 	}
 
@@ -267,15 +273,51 @@ func TestValidateDestinationsShares(t *testing.T) {
 		errorMessage string
 	}{
 
-		{"DestinationShare empty name", types.Destinations{PrimaryShare: baseAccount, Shares: sharesEmptyName, BurnShare: sdk.ZeroDec()}, true, "destination share name cannot be empty"},
-		{"DestinationShare share is nil", types.Destinations{PrimaryShare: baseAccount, Shares: sharesShareIsNil, BurnShare: sdk.ZeroDec()}, true, "share cannot be nil"},
-		{"DestinationShare destination is of wrong type", types.Destinations{PrimaryShare: baseAccount, Shares: sharesWrongDestinationAccount, BurnShare: sdk.ZeroDec()}, true, "account \"WrongTypeAccount\" is of the wrong type: WrongType"},
-		{"Share is less than 0", types.Destinations{PrimaryShare: baseAccount, Shares: sharesShareIsLessThan0, BurnShare: sdk.ZeroDec()}, true, "share must be between 0 and 1"},
-		{"Share is less more than 1", types.Destinations{PrimaryShare: baseAccount, Shares: sharesShareIsMoreThan1, BurnShare: sdk.ZeroDec()}, true, "share must be between 0 and 1"},
-		{"Burn share is nil", types.Destinations{PrimaryShare: baseAccount, Shares: corectShares, BurnShare: sdk.Dec{}}, true, "burn share cannot be nil"},
-		{"BurnShare is higher than 1", types.Destinations{PrimaryShare: baseAccount, Shares: corectShares, BurnShare: sdk.MustNewDecFromStr("1.1")}, true, "burn share must be between 0 and 1"},
-		{"BurnShare is less than 0", types.Destinations{PrimaryShare: baseAccount, Shares: corectShares, BurnShare: sdk.MustNewDecFromStr("-1")}, true, "burn share must be between 0 and 1"},
-		{"Share name reserved for primary share", types.Destinations{PrimaryShare: baseAccount, Shares: sharesPrimaryShareName, BurnShare: sdk.ZeroDec()}, true, "share name: " + primaryShareName + " is reserved for primary share"},
+		{
+			"DestinationShare empty name",
+			types.Destinations{PrimaryShare: mainAccount, Shares: sharesEmptyName, BurnShare: sdk.ZeroDec()},
+			true, "destination share  validation error: destination share name cannot be empty",
+		},
+		{
+			"DestinationShare share is nil",
+			types.Destinations{PrimaryShare: mainAccount, Shares: sharesShareIsNil, BurnShare: sdk.ZeroDec()},
+			true, "destination share ShareName validation error: share cannot be nil",
+		},
+		{
+			"DestinationShare destination is of wrong type",
+			types.Destinations{PrimaryShare: mainAccount, Shares: sharesWrongDestinationAccount, BurnShare: sdk.ZeroDec()},
+			true, "destination share ShareName validation error: account \"WrongTypeAccount\" is of the wrong type: WrongType",
+		},
+		{
+			"Share is less than 0",
+			types.Destinations{PrimaryShare: mainAccount, Shares: sharesShareIsLessThan0, BurnShare: sdk.ZeroDec()},
+			true, "destination share ShareName validation error: share must be between 0 and 1",
+		},
+		{
+			"Share is less more than 1",
+			types.Destinations{PrimaryShare: mainAccount, Shares: sharesShareIsMoreThan1, BurnShare: sdk.ZeroDec()},
+			true, "destination share ShareName validation error: share must be between 0 and 1",
+		},
+		{
+			"Burn share is nil",
+			types.Destinations{PrimaryShare: mainAccount, Shares: corectShares, BurnShare: sdk.Dec{}},
+			true, "burn share cannot be nil",
+		},
+		{
+			"BurnShare is higher than 1",
+			types.Destinations{PrimaryShare: mainAccount, Shares: corectShares, BurnShare: sdk.MustNewDecFromStr("1.1")},
+			true, "burn share must be between 0 and 1",
+		},
+		{
+			"BurnShare is less than 0",
+			types.Destinations{PrimaryShare: mainAccount, Shares: corectShares, BurnShare: sdk.MustNewDecFromStr("-1")},
+			true, "burn share must be between 0 and 1",
+		},
+		{
+			"Share name reserved for primary share",
+			types.Destinations{PrimaryShare: mainAccount, Shares: sharesPrimaryShareName, BurnShare: sdk.ZeroDec()},
+			true, "destination share " + primaryShareName + " validation error: share name: " + primaryShareName + " is reserved for primary share",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -304,6 +346,9 @@ func TestValidateSubDistributor(t *testing.T) {
 	subdistributorEmptyDestinations := CreateSubDistributor(MAIN_SOURCE)
 	subdistributorEmptyDestinations.Destinations = types.Destinations{}
 
+	subdistributorEmptyDestinationsShares := CreateSubDistributor(MAIN_SOURCE)
+	subdistributorEmptyDestinationsShares.Destinations.Shares = []*types.DestinationShare{nil}
+
 	tests := []struct {
 		name           string
 		subDistributor types.SubDistributor
@@ -312,9 +357,10 @@ func TestValidateSubDistributor(t *testing.T) {
 	}{
 		{"correct subdistributor", subdistributorCorrect, false, ""},
 		{"subdistributor has no name", subdistributorNoName, true, "subdistributor name cannot be empty"},
-		{"subdistributor has no sources", subdistributorNoSources, true, "subdistributor must have at least one source"},
-		{"subdistributor has source with nil type", subdistributorNilSource, true, "source cannot be nil"},
-		{"subdistributor has empty destinations", subdistributorEmptyDestinations, true, "destinations cannot be empty"},
+		{"subdistributor has no sources", subdistributorNoSources, true, "subdistributor " + subdistributorNoSources.Name + " must have at least one source"},
+		{"subdistributor has source with nil type", subdistributorNilSource, true, "subdistributor " + subdistributorNilSource.Name + " source on position 1 cannot be nil"},
+		{"subdistributor has empty destinations", subdistributorEmptyDestinations, true, "subdistributor " + subdistributorEmptyDestinations.Name + " destinations validation error: burn share cannot be nil"},
+		{"subdistributor has empty destinations shares", subdistributorEmptyDestinationsShares, true, "subdistributor " + subdistributorEmptyDestinationsShares.Name + " destinations validation error: destination share on position 1 cannot be nil"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -511,9 +557,12 @@ func TestValidateCorrectModuleAccountInsideSubdistributor(t *testing.T) {
 		{"correct primary share module account", correctPrimaryShareModuleAccount, false, ""},
 		{"correct source module account", correctSourceModuleAccount, false, ""},
 		{"correct share module account", correctShareModuleAccount, false, ""},
-		{"wrong primary share module account", wrongPrimaryShareModuleAccount, true, "module account \"CUSTOM_ID-mainDst\" doesn't exist in maccPerms"},
-		{"wrong source module account", wrongSourceModuleAccount, true, "module account \"CUSTOM_ID-src\" doesn't exist in maccPerms"},
-		{"wrong share module account", wrongShareModuleAccount, true, "module account \"CUSTOM_ID-shareDst\" doesn't exist in maccPerms"},
+		{"wrong primary share module account", wrongPrimaryShareModuleAccount, true,
+			"subdistributor " + wrongPrimaryShareModuleAccount.Name + " destinations validation error: primary share validation error: module account \"CUSTOM_ID-mainDst\" doesn't exist in maccPerms"},
+		{"wrong source module account", wrongSourceModuleAccount, true,
+			"subdistributor " + wrongSourceModuleAccount.Name + " source with id \"" + wrongSourceModuleAccount.Sources[0].Id + "\" validation error: module account \"CUSTOM_ID-src\" doesn't exist in maccPerms"},
+		{"wrong share module account", wrongShareModuleAccount, true,
+			"subdistributor " + wrongShareModuleAccount.Name + " destinations validation error: destination share " + wrongShareModuleAccount.Destinations.Shares[0].Name + " validation error: module account \"CUSTOM_ID-shareDst\" doesn't exist in maccPerms"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -535,7 +584,7 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 	}
 	var tests []test
 
-	for _, accType := range AccountTypes {
+	for _, accType := range []string{types.MAIN, types.MODULE_ACCOUNT, types.INTERNAL_ACCOUNT} {
 		subDistributorCases := make(map[int][]types.SubDistributor)
 		subDistributorCases[0] = []types.SubDistributor{
 			createSubDistributor(CUSTOM_ACCOUNT, accType, accType, CUSTOM_ID, false),
@@ -564,6 +613,8 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 			accId := accType + "-" + CUSTOM_ID
 			if accType == types.MAIN {
 				accId = accType
+			} else if accType == types.INTERNAL_ACCOUNT {
+				accId = accId + "-" + accType
 			}
 			errorMessage := "same " + accId + " account cannot occur twice within one subdistributor, subdistributor name: " + subDistributorCases[i][0].Name
 
@@ -581,6 +632,94 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 			require.NoError(t, err)
 		})
 	}
+}
+
+func TestValidateUniquenessOfSubdistributorsBaseAccountType(t *testing.T) {
+	accType := types.BASE_ACCOUNT
+
+	sameSourceAndDestinationShareShare := []types.SubDistributor{
+		createSubDistributor(CUSTOM_ACCOUNT, accType, accType, CUSTOM_ID, false),
+		CreateSubDistributor(MAIN_SOURCE),
+		CreateSubDistributor(INTERNAL_SOURCE),
+	}
+	sameSourceAndDestinationShareShare[0].Sources[0].Id = sameSourceAndDestinationShareShare[0].Destinations.Shares[0].Destination.Id
+
+	samePrimaryShareAndDestinationShareShare := []types.SubDistributor{
+		createSubDistributor(accType, CUSTOM_ACCOUNT, accType, CUSTOM_ID, false),
+		CreateSubDistributor(MAIN_SOURCE),
+		CreateSubDistributor(INTERNAL_SOURCE),
+	}
+	samePrimaryShareAndDestinationShareShare[0].Destinations.PrimaryShare.Id = samePrimaryShareAndDestinationShareShare[0].Destinations.Shares[0].Destination.Id
+
+	sameSourceAndPrimaryShare := []types.SubDistributor{
+		createSubDistributor(accType, accType, CUSTOM_ACCOUNT, CUSTOM_ID, false),
+		CreateSubDistributor(MAIN_SOURCE),
+		CreateSubDistributor(INTERNAL_SOURCE),
+	}
+	sameSourceAndPrimaryShare[0].Destinations.PrimaryShare.Id = sameSourceAndPrimaryShare[0].Sources[0].Id
+
+	sameSourceDestinationShareAndPrimaryShare := []types.SubDistributor{
+		createSubDistributor(accType, accType, accType, CUSTOM_ID, false),
+		CreateSubDistributor(MAIN_SOURCE),
+		CreateSubDistributor(INTERNAL_SOURCE),
+	}
+	sameSourceDestinationShareAndPrimaryShare[0].Sources[0].Id = sameSourceDestinationShareAndPrimaryShare[0].Destinations.Shares[0].Destination.Id
+
+	sameShares := createSubDistributor(CUSTOM_ACCOUNT, CUSTOM_ACCOUNT_2, accType, CUSTOM_ID, false)
+	copiedShare := *sameShares.Destinations.Shares[0]
+	copiedShare.Name = helpers.RandStringOfLength(10)
+	sameShares.Destinations.Shares = append(sameShares.Destinations.Shares, &copiedShare)
+	sameSourceDestinationShareDestinations := []types.SubDistributor{
+		sameShares,
+		CreateSubDistributor(MAIN_SOURCE),
+		CreateSubDistributor(INTERNAL_SOURCE),
+	}
+
+	tests := []struct {
+		subDistributors []types.SubDistributor
+		expectError     bool
+		errorMessage    string
+	}{
+		{
+			sameSourceAndDestinationShareShare,
+			true,
+			uniquenessOfSubdistributorsBaseAccountErr(sameSourceAndDestinationShareShare[0].Sources[0].Id, sameSourceAndDestinationShareShare[0].Name),
+		},
+		{
+			samePrimaryShareAndDestinationShareShare,
+			true,
+			uniquenessOfSubdistributorsBaseAccountErr(samePrimaryShareAndDestinationShareShare[0].Destinations.PrimaryShare.Id, samePrimaryShareAndDestinationShareShare[0].Name),
+		},
+		{
+			sameSourceAndPrimaryShare,
+			true,
+			uniquenessOfSubdistributorsBaseAccountErr(sameSourceAndPrimaryShare[0].Destinations.PrimaryShare.Id, sameSourceAndPrimaryShare[0].Name),
+		},
+		{
+			sameSourceDestinationShareAndPrimaryShare,
+			true,
+			uniquenessOfSubdistributorsBaseAccountErr(sameSourceDestinationShareAndPrimaryShare[0].Sources[0].Id, sameSourceDestinationShareAndPrimaryShare[0].Name),
+		},
+		{
+			sameSourceDestinationShareDestinations,
+			true,
+			uniquenessOfSubdistributorsBaseAccountErr(sameSourceDestinationShareDestinations[0].Destinations.Shares[0].Destination.Id, sameSourceDestinationShareDestinations[0].Name),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.errorMessage, func(t *testing.T) {
+			err := types.ValidateSubDistributors(tt.subDistributors)
+			if tt.expectError {
+				require.EqualError(t, err, tt.errorMessage)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func uniquenessOfSubdistributorsBaseAccountErr(accountId, subdistributorName string) string {
+	return "same BASE_ACCOUNT-" + accountId + " account cannot occur twice within one subdistributor, subdistributor name: " + subdistributorName
 }
 
 func TestValidateUniquenessOfPrimaryShareNames(t *testing.T) {
@@ -657,14 +796,14 @@ func createSubDistributor(
 	primaryShareType string,
 	sourceType string,
 	destinationShareType string,
-	Id string,
+	id string,
 	addIdSuffix bool,
 ) types.SubDistributor {
 	return types.SubDistributor{
 		Name: helpers.RandStringOfLength(10),
 		Destinations: types.Destinations{
 			PrimaryShare: types.Account{
-				Id:   Id + GetIdSuffix("mainDst", primaryShareType, addIdSuffix),
+				Id:   cfedistributortestutils.GetCorrectAccountId(id, getAccountSuffix("-mainDst", addIdSuffix), primaryShareType),
 				Type: primaryShareType,
 			},
 			BurnShare: sdk.ZeroDec(),
@@ -672,7 +811,7 @@ func createSubDistributor(
 				{
 					Name: helpers.RandStringOfLength(10),
 					Destination: types.Account{
-						Id:   Id + GetIdSuffix("shareDst", destinationShareType, addIdSuffix),
+						Id:   cfedistributortestutils.GetCorrectAccountId(id, getAccountSuffix("-shareDst", addIdSuffix), destinationShareType),
 						Type: destinationShareType,
 					},
 					Share: sdk.ZeroDec(),
@@ -681,19 +820,16 @@ func createSubDistributor(
 		},
 		Sources: []*types.Account{
 			{
-				Id:   Id + GetIdSuffix("src", sourceType, addIdSuffix),
+				Id:   cfedistributortestutils.GetCorrectAccountId(id, getAccountSuffix("-src", addIdSuffix), sourceType),
 				Type: sourceType,
 			},
 		},
 	}
 }
 
-func GetIdSuffix(suffix string, accType string, addIdSuffix bool) string {
-	if !addIdSuffix {
-		return ""
+func getAccountSuffix(suffix string, addIdSuffix bool) string {
+	if addIdSuffix {
+		return suffix
 	}
-	if accType == types.INTERNAL_ACCOUNT || accType == types.MAIN {
-		return "-" + accType
-	}
-	return "-" + suffix
+	return ""
 }

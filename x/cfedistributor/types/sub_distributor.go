@@ -2,8 +2,8 @@ package types
 
 import (
 	"fmt"
+	"github.com/cosmos/btcutil/bech32"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"reflect"
 )
 
 const maxShare = 1
@@ -14,20 +14,17 @@ func (subdistributor SubDistributor) Validate() error {
 		return fmt.Errorf("subdistributor name cannot be empty")
 	}
 	if err := subdistributor.Destinations.Validate(subdistributor.GetPrimaryShareName()); err != nil {
-		return err
-	}
-	if err := subdistributor.Destinations.PrimaryShare.Validate(); err != nil {
-		return err
+		return fmt.Errorf("subdistributor %s destinations validation error: %w", subdistributor.Name, err)
 	}
 	if len(subdistributor.Sources) < 1 {
-		return fmt.Errorf("subdistributor must have at least one source")
+		return fmt.Errorf("subdistributor %s must have at least one source", subdistributor.Name)
 	}
-	for _, source := range subdistributor.Sources {
+	for i, source := range subdistributor.Sources {
 		if source == nil {
-			return fmt.Errorf("source cannot be nil")
+			return fmt.Errorf("subdistributor %s source on position %d cannot be nil", subdistributor.Name, i+1)
 		}
 		if err := source.Validate(); err != nil {
-			return err
+			return fmt.Errorf("subdistributor %s source with id \"%s\" validation error: %w", subdistributor.Name, source.Id, err)
 		}
 	}
 
@@ -39,9 +36,6 @@ func (subdistributor SubDistributor) GetPrimaryShareName() string {
 }
 
 func (destinations Destinations) Validate(primaryShareName string) error {
-	if reflect.ValueOf(destinations).IsZero() {
-		return fmt.Errorf("destinations cannot be empty")
-	}
 	if destinations.BurnShare.IsNil() {
 		return fmt.Errorf("burn share cannot be nil")
 	}
@@ -49,12 +43,17 @@ func (destinations Destinations) Validate(primaryShareName string) error {
 		return fmt.Errorf("burn share must be between 0 and 1")
 	}
 
-	for _, shares := range destinations.Shares {
-		if err := shares.Validate(primaryShareName); err != nil {
-			return err
+	for i, share := range destinations.Shares {
+		if share == nil {
+			return fmt.Errorf("destination share on position %d cannot be nil", i+1)
+		}
+		if err := share.Validate(primaryShareName); err != nil {
+			return fmt.Errorf("destination share %s validation error: %w", share.Name, err)
 		}
 	}
-
+	if err := destinations.PrimaryShare.Validate(); err != nil {
+		return fmt.Errorf("primary share validation error: %w", err)
+	}
 	if err := destinations.CheckIfSharesSumIsBetween0And1(); err != nil {
 		return err
 	}
@@ -75,8 +74,11 @@ func (destinations Destinations) CheckIfSharesSumIsBetween0And1() error {
 }
 
 func (destinationShare *DestinationShare) Validate(primaryShareName string) error {
-	if destinationShare == nil {
-		return fmt.Errorf("destination share cannot be nil")
+	if destinationShare.Name == "" {
+		return fmt.Errorf("destination share name cannot be empty")
+	}
+	if destinationShare.Name == primaryShareName {
+		return fmt.Errorf("share name: %s is reserved for primary share", destinationShare.Name)
 	}
 	if destinationShare.Share.IsNil() {
 		return fmt.Errorf("share cannot be nil")
@@ -86,12 +88,6 @@ func (destinationShare *DestinationShare) Validate(primaryShareName string) erro
 	}
 	if err := destinationShare.Destination.Validate(); err != nil {
 		return err
-	}
-	if destinationShare.Name == "" {
-		return fmt.Errorf("destination share name cannot be empty")
-	}
-	if destinationShare.Name == primaryShareName {
-		return fmt.Errorf("share name: %s is reserved for primary share", destinationShare.Name)
 	}
 	return nil
 }
@@ -123,16 +119,24 @@ const (
 
 func (account Account) Validate() error {
 	switch account.Type {
-	case INTERNAL_ACCOUNT, MAIN, BASE_ACCOUNT:
+	case MAIN:
 		return nil
+	case INTERNAL_ACCOUNT:
+		if account.Id == "" {
+			return fmt.Errorf("internal account id cannot be empty")
+		}
+	case BASE_ACCOUNT:
+		if _, _, err := bech32.DecodeNoLimit(account.Id); err != nil {
+			return fmt.Errorf("base account id \"%s\" is not a valid bech32 address", account.Id)
+		}
 	case MODULE_ACCOUNT:
 		if !accountExistInMacPerms(account.Id) {
 			return fmt.Errorf("module account \"%s\" doesn't exist in maccPerms", account.Id)
 		}
-		return nil
 	default:
 		return fmt.Errorf("account \"%s\" is of the wrong type: %s", account.Id, account.Type)
 	}
+	return nil
 }
 
 func (account Account) GetAccounteKey() string {
@@ -220,7 +224,7 @@ func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[str
 
 func validateUniquenessOfNames(subDistributorName string, nameOccured *map[string]bool) error {
 	if (*nameOccured)[subDistributorName] {
-		return fmt.Errorf("subdistributor names must be unique, subdistributor name: " + subDistributorName)
+		return fmt.Errorf("subdistributor names must be unique, subdistributor name: %s", subDistributorName)
 	}
 	(*nameOccured)[subDistributorName] = true
 

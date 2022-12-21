@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -76,6 +78,13 @@ func createRandomAccAddressHexAndBechNoBalance(i int64) (hex string, bech string
 
 func CreateRandomAccAddressNoBalance(i int64) string {
 	_, bech := createRandomAccAddressHexAndBechNoBalance(i)
+	return bech
+}
+
+func CreateRandomAccAddress() string {
+	src := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(src)
+	_, bech := createRandomAccAddressHexAndBechNoBalance(r.Int63())
 	return bech
 }
 
