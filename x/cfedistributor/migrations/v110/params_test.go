@@ -80,7 +80,7 @@ func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[0].Name+" destinations validation error: destination share "+oldSubDistributors[0].Destination.Share[0].Name+" validation error: destination account validation error: module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[0].Name+" destinations validation error: destination share "+oldSubDistributors[0].Destination.Share[0].Name+" destination account validation error: module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
 }
 
 func setV101Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v101.SubDistributor) {

@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	"github.com/cosmos/btcutil/bech32"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -48,7 +48,7 @@ func (destinations Destinations) Validate(primaryShareName string) error {
 			return fmt.Errorf("destination share on position %d cannot be nil", i+1)
 		}
 		if err := share.Validate(primaryShareName); err != nil {
-			return fmt.Errorf("destination share %s validation error: %w", share.Name, err)
+			return err
 		}
 	}
 	if err := destinations.PrimaryShare.Validate(); err != nil {
@@ -78,16 +78,16 @@ func (destinationShare *DestinationShare) Validate(primaryShareName string) erro
 		return fmt.Errorf("destination share name cannot be empty")
 	}
 	if destinationShare.Name == primaryShareName {
-		return fmt.Errorf("share name: %s is reserved for primary share", destinationShare.Name)
+		return fmt.Errorf("destination share name: %s is reserved for primary share", destinationShare.Name)
 	}
 	if destinationShare.Share.IsNil() {
-		return fmt.Errorf("share cannot be nil")
+		return fmt.Errorf("destination share %s share cannot be nil", destinationShare.Name)
 	}
 	if destinationShare.Share.GTE(sdk.NewDec(maxShare)) || destinationShare.Share.IsNegative() {
-		return fmt.Errorf("share must be between 0 and 1")
+		return fmt.Errorf("destination share %s share must be between 0 and 1", destinationShare.Name)
 	}
 	if err := destinationShare.Destination.Validate(); err != nil {
-		return fmt.Errorf("destination account validation error: %w", err)
+		return fmt.Errorf("destination share %s destination account validation error: %w", destinationShare.Name, err)
 	}
 	return nil
 }
@@ -126,8 +126,8 @@ func (account Account) Validate() error {
 			return fmt.Errorf("internal account id cannot be empty")
 		}
 	case BASE_ACCOUNT:
-		if _, _, err := bech32.DecodeNoLimit(account.Id); err != nil {
-			return fmt.Errorf("base account id \"%s\" is not a valid bech32 address", account.Id)
+		if _, err := sdk.AccAddressFromBech32(account.Id); err != nil {
+			return fmt.Errorf("base account id \"%s\" is not a valid bech32 address: %w", account.Id, err)
 		}
 	case MODULE_ACCOUNT:
 		if !accountExistInMacPerms(account.Id) {

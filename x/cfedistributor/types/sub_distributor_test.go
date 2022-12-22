@@ -1,12 +1,14 @@
 package types_test
 
 import (
+	"testing"
+
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 var mainAccount = types.Account{
@@ -15,6 +17,7 @@ var mainAccount = types.Account{
 }
 
 func TestCheckAccountType(t *testing.T) {
+	addr, _ := commontestutils.CreateAccounts(1, 0)
 	cfedistributortestutils.SetTestMaccPerms()
 	tests := []struct {
 		name         string
@@ -22,8 +25,8 @@ func TestCheckAccountType(t *testing.T) {
 		expectError  bool
 		errorMessage string
 	}{
-		{"Check base account", types.Account{Id: "c4e1avc7vz3khvlf6fgd3a2exnaqnhhk0sxzzgxc4n", Type: types.BASE_ACCOUNT}, false, ""},
-		{"Check base account - wrong acc address", types.Account{Id: "not_valid_bech32", Type: types.BASE_ACCOUNT}, true, "base account id \"not_valid_bech32\" is not a valid bech32 address"},
+		{"Check base account", types.Account{Id: addr[0].String(), Type: types.BASE_ACCOUNT}, false, ""},
+		{"Check base account - wrong acc address", types.Account{Id: "not_valid_bech32", Type: types.BASE_ACCOUNT}, true, "base account id \"not_valid_bech32\" is not a valid bech32 address: decoding bech32 failed: invalid separator index -1"},
 		{"Check module account - account doesn't exist in maccPerms", types.Account{Id: "sample", Type: types.MODULE_ACCOUNT}, true, "module account \"sample\" doesn't exist in maccPerms"},
 		{"Check module account - account exists in maccPerms", types.Account{Id: "CUSTOM_ID", Type: types.MODULE_ACCOUNT}, false, ""},
 		{"Check internal account", types.Account{Id: "sample", Type: types.INTERNAL_ACCOUNT}, false, ""},
@@ -193,7 +196,7 @@ func TestValidateDestinationsShareSum(t *testing.T) {
 		{
 			"Share sum equal 110",
 			types.Destinations{PrimaryShare: mainAccount, Shares: sharesEqual110, BurnShare: sdk.ZeroDec()},
-			true, "destination share shareName validation error: share must be between 0 and 1",
+			true, "destination share shareName share must be between 0 and 1",
 		},
 	}
 	for _, tt := range tests {
@@ -276,27 +279,27 @@ func TestValidateDestinationsShares(t *testing.T) {
 		{
 			"DestinationShare empty name",
 			types.Destinations{PrimaryShare: mainAccount, Shares: sharesEmptyName, BurnShare: sdk.ZeroDec()},
-			true, "destination share  validation error: destination share name cannot be empty",
+			true, "destination share name cannot be empty",
 		},
 		{
 			"DestinationShare share is nil",
 			types.Destinations{PrimaryShare: mainAccount, Shares: sharesShareIsNil, BurnShare: sdk.ZeroDec()},
-			true, "destination share ShareName validation error: share cannot be nil",
+			true, "destination share ShareName share cannot be nil",
 		},
 		{
 			"DestinationShare destination is of wrong type",
 			types.Destinations{PrimaryShare: mainAccount, Shares: sharesWrongDestinationAccount, BurnShare: sdk.ZeroDec()},
-			true, "destination share ShareName validation error: destination account validation error: account \"WrongTypeAccount\" is of the wrong type: WrongType",
+			true, "destination share ShareName destination account validation error: account \"WrongTypeAccount\" is of the wrong type: WrongType",
 		},
 		{
 			"Share is less than 0",
 			types.Destinations{PrimaryShare: mainAccount, Shares: sharesShareIsLessThan0, BurnShare: sdk.ZeroDec()},
-			true, "destination share ShareName validation error: share must be between 0 and 1",
+			true, "destination share ShareName share must be between 0 and 1",
 		},
 		{
 			"Share is less more than 1",
 			types.Destinations{PrimaryShare: mainAccount, Shares: sharesShareIsMoreThan1, BurnShare: sdk.ZeroDec()},
-			true, "destination share ShareName validation error: share must be between 0 and 1",
+			true, "destination share ShareName share must be between 0 and 1",
 		},
 		{
 			"Burn share is nil",
@@ -316,7 +319,7 @@ func TestValidateDestinationsShares(t *testing.T) {
 		{
 			"Share name reserved for primary share",
 			types.Destinations{PrimaryShare: mainAccount, Shares: sharesPrimaryShareName, BurnShare: sdk.ZeroDec()},
-			true, "destination share " + primaryShareName + " validation error: share name: " + primaryShareName + " is reserved for primary share",
+			true, "destination share name: " + primaryShareName + " is reserved for primary share",
 		},
 	}
 	for _, tt := range tests {
@@ -562,7 +565,7 @@ func TestValidateCorrectModuleAccountInsideSubdistributor(t *testing.T) {
 		{"wrong source module account", wrongSourceModuleAccount, true,
 			"subdistributor " + wrongSourceModuleAccount.Name + " source with id \"" + wrongSourceModuleAccount.Sources[0].Id + "\" validation error: module account \"CUSTOM_ID-src\" doesn't exist in maccPerms"},
 		{"wrong share module account", wrongShareModuleAccount, true,
-			"subdistributor " + wrongShareModuleAccount.Name + " destinations validation error: destination share " + wrongShareModuleAccount.Destinations.Shares[0].Name + " validation error: destination account validation error: module account \"CUSTOM_ID-shareDst\" doesn't exist in maccPerms"},
+			"subdistributor " + wrongShareModuleAccount.Name + " destinations validation error: destination share " + wrongShareModuleAccount.Destinations.Shares[0].Name + " destination account validation error: module account \"CUSTOM_ID-shareDst\" doesn't exist in maccPerms"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
