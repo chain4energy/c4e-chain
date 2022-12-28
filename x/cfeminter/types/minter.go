@@ -48,7 +48,7 @@ func (params MinterConfig) Validate() error {
 			return err
 		}
 
-		if err = minter.Validate(); err != nil {
+		if err = minter.validate(); err != nil {
 			return fmt.Errorf("minter with id %d validation error: %w", minter.SequenceId, err)
 		}
 	}
@@ -105,7 +105,7 @@ func (params MinterConfig) ContainsMinter(sequenceId uint32) bool {
 	return false
 }
 
-func (m Minter) Validate() error {
+func (m Minter) validate() error {
 	switch m.Type {
 	case NoMintingType:
 		if m.LinearMinting != nil || m.ExponentialStepMinting != nil {
@@ -114,9 +114,6 @@ func (m Minter) Validate() error {
 	case LinearMintingType:
 		if m.ExponentialStepMinting != nil {
 			return fmt.Errorf("for LinearMintingType type (1) ExponentialStepMinting cannot be set")
-		}
-		if m.LinearMinting == nil {
-			return fmt.Errorf("for LinearMintingType type (1) LinearMinting must be set")
 		}
 		if m.EndTime == nil {
 			return fmt.Errorf("for LinearMintingType type (1) EndTime must be set")
@@ -128,9 +125,6 @@ func (m Minter) Validate() error {
 		if m.LinearMinting != nil {
 			return fmt.Errorf("for ExponentialStepMintingType type (2) LinearMinting cannot be set")
 		}
-		if m.ExponentialStepMinting == nil {
-			return fmt.Errorf("for ExponentialStepMintingType type (2) ExponentialStepMinting must be set")
-		}
 		if err := m.ExponentialStepMinting.validate(); err != nil {
 			return fmt.Errorf("ExponentialStepMintingType error: %w", err)
 		}
@@ -140,7 +134,10 @@ func (m Minter) Validate() error {
 	return nil
 }
 
-func (m LinearMinting) validate() error {
+func (m *LinearMinting) validate() error {
+	if m == nil {
+		return fmt.Errorf("for LinearMintingType type (1) LinearMinting must be set")
+	}
 	if m.Amount.IsNil() {
 		return fmt.Errorf("amount cannot be nil")
 	}
@@ -150,7 +147,10 @@ func (m LinearMinting) validate() error {
 	return nil
 }
 
-func (m ExponentialStepMinting) validate() error {
+func (m *ExponentialStepMinting) validate() error {
+	if m == nil {
+		return fmt.Errorf("for ExponentialStepMintingType type (2) ExponentialStepMinting must be set")
+	}
 	if m.Amount.IsNil() {
 		return fmt.Errorf("amount cannot be nil")
 	}

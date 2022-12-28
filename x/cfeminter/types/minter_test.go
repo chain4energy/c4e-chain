@@ -362,7 +362,7 @@ func TestValidateMinterTimeLineraMinterTypeWithNoLinearMintingDefinition(t *test
 	}
 
 	params := types.Params{MintDenom: customDenom, MinterConfig: minterConfig}
-	require.EqualError(t, params.Validate(), "minter with id 2 validation error: for LinearMintingType type (1) LinearMinting must be set")
+	require.EqualError(t, params.Validate(), "minter with id 2 validation error: LinearMintingType error: for LinearMintingType type (1) LinearMinting must be set")
 }
 
 func TestValidateMinterTimeLineraMinterTypeWithNoEndTimeInNotLastPeriod(t *testing.T) {
@@ -849,7 +849,7 @@ func TestValidateExponentialStepMintingMinterNotSet(t *testing.T) {
 	}
 
 	params := types.Params{MintDenom: customDenom, MinterConfig: minterConfig}
-	require.EqualError(t, params.Validate(), "minter with id 2 validation error: for ExponentialStepMintingType type (2) ExponentialStepMinting must be set")
+	require.EqualError(t, params.Validate(), "minter with id 2 validation error: ExponentialStepMintingType error: for ExponentialStepMintingType type (2) ExponentialStepMinting must be set")
 }
 
 func TestValidateExponentialStepMintingAmountBelowZero(t *testing.T) {
