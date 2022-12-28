@@ -146,55 +146,31 @@ func (account Account) GetAccounteKey() string {
 func ValidateSubDistributors(subDistributors []SubDistributor) error {
 	lastOccurrence := make(map[string]string)
 	lastOccurrenceIndex := make(map[string]int)
-	subDistributorNameOccured := make(map[string]bool)
-	shareNameOccured := make(map[string]bool)
+	subDistributorNameOccurred := make(map[string]bool)
+	shareNameOccurred := make(map[string]bool)
 
 	for i := 0; i < len(subDistributors); i++ {
 		subDistributorName := subDistributors[i].Name
-		err := validateUniquenessOfNames(subDistributorName, &subDistributorNameOccured)
-		if err != nil {
+		if err := validateUniquenessOfNames(subDistributorName, &subDistributorNameOccurred); err != nil {
 			return err
 		}
-
-		for j := 0; j < len(subDistributors[i].Sources); j++ {
-			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, subDistributors[i].Sources[j], i, SOURCE); err != nil {
-				return err
-			}
+		if err := validateSources(subDistributors[i].Sources, i, lastOccurrence, lastOccurrenceIndex, subDistributorName, SOURCE); err != nil {
+			return err
 		}
 
 		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.PrimaryShare, i, DESTINATION); err != nil {
 			return err
 		}
 
-		if err = validateUniquenessOfNames(subDistributors[i].GetPrimaryShareName(), &shareNameOccured); err != nil {
+		if err := validateUniquenessOfNames(subDistributors[i].GetPrimaryShareName(), &shareNameOccurred); err != nil {
 			return err
 		}
-
-		for j := 0; j < len(subDistributors[i].Destinations.Shares); j++ {
-			shareName := subDistributors[i].Destinations.Shares[j].Name
-			if err = validateUniquenessOfNames(shareName, &shareNameOccured); err != nil {
-				return err
-			}
-
-			if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.Shares[j].Destination, i, DESTINATION); err != nil {
-				return err
-			}
-		}
-
-	}
-
-	if lastOccurrence[MAIN] == "" {
-		return fmt.Errorf("there must be at least one subdistributor with the source main type")
-	}
-	for accountId := range lastOccurrence {
-		if lastOccurrence[accountId] != SOURCE {
-			return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the " +
-				"destination of internal or main account type there must be exactly one occurrence of a subdistributor with the " +
-				"source of internal account type, account id: " + accountId)
+		if err := validateDestinationsShares(subDistributors[i].Destinations.Shares, i, lastOccurrence, lastOccurrenceIndex, shareNameOccurred, subDistributorName, DESTINATION); err != nil {
+			return err
 		}
 	}
 
-	return nil
+	return validateLastOccurrence(lastOccurrence)
 }
 
 func getId(account *Account) string {
@@ -208,7 +184,7 @@ func isAccountPositionValidatable(accType string) bool {
 	return accType == INTERNAL_ACCOUNT || accType == MAIN
 }
 
-func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, position int, occuranceType string) error {
+func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, position int, accountType string) error {
 	id := getId(account)
 	currentPosition := position + 1
 	if lastOccurrenceIndex[id] == currentPosition {
@@ -216,17 +192,17 @@ func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[str
 			id, subDistributorName)
 	}
 	if isAccountPositionValidatable(account.Type) {
-		lastOccurrence[id] = occuranceType
+		lastOccurrence[id] = accountType
 	}
 	lastOccurrenceIndex[id] = currentPosition
 	return nil
 }
 
-func validateUniquenessOfNames(subDistributorName string, nameOccured *map[string]bool) error {
-	if (*nameOccured)[subDistributorName] {
+func validateUniquenessOfNames(subDistributorName string, nameOccurred *map[string]bool) error {
+	if (*nameOccurred)[subDistributorName] {
 		return fmt.Errorf("subdistributor names must be unique, subdistributor name: %s", subDistributorName)
 	}
-	(*nameOccured)[subDistributorName] = true
+	(*nameOccurred)[subDistributorName] = true
 
 	return nil
 }
@@ -234,4 +210,40 @@ func validateUniquenessOfNames(subDistributorName string, nameOccured *map[strin
 func accountExistInMacPerms(accountId string) bool {
 	_, found := maccPerms[accountId]
 	return found
+}
+
+func validateSources(accounts []*Account, subDistributorIndex int, lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, accountType string) error {
+	for _, source := range accounts {
+		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, source, subDistributorIndex, accountType); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+func validateDestinationsShares(shares []*DestinationShare, subDistributorIndex int, lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, shareNameOccurred map[string]bool, subDistributorName string, accountType string) error {
+	for _, share := range shares {
+		if err := validateUniquenessOfNames(share.Name, &shareNameOccurred); err != nil {
+			return err
+		}
+		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &share.Destination, subDistributorIndex, accountType); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func validateLastOccurrence(lastOccurrence map[string]string) error {
+	if lastOccurrence[MAIN] == "" {
+		return fmt.Errorf("there must be at least one subdistributor with the source main type")
+	}
+	for accountId := range lastOccurrence {
+		if lastOccurrence[accountId] != SOURCE {
+			return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the " +
+				"destination of internal or main account type there must be exactly one occurrence of a subdistributor with the " +
+				"source of internal account type, account id: " + accountId)
+		}
+	}
+	return nil
 }

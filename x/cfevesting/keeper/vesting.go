@@ -13,7 +13,7 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
-// vest
+const VESTING_ADDRESS = "vestingAddr: "
 
 func (k Keeper) CreateVestingPool(ctx sdk.Context, addr string, name string, amount sdk.Int, duration time.Duration, vestingType string) error {
 	k.Logger(ctx).Debug("create vesting pool", "addr", addr, "amount: ", amount, "vestingType", vestingType)
@@ -39,19 +39,19 @@ func (k Keeper) addVestingPool(
 	lockEnd time.Time) error {
 
 	if vestingPoolName == "" {
-		k.Logger(ctx).Error("add vesting pool: empty name ", "vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "amount", amount)
+		k.Logger(ctx).Error("add vesting pool: empty name ", "vestingPoolName", vestingPoolName, VESTING_ADDRESS, vestingAddr, "coinSrcAddr", coinSrcAddr, "amount", amount)
 		return sdkerrors.Wrap(types.ErrParam, "add vesting pool empty name")
 	}
 
 	if amount.LTE(sdk.ZeroInt()) {
-		k.Logger(ctx).Error("add vesting pool amount <= 0", "vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "amount", amount)
+		k.Logger(ctx).Error("add vesting pool amount <= 0", "vestingPoolName", vestingPoolName, VESTING_ADDRESS, vestingAddr, "coinSrcAddr", coinSrcAddr, "amount", amount)
 		return sdkerrors.Wrap(types.ErrAmount, "add vesting pool amount <= 0")
 	}
 
 	_, err := sdk.AccAddressFromBech32(vestingAddr)
 	if err != nil {
 		k.Logger(ctx).Error("add vesting pool vesting acc address parsing error",
-			"vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "error", err.Error())
+			"vestingPoolName", vestingPoolName, VESTING_ADDRESS, vestingAddr, "coinSrcAddr", coinSrcAddr, "error", err.Error())
 		return sdkerrors.Wrap(types.ErrParsing, sdkerrors.Wrap(err, "add vesting pool - vesting acc address error").Error())
 	}
 	denom := k.GetParams(ctx).Denom
@@ -60,7 +60,7 @@ func (k Keeper) addVestingPool(
 	srcAccAddress, err = sdk.AccAddressFromBech32(coinSrcAddr)
 	if err != nil {
 		k.Logger(ctx).Error("add vesting pool source account address parsing error",
-			"vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "error", err.Error())
+			"vestingPoolName", vestingPoolName, VESTING_ADDRESS, vestingAddr, "coinSrcAddr", coinSrcAddr, "error", err.Error())
 		return sdkerrors.Wrap(types.ErrParsing, sdkerrors.Wrap(err, "add vesting pool - source account address error").Error())
 	}
 
@@ -68,7 +68,7 @@ func (k Keeper) addVestingPool(
 
 	if balance.Amount.LT(amount) {
 		k.Logger(ctx).Error("add vesting pool balance less than requested amount error",
-			"vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr, "balanceAmount",
+			"vestingPoolName", vestingPoolName, VESTING_ADDRESS, vestingAddr, "coinSrcAddr", coinSrcAddr, "balanceAmount",
 			balance.Amount.String(), "balanceDenom", balance.Denom, "reguestedAmount", amount.String()+denom)
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "add vesting pool - balance [%s%s] less than requested amount: %s%s",
 			balance.Amount.String(), balance.Denom, amount.String(), denom)
@@ -83,7 +83,7 @@ func (k Keeper) addVestingPool(
 		for _, pool := range accVestingPools.VestingPools {
 			if pool.Name == vestingPoolName {
 				k.Logger(ctx).Error("add vesting pool vesting pool name already exists error",
-					"vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr")
+					"vestingPoolName", vestingPoolName, VESTING_ADDRESS, vestingAddr, "coinSrcAddr")
 				return sdkerrors.Wrapf(types.ErrAlreadyExists, "add vesting pool - vesting pool name: %s", vestingPoolName)
 			}
 		}
@@ -104,7 +104,7 @@ func (k Keeper) addVestingPool(
 	coinsToSend := sdk.NewCoins(coinToSend)
 	err = k.bank.SendCoinsFromAccountToModule(ctx, srcAccAddress, types.ModuleName, coinsToSend)
 
-	k.Logger(ctx).Debug("add vesting pool", "vestingPoolName", vestingPoolName, "vestingAddr: ", vestingAddr, "coinSrcAddr", coinSrcAddr,
+	k.Logger(ctx).Debug("add vesting pool", "vestingPoolName", vestingPoolName, VESTING_ADDRESS, vestingAddr, "coinSrcAddr", coinSrcAddr,
 		"amount", amount, "vestingType", vestingType, "lockStart", lockStart, "lockEnd", lockEnd,
 		"denom", denom, "balance", balance, "vestingPoolsFound", vestingPoolsFound, "vestingPool", vestingPool)
 	if err != nil {

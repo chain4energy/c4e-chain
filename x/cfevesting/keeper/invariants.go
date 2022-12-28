@@ -7,6 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+const NONNEGATIVE_AMOUNTS_INVARIANT = "nonnegative vesting pool amounts"
+
 // RegisterInvariants register cfedistribution invariants
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 	ir.RegisterRoute(types.ModuleName, "nonnegative-vesting-pool-amount",
@@ -25,19 +27,19 @@ func NonNegativeVestingPoolAmountsInvariant(k Keeper) sdk.Invariant {
 		for _, accountVestingPools := range allVestingPools {
 			for _, vestingPool := range accountVestingPools.VestingPools {
 				if vestingPool.Withdrawn.IsNegative() {
-					return sdk.FormatInvariant(types.ModuleName, "nonnegative vesting pool amounts",
+					return sdk.FormatInvariant(types.ModuleName, NONNEGATIVE_AMOUNTS_INVARIANT,
 						fmt.Sprintf("\tnegative Withdrawn %s in vesting pool: %s for address: %s", vestingPool.Withdrawn, vestingPool.Name, accountVestingPools.Address)), true
 				} else if vestingPool.Sent.IsNegative() {
-					return sdk.FormatInvariant(types.ModuleName, "nonnegative vesting pool amounts",
+					return sdk.FormatInvariant(types.ModuleName, NONNEGATIVE_AMOUNTS_INVARIANT,
 						fmt.Sprintf("\tnegative Sent %s in vesting pool: %s for address: %s", vestingPool.Sent, vestingPool.Name, accountVestingPools.Address)), true
 				} else if vestingPool.InitiallyLocked.IsNegative() {
-					return sdk.FormatInvariant(types.ModuleName, "nonnegative vesting pool amounts",
+					return sdk.FormatInvariant(types.ModuleName, NONNEGATIVE_AMOUNTS_INVARIANT,
 						fmt.Sprintf("\tnegative InitiallyLocked %s in vesting pool: %s for address: %s", vestingPool.InitiallyLocked, vestingPool.Name, accountVestingPools.Address)), true
 				}
 			}
 		}
 
-		return sdk.FormatInvariant(types.ModuleName, "nonnegative vesting pool amounts", "\tno negative amounts in vesting pools"), false
+		return sdk.FormatInvariant(types.ModuleName, NONNEGATIVE_AMOUNTS_INVARIANT, "\tno negative amounts in vesting pools"), false
 	}
 }
 
