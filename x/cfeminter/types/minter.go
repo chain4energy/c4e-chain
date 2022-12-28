@@ -12,9 +12,9 @@ import (
 const year = time.Hour * 24 * 365
 
 const ( // MintingPeriod types
-	NO_MINTING               string = "NO_MINTING"
-	LINEAR_MINTING           string = "LINEAR_MINTING"
-	EXPONENTIAL_STEP_MINTING string = "EXPONENTIAL_STEP_MINTING"
+	NoMintingType              string = "NO_MINTING"
+	LinearMintingType          string = "LINEAR_MINTING"
+	ExponentialStepMintingType string = "EXPONENTIAL_STEP_MINTING"
 )
 
 func (params MinterConfig) Validate() error {
@@ -107,32 +107,32 @@ func (params MinterConfig) ContainsMinter(sequenceId uint32) bool {
 
 func (m Minter) Validate() error {
 	switch m.Type {
-	case NO_MINTING:
+	case NoMintingType:
 		if m.LinearMinting != nil || m.ExponentialStepMinting != nil {
 			return fmt.Errorf("for NO_MINTING type (0) LinearMinting and ExponentialStepMinting cannot be set")
 		}
-	case LINEAR_MINTING:
+	case LinearMintingType:
 		if m.ExponentialStepMinting != nil {
-			return fmt.Errorf("for LINEAR_MINTING type (1) ExponentialStepMinting cannot be set")
+			return fmt.Errorf("for LinearMintingType type (1) ExponentialStepMinting cannot be set")
 		}
 		if m.LinearMinting == nil {
-			return fmt.Errorf("for LINEAR_MINTING type (1) LinearMinting must be set")
+			return fmt.Errorf("for LinearMintingType type (1) LinearMinting must be set")
 		}
 		if m.EndTime == nil {
-			return fmt.Errorf("for LINEAR_MINTING type (1) EndTime must be set")
+			return fmt.Errorf("for LinearMintingType type (1) EndTime must be set")
 		}
 		if err := m.LinearMinting.validate(); err != nil {
-			return fmt.Errorf("LINEAR_MINTING error: %w", err)
+			return fmt.Errorf("LinearMintingType error: %w", err)
 		}
-	case EXPONENTIAL_STEP_MINTING:
+	case ExponentialStepMintingType:
 		if m.LinearMinting != nil {
-			return fmt.Errorf("for EXPONENTIAL_STEP_MINTING type (2) LinearMinting cannot be set")
+			return fmt.Errorf("for ExponentialStepMintingType type (2) LinearMinting cannot be set")
 		}
 		if m.ExponentialStepMinting == nil {
-			return fmt.Errorf("for EXPONENTIAL_STEP_MINTING type (2) ExponentialStepMinting must be set")
+			return fmt.Errorf("for ExponentialStepMintingType type (2) ExponentialStepMinting must be set")
 		}
 		if err := m.ExponentialStepMinting.validate(); err != nil {
-			return fmt.Errorf("EXPONENTIAL_STEP_MINTING error: %w", err)
+			return fmt.Errorf("ExponentialStepMintingType error: %w", err)
 		}
 	default:
 		return fmt.Errorf("unknow minting configuration type: %s", m.Type)
@@ -202,11 +202,11 @@ func (m *Minter) CalculateInflation(totalSupply sdk.Int, startTime time.Time, bl
 		return sdk.ZeroDec()
 	}
 	switch m.Type {
-	case NO_MINTING:
+	case NoMintingType:
 		return sdk.ZeroDec()
-	case LINEAR_MINTING:
+	case LinearMintingType:
 		return m.LinearMinting.calculateInflation(totalSupply, startTime, *m.EndTime)
-	case EXPONENTIAL_STEP_MINTING:
+	case ExponentialStepMintingType:
 		return m.ExponentialStepMinting.calculateInflation(totalSupply, startTime, m.EndTime, blockTime)
 	default:
 		return sdk.ZeroDec()
@@ -253,11 +253,11 @@ func (m *ExponentialStepMinting) calculateInflation(totalSupply sdk.Int, startTi
 
 func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, minterStart time.Time, blockTime time.Time) sdk.Dec {
 	switch m.Type {
-	case NO_MINTING:
+	case NoMintingType:
 		return sdk.ZeroDec()
-	case LINEAR_MINTING:
+	case LinearMintingType:
 		return m.LinearMinting.amountToMint(minterStart, *m.EndTime, blockTime)
-	case EXPONENTIAL_STEP_MINTING:
+	case ExponentialStepMintingType:
 		return m.ExponentialStepMinting.amountToMint(logger, minterStart, m.EndTime, blockTime)
 	default:
 		return sdk.ZeroDec()

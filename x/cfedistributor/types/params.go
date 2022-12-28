@@ -23,14 +23,14 @@ var (
 			Destinations: Destinations{
 				PrimaryShare: Account{
 					Id:   ValidatorsRewardsCollector,
-					Type: MODULE_ACCOUNT,
+					Type: ModuleAccount,
 				},
 				BurnShare: sdk.ZeroDec(),
 			},
 			Sources: []*Account{
 				{
 					Id:   "",
-					Type: MAIN,
+					Type: Main,
 				},
 			},
 		},

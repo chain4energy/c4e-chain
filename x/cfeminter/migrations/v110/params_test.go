@@ -121,7 +121,7 @@ func TestMigrationWrongExponentialStepMinting(t *testing.T) {
 		createV100MinterPeriod(2, nil, "NO_MINTING", nil, nil),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: EXPONENTIAL_STEP_MINTING error: stepDuration must be bigger than 0")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: ExponentialStepMintingType error: stepDuration must be bigger than 0")
 }
 
 func TestMigrationWrongLinearMinting(t *testing.T) {
@@ -133,8 +133,9 @@ func TestMigrationWrongLinearMinting(t *testing.T) {
 		createV100MinterPeriod(1, &endTime1, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
+
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: LINEAR_MINTING error: amount cannot be less than 0")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: LinearMintingType error: amount cannot be less than 0")
 }
 
 func setV101MinterConfig(t *testing.T, ctx sdk.Context, keeperData *common.AdditionalKeeperData, startTime time.Time, mintingPeriods []*v101.MintingPeriod) {
@@ -187,13 +188,13 @@ func MigrateParamsV100ToV101(
 
 		switch oldMinterPeriod.Type {
 		case "TIME_LINEAR_MINTER":
-			require.EqualValues(t, newMinters[i].Type, types.LINEAR_MINTING)
+			require.EqualValues(t, newMinters[i].Type, types.LinearMintingType)
 			break
 		case "PERIODIC_REDUCTION_MINTER":
-			require.EqualValues(t, newMinters[i].Type, types.EXPONENTIAL_STEP_MINTING)
+			require.EqualValues(t, newMinters[i].Type, types.ExponentialStepMintingType)
 			break
 		case "NO_MINTING":
-			require.EqualValues(t, newMinters[i].Type, types.NO_MINTING)
+			require.EqualValues(t, newMinters[i].Type, types.NoMintingType)
 			break
 		}
 

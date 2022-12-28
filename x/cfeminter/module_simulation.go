@@ -46,7 +46,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	minters := []*types.Minter{
 		{
 			SequenceId:             1,
-			Type:                   types.EXPONENTIAL_STEP_MINTING,
+			Type:                   types.ExponentialStepMintingType,
 			ExponentialStepMinting: &prminter,
 		},
 	}

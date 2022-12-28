@@ -17,7 +17,7 @@ var (
 		Minters: []*Minter{
 			{
 				SequenceId: 1,
-				Type:       NO_MINTING,
+				Type:       NoMintingType,
 			},
 		},
 	}

@@ -18,7 +18,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		allCoinsToDistribute := sdk.NewDecCoins()
 		for _, source := range subDistributor.Sources {
 			var coinsToDistribute sdk.DecCoins
-			if source.Type == types.MAIN {
+			if source.Type == types.Main {
 				coinsToDistribute = k.PrepareCoinToDistributeForMainAccount(ctx, states, subDistributor.Name)
 			} else {
 				coinsToDistribute = k.PrepareCoinToDistributeForNotMainAccount(ctx, *source, states, subDistributor.Name)
@@ -49,8 +49,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		}
 		states = *newStates
 	}
-
-
 
 	k.SendCoinsFromStates(ctx, states)
 }

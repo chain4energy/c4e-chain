@@ -201,10 +201,10 @@ func SetTestMaccPerms() {
 }
 
 func GetAccountTestId(id, suffix, accType string) string {
-	if accType == cfedistributortypes.BASE_ACCOUNT {
+	if accType == cfedistributortypes.BaseAccount {
 		return commontestutils.CreateRandomAccAddress()
 	}
-	if accType == cfedistributortypes.INTERNAL_ACCOUNT || accType == cfedistributortypes.MAIN {
+	if accType == cfedistributortypes.InternalAccount || accType == cfedistributortypes.Main {
 		return id + "-" + accType
 	}
 	return id + suffix

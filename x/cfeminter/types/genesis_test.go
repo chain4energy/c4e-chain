@@ -252,10 +252,10 @@ func createOkMinterConfig() types.MinterConfig {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
 
-	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
 	return types.MinterConfig{
 		StartTime: startTime,
@@ -272,10 +272,10 @@ func createNotOkMinterConfig() types.MinterConfig {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
 
-	minter3 := types.Minter{SequenceId: 5, Type: types.NO_MINTING}
+	minter3 := types.Minter{SequenceId: 5, Type: types.NoMintingType}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
 
 	return types.MinterConfig{

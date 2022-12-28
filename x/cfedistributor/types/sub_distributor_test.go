@@ -13,7 +13,7 @@ import (
 
 var mainAccount = types.Account{
 	Id:   "abc",
-	Type: types.MAIN,
+	Type: types.Main,
 }
 
 func TestCheckAccountType(t *testing.T) {
@@ -25,13 +25,13 @@ func TestCheckAccountType(t *testing.T) {
 		expectError  bool
 		errorMessage string
 	}{
-		{"Check base account", types.Account{Id: addr[0].String(), Type: types.BASE_ACCOUNT}, false, ""},
-		{"Check base account - wrong acc address", types.Account{Id: "not_valid_bech32", Type: types.BASE_ACCOUNT}, true, "base account id \"not_valid_bech32\" is not a valid bech32 address: decoding bech32 failed: invalid separator index -1"},
-		{"Check module account - account doesn't exist in maccPerms", types.Account{Id: "sample", Type: types.MODULE_ACCOUNT}, true, "module account \"sample\" doesn't exist in maccPerms"},
-		{"Check module account - account exists in maccPerms", types.Account{Id: "CUSTOM_ID", Type: types.MODULE_ACCOUNT}, false, ""},
-		{"Check internal account", types.Account{Id: "sample", Type: types.INTERNAL_ACCOUNT}, false, ""},
-		{"Check internal account - empty id", types.Account{Id: "", Type: types.INTERNAL_ACCOUNT}, true, "internal account id cannot be empty"},
-		{"Check main account", types.Account{Id: "sample", Type: types.MAIN}, false, ""},
+		{"Check base account", types.Account{Id: addr[0].String(), Type: types.BaseAccount}, false, ""},
+		{"Check base account - wrong acc address", types.Account{Id: "not_valid_bech32", Type: types.BaseAccount}, true, "base account id \"not_valid_bech32\" is not a valid bech32 address: decoding bech32 failed: invalid separator index -1"},
+		{"Check module account - account doesn't exist in maccPerms", types.Account{Id: "sample", Type: types.ModuleAccount}, true, "module account \"sample\" doesn't exist in maccPerms"},
+		{"Check module account - account exists in maccPerms", types.Account{Id: "CUSTOM_ID", Type: types.ModuleAccount}, false, ""},
+		{"Check internal account", types.Account{Id: "sample", Type: types.InternalAccount}, false, ""},
+		{"Check internal account - empty id", types.Account{Id: "", Type: types.InternalAccount}, true, "internal account id cannot be empty"},
+		{"Check main account", types.Account{Id: "sample", Type: types.Main}, false, ""},
 		{"Check wrong account", types.Account{Id: "test", Type: "wrong_type"}, true, "account \"test\" is of the wrong type: wrong_type"},
 	}
 	for _, tt := range tests {
@@ -544,12 +544,12 @@ func TestValidateUniquenessOfNames(t *testing.T) {
 
 func TestValidateCorrectModuleAccountInsideSubdistributor(t *testing.T) {
 	cfedistributortestutils.SetTestMaccPerms()
-	correctPrimaryShareModuleAccount := createSubDistributor(types.MODULE_ACCOUNT, types.BASE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, false)
-	correctSourceModuleAccount := createSubDistributor(types.BASE_ACCOUNT, types.MODULE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, false)
-	correctShareModuleAccount := createSubDistributor(types.BASE_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, CUSTOM_ID, false)
-	wrongPrimaryShareModuleAccount := createSubDistributor(types.MODULE_ACCOUNT, types.BASE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, true)
-	wrongSourceModuleAccount := createSubDistributor(types.BASE_ACCOUNT, types.MODULE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, true)
-	wrongShareModuleAccount := createSubDistributor(types.BASE_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, CUSTOM_ID, true)
+	correctPrimaryShareModuleAccount := createSubDistributor(types.ModuleAccount, types.BaseAccount, types.BaseAccount, CUSTOM_ID, false)
+	correctSourceModuleAccount := createSubDistributor(types.BaseAccount, types.ModuleAccount, types.BaseAccount, CUSTOM_ID, false)
+	correctShareModuleAccount := createSubDistributor(types.BaseAccount, types.BaseAccount, types.ModuleAccount, CUSTOM_ID, false)
+	wrongPrimaryShareModuleAccount := createSubDistributor(types.ModuleAccount, types.BaseAccount, types.BaseAccount, CUSTOM_ID, true)
+	wrongSourceModuleAccount := createSubDistributor(types.BaseAccount, types.ModuleAccount, types.BaseAccount, CUSTOM_ID, true)
+	wrongShareModuleAccount := createSubDistributor(types.BaseAccount, types.BaseAccount, types.ModuleAccount, CUSTOM_ID, true)
 
 	tests := []struct {
 		name            string
@@ -587,7 +587,7 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 	}
 	var tests []test
 
-	for _, accType := range []string{types.MAIN, types.MODULE_ACCOUNT, types.INTERNAL_ACCOUNT} {
+	for _, accType := range []string{types.Main, types.ModuleAccount, types.InternalAccount} {
 		subDistributorCases := make(map[int][]types.SubDistributor)
 		subDistributorCases[0] = []types.SubDistributor{
 			createSubDistributor(CUSTOM_ACCOUNT, accType, accType, CUSTOM_ID, false),
@@ -614,9 +614,9 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(MAIN_SOURCE))
 			subDistributorCases[i] = append(subDistributorCases[i], CreateSubDistributor(INTERNAL_SOURCE))
 			accId := accType + "-" + CUSTOM_ID
-			if accType == types.MAIN {
+			if accType == types.Main {
 				accId = accType
-			} else if accType == types.INTERNAL_ACCOUNT {
+			} else if accType == types.InternalAccount {
 				accId = accId + "-" + accType
 			}
 			errorMessage := "same " + accId + " account cannot occur twice within one subdistributor, subdistributor name: " + subDistributorCases[i][0].Name
@@ -638,7 +638,7 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 }
 
 func TestValidateUniquenessOfSubdistributorsBaseAccountType(t *testing.T) {
-	accType := types.BASE_ACCOUNT
+	accType := types.BaseAccount
 
 	sameSourceAndDestinationShareShare := []types.SubDistributor{
 		createSubDistributor(CUSTOM_ACCOUNT, accType, accType, CUSTOM_ID, false),
@@ -763,7 +763,7 @@ func TestValidateUniquenessOfPrimaryShareNames(t *testing.T) {
 	}
 }
 
-var AccountTypes = []string{types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT}
+var AccountTypes = []string{types.InternalAccount, types.ModuleAccount, types.Main, types.BaseAccount}
 
 const (
 	CUSTOM_ACCOUNT             = "CUSTOM_ACCOUNT"
@@ -780,17 +780,17 @@ const (
 func CreateSubDistributor(accType string) types.SubDistributor {
 	switch accType {
 	case MAIN_SOURCE:
-		return createSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(types.BaseAccount, types.Main, types.BaseAccount, CUSTOM_ID, true)
 	case MAIN_DESTINATION:
-		return createSubDistributor(types.MAIN, types.BASE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(types.Main, types.BaseAccount, types.BaseAccount, CUSTOM_ID, true)
 	case MAIN_DESTINATION_SHARE:
-		return createSubDistributor(types.BASE_ACCOUNT, types.BASE_ACCOUNT, types.MAIN, CUSTOM_ID, true)
+		return createSubDistributor(types.BaseAccount, types.BaseAccount, types.Main, CUSTOM_ID, true)
 	case INTERNAL_SOURCE:
-		return createSubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(types.BaseAccount, types.InternalAccount, types.BaseAccount, CUSTOM_ID, true)
 	case INTERNAL_DESTINATION:
-		return createSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.BASE_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(types.InternalAccount, types.BaseAccount, types.BaseAccount, CUSTOM_ID, true)
 	case INTERNAL_DESTINATION_SHARE:
-		return createSubDistributor(types.BASE_ACCOUNT, types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, CUSTOM_ID, true)
+		return createSubDistributor(types.BaseAccount, types.BaseAccount, types.InternalAccount, CUSTOM_ID, true)
 	}
 	return types.SubDistributor{}
 }

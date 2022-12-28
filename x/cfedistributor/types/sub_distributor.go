@@ -94,42 +94,42 @@ func (destinationShare *DestinationShare) Validate(primaryShareName string) erro
 
 func (s State) StateIdString() string {
 	if s.Burn {
-		return BURN
-	} else if s.Account != nil && s.Account.Type == MAIN {
-		return MAIN
+		return Burn
+	} else if s.Account != nil && s.Account.Type == Main {
+		return Main
 	} else if s.Account != nil {
 		return s.Account.Type + "-" + s.Account.Id
 	} else {
-		return UNKNOWN_ACCOUNT
+		return UnknownAccount
 	}
 }
 
 const (
 	// Account Types
-	INTERNAL_ACCOUNT = "INTERNAL_ACCOUNT"
-	MODULE_ACCOUNT   = "MODULE_ACCOUNT"
-	MAIN             = "MAIN"
-	BASE_ACCOUNT     = "BASE_ACCOUNT"
+	InternalAccount = "INTERNAL_ACCOUNT"
+	ModuleAccount   = "MODULE_ACCOUNT"
+	Main            = "MAIN"
+	BaseAccount     = "BASE_ACCOUNT"
 	// Other consts
-	UNKNOWN_ACCOUNT = "Unknown"
-	BURN            = "BURN"
-	DESTINATION     = "DESTINATION"
-	SOURCE          = "SOURCE"
+	UnknownAccount = "Unknown"
+	Burn           = "BURN"
+	Destination    = "DESTINATION"
+	Source         = "SOURCE"
 )
 
 func (account Account) Validate() error {
 	switch account.Type {
-	case MAIN:
+	case Main:
 		return nil
-	case INTERNAL_ACCOUNT:
+	case InternalAccount:
 		if account.Id == "" {
 			return fmt.Errorf("internal account id cannot be empty")
 		}
-	case BASE_ACCOUNT:
+	case BaseAccount:
 		if _, err := sdk.AccAddressFromBech32(account.Id); err != nil {
 			return fmt.Errorf("base account id \"%s\" is not a valid bech32 address: %w", account.Id, err)
 		}
-	case MODULE_ACCOUNT:
+	case ModuleAccount:
 		if !accountExistInMacPerms(account.Id) {
 			return fmt.Errorf("module account \"%s\" doesn't exist in maccPerms", account.Id)
 		}
@@ -154,18 +154,18 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 		if err := validateUniquenessOfNames(subDistributorName, &subDistributorNameOccurred); err != nil {
 			return err
 		}
-		if err := validateSources(subDistributors[i].Sources, i, lastOccurrence, lastOccurrenceIndex, subDistributorName, SOURCE); err != nil {
+		if err := validateSources(subDistributors[i].Sources, i, lastOccurrence, lastOccurrenceIndex, subDistributorName, Source); err != nil {
 			return err
 		}
 
-		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.PrimaryShare, i, DESTINATION); err != nil {
+		if err := setOccurrence(lastOccurrence, lastOccurrenceIndex, subDistributorName, &subDistributors[i].Destinations.PrimaryShare, i, Destination); err != nil {
 			return err
 		}
 
 		if err := validateUniquenessOfNames(subDistributors[i].GetPrimaryShareName(), &shareNameOccurred); err != nil {
 			return err
 		}
-		if err := validateDestinationsShares(subDistributors[i].Destinations.Shares, i, lastOccurrence, lastOccurrenceIndex, shareNameOccurred, subDistributorName, DESTINATION); err != nil {
+		if err := validateDestinationsShares(subDistributors[i].Destinations.Shares, i, lastOccurrence, lastOccurrenceIndex, shareNameOccurred, subDistributorName, Destination); err != nil {
 			return err
 		}
 	}
@@ -174,14 +174,14 @@ func ValidateSubDistributors(subDistributors []SubDistributor) error {
 }
 
 func getId(account *Account) string {
-	if account.Type == MAIN {
-		return MAIN
+	if account.Type == Main {
+		return Main
 	}
 	return account.Type + "-" + account.Id
 }
 
 func isAccountPositionValidatable(accType string) bool {
-	return accType == INTERNAL_ACCOUNT || accType == MAIN
+	return accType == InternalAccount || accType == Main
 }
 
 func setOccurrence(lastOccurrence map[string]string, lastOccurrenceIndex map[string]int, subDistributorName string, account *Account, position int, accountType string) error {
@@ -235,11 +235,11 @@ func validateDestinationsShares(shares []*DestinationShare, subDistributorIndex 
 }
 
 func validateLastOccurrence(lastOccurrence map[string]string) error {
-	if lastOccurrence[MAIN] == "" {
+	if lastOccurrence[Main] == "" {
 		return fmt.Errorf("there must be at least one subdistributor with the source main type")
 	}
 	for accountId := range lastOccurrence {
-		if lastOccurrence[accountId] != SOURCE {
+		if lastOccurrence[accountId] != Source {
 			return fmt.Errorf("wrong order of subdistributors, after each occurrence of a subdistributor with the " +
 				"destination of internal or main account type there must be exactly one occurrence of a subdistributor with the " +
 				"source of internal account type, account id: " + accountId)

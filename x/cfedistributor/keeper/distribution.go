@@ -101,9 +101,9 @@ func prepareLeftCoinToDistribute(coinsToDistribute sdk.DecCoins, source types.Ac
 
 func (k Keeper) PrepareCoinToDistributeForNotMainAccount(ctx sdk.Context, source types.Account, states []types.State, subDistributorName string) sdk.DecCoins {
 	var coinsToDistribute sdk.DecCoins
-	if types.MODULE_ACCOUNT == source.Type {
+	if types.ModuleAccount == source.Type {
 		coinsToDistribute = k.prepareCoinToDistributeForModuleAccount(ctx, source, subDistributorName)
-	} else if types.INTERNAL_ACCOUNT != source.Type {
+	} else if types.InternalAccount != source.Type {
 		coinsToDistribute = k.prepareCoinToDistributeForBaseAccount(ctx, source, subDistributorName)
 	} else {
 		coinsToDistribute = sdk.NewDecCoins()
@@ -163,10 +163,10 @@ func (k Keeper) sendCoinsToBaseAccount(ctx sdk.Context, state *types.State) {
 
 func (k Keeper) SendCoinsFromStates(ctx sdk.Context, states []types.State) {
 	for _, state := range states {
-		if types.INTERNAL_ACCOUNT != state.Account.Type && checkIfAnyCoinIsGTE1(state.Remains) {
+		if types.InternalAccount != state.Account.Type && checkIfAnyCoinIsGTE1(state.Remains) {
 			if state.Burn {
 				k.burnCoins(ctx, &state)
-			} else if types.MODULE_ACCOUNT == state.Account.Type {
+			} else if types.ModuleAccount == state.Account.Type {
 				k.sendCoinsToModuleAccount(ctx, &state)
 			} else {
 				k.sendCoinsToBaseAccount(ctx, &state)
@@ -226,7 +226,7 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 	localRemains = states
 	defaultShare := coinsToDistributeDec
 	for _, share := range subDistributor.Destinations.Shares {
-		if share.Destination.Type == types.MAIN {
+		if share.Destination.Type == types.Main {
 			continue
 		}
 		calculatedShare := calculatePercentage(share.Share, coinsToDistributeDec)
@@ -265,7 +265,7 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 
 	accountDefault := subDistributor.Destinations.GetPrimaryShare()
 
-	if accountDefault.Type != types.MAIN {
+	if accountDefault.Type != types.Main {
 		findFunc := func() int {
 			return findAccountState(localRemains, &accountDefault)
 		}
