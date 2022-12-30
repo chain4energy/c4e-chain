@@ -140,3 +140,30 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
+
+func TestCreateVestingAccountStartTimeAfterEndTime(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := commontestutils.CreateAccounts(3, 0)
+	accAddr1 := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accBalance := sdk.NewInt(15000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
+	sendAmount := sdk.NewInt(10000)
+	coins := sdk.Coins{{Amount: sendAmount, Denom: commontestutils.DefaultTestDenom}}
+	startTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.Local)
+	endTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.Local)
+
+	testHelper.C4eVestingUtils.MessageCreateVestingAccountError(
+		accAddr1,
+		accAddr2,
+		coins,
+		startTime,
+		endTime,
+		accBalance,
+		"create vesting account - start time is after end time error ("+startTime.String()+" > "+endTime.String()+"): start time cannot be after end time",
+	)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
