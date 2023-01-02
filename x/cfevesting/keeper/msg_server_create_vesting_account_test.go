@@ -1,9 +1,10 @@
 package keeper_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
@@ -162,7 +163,7 @@ func TestCreateVestingAccountStartTimeAfterEndTime(t *testing.T) {
 		startTime,
 		endTime,
 		accBalance,
-		"create vesting account - start time is after end time error ("+startTime.String()+" > "+endTime.String()+"): start time cannot be after end time",
+		"create vesting account - start time is after end time error ("+startTime.String()+" > "+endTime.String()+"): wrong param value",
 	)
 
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()

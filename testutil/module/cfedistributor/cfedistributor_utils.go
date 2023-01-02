@@ -1,10 +1,11 @@
 package cfedistributorutils
 
 import (
+	"testing"
+
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"testing"
 
 	"github.com/chain4energy/c4e-chain/x/cfedistributor"
 	cfedistributormodulekeeper "github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
@@ -64,7 +65,7 @@ func (d *C4eDistributorUtils) VerifyStateAmount(ctx sdk.Context, stateName strin
 }
 
 func (d *C4eDistributorUtils) VerifyDefaultDenomStateAmount(ctx sdk.Context, account cfedistributortypes.Account, expectedRemains sdk.Dec) {
-	d.VerifyStateAmount(ctx, account.GetAccounteKey(), commontestutils.DefaultTestDenom, expectedRemains)
+	d.VerifyStateAmount(ctx, account.GetAccountKey(), commontestutils.DefaultTestDenom, expectedRemains)
 }
 
 func (d *C4eDistributorUtils) VerifyBurnStateAmount(ctx sdk.Context, denom string, expectedRemains sdk.Dec) {

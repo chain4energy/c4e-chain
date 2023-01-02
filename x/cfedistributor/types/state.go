@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -59,12 +60,8 @@ func StateSumIsInteger(states []State) (error, sdk.Coins) {
 
 func (state State) GetStateKey() string {
 	if state.Account != nil && state.Account.Id != "" && state.Account.Type != "" {
-		return state.Account.GetAccounteKey()
+		return state.Account.GetAccountKey()
 	} else {
 		return BurnStateKey
 	}
-}
-
-func (account Account) GetAccounteKey() string {
-	return account.Type + "-" + account.Id
 }

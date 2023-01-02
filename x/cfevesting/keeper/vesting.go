@@ -261,7 +261,7 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 
 	if startTime > endTime {
 		k.Logger(ctx).Error("create vesting account start time is after end time", "startTime", startTime, "endTime", endTime)
-		return sdkerrors.Wrapf(types.ErrStartTimeAfterEndTime, "create vesting account - start time is after end time error (%s > %s)", time.Unix(startTime, 0).String(), time.Unix(endTime, 0).String())
+		return sdkerrors.Wrapf(types.ErrParam, "create vesting account - start time is after end time error (%s > %s)", time.Unix(startTime, 0).String(), time.Unix(endTime, 0).String())
 	}
 
 	if err := bk.IsSendEnabledCoins(ctx, amount...); err != nil {

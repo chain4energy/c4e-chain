@@ -17,5 +17,4 @@ var (
 	ErrInvalidAccountType              = sdkerrors.Register(ModuleName, 8, "invalid account type")
 	ErrParsing                         = sdkerrors.Register(ModuleName, 9, "failed to parse")
 	ErrParam                           = sdkerrors.Register(ModuleName, 10, "wrong param value")
-	ErrStartTimeAfterEndTime           = sdkerrors.Register(ModuleName, 11, "start time cannot be after end time")
 )
