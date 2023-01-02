@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -163,7 +165,7 @@ func GetExpectedWithdrawable(lockEnd time.Time, current time.Time, amount sdk.In
 }
 
 func CreateTimeFromNumOfHours(numOfHours int64) time.Time {
-	return testcosmos.TestEnvTime.Add(time.Hour * time.Duration(numOfHours))
+	return testenv.TestEnvTime.Add(time.Hour * time.Duration(numOfHours))
 }
 
 func CreateDurationFromNumOfHours(numOfHours int64) time.Duration {

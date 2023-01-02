@@ -10,6 +10,8 @@ import (
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 )
 
@@ -149,7 +151,7 @@ func TestGenesisAccountVestingPools(t *testing.T) {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(testcosmos.DefaultTestDenom),
+		Params: types.NewParams(testenv.DefaultTestDenom),
 
 		VestingTypes:        []types.GenesisVestingType{},
 		AccountVestingPools: accountVestingPoolsArray,

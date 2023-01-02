@@ -8,6 +8,8 @@ import (
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
 )
 
 func TestCreateVestingAccount(t *testing.T) {
@@ -20,7 +22,7 @@ func TestCreateVestingAccount(t *testing.T) {
 	accBalance := sdk.NewInt(100000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
-	coins := sdk.Coins{{Amount: sendAmount, Denom: testcosmos.DefaultTestDenom}}
+	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
 	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.UTC)
 
@@ -47,7 +49,7 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 	accBalance := sdk.NewInt(100000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
-	coins := sdk.Coins{{Amount: sendAmount, Denom: testcosmos.DefaultTestDenom}}
+	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
 	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.UTC)
 
@@ -60,7 +62,7 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 		accBalance,
 	)
 
-	accBalance = accBalance.Sub(coins.AmountOf(testcosmos.DefaultTestDenom))
+	accBalance = accBalance.Sub(coins.AmountOf(testenv.DefaultTestDenom))
 	testHelper.C4eVestingUtils.MessageCreateVestingAccount(
 		accAddr1,
 		accAddr3,
@@ -70,7 +72,7 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 		accBalance,
 	)
 
-	accBalance = accBalance.Sub(coins.AmountOf(testcosmos.DefaultTestDenom))
+	accBalance = accBalance.Sub(coins.AmountOf(testenv.DefaultTestDenom))
 	testHelper.C4eVestingUtils.MessageCreateVestingAccountError(
 		accAddr1,
 		accAddr1,
@@ -115,7 +117,7 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 	accBalance := sdk.NewInt(15000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
-	coins := sdk.Coins{{Amount: sendAmount, Denom: testcosmos.DefaultTestDenom}}
+	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
 	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.UTC)
 
@@ -128,7 +130,7 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 		accBalance,
 	)
 
-	accBalance = accBalance.Sub(coins.AmountOf(testcosmos.DefaultTestDenom))
+	accBalance = accBalance.Sub(coins.AmountOf(testenv.DefaultTestDenom))
 	testHelper.C4eVestingUtils.MessageCreateVestingAccountError(
 		accAddr1,
 		accAddr3,
@@ -136,7 +138,7 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 		startTime,
 		endTime,
 		accBalance,
-		"create vesting account - send coins to vesting account error (from: "+accAddr1.String()+", to: "+accAddr3.String()+", amount: "+coins.String()+"): "+accBalance.String()+testcosmos.DefaultTestDenom+" is smaller than "+coins.String()+": insufficient funds: failed to send coins",
+		"create vesting account - send coins to vesting account error (from: "+accAddr1.String()+", to: "+accAddr3.String()+", amount: "+coins.String()+"): "+accBalance.String()+testenv.DefaultTestDenom+" is smaller than "+coins.String()+": insufficient funds: failed to send coins",
 	)
 
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
@@ -152,7 +154,7 @@ func TestCreateVestingAccountStartTimeAfterEndTime(t *testing.T) {
 	accBalance := sdk.NewInt(15000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
 	sendAmount := sdk.NewInt(10000)
-	coins := sdk.Coins{{Amount: sendAmount, Denom: testcosmos.DefaultTestDenom}}
+	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
 	startTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.Local)
 	endTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.Local)
 

@@ -7,6 +7,7 @@ import (
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	testcfedistributor "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	testcfeminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	testcfevesting "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
@@ -22,16 +23,16 @@ import (
 )
 
 func Setup(isCheckTx bool) *c4eapp.App {
-	app, _ := SetupWithValidatorsAmount(isCheckTx, testcosmos.DefaultTestDenom, 1)
+	app, _ := SetupWithValidatorsAmount(isCheckTx, testenv.DefaultTestDenom, 1)
 	return app
 }
 
 func SetupAndGetValidatorsRelatedCoins(isCheckTx bool, balances ...banktypes.Balance) (*c4eapp.App, sdk.Coin) {
-	return SetupWithValidatorsAmount(isCheckTx, testcosmos.DefaultTestDenom, 1, balances...)
+	return SetupWithValidatorsAmount(isCheckTx, testenv.DefaultTestDenom, 1, balances...)
 }
 
 func SetupApp(initBlock int64) (*c4eapp.App, sdk.Context, sdk.Coin) {
-	return SetupAppWithTime(initBlock, testcosmos.TestEnvTime)
+	return SetupAppWithTime(initBlock, testenv.TestEnvTime)
 }
 
 func SetupAppWithTime(initBlock int64, initTime time.Time, balances ...banktypes.Balance) (*c4eapp.App, sdk.Context, sdk.Coin) {
@@ -44,11 +45,11 @@ func SetupAppWithTime(initBlock int64, initTime time.Time, balances ...banktypes
 }
 
 func SetupTestApp(t *testing.T) *TestHelper {
-	return SetupTestAppWithHeightAndTime(t, 1, testcosmos.TestEnvTime)
+	return SetupTestAppWithHeightAndTime(t, 1, testenv.TestEnvTime)
 }
 
 func SetupTestAppWithHeight(t *testing.T, initBlock int64) *TestHelper {
-	return SetupTestAppWithHeightAndTime(t, initBlock, testcosmos.TestEnvTime)
+	return SetupTestAppWithHeightAndTime(t, initBlock, testenv.TestEnvTime)
 }
 
 func SetupTestAppWithHeightAndTime(t *testing.T, initBlock int64, initTime time.Time, balances ...banktypes.Balance) *TestHelper {
@@ -92,7 +93,7 @@ func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time
 		InitTime:              initTime,
 	}
 
-	var testHelperP testcosmos.TestContext = &testHelper
+	var testHelperP testenv.TestContext = &testHelper
 
 	bankUtils := testcosmos.NewContextBankUtils(t, testHelper, &helperAk, helperBk)
 

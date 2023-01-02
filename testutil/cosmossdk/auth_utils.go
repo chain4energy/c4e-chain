@@ -11,6 +11,8 @@ import (
 	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/stretchr/testify/require"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
 )
 
 type AuthUtils struct {
@@ -46,7 +48,7 @@ func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coin 
 }
 
 func (au *AuthUtils) CreateDefaultDenomVestingAccount(ctx sdk.Context, address string, amount sdk.Int, start time.Time, end time.Time) error {
-	return au.CreateVestingAccount(ctx, address, sdk.NewCoin(DefaultTestDenom, amount), start, end)
+	return au.CreateVestingAccount(ctx, address, sdk.NewCoin(testenv.DefaultTestDenom, amount), start, end)
 }
 
 func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedDenom string, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
@@ -68,15 +70,15 @@ func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddres
 }
 
 func (au *AuthUtils) VerifyDefaultDenomVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
-	au.VerifyVestingAccount(ctx, address, DefaultTestDenom, lockedAmount, startTime, endTime)
+	au.VerifyVestingAccount(ctx, address, testenv.DefaultTestDenom, lockedAmount, startTime, endTime)
 }
 
 type ContextAuthUtils struct {
 	AuthUtils
-	testContext TestContext
+	testContext testenv.TestContext
 }
 
-func NewContextAuthUtils(t *testing.T, testContext TestContext, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) *ContextAuthUtils {
+func NewContextAuthUtils(t *testing.T, testContext testenv.TestContext, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) *ContextAuthUtils {
 	authUtils := NewAuthUtils(t, helperAccountKeeper, bankUtils)
 	return &ContextAuthUtils{AuthUtils: authUtils, testContext: testContext}
 }

@@ -1,42 +1,11 @@
 package cosmossdk
 
 import (
-	"context"
-	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
-
-	"encoding/json"
-	"github.com/stretchr/testify/require"
-	"io/ioutil"
-	"os"
-	"strings"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
 )
-
-const paramIndicator = "###"
-
-type TestContext interface {
-	GetContext() sdk.Context
-	GetWrappedContext() context.Context
-}
-
-func UnmarshalJsonFileWithParams(file string, v any, params map[string]string) {
-	jsonFileMinter, _ := os.Open(file)
-	byteValueMinter, _ := ioutil.ReadAll(jsonFileMinter)
-	jsonData := string(byteValueMinter)
-	for pKey, pVal := range params {
-		jsonData = strings.ReplaceAll(jsonData, paramIndicator+pKey+paramIndicator, pVal)
-	}
-	byteValueMinter = []byte(jsonData)
-	json.Unmarshal(byteValueMinter, v)
-}
-
-func UnmarshalJsonFile(file string, v any) {
-	UnmarshalJsonFileWithParams(file, v, nil)
-}
 
 func CheckInvariant(t *testing.T, ctx sdk.Context, invariant sdk.Invariant, failed bool, message string) {
 	msg, wasFailed := invariant(ctx)
@@ -49,10 +18,4 @@ func ValidateManyInvariants(t *testing.T, ctx sdk.Context, invariants []sdk.Inva
 		msg, failed := invariants[i](ctx)
 		require.False(t, failed, "Invariant failed - "+msg)
 	}
-}
-
-type AdditionalKeeperData struct {
-	Cdc      *codec.ProtoCodec
-	StoreKey *storetypes.KVStoreKey
-	Subspace typesparams.Subspace
 }

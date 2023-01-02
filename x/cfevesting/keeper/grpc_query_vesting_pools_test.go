@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -31,7 +33,7 @@ func TestVesting(t *testing.T) {
 
 func TestVestingSomeToWithdraw(t *testing.T) {
 	height := int64(10100)
-	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testenv.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
@@ -51,7 +53,7 @@ func TestVestingSomeToWithdraw(t *testing.T) {
 
 func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	height := int64(10100)
-	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testenv.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
@@ -71,7 +73,7 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 	height := int64(10100)
-	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testenv.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
@@ -95,7 +97,7 @@ func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 
 func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	height := int64(10100)
-	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testenv.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
@@ -120,7 +122,7 @@ func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 
 func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
 	height := int64(10100)
-	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testenv.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)

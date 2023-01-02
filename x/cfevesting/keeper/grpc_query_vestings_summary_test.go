@@ -6,6 +6,7 @@ import (
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -38,7 +39,7 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(testcosmos.DefaultTestDenom),
+		Params: types.NewParams(testenv.DefaultTestDenom),
 
 		VestingTypes:        []types.GenesisVestingType{},
 		AccountVestingPools: accountVestingPoolsArray,
@@ -83,7 +84,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(testcosmos.DefaultTestDenom),
+		Params: types.NewParams(testenv.DefaultTestDenom),
 		VestingAccountList: []types.VestingAccount{
 			{
 				Id:      0,
@@ -156,7 +157,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(testcosmos.DefaultTestDenom),
+		Params: types.NewParams(testenv.DefaultTestDenom),
 		VestingAccountList: []types.VestingAccount{
 			{
 				Id:      0,
@@ -242,7 +243,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(testcosmos.DefaultTestDenom),
+		Params: types.NewParams(testenv.DefaultTestDenom),
 		VestingAccountList: []types.VestingAccount{
 			{
 				Id:      0,
@@ -335,7 +336,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(testcosmos.DefaultTestDenom),
+		Params: types.NewParams(testenv.DefaultTestDenom),
 		VestingAccountList: []types.VestingAccount{
 			{
 				Id:      0,

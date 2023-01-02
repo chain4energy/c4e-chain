@@ -4,6 +4,7 @@ import (
 	"time"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"testing"
@@ -119,10 +120,10 @@ func (m *C4eMinterUtils) SetParams(ctx sdk.Context, params cfemintertypes.Params
 
 type ContextC4eMinterUtils struct {
 	C4eMinterUtils
-	testContext testcosmos.TestContext
+	testContext testenv.TestContext
 }
 
-func NewContextC4eMinterUtils(t *testing.T, testContext testcosmos.TestContext, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
+func NewContextC4eMinterUtils(t *testing.T, testContext testenv.TestContext, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *testcosmos.BankUtils) *ContextC4eMinterUtils {
 	c4eMinterUtils := NewC4eMinterUtils(t, helperCfeminterKeeper, helperAccountKeeper, bankUtils)

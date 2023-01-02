@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
-	v101 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
-	v110 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v110"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v110"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -89,7 +89,7 @@ func MigrateStoreV100ToV101(
 	t *testing.T,
 	ctx sdk.Context,
 	keeper keeper.Keeper,
-	keeperData *cosmossdk.AdditionalKeeperData,
+	keeperData *testenv.AdditionalKeeperData,
 	expectError bool, errorMessage string,
 ) {
 	oldState := getV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc)

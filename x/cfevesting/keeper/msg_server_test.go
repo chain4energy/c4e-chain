@@ -5,7 +5,8 @@ import (
 
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
 	"testing"
@@ -30,7 +31,7 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsRespon
 				require.EqualValues(t, testutils.GetExpectedWithdrawableForVesting(*vesting, current).String(), response.VestingPools[0].Withdrawable)
 				require.EqualValues(t, true, vesting.LockStart.Equal(vestingInfo.LockStart))
 				require.EqualValues(t, true, vesting.LockEnd.Equal(vestingInfo.LockEnd))
-				require.EqualValues(t, testcosmos.DefaultTestDenom, response.VestingPools[0].InitiallyLocked.Denom)
+				require.EqualValues(t, testenv.DefaultTestDenom, response.VestingPools[0].InitiallyLocked.Denom)
 				require.EqualValues(t, vesting.InitiallyLocked, response.VestingPools[0].InitiallyLocked.Amount)
 				require.EqualValues(t, vesting.GetCurrentlyLocked().String(), response.VestingPools[0].CurrentlyLocked)
 				require.EqualValues(t, vesting.Sent.String(), response.VestingPools[0].SentAmount)

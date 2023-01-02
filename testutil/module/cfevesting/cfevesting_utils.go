@@ -8,6 +8,7 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/nullify"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -377,10 +378,10 @@ func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, from
 
 type ContextC4eVestingUtils struct {
 	C4eVestingUtils
-	testContext testcosmos.TestContext
+	testContext testenv.TestContext
 }
 
-func NewContextC4eVestingUtils(t *testing.T, testContext testcosmos.TestContext, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
+func NewContextC4eVestingUtils(t *testing.T, testContext testenv.TestContext, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	helperBankKeeper *bankkeeper.Keeper,
 	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *testcosmos.BankUtils,
@@ -533,8 +534,8 @@ func (h *C4eVestingUtils) MessageCreateVestingAccount(
 	vestingAccountCountAfter := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
 	require.EqualValues(h.t, vestingAccountCountBefore+1, vestingAccountCountAfter)
 
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore.Sub(coins.AmountOf(testcosmos.DefaultTestDenom)))
-	h.authUtils.VerifyVestingAccount(ctx, toAddress, testcosmos.DefaultTestDenom, coins.AmountOf(testcosmos.DefaultTestDenom), startTime, endTime)
+	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore.Sub(coins.AmountOf(testenv.DefaultTestDenom)))
+	h.authUtils.VerifyVestingAccount(ctx, toAddress, testenv.DefaultTestDenom, coins.AmountOf(testenv.DefaultTestDenom), startTime, endTime)
 	accFromList, found := h.helperCfevestingKeeper.GetVestingAccount(ctx, vestingAccountCountBefore)
 	require.Equal(h.t, true, found)
 	require.Equal(h.t, toAddress.String(), accFromList.Address)
