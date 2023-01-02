@@ -3,7 +3,7 @@ package simulation
 import (
 	"math/rand"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -27,7 +27,7 @@ func SimulateSendToVestingAccount(
 		accAddress := allVestingPools[randVestingPoolId].Address
 		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10))
 		randInt := helpers.RandomInt(r, 1000000000)
-		simAccount2Address := commontestutils.CreateRandomAccAddressNoBalance(randInt)
+		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
 		numOfPools := len(allVestingPools[randVestingPoolId].VestingPools)
 		var randVestingId int64 = 0
 		if numOfPools > 1 {

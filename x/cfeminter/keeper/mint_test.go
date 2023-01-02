@@ -5,7 +5,7 @@ import (
 	"time"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -236,7 +236,7 @@ func TestMintWithExponentialStepMintingMinterStateAmountTooBig(t *testing.T) {
 func prepareApp(t *testing.T, initialBlockTime time.Time, mintingStartTime time.Time, minters []*types.Minter) *testapp.TestHelper {
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, initialBlockTime)
 	params := types.DefaultParams()
-	params.MintDenom = commontestutils.DefaultTestDenom
+	params.MintDenom = testcosmos.DefaultTestDenom
 	params.MinterConfig.StartTime = mintingStartTime
 	params.MinterConfig.Minters = minters
 

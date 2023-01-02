@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"testing"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -16,7 +16,7 @@ func TestVesting(t *testing.T) {
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
 	wctx := sdk.WrapSDKContext(ctx)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
@@ -31,10 +31,10 @@ func TestVesting(t *testing.T) {
 
 func TestVestingSomeToWithdraw(t *testing.T) {
 	height := int64(10100)
-	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
@@ -51,10 +51,10 @@ func TestVestingSomeToWithdraw(t *testing.T) {
 
 func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 	height := int64(10100)
-	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
@@ -71,11 +71,11 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 	height := int64(10100)
-	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
@@ -95,11 +95,11 @@ func TestVestingSentAfterLockEndReceivingSide(t *testing.T) {
 
 func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	height := int64(10100)
-	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
@@ -120,11 +120,11 @@ func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 
 func TestVestingSentAfterLockEndSendingSideAndWithdrawn(t *testing.T) {
 	height := int64(10100)
-	time := commontestutils.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
+	time := testcosmos.TestEnvTime.Add(testutils.CreateDurationFromNumOfHours(10100))
 
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeightAndTime(t, height, time)
 	wctx := sdk.WrapSDKContext(ctx)
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
@@ -147,7 +147,7 @@ func TestVestingManyVestings(t *testing.T) {
 	height := int64(0)
 	keeper, ctx := testkeeper.CfevestingKeeperWithBlockHeight(t, height)
 	wctx := sdk.WrapSDKContext(ctx)
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	addr := acountsAddresses[0].String()
 
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(3, 1, 1)

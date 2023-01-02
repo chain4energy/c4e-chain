@@ -5,7 +5,7 @@ import (
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -16,19 +16,19 @@ import (
 )
 
 func TestVestingsAmountPoolsOnly(t *testing.T) {
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
 	start := testutils.CreateTimeFromNumOfHours(1000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(10000)
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		VestingType:               "test",
-		LockStart:                 start,
-		LockEnd:                   lockEnd,
-		InitiallyLocked:                    amount,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
+		VestingType:     "test",
+		LockStart:       start,
+		LockEnd:         lockEnd,
+		InitiallyLocked: amount,
+		Withdrawn:       sdk.ZeroInt(),
+		Sent:            sdk.ZeroInt(),
 	}
 	accVestingPools := types.AccountVestingPools{
 		Address:      acountsAddresses[0].String(),
@@ -38,7 +38,7 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(commontestutils.DefaultTestDenom),
+		Params: types.NewParams(testcosmos.DefaultTestDenom),
 
 		VestingTypes:        []types.GenesisVestingType{},
 		AccountVestingPools: accountVestingPoolsArray,
@@ -60,19 +60,19 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 }
 
 func TestVestingsAmountPoolsAndAccount(t *testing.T) {
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	start := testutils.CreateTimeFromNumOfHours(1000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(10000)
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		VestingType:               "test",
-		LockStart:                 start,
-		LockEnd:                   lockEnd,
-		InitiallyLocked:                    amount,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
+		VestingType:     "test",
+		LockStart:       start,
+		LockEnd:         lockEnd,
+		InitiallyLocked: amount,
+		Withdrawn:       sdk.ZeroInt(),
+		Sent:            sdk.ZeroInt(),
 	}
 
 	accVestingPools := types.AccountVestingPools{
@@ -83,7 +83,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(commontestutils.DefaultTestDenom),
+		Params: types.NewParams(testcosmos.DefaultTestDenom),
 		VestingAccountList: []types.VestingAccount{
 			{
 				Id:      0,
@@ -133,19 +133,19 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 }
 
 func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
-	acountsAddresses, validatorsAddresses := commontestutils.CreateAccounts(2, 3)
+	acountsAddresses, validatorsAddresses := testcosmos.CreateAccounts(2, 3)
 
 	start := testutils.CreateTimeFromNumOfHours(1000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(10000)
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		VestingType:               "test",
-		LockStart:                 start,
-		LockEnd:                   lockEnd,
-		InitiallyLocked:                    amount,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
+		VestingType:     "test",
+		LockStart:       start,
+		LockEnd:         lockEnd,
+		InitiallyLocked: amount,
+		Withdrawn:       sdk.ZeroInt(),
+		Sent:            sdk.ZeroInt(),
 	}
 
 	accVestingPools := types.AccountVestingPools{
@@ -156,7 +156,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(commontestutils.DefaultTestDenom),
+		Params: types.NewParams(testcosmos.DefaultTestDenom),
 		VestingAccountList: []types.VestingAccount{
 			{
 				Id:      0,
@@ -219,19 +219,19 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 }
 
 func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
-	acountsAddresses, validatorsAddresses := commontestutils.CreateAccounts(2, 3)
+	acountsAddresses, validatorsAddresses := testcosmos.CreateAccounts(2, 3)
 
 	start := testutils.CreateTimeFromNumOfHours(1000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(10000)
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		VestingType:               "test",
-		LockStart:                 start,
-		LockEnd:                   lockEnd,
-		InitiallyLocked:                    amount,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
+		VestingType:     "test",
+		LockStart:       start,
+		LockEnd:         lockEnd,
+		InitiallyLocked: amount,
+		Withdrawn:       sdk.ZeroInt(),
+		Sent:            sdk.ZeroInt(),
 	}
 
 	accVestingPools := types.AccountVestingPools{
@@ -242,7 +242,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(commontestutils.DefaultTestDenom),
+		Params: types.NewParams(testcosmos.DefaultTestDenom),
 		VestingAccountList: []types.VestingAccount{
 			{
 				Id:      0,
@@ -312,19 +312,19 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 }
 
 func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T) {
-	acountsAddresses, validatorsAddresses := commontestutils.CreateAccounts(2, 3)
+	acountsAddresses, validatorsAddresses := testcosmos.CreateAccounts(2, 3)
 
 	start := testutils.CreateTimeFromNumOfHours(100000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(100000)
 	amount := sdk.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
-		VestingType:               "test",
-		LockStart:                 start,
-		LockEnd:                   lockEnd,
-		InitiallyLocked:                    amount,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
+		VestingType:     "test",
+		LockStart:       start,
+		LockEnd:         lockEnd,
+		InitiallyLocked: amount,
+		Withdrawn:       sdk.ZeroInt(),
+		Sent:            sdk.ZeroInt(),
 	}
 
 	accVestingPools := types.AccountVestingPools{
@@ -335,7 +335,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	accountVestingPoolsArray := []*types.AccountVestingPools{&accVestingPools}
 
 	genesisState := types.GenesisState{
-		Params: types.NewParams(commontestutils.DefaultTestDenom),
+		Params: types.NewParams(testcosmos.DefaultTestDenom),
 		VestingAccountList: []types.VestingAccount{
 			{
 				Id:      0,

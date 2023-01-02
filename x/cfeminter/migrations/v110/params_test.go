@@ -1,14 +1,15 @@
 package v110_test
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/common"
+	"time"
+
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v110"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/stretchr/testify/require"
-	"time"
 
 	"testing"
 
@@ -138,7 +139,7 @@ func TestMigrationWrongLinearMinting(t *testing.T) {
 	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: LinearMintingType error: amount cannot be less than 0")
 }
 
-func setV101MinterConfig(t *testing.T, ctx sdk.Context, keeperData *common.AdditionalKeeperData, startTime time.Time, mintingPeriods []*v101.MintingPeriod) {
+func setV101MinterConfig(t *testing.T, ctx sdk.Context, keeperData *testcosmos.AdditionalKeeperData, startTime time.Time, mintingPeriods []*v101.MintingPeriod) {
 	minter := v101.Minter{
 		Start:   startTime,
 		Periods: mintingPeriods,
@@ -149,11 +150,11 @@ func setV101MinterConfig(t *testing.T, ctx sdk.Context, keeperData *common.Addit
 	store.Set(v101.KeyMinter, bz)
 }
 
-func newStore(ctx sdk.Context, testUtil *common.AdditionalKeeperData) prefix.Store {
+func newStore(ctx sdk.Context, testUtil *testcosmos.AdditionalKeeperData) prefix.Store {
 	return prefix.NewStore(ctx.KVStore(testUtil.StoreKey), append([]byte((testUtil.Subspace.Name())), '/'))
 }
 
-func getV101MinterConfig(ctx sdk.Context, keeperData *common.AdditionalKeeperData) (oldMinterConfig v101.Minter) {
+func getV101MinterConfig(ctx sdk.Context, keeperData *testcosmos.AdditionalKeeperData) (oldMinterConfig v101.Minter) {
 	oldMinterConfigRaw := keeperData.Subspace.GetRaw(ctx, v101.KeyMinter)
 	if err := codec.NewLegacyAmino().UnmarshalJSON(oldMinterConfigRaw, &oldMinterConfig); err != nil {
 		panic(err)
@@ -165,7 +166,7 @@ func MigrateParamsV100ToV101(
 	t *testing.T,
 	ctx sdk.Context,
 	keeper keeper.Keeper,
-	keeperData *common.AdditionalKeeperData,
+	keeperData *testcosmos.AdditionalKeeperData,
 	expectError bool, errorMessage string,
 ) {
 	oldMinterConfig := getV101MinterConfig(ctx, keeperData)

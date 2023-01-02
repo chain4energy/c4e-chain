@@ -1,13 +1,14 @@
 package v110_test
 
 import (
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	"testing"
+
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/stretchr/testify/require"
-	"testing"
 
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -16,7 +17,7 @@ import (
 
 func TestMigrationStatesBurnFalse(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	coin := sdk.NewDecCoin(commontestutils.DefaultTestDenom, sdk.NewInt(0))
+	coin := sdk.NewDecCoin(testcosmos.DefaultTestDenom, sdk.NewInt(0))
 	states := []v101.State{
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
@@ -28,7 +29,7 @@ func TestMigrationStatesBurnFalse(t *testing.T) {
 
 func TestMigrationStatesBurnTrue(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	coin := sdk.NewDecCoin(commontestutils.DefaultTestDenom, sdk.NewInt(100))
+	coin := sdk.NewDecCoin(testcosmos.DefaultTestDenom, sdk.NewInt(100))
 	states := []v101.State{
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
@@ -40,8 +41,8 @@ func TestMigrationStatesBurnTrue(t *testing.T) {
 
 func TestMigrationStatesBurnTrueAndFalse(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	coin := sdk.NewDecCoin(commontestutils.DefaultTestDenom, sdk.NewInt(100))
-	coin2 := sdk.NewDecCoin(commontestutils.DefaultTestDenom, sdk.NewInt(300))
+	coin := sdk.NewDecCoin(testcosmos.DefaultTestDenom, sdk.NewInt(100))
+	coin2 := sdk.NewDecCoin(testcosmos.DefaultTestDenom, sdk.NewInt(300))
 	states := []v101.State{
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin2),

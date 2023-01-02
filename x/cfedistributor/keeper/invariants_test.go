@@ -6,7 +6,7 @@ import (
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -14,9 +14,9 @@ import (
 func TestNonNegativeCoinStateInvariantCorrect(t *testing.T) {
 	testUtil, _, ctx := testkeeper.CfedistributorKeeperTestUtil(t)
 
-	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(1324)}}}
+	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(1324)}}}
 	testUtil.SetState(ctx, state)
-	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
+	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
 	testUtil.SetState(ctx, state)
 
 	testUtil.CheckNonNegativeCoinStateInvariant(ctx, false,
@@ -26,9 +26,9 @@ func TestNonNegativeCoinStateInvariantCorrect(t *testing.T) {
 func TestNonNegativeCoinStateInvariantNegativeAccountSate(t *testing.T) {
 	testUtil, _, ctx := testkeeper.CfedistributorKeeperTestUtil(t)
 
-	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(-1)}}}
+	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(-1)}}}
 	testUtil.SetState(ctx, state)
-	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
+	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
 	testUtil.SetState(ctx, state)
 
 	testUtil.CheckNonNegativeCoinStateInvariant(ctx, true,
@@ -38,9 +38,9 @@ func TestNonNegativeCoinStateInvariantNegativeAccountSate(t *testing.T) {
 func TestNonNegativeCoinStateInvariantNegativeBurnSate(t *testing.T) {
 	testUtil, _, ctx := testkeeper.CfedistributorKeeperTestUtil(t)
 
-	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(324)}}}
+	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(324)}}}
 	testUtil.SetState(ctx, state)
-	state = types.State{Account: &types.Account{Id: "", Type: ""}, Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(-1)}}}
+	state = types.State{Account: &types.Account{Id: "", Type: ""}, Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(-1)}}}
 	testUtil.SetState(ctx, state)
 
 	testUtil.CheckNonNegativeCoinStateInvariant(ctx, true,
@@ -50,11 +50,11 @@ func TestNonNegativeCoinStateInvariantNegativeBurnSate(t *testing.T) {
 func TestStateSumBalanceCheckInvariantCorrect(t *testing.T) {
 	testHelper := testapp.SetupTestApp(t)
 
-	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(1324)}}}
+	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(1324)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
-	state = types.State{Account: &types.Account{Id: "test2", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(200)}}}
+	state = types.State{Account: &types.Account{Id: "test2", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(200)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
-	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
+	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1524), types.DistributorMainAccount)
 
@@ -65,11 +65,11 @@ func TestStateSumBalanceCheckInvariantCorrect(t *testing.T) {
 func TestStateSumBalanceCheckInvariantSumNotInt(t *testing.T) {
 	testHelper := testapp.SetupTestApp(t)
 
-	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.MustNewDecFromStr("12.132")}}}
+	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.MustNewDecFromStr("12.132")}}}
 	testHelper.C4eDistributorUtils.SetState(state)
-	state = types.State{Account: &types.Account{Id: "test2", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(200)}}}
+	state = types.State{Account: &types.Account{Id: "test2", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(200)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
-	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
+	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1524), types.DistributorMainAccount)
 
@@ -80,11 +80,11 @@ func TestStateSumBalanceCheckInvariantSumNotInt(t *testing.T) {
 func TestStateSumBalanceCheckInvariantSumDiffersFromModuleAccountBalance(t *testing.T) {
 	testHelper := testapp.SetupTestApp(t)
 
-	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(1324)}}}
+	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(1324)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
-	state = types.State{Account: &types.Account{Id: "test2", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(200)}}}
+	state = types.State{Account: &types.Account{Id: "test2", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(200)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
-	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: commontestutils.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
+	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testcosmos.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1523), types.DistributorMainAccount)
 

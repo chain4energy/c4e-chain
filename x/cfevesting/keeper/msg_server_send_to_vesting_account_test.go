@@ -1,21 +1,22 @@
 package keeper_test
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
 	"time"
+
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 )
 
 func TestSendVestingAccount(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -36,7 +37,7 @@ func TestSendVestingAccountJustBeforeLockEnd(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -58,7 +59,7 @@ func TestSendVestingAccountNoRestartVesting(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -95,7 +96,7 @@ func sendVestingAccountPoolLockEndedTest(t *testing.T, afterEnd time.Duration, r
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -119,7 +120,7 @@ func TestSendVestingAccountMultiple(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(4, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(4, 0)
 
 	accAddr := acountsAddresses[0]
 	vestAccAddr1 := acountsAddresses[1]
@@ -144,7 +145,7 @@ func TestSendVestingAccountMultiple(t *testing.T) {
 func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -162,7 +163,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -183,7 +184,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -205,7 +206,7 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -227,7 +228,7 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -248,7 +249,7 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 func TestSendVestingAccountVestingTypesFreeZeroFree(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
@@ -276,7 +277,7 @@ func TestSendVestingAccountVestingTypesFreeZeroFree(t *testing.T) {
 func TestSendVestingAccountVestingTypesFreeMaxFree(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	accAddr := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]

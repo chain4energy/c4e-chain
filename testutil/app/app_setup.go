@@ -12,7 +12,7 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -172,11 +172,11 @@ func genesisStateWithValSet(
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	vestingGenesis := cfevestingtypes.DefaultGenesis()
-	vestingGenesis.Params.Denom = commontestutils.DefaultTestDenom
+	vestingGenesis.Params.Denom = testcosmos.DefaultTestDenom
 	genesisState[cfevestingtypes.ModuleName] = app.AppCodec().MustMarshalJSON(vestingGenesis)
 
 	distributorGenesis := cfedistributortypes.DefaultGenesis()
-	distributorGenesis.Params.SubDistributors[0].Destinations.PrimaryShare.Id = commontestutils.DefaultDistributionDestination
+	distributorGenesis.Params.SubDistributors[0].Destinations.PrimaryShare.Id = testcosmos.DefaultDistributionDestination
 	genesisState[cfedistributortypes.ModuleName] = app.AppCodec().MustMarshalJSON(distributorGenesis)
 
 	return genesisState, delegationsSum

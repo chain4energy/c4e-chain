@@ -1,4 +1,4 @@
-package common
+package cosmossdk
 
 import (
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"

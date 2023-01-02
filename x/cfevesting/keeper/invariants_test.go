@@ -7,13 +7,13 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestNonNegativeVestingPoolAmountsInvariantCorrect(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
 	testUtil.CheckNonNegativeVestingPoolAmountsInvariant(ctx, false,
@@ -21,7 +21,7 @@ func TestNonNegativeVestingPoolAmountsInvariantCorrect(t *testing.T) {
 }
 
 func TestNonNegativeVestingPoolAmountsInvariantManyyVestingPoolsCorrect(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(3, 0)
+	accounts, _ := testcosmos.CreateAccounts(3, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(50))
 	testUtil.SetupAccountVestingPools(ctx, accounts[1].String(), 10, sdk.NewInt(102), sdk.NewInt(23))
@@ -32,7 +32,7 @@ func TestNonNegativeVestingPoolAmountsInvariantManyyVestingPoolsCorrect(t *testi
 }
 
 func TestNonNegativeVestingPoolAmountsInvariantCorrectZeros(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 1, sdk.ZeroInt(), sdk.ZeroInt())
 	testUtil.CheckNonNegativeVestingPoolAmountsInvariant(ctx, false,
@@ -41,7 +41,7 @@ func TestNonNegativeVestingPoolAmountsInvariantCorrectZeros(t *testing.T) {
 }
 
 func TestNonNegativeVestingPoolAmountsInvariantNagativeInitiallyLocked(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 
 	modification := func(pool *types.VestingPool) {
@@ -53,7 +53,7 @@ func TestNonNegativeVestingPoolAmountsInvariantNagativeInitiallyLocked(t *testin
 }
 
 func TestNonNegativeVestingPoolAmountsInvariantNagativeSent(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 
 	modification := func(pool *types.VestingPool) {
@@ -65,7 +65,7 @@ func TestNonNegativeVestingPoolAmountsInvariantNagativeSent(t *testing.T) {
 }
 
 func TestNonNegativeVestingPoolAmountsInvariantNagativeWithdrawn(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 
 	modification := func(pool *types.VestingPool) {
@@ -77,7 +77,7 @@ func TestNonNegativeVestingPoolAmountsInvariantNagativeWithdrawn(t *testing.T) {
 }
 
 func TestVestingPoolConsistentDataInvariantCorrect(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
 	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, false,
@@ -85,7 +85,7 @@ func TestVestingPoolConsistentDataInvariantCorrect(t *testing.T) {
 }
 
 func TestVestingPoolConsistentDataInvariantManyVestingPoolCorrect(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(3, 0)
+	accounts, _ := testcosmos.CreateAccounts(3, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(50))
 	testUtil.SetupAccountVestingPools(ctx, accounts[1].String(), 10, sdk.NewInt(89), sdk.NewInt(34))
@@ -95,7 +95,7 @@ func TestVestingPoolConsistentDataInvariantManyVestingPoolCorrect(t *testing.T) 
 }
 
 func TestVestingPoolConsistentDataInvariantCorrectAllWithdrawn(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 	testUtil.SetupAccountVestingPools(ctx, accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(100))
 	testUtil.CheckVestingPoolConsistentDataInvariant(ctx, false,
@@ -103,7 +103,7 @@ func TestVestingPoolConsistentDataInvariantCorrectAllWithdrawn(t *testing.T) {
 }
 
 func TestVestingPoolConsistentDataInvariantWrongWithdrawn(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 
 	modification := func(pool *types.VestingPool) {
@@ -115,7 +115,7 @@ func TestVestingPoolConsistentDataInvariantWrongWithdrawn(t *testing.T) {
 }
 
 func TestVestingPoolConsistentDataInvariantWrongSent(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 
 	modification := func(pool *types.VestingPool) {
@@ -128,7 +128,7 @@ func TestVestingPoolConsistentDataInvariantWrongSent(t *testing.T) {
 }
 
 func TestVestingPoolConsistentDataInvariantWrongWithdrawnPlusSent(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtil(t)
 
 	modification := func(pool *types.VestingPool) {
@@ -141,7 +141,7 @@ func TestVestingPoolConsistentDataInvariantWrongWithdrawnPlusSent(t *testing.T) 
 }
 
 func TestCheckModuleAccountInvariantCorrect(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(30))
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(70), types.ModuleName)
@@ -151,7 +151,7 @@ func TestCheckModuleAccountInvariantCorrect(t *testing.T) {
 }
 
 func TestCheckModuleAccountInvariantMamyAccountVestingPoolsCorrect(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(3, 0)
+	accounts, _ := testcosmos.CreateAccounts(3, 0)
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(30))
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[1].String(), 10, sdk.NewInt(50), sdk.NewInt(20))
@@ -164,7 +164,7 @@ func TestCheckModuleAccountInvariantMamyAccountVestingPoolsCorrect(t *testing.T)
 }
 
 func TestCheckModuleAccountInvariantNoModuleAccount(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
 
@@ -174,7 +174,7 @@ func TestCheckModuleAccountInvariantNoModuleAccount(t *testing.T) {
 }
 
 func TestCheckModuleAccountInvariantWrongBalance(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(1, 0)
+	accounts, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper := testapp.SetupTestApp(t)
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(30))
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(71), types.ModuleName)

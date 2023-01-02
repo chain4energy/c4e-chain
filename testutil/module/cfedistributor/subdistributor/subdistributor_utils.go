@@ -1,7 +1,7 @@
 package subdistributor
 
 import (
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,7 +20,7 @@ const (
 const C4eDistributorCollectorName = types.GreenEnergyBoosterCollector
 const NoValidatorsCollectorName = types.GovernanceBoosterCollector
 
-var accAdresses, _ = commontestutils.CreateAccounts(3, 0)
+var accAdresses, _ = testcosmos.CreateAccounts(3, 0)
 
 var BaseAccountAddress = accAdresses[0]
 var ShareDevelopmentFundAccountAddress = accAdresses[1]

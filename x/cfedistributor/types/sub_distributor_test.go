@@ -3,7 +3,7 @@ package types_test
 import (
 	"testing"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
@@ -17,7 +17,7 @@ var mainAccount = types.Account{
 }
 
 func TestCheckAccountType(t *testing.T) {
-	addr, _ := commontestutils.CreateAccounts(1, 0)
+	addr, _ := testcosmos.CreateAccounts(1, 0)
 	cfedistributortestutils.SetTestMaccPerms()
 	tests := []struct {
 		name         string

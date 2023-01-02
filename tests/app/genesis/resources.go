@@ -1,15 +1,16 @@
 package genesis
 
 import (
-	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
+	"time"
+
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	mintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
 )
 
 var (
-	accountsAddresses, _ = testcommon.CreateAccounts(2, 0)
+	accountsAddresses, _ = testcosmos.CreateAccounts(2, 0)
 	DevelopmentFundAddr  = accountsAddresses[0]
 	LpAccountAddr        = accountsAddresses[1]
 )

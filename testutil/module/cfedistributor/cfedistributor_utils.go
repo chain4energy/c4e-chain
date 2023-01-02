@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/chain4energy/c4e-chain/x/cfedistributor"
@@ -34,7 +34,7 @@ func (d *C4eDistributorKeeperUtils) SetState(ctx sdk.Context, state cfedistribut
 
 func (h *C4eDistributorKeeperUtils) CheckNonNegativeCoinStateInvariant(ctx sdk.Context, failed bool, message string) {
 	invariant := cfedistributormodulekeeper.NonNegativeCoinStateInvariant(*h.helperCfedistributorKeeper)
-	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
+	testcosmos.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
 func (h *C4eDistributorKeeperUtils) GetC4eDistributorKeeper() *cfedistributormodulekeeper.Keeper {
@@ -43,7 +43,7 @@ func (h *C4eDistributorKeeperUtils) GetC4eDistributorKeeper() *cfedistributormod
 
 func (h *C4eDistributorKeeperUtils) CheckStateSumBalanceCheckInvariant(ctx sdk.Context, failed bool, message string) {
 	invariant := cfedistributormodulekeeper.StateSumBalanceCheckInvariant(*h.helperCfedistributorKeeper)
-	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
+	testcosmos.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
 type C4eDistributorUtils struct {
@@ -53,7 +53,7 @@ type C4eDistributorUtils struct {
 
 func NewC4eDistributorUtils(t *testing.T, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils) C4eDistributorUtils {
+	bankUtils *testcosmos.BankUtils) C4eDistributorUtils {
 	return C4eDistributorUtils{C4eDistributorKeeperUtils: NewC4eDistributorKeeperUtils(t, helperCfedistributorKeeper), helperAccountKeeper: helperAccountKeeper}
 }
 
@@ -65,7 +65,7 @@ func (d *C4eDistributorUtils) VerifyStateAmount(ctx sdk.Context, stateName strin
 }
 
 func (d *C4eDistributorUtils) VerifyDefaultDenomStateAmount(ctx sdk.Context, account cfedistributortypes.Account, expectedRemains sdk.Dec) {
-	d.VerifyStateAmount(ctx, account.GetAccountKey(), commontestutils.DefaultTestDenom, expectedRemains)
+	d.VerifyStateAmount(ctx, account.GetAccountKey(), testcosmos.DefaultTestDenom, expectedRemains)
 }
 
 func (d *C4eDistributorUtils) VerifyBurnStateAmount(ctx sdk.Context, denom string, expectedRemains sdk.Dec) {
@@ -74,7 +74,7 @@ func (d *C4eDistributorUtils) VerifyBurnStateAmount(ctx sdk.Context, denom strin
 }
 
 func (d *C4eDistributorUtils) VerifyDefaultDenomBurnStateAmount(ctx sdk.Context, expectedRemains sdk.Dec) {
-	d.VerifyBurnStateAmount(ctx, commontestutils.DefaultTestDenom, expectedRemains)
+	d.VerifyBurnStateAmount(ctx, testcosmos.DefaultTestDenom, expectedRemains)
 }
 
 func (d *C4eDistributorUtils) VerifyNumberOfStates(ctx sdk.Context, expectedNumberOfStates int) {
@@ -104,7 +104,7 @@ func (m *C4eDistributorUtils) ValidateInvariants(ctx sdk.Context) {
 		cfedistributormodulekeeper.StateSumBalanceCheckInvariant(*m.helperCfedistributorKeeper),
 		cfedistributormodulekeeper.NonNegativeCoinStateInvariant(*m.helperCfedistributorKeeper),
 	}
-	commontestutils.ValidateManyInvariants(m.t, ctx, invariants)
+	testcosmos.ValidateManyInvariants(m.t, ctx, invariants)
 }
 
 func (m *C4eDistributorUtils) SetParams(ctx sdk.Context, params cfedistributortypes.Params) {
@@ -113,12 +113,12 @@ func (m *C4eDistributorUtils) SetParams(ctx sdk.Context, params cfedistributorty
 
 type ContextC4eDistributorUtils struct {
 	C4eDistributorUtils
-	testContext commontestutils.TestContext
+	testContext testcosmos.TestContext
 }
 
-func NewContextC4eDistributorUtils(t *testing.T, testContext commontestutils.TestContext, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
+func NewContextC4eDistributorUtils(t *testing.T, testContext testcosmos.TestContext, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils) *ContextC4eDistributorUtils {
+	bankUtils *testcosmos.BankUtils) *ContextC4eDistributorUtils {
 	c4eDistributorUtils := NewC4eDistributorUtils(t, helperCfedistributorKeeper, helperAccountKeeper, bankUtils)
 	return &ContextC4eDistributorUtils{C4eDistributorUtils: c4eDistributorUtils, testContext: testContext}
 }
@@ -203,7 +203,7 @@ func SetTestMaccPerms() {
 
 func GetAccountTestId(id, suffix, accType string) string {
 	if accType == cfedistributortypes.BaseAccount {
-		return commontestutils.CreateRandomAccAddress()
+		return testcosmos.CreateRandomAccAddress()
 	}
 	if accType == cfedistributortypes.InternalAccount || accType == cfedistributortypes.Main {
 		return id + "-" + accType

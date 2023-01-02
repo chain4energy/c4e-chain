@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,7 +19,7 @@ type TcData struct {
 }
 
 func TestGenesisState_Validate(t *testing.T) {
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	for _, tc := range []TcData{
 		defaultGenesisTest(),

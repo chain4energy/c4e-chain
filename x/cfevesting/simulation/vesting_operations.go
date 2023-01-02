@@ -1,12 +1,13 @@
 package simulation
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 	"strconv"
 	"time"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -23,7 +24,7 @@ func SimulateVestingOperations(
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount1, _ := simtypes.RandomAcc(r, accs)
 		randInt := helpers.RandomInt(r, 10000000)
-		simAccount2Address := commontestutils.CreateRandomAccAddressNoBalance(randInt)
+		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
 
 		randVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
 		randVestingAmount := sdk.NewInt(helpers.RandomInt(r, 10000000000))
