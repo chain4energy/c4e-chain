@@ -3,12 +3,12 @@ package cosmossdk
 import (
 	"testing"
 
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 )
 
 const helperModuleAccount = "helperTestAcc"

@@ -13,7 +13,6 @@ import (
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-
 )
 
 func TestOneYearLinear(t *testing.T) {

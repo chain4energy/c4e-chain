@@ -25,7 +25,7 @@ $ %s query %s params
 				types.ModuleName, version.AppName, types.ModuleName,
 			),
 		),
-		Args:  cobra.NoArgs,
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 

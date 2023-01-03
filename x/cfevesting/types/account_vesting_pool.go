@@ -76,4 +76,3 @@ func (m *VestingPool) Validate(accountAdd string) error {
 	}
 	return nil
 }
-

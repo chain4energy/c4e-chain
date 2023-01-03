@@ -9,9 +9,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/version"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 )
 
@@ -42,9 +42,9 @@ Arguments:
 Example:
 $ %s tx %s create-vesting-account %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj my_vesting_pool 120000 true --from mykey
 `, version.AppName, types.ModuleName, bech32PrefixAddr,
-			),
 		),
-		Args:  cobra.ExactArgs(4),
+		),
+		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argToAddress := args[0]
 			argVestingPoolName := args[1]

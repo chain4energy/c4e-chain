@@ -34,9 +34,9 @@ Arguments:
 Example:
 $ %s tx %s create-vesting-account %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 123000 1609455 1640991 --from mykey
 `, version.AppName, types.ModuleName, bech32PrefixAddr,
-			),
 		),
-		Args:  cobra.ExactArgs(4),
+		),
+		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argToAddress := args[0]
 			argAmount := args[1]
