@@ -10,24 +10,23 @@ message NewVestingAccount {
 }
 
 message NewVestingPool {
-  string creator = 1;
+  string creator = 1; // TODO: rename to owner
   string name = 2;
   string amount = 3;
   string duration = 4;
   string vestingType = 5;
-
 }
 
 message NewVestingAccountFromVestingPool {
-  string owner_address = 1;
+  string owner_address = 1; // TODO: rename to owner
   string address = 2;
-  string vesting_pool_name = 4;
-  string amount = 5;
-  string restart_vesting = 6;
+  string vesting_pool_name = 3;
+  string amount = 4;
+  string restart_vesting = 5;
 }
 
 message WithdrawAvailable{
-  string owner_address = 1;
-  string vesting_pool_name = 4;
-  string amount = 5;
+  string owner_address = 1; // TODO: rename to owner
+  string vesting_pool_name = 2;
+  string amount = 3;
 }

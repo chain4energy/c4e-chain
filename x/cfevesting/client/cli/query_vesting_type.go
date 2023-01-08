@@ -17,7 +17,7 @@ var _ = strconv.Itoa(0)
 func CmdVestingType() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vesting-type",
-		Short: "Query for all vesting types",
+		Short: "Query all vesting types",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all vesting types.
 

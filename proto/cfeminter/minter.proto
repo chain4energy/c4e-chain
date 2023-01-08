@@ -65,7 +65,7 @@ message MinterState {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  string remainder_from_previous_period = 5 [
+  string remainder_from_previous_period = 5 [ // TODO: rename to remainder_from_previous_minter
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];

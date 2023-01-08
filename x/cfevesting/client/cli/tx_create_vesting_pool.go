@@ -21,10 +21,10 @@ var _ = strconv.Itoa(0)
 func CmdVest() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-vesting-pool [name] [amount] [duration] [vesting-type]",
-		Short: "Createsa a new vesting pool for creator address",
-		Long: strings.TrimSpace(fmt.Sprintf(`Creates a new vesting pool with a given name for the creater address. In newly created vesting pool given amount of tokens is locked for given duration.
-During lock time tokens can only be send by creator to vesting accounts with parameters set according to given vesting-type.
-Tokens can be withdrawn by creator after lock duration.
+		Short: "Create a new vesting pool for the creator's address",
+		Long: strings.TrimSpace(fmt.Sprintf(`Create a new vesting pool with a given name for the creator's address. In the newly created vesting pool a given amount of tokens is locked for a given duration.
+During lock time tokens can only be send by the creator to vesting accounts with parameters set according to a given vesting-type.
+Tokens can be withdrawn by the creator after lock duration.
 
 Arguments:
   [name]         unique name per creator of new vesting pool

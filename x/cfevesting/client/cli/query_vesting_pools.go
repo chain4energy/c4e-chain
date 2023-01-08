@@ -20,9 +20,9 @@ func CmdVestingPools() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "vesting-pools [address]",
-		Short: "Query for all vesting pools of given address",
+		Short: "Query all vesting pools of a given address",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query for all vesting pools of given address.
+			fmt.Sprintf(`Query for all vesting pools of a given address.
 
 Arguments:
   [address] vesting pools owner address

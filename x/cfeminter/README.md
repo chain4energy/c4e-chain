@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Chain4Energy minter module provides functionality of controlled token emissions. Tokens are emited according to configuration.
+Chain4Energy minter module provides functionality of controlled token emissions. Tokens are emitted according to configuration.
 
 ## Contents
 
@@ -20,32 +20,31 @@ The purpose of `cfeminter` module is to provide token emission mechanism.
 ### Token emission mechanism
 
 Token emission mechanism mints calculated amount of tokens per each block. 
-Token amount is calculated according to cfeminter module configuration params.
+Token amount is calculated accordingly to cfeminter module configuration params.
 Tokens minting process is divided into separate minters where each minter has
 different minting rules. Those minting rules are defined within cfeminter 
 module configuration params.
-Simply, mintining process configuration is a list of ordered minters,
-where each minter has its own start and end time (end time for last minter 
-is not required, in that case last minter works infinitely).
+Simply, minting process configuration is a list of ordered minters,
+where each minter has its own start and end time. Last minter cannot have end time because it
+must be defined to work infinitely.
 
 ### Minters 
 
 Ordered list of minters defines whole token emission process.
-End time of one minter is a start time of the next minter on the minters list.
-Each minter has its own type assigned. 
-Last minter on the list must be defined to work indefinitely (cannot have end time).
+End time of one minter is a start time of the next minter in the minters list.
+Each minter has its own type assigned.
 
 ### Minting type
 
 Minting type defines general rules of token emission. Each minter has its
 specific minting type. Currently, cfeminter module supports following minting types:
-- no miniting
+- no minting
 - linear minting
 - exponential step minting
 
-Each minting type has its own specific set of parameters modifying token emission
+Each minting type has its own specific set of parameters modifying token emission.
 
-#### No minitng
+#### No minting
 
 No minting is a simple minting type that mints nothing.
 This minting type has no parameters.
@@ -64,14 +63,14 @@ Minter type parameters:
 
 Exponential step minting is block time based minting type. It mints configured amount
 of tokens within minter, where it divides this minter into smaller subminters of 
-equal lenght. Then within subminter expected amount is minted, lineary. Expected 
+equal length. Then within each subminter expected amount is minted, linearly. Expected 
 amount of subminter minted tokens is equal to tokens minted by previous subminter 
 multiplied by configured factor. For example initial minter amount is 40 million, 
 multiplying factor set to 0.5 and step duration is four years, then:
-* 1st subminter (1st year) mints 40 millions linearly 
-* 2nd subminter (2nd year) mints 20 millions linearly
-* 3rd subminter (3rd year) mints 10 millions linearly
-* 4th subminter (4th year) mints 5 millions linearly
+* 1st subminter (first 4 years) mints 40 millions linearly 
+* 2nd subminter (second 4 years) mints 20 millions linearly
+* 3rd subminter (third 4 years) mints 10 millions linearly
+* 4th subminter (fourth 4 years) mints 5 millions linearly
 and so on.
 
 This minter can mint infinitely.
@@ -88,32 +87,32 @@ Minter type parameters:
 Minter configuration:
 * minting start: now
 * Amount of minter Minters: 1
-* Minter period 1:
+* Minter 1:
     * end time: null
     * type: exponential step minting
     * exponential step minting parameters:
-        * step_duration: 4 years
+        * step duration: 4 years
         * amount: 40 millions
-        * amount_multiplier: 0.5
+        * amount multiplier: 0.5
 
 Result:
-* 1st 4 years mints 40 millions 
-* 2nd 4 years mints 20 millions
-* 3rd 4 years mints 10 millions
+* first 4 years mints 40 millions 
+* second 4 years mints 20 millions
+* third 4 years mints 10 millions
 and so on
 
 ### Linear minting of 100 million of token during period of 10 years, next no emission
 
-Minter configration:
+Minter configuration:
 
 * minting start: now
 * Amount of minter Minters: 2
-* Minter period 1:
+* Minter 1:
     * end time: 10 years from now
     * type: linear minting
     * linear minting parameters:
         * amount: 100 millions
-* Minter period 2:
+* Minter 2:
     * end time: null
     * type: no minting
 
@@ -124,9 +123,9 @@ Result:
 
 The Chain4Energy minter module contains the following configurations parameters:
 
-| Key           | Type         | Description                     |
-|---------------|--------------| ------------------------------- |
-| mint_denom    | string       | Denom of minting token |
+| Key           | Type         | Description                  |
+|---------------|--------------|------------------------------|
+| mint_denom    | string       | Denom of minting token       |
 | minter_config | MinterConfig | Token emission configuration |
 
 ### MinterConfig type
@@ -148,9 +147,9 @@ The Chain4Energy minter module contains the following configurations parameters:
 
 ### LinearMinting type
 
-| Param   | Type         | Description                                |
-| ------- | ------------ |--------------------------------------------|
-| amount    | sdk.Int       | An amount to mint lieary during the period |
+| Param    | Type          | Description                                  |
+|----------|---------------|----------------------------------------------|
+| amount   | sdk.Int       | An amount to mint linearly during the period |
 
 ### ExponentialStepMinting type
 
@@ -172,7 +171,7 @@ The Chain4Energy minter module contains the following configurations parameters:
       "start_time": "2022-07-05T00:00:00Z",
       "minters": [
         {
-          "SequenceId": 1,
+          "sequenceId": 1,
           "end_time": null,
           "type": "EXPONENTIAL_STEP_MINTING",
           "linear_minting": null,
@@ -198,7 +197,7 @@ The Chain4Energy minter module contains the following configurations parameters:
       "start_time": "2022-07-05T00:00:00Z",
       "minters": [
         {
-          "SequenceId": 1,
+          "sequenceId": 1,
           "end_time": "2023-07-05T00:00:00Z",
           "type": "LINEAR_MINTING",
           "linear_minting": {
@@ -207,7 +206,7 @@ The Chain4Energy minter module contains the following configurations parameters:
           "exponential_step_minting": null
         },
         {
-          "SequenceId": 2,
+          "sequenceId": 2,
           "end_time": null,
           "type": "NO_MINTING",
           "linear_minting": null,
@@ -221,23 +220,23 @@ The Chain4Energy minter module contains the following configurations parameters:
 
 ## State
 
-Chain4Energy minter module state contains informations used  by current minting period.
-Module state contains followng data:
+Chain4Energy minter module state contains information used by current minter.
+Module state contains following data:
 
-| Key                | Type                         | Description                              |
-|--------------------|------------------------------|------------------------------------------|
-| minter_state       | MinterState                  | current minting period state             |
-| state_history      | List of MinterState          | previuos minting Minters final states    |
+| Key                | Type                         | Description                   |
+|--------------------|------------------------------|-------------------------------|
+| minter_state       | MinterState                  | current minter state          |
+| state_history      | List of MinterState          | previous minters final states |
 
 ### MinterState
 
-| Key                            | Type     | Description                                                               |
-|--------------------------------|----------|---------------------------------------------------------------------------|
-| sequence_id                    | uint32   | current minting period SequenceId                                         |
-| amount_minted                  | sdk.Int  | amount minted by current minting period                                   |
-| remainder_to_mint              | sdk.Dec  | decimal remainder - decimal amount that should be minted but was not Int. |
-| last_mint_block_time           | sdk.Time | Time of last mint                                                         |
-| remainder_from_previous_period | sdk.Dec  | decimal remainder left by previous minting period                         |
+| Key                            | Type     | Description                                                        |
+|--------------------------------|----------|--------------------------------------------------------------------|
+| sequence_id                    | uint32   | current minter sequenceId                                          |
+| amount_minted                  | sdk.Int  | amount minted by current minter                                    |
+| remainder_to_mint              | sdk.Dec  | amount that should have been minted in previous block but was not  |
+| last_mint_block_time           | sdk.Time | Time of last mint                                                  |
+| remainder_from_previous_period | sdk.Dec  | amount that should have been minted in previous minter but was not | // TODO: rename to remainder_from_previous_minter
 
 ### Example state
 
@@ -277,7 +276,7 @@ TODO add minter period id
 
 Queries the module params.
 
-See example reponse:
+See example response:
 
 ```json
 {
@@ -306,7 +305,7 @@ See example reponse:
 
 Queries the module state.
 
-See example reponse:
+See example response:
 
 ```json
 {
@@ -325,7 +324,7 @@ See example reponse:
 
 Queries current inflation.
 
-See example reponse:
+See example response:
 
 ```json
 {

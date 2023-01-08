@@ -19,7 +19,7 @@ func CmdInflation() *cobra.Command {
 		Use:   "inflation",
 		Short: "Query current inflation",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query current inflation.
+			fmt.Sprintf(`Query the current inflation.
 
 Example:
 $ %s query %s inflation
