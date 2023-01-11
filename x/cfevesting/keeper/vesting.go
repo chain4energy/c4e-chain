@@ -22,10 +22,11 @@ func (k Keeper) CreateVestingPool(ctx sdk.Context, addr string, name string, amo
 		k.Logger(ctx).Error("create vesting pool get vesting type error", "error", err.Error())
 		return sdkerrors.Wrap(sdkerrors.ErrNotFound, sdkerrors.Wrap(err, "create vesting pool - get vesting type error").Error())
 	}
-
+	if duration <= 0 {
+		return sdkerrors.Wrap(types.ErrParam, "add vesting pool - duration is <= 0 or nil")
+	}
 	return k.addVestingPool(ctx, name, addr, addr, amount, vestingType, ctx.BlockTime(),
 		ctx.BlockTime().Add(duration))
-
 }
 
 func (k Keeper) addVestingPool(
@@ -45,7 +46,7 @@ func (k Keeper) addVestingPool(
 
 	if amount.LTE(sdk.ZeroInt()) {
 		k.Logger(ctx).Error("add vesting pool amount <= 0", "vestingPoolName", vestingPoolName, VESTING_ADDRESS, vestingAddr, "coinSrcAddr", coinSrcAddr, "amount", amount)
-		return sdkerrors.Wrap(types.ErrAmount, "add vesting pool amount <= 0")
+		return sdkerrors.Wrap(types.ErrAmount, "add vesting pool - amount is <= 0")
 	}
 
 	_, err := sdk.AccAddressFromBech32(vestingAddr)
@@ -187,6 +188,10 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, address string) (withdrawn
 
 func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr string, vestingPoolName string, amount sdk.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
 	k.Logger(ctx).Debug("send to new vesting account", "fromAddr", fromAddr, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "restartVesting", restartVesting)
+
+	if amount.LTE(sdk.ZeroInt()) {
+		return withdrawn, sdkerrors.Wrap(types.ErrParam, "send to new vesting account - amount is <= 0")
+	}
 	if fromAddr == toAddr {
 		k.Logger(ctx).Error("send to new vesting account from address and to address cannot be identical error", "fromAddr", fromAddr, "toAddr", toAddr)
 		return withdrawn, sdkerrors.Wrapf(types.ErrIdenticalAccountsAddresses, "send to new vesting account - identical from address (%s) and to address (%s)", fromAddr, toAddr)
@@ -259,6 +264,9 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 	ak := k.account
 	bk := k.bank
 
+	if amount.IsAnyNegative() {
+		return sdkerrors.Wrap(types.ErrParam, "create vesting account - negative coin amount")
+	}
 	if startTime > endTime {
 		k.Logger(ctx).Error("create vesting account start time is after end time", "startTime", startTime, "endTime", endTime)
 		return sdkerrors.Wrapf(types.ErrParam, "create vesting account - start time is after end time error (%s > %s)", time.Unix(startTime, 0).String(), time.Unix(endTime, 0).String())
