@@ -26,13 +26,15 @@ message ClaimRecord {
 message Campaign {
   uint64 campaign_id   = 1;
   bool enabled    = 2;
-  google.protobuf.Timestamp start_time = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp start_time = 3 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
   google.protobuf.Timestamp end_time = 4 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
   // period of locked coins from claim
   google.protobuf.Duration lockup_period = 5 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
   // period of vesting coins after lockup period
-  google.protobuf.Duration vesting_period = 6 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
-  string description = 7;
+  google.protobuf.Duration vesting_period = 6 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  string name = 7;
+  string description = 8;
+  google.protobuf.Duration  campaign_duration = 9 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
 }
 
 message InitialClaim {

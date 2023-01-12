@@ -14,22 +14,6 @@
  */
 export interface C4EchaincfeairdropParams {
   denom?: string;
-  campaigns?: CfeairdropCampaign[];
-}
-
-export interface CfeairdropCampaign {
-  /** @format uint64 */
-  campaign_id?: string;
-  enabled?: boolean;
-
-  /** @format date-time */
-  start_time?: string;
-
-  /** @format date-time */
-  end_time?: string;
-  lockup_period?: string;
-  vesting_period?: string;
-  description?: string;
 }
 
 export interface CfeairdropCampaignRecord {

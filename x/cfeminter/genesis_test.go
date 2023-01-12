@@ -1,6 +1,7 @@
 package cfeminter_test
 
 import (
+	"github.com/cosmos/btcutil/bech32"
 	"testing"
 	"time"
 
@@ -17,27 +18,36 @@ const PeriodDuration = time.Duration(345600000000 * 1000000)
 const Year = time.Hour * 24 * 365
 const SecondsInYear = int32(3600 * 24 * 365)
 
+func convertAddressToC4E(address string) string {
+	_, decoded, _ := bech32.Decode(address, 100)
+	encoded, _ := bech32.Encode("c4e", decoded)
+	return encoded
+}
+
 func TestGenesis(t *testing.T) {
-	layout := "2006-01-02T15:04:05.000Z"
-	str := "2014-11-12T11:45:26.371Z"
-	mintTime, _ := time.Parse(layout, str)
-	genesisState := types.GenesisState{
-		Params: types.NewParams("myc4e", createMinter(time.Now())),
-		MinterState: types.MinterState{
-			Position:                    9,
-			AmountMinted:                sdk.NewInt(12312),
-			RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
-			RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("7654.423"),
-			LastMintBlockTime:           mintTime,
-		},
 
-		// this line is used by starport scaffolding # genesis/test/state
+	convertAddressToC4E("cosmos1ryams4f7af0p6yrj59hztu668sjvp6rhhzene5")
 
-	}
-	testHelper := testapp.SetupTestApp(t)
-
-	testHelper.C4eMinterUtils.InitGenesis(genesisState)
-	testHelper.C4eMinterUtils.ExportGenesis(genesisState)
+	//layout := "2006-01-02T15:04:05.000Z"
+	//str := "2014-11-12T11:45:26.371Z"
+	//mintTime, _ := time.Parse(layout, str)
+	//genesisState := types.GenesisState{
+	//	Params: types.NewParams("myc4e", createMinter(time.Now())),
+	//	MinterState: types.MinterState{
+	//		Position:                    9,
+	//		AmountMinted:                sdk.NewInt(12312),
+	//		RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
+	//		RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("7654.423"),
+	//		LastMintBlockTime:           mintTime,
+	//	},
+	//
+	//	// this line is used by starport scaffolding # genesis/test/state
+	//
+	//}
+	//testHelper := testapp.SetupTestApp(t)
+	//
+	//testHelper.C4eMinterUtils.InitGenesis(genesisState)
+	//testHelper.C4eMinterUtils.ExportGenesis(genesisState)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
 

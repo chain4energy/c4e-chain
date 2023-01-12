@@ -72,24 +72,28 @@ func TestClaimInitial(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	// ctx := testHelper.Context
+	start := testHelper.Context.BlockTime()
 
 	end := testHelper.Context.BlockTime().Add(1000)
 	lockupPeriod := time.Hour
 	vestingPeriod := 3 * time.Hour
-	params := types.Params{Denom: commontestutils.DefaultTestDenom, Campaigns: []*types.Campaign{
+
+	campaigns := []*types.Campaign{
 		{
 			CampaignId:    1,
 			Enabled:       true,
-			StartTime:     testHelper.Context.BlockTime(),
+			StartTime:     &start,
 			EndTime:       &end,
 			LockupPeriod:  lockupPeriod,
 			VestingPeriod: vestingPeriod,
 			Description:   "test-campaign",
 		},
-	}}
+	}
+
+	params := types.Params{Denom: commontestutils.DefaultTestDenom}
 	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}}
 	missions := []types.Mission{{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
-	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions}
+	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
 	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
@@ -104,21 +108,23 @@ func TestClaimInitialCampaignNotFound(t *testing.T) {
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
+	start := testHelper.Context.BlockTime()
 	end := testHelper.Context.BlockTime().Add(1000)
-	params := types.Params{Denom: commontestutils.DefaultTestDenom, Campaigns: []*types.Campaign{
+	campaigns := []*types.Campaign{
 		{
 			CampaignId:    1,
 			Enabled:       true,
-			StartTime:     testHelper.Context.BlockTime(),
+			StartTime:     &start,
 			EndTime:       &end,
 			LockupPeriod:  1000,
 			VestingPeriod: 2000,
 			Description:   "test-campaign",
 		},
-	}}
+	}
+	params := types.Params{Denom: commontestutils.DefaultTestDenom}
 	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}}
 	missions := []types.Mission{{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
-	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions}
+	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
 	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
@@ -132,21 +138,25 @@ func TestClaimInitialCampaignClaimError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	start := testHelper.Context.BlockTime()
+
 	end := testHelper.Context.BlockTime().Add(1000)
-	params := types.Params{Denom: commontestutils.DefaultTestDenom, Campaigns: []*types.Campaign{
+	campaigns := []*types.Campaign{
 		{
 			CampaignId:    1,
 			Enabled:       true,
-			StartTime:     testHelper.Context.BlockTime(),
+			StartTime:     &start,
 			EndTime:       &end,
 			LockupPeriod:  1000,
 			VestingPeriod: 2000,
 			Description:   "test-campaign",
 		},
-	}}
+	}
+
+	params := types.Params{Denom: commontestutils.DefaultTestDenom}
 	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}}
 	missions := []types.Mission{{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
-	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions}
+	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
 	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
@@ -164,14 +174,15 @@ func TestClaimInitialTwoCampaigns(t *testing.T) {
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
+	start := testHelper.Context.BlockTime()
 	end := testHelper.Context.BlockTime().Add(1000)
 	lockupPeriod := time.Hour
 	vestingPeriod := 3 * time.Hour
-	params := types.Params{Denom: commontestutils.DefaultTestDenom, Campaigns: []*types.Campaign{
+	campaigns := []*types.Campaign{
 		{
 			CampaignId:    1,
 			Enabled:       true,
-			StartTime:     testHelper.Context.BlockTime(),
+			StartTime:     &start,
 			EndTime:       &end,
 			LockupPeriod:  lockupPeriod,
 			VestingPeriod: vestingPeriod,
@@ -180,20 +191,22 @@ func TestClaimInitialTwoCampaigns(t *testing.T) {
 		{
 			CampaignId:    2,
 			Enabled:       true,
-			StartTime:     testHelper.Context.BlockTime(),
+			StartTime:     &start,
 			EndTime:       &end,
 			LockupPeriod:  lockupPeriod,
 			VestingPeriod: vestingPeriod,
 			Description:   "test-campaign-1",
 		},
-	}}
+	}
+
+	params := types.Params{Denom: commontestutils.DefaultTestDenom}
 	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}, {CampaignId: 2, MissionId: 4}}
 
 	missions := []types.Mission{
 		{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")},
 		{CampaignId: 2, MissionId: 4, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.3")},
 	}
-	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions}
+	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
 	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}

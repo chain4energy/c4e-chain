@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { Campaign } from "../cfeairdrop/airdrop";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -7,7 +6,6 @@ export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 /** Params defines the parameters for the module. */
 export interface Params {
   denom: string;
-  campaigns: Campaign[];
 }
 
 const baseParams: object = { denom: "" };
@@ -17,9 +15,6 @@ export const Params = {
     if (message.denom !== "") {
       writer.uint32(10).string(message.denom);
     }
-    for (const v of message.campaigns) {
-      Campaign.encode(v!, writer.uint32(18).fork()).ldelim();
-    }
     return writer;
   },
 
@@ -27,15 +22,11 @@ export const Params = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseParams } as Params;
-    message.campaigns = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
           message.denom = reader.string();
-          break;
-        case 2:
-          message.campaigns.push(Campaign.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -47,16 +38,10 @@ export const Params = {
 
   fromJSON(object: any): Params {
     const message = { ...baseParams } as Params;
-    message.campaigns = [];
     if (object.denom !== undefined && object.denom !== null) {
       message.denom = String(object.denom);
     } else {
       message.denom = "";
-    }
-    if (object.campaigns !== undefined && object.campaigns !== null) {
-      for (const e of object.campaigns) {
-        message.campaigns.push(Campaign.fromJSON(e));
-      }
     }
     return message;
   },
@@ -64,28 +49,15 @@ export const Params = {
   toJSON(message: Params): unknown {
     const obj: any = {};
     message.denom !== undefined && (obj.denom = message.denom);
-    if (message.campaigns) {
-      obj.campaigns = message.campaigns.map((e) =>
-        e ? Campaign.toJSON(e) : undefined
-      );
-    } else {
-      obj.campaigns = [];
-    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<Params>): Params {
     const message = { ...baseParams } as Params;
-    message.campaigns = [];
     if (object.denom !== undefined && object.denom !== null) {
       message.denom = object.denom;
     } else {
       message.denom = "";
-    }
-    if (object.campaigns !== undefined && object.campaigns !== null) {
-      for (const e of object.campaigns) {
-        message.campaigns.push(Campaign.fromPartial(e));
-      }
     }
     return message;
   },

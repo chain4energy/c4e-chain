@@ -28,7 +28,9 @@ export interface Campaign {
   lockup_period: Duration | undefined;
   /** period of vesting coins after lockup period */
   vesting_period: Duration | undefined;
+  name: string;
   description: string;
+  campaign_duration: Duration | undefined;
 }
 
 export interface InitialClaim {
@@ -315,6 +317,7 @@ export const ClaimRecord = {
 const baseCampaign: object = {
   campaign_id: 0,
   enabled: false,
+  name: "",
   description: "",
 };
 
@@ -347,8 +350,17 @@ export const Campaign = {
         writer.uint32(50).fork()
       ).ldelim();
     }
+    if (message.name !== "") {
+      writer.uint32(58).string(message.name);
+    }
     if (message.description !== "") {
-      writer.uint32(58).string(message.description);
+      writer.uint32(66).string(message.description);
+    }
+    if (message.campaign_duration !== undefined) {
+      Duration.encode(
+        message.campaign_duration,
+        writer.uint32(74).fork()
+      ).ldelim();
     }
     return writer;
   },
@@ -383,7 +395,13 @@ export const Campaign = {
           message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         case 7:
+          message.name = reader.string();
+          break;
+        case 8:
           message.description = reader.string();
+          break;
+        case 9:
+          message.campaign_duration = Duration.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -425,10 +443,23 @@ export const Campaign = {
     } else {
       message.vesting_period = undefined;
     }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
+    }
     if (object.description !== undefined && object.description !== null) {
       message.description = String(object.description);
     } else {
       message.description = "";
+    }
+    if (
+      object.campaign_duration !== undefined &&
+      object.campaign_duration !== null
+    ) {
+      message.campaign_duration = Duration.fromJSON(object.campaign_duration);
+    } else {
+      message.campaign_duration = undefined;
     }
     return message;
   },
@@ -454,8 +485,13 @@ export const Campaign = {
       (obj.vesting_period = message.vesting_period
         ? Duration.toJSON(message.vesting_period)
         : undefined);
+    message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
+    message.campaign_duration !== undefined &&
+      (obj.campaign_duration = message.campaign_duration
+        ? Duration.toJSON(message.campaign_duration)
+        : undefined);
     return obj;
   },
 
@@ -491,10 +527,25 @@ export const Campaign = {
     } else {
       message.vesting_period = undefined;
     }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
+    }
     if (object.description !== undefined && object.description !== null) {
       message.description = object.description;
     } else {
       message.description = "";
+    }
+    if (
+      object.campaign_duration !== undefined &&
+      object.campaign_duration !== null
+    ) {
+      message.campaign_duration = Duration.fromPartial(
+        object.campaign_duration
+      );
+    } else {
+      message.campaign_duration = undefined;
     }
     return message;
   },

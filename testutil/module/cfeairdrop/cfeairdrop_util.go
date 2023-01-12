@@ -401,7 +401,7 @@ func (h *C4eAirdropUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint
 
 func (h *C4eAirdropUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId uint64,
 	claimerAccountBefore *cfeairdroptypes.AirdropVestingAccount, expectedAmount sdk.Int) *cfeairdroptypes.AirdropVestingAccount {
-	campaign := h.helpeCfeairdropkeeper.Campaign(ctx, campaignId)
+	campaign, _ := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
 	expectedStartTime := ctx.BlockTime().Add(campaign.LockupPeriod)
 	expectedEndTime := expectedStartTime.Add(campaign.VestingPeriod)
 	expectedOriginalVesting := sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, expectedAmount))

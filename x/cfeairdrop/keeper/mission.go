@@ -73,7 +73,7 @@ func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 }
 
 func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64, missionId uint64, address string, isHook bool) (*types.Campaign, *types.Mission, *types.ClaimRecord, error) {
-	campaignConfig := k.Campaign(ctx, campaignId)
+	campaignConfig, found := k.GetCampaign(ctx, campaignId)
 	if campaignConfig == nil {
 		k.Logger(ctx).Error(log+" - camapign not found", "campaignId", campaignId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
@@ -113,7 +113,7 @@ func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64
 		k.Logger(ctx).Error(log+" - campaign record not found", "address", address, "campaignId", campaignId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id: %d not found for address %s", campaignId, address)
 	}
-	return campaignConfig, &mission, &claimRecord, nil
+	return &campaignConfig, &mission, &claimRecord, nil
 }
 
 func (k Keeper) ClaimInitialMission(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {

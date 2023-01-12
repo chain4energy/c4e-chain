@@ -1,6 +1,11 @@
 /* eslint-disable */
 import { Params } from "../cfeairdrop/params";
-import { ClaimRecord, InitialClaim, Mission } from "../cfeairdrop/airdrop";
+import {
+  Campaign,
+  ClaimRecord,
+  InitialClaim,
+  Mission,
+} from "../cfeairdrop/airdrop";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -8,6 +13,7 @@ export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 /** GenesisState defines the cfeairdrop module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
+  campaigns: Campaign[];
   claimRecords: ClaimRecord[];
   initialClaims: InitialClaim[];
   /** this line is used by starport scaffolding # genesis/proto/state */
@@ -21,14 +27,17 @@ export const GenesisState = {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
+    for (const v of message.campaigns) {
+      Campaign.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
     for (const v of message.claimRecords) {
-      ClaimRecord.encode(v!, writer.uint32(18).fork()).ldelim();
+      ClaimRecord.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     for (const v of message.initialClaims) {
-      InitialClaim.encode(v!, writer.uint32(26).fork()).ldelim();
+      InitialClaim.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     for (const v of message.missions) {
-      Mission.encode(v!, writer.uint32(34).fork()).ldelim();
+      Mission.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -37,6 +46,7 @@ export const GenesisState = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
+    message.campaigns = [];
     message.claimRecords = [];
     message.initialClaims = [];
     message.missions = [];
@@ -47,16 +57,19 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
+          message.campaigns.push(Campaign.decode(reader, reader.uint32()));
+          break;
+        case 3:
           message.claimRecords.push(
             ClaimRecord.decode(reader, reader.uint32())
           );
           break;
-        case 3:
+        case 4:
           message.initialClaims.push(
             InitialClaim.decode(reader, reader.uint32())
           );
           break;
-        case 4:
+        case 5:
           message.missions.push(Mission.decode(reader, reader.uint32()));
           break;
         default:
@@ -69,6 +82,7 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
+    message.campaigns = [];
     message.claimRecords = [];
     message.initialClaims = [];
     message.missions = [];
@@ -76,6 +90,11 @@ export const GenesisState = {
       message.params = Params.fromJSON(object.params);
     } else {
       message.params = undefined;
+    }
+    if (object.campaigns !== undefined && object.campaigns !== null) {
+      for (const e of object.campaigns) {
+        message.campaigns.push(Campaign.fromJSON(e));
+      }
     }
     if (object.claimRecords !== undefined && object.claimRecords !== null) {
       for (const e of object.claimRecords) {
@@ -99,6 +118,13 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    if (message.campaigns) {
+      obj.campaigns = message.campaigns.map((e) =>
+        e ? Campaign.toJSON(e) : undefined
+      );
+    } else {
+      obj.campaigns = [];
+    }
     if (message.claimRecords) {
       obj.claimRecords = message.claimRecords.map((e) =>
         e ? ClaimRecord.toJSON(e) : undefined
@@ -125,6 +151,7 @@ export const GenesisState = {
 
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
+    message.campaigns = [];
     message.claimRecords = [];
     message.initialClaims = [];
     message.missions = [];
@@ -132,6 +159,11 @@ export const GenesisState = {
       message.params = Params.fromPartial(object.params);
     } else {
       message.params = undefined;
+    }
+    if (object.campaigns !== undefined && object.campaigns !== null) {
+      for (const e of object.campaigns) {
+        message.campaigns.push(Campaign.fromPartial(e));
+      }
     }
     if (object.claimRecords !== undefined && object.claimRecords !== null) {
       for (const e of object.claimRecords) {

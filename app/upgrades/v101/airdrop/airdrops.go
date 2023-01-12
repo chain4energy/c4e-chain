@@ -45,7 +45,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	gleamCampaign := cfeairdroptypes.Campaign{
 		CampaignId:    gleamCamapaignId,
 		Enabled:       true,
-		StartTime:     gleamStart,
+		StartTime:     &gleamStart,
 		EndTime:       &gleamEnd,
 		LockupPeriod:  lockupPeriod,
 		VestingPeriod: vestingPeriod,
@@ -55,18 +55,14 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	stakeCampaign := cfeairdroptypes.Campaign{
 		CampaignId:    stakeCamapaignId,
 		Enabled:       true,
-		StartTime:     stakeStart,
+		StartTime:     &stakeStart,
 		EndTime:       &stakeEnd,
 		LockupPeriod:  lockupPeriod,
 		VestingPeriod: vestingPeriod,
 		Description:   "ATOM stake airdrop ??????", // TODO description + add name to campaign
 	}
-
-	params := cfeairdroptypes.Params{
-		Denom:     "uc4e", // Some constant: uc4e ???
-		Campaigns: []*cfeairdroptypes.Campaign{&gleamCampaign, &stakeCampaign},
-	}
-	airdropKeeper.SetParams(ctx, params)
+	airdropKeeper.SetCampaign(ctx, gleamCampaign)
+	airdropKeeper.SetCampaign(ctx, stakeCampaign)
 
 	// Gleam contests missions
 	airdropKeeper.SetMission(

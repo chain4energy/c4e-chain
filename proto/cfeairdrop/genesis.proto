@@ -11,8 +11,9 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 // GenesisState defines the cfeairdrop module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
-  repeated ClaimRecord claimRecords = 2 [(gogoproto.nullable) = false];
-  repeated InitialClaim initialClaims = 3 [(gogoproto.nullable) = false];
-  repeated Mission missions = 4 [(gogoproto.nullable) = false];
+  repeated Campaign campaigns = 2;
+  repeated ClaimRecord claimRecords = 3 [(gogoproto.nullable) = false];
+  repeated InitialClaim initialClaims = 4 [(gogoproto.nullable) = false];
+  repeated Mission missions = 5 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }
