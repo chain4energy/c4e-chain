@@ -23,11 +23,19 @@ message MsgClaim {
 
 message MsgClaimResponse {}
 
-message MsgCreateAirdropCampaign {
-  string creator = 1;
-  string owner = 2;
+message MsgCreateCampaign {
+  string owner = 1;
+  google.protobuf.Timestamp start_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp end_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+
   string name = 3;
-  google.protobuf.Duration  campaign_duration = 4 [
+  google.protobuf.Duration campaign_duration = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];

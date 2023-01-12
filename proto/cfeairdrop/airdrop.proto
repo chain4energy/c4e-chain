@@ -24,6 +24,7 @@ message ClaimRecord {
 }
 
 message Campaign {
+  string owner = 1;
   uint64 campaign_id = 1;
   bool enabled = 2;
   google.protobuf.Timestamp start_time = 3 [
@@ -46,10 +47,6 @@ message Campaign {
   ];
   string name = 7;
   string description = 8;
-  google.protobuf.Duration campaign_duration = 9 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdduration) = true
-  ];
 }
 
 message InitialClaim {
