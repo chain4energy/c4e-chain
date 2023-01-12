@@ -55,16 +55,19 @@ message QueryParamsRequest {}
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
   // params holds all the parameters of this module.
-  Params params = 1 [(gogoproto.nullable) = false];
+  Params params = 1 [
+		(gogoproto.nullable) = false
+	];
 }
 
 message QueryGetClaimRecordRequest {
 	  string address = 1;
-
 }
 
 message QueryGetClaimRecordResponse {
-	ClaimRecord claimRecord = 1 [(gogoproto.nullable) = false];
+	ClaimRecord claimRecord = 1 [
+		(gogoproto.nullable) = false
+	];
 }
 
 message QueryAllClaimRecordRequest {
@@ -72,17 +75,20 @@ message QueryAllClaimRecordRequest {
 }
 
 message QueryAllClaimRecordResponse {
-	repeated ClaimRecord claimRecord = 1 [(gogoproto.nullable) = false];
+	repeated ClaimRecord claimRecord = 1 [
+		(gogoproto.nullable) = false
+	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetInitialClaimRequest {
 	  uint64 campaignId = 1;
-
 }
 
 message QueryGetInitialClaimResponse {
-	InitialClaim initialClaim = 1 [(gogoproto.nullable) = false];
+	InitialClaim initialClaim = 1 [
+		(gogoproto.nullable) = false
+	];
 }
 
 message QueryAllInitialClaimRequest {
@@ -90,18 +96,21 @@ message QueryAllInitialClaimRequest {
 }
 
 message QueryAllInitialClaimResponse {
-	repeated InitialClaim initialClaim = 1 [(gogoproto.nullable) = false];
+	repeated InitialClaim initialClaim = 1 [
+		(gogoproto.nullable) = false
+	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetMissionRequest {
 	uint64 campaignId = 1;
 	uint64 missionId = 2;
-
 }
 
 message QueryGetMissionResponse {
-	Mission mission = 1 [(gogoproto.nullable) = false];
+	Mission mission = 1 [
+		(gogoproto.nullable) = false
+	];
 }
 
 message QueryAllMissionRequest {
@@ -109,7 +118,9 @@ message QueryAllMissionRequest {
 }
 
 message QueryAllMissionResponse {
-	repeated Mission mission = 1 [(gogoproto.nullable) = false];
+	repeated Mission mission = 1 [
+		(gogoproto.nullable) = false
+	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

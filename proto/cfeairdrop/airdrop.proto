@@ -8,46 +8,61 @@ import "google/protobuf/duration.proto";
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 
 message CampaignRecord {
-  uint64 campaign_id   = 1;
-  string claimable = 3 [
-    (gogoproto.nullable)   = false,
+  uint64 campaign_id = 1;
+  string claimable = 2 [
+    (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  repeated uint64 completedMissions = 4;
-  repeated uint64 claimedMissions = 5;
+  repeated uint64 completedMissions = 3;
+  repeated uint64 claimedMissions = 4;
 }
 
 message ClaimRecord {
-  string address  = 1;
-  string claim_address  = 2;
+  string address = 1;
+  string claim_address = 2;
   repeated CampaignRecord campaign_records = 3;
 }
 
 message Campaign {
-  uint64 campaign_id   = 1;
-  bool enabled    = 2;
-  google.protobuf.Timestamp start_time = 3 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp end_time = 4 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
+  uint64 campaign_id = 1;
+  bool enabled = 2;
+  google.protobuf.Timestamp start_time = 3 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp end_time = 4 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
   // period of locked coins from claim
-  google.protobuf.Duration lockup_period = 5 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
+  google.protobuf.Duration lockup_period = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
   // period of vesting coins after lockup period
-  google.protobuf.Duration vesting_period = 6 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  google.protobuf.Duration vesting_period = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
   string name = 7;
   string description = 8;
-  google.protobuf.Duration  campaign_duration = 9 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  google.protobuf.Duration campaign_duration = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
 }
 
 message InitialClaim {
-  uint64 campaign_id   = 2;
+  uint64 campaign_id = 2;
   uint64 mission_id = 3;
 }
 
 message Mission {
-  uint64 campaign_id   = 1;
-  uint64 mission_id   = 2;
+  uint64 campaign_id = 1;
+  uint64 mission_id = 2;
   string description = 3;
-  string weight      = 4 [
-    (gogoproto.nullable)   = false,
+  string weight = 4 [
+    (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
   ];
 }

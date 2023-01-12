@@ -73,8 +73,8 @@ func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 }
 
 func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64, missionId uint64, address string, isHook bool) (*types.Campaign, *types.Mission, *types.ClaimRecord, error) {
-	campaignConfig, found := k.GetCampaign(ctx, campaignId)
-	if campaignConfig == nil {
+	campaignConfig, campaignFound := k.GetCampaign(ctx, campaignId)
+	if !campaignFound {
 		k.Logger(ctx).Error(log+" - camapign not found", "campaignId", campaignId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
 	}
@@ -88,8 +88,8 @@ func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64
 	}
 	k.Logger(ctx).Debug(log, "campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaignConfig.StartTime, "campaigh end", campaignConfig.EndTime)
 
-	mission, found := k.GetMission(ctx, campaignId, missionId)
-	if !found {
+	mission, missionFound := k.GetMission(ctx, campaignId, missionId)
+	if !missionFound {
 		k.Logger(ctx).Error(log+" - mission not found", "campaignId", campaignId, "missionId", missionId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "mission not found - campaignId %d, missionId %d", campaignId, missionId)
 	}

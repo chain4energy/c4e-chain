@@ -79,7 +79,7 @@ func (k Keeper) addClaimRecord(ctx sdk.Context, address string, campaignId uint6
 }
 
 func (k Keeper) AddCampaignRecords(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, campaignRecord map[string]sdk.Int) error {
-	records := []*types.ClaimRecord{}
+	var records []*types.ClaimRecord
 	sum := sdk.ZeroInt()
 	for address, claimable := range campaignRecord {
 		record, err := k.addClaimRecord(ctx, address, campaignId, claimable)

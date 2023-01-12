@@ -21,20 +21,27 @@ message MsgClaim {
   string mission_id = 3;
 }
 
-message MsgClaimResponse {
-}
+message MsgClaimResponse {}
 
 message MsgCreateAirdropCampaign {
   string creator = 1;
   string owner = 2;
   string name = 3;
-  google.protobuf.Duration  campaign_duration = 4 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
-  google.protobuf.Duration lockup_period = 5 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
-  google.protobuf.Duration vesting_period = 6 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  google.protobuf.Duration  campaign_duration = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
+  google.protobuf.Duration lockup_period = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
+  google.protobuf.Duration vesting_period = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
   string description = 7;
 }
 
-message MsgCreateAirdropCampaignResponse {
-}
+message MsgCreateAirdropCampaignResponse {}
 
 // this line is used by starport scaffolding # proto/tx/message
