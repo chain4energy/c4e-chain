@@ -9,6 +9,10 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
+	// Set all the campaignXX
+	for _, elem := range genState.Campaigns {
+		k.SetCampaign(ctx, *elem)
+	}
 	// Set all the claimRecordXX
 	for _, elem := range genState.ClaimRecords {
 		k.SetClaimRecord(ctx, elem)
