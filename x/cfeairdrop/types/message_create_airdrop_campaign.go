@@ -10,15 +10,16 @@ const TypeMsgCreateAirdropCampaign = "create_airdrop_campaign"
 
 var _ sdk.Msg = &MsgCreateAirdropCampaign{}
 
-func NewMsgCreateAirdropCampaign(creator string, owner string, name string, campaignDuration time.Duration, lockupPeriod time.Duration, vestingPeriod time.Duration, description string) *MsgCreateAirdropCampaign {
+func NewMsgCreateAirdropCampaign(owner string, name string, description string, startTime int64,
+	endTime int64, lockupPeriod time.Duration, vestingPeriod time.Duration) *MsgCreateAirdropCampaign {
 	return &MsgCreateAirdropCampaign{
-		Creator:          creator,
-		Owner:            owner,
-		Name:             name,
-		CampaignDuration: campaignDuration,
-		LockupPeriod:     lockupPeriod,
-		VestingPeriod:    vestingPeriod,
-		Description:      description,
+		Owner:         owner,
+		Name:          name,
+		Description:   description,
+		StartTime:     startTime,
+		EndTime:       endTime,
+		LockupPeriod:  lockupPeriod,
+		VestingPeriod: vestingPeriod,
 	}
 }
 
@@ -31,7 +32,7 @@ func (msg *MsgCreateAirdropCampaign) Type() string {
 }
 
 func (msg *MsgCreateAirdropCampaign) GetSigners() []sdk.AccAddress {
-	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +45,7 @@ func (msg *MsgCreateAirdropCampaign) GetSignBytes() []byte {
 }
 
 func (msg *MsgCreateAirdropCampaign) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}

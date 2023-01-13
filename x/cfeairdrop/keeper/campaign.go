@@ -1,17 +1,42 @@
 package keeper
 
 import (
+	"encoding/binary"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// AppendNewCampaign appends a campaign in the store with a new id and update the count
+func (k Keeper) AppendNewCampaign(
+	ctx sdk.Context,
+	campaign types.Campaign,
+) uint64 {
+	// Create the vestingAccount
+	count := k.GetCampaignCount(ctx)
+
+	// Set the ID of the appended value
+	campaign.Id = count
+
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
+	appendedValue := k.cdc.MustMarshal(&campaign)
+	store.Set(types.CampaignKey(
+		campaign.Id,
+	), appendedValue)
+
+	// Update vestingAccount count
+	k.SetCampaignCount(ctx, count+1)
+
+	return count
+}
+
 // SetCampaign set a specific campaignO in the store from its index
 func (k Keeper) SetCampaign(ctx sdk.Context, campaign types.Campaign) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
+
 	b := k.cdc.MustMarshal(&campaign)
 	store.Set(types.CampaignKey(
-		campaign.CampaignId,
+		campaign.Id,
 	), b)
 }
 
@@ -59,4 +84,26 @@ func (k Keeper) GetAllCampaign(ctx sdk.Context) (list []types.Campaign) {
 	}
 
 	return
+}
+
+func (k Keeper) GetCampaignCount(ctx sdk.Context) uint64 {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+	byteKey := types.KeyPrefix(types.CampaignCountKey)
+	bz := store.Get(byteKey)
+
+	// Count doesn't exist: no element
+	if bz == nil {
+		return 0
+	}
+
+	// Parse bytes
+	return binary.BigEndian.Uint64(bz)
+}
+
+func (k Keeper) SetCampaignCount(ctx sdk.Context, count uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+	byteKey := types.KeyPrefix(types.CampaignCountKey)
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	store.Set(byteKey, bz)
 }

@@ -26,7 +26,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-//Period defines a length of time and amount of coins that will vest.
+// ContinuousVestingPeriod defines a length of time and amount of coins that will vest.
 type ContinuousVestingPeriod struct {
 	StartTime int64                                    `protobuf:"varint,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	EndTime   int64                                    `protobuf:"varint,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
@@ -86,7 +86,7 @@ func (m *ContinuousVestingPeriod) GetAmount() github_com_cosmos_cosmos_sdk_types
 	return nil
 }
 
-// PeriodicVestingAccount implements the VestingAccount interface. It
+// AirdropVestingAccount implements the VestingAccount interface. It
 // periodically vests by unlocking coins during each specified period.
 type AirdropVestingAccount struct {
 	*types1.BaseVestingAccount `protobuf:"bytes,1,opt,name=base_vesting_account,json=baseVestingAccount,proto3,embedded=base_vesting_account" json:"base_vesting_account,omitempty"`

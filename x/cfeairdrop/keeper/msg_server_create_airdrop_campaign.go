@@ -13,10 +13,9 @@ func (k msgServer) CreateAirdropCampaign(goCtx context.Context, msg *types.MsgCr
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
-	if err := keeper.CreateAidropCampaign(ctx, msg.Creator, msg.Owner, msg.); err != nil {
+	if err := keeper.CreateAidropCampaign(ctx, msg.Owner, msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.LockupPeriod, msg.VestingPeriod); err != nil {
 		return nil, err
 	}
-
 
 	return &types.MsgCreateAirdropCampaignResponse{}, nil
 }

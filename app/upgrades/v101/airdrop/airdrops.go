@@ -43,7 +43,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	}
 
 	gleamCampaign := cfeairdroptypes.Campaign{
-		CampaignId:    gleamCamapaignId,
+		Id:            gleamCamapaignId,
 		Enabled:       true,
 		StartTime:     &gleamStart,
 		EndTime:       &gleamEnd,
@@ -53,7 +53,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	}
 
 	stakeCampaign := cfeairdroptypes.Campaign{
-		CampaignId:    stakeCamapaignId,
+		Id:            stakeCamapaignId,
 		Enabled:       true,
 		StartTime:     &stakeStart,
 		EndTime:       &stakeEnd,

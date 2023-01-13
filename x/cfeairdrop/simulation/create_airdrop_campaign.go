@@ -19,7 +19,7 @@ func SimulateMsgCreateAirdropCampaign(
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		msg := &types.MsgCreateAirdropCampaign{
-			Creator: simAccount.Address.String(),
+			Owner: simAccount.Address.String(),
 		}
 
 		// TODO: Handling the CreateAirdropCampaign simulation

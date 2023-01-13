@@ -20,7 +20,10 @@ export interface ClaimRecord {
 }
 
 export interface Campaign {
-  campaign_id: number;
+  id: number;
+  owner: string;
+  name: string;
+  description: string;
   enabled: boolean;
   start_time: Date | undefined;
   end_time: Date | undefined;
@@ -28,9 +31,6 @@ export interface Campaign {
   lockup_period: Duration | undefined;
   /** period of vesting coins after lockup period */
   vesting_period: Duration | undefined;
-  name: string;
-  description: string;
-  campaign_duration: Duration | undefined;
 }
 
 export interface InitialClaim {
@@ -58,14 +58,14 @@ export const CampaignRecord = {
       writer.uint32(8).uint64(message.campaign_id);
     }
     if (message.claimable !== "") {
-      writer.uint32(26).string(message.claimable);
+      writer.uint32(18).string(message.claimable);
     }
-    writer.uint32(34).fork();
+    writer.uint32(26).fork();
     for (const v of message.completedMissions) {
       writer.uint64(v);
     }
     writer.ldelim();
-    writer.uint32(42).fork();
+    writer.uint32(34).fork();
     for (const v of message.claimedMissions) {
       writer.uint64(v);
     }
@@ -85,10 +85,10 @@ export const CampaignRecord = {
         case 1:
           message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
-        case 3:
+        case 2:
           message.claimable = reader.string();
           break;
-        case 4:
+        case 3:
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
@@ -102,7 +102,7 @@ export const CampaignRecord = {
             );
           }
           break;
-        case 5:
+        case 4:
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
@@ -315,50 +315,48 @@ export const ClaimRecord = {
 };
 
 const baseCampaign: object = {
-  campaign_id: 0,
-  enabled: false,
+  id: 0,
+  owner: "",
   name: "",
   description: "",
+  enabled: false,
 };
 
 export const Campaign = {
   encode(message: Campaign, writer: Writer = Writer.create()): Writer {
-    if (message.campaign_id !== 0) {
-      writer.uint32(8).uint64(message.campaign_id);
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id);
+    }
+    if (message.owner !== "") {
+      writer.uint32(18).string(message.owner);
+    }
+    if (message.name !== "") {
+      writer.uint32(26).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(34).string(message.description);
     }
     if (message.enabled === true) {
-      writer.uint32(16).bool(message.enabled);
+      writer.uint32(40).bool(message.enabled);
     }
     if (message.start_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.start_time),
-        writer.uint32(26).fork()
+        writer.uint32(50).fork()
       ).ldelim();
     }
     if (message.end_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.end_time),
-        writer.uint32(34).fork()
+        writer.uint32(58).fork()
       ).ldelim();
     }
     if (message.lockup_period !== undefined) {
-      Duration.encode(message.lockup_period, writer.uint32(42).fork()).ldelim();
+      Duration.encode(message.lockup_period, writer.uint32(66).fork()).ldelim();
     }
     if (message.vesting_period !== undefined) {
       Duration.encode(
         message.vesting_period,
-        writer.uint32(50).fork()
-      ).ldelim();
-    }
-    if (message.name !== "") {
-      writer.uint32(58).string(message.name);
-    }
-    if (message.description !== "") {
-      writer.uint32(66).string(message.description);
-    }
-    if (message.campaign_duration !== undefined) {
-      Duration.encode(
-        message.campaign_duration,
         writer.uint32(74).fork()
       ).ldelim();
     }
@@ -373,35 +371,35 @@ export const Campaign = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.campaign_id = longToNumber(reader.uint64() as Long);
+          message.id = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.enabled = reader.bool();
+          message.owner = reader.string();
           break;
         case 3:
+          message.name = reader.string();
+          break;
+        case 4:
+          message.description = reader.string();
+          break;
+        case 5:
+          message.enabled = reader.bool();
+          break;
+        case 6:
           message.start_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 4:
+        case 7:
           message.end_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 5:
+        case 8:
           message.lockup_period = Duration.decode(reader, reader.uint32());
           break;
-        case 6:
-          message.vesting_period = Duration.decode(reader, reader.uint32());
-          break;
-        case 7:
-          message.name = reader.string();
-          break;
-        case 8:
-          message.description = reader.string();
-          break;
         case 9:
-          message.campaign_duration = Duration.decode(reader, reader.uint32());
+          message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -413,10 +411,25 @@ export const Campaign = {
 
   fromJSON(object: any): Campaign {
     const message = { ...baseCampaign } as Campaign;
-    if (object.campaign_id !== undefined && object.campaign_id !== null) {
-      message.campaign_id = Number(object.campaign_id);
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id);
     } else {
-      message.campaign_id = 0;
+      message.id = 0;
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner);
+    } else {
+      message.owner = "";
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = String(object.description);
+    } else {
+      message.description = "";
     }
     if (object.enabled !== undefined && object.enabled !== null) {
       message.enabled = Boolean(object.enabled);
@@ -443,31 +456,16 @@ export const Campaign = {
     } else {
       message.vesting_period = undefined;
     }
-    if (object.name !== undefined && object.name !== null) {
-      message.name = String(object.name);
-    } else {
-      message.name = "";
-    }
-    if (object.description !== undefined && object.description !== null) {
-      message.description = String(object.description);
-    } else {
-      message.description = "";
-    }
-    if (
-      object.campaign_duration !== undefined &&
-      object.campaign_duration !== null
-    ) {
-      message.campaign_duration = Duration.fromJSON(object.campaign_duration);
-    } else {
-      message.campaign_duration = undefined;
-    }
     return message;
   },
 
   toJSON(message: Campaign): unknown {
     const obj: any = {};
-    message.campaign_id !== undefined &&
-      (obj.campaign_id = message.campaign_id);
+    message.id !== undefined && (obj.id = message.id);
+    message.owner !== undefined && (obj.owner = message.owner);
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined &&
+      (obj.description = message.description);
     message.enabled !== undefined && (obj.enabled = message.enabled);
     message.start_time !== undefined &&
       (obj.start_time =
@@ -485,22 +483,30 @@ export const Campaign = {
       (obj.vesting_period = message.vesting_period
         ? Duration.toJSON(message.vesting_period)
         : undefined);
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined &&
-      (obj.description = message.description);
-    message.campaign_duration !== undefined &&
-      (obj.campaign_duration = message.campaign_duration
-        ? Duration.toJSON(message.campaign_duration)
-        : undefined);
     return obj;
   },
 
   fromPartial(object: DeepPartial<Campaign>): Campaign {
     const message = { ...baseCampaign } as Campaign;
-    if (object.campaign_id !== undefined && object.campaign_id !== null) {
-      message.campaign_id = object.campaign_id;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id;
     } else {
-      message.campaign_id = 0;
+      message.id = 0;
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    } else {
+      message.owner = "";
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    } else {
+      message.description = "";
     }
     if (object.enabled !== undefined && object.enabled !== null) {
       message.enabled = object.enabled;
@@ -526,26 +532,6 @@ export const Campaign = {
       message.vesting_period = Duration.fromPartial(object.vesting_period);
     } else {
       message.vesting_period = undefined;
-    }
-    if (object.name !== undefined && object.name !== null) {
-      message.name = object.name;
-    } else {
-      message.name = "";
-    }
-    if (object.description !== undefined && object.description !== null) {
-      message.description = object.description;
-    } else {
-      message.description = "";
-    }
-    if (
-      object.campaign_duration !== undefined &&
-      object.campaign_duration !== null
-    ) {
-      message.campaign_duration = Duration.fromPartial(
-        object.campaign_duration
-      );
-    } else {
-      message.campaign_duration = undefined;
     }
     return message;
   },

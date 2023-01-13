@@ -1,5 +1,6 @@
 /* eslint-disable */
-import { Reader, Writer } from "protobufjs/minimal";
+import { Reader, util, configure, Writer } from "protobufjs/minimal";
+import * as Long from "long";
 import { Duration } from "../google/protobuf/duration";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -13,13 +14,13 @@ export interface MsgClaim {
 export interface MsgClaimResponse {}
 
 export interface MsgCreateAirdropCampaign {
-  creator: string;
   owner: string;
   name: string;
-  campaign_duration: Duration | undefined;
+  description: string;
+  start_time: number;
+  end_time: number;
   lockup_period: Duration | undefined;
   vesting_period: Duration | undefined;
-  description: string;
 }
 
 export interface MsgCreateAirdropCampaignResponse {}
@@ -153,10 +154,11 @@ export const MsgClaimResponse = {
 };
 
 const baseMsgCreateAirdropCampaign: object = {
-  creator: "",
   owner: "",
   name: "",
   description: "",
+  start_time: 0,
+  end_time: 0,
 };
 
 export const MsgCreateAirdropCampaign = {
@@ -164,32 +166,29 @@ export const MsgCreateAirdropCampaign = {
     message: MsgCreateAirdropCampaign,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
-    }
     if (message.owner !== "") {
-      writer.uint32(18).string(message.owner);
+      writer.uint32(10).string(message.owner);
     }
     if (message.name !== "") {
-      writer.uint32(26).string(message.name);
+      writer.uint32(18).string(message.name);
     }
-    if (message.campaign_duration !== undefined) {
-      Duration.encode(
-        message.campaign_duration,
-        writer.uint32(34).fork()
-      ).ldelim();
+    if (message.description !== "") {
+      writer.uint32(26).string(message.description);
+    }
+    if (message.start_time !== 0) {
+      writer.uint32(32).int64(message.start_time);
+    }
+    if (message.end_time !== 0) {
+      writer.uint32(40).int64(message.end_time);
     }
     if (message.lockup_period !== undefined) {
-      Duration.encode(message.lockup_period, writer.uint32(42).fork()).ldelim();
+      Duration.encode(message.lockup_period, writer.uint32(50).fork()).ldelim();
     }
     if (message.vesting_period !== undefined) {
       Duration.encode(
         message.vesting_period,
-        writer.uint32(50).fork()
+        writer.uint32(58).fork()
       ).ldelim();
-    }
-    if (message.description !== "") {
-      writer.uint32(58).string(message.description);
     }
     return writer;
   },
@@ -207,25 +206,25 @@ export const MsgCreateAirdropCampaign = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
           message.owner = reader.string();
           break;
-        case 3:
+        case 2:
           message.name = reader.string();
           break;
+        case 3:
+          message.description = reader.string();
+          break;
         case 4:
-          message.campaign_duration = Duration.decode(reader, reader.uint32());
+          message.start_time = longToNumber(reader.int64() as Long);
           break;
         case 5:
-          message.lockup_period = Duration.decode(reader, reader.uint32());
+          message.end_time = longToNumber(reader.int64() as Long);
           break;
         case 6:
-          message.vesting_period = Duration.decode(reader, reader.uint32());
+          message.lockup_period = Duration.decode(reader, reader.uint32());
           break;
         case 7:
-          message.description = reader.string();
+          message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -239,11 +238,6 @@ export const MsgCreateAirdropCampaign = {
     const message = {
       ...baseMsgCreateAirdropCampaign,
     } as MsgCreateAirdropCampaign;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = String(object.creator);
-    } else {
-      message.creator = "";
-    }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = String(object.owner);
     } else {
@@ -254,13 +248,20 @@ export const MsgCreateAirdropCampaign = {
     } else {
       message.name = "";
     }
-    if (
-      object.campaign_duration !== undefined &&
-      object.campaign_duration !== null
-    ) {
-      message.campaign_duration = Duration.fromJSON(object.campaign_duration);
+    if (object.description !== undefined && object.description !== null) {
+      message.description = String(object.description);
     } else {
-      message.campaign_duration = undefined;
+      message.description = "";
+    }
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.start_time = Number(object.start_time);
+    } else {
+      message.start_time = 0;
+    }
+    if (object.end_time !== undefined && object.end_time !== null) {
+      message.end_time = Number(object.end_time);
+    } else {
+      message.end_time = 0;
     }
     if (object.lockup_period !== undefined && object.lockup_period !== null) {
       message.lockup_period = Duration.fromJSON(object.lockup_period);
@@ -272,23 +273,17 @@ export const MsgCreateAirdropCampaign = {
     } else {
       message.vesting_period = undefined;
     }
-    if (object.description !== undefined && object.description !== null) {
-      message.description = String(object.description);
-    } else {
-      message.description = "";
-    }
     return message;
   },
 
   toJSON(message: MsgCreateAirdropCampaign): unknown {
     const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
     message.owner !== undefined && (obj.owner = message.owner);
     message.name !== undefined && (obj.name = message.name);
-    message.campaign_duration !== undefined &&
-      (obj.campaign_duration = message.campaign_duration
-        ? Duration.toJSON(message.campaign_duration)
-        : undefined);
+    message.description !== undefined &&
+      (obj.description = message.description);
+    message.start_time !== undefined && (obj.start_time = message.start_time);
+    message.end_time !== undefined && (obj.end_time = message.end_time);
     message.lockup_period !== undefined &&
       (obj.lockup_period = message.lockup_period
         ? Duration.toJSON(message.lockup_period)
@@ -297,8 +292,6 @@ export const MsgCreateAirdropCampaign = {
       (obj.vesting_period = message.vesting_period
         ? Duration.toJSON(message.vesting_period)
         : undefined);
-    message.description !== undefined &&
-      (obj.description = message.description);
     return obj;
   },
 
@@ -308,11 +301,6 @@ export const MsgCreateAirdropCampaign = {
     const message = {
       ...baseMsgCreateAirdropCampaign,
     } as MsgCreateAirdropCampaign;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = object.creator;
-    } else {
-      message.creator = "";
-    }
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = object.owner;
     } else {
@@ -323,15 +311,20 @@ export const MsgCreateAirdropCampaign = {
     } else {
       message.name = "";
     }
-    if (
-      object.campaign_duration !== undefined &&
-      object.campaign_duration !== null
-    ) {
-      message.campaign_duration = Duration.fromPartial(
-        object.campaign_duration
-      );
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
     } else {
-      message.campaign_duration = undefined;
+      message.description = "";
+    }
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.start_time = object.start_time;
+    } else {
+      message.start_time = 0;
+    }
+    if (object.end_time !== undefined && object.end_time !== null) {
+      message.end_time = object.end_time;
+    } else {
+      message.end_time = 0;
     }
     if (object.lockup_period !== undefined && object.lockup_period !== null) {
       message.lockup_period = Duration.fromPartial(object.lockup_period);
@@ -342,11 +335,6 @@ export const MsgCreateAirdropCampaign = {
       message.vesting_period = Duration.fromPartial(object.vesting_period);
     } else {
       message.vesting_period = undefined;
-    }
-    if (object.description !== undefined && object.description !== null) {
-      message.description = object.description;
-    } else {
-      message.description = "";
     }
     return message;
   },
@@ -451,6 +439,16 @@ interface Rpc {
   ): Promise<Uint8Array>;
 }
 
+declare var self: any | undefined;
+declare var window: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
+
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
   ? T
@@ -461,3 +459,15 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (util.Long !== Long) {
+  util.Long = Long as any;
+  configure();
+}

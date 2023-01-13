@@ -23,31 +23,24 @@ message MsgClaim {
 
 message MsgClaimResponse {}
 
-message MsgCreateCampaign {
+message MsgCreateAirdropCampaign {
   string owner = 1;
-  google.protobuf.Timestamp start_time = 3 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
+  string name = 2;
+  string description = 3;
+  int64 start_time = 4 [
+    (gogoproto.moretags) = "yaml:\"start_time\""
   ];
-  google.protobuf.Timestamp end_time = 3 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
+  int64 end_time = 5 [
+    (gogoproto.moretags) = "yaml:\"end_time\""
   ];
-
-  string name = 3;
-  google.protobuf.Duration campaign_duration = 4 [
+  google.protobuf.Duration lockup_period = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
-  google.protobuf.Duration lockup_period = 5 [
+  google.protobuf.Duration vesting_period = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
-  google.protobuf.Duration vesting_period = 6 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdduration) = true
-  ];
-  string description = 7;
 }
 
 message MsgCreateAirdropCampaignResponse {}

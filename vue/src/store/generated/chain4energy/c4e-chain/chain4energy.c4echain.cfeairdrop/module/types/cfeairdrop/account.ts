@@ -6,7 +6,7 @@ import { BaseVestingAccount } from "../cosmos/vesting/v1beta1/vesting";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
-/** Period defines a length of time and amount of coins that will vest. */
+/** ContinuousVestingPeriod defines a length of time and amount of coins that will vest. */
 export interface ContinuousVestingPeriod {
   start_time: number;
   end_time: number;
@@ -14,7 +14,7 @@ export interface ContinuousVestingPeriod {
 }
 
 /**
- * PeriodicVestingAccount implements the VestingAccount interface. It
+ * AirdropVestingAccount implements the VestingAccount interface. It
  * periodically vests by unlocking coins during each specified period.
  */
 export interface AirdropVestingAccount {

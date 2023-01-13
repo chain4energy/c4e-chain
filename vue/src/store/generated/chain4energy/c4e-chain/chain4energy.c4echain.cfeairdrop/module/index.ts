@@ -4,13 +4,13 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgClaim } from "./types/cfeairdrop/tx";
 import { MsgCreateAirdropCampaign } from "./types/cfeairdrop/tx";
+import { MsgClaim } from "./types/cfeairdrop/tx";
 
 
 const types = [
-  ["/chain4energy.c4echain.cfeairdrop.MsgClaim", MsgClaim],
   ["/chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaign", MsgCreateAirdropCampaign],
+  ["/chain4energy.c4echain.cfeairdrop.MsgClaim", MsgClaim],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -43,8 +43,8 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
-    msgClaim: (data: MsgClaim): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgClaim", value: MsgClaim.fromPartial( data ) }),
     msgCreateAirdropCampaign: (data: MsgCreateAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaign", value: MsgCreateAirdropCampaign.fromPartial( data ) }),
+    msgClaim: (data: MsgClaim): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgClaim", value: MsgClaim.fromPartial( data ) }),
     
   };
 };
