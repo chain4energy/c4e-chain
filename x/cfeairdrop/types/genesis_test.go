@@ -49,6 +49,15 @@ func TestGenesisState_Validate(t *testing.T) {
 						MissionId:  1,
 					},
 				},
+				AirdropEntryList: []types.AirdropEntry{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				AirdropEntryCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -94,6 +103,32 @@ func TestGenesisState_Validate(t *testing.T) {
 						MissionId:  0,
 					},
 				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated airdropEntry",
+			genState: &types.GenesisState{
+				AirdropEntryList: []types.AirdropEntry{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid airdropEntry count",
+			genState: &types.GenesisState{
+				AirdropEntryList: []types.AirdropEntry{
+					{
+						Id: 1,
+					},
+				},
+				AirdropEntryCount: 0,
 			},
 			valid: false,
 		},

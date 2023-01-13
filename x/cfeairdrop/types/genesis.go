@@ -10,9 +10,10 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		ClaimRecords:  []ClaimRecord{},
-		InitialClaims: []InitialClaim{},
-		Missions:      []Mission{},
+		ClaimRecords:     []ClaimRecord{},
+		InitialClaims:    []InitialClaim{},
+		Missions:         []Mission{},
+		AirdropEntryList: []AirdropEntry{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -50,6 +51,18 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for mission")
 		}
 		missionIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated ID in airdropEntry
+	airdropEntryIdMap := make(map[uint64]bool)
+	airdropEntryCount := gs.GetAirdropEntryCount()
+	for _, elem := range gs.AirdropEntryList {
+		if _, ok := airdropEntryIdMap[elem.Id]; ok {
+			return fmt.Errorf("duplicated id for airdropEntry")
+		}
+		if elem.Id >= airdropEntryCount {
+			return fmt.Errorf("airdropEntry id should be lower or equal than the last id")
+		}
+		airdropEntryIdMap[elem.Id] = true
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

@@ -3,6 +3,7 @@ package chain4energy.c4echain.cfeairdrop;
 import "google/protobuf/duration.proto";
 import "gogoproto/gogo.proto";
 
+import "cfeairdrop/airdrop_entry.proto";
 // this line is used by starport scaffolding # proto/tx/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
@@ -11,6 +12,10 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 service Msg {
   rpc Claim(MsgClaim) returns (MsgClaimResponse);
   rpc CreateAirdropCampaign(MsgCreateAirdropCampaign) returns (MsgCreateAirdropCampaignResponse);
+  rpc AddMissionToAidropCampaign(MsgAddMissionToAidropCampaign) returns (MsgAddMissionToAidropCampaignResponse);
+rpc CreateAirdropEntry(MsgCreateAirdropEntry) returns (MsgCreateAirdropEntryResponse);
+  rpc UpdateAirdropEntry(MsgUpdateAirdropEntry) returns (MsgUpdateAirdropEntryResponse);
+  rpc DeleteAirdropEntry(MsgDeleteAirdropEntry) returns (MsgDeleteAirdropEntryResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -43,5 +48,46 @@ message MsgCreateAirdropCampaign {
 }
 
 message MsgCreateAirdropCampaignResponse {}
+
+message MsgAddMissionToAidropCampaign {
+  string owner = 1;
+  uint64 campaignId = 2;
+  string name =3;
+  string description = 4;
+  string missionType = 5;
+  string weight = 6 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgAddMissionToAidropCampaignResponse {
+}
+
+message MsgCreateAirdropEntry {
+  string creator = 1;
+  string address = 2;
+  uint64 amount = 3;
+}
+
+message MsgCreateAirdropEntryResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateAirdropEntry {
+  string creator = 1;
+  uint64 id = 2;
+  string address = 3;
+  uint64 amount = 4;
+}
+
+message MsgUpdateAirdropEntryResponse {}
+
+message MsgDeleteAirdropEntry {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgDeleteAirdropEntryResponse {}
 
 // this line is used by starport scaffolding # proto/tx/message

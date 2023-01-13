@@ -40,6 +40,15 @@ func TestGenesis(t *testing.T) {
 				MissionId:  1,
 			},
 		},
+		AirdropEntryList: []types.AirdropEntry{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		AirdropEntryCount: 2,
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -54,5 +63,7 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.ClaimRecords, got.ClaimRecords)
 	require.ElementsMatch(t, genesisState.InitialClaims, got.InitialClaims)
 	require.ElementsMatch(t, genesisState.Missions, got.Missions)
+	require.ElementsMatch(t, genesisState.AirdropEntryList, got.AirdropEntryList)
+	require.Equal(t, genesisState.AirdropEntryCount, got.AirdropEntryCount)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

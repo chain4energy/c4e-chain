@@ -32,6 +32,22 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateAirdropCampaign int = 100
 
+	opWeightMsgAddMissionToAidropCampaign = "op_weight_msg_add_mission_to_aidrop_campaign"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgAddMissionToAidropCampaign int = 100
+
+	opWeightMsgCreateAirdropEntry = "op_weight_msg_airdrop_entry"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateAirdropEntry int = 100
+
+	opWeightMsgUpdateAirdropEntry = "op_weight_msg_airdrop_entry"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateAirdropEntry int = 100
+
+	opWeightMsgDeleteAirdropEntry = "op_weight_msg_airdrop_entry"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteAirdropEntry int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -43,6 +59,17 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	}
 	cfeairdropGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
+		AirdropEntryList: []types.AirdropEntry{
+			{
+				Id:      0,
+				Address: sample.AccAddress(),
+			},
+			{
+				Id:      1,
+				Address: sample.AccAddress(),
+			},
+		},
+		AirdropEntryCount: 2,
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfeairdropGenesis)
@@ -86,6 +113,50 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateAirdropCampaign,
 		cfeairdropsimulation.SimulateMsgCreateAirdropCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgAddMissionToAidropCampaign int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddMissionToAidropCampaign, &weightMsgAddMissionToAidropCampaign, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddMissionToAidropCampaign = defaultWeightMsgAddMissionToAidropCampaign
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddMissionToAidropCampaign,
+		cfeairdropsimulation.SimulateMsgAddMissionToAidropCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCreateAirdropEntry int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateAirdropEntry, &weightMsgCreateAirdropEntry, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateAirdropEntry = defaultWeightMsgCreateAirdropEntry
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateAirdropEntry,
+		cfeairdropsimulation.SimulateMsgCreateAirdropEntry(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateAirdropEntry int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateAirdropEntry, &weightMsgUpdateAirdropEntry, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateAirdropEntry = defaultWeightMsgUpdateAirdropEntry
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateAirdropEntry,
+		cfeairdropsimulation.SimulateMsgUpdateAirdropEntry(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteAirdropEntry int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteAirdropEntry, &weightMsgDeleteAirdropEntry, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteAirdropEntry = defaultWeightMsgDeleteAirdropEntry
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteAirdropEntry,
+		cfeairdropsimulation.SimulateMsgDeleteAirdropEntry(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

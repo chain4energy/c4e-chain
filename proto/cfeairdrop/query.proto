@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cfeairdrop/params.proto";
 import "cfeairdrop/airdrop.proto";
+import "cfeairdrop/airdrop_entry.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
@@ -54,6 +55,16 @@ service Query {
 	rpc Campaign(QueryCampaignRequest) returns (QueryCampaignResponse) {
 		option (google.api.http).get = "/c4e/airdrop/campaign/{campaignId}";
 	}
+// Queries a AirdropEntry by id.
+	rpc AirdropEntry(QueryGetAirdropEntryRequest) returns (QueryGetAirdropEntryResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/airdrop_entry/{id}";
+	}
+
+	// Queries a list of AirdropEntry items.
+	rpc AirdropEntryAll(QueryAllAirdropEntryRequest) returns (QueryAllAirdropEntryResponse) {
+		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/airdrop_entry";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -151,6 +162,23 @@ message QueryCampaignResponse {
 	Campaign campaign = 1 [
 		(gogoproto.nullable) = false
 	];
+}
+
+message QueryGetAirdropEntryRequest {
+	uint64 id = 1;
+}
+
+message QueryGetAirdropEntryResponse {
+	AirdropEntry AirdropEntry = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAirdropEntryRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAirdropEntryResponse {
+	repeated AirdropEntry AirdropEntry = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

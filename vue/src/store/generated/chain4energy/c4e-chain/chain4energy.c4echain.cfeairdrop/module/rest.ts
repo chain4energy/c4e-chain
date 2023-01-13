@@ -16,6 +16,15 @@ export interface C4EchaincfeairdropParams {
   denom?: string;
 }
 
+export interface CfeairdropAirdropEntry {
+  /** @format uint64 */
+  id?: string;
+  address?: string;
+
+  /** @format uint64 */
+  amount?: string;
+}
+
 export interface CfeairdropCampaign {
   /** @format uint64 */
   id?: string;
@@ -65,9 +74,35 @@ export interface CfeairdropMission {
   weight?: string;
 }
 
+export type CfeairdropMsgAddMissionToAidropCampaignResponse = object;
+
 export type CfeairdropMsgClaimResponse = object;
 
 export type CfeairdropMsgCreateAirdropCampaignResponse = object;
+
+export interface CfeairdropMsgCreateAirdropEntryResponse {
+  /** @format uint64 */
+  id?: string;
+}
+
+export type CfeairdropMsgDeleteAirdropEntryResponse = object;
+
+export type CfeairdropMsgUpdateAirdropEntryResponse = object;
+
+export interface CfeairdropQueryAllAirdropEntryResponse {
+  AirdropEntry?: CfeairdropAirdropEntry[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
 
 export interface CfeairdropQueryCampaignResponse {
   campaign?: CfeairdropCampaign;
@@ -105,6 +140,10 @@ export interface CfeairdropQueryClaimRecordsResponse {
    *  }
    */
   pagination?: V1Beta1PageResponse;
+}
+
+export interface CfeairdropQueryGetAirdropEntryResponse {
+  AirdropEntry?: CfeairdropAirdropEntry;
 }
 
 export interface CfeairdropQueryInitialClaimResponse {
@@ -715,6 +754,48 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<CfeairdropQueryParamsResponse, RpcStatus>({
       path: `/c4e/airdrop/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryAirdropEntryAll
+   * @summary Queries a list of AirdropEntry items.
+   * @request GET:/chain4energy/c4e-chain/cfeairdrop/airdrop_entry
+   */
+  queryAirdropEntryAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<CfeairdropQueryAllAirdropEntryResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfeairdrop/airdrop_entry`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryAirdropEntry
+   * @summary Queries a AirdropEntry by id.
+   * @request GET:/chain4energy/c4e-chain/cfeairdrop/airdrop_entry/{id}
+   */
+  queryAirdropEntry = (id: string, params: RequestParams = {}) =>
+    this.request<CfeairdropQueryGetAirdropEntryResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfeairdrop/airdrop_entry/${id}`,
       method: "GET",
       format: "json",
       ...params,
