@@ -46,7 +46,7 @@ func (gs GenesisState) Validate() error {
 	missionIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.Missions {
-		index := string(MissionKey(elem.CampaignId, elem.MissionId))
+		index := string(MissionKey(elem.CampaignId, elem.Id))
 		if _, ok := missionIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for mission")
 		}

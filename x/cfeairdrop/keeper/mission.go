@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/binary"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,7 +16,7 @@ func (k Keeper) SetMission(ctx sdk.Context, mission types.Mission) {
 	b := k.cdc.MustMarshal(&mission)
 	store.Set(types.MissionKey(
 		mission.CampaignId,
-		mission.MissionId,
+		mission.Id,
 	), b)
 }
 
@@ -68,4 +69,50 @@ func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 	}
 
 	return
+}
+
+func (k Keeper) AppendNewMission(
+	ctx sdk.Context,
+	campaignId uint64,
+	mission types.Mission,
+) uint64 {
+	// Create the vestingAccount
+	count := k.GetMissionCount(ctx)
+
+	// Set the ID of the appended value
+	mission.Id = count
+
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
+	appendedValue := k.cdc.MustMarshal(&mission)
+	store.Set(types.MissionKey(
+		campaignId,
+		mission.Id,
+	), appendedValue)
+
+	// Update vestingAccount count
+	k.SetMissionCount(ctx, count+1)
+
+	return count
+}
+
+func (k Keeper) GetMissionCount(ctx sdk.Context) uint64 {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+	byteKey := types.KeyPrefix(types.MissionCountKey)
+	bz := store.Get(byteKey)
+
+	// Count doesn't exist: no element
+	if bz == nil {
+		return 0
+	}
+
+	// Parse bytes
+	return binary.BigEndian.Uint64(bz)
+}
+
+func (k Keeper) SetMissionCount(ctx sdk.Context, count uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+	byteKey := types.KeyPrefix(types.MissionCountKey)
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	store.Set(byteKey, bz)
 }

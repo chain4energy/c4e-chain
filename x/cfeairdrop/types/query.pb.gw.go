@@ -258,7 +258,7 @@ func request_Query_Mission_0(ctx context.Context, marshaler runtime.Marshaler, c
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "missionId")
 	}
 
-	protoReq.MissionId, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "missionId", err)
@@ -296,7 +296,7 @@ func local_request_Query_Mission_0(ctx context.Context, marshaler runtime.Marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "missionId")
 	}
 
-	protoReq.MissionId, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "missionId", err)

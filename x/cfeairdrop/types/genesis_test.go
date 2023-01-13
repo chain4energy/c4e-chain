@@ -42,11 +42,11 @@ func TestGenesisState_Validate(t *testing.T) {
 				Missions: []types.Mission{
 					{
 						CampaignId: 0,
-						MissionId:  0,
+						Id:         0,
 					},
 					{
 						CampaignId: 1,
-						MissionId:  1,
+						Id:         1,
 					},
 				},
 				AirdropEntryList: []types.AirdropEntry{
@@ -96,11 +96,11 @@ func TestGenesisState_Validate(t *testing.T) {
 				Missions: []types.Mission{
 					{
 						CampaignId: 0,
-						MissionId:  0,
+						Id:         0,
 					},
 					{
 						CampaignId: 0,
-						MissionId:  0,
+						Id:         0,
 					},
 				},
 			},

@@ -23,7 +23,7 @@ func createNInitialClaim(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.
 	items := make([]types.InitialClaim, n)
 	for i := range items {
 		items[i].CampaignId = uint64(i)
-		items[i].MissionId = uint64(1000 + i)
+		items[i].Id = uint64(1000 + i)
 		keeper.SetInitialClaim(ctx, items[i])
 	}
 	return items
@@ -91,8 +91,8 @@ func TestClaimInitial(t *testing.T) {
 	}
 
 	params := types.Params{Denom: commontestutils.DefaultTestDenom}
-	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}}
-	missions := []types.Mission{{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
+	initialClaims := []types.InitialClaim{{CampaignId: 1, Id: 3}}
+	missions := []types.Mission{{CampaignId: 1, Id: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
@@ -122,8 +122,8 @@ func TestClaimInitialCampaignNotFound(t *testing.T) {
 		},
 	}
 	params := types.Params{Denom: commontestutils.DefaultTestDenom}
-	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}}
-	missions := []types.Mission{{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
+	initialClaims := []types.InitialClaim{{CampaignId: 1, Id: 3}}
+	missions := []types.Mission{{CampaignId: 1, Id: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
@@ -154,8 +154,8 @@ func TestClaimInitialCampaignClaimError(t *testing.T) {
 	}
 
 	params := types.Params{Denom: commontestutils.DefaultTestDenom}
-	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}}
-	missions := []types.Mission{{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
+	initialClaims := []types.InitialClaim{{CampaignId: 1, Id: 3}}
+	missions := []types.Mission{{CampaignId: 1, Id: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")}}
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
@@ -200,11 +200,11 @@ func TestClaimInitialTwoCampaigns(t *testing.T) {
 	}
 
 	params := types.Params{Denom: commontestutils.DefaultTestDenom}
-	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: 3}, {CampaignId: 2, MissionId: 4}}
+	initialClaims := []types.InitialClaim{{CampaignId: 1, Id: 3}, {CampaignId: 2, Id: 4}}
 
 	missions := []types.Mission{
-		{CampaignId: 1, MissionId: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")},
-		{CampaignId: 2, MissionId: 4, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.3")},
+		{CampaignId: 1, Id: 3, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.2")},
+		{CampaignId: 2, Id: 4, Description: "test-mission", Weight: sdk.MustNewDecFromStr("0.3")},
 	}
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)

@@ -79,7 +79,7 @@ func (k Keeper) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer string)
 	if !found {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign not found: campaign id: %d ", campaignId)
 	}
-	if err := k.ClaimInitialMission(ctx, campaignId, initialClaim.MissionId, claimer); err != nil {
+	if err := k.ClaimInitialMission(ctx, campaignId, initialClaim.Id, claimer); err != nil {
 		return err // errors.Wrap(types.ErrMissionCompleteFailure, err.Error())
 	}
 	return nil

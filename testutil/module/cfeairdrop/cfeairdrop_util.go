@@ -203,7 +203,7 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 	initialClaim, foundIc := h.helpeCfeairdropkeeper.GetInitialClaim(ctx, campaignId)
 	require.True(h.t, foundIc)
 
-	mission, _ := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, initialClaim.MissionId)
+	mission, _ := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, initialClaim.Id)
 	claimRecord, _ := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
 
 	expectedAmount := mission.Weight.MulInt(claimRecord.GetCampaignRecord(campaignId).Claimable).TruncateInt()
@@ -232,8 +232,8 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 	require.True(h.t, found)
 	camapaignRecord := claimRecord.GetCampaignRecord(campaignId)
 	require.NotNil(h.t, camapaignRecord)
-	require.ElementsMatch(h.t, []uint64{initialClaim.MissionId}, camapaignRecord.CompletedMissions)
-	require.ElementsMatch(h.t, []uint64{initialClaim.MissionId}, camapaignRecord.ClaimedMissions)
+	require.ElementsMatch(h.t, []uint64{initialClaim.Id}, camapaignRecord.CompletedMissions)
+	require.ElementsMatch(h.t, []uint64{initialClaim.Id}, camapaignRecord.ClaimedMissions)
 }
 
 func (h *C4eAirdropUtils) ClaimInitialError(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, errorMessage string) {

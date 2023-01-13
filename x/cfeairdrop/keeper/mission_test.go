@@ -25,7 +25,7 @@ func TestMissionGet(t *testing.T) {
 	for _, item := range items {
 		rst, found := keeper.GetMission(ctx,
 			item.CampaignId,
-			item.MissionId,
+			item.Id,
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -40,11 +40,11 @@ func TestMissionRemove(t *testing.T) {
 	for _, item := range items {
 		keeper.RemoveMission(ctx,
 			item.CampaignId,
-			item.MissionId,
+			item.Id,
 		)
 		_, found := keeper.GetMission(ctx,
 			item.CampaignId,
-			item.MissionId,
+			item.Id,
 		)
 		require.False(t, found)
 	}
@@ -511,7 +511,7 @@ func createNMission(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Missi
 	items := make([]types.Mission, n)
 	for i := range items {
 		items[i].CampaignId = uint64(i)
-		items[i].MissionId = uint64(i)
+		items[i].Id = uint64(i)
 		items[i].Weight = sdk.NewDec(int64(i))
 		items[i].Description = fmt.Sprintf("desc %d", i)
 
@@ -541,11 +541,11 @@ func prepareTestCampaign(ctx sdk.Context) (types.Params, []*types.Campaign) {
 }
 
 func prepareMissions() ([]types.InitialClaim, []types.Mission) {
-	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: uint64(types.INITIAL)}}
+	initialClaims := []types.InitialClaim{{CampaignId: 1, Id: uint64(types.INITIAL)}}
 	missions := []types.Mission{
-		{CampaignId: 1, MissionId: uint64(types.INITIAL), Description: "initial-mission", Weight: sdk.MustNewDecFromStr("0.1")},
-		{CampaignId: 1, MissionId: uint64(types.DELEGATION), Description: "test-delegation-mission", Weight: sdk.MustNewDecFromStr("0.2")},
-		{CampaignId: 1, MissionId: uint64(types.VOTE), Description: "test-vote-mission", Weight: sdk.MustNewDecFromStr("0.3")},
+		{CampaignId: 1, Id: uint64(types.INITIAL), Description: "initial-mission", Weight: sdk.MustNewDecFromStr("0.1")},
+		{CampaignId: 1, Id: uint64(types.DELEGATION), Description: "test-delegation-mission", Weight: sdk.MustNewDecFromStr("0.2")},
+		{CampaignId: 1, Id: uint64(types.VOTE), Description: "test-vote-mission", Weight: sdk.MustNewDecFromStr("0.3")},
 	}
 	return initialClaims, missions
 }

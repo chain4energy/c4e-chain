@@ -69,19 +69,19 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		ctx,
 		cfeairdroptypes.Mission{
 			CampaignId:  gleamCamapaignId,
-			MissionId:   uint64(cfeairdroptypes.INITIAL),
+			Id:          uint64(cfeairdroptypes.INITIAL),
 			Weight:      sdk.NewDec(1),
 			Description: "Claim gleam contest airdrop", // TODO description ??
 		},
 	)
-	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: gleamCamapaignId, MissionId: uint64(cfeairdroptypes.INITIAL)})
+	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: gleamCamapaignId, Id: uint64(cfeairdroptypes.INITIAL)})
 
 	// ATOM stakers missions
 	airdropKeeper.SetMission(
 		ctx,
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
-			MissionId:   uint64(cfeairdroptypes.INITIAL),
+			Id:          uint64(cfeairdroptypes.INITIAL),
 			Weight:      sdk.MustNewDecFromStr("0.2"),
 			Description: "Claim initial stakers airdrop", // TODO description ??
 		},
@@ -91,7 +91,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		ctx,
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
-			MissionId:   uint64(cfeairdroptypes.DELEGATION),
+			Id:          uint64(cfeairdroptypes.DELEGATION),
 			Weight:      sdk.MustNewDecFromStr("0.4"),
 			Description: "Claim delegtion stakers airdrop", // TODO description ??
 		},
@@ -101,13 +101,13 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		ctx,
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
-			MissionId:   uint64(cfeairdroptypes.VOTE),
+			Id:          uint64(cfeairdroptypes.VOTE),
 			Weight:      sdk.MustNewDecFromStr("0.4"),
 			Description: "Claim voting stakers airdrop", // TODO description ??
 		},
 	)
 
-	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: stakeCamapaignId, MissionId: uint64(cfeairdroptypes.INITIAL)})
+	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: stakeCamapaignId, Id: uint64(cfeairdroptypes.INITIAL)})
 
 	acc := accountKeeper.GetModuleAccount(ctx, airdropSource)
 	if acc == nil {

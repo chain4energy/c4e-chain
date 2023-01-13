@@ -7,6 +7,7 @@ var _ binary.ByteOrder
 const (
 	// MissionKeyPrefix is the prefix to retrieve all Mission
 	MissionKeyPrefix = "Mission/value/"
+	MissionCountKey  = "Mission-count-"
 )
 
 func MissionKey(campaignId uint64, missionId uint64) []byte {

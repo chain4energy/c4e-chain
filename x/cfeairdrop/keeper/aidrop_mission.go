@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	errortypes "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -84,7 +84,7 @@ func (k Keeper) ClaimMission(ctx sdk.Context, campaignId uint64, missionId uint6
 
 func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig *types.Campaign, mission *types.Mission, claimRecord *types.ClaimRecord) (*types.ClaimRecord, error) {
 	campaignId := mission.CampaignId
-	missionId := mission.MissionId
+	missionId := mission.Id
 	address := claimRecord.Address
 	if !claimRecord.IsMissionCompleted(campaignId, missionId) {
 		k.Logger(ctx).Error("claim mission - mission not completed", "address", address, "campaignId", campaignId, "missionId", missionId)
@@ -128,12 +128,12 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig 
 	}
 	claimer, err := sdk.AccAddressFromBech32(sendTo)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), sendTo)
+		return nil, sdkerrors.Wrapf(errortypes.ErrParsing, "wrong claiming address %s: "+err.Error(), sendTo)
 	}
 	start := ctx.BlockTime().Add(campaignConfig.LockupPeriod)
 	end := start.Add(campaignConfig.VestingPeriod)
 	if err := k.SendToAirdropAccount(ctx, claimer, claimable, start.Unix(), end.Unix(), initialClaim); err != nil {
-		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), sendTo)
+		return nil, sdkerrors.Wrapf(errortypes.ErrSendCoins, "send to claiming address %s error: "+err.Error(), sendTo)
 	}
 	return claimRecord, nil
 
@@ -156,7 +156,7 @@ func (k Keeper) CompleteMission(ctx sdk.Context, campaignId uint64, missionId ui
 // the method fails if the mission has already been completed
 func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *types.Mission, claimRecord *types.ClaimRecord) (*types.ClaimRecord, error) {
 	campaignId := mission.CampaignId
-	missionId := mission.MissionId
+	missionId := mission.Id
 	address := claimRecord.Address
 	// check if the mission is already complted for the claim record
 	if claimRecord.IsMissionCompleted(campaignId, missionId) {
@@ -170,9 +170,9 @@ func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *t
 			k.Logger(ctx).Error("complete mission - initial claim not found", "campaignId", campaignId)
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "initial claim not found - campaignId %d", campaignId)
 		}
-		if !claimRecord.IsMissionClaimed(initialClaim.CampaignId, initialClaim.MissionId) {
+		if !claimRecord.IsMissionClaimed(initialClaim.CampaignId, initialClaim.Id) {
 			k.Logger(ctx).Error("complete mission - initial mission not completed", "address", address, "campaignId", campaignId, "missionId", missionId)
-			return nil, sdkerrors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d, missionId: %d", address, initialClaim.CampaignId, initialClaim.MissionId)
+			return nil, sdkerrors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d, missionId: %d", address, initialClaim.CampaignId, initialClaim.Id)
 		}
 	}
 
@@ -188,4 +188,45 @@ func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *t
 	// })
 
 	return claimRecord, nil
+}
+
+func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType string,
+	weight sdk.Dec) error {
+	k.Logger(ctx).Debug("add mission to airdrop campaign", "owner", owner, "campaignId", campaignId, "name", name,
+		"description", description, "missionType", missionType, "weight", weight)
+	if weight.GT(sdk.NewDec(1)) {
+		k.Logger(ctx).Error("add mission to airdrop campaign weight is >= 1", "weight", weight)
+		return sdkerrors.Wrapf(errortypes.ErrParam, "add mission to airdrop campaign weight is >= 1 (%s > 1)", weight.String())
+	}
+	if name == "" {
+		k.Logger(ctx).Error("add mission to airdrop campaign: empty name ")
+		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty name")
+	}
+	if description == "" {
+		k.Logger(ctx).Error("add mission to airdrop campaign: empty description ")
+		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty description")
+	}
+	_, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		k.Logger(ctx).Error("add mission to airdrop campaign owner parsing error", "owner", owner, "error", err.Error())
+		return sdkerrors.Wrap(errortypes.ErrParsing, sdkerrors.Wrapf(err, "add mission to airdrop campaign - owner parsing error: %s", owner).Error())
+	}
+	campaign, found := k.GetCampaign(ctx, campaignId)
+	if !found {
+		k.Logger(ctx).Error("add mission to airdrop campaign not found", "campaignId", campaignId)
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add mission to airdrop campaign - campaign with id %d not found", campaignId)
+	}
+	if campaign.Owner != owner {
+		k.Logger(ctx).Error("add mission to airdrop you are not the owner of this campaign", "campaignId", campaignId)
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add mission to airdrop campaign - you are not the owner of campaign with id %d", campaignId)
+	}
+	mission := types.Mission{
+		CampaignId:  campaignId,
+		Name:        name,
+		Description: description,
+		MissionType: missionType,
+		Weight:      weight,
+	}
+	k.AppendNewMission(ctx, campaignId, mission)
+	return nil
 }

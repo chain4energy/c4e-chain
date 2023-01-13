@@ -483,7 +483,7 @@ func (m *QueryInitialClaimsResponse) GetPagination() *query.PageResponse {
 
 type QueryMissionRequest struct {
 	CampaignId uint64 `protobuf:"varint,1,opt,name=campaignId,proto3" json:"campaignId,omitempty"`
-	MissionId  uint64 `protobuf:"varint,2,opt,name=missionId,proto3" json:"missionId,omitempty"`
+	Id         uint64 `protobuf:"varint,2,opt,name=missionId,proto3" json:"missionId,omitempty"`
 }
 
 func (m *QueryMissionRequest) Reset()         { *m = QueryMissionRequest{} }
@@ -528,7 +528,7 @@ func (m *QueryMissionRequest) GetCampaignId() uint64 {
 
 func (m *QueryMissionRequest) GetMissionId() uint64 {
 	if m != nil {
-		return m.MissionId
+		return m.Id
 	}
 	return 0
 }
@@ -1968,8 +1968,8 @@ func (m *QueryMissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.MissionId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.MissionId))
+	if m.Id != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Id))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -2539,8 +2539,8 @@ func (m *QueryMissionRequest) Size() (n int) {
 	if m.CampaignId != 0 {
 		n += 1 + sovQuery(uint64(m.CampaignId))
 	}
-	if m.MissionId != 0 {
-		n += 1 + sovQuery(uint64(m.MissionId))
+	if m.Id != 0 {
+		n += 1 + sovQuery(uint64(m.Id))
 	}
 	return n
 }
@@ -3616,9 +3616,9 @@ func (m *QueryMissionRequest) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MissionId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			m.MissionId = 0
+			m.Id = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -3628,7 +3628,7 @@ func (m *QueryMissionRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.MissionId |= uint64(b&0x7F) << shift
+				m.Id |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

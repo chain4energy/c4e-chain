@@ -27,8 +27,8 @@ func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr
 	missions := h.k.GetAllMission(ctx)
 	for _, mission := range missions {
 		// TODO error handling
-		if mission.MissionId == uint64(types.DELEGATION) {
-			_ = h.k.CompleteMission(ctx, mission.CampaignId, mission.MissionId, delAddr.String(), true)
+		if mission.Id == uint64(types.DELEGATION) {
+			_ = h.k.CompleteMission(ctx, mission.CampaignId, mission.Id, delAddr.String(), true)
 		}
 	}
 

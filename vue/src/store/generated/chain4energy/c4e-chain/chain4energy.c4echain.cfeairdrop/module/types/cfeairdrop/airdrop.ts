@@ -39,8 +39,10 @@ export interface InitialClaim {
 }
 
 export interface Mission {
+  id: number;
   campaign_id: number;
-  mission_id: number;
+  name: string;
+  missionType: string;
   description: string;
   weight: string;
 }
@@ -611,25 +613,33 @@ export const InitialClaim = {
 };
 
 const baseMission: object = {
+  id: 0,
   campaign_id: 0,
-  mission_id: 0,
+  name: "",
+  missionType: "",
   description: "",
   weight: "",
 };
 
 export const Mission = {
   encode(message: Mission, writer: Writer = Writer.create()): Writer {
-    if (message.campaign_id !== 0) {
-      writer.uint32(8).uint64(message.campaign_id);
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id);
     }
-    if (message.mission_id !== 0) {
-      writer.uint32(16).uint64(message.mission_id);
+    if (message.campaign_id !== 0) {
+      writer.uint32(16).uint64(message.campaign_id);
+    }
+    if (message.name !== "") {
+      writer.uint32(26).string(message.name);
+    }
+    if (message.missionType !== "") {
+      writer.uint32(34).string(message.missionType);
     }
     if (message.description !== "") {
-      writer.uint32(26).string(message.description);
+      writer.uint32(42).string(message.description);
     }
     if (message.weight !== "") {
-      writer.uint32(34).string(message.weight);
+      writer.uint32(50).string(message.weight);
     }
     return writer;
   },
@@ -642,15 +652,21 @@ export const Mission = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.campaign_id = longToNumber(reader.uint64() as Long);
+          message.id = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.mission_id = longToNumber(reader.uint64() as Long);
+          message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
         case 3:
-          message.description = reader.string();
+          message.name = reader.string();
           break;
         case 4:
+          message.missionType = reader.string();
+          break;
+        case 5:
+          message.description = reader.string();
+          break;
+        case 6:
           message.weight = reader.string();
           break;
         default:
@@ -663,15 +679,25 @@ export const Mission = {
 
   fromJSON(object: any): Mission {
     const message = { ...baseMission } as Mission;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id);
+    } else {
+      message.id = 0;
+    }
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
       message.campaign_id = Number(object.campaign_id);
     } else {
       message.campaign_id = 0;
     }
-    if (object.mission_id !== undefined && object.mission_id !== null) {
-      message.mission_id = Number(object.mission_id);
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
     } else {
-      message.mission_id = 0;
+      message.name = "";
+    }
+    if (object.missionType !== undefined && object.missionType !== null) {
+      message.missionType = String(object.missionType);
+    } else {
+      message.missionType = "";
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = String(object.description);
@@ -688,9 +714,12 @@ export const Mission = {
 
   toJSON(message: Mission): unknown {
     const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
     message.campaign_id !== undefined &&
       (obj.campaign_id = message.campaign_id);
-    message.mission_id !== undefined && (obj.mission_id = message.mission_id);
+    message.name !== undefined && (obj.name = message.name);
+    message.missionType !== undefined &&
+      (obj.missionType = message.missionType);
     message.description !== undefined &&
       (obj.description = message.description);
     message.weight !== undefined && (obj.weight = message.weight);
@@ -699,15 +728,25 @@ export const Mission = {
 
   fromPartial(object: DeepPartial<Mission>): Mission {
     const message = { ...baseMission } as Mission;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id;
+    } else {
+      message.id = 0;
+    }
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
       message.campaign_id = object.campaign_id;
     } else {
       message.campaign_id = 0;
     }
-    if (object.mission_id !== undefined && object.mission_id !== null) {
-      message.mission_id = object.mission_id;
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
     } else {
-      message.mission_id = 0;
+      message.name = "";
+    }
+    if (object.missionType !== undefined && object.missionType !== null) {
+      message.missionType = object.missionType;
+    } else {
+      message.missionType = "";
     }
     if (object.description !== undefined && object.description !== null) {
       message.description = object.description;

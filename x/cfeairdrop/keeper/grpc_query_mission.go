@@ -48,7 +48,7 @@ func (k Keeper) Mission(c context.Context, req *types.QueryMissionRequest) (*typ
 	val, found := k.GetMission(
 		ctx,
 		req.CampaignId,
-		req.MissionId,
+		req.Id,
 	)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")

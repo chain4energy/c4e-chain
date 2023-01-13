@@ -66,10 +66,12 @@ export interface CfeairdropInitialClaim {
 
 export interface CfeairdropMission {
   /** @format uint64 */
-  campaign_id?: string;
+  id?: string;
 
   /** @format uint64 */
-  mission_id?: string;
+  campaign_id?: string;
+  name?: string;
+  missionType?: string;
   description?: string;
   weight?: string;
 }

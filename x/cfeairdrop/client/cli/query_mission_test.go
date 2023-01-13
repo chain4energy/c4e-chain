@@ -24,7 +24,7 @@ func networkWithMissionObjects(t *testing.T, n int) (*network.Network, []types.M
 	for i := 0; i < n; i++ {
 		mission := types.Mission{
 			CampaignId:  uint64(i),
-			MissionId:   uint64(i),
+			Id:          uint64(i),
 			Description: fmt.Sprintf("Desc %d", i),
 			Weight:      sdk.NewDec(int64(i)),
 		}
@@ -57,7 +57,7 @@ func networkWithMissionObjects(t *testing.T, n int) (*network.Network, []types.M
 //		{
 //			desc:         "found",
 //			idCampaignId: strconv.FormatUint(objs[0].CampaignId, 10),
-//			idMissionId:  strconv.FormatUint(objs[0].MissionId, 10),
+//			idMissionId:  strconv.FormatUint(objs[0].Id, 10),
 //
 //			args: common,
 //			obj:  objs[0],

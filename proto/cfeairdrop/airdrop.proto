@@ -55,10 +55,12 @@ message InitialClaim {
 }
 
 message Mission {
-  uint64 campaign_id = 1;
-  uint64 mission_id = 2;
-  string description = 3;
-  string weight = 4 [
+  uint64 id = 1;
+  uint64 campaign_id = 2;
+  string name = 3;
+  string missionType = 4;
+  string description = 5;
+  string weight = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
   ];

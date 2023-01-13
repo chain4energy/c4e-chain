@@ -12,6 +12,14 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 	endTime int64, lockupPeriod time.Duration, vestingPeriod time.Duration) error {
 	k.Logger(ctx).Debug("create aidrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
+	if name == "" {
+		k.Logger(ctx).Error("create airdrop campaign campaign: empty name ")
+		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty name")
+	}
+	if description == "" {
+		k.Logger(ctx).Error("create airdrop campaign campaign: empty description ")
+		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty description")
+	}
 	if startTime <= ctx.BlockTime().Unix() {
 		k.Logger(ctx).Error("create airdrop campaign start time in the past", "startTime", startTime)
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time in the past error  (%s < %s)", time.Unix(startTime, 0).String(), ctx.BlockTime())

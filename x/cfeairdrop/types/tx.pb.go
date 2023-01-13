@@ -36,7 +36,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type MsgClaim struct {
 	Claimer    string `protobuf:"bytes,1,opt,name=claimer,proto3" json:"claimer,omitempty"`
 	CampaignId string `protobuf:"bytes,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
-	MissionId  string `protobuf:"bytes,3,opt,name=mission_id,json=missionId,proto3" json:"mission_id,omitempty"`
+	Id         string `protobuf:"bytes,3,opt,name=mission_id,json=missionId,proto3" json:"mission_id,omitempty"`
 }
 
 func (m *MsgClaim) Reset()         { *m = MsgClaim{} }
@@ -88,7 +88,7 @@ func (m *MsgClaim) GetCampaignId() string {
 
 func (m *MsgClaim) GetMissionId() string {
 	if m != nil {
-		return m.MissionId
+		return m.Id
 	}
 	return ""
 }
@@ -1016,10 +1016,10 @@ func (m *MsgClaim) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.MissionId) > 0 {
-		i -= len(m.MissionId)
-		copy(dAtA[i:], m.MissionId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.MissionId)))
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Id)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1468,7 +1468,7 @@ func (m *MsgClaim) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.MissionId)
+	l = len(m.Id)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1753,7 +1753,7 @@ func (m *MsgClaim) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MissionId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1781,7 +1781,7 @@ func (m *MsgClaim) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MissionId = string(dAtA[iNdEx:postIndex])
+			m.Id = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

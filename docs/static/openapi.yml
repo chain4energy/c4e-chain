@@ -1600,12 +1600,16 @@ paths:
                 items:
                   type: object
                   properties:
+                    id:
+                      type: string
+                      format: uint64
                     campaign_id:
                       type: string
                       format: uint64
-                    mission_id:
+                    name:
                       type: string
-                      format: uint64
+                    missionType:
+                      type: string
                     description:
                       type: string
                     weight:
@@ -1894,12 +1898,16 @@ paths:
               mission:
                 type: object
                 properties:
+                  id:
+                    type: string
+                    format: uint64
                   campaign_id:
                     type: string
                     format: uint64
-                  mission_id:
+                  name:
                     type: string
-                    format: uint64
+                  missionType:
+                    type: string
                   description:
                     type: string
                   weight:
@@ -34749,12 +34757,16 @@ definitions:
   chain4energy.c4echain.cfeairdrop.Mission:
     type: object
     properties:
+      id:
+        type: string
+        format: uint64
       campaign_id:
         type: string
         format: uint64
-      mission_id:
+      name:
         type: string
-        format: uint64
+      missionType:
+        type: string
       description:
         type: string
       weight:
@@ -35065,12 +35077,16 @@ definitions:
       mission:
         type: object
         properties:
+          id:
+            type: string
+            format: uint64
           campaign_id:
             type: string
             format: uint64
-          mission_id:
+          name:
             type: string
-            format: uint64
+          missionType:
+            type: string
           description:
             type: string
           weight:
@@ -35083,12 +35099,16 @@ definitions:
         items:
           type: object
           properties:
+            id:
+              type: string
+              format: uint64
             campaign_id:
               type: string
               format: uint64
-            mission_id:
+            name:
               type: string
-              format: uint64
+            missionType:
+              type: string
             description:
               type: string
             weight:
