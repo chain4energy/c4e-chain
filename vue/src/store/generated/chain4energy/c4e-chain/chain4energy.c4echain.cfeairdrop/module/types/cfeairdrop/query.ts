@@ -2,7 +2,12 @@
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
 import { Params } from "../cfeairdrop/params";
-import { ClaimRecord, InitialClaim, Mission } from "../cfeairdrop/airdrop";
+import {
+  ClaimRecord,
+  InitialClaim,
+  Mission,
+  Campaign,
+} from "../cfeairdrop/airdrop";
 import {
   PageRequest,
   PageResponse,
@@ -19,56 +24,73 @@ export interface QueryParamsResponse {
   params: Params | undefined;
 }
 
-export interface QueryGetClaimRecordRequest {
+export interface QueryClaimRecordRequest {
   address: string;
 }
 
-export interface QueryGetClaimRecordResponse {
+export interface QueryClaimRecordResponse {
   claimRecord: ClaimRecord | undefined;
 }
 
-export interface QueryAllClaimRecordRequest {
+export interface QueryClaimRecordsRequest {
   pagination: PageRequest | undefined;
 }
 
-export interface QueryAllClaimRecordResponse {
+export interface QueryClaimRecordsResponse {
   claimRecord: ClaimRecord[];
   pagination: PageResponse | undefined;
 }
 
-export interface QueryGetInitialClaimRequest {
+export interface QueryInitialClaimRequest {
   campaignId: number;
 }
 
-export interface QueryGetInitialClaimResponse {
+export interface QueryInitialClaimResponse {
   initialClaim: InitialClaim | undefined;
 }
 
-export interface QueryAllInitialClaimRequest {
+export interface QueryInitialClaimsRequest {
   pagination: PageRequest | undefined;
 }
 
-export interface QueryAllInitialClaimResponse {
+export interface QueryInitialClaimsResponse {
   initialClaim: InitialClaim[];
   pagination: PageResponse | undefined;
 }
 
-export interface QueryGetMissionRequest {
+export interface QueryMissionRequest {
   campaignId: number;
   missionId: number;
 }
 
-export interface QueryGetMissionResponse {
+export interface QueryMissionResponse {
   mission: Mission | undefined;
 }
 
-export interface QueryAllMissionRequest {
+export interface QueryMissionsRequest {
   pagination: PageRequest | undefined;
 }
 
-export interface QueryAllMissionResponse {
+export interface QueryMissionsResponse {
   mission: Mission[];
   pagination: PageResponse | undefined;
+}
+
+export interface QueryCampaignsRequest {
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryCampaignsResponse {
+  campaign: Campaign[];
+  pagination: PageResponse | undefined;
+}
+
+export interface QueryCampaignRequest {
+  campaignId: number;
+}
+
+export interface QueryCampaignResponse {
+  campaign: Campaign | undefined;
 }
 
 const baseQueryParamsRequest: object = {};
@@ -168,11 +190,11 @@ export const QueryParamsResponse = {
   },
 };
 
-const baseQueryGetClaimRecordRequest: object = { address: "" };
+const baseQueryClaimRecordRequest: object = { address: "" };
 
-export const QueryGetClaimRecordRequest = {
+export const QueryClaimRecordRequest = {
   encode(
-    message: QueryGetClaimRecordRequest,
+    message: QueryClaimRecordRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.address !== "") {
@@ -181,15 +203,12 @@ export const QueryGetClaimRecordRequest = {
     return writer;
   },
 
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): QueryGetClaimRecordRequest {
+  decode(input: Reader | Uint8Array, length?: number): QueryClaimRecordRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryGetClaimRecordRequest,
-    } as QueryGetClaimRecordRequest;
+      ...baseQueryClaimRecordRequest,
+    } as QueryClaimRecordRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -204,10 +223,10 @@ export const QueryGetClaimRecordRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetClaimRecordRequest {
+  fromJSON(object: any): QueryClaimRecordRequest {
     const message = {
-      ...baseQueryGetClaimRecordRequest,
-    } as QueryGetClaimRecordRequest;
+      ...baseQueryClaimRecordRequest,
+    } as QueryClaimRecordRequest;
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
     } else {
@@ -216,18 +235,18 @@ export const QueryGetClaimRecordRequest = {
     return message;
   },
 
-  toJSON(message: QueryGetClaimRecordRequest): unknown {
+  toJSON(message: QueryClaimRecordRequest): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
     return obj;
   },
 
   fromPartial(
-    object: DeepPartial<QueryGetClaimRecordRequest>
-  ): QueryGetClaimRecordRequest {
+    object: DeepPartial<QueryClaimRecordRequest>
+  ): QueryClaimRecordRequest {
     const message = {
-      ...baseQueryGetClaimRecordRequest,
-    } as QueryGetClaimRecordRequest;
+      ...baseQueryClaimRecordRequest,
+    } as QueryClaimRecordRequest;
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     } else {
@@ -237,11 +256,11 @@ export const QueryGetClaimRecordRequest = {
   },
 };
 
-const baseQueryGetClaimRecordResponse: object = {};
+const baseQueryClaimRecordResponse: object = {};
 
-export const QueryGetClaimRecordResponse = {
+export const QueryClaimRecordResponse = {
   encode(
-    message: QueryGetClaimRecordResponse,
+    message: QueryClaimRecordResponse,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.claimRecord !== undefined) {
@@ -256,12 +275,12 @@ export const QueryGetClaimRecordResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryGetClaimRecordResponse {
+  ): QueryClaimRecordResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryGetClaimRecordResponse,
-    } as QueryGetClaimRecordResponse;
+      ...baseQueryClaimRecordResponse,
+    } as QueryClaimRecordResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -276,10 +295,10 @@ export const QueryGetClaimRecordResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetClaimRecordResponse {
+  fromJSON(object: any): QueryClaimRecordResponse {
     const message = {
-      ...baseQueryGetClaimRecordResponse,
-    } as QueryGetClaimRecordResponse;
+      ...baseQueryClaimRecordResponse,
+    } as QueryClaimRecordResponse;
     if (object.claimRecord !== undefined && object.claimRecord !== null) {
       message.claimRecord = ClaimRecord.fromJSON(object.claimRecord);
     } else {
@@ -288,7 +307,7 @@ export const QueryGetClaimRecordResponse = {
     return message;
   },
 
-  toJSON(message: QueryGetClaimRecordResponse): unknown {
+  toJSON(message: QueryClaimRecordResponse): unknown {
     const obj: any = {};
     message.claimRecord !== undefined &&
       (obj.claimRecord = message.claimRecord
@@ -298,11 +317,11 @@ export const QueryGetClaimRecordResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryGetClaimRecordResponse>
-  ): QueryGetClaimRecordResponse {
+    object: DeepPartial<QueryClaimRecordResponse>
+  ): QueryClaimRecordResponse {
     const message = {
-      ...baseQueryGetClaimRecordResponse,
-    } as QueryGetClaimRecordResponse;
+      ...baseQueryClaimRecordResponse,
+    } as QueryClaimRecordResponse;
     if (object.claimRecord !== undefined && object.claimRecord !== null) {
       message.claimRecord = ClaimRecord.fromPartial(object.claimRecord);
     } else {
@@ -312,11 +331,11 @@ export const QueryGetClaimRecordResponse = {
   },
 };
 
-const baseQueryAllClaimRecordRequest: object = {};
+const baseQueryClaimRecordsRequest: object = {};
 
-export const QueryAllClaimRecordRequest = {
+export const QueryClaimRecordsRequest = {
   encode(
-    message: QueryAllClaimRecordRequest,
+    message: QueryClaimRecordsRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.pagination !== undefined) {
@@ -328,12 +347,12 @@ export const QueryAllClaimRecordRequest = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryAllClaimRecordRequest {
+  ): QueryClaimRecordsRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryAllClaimRecordRequest,
-    } as QueryAllClaimRecordRequest;
+      ...baseQueryClaimRecordsRequest,
+    } as QueryClaimRecordsRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -348,10 +367,10 @@ export const QueryAllClaimRecordRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllClaimRecordRequest {
+  fromJSON(object: any): QueryClaimRecordsRequest {
     const message = {
-      ...baseQueryAllClaimRecordRequest,
-    } as QueryAllClaimRecordRequest;
+      ...baseQueryClaimRecordsRequest,
+    } as QueryClaimRecordsRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromJSON(object.pagination);
     } else {
@@ -360,7 +379,7 @@ export const QueryAllClaimRecordRequest = {
     return message;
   },
 
-  toJSON(message: QueryAllClaimRecordRequest): unknown {
+  toJSON(message: QueryClaimRecordsRequest): unknown {
     const obj: any = {};
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
@@ -370,11 +389,11 @@ export const QueryAllClaimRecordRequest = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryAllClaimRecordRequest>
-  ): QueryAllClaimRecordRequest {
+    object: DeepPartial<QueryClaimRecordsRequest>
+  ): QueryClaimRecordsRequest {
     const message = {
-      ...baseQueryAllClaimRecordRequest,
-    } as QueryAllClaimRecordRequest;
+      ...baseQueryClaimRecordsRequest,
+    } as QueryClaimRecordsRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromPartial(object.pagination);
     } else {
@@ -384,11 +403,11 @@ export const QueryAllClaimRecordRequest = {
   },
 };
 
-const baseQueryAllClaimRecordResponse: object = {};
+const baseQueryClaimRecordsResponse: object = {};
 
-export const QueryAllClaimRecordResponse = {
+export const QueryClaimRecordsResponse = {
   encode(
-    message: QueryAllClaimRecordResponse,
+    message: QueryClaimRecordsResponse,
     writer: Writer = Writer.create()
   ): Writer {
     for (const v of message.claimRecord) {
@@ -406,12 +425,12 @@ export const QueryAllClaimRecordResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryAllClaimRecordResponse {
+  ): QueryClaimRecordsResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryAllClaimRecordResponse,
-    } as QueryAllClaimRecordResponse;
+      ...baseQueryClaimRecordsResponse,
+    } as QueryClaimRecordsResponse;
     message.claimRecord = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -430,10 +449,10 @@ export const QueryAllClaimRecordResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllClaimRecordResponse {
+  fromJSON(object: any): QueryClaimRecordsResponse {
     const message = {
-      ...baseQueryAllClaimRecordResponse,
-    } as QueryAllClaimRecordResponse;
+      ...baseQueryClaimRecordsResponse,
+    } as QueryClaimRecordsResponse;
     message.claimRecord = [];
     if (object.claimRecord !== undefined && object.claimRecord !== null) {
       for (const e of object.claimRecord) {
@@ -448,7 +467,7 @@ export const QueryAllClaimRecordResponse = {
     return message;
   },
 
-  toJSON(message: QueryAllClaimRecordResponse): unknown {
+  toJSON(message: QueryClaimRecordsResponse): unknown {
     const obj: any = {};
     if (message.claimRecord) {
       obj.claimRecord = message.claimRecord.map((e) =>
@@ -465,11 +484,11 @@ export const QueryAllClaimRecordResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryAllClaimRecordResponse>
-  ): QueryAllClaimRecordResponse {
+    object: DeepPartial<QueryClaimRecordsResponse>
+  ): QueryClaimRecordsResponse {
     const message = {
-      ...baseQueryAllClaimRecordResponse,
-    } as QueryAllClaimRecordResponse;
+      ...baseQueryClaimRecordsResponse,
+    } as QueryClaimRecordsResponse;
     message.claimRecord = [];
     if (object.claimRecord !== undefined && object.claimRecord !== null) {
       for (const e of object.claimRecord) {
@@ -485,11 +504,11 @@ export const QueryAllClaimRecordResponse = {
   },
 };
 
-const baseQueryGetInitialClaimRequest: object = { campaignId: 0 };
+const baseQueryInitialClaimRequest: object = { campaignId: 0 };
 
-export const QueryGetInitialClaimRequest = {
+export const QueryInitialClaimRequest = {
   encode(
-    message: QueryGetInitialClaimRequest,
+    message: QueryInitialClaimRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.campaignId !== 0) {
@@ -501,12 +520,12 @@ export const QueryGetInitialClaimRequest = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryGetInitialClaimRequest {
+  ): QueryInitialClaimRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryGetInitialClaimRequest,
-    } as QueryGetInitialClaimRequest;
+      ...baseQueryInitialClaimRequest,
+    } as QueryInitialClaimRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -521,10 +540,10 @@ export const QueryGetInitialClaimRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetInitialClaimRequest {
+  fromJSON(object: any): QueryInitialClaimRequest {
     const message = {
-      ...baseQueryGetInitialClaimRequest,
-    } as QueryGetInitialClaimRequest;
+      ...baseQueryInitialClaimRequest,
+    } as QueryInitialClaimRequest;
     if (object.campaignId !== undefined && object.campaignId !== null) {
       message.campaignId = Number(object.campaignId);
     } else {
@@ -533,18 +552,18 @@ export const QueryGetInitialClaimRequest = {
     return message;
   },
 
-  toJSON(message: QueryGetInitialClaimRequest): unknown {
+  toJSON(message: QueryInitialClaimRequest): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = message.campaignId);
     return obj;
   },
 
   fromPartial(
-    object: DeepPartial<QueryGetInitialClaimRequest>
-  ): QueryGetInitialClaimRequest {
+    object: DeepPartial<QueryInitialClaimRequest>
+  ): QueryInitialClaimRequest {
     const message = {
-      ...baseQueryGetInitialClaimRequest,
-    } as QueryGetInitialClaimRequest;
+      ...baseQueryInitialClaimRequest,
+    } as QueryInitialClaimRequest;
     if (object.campaignId !== undefined && object.campaignId !== null) {
       message.campaignId = object.campaignId;
     } else {
@@ -554,11 +573,11 @@ export const QueryGetInitialClaimRequest = {
   },
 };
 
-const baseQueryGetInitialClaimResponse: object = {};
+const baseQueryInitialClaimResponse: object = {};
 
-export const QueryGetInitialClaimResponse = {
+export const QueryInitialClaimResponse = {
   encode(
-    message: QueryGetInitialClaimResponse,
+    message: QueryInitialClaimResponse,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.initialClaim !== undefined) {
@@ -573,12 +592,12 @@ export const QueryGetInitialClaimResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryGetInitialClaimResponse {
+  ): QueryInitialClaimResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryGetInitialClaimResponse,
-    } as QueryGetInitialClaimResponse;
+      ...baseQueryInitialClaimResponse,
+    } as QueryInitialClaimResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -593,10 +612,10 @@ export const QueryGetInitialClaimResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetInitialClaimResponse {
+  fromJSON(object: any): QueryInitialClaimResponse {
     const message = {
-      ...baseQueryGetInitialClaimResponse,
-    } as QueryGetInitialClaimResponse;
+      ...baseQueryInitialClaimResponse,
+    } as QueryInitialClaimResponse;
     if (object.initialClaim !== undefined && object.initialClaim !== null) {
       message.initialClaim = InitialClaim.fromJSON(object.initialClaim);
     } else {
@@ -605,7 +624,7 @@ export const QueryGetInitialClaimResponse = {
     return message;
   },
 
-  toJSON(message: QueryGetInitialClaimResponse): unknown {
+  toJSON(message: QueryInitialClaimResponse): unknown {
     const obj: any = {};
     message.initialClaim !== undefined &&
       (obj.initialClaim = message.initialClaim
@@ -615,11 +634,11 @@ export const QueryGetInitialClaimResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryGetInitialClaimResponse>
-  ): QueryGetInitialClaimResponse {
+    object: DeepPartial<QueryInitialClaimResponse>
+  ): QueryInitialClaimResponse {
     const message = {
-      ...baseQueryGetInitialClaimResponse,
-    } as QueryGetInitialClaimResponse;
+      ...baseQueryInitialClaimResponse,
+    } as QueryInitialClaimResponse;
     if (object.initialClaim !== undefined && object.initialClaim !== null) {
       message.initialClaim = InitialClaim.fromPartial(object.initialClaim);
     } else {
@@ -629,11 +648,11 @@ export const QueryGetInitialClaimResponse = {
   },
 };
 
-const baseQueryAllInitialClaimRequest: object = {};
+const baseQueryInitialClaimsRequest: object = {};
 
-export const QueryAllInitialClaimRequest = {
+export const QueryInitialClaimsRequest = {
   encode(
-    message: QueryAllInitialClaimRequest,
+    message: QueryInitialClaimsRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.pagination !== undefined) {
@@ -645,12 +664,12 @@ export const QueryAllInitialClaimRequest = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryAllInitialClaimRequest {
+  ): QueryInitialClaimsRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryAllInitialClaimRequest,
-    } as QueryAllInitialClaimRequest;
+      ...baseQueryInitialClaimsRequest,
+    } as QueryInitialClaimsRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -665,10 +684,10 @@ export const QueryAllInitialClaimRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllInitialClaimRequest {
+  fromJSON(object: any): QueryInitialClaimsRequest {
     const message = {
-      ...baseQueryAllInitialClaimRequest,
-    } as QueryAllInitialClaimRequest;
+      ...baseQueryInitialClaimsRequest,
+    } as QueryInitialClaimsRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromJSON(object.pagination);
     } else {
@@ -677,7 +696,7 @@ export const QueryAllInitialClaimRequest = {
     return message;
   },
 
-  toJSON(message: QueryAllInitialClaimRequest): unknown {
+  toJSON(message: QueryInitialClaimsRequest): unknown {
     const obj: any = {};
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
@@ -687,11 +706,11 @@ export const QueryAllInitialClaimRequest = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryAllInitialClaimRequest>
-  ): QueryAllInitialClaimRequest {
+    object: DeepPartial<QueryInitialClaimsRequest>
+  ): QueryInitialClaimsRequest {
     const message = {
-      ...baseQueryAllInitialClaimRequest,
-    } as QueryAllInitialClaimRequest;
+      ...baseQueryInitialClaimsRequest,
+    } as QueryInitialClaimsRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromPartial(object.pagination);
     } else {
@@ -701,11 +720,11 @@ export const QueryAllInitialClaimRequest = {
   },
 };
 
-const baseQueryAllInitialClaimResponse: object = {};
+const baseQueryInitialClaimsResponse: object = {};
 
-export const QueryAllInitialClaimResponse = {
+export const QueryInitialClaimsResponse = {
   encode(
-    message: QueryAllInitialClaimResponse,
+    message: QueryInitialClaimsResponse,
     writer: Writer = Writer.create()
   ): Writer {
     for (const v of message.initialClaim) {
@@ -723,12 +742,12 @@ export const QueryAllInitialClaimResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryAllInitialClaimResponse {
+  ): QueryInitialClaimsResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryAllInitialClaimResponse,
-    } as QueryAllInitialClaimResponse;
+      ...baseQueryInitialClaimsResponse,
+    } as QueryInitialClaimsResponse;
     message.initialClaim = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -749,10 +768,10 @@ export const QueryAllInitialClaimResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllInitialClaimResponse {
+  fromJSON(object: any): QueryInitialClaimsResponse {
     const message = {
-      ...baseQueryAllInitialClaimResponse,
-    } as QueryAllInitialClaimResponse;
+      ...baseQueryInitialClaimsResponse,
+    } as QueryInitialClaimsResponse;
     message.initialClaim = [];
     if (object.initialClaim !== undefined && object.initialClaim !== null) {
       for (const e of object.initialClaim) {
@@ -767,7 +786,7 @@ export const QueryAllInitialClaimResponse = {
     return message;
   },
 
-  toJSON(message: QueryAllInitialClaimResponse): unknown {
+  toJSON(message: QueryInitialClaimsResponse): unknown {
     const obj: any = {};
     if (message.initialClaim) {
       obj.initialClaim = message.initialClaim.map((e) =>
@@ -784,11 +803,11 @@ export const QueryAllInitialClaimResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryAllInitialClaimResponse>
-  ): QueryAllInitialClaimResponse {
+    object: DeepPartial<QueryInitialClaimsResponse>
+  ): QueryInitialClaimsResponse {
     const message = {
-      ...baseQueryAllInitialClaimResponse,
-    } as QueryAllInitialClaimResponse;
+      ...baseQueryInitialClaimsResponse,
+    } as QueryInitialClaimsResponse;
     message.initialClaim = [];
     if (object.initialClaim !== undefined && object.initialClaim !== null) {
       for (const e of object.initialClaim) {
@@ -804,11 +823,11 @@ export const QueryAllInitialClaimResponse = {
   },
 };
 
-const baseQueryGetMissionRequest: object = { campaignId: 0, missionId: 0 };
+const baseQueryMissionRequest: object = { campaignId: 0, missionId: 0 };
 
-export const QueryGetMissionRequest = {
+export const QueryMissionRequest = {
   encode(
-    message: QueryGetMissionRequest,
+    message: QueryMissionRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.campaignId !== 0) {
@@ -820,10 +839,10 @@ export const QueryGetMissionRequest = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryGetMissionRequest {
+  decode(input: Reader | Uint8Array, length?: number): QueryMissionRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQueryGetMissionRequest } as QueryGetMissionRequest;
+    const message = { ...baseQueryMissionRequest } as QueryMissionRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -841,8 +860,8 @@ export const QueryGetMissionRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetMissionRequest {
-    const message = { ...baseQueryGetMissionRequest } as QueryGetMissionRequest;
+  fromJSON(object: any): QueryMissionRequest {
+    const message = { ...baseQueryMissionRequest } as QueryMissionRequest;
     if (object.campaignId !== undefined && object.campaignId !== null) {
       message.campaignId = Number(object.campaignId);
     } else {
@@ -856,17 +875,15 @@ export const QueryGetMissionRequest = {
     return message;
   },
 
-  toJSON(message: QueryGetMissionRequest): unknown {
+  toJSON(message: QueryMissionRequest): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = message.campaignId);
     message.missionId !== undefined && (obj.missionId = message.missionId);
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<QueryGetMissionRequest>
-  ): QueryGetMissionRequest {
-    const message = { ...baseQueryGetMissionRequest } as QueryGetMissionRequest;
+  fromPartial(object: DeepPartial<QueryMissionRequest>): QueryMissionRequest {
+    const message = { ...baseQueryMissionRequest } as QueryMissionRequest;
     if (object.campaignId !== undefined && object.campaignId !== null) {
       message.campaignId = object.campaignId;
     } else {
@@ -881,11 +898,11 @@ export const QueryGetMissionRequest = {
   },
 };
 
-const baseQueryGetMissionResponse: object = {};
+const baseQueryMissionResponse: object = {};
 
-export const QueryGetMissionResponse = {
+export const QueryMissionResponse = {
   encode(
-    message: QueryGetMissionResponse,
+    message: QueryMissionResponse,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.mission !== undefined) {
@@ -894,12 +911,10 @@ export const QueryGetMissionResponse = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryGetMissionResponse {
+  decode(input: Reader | Uint8Array, length?: number): QueryMissionResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryGetMissionResponse,
-    } as QueryGetMissionResponse;
+    const message = { ...baseQueryMissionResponse } as QueryMissionResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -914,10 +929,8 @@ export const QueryGetMissionResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetMissionResponse {
-    const message = {
-      ...baseQueryGetMissionResponse,
-    } as QueryGetMissionResponse;
+  fromJSON(object: any): QueryMissionResponse {
+    const message = { ...baseQueryMissionResponse } as QueryMissionResponse;
     if (object.mission !== undefined && object.mission !== null) {
       message.mission = Mission.fromJSON(object.mission);
     } else {
@@ -926,7 +939,7 @@ export const QueryGetMissionResponse = {
     return message;
   },
 
-  toJSON(message: QueryGetMissionResponse): unknown {
+  toJSON(message: QueryMissionResponse): unknown {
     const obj: any = {};
     message.mission !== undefined &&
       (obj.mission = message.mission
@@ -935,12 +948,8 @@ export const QueryGetMissionResponse = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<QueryGetMissionResponse>
-  ): QueryGetMissionResponse {
-    const message = {
-      ...baseQueryGetMissionResponse,
-    } as QueryGetMissionResponse;
+  fromPartial(object: DeepPartial<QueryMissionResponse>): QueryMissionResponse {
+    const message = { ...baseQueryMissionResponse } as QueryMissionResponse;
     if (object.mission !== undefined && object.mission !== null) {
       message.mission = Mission.fromPartial(object.mission);
     } else {
@@ -950,11 +959,11 @@ export const QueryGetMissionResponse = {
   },
 };
 
-const baseQueryAllMissionRequest: object = {};
+const baseQueryMissionsRequest: object = {};
 
-export const QueryAllMissionRequest = {
+export const QueryMissionsRequest = {
   encode(
-    message: QueryAllMissionRequest,
+    message: QueryMissionsRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.pagination !== undefined) {
@@ -963,10 +972,10 @@ export const QueryAllMissionRequest = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryAllMissionRequest {
+  decode(input: Reader | Uint8Array, length?: number): QueryMissionsRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQueryAllMissionRequest } as QueryAllMissionRequest;
+    const message = { ...baseQueryMissionsRequest } as QueryMissionsRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -981,8 +990,8 @@ export const QueryAllMissionRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllMissionRequest {
-    const message = { ...baseQueryAllMissionRequest } as QueryAllMissionRequest;
+  fromJSON(object: any): QueryMissionsRequest {
+    const message = { ...baseQueryMissionsRequest } as QueryMissionsRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromJSON(object.pagination);
     } else {
@@ -991,7 +1000,7 @@ export const QueryAllMissionRequest = {
     return message;
   },
 
-  toJSON(message: QueryAllMissionRequest): unknown {
+  toJSON(message: QueryMissionsRequest): unknown {
     const obj: any = {};
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
@@ -1000,10 +1009,8 @@ export const QueryAllMissionRequest = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<QueryAllMissionRequest>
-  ): QueryAllMissionRequest {
-    const message = { ...baseQueryAllMissionRequest } as QueryAllMissionRequest;
+  fromPartial(object: DeepPartial<QueryMissionsRequest>): QueryMissionsRequest {
+    const message = { ...baseQueryMissionsRequest } as QueryMissionsRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromPartial(object.pagination);
     } else {
@@ -1013,11 +1020,11 @@ export const QueryAllMissionRequest = {
   },
 };
 
-const baseQueryAllMissionResponse: object = {};
+const baseQueryMissionsResponse: object = {};
 
-export const QueryAllMissionResponse = {
+export const QueryMissionsResponse = {
   encode(
-    message: QueryAllMissionResponse,
+    message: QueryMissionsResponse,
     writer: Writer = Writer.create()
   ): Writer {
     for (const v of message.mission) {
@@ -1032,12 +1039,10 @@ export const QueryAllMissionResponse = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryAllMissionResponse {
+  decode(input: Reader | Uint8Array, length?: number): QueryMissionsResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryAllMissionResponse,
-    } as QueryAllMissionResponse;
+    const message = { ...baseQueryMissionsResponse } as QueryMissionsResponse;
     message.mission = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1056,10 +1061,8 @@ export const QueryAllMissionResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllMissionResponse {
-    const message = {
-      ...baseQueryAllMissionResponse,
-    } as QueryAllMissionResponse;
+  fromJSON(object: any): QueryMissionsResponse {
+    const message = { ...baseQueryMissionsResponse } as QueryMissionsResponse;
     message.mission = [];
     if (object.mission !== undefined && object.mission !== null) {
       for (const e of object.mission) {
@@ -1074,7 +1077,7 @@ export const QueryAllMissionResponse = {
     return message;
   },
 
-  toJSON(message: QueryAllMissionResponse): unknown {
+  toJSON(message: QueryMissionsResponse): unknown {
     const obj: any = {};
     if (message.mission) {
       obj.mission = message.mission.map((e) =>
@@ -1091,11 +1094,9 @@ export const QueryAllMissionResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryAllMissionResponse>
-  ): QueryAllMissionResponse {
-    const message = {
-      ...baseQueryAllMissionResponse,
-    } as QueryAllMissionResponse;
+    object: DeepPartial<QueryMissionsResponse>
+  ): QueryMissionsResponse {
+    const message = { ...baseQueryMissionsResponse } as QueryMissionsResponse;
     message.mission = [];
     if (object.mission !== undefined && object.mission !== null) {
       for (const e of object.mission) {
@@ -1111,30 +1112,310 @@ export const QueryAllMissionResponse = {
   },
 };
 
+const baseQueryCampaignsRequest: object = {};
+
+export const QueryCampaignsRequest = {
+  encode(
+    message: QueryCampaignsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryCampaignsRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryCampaignsRequest } as QueryCampaignsRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCampaignsRequest {
+    const message = { ...baseQueryCampaignsRequest } as QueryCampaignsRequest;
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCampaignsRequest): unknown {
+    const obj: any = {};
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryCampaignsRequest>
+  ): QueryCampaignsRequest {
+    const message = { ...baseQueryCampaignsRequest } as QueryCampaignsRequest;
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryCampaignsResponse: object = {};
+
+export const QueryCampaignsResponse = {
+  encode(
+    message: QueryCampaignsResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    for (const v of message.campaign) {
+      Campaign.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(
+        message.pagination,
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryCampaignsResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryCampaignsResponse } as QueryCampaignsResponse;
+    message.campaign = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.campaign.push(Campaign.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCampaignsResponse {
+    const message = { ...baseQueryCampaignsResponse } as QueryCampaignsResponse;
+    message.campaign = [];
+    if (object.campaign !== undefined && object.campaign !== null) {
+      for (const e of object.campaign) {
+        message.campaign.push(Campaign.fromJSON(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCampaignsResponse): unknown {
+    const obj: any = {};
+    if (message.campaign) {
+      obj.campaign = message.campaign.map((e) =>
+        e ? Campaign.toJSON(e) : undefined
+      );
+    } else {
+      obj.campaign = [];
+    }
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageResponse.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryCampaignsResponse>
+  ): QueryCampaignsResponse {
+    const message = { ...baseQueryCampaignsResponse } as QueryCampaignsResponse;
+    message.campaign = [];
+    if (object.campaign !== undefined && object.campaign !== null) {
+      for (const e of object.campaign) {
+        message.campaign.push(Campaign.fromPartial(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryCampaignRequest: object = { campaignId: 0 };
+
+export const QueryCampaignRequest = {
+  encode(
+    message: QueryCampaignRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.campaignId !== 0) {
+      writer.uint32(8).uint64(message.campaignId);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryCampaignRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryCampaignRequest } as QueryCampaignRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.campaignId = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCampaignRequest {
+    const message = { ...baseQueryCampaignRequest } as QueryCampaignRequest;
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = Number(object.campaignId);
+    } else {
+      message.campaignId = 0;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCampaignRequest): unknown {
+    const obj: any = {};
+    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<QueryCampaignRequest>): QueryCampaignRequest {
+    const message = { ...baseQueryCampaignRequest } as QueryCampaignRequest;
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = object.campaignId;
+    } else {
+      message.campaignId = 0;
+    }
+    return message;
+  },
+};
+
+const baseQueryCampaignResponse: object = {};
+
+export const QueryCampaignResponse = {
+  encode(
+    message: QueryCampaignResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.campaign !== undefined) {
+      Campaign.encode(message.campaign, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryCampaignResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryCampaignResponse } as QueryCampaignResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.campaign = Campaign.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryCampaignResponse {
+    const message = { ...baseQueryCampaignResponse } as QueryCampaignResponse;
+    if (object.campaign !== undefined && object.campaign !== null) {
+      message.campaign = Campaign.fromJSON(object.campaign);
+    } else {
+      message.campaign = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryCampaignResponse): unknown {
+    const obj: any = {};
+    message.campaign !== undefined &&
+      (obj.campaign = message.campaign
+        ? Campaign.toJSON(message.campaign)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryCampaignResponse>
+  ): QueryCampaignResponse {
+    const message = { ...baseQueryCampaignResponse } as QueryCampaignResponse;
+    if (object.campaign !== undefined && object.campaign !== null) {
+      message.campaign = Campaign.fromPartial(object.campaign);
+    } else {
+      message.campaign = undefined;
+    }
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
   /** Queries a ClaimRecord by index. */
   ClaimRecord(
-    request: QueryGetClaimRecordRequest
-  ): Promise<QueryGetClaimRecordResponse>;
+    request: QueryClaimRecordRequest
+  ): Promise<QueryClaimRecordResponse>;
   /** Queries a list of ClaimRecord items. */
-  ClaimRecordAll(
-    request: QueryAllClaimRecordRequest
-  ): Promise<QueryAllClaimRecordResponse>;
+  ClaimRecords(
+    request: QueryClaimRecordsRequest
+  ): Promise<QueryClaimRecordsResponse>;
   /** Queries a InitialClaim by index. */
   InitialClaim(
-    request: QueryGetInitialClaimRequest
-  ): Promise<QueryGetInitialClaimResponse>;
+    request: QueryInitialClaimRequest
+  ): Promise<QueryInitialClaimResponse>;
   /** Queries a list of InitialClaim items. */
-  InitialClaimAll(
-    request: QueryAllInitialClaimRequest
-  ): Promise<QueryAllInitialClaimResponse>;
+  InitialClaims(
+    request: QueryInitialClaimsRequest
+  ): Promise<QueryInitialClaimsResponse>;
   /** Queries a Mission by index. */
-  Mission(request: QueryGetMissionRequest): Promise<QueryGetMissionResponse>;
+  Mission(request: QueryMissionRequest): Promise<QueryMissionResponse>;
   /** Queries a list of Mission items. */
-  MissionAll(request: QueryAllMissionRequest): Promise<QueryAllMissionResponse>;
+  MissionAll(request: QueryMissionsRequest): Promise<QueryMissionsResponse>;
+  /** Queries a list of Campaigns items. */
+  Campaigns(request: QueryCampaignsRequest): Promise<QueryCampaignsResponse>;
+  /** Queries a list of Campaigns items. */
+  Campaign(request: QueryCampaignRequest): Promise<QueryCampaignResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1153,84 +1434,106 @@ export class QueryClientImpl implements Query {
   }
 
   ClaimRecord(
-    request: QueryGetClaimRecordRequest
-  ): Promise<QueryGetClaimRecordResponse> {
-    const data = QueryGetClaimRecordRequest.encode(request).finish();
+    request: QueryClaimRecordRequest
+  ): Promise<QueryClaimRecordResponse> {
+    const data = QueryClaimRecordRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
       "ClaimRecord",
       data
     );
     return promise.then((data) =>
-      QueryGetClaimRecordResponse.decode(new Reader(data))
+      QueryClaimRecordResponse.decode(new Reader(data))
     );
   }
 
-  ClaimRecordAll(
-    request: QueryAllClaimRecordRequest
-  ): Promise<QueryAllClaimRecordResponse> {
-    const data = QueryAllClaimRecordRequest.encode(request).finish();
+  ClaimRecords(
+    request: QueryClaimRecordsRequest
+  ): Promise<QueryClaimRecordsResponse> {
+    const data = QueryClaimRecordsRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
-      "ClaimRecordAll",
+      "ClaimRecords",
       data
     );
     return promise.then((data) =>
-      QueryAllClaimRecordResponse.decode(new Reader(data))
+      QueryClaimRecordsResponse.decode(new Reader(data))
     );
   }
 
   InitialClaim(
-    request: QueryGetInitialClaimRequest
-  ): Promise<QueryGetInitialClaimResponse> {
-    const data = QueryGetInitialClaimRequest.encode(request).finish();
+    request: QueryInitialClaimRequest
+  ): Promise<QueryInitialClaimResponse> {
+    const data = QueryInitialClaimRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
       "InitialClaim",
       data
     );
     return promise.then((data) =>
-      QueryGetInitialClaimResponse.decode(new Reader(data))
+      QueryInitialClaimResponse.decode(new Reader(data))
     );
   }
 
-  InitialClaimAll(
-    request: QueryAllInitialClaimRequest
-  ): Promise<QueryAllInitialClaimResponse> {
-    const data = QueryAllInitialClaimRequest.encode(request).finish();
+  InitialClaims(
+    request: QueryInitialClaimsRequest
+  ): Promise<QueryInitialClaimsResponse> {
+    const data = QueryInitialClaimsRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
-      "InitialClaimAll",
+      "InitialClaims",
       data
     );
     return promise.then((data) =>
-      QueryAllInitialClaimResponse.decode(new Reader(data))
+      QueryInitialClaimsResponse.decode(new Reader(data))
     );
   }
 
-  Mission(request: QueryGetMissionRequest): Promise<QueryGetMissionResponse> {
-    const data = QueryGetMissionRequest.encode(request).finish();
+  Mission(request: QueryMissionRequest): Promise<QueryMissionResponse> {
+    const data = QueryMissionRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
       "Mission",
       data
     );
     return promise.then((data) =>
-      QueryGetMissionResponse.decode(new Reader(data))
+      QueryMissionResponse.decode(new Reader(data))
     );
   }
 
-  MissionAll(
-    request: QueryAllMissionRequest
-  ): Promise<QueryAllMissionResponse> {
-    const data = QueryAllMissionRequest.encode(request).finish();
+  MissionAll(request: QueryMissionsRequest): Promise<QueryMissionsResponse> {
+    const data = QueryMissionsRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
       "MissionAll",
       data
     );
     return promise.then((data) =>
-      QueryAllMissionResponse.decode(new Reader(data))
+      QueryMissionsResponse.decode(new Reader(data))
+    );
+  }
+
+  Campaigns(request: QueryCampaignsRequest): Promise<QueryCampaignsResponse> {
+    const data = QueryCampaignsRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeairdrop.Query",
+      "Campaigns",
+      data
+    );
+    return promise.then((data) =>
+      QueryCampaignsResponse.decode(new Reader(data))
+    );
+  }
+
+  Campaign(request: QueryCampaignRequest): Promise<QueryCampaignResponse> {
+    const data = QueryCampaignRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeairdrop.Query",
+      "Campaign",
+      data
+    );
+    return promise.then((data) =>
+      QueryCampaignResponse.decode(new Reader(data))
     );
   }
 }

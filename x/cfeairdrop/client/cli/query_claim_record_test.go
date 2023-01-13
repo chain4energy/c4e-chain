@@ -75,7 +75,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //				require.ErrorIs(t, stat.Err(), tc.err)
 //			} else {
 //				require.NoError(t, err)
-//				var resp types.QueryGetClaimRecordResponse
+//				var resp types.QueryClaimRecordResponse
 //				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //				require.NotNil(t, resp.ClaimRecord)
 //				require.Equal(t,
@@ -112,7 +112,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //			args := request(nil, uint64(i), uint64(step), false)
 //			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecord(), args)
 //			require.NoError(t, err)
-//			var resp types.QueryAllClaimRecordResponse
+//			var resp types.QueryClaimRecordsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //			require.LessOrEqual(t, len(resp.ClaimRecord), step)
 //			require.Subset(t,
@@ -128,7 +128,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //			args := request(next, 0, uint64(step), false)
 //			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecord(), args)
 //			require.NoError(t, err)
-//			var resp types.QueryAllClaimRecordResponse
+//			var resp types.QueryClaimRecordsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //			require.LessOrEqual(t, len(resp.ClaimRecord), step)
 //			require.Subset(t,
@@ -142,7 +142,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //		args := request(nil, 0, uint64(len(objs)), true)
 //		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecord(), args)
 //		require.NoError(t, err)
-//		var resp types.QueryAllClaimRecordResponse
+//		var resp types.QueryClaimRecordsResponse
 //		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //		require.NoError(t, err)
 //		require.Equal(t, len(objs), int(resp.Pagination.Total))

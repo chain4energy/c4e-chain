@@ -24,29 +24,29 @@ func TestMissionQuerySingle(t *testing.T) {
 	msgs := createNMission(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryGetMissionRequest
-		response *types.QueryGetMissionResponse
+		request  *types.QueryMissionRequest
+		response *types.QueryMissionResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryGetMissionRequest{
+			request: &types.QueryMissionRequest{
 				CampaignId: msgs[0].CampaignId,
 				MissionId:  msgs[0].MissionId,
 			},
-			response: &types.QueryGetMissionResponse{Mission: msgs[0]},
+			response: &types.QueryMissionResponse{Mission: msgs[0]},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryGetMissionRequest{
+			request: &types.QueryMissionRequest{
 				CampaignId: msgs[1].CampaignId,
 				MissionId:  msgs[1].MissionId,
 			},
-			response: &types.QueryGetMissionResponse{Mission: msgs[1]},
+			response: &types.QueryMissionResponse{Mission: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryGetMissionRequest{
+			request: &types.QueryMissionRequest{
 				CampaignId: 100000,
 				MissionId:  100000,
 			},
@@ -77,8 +77,8 @@ func TestMissionQueryPaginated(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNMission(keeper, ctx, 5)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllMissionRequest {
-		return &types.QueryAllMissionRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryMissionsRequest {
+		return &types.QueryMissionsRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,

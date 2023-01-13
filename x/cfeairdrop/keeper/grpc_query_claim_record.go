@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) ClaimRecordAll(c context.Context, req *types.QueryAllClaimRecordRequest) (*types.QueryAllClaimRecordResponse, error) {
+func (k Keeper) ClaimRecords(c context.Context, req *types.QueryClaimRecordsRequest) (*types.QueryClaimRecordsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -36,10 +36,10 @@ func (k Keeper) ClaimRecordAll(c context.Context, req *types.QueryAllClaimRecord
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllClaimRecordResponse{ClaimRecord: claimRecords, Pagination: pageRes}, nil
+	return &types.QueryClaimRecordsResponse{ClaimRecord: claimRecords, Pagination: pageRes}, nil
 }
 
-func (k Keeper) ClaimRecord(c context.Context, req *types.QueryGetClaimRecordRequest) (*types.QueryGetClaimRecordResponse, error) {
+func (k Keeper) ClaimRecord(c context.Context, req *types.QueryClaimRecordRequest) (*types.QueryClaimRecordResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -53,5 +53,5 @@ func (k Keeper) ClaimRecord(c context.Context, req *types.QueryGetClaimRecordReq
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetClaimRecordResponse{ClaimRecord: val}, nil
+	return &types.QueryClaimRecordResponse{ClaimRecord: val}, nil
 }

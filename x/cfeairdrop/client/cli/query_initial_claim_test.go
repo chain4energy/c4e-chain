@@ -75,7 +75,7 @@ func networkWithInitialClaimObjects(t *testing.T, n int) (*network.Network, []ty
 //				require.ErrorIs(t, stat.Err(), tc.err)
 //			} else {
 //				require.NoError(t, err)
-//				var resp types.QueryGetInitialClaimResponse
+//				var resp types.QueryInitialClaimResponse
 //				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //				require.NotNil(t, resp.InitialClaim)
 //				require.Equal(t,
@@ -112,7 +112,7 @@ func networkWithInitialClaimObjects(t *testing.T, n int) (*network.Network, []ty
 //			args := request(nil, uint64(i), uint64(step), false)
 //			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListInitialClaim(), args)
 //			require.NoError(t, err)
-//			var resp types.QueryAllInitialClaimResponse
+//			var resp types.QueryInitialClaimsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //			require.LessOrEqual(t, len(resp.InitialClaim), step)
 //			require.Subset(t,
@@ -128,7 +128,7 @@ func networkWithInitialClaimObjects(t *testing.T, n int) (*network.Network, []ty
 //			args := request(next, 0, uint64(step), false)
 //			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListInitialClaim(), args)
 //			require.NoError(t, err)
-//			var resp types.QueryAllInitialClaimResponse
+//			var resp types.QueryInitialClaimsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //			require.LessOrEqual(t, len(resp.InitialClaim), step)
 //			require.Subset(t,
@@ -142,7 +142,7 @@ func networkWithInitialClaimObjects(t *testing.T, n int) (*network.Network, []ty
 //		args := request(nil, 0, uint64(len(objs)), true)
 //		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListInitialClaim(), args)
 //		require.NoError(t, err)
-//		var resp types.QueryAllInitialClaimResponse
+//		var resp types.QueryInitialClaimsResponse
 //		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //		require.NoError(t, err)
 //		require.Equal(t, len(objs), int(resp.Pagination.Total))

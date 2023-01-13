@@ -24,11 +24,11 @@ func CmdListInitialClaim() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllInitialClaimRequest{
+			params := &types.QueryInitialClaimsRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.InitialClaimAll(context.Background(), params)
+			res, err := queryClient.InitialClaims(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -58,7 +58,7 @@ func CmdShowInitialClaim() *cobra.Command {
 				return err
 			}
 
-			params := &types.QueryGetInitialClaimRequest{
+			params := &types.QueryInitialClaimRequest{
 				CampaignId: argCampaignId,
 			}
 

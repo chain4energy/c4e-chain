@@ -23,11 +23,11 @@ func CmdListClaimRecord() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllClaimRecordRequest{
+			params := &types.QueryClaimRecordsRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.ClaimRecordAll(context.Background(), params)
+			res, err := queryClient.ClaimRecords(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -54,7 +54,7 @@ func CmdShowClaimRecord() *cobra.Command {
 
 			argIndex := args[0]
 
-			params := &types.QueryGetClaimRecordRequest{
+			params := &types.QueryClaimRecordRequest{
 				Address: argIndex,
 			}
 

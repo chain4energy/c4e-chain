@@ -70,8 +70,8 @@ func (k Keeper) RemoveCampaign(
 	))
 }
 
-// GetAllCampaign returns all campaignO
-func (k Keeper) GetAllCampaign(ctx sdk.Context) (list []types.Campaign) {
+// GetCampaigns returns all campaignO
+func (k Keeper) GetCampaigns(ctx sdk.Context) (list []types.Campaign) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 

@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) MissionAll(c context.Context, req *types.QueryAllMissionRequest) (*types.QueryAllMissionResponse, error) {
+func (k Keeper) MissionAll(c context.Context, req *types.QueryMissionsRequest) (*types.QueryMissionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -36,10 +36,10 @@ func (k Keeper) MissionAll(c context.Context, req *types.QueryAllMissionRequest)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllMissionResponse{Mission: missions, Pagination: pageRes}, nil
+	return &types.QueryMissionsResponse{Mission: missions, Pagination: pageRes}, nil
 }
 
-func (k Keeper) Mission(c context.Context, req *types.QueryGetMissionRequest) (*types.QueryGetMissionResponse, error) {
+func (k Keeper) Mission(c context.Context, req *types.QueryMissionRequest) (*types.QueryMissionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -54,5 +54,5 @@ func (k Keeper) Mission(c context.Context, req *types.QueryGetMissionRequest) (*
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetMissionResponse{Mission: val}, nil
+	return &types.QueryMissionResponse{Mission: val}, nil
 }

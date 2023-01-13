@@ -17,13 +17,13 @@ func TestMsgCreateAirdropCampaign_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgCreateAirdropCampaign{
-				Creator: "invalid_address",
+				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgCreateAirdropCampaign{
-				Creator: sample.AccAddress(),
+				Owner: sample.AccAddress(),
 			},
 		},
 	}

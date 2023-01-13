@@ -84,7 +84,7 @@ func networkWithMissionObjects(t *testing.T, n int) (*network.Network, []types.M
 //				require.ErrorIs(t, stat.Err(), tc.err)
 //			} else {
 //				require.NoError(t, err)
-//				var resp types.QueryGetMissionResponse
+//				var resp types.QueryMissionResponse
 //				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //				require.NotNil(t, resp.Mission)
 //				require.Equal(t,
@@ -121,7 +121,7 @@ func networkWithMissionObjects(t *testing.T, n int) (*network.Network, []types.M
 //			args := request(nil, uint64(i), uint64(step), false)
 //			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMission(), args)
 //			require.NoError(t, err)
-//			var resp types.QueryAllMissionResponse
+//			var resp types.QueryMissionsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //			require.LessOrEqual(t, len(resp.Mission), step)
 //			require.Subset(t,
@@ -137,7 +137,7 @@ func networkWithMissionObjects(t *testing.T, n int) (*network.Network, []types.M
 //			args := request(next, 0, uint64(step), false)
 //			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMission(), args)
 //			require.NoError(t, err)
-//			var resp types.QueryAllMissionResponse
+//			var resp types.QueryMissionsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //			require.LessOrEqual(t, len(resp.Mission), step)
 //			require.Subset(t,
@@ -151,7 +151,7 @@ func networkWithMissionObjects(t *testing.T, n int) (*network.Network, []types.M
 //		args := request(nil, 0, uint64(len(objs)), true)
 //		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListMission(), args)
 //		require.NoError(t, err)
-//		var resp types.QueryAllMissionResponse
+//		var resp types.QueryMissionsResponse
 //		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 //		require.NoError(t, err)
 //		require.Equal(t, len(objs), int(resp.Pagination.Total))

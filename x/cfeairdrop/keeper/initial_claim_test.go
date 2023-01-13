@@ -80,7 +80,7 @@ func TestClaimInitial(t *testing.T) {
 
 	campaigns := []*types.Campaign{
 		{
-			CampaignId:    1,
+			Id:            1,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -112,7 +112,7 @@ func TestClaimInitialCampaignNotFound(t *testing.T) {
 	end := testHelper.Context.BlockTime().Add(1000)
 	campaigns := []*types.Campaign{
 		{
-			CampaignId:    1,
+			Id:            1,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -143,7 +143,7 @@ func TestClaimInitialCampaignClaimError(t *testing.T) {
 	end := testHelper.Context.BlockTime().Add(1000)
 	campaigns := []*types.Campaign{
 		{
-			CampaignId:    1,
+			Id:            1,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -180,7 +180,7 @@ func TestClaimInitialTwoCampaigns(t *testing.T) {
 	vestingPeriod := 3 * time.Hour
 	campaigns := []*types.Campaign{
 		{
-			CampaignId:    1,
+			Id:            1,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -189,7 +189,7 @@ func TestClaimInitialTwoCampaigns(t *testing.T) {
 			Description:   "test-campaign",
 		},
 		{
-			CampaignId:    2,
+			Id:            2,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,

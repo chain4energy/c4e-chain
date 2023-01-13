@@ -529,7 +529,7 @@ func prepareTestCampaign(ctx sdk.Context) (types.Params, []*types.Campaign) {
 			Denom: commontestutils.DefaultTestDenom},
 		[]*types.Campaign{
 			{
-				CampaignId:    1,
+				Id:            1,
 				Enabled:       true,
 				StartTime:     &start,
 				EndTime:       &end,

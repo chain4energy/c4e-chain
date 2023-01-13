@@ -17,35 +17,43 @@ service Query {
     option (google.api.http).get = "/c4e/airdrop/params";
   }
   // Queries a ClaimRecord by index.
-	rpc ClaimRecord(QueryGetClaimRecordRequest) returns (QueryGetClaimRecordResponse) {
+	rpc ClaimRecord(QueryClaimRecordRequest) returns (QueryClaimRecordResponse) {
 		option (google.api.http).get = "/c4e/airdrop/claim_record/{address}";
 	}
 
 	// Queries a list of ClaimRecord items.
-	rpc ClaimRecordAll(QueryAllClaimRecordRequest) returns (QueryAllClaimRecordResponse) {
+	rpc ClaimRecords(QueryClaimRecordsRequest) returns (QueryClaimRecordsResponse) {
 		option (google.api.http).get = "/c4e/airdrop/claim_record";
 	}
 
 // Queries a InitialClaim by index.
-	rpc InitialClaim(QueryGetInitialClaimRequest) returns (QueryGetInitialClaimResponse) {
+	rpc InitialClaim(QueryInitialClaimRequest) returns (QueryInitialClaimResponse) {
 		option (google.api.http).get = "/c4e/airdrop/initial_claim/{campaignId}";
 	}
 
 	// Queries a list of InitialClaim items.
-	rpc InitialClaimAll(QueryAllInitialClaimRequest) returns (QueryAllInitialClaimResponse) {
+	rpc InitialClaims(QueryInitialClaimsRequest) returns (QueryInitialClaimsResponse) {
 		option (google.api.http).get = "/c4e/airdrop/initial_claim";
 	}
 
 // Queries a Mission by index.
-	rpc Mission(QueryGetMissionRequest) returns (QueryGetMissionResponse) {
-		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/mission/{campaignId}/{missionId}";
+	rpc Mission(QueryMissionRequest) returns (QueryMissionResponse) {
+		option (google.api.http).get = "/c4e/airdrop/mission/{campaignId}/{missionId}";
 	}
 
 	// Queries a list of Mission items.
-	rpc MissionAll(QueryAllMissionRequest) returns (QueryAllMissionResponse) {
-		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/mission";
+	rpc MissionAll(QueryMissionsRequest) returns (QueryMissionsResponse) {
+		option (google.api.http).get = "/c4e/airdrop/mission";
 	}
 
+// Queries a list of Campaigns items.
+	rpc Campaigns(QueryCampaignsRequest) returns (QueryCampaignsResponse) {
+		option (google.api.http).get = "/c4e/airdrop/campaigns";
+	}
+	// Queries a list of Campaigns items.
+	rpc Campaign(QueryCampaignRequest) returns (QueryCampaignResponse) {
+		option (google.api.http).get = "/c4e/airdrop/campaign/{campaignId}";
+	}
 // this line is used by starport scaffolding # 2
 }
 
@@ -60,68 +68,89 @@ message QueryParamsResponse {
 	];
 }
 
-message QueryGetClaimRecordRequest {
+message QueryClaimRecordRequest {
 	  string address = 1;
 }
 
-message QueryGetClaimRecordResponse {
+message QueryClaimRecordResponse {
 	ClaimRecord claimRecord = 1 [
 		(gogoproto.nullable) = false
 	];
 }
 
-message QueryAllClaimRecordRequest {
+message QueryClaimRecordsRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllClaimRecordResponse {
+message QueryClaimRecordsResponse {
 	repeated ClaimRecord claimRecord = 1 [
 		(gogoproto.nullable) = false
 	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryGetInitialClaimRequest {
+message QueryInitialClaimRequest {
 	  uint64 campaignId = 1;
 }
 
-message QueryGetInitialClaimResponse {
+message QueryInitialClaimResponse {
 	InitialClaim initialClaim = 1 [
 		(gogoproto.nullable) = false
 	];
 }
 
-message QueryAllInitialClaimRequest {
+message QueryInitialClaimsRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllInitialClaimResponse {
+message QueryInitialClaimsResponse {
 	repeated InitialClaim initialClaim = 1 [
 		(gogoproto.nullable) = false
 	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryGetMissionRequest {
+message QueryMissionRequest {
 	uint64 campaignId = 1;
 	uint64 missionId = 2;
 }
 
-message QueryGetMissionResponse {
+message QueryMissionResponse {
 	Mission mission = 1 [
 		(gogoproto.nullable) = false
 	];
 }
 
-message QueryAllMissionRequest {
+message QueryMissionsRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllMissionResponse {
+message QueryMissionsResponse {
 	repeated Mission mission = 1 [
 		(gogoproto.nullable) = false
 	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryCampaignsRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryCampaignsResponse {
+	repeated Campaign campaign = 1 [
+		(gogoproto.nullable) = false
+	];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryCampaignRequest {
+	uint64 campaignId = 1;
+}
+
+message QueryCampaignResponse {
+	Campaign campaign = 1 [
+		(gogoproto.nullable) = false
+	];
 }
 
 // this line is used by starport scaffolding # 3

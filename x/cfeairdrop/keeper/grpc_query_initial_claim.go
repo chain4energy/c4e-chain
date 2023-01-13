@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) InitialClaimAll(c context.Context, req *types.QueryAllInitialClaimRequest) (*types.QueryAllInitialClaimResponse, error) {
+func (k Keeper) InitialClaims(c context.Context, req *types.QueryInitialClaimsRequest) (*types.QueryInitialClaimsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -36,10 +36,10 @@ func (k Keeper) InitialClaimAll(c context.Context, req *types.QueryAllInitialCla
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllInitialClaimResponse{InitialClaim: initialClaims, Pagination: pageRes}, nil
+	return &types.QueryInitialClaimsResponse{InitialClaim: initialClaims, Pagination: pageRes}, nil
 }
 
-func (k Keeper) InitialClaim(c context.Context, req *types.QueryGetInitialClaimRequest) (*types.QueryGetInitialClaimResponse, error) {
+func (k Keeper) InitialClaim(c context.Context, req *types.QueryInitialClaimRequest) (*types.QueryInitialClaimResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -53,5 +53,5 @@ func (k Keeper) InitialClaim(c context.Context, req *types.QueryGetInitialClaimR
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetInitialClaimResponse{InitialClaim: val}, nil
+	return &types.QueryInitialClaimResponse{InitialClaim: val}, nil
 }

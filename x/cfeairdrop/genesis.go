@@ -27,10 +27,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
-
-	// k.SendToAirdropAccount(ctx, "c4e1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8fdd9gs",
-	// 	"c4e1497khscv809hzwflml2wztryvsvrftu38ea43p",
-	// 	sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(1000000))), ctx.BlockTime().Unix(), ctx.BlockTime().Unix()+100000)
 }
 
 // ExportGenesis returns the capability module's exported genesis.

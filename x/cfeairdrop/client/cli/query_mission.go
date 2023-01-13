@@ -24,7 +24,7 @@ func CmdListMission() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllMissionRequest{
+			params := &types.QueryMissionsRequest{
 				Pagination: pageReq,
 			}
 
@@ -62,7 +62,7 @@ func CmdShowMission() *cobra.Command {
 				return err
 			}
 
-			params := &types.QueryGetMissionRequest{
+			params := &types.QueryMissionRequest{
 				CampaignId: argCampaignId,
 				MissionId:  argMissionId,
 			}
