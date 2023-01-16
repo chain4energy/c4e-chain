@@ -544,7 +544,7 @@ paths:
         - Query
   /c4e/airdrop/claim_record:
     get:
-      summary: Queries a list of ClaimRecord items.
+      summary: Queries a list of UserAirdropEntries items.
       operationId: Chain4EnergyC4EchainCfeairdropClaimRecords
       responses:
         '200':
@@ -552,7 +552,7 @@ paths:
           schema:
             type: object
             properties:
-              claimRecord:
+              usersAirdropEntries:
                 type: array
                 items:
                   type: object
@@ -561,7 +561,7 @@ paths:
                       type: string
                     claim_address:
                       type: string
-                    campaign_records:
+                    airdrop_entries_state:
                       type: array
                       items:
                         type: object
@@ -569,7 +569,7 @@ paths:
                           campaign_id:
                             type: string
                             format: uint64
-                          claimable:
+                          total_amount:
                             type: string
                           completedMissions:
                             type: array
@@ -854,22 +854,22 @@ paths:
         - Query
   '/c4e/airdrop/claim_record/{address}':
     get:
-      summary: Queries a ClaimRecord by index.
-      operationId: Chain4EnergyC4EchainCfeairdropClaimRecord
+      summary: Queries a UserAirdropEntries by index.
+      operationId: Chain4EnergyC4EchainCfeairdropUserAirdropEntries
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              claimRecord:
+              userAirdropEntries:
                 type: object
                 properties:
                   address:
                     type: string
                   claim_address:
                     type: string
-                  campaign_records:
+                  airdrop_entries_state:
                     type: array
                     items:
                       type: object
@@ -877,7 +877,7 @@ paths:
                         campaign_id:
                           type: string
                           format: uint64
-                        claimable:
+                        total_amount:
                           type: string
                         completedMissions:
                           type: array
@@ -1608,10 +1608,19 @@ paths:
                       format: uint64
                     name:
                       type: string
-                    missionType:
-                      type: string
                     description:
                       type: string
+                    missionType:
+                      type: string
+                      enum:
+                        - UNSPECIFIED
+                        - INITIAL_CLAIM
+                        - DELEGATION
+                        - VOTE
+                      default: UNSPECIFIED
+                      title: >-
+                        - UNSPECIFIED: option (gogoproto.goproto_enum_prefix) =
+                        false;
                     weight:
                       type: string
               pagination:
@@ -1906,10 +1915,19 @@ paths:
                     format: uint64
                   name:
                     type: string
-                  missionType:
-                    type: string
                   description:
                     type: string
+                  missionType:
+                    type: string
+                    enum:
+                      - UNSPECIFIED
+                      - INITIAL_CLAIM
+                      - DELEGATION
+                      - VOTE
+                    default: UNSPECIFIED
+                    title: >-
+                      - UNSPECIFIED: option (gogoproto.goproto_enum_prefix) =
+                      false;
                   weight:
                     type: string
         default:
@@ -2331,14 +2349,10 @@ paths:
                 items:
                   type: object
                   properties:
-                    id:
-                      type: string
-                      format: uint64
                     address:
                       type: string
                     amount:
                       type: string
-                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -2623,14 +2637,10 @@ paths:
               AirdropEntry:
                 type: object
                 properties:
-                  id:
-                    type: string
-                    format: uint64
                   address:
                     type: string
                   amount:
                     type: string
-                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -34666,14 +34676,28 @@ definitions:
   chain4energy.c4echain.cfeairdrop.AirdropEntry:
     type: object
     properties:
-      id:
-        type: string
-        format: uint64
       address:
         type: string
       amount:
         type: string
+  chain4energy.c4echain.cfeairdrop.AirdropEntryState:
+    type: object
+    properties:
+      campaign_id:
+        type: string
         format: uint64
+      total_amount:
+        type: string
+      completedMissions:
+        type: array
+        items:
+          type: string
+          format: uint64
+      claimedMissions:
+        type: array
+        items:
+          type: string
+          format: uint64
   chain4energy.c4echain.cfeairdrop.Campaign:
     type: object
     properties:
@@ -34700,51 +34724,6 @@ definitions:
       vesting_period:
         type: string
         title: period of vesting coins after lockup period
-  chain4energy.c4echain.cfeairdrop.CampaignRecord:
-    type: object
-    properties:
-      campaign_id:
-        type: string
-        format: uint64
-      claimable:
-        type: string
-      completedMissions:
-        type: array
-        items:
-          type: string
-          format: uint64
-      claimedMissions:
-        type: array
-        items:
-          type: string
-          format: uint64
-  chain4energy.c4echain.cfeairdrop.ClaimRecord:
-    type: object
-    properties:
-      address:
-        type: string
-      claim_address:
-        type: string
-      campaign_records:
-        type: array
-        items:
-          type: object
-          properties:
-            campaign_id:
-              type: string
-              format: uint64
-            claimable:
-              type: string
-            completedMissions:
-              type: array
-              items:
-                type: string
-                format: uint64
-            claimedMissions:
-              type: array
-              items:
-                type: string
-                format: uint64
   chain4energy.c4echain.cfeairdrop.InitialClaim:
     type: object
     properties:
@@ -34765,27 +34744,37 @@ definitions:
         format: uint64
       name:
         type: string
-      missionType:
-        type: string
       description:
         type: string
+      missionType:
+        type: string
+        enum:
+          - UNSPECIFIED
+          - INITIAL_CLAIM
+          - DELEGATION
+          - VOTE
+        default: UNSPECIFIED
+        title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
       weight:
         type: string
+  chain4energy.c4echain.cfeairdrop.MissionType:
+    type: string
+    enum:
+      - UNSPECIFIED
+      - INITIAL_CLAIM
+      - DELEGATION
+      - VOTE
+    default: UNSPECIFIED
+    title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
+  chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntriesResponse:
+    type: object
   chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaignResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgClaimResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgCreateAirdropEntryResponse:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uint64
   chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntryResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.MsgUpdateAirdropEntryResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.Params:
     type: object
@@ -34801,14 +34790,10 @@ definitions:
         items:
           type: object
           properties:
-            id:
-              type: string
-              format: uint64
             address:
               type: string
             amount:
               type: string
-              format: uint64
       pagination:
         type: object
         properties:
@@ -34922,14 +34907,14 @@ definitions:
   chain4energy.c4echain.cfeairdrop.QueryClaimRecordResponse:
     type: object
     properties:
-      claimRecord:
+      userAirdropEntries:
         type: object
         properties:
           address:
             type: string
           claim_address:
             type: string
-          campaign_records:
+          airdrop_entries_state:
             type: array
             items:
               type: object
@@ -34937,7 +34922,7 @@ definitions:
                 campaign_id:
                   type: string
                   format: uint64
-                claimable:
+                total_amount:
                   type: string
                 completedMissions:
                   type: array
@@ -34952,7 +34937,7 @@ definitions:
   chain4energy.c4echain.cfeairdrop.QueryClaimRecordsResponse:
     type: object
     properties:
-      claimRecord:
+      usersAirdropEntries:
         type: array
         items:
           type: object
@@ -34961,7 +34946,7 @@ definitions:
               type: string
             claim_address:
               type: string
-            campaign_records:
+            airdrop_entries_state:
               type: array
               items:
                 type: object
@@ -34969,7 +34954,7 @@ definitions:
                   campaign_id:
                     type: string
                     format: uint64
-                  claimable:
+                  total_amount:
                     type: string
                   completedMissions:
                     type: array
@@ -35012,14 +34997,10 @@ definitions:
       AirdropEntry:
         type: object
         properties:
-          id:
-            type: string
-            format: uint64
           address:
             type: string
           amount:
             type: string
-            format: uint64
   chain4energy.c4echain.cfeairdrop.QueryInitialClaimResponse:
     type: object
     properties:
@@ -35085,10 +35066,17 @@ definitions:
             format: uint64
           name:
             type: string
-          missionType:
-            type: string
           description:
             type: string
+          missionType:
+            type: string
+            enum:
+              - UNSPECIFIED
+              - INITIAL_CLAIM
+              - DELEGATION
+              - VOTE
+            default: UNSPECIFIED
+            title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
           weight:
             type: string
   chain4energy.c4echain.cfeairdrop.QueryMissionsResponse:
@@ -35107,10 +35095,17 @@ definitions:
               format: uint64
             name:
               type: string
-            missionType:
-              type: string
             description:
               type: string
+            missionType:
+              type: string
+              enum:
+                - UNSPECIFIED
+                - INITIAL_CLAIM
+                - DELEGATION
+                - VOTE
+              default: UNSPECIFIED
+              title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
             weight:
               type: string
       pagination:
@@ -35148,6 +35143,33 @@ definitions:
           denom:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cfeairdrop.UserAirdropEntries:
+    type: object
+    properties:
+      address:
+        type: string
+      claim_address:
+        type: string
+      airdrop_entries_state:
+        type: array
+        items:
+          type: object
+          properties:
+            campaign_id:
+              type: string
+              format: uint64
+            total_amount:
+              type: string
+            completedMissions:
+              type: array
+              items:
+                type: string
+                format: uint64
+            claimedMissions:
+              type: array
+              items:
+                type: string
+                format: uint64
   cosmos.base.query.v1beta1.PageRequest:
     type: object
     properties:

@@ -17,12 +17,16 @@ export interface C4EchaincfeairdropParams {
 }
 
 export interface CfeairdropAirdropEntry {
-  /** @format uint64 */
-  id?: string;
   address?: string;
-
-  /** @format uint64 */
   amount?: string;
+}
+
+export interface CfeairdropAirdropEntryState {
+  /** @format uint64 */
+  campaign_id?: string;
+  total_amount?: string;
+  completedMissions?: string[];
+  claimedMissions?: string[];
 }
 
 export interface CfeairdropCampaign {
@@ -42,20 +46,6 @@ export interface CfeairdropCampaign {
   vesting_period?: string;
 }
 
-export interface CfeairdropCampaignRecord {
-  /** @format uint64 */
-  campaign_id?: string;
-  claimable?: string;
-  completedMissions?: string[];
-  claimedMissions?: string[];
-}
-
-export interface CfeairdropClaimRecord {
-  address?: string;
-  claim_address?: string;
-  campaign_records?: CfeairdropCampaignRecord[];
-}
-
 export interface CfeairdropInitialClaim {
   /** @format uint64 */
   campaign_id?: string;
@@ -71,10 +61,19 @@ export interface CfeairdropMission {
   /** @format uint64 */
   campaign_id?: string;
   name?: string;
-  missionType?: string;
   description?: string;
+  missionType?: CfeairdropMissionType;
   weight?: string;
 }
+
+export enum CfeairdropMissionType {
+  UNSPECIFIED = "UNSPECIFIED",
+  INITIAL_CLAIM = "INITIAL_CLAIM",
+  DELEGATION = "DELEGATION",
+  VOTE = "VOTE",
+}
+
+export type CfeairdropMsgAddAirdropEntriesResponse = object;
 
 export type CfeairdropMsgAddMissionToAidropCampaignResponse = object;
 
@@ -82,14 +81,7 @@ export type CfeairdropMsgClaimResponse = object;
 
 export type CfeairdropMsgCreateAirdropCampaignResponse = object;
 
-export interface CfeairdropMsgCreateAirdropEntryResponse {
-  /** @format uint64 */
-  id?: string;
-}
-
 export type CfeairdropMsgDeleteAirdropEntryResponse = object;
-
-export type CfeairdropMsgUpdateAirdropEntryResponse = object;
 
 export interface CfeairdropQueryAllAirdropEntryResponse {
   AirdropEntry?: CfeairdropAirdropEntry[];
@@ -126,11 +118,11 @@ export interface CfeairdropQueryCampaignsResponse {
 }
 
 export interface CfeairdropQueryClaimRecordResponse {
-  claimRecord?: CfeairdropClaimRecord;
+  userAirdropEntries?: CfeairdropUserAirdropEntries;
 }
 
 export interface CfeairdropQueryClaimRecordsResponse {
-  claimRecord?: CfeairdropClaimRecord[];
+  usersAirdropEntries?: CfeairdropUserAirdropEntries[];
 
   /**
    * PageResponse is to be embedded in gRPC response messages where the
@@ -192,6 +184,12 @@ export interface CfeairdropQueryMissionsResponse {
 export interface CfeairdropQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: C4EchaincfeairdropParams;
+}
+
+export interface CfeairdropUserAirdropEntries {
+  address?: string;
+  claim_address?: string;
+  airdrop_entries_state?: CfeairdropAirdropEntryState[];
 }
 
 /**
@@ -355,13 +353,6 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
-
-  /**
-   * reverse is set to true if results are to be returned in the descending order.
-   *
-   * Since: cosmos-sdk 0.43
-   */
-  reverse?: boolean;
 }
 
 /**
@@ -607,7 +598,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -624,7 +614,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    *
    * @tags Query
    * @name QueryClaimRecords
-   * @summary Queries a list of ClaimRecord items.
+   * @summary Queries a list of UserAirdropEntries items.
    * @request GET:/c4e/airdrop/claim_record
    */
   queryClaimRecords = (
@@ -633,7 +623,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -649,11 +638,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryClaimRecord
-   * @summary Queries a ClaimRecord by index.
+   * @name QueryUserAirdropEntries
+   * @summary Queries a UserAirdropEntries by index.
    * @request GET:/c4e/airdrop/claim_record/{address}
    */
-  queryClaimRecord = (address: string, params: RequestParams = {}) =>
+  queryUserAirdropEntries = (address: string, params: RequestParams = {}) =>
     this.request<CfeairdropQueryClaimRecordResponse, RpcStatus>({
       path: `/c4e/airdrop/claim_record/${address}`,
       method: "GET",
@@ -675,7 +664,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -717,7 +705,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -775,7 +762,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>

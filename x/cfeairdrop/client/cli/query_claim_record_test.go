@@ -13,14 +13,14 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []types.ClaimRecord) {
+func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []types.UserAirdropEntries) {
 	t.Helper()
 	cfg := network.DefaultConfig()
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
-		claimRecord := types.ClaimRecord{
+		claimRecord := types.UserAirdropEntries{
 			Address: strconv.Itoa(i),
 		}
 		nullify.Fill(&claimRecord)
@@ -46,7 +46,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //
 //		args []string
 //		err  error
-//		obj  types.ClaimRecord
+//		obj  types.UserAirdropEntries
 //	}{
 //		{
 //			desc:    "found",
@@ -77,10 +77,10 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //				require.NoError(t, err)
 //				var resp types.QueryClaimRecordResponse
 //				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-//				require.NotNil(t, resp.ClaimRecord)
+//				require.NotNil(t, resp.UserAirdropEntries)
 //				require.Equal(t,
 //					nullify.Fill(&tc.obj),
-//					nullify.Fill(&resp.ClaimRecord),
+//					nullify.Fill(&resp.UserAirdropEntries),
 //				)
 //			}
 //		})
@@ -114,10 +114,10 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //			require.NoError(t, err)
 //			var resp types.QueryClaimRecordsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-//			require.LessOrEqual(t, len(resp.ClaimRecord), step)
+//			require.LessOrEqual(t, len(resp.UserAirdropEntries), step)
 //			require.Subset(t,
 //				nullify.Fill(objs),
-//				nullify.Fill(resp.ClaimRecord),
+//				nullify.Fill(resp.UserAirdropEntries),
 //			)
 //		}
 //	})
@@ -130,10 +130,10 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //			require.NoError(t, err)
 //			var resp types.QueryClaimRecordsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-//			require.LessOrEqual(t, len(resp.ClaimRecord), step)
+//			require.LessOrEqual(t, len(resp.UserAirdropEntries), step)
 //			require.Subset(t,
 //				nullify.Fill(objs),
-//				nullify.Fill(resp.ClaimRecord),
+//				nullify.Fill(resp.UserAirdropEntries),
 //			)
 //			next = resp.Pagination.NextKey
 //		}
@@ -148,7 +148,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //		require.Equal(t, len(objs), int(resp.Pagination.Total))
 //		require.ElementsMatch(t,
 //			nullify.Fill(objs),
-//			nullify.Fill(resp.ClaimRecord),
+//			nullify.Fill(resp.UserAirdropEntries),
 //		)
 //	})
 //}

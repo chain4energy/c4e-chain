@@ -13,58 +13,24 @@ import (
 
 func CmdCreateAirdropEntry() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-airdrop-entry [address] [amount]",
+		Use:   "create-airdrop-entry [campaignId] [airdrop-entries-list]",
 		Short: "Create a new AirdropEntry",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argAddress := args[0]
-			argAmount, err := cast.ToUint64E(args[1])
+			argCampaignId, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-
-			msg := types.NewMsgCreateAirdropEntry(clientCtx.GetFromAddress().String(), argAddress, argAmount)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func CmdUpdateAirdropEntry() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-airdrop-entry [id] [address] [amount]",
-		Short: "Update a AirdropEntry",
-		Args:  cobra.ExactArgs(3),
-		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			argAirdropEntries, err := parseAirdropEntries(clientCtx, args[1])
 			if err != nil {
 				return err
 			}
 
-			argAddress := args[1]
-
-			argAmount, err := cast.ToUint64E(args[2])
-			if err != nil {
-				return err
-			}
-
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgUpdateAirdropEntry(clientCtx.GetFromAddress().String(), id, argAddress, argAmount)
+			msg := types.NewMsgCreateAirdropEntry(clientCtx.GetFromAddress().String(), argCampaignId, argAirdropEntries)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

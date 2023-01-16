@@ -14,8 +14,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		k.SetCampaign(ctx, *elem)
 	}
 	// Set all the claimRecordXX
-	for _, elem := range genState.ClaimRecords {
-		k.SetClaimRecord(ctx, elem)
+	for _, elem := range genState.UserAirdropEntries {
+		k.SetUserAirdropEntries(ctx, elem)
 	}
 	// Set all the initialClaim
 	for _, elem := range genState.InitialClaims {
@@ -24,10 +24,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// Set all the mission
 	for _, elem := range genState.Missions {
 		k.SetMission(ctx, elem)
-	}
-	// Set all the airdropEntry
-	for _, elem := range genState.AirdropEntryList {
-		k.SetAirdropEntry(ctx, elem)
 	}
 
 	// Set airdropEntry count
@@ -40,8 +36,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
-
-	genesis.ClaimRecords = k.GetAllClaimRecord(ctx)
+	genesis.UserAirdropEntries = k.GetAllUserAirdropEntriesRecord(ctx)
 	genesis.InitialClaims = k.GetAllInitialClaim(ctx)
 	genesis.Missions = k.GetAllMission(ctx)
 	genesis.AirdropEntryList = k.GetAllAirdropEntry(ctx)

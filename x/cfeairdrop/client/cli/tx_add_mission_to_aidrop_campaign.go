@@ -15,12 +15,12 @@ var _ = strconv.Itoa(0)
 
 func CmdAddMissionToAidropCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-mission-to-aidrop-campaign [name] [campaign-id] [description] [mission-type] [weight]",
+		Use:   "add-mission-to-aidrop-campaign [campaign-id] [name] [description] [mission-type] [weight]",
 		Short: "Broadcast message AddMissionToAidropCampaign",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argName := args[0]
-			argCampaignId := args[1]
+			argCampaignId := args[0]
+			argName := args[1]
 			argDescription := args[2]
 			argMissionType := args[3]
 			argWeight := args[4]
@@ -35,6 +35,11 @@ func CmdAddMissionToAidropCampaign() *cobra.Command {
 				return err
 			}
 
+			missionType, err := types.MissionTypeFromString(types.NormalizeMissionType(argMissionType))
+			if err != nil {
+				return err
+			}
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -42,10 +47,10 @@ func CmdAddMissionToAidropCampaign() *cobra.Command {
 
 			msg := types.NewMsgAddMissionToAidropCampaign(
 				clientCtx.GetFromAddress().String(),
-				argName,
 				campaignId,
+				argName,
 				argDescription,
-				argMissionType,
+				missionType,
 				weight,
 			)
 			if err := msg.ValidateBasic(); err != nil {

@@ -32,34 +32,6 @@ func (k Keeper) SetAirdropEntryCount(ctx sdk.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
-// AppendAirdropEntry appends a airdropEntry in the store with a new id and update the count
-func (k Keeper) AppendAirdropEntry(
-	ctx sdk.Context,
-	airdropEntry types.AirdropEntry,
-) uint64 {
-	// Create the airdropEntry
-	count := k.GetAirdropEntryCount(ctx)
-
-	// Set the ID of the appended value
-	airdropEntry.Id = count
-
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropEntryKey))
-	appendedValue := k.cdc.MustMarshal(&airdropEntry)
-	store.Set(GetAirdropEntryIDBytes(airdropEntry.Id), appendedValue)
-
-	// Update airdropEntry count
-	k.SetAirdropEntryCount(ctx, count+1)
-
-	return count
-}
-
-// SetAirdropEntry set a specific airdropEntry in the store
-func (k Keeper) SetAirdropEntry(ctx sdk.Context, airdropEntry types.AirdropEntry) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropEntryKey))
-	b := k.cdc.MustMarshal(&airdropEntry)
-	store.Set(GetAirdropEntryIDBytes(airdropEntry.Id), b)
-}
-
 // GetAirdropEntry returns a airdropEntry from its id
 func (k Keeper) GetAirdropEntry(ctx sdk.Context, id uint64) (val types.AirdropEntry, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropEntryKey))

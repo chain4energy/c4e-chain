@@ -16,19 +16,19 @@ func (k Keeper) ClaimRecords(c context.Context, req *types.QueryClaimRecordsRequ
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var claimRecords []types.ClaimRecord
+	var userAirdropEntries []types.UserAirdropEntries
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
 	claimRecordStore := prefix.NewStore(store, types.KeyPrefix(types.ClaimRecordKeyPrefix))
 
 	pageRes, err := query.Paginate(claimRecordStore, req.Pagination, func(key []byte, value []byte) error {
-		var claimRecord types.ClaimRecord
-		if err := k.cdc.Unmarshal(value, &claimRecord); err != nil {
+		var userAirdropEntry types.UserAirdropEntries
+		if err := k.cdc.Unmarshal(value, &userAirdropEntry); err != nil {
 			return err
 		}
 
-		claimRecords = append(claimRecords, claimRecord)
+		userAirdropEntries = append(userAirdropEntries, userAirdropEntry)
 		return nil
 	})
 
@@ -36,16 +36,16 @@ func (k Keeper) ClaimRecords(c context.Context, req *types.QueryClaimRecordsRequ
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryClaimRecordsResponse{ClaimRecord: claimRecords, Pagination: pageRes}, nil
+	return &types.QueryClaimRecordsResponse{UsersAirdropEntries: userAirdropEntries, Pagination: pageRes}, nil
 }
 
-func (k Keeper) ClaimRecord(c context.Context, req *types.QueryClaimRecordRequest) (*types.QueryClaimRecordResponse, error) {
+func (k Keeper) UserAirdropEntries(c context.Context, req *types.QueryClaimRecordRequest) (*types.QueryClaimRecordResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetClaimRecord(
+	val, found := k.GetUserAirdropEntries(
 		ctx,
 		req.Address,
 	)
@@ -53,5 +53,5 @@ func (k Keeper) ClaimRecord(c context.Context, req *types.QueryClaimRecordReques
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryClaimRecordResponse{ClaimRecord: val}, nil
+	return &types.QueryClaimRecordResponse{UserAirdropEntries: val}, nil
 }

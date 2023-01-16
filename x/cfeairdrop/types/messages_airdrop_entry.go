@@ -11,79 +11,39 @@ const (
 	TypeMsgDeleteAirdropEntry = "delete_airdrop_entry"
 )
 
-var _ sdk.Msg = &MsgCreateAirdropEntry{}
+var _ sdk.Msg = &MsgAddAirdropEntries{}
 
-func NewMsgCreateAirdropEntry(creator string, address string, amount uint64) *MsgCreateAirdropEntry {
-	return &MsgCreateAirdropEntry{
-		Creator: creator,
-		Address: address,
-		Amount:  amount,
+func NewMsgCreateAirdropEntry(onwer string, campaignId uint64, airdropEntries []*AirdropEntry) *MsgAddAirdropEntries {
+	return &MsgAddAirdropEntries{
+		Owner:          onwer,
+		CampaignId:     campaignId,
+		AirdropEntries: airdropEntries,
 	}
 }
 
-func (msg *MsgCreateAirdropEntry) Route() string {
+func (msg *MsgAddAirdropEntries) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgCreateAirdropEntry) Type() string {
+func (msg *MsgAddAirdropEntries) Type() string {
 	return TypeMsgCreateAirdropEntry
 }
 
-func (msg *MsgCreateAirdropEntry) GetSigners() []sdk.AccAddress {
-	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+func (msg *MsgAddAirdropEntries) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgCreateAirdropEntry) GetSignBytes() []byte {
+func (msg *MsgAddAirdropEntries) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgCreateAirdropEntry) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
-	}
-	return nil
-}
-
-var _ sdk.Msg = &MsgUpdateAirdropEntry{}
-
-func NewMsgUpdateAirdropEntry(creator string, id uint64, address string, amount uint64) *MsgUpdateAirdropEntry {
-	return &MsgUpdateAirdropEntry{
-		Id:      id,
-		Creator: creator,
-		Address: address,
-		Amount:  amount,
-	}
-}
-
-func (msg *MsgUpdateAirdropEntry) Route() string {
-	return RouterKey
-}
-
-func (msg *MsgUpdateAirdropEntry) Type() string {
-	return TypeMsgUpdateAirdropEntry
-}
-
-func (msg *MsgUpdateAirdropEntry) GetSigners() []sdk.AccAddress {
-	creator, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{creator}
-}
-
-func (msg *MsgUpdateAirdropEntry) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
-}
-
-func (msg *MsgUpdateAirdropEntry) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
+func (msg *MsgAddAirdropEntries) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}

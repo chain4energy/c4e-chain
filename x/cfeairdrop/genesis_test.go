@@ -14,7 +14,7 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
-		ClaimRecords: []types.ClaimRecord{
+		UserAirdropEntries: []types.UserAirdropEntries{
 			{
 				Address: "0",
 			},
@@ -42,10 +42,10 @@ func TestGenesis(t *testing.T) {
 		},
 		AirdropEntryList: []types.AirdropEntry{
 			{
-				Id: 0,
+				Address: "0",
 			},
 			{
-				Id: 1,
+				Address: "0",
 			},
 		},
 		AirdropEntryCount: 2,
@@ -60,7 +60,7 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
-	require.ElementsMatch(t, genesisState.ClaimRecords, got.ClaimRecords)
+	require.ElementsMatch(t, genesisState.UserAirdropEntries, got.UserAirdropEntries)
 	require.ElementsMatch(t, genesisState.InitialClaims, got.InitialClaims)
 	require.ElementsMatch(t, genesisState.Missions, got.Missions)
 	require.ElementsMatch(t, genesisState.AirdropEntryList, got.AirdropEntryList)

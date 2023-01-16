@@ -68,20 +68,20 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	airdropKeeper.SetMission(
 		ctx,
 		cfeairdroptypes.Mission{
+			Id:          0,
 			CampaignId:  gleamCamapaignId,
-			Id:          uint64(cfeairdroptypes.INITIAL),
 			Weight:      sdk.NewDec(1),
 			Description: "Claim gleam contest airdrop", // TODO description ??
 		},
 	)
-	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: gleamCamapaignId, Id: uint64(cfeairdroptypes.INITIAL)})
+	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: gleamCamapaignId, MissionId: 0})
 
 	// ATOM stakers missions
 	airdropKeeper.SetMission(
 		ctx,
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
-			Id:          uint64(cfeairdroptypes.INITIAL),
+			Id:          0,
 			Weight:      sdk.MustNewDecFromStr("0.2"),
 			Description: "Claim initial stakers airdrop", // TODO description ??
 		},
@@ -91,7 +91,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		ctx,
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
-			Id:          uint64(cfeairdroptypes.DELEGATION),
+			Id:          1,
 			Weight:      sdk.MustNewDecFromStr("0.4"),
 			Description: "Claim delegtion stakers airdrop", // TODO description ??
 		},
@@ -101,20 +101,24 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		ctx,
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
-			Id:          uint64(cfeairdroptypes.VOTE),
+			Id:          2,
 			Weight:      sdk.MustNewDecFromStr("0.4"),
 			Description: "Claim voting stakers airdrop", // TODO description ??
 		},
 	)
 
-	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: stakeCamapaignId, Id: uint64(cfeairdroptypes.INITIAL)})
+	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: stakeCamapaignId, MissionId: 0})
 
 	acc := accountKeeper.GetModuleAccount(ctx, airdropSource)
 	if acc == nil {
 		airdropKeeper.Logger(ctx).Error("source module account not found", "name", airdropSource)
 		return fmt.Errorf("source module account not found: %s", airdropSource)
 	}
-	airdropKeeper.AddCampaignRecords(ctx, acc.GetAddress(), gleamCamapaignId, gleamContestRecords)
-	airdropKeeper.AddCampaignRecords(ctx, acc.GetAddress(), stakeCamapaignId, stakeRecords)
+	if err = airdropKeeper.AddAirdropEntries(ctx, acc.GetAddress().String(), gleamCamapaignId, gleamContestRecords); err != nil {
+		return err
+	}
+	if err = airdropKeeper.AddAirdropEntries(ctx, acc.GetAddress().String(), stakeCamapaignId, stakeRecords); err != nil {
+		return err
+	}
 	return nil
 }

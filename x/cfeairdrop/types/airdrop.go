@@ -8,21 +8,14 @@ import (
 
 type MessageId uint64
 
-const (
-	INITIAL MessageId = iota
-	DELEGATION
-	VOTE
-	end
-)
-
 func IsMessageId(id uint64) bool {
 	return id < uint64(end)
 }
 
-func (cr *ClaimRecord) GetCampaignRecord(camapaignId uint64) *CampaignRecord {
-	for _, campaignRecord := range cr.CampaignRecords {
-		if campaignRecord.CampaignId == camapaignId {
-			return campaignRecord
+func (cr *UserAirdropEntries) GetAidropEntryState(camapaignId uint64) *AirdropEntryState {
+	for _, airdropEntryState := range cr.AirdropEntriesState {
+		if airdropEntryState.CampaignId == camapaignId {
+			return airdropEntryState
 		}
 	}
 	return nil

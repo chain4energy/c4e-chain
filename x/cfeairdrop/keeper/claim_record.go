@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	errortypes "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,23 +10,23 @@ import (
 )
 
 // SetClaimRecordXX set a specific claimRecordXX in the store from its index
-func (k Keeper) SetClaimRecord(ctx sdk.Context, claimRecord types.ClaimRecord) {
+func (k Keeper) SetUserAirdropEntries(ctx sdk.Context, userAirdropEntries types.UserAirdropEntries) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimRecordKeyPrefix))
-	b := k.cdc.MustMarshal(&claimRecord)
-	store.Set(types.ClaimRecordKey(
-		claimRecord.Address,
+	b := k.cdc.MustMarshal(&userAirdropEntries)
+	store.Set(types.UserAirdropEntriesKey(
+		userAirdropEntries.Address,
 	), b)
 }
 
 // GetClaimRecordXX returns a claimRecordXX from its index
-func (k Keeper) GetClaimRecord(
+func (k Keeper) GetUserAirdropEntries(
 	ctx sdk.Context,
 	address string,
 
-) (val types.ClaimRecord, found bool) {
+) (val types.UserAirdropEntries, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimRecordKeyPrefix))
 
-	b := store.Get(types.ClaimRecordKey(
+	b := store.Get(types.UserAirdropEntriesKey(
 		address,
 	))
 	if b == nil {
@@ -37,27 +37,15 @@ func (k Keeper) GetClaimRecord(
 	return val, true
 }
 
-// RemoveClaimRecordXX removes a claimRecordXX from the store
-func (k Keeper) RemoveClaimRecord(
-	ctx sdk.Context,
-	index string,
-
-) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimRecordKeyPrefix))
-	store.Delete(types.ClaimRecordKey(
-		index,
-	))
-}
-
 // GetAllClaimRecordXX returns all claimRecordXX
-func (k Keeper) GetAllClaimRecord(ctx sdk.Context) (list []types.ClaimRecord) {
+func (k Keeper) GetAllUserAirdropEntriesRecord(ctx sdk.Context) (list []types.UserAirdropEntries) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimRecordKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.ClaimRecord
+		var val types.UserAirdropEntries
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}
@@ -65,36 +53,54 @@ func (k Keeper) GetAllClaimRecord(ctx sdk.Context) (list []types.ClaimRecord) {
 	return
 }
 
-func (k Keeper) addClaimRecord(ctx sdk.Context, address string, campaignId uint64, claimable sdk.Int) (*types.ClaimRecord, error) {
-	claimRecord, found := k.GetClaimRecord(ctx, address)
+// RemoveClaimRecordXX removes a claimRecordXX from the store
+func (k Keeper) RemoveClaimRecord(
+	ctx sdk.Context,
+	index string,
+
+) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ClaimRecordKeyPrefix))
+	store.Delete(types.UserAirdropEntriesKey(
+		index,
+	))
+}
+
+func (k Keeper) addClaimRecord(ctx sdk.Context, campaignId uint64, address string, totalAmount sdk.Int) (*types.UserAirdropEntries, error) {
+	claimRecord, found := k.GetUserAirdropEntries(ctx, address)
 	if !found {
-		claimRecord = types.ClaimRecord{Address: address}
+		claimRecord = types.UserAirdropEntries{Address: address}
 		// k.grantFeeAllowance(ctx, address)
 	}
 	if claimRecord.HasCampaign(campaignId) {
-		return nil, sdkerrors.Wrapf(c4eerrors.ErrAlreadyExists, "campaignId %d already exists for address: %s", campaignId, address)
+		return nil, sdkerrors.Wrapf(errortypes.ErrAlreadyExists, "campaignId %d already exists for address: %s", campaignId, address)
 	}
-	claimRecord.CampaignRecords = append(claimRecord.CampaignRecords, &types.CampaignRecord{CampaignId: campaignId, Claimable: claimable})
+	claimRecord.AirdropEntriesState = append(claimRecord.AirdropEntriesState, &types.AirdropEntryState{CampaignId: campaignId, TotalAmount: totalAmount})
 	return &claimRecord, nil
 }
 
-func (k Keeper) AddCampaignRecords(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, campaignRecord map[string]sdk.Int) error {
-	var records []*types.ClaimRecord
+func (k Keeper) AddAirdropEntries(ctx sdk.Context, owner string, campaignId uint64, airdropEntries []*types.AirdropEntry) error {
+	srcAddr, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		k.Logger(ctx).Error("add campaign entries owner parsing error", "owner", owner, "error", err.Error())
+		return sdkerrors.Wrap(errortypes.ErrParsing, sdkerrors.Wrapf(err, "add mission to airdrop campaign - owner parsing error: %s", owner).Error())
+	}
+
+	var records []*types.UserAirdropEntries
 	sum := sdk.ZeroInt()
-	for address, claimable := range campaignRecord {
-		record, err := k.addClaimRecord(ctx, address, campaignId, claimable)
+	for _, airdropEntry := range airdropEntries {
+		record, err := k.addClaimRecord(ctx, campaignId, airdropEntry.Address, airdropEntry.Amount)
 		if err != nil {
 			return err
 		}
 		records = append(records, record)
-		sum = sum.Add(claimable)
+		sum = sum.Add(airdropEntry.Amount)
 	}
 	coins := sdk.NewCoins(sdk.NewCoin("uc4e", sum)) // TODO remove hardcoded uc4e
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, srcAddress, types.ModuleName, coins); err != nil {
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, srcAddr, types.ModuleName, coins); err != nil {
 		return err
 	}
 	for _, record := range records {
-		k.SetClaimRecord(ctx, *record)
+		k.SetUserAirdropEntries(ctx, *record)
 	}
 	return nil
 }

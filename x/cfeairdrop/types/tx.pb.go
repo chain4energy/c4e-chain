@@ -36,7 +36,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type MsgClaim struct {
 	Claimer    string `protobuf:"bytes,1,opt,name=claimer,proto3" json:"claimer,omitempty"`
 	CampaignId string `protobuf:"bytes,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
-	Id         string `protobuf:"bytes,3,opt,name=mission_id,json=missionId,proto3" json:"mission_id,omitempty"`
+	MissionId  string `protobuf:"bytes,3,opt,name=mission_id,json=missionId,proto3" json:"mission_id,omitempty"`
 }
 
 func (m *MsgClaim) Reset()         { *m = MsgClaim{} }
@@ -88,7 +88,7 @@ func (m *MsgClaim) GetCampaignId() string {
 
 func (m *MsgClaim) GetMissionId() string {
 	if m != nil {
-		return m.Id
+		return m.MissionId
 	}
 	return ""
 }
@@ -262,7 +262,7 @@ type MsgAddMissionToAidropCampaign struct {
 	CampaignId  uint64                                 `protobuf:"varint,2,opt,name=campaignId,proto3" json:"campaignId,omitempty"`
 	Name        string                                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Description string                                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	MissionType string                                 `protobuf:"bytes,5,opt,name=missionType,proto3" json:"missionType,omitempty"`
+	MissionType MissionType                            `protobuf:"varint,5,opt,name=missionType,proto3,enum=chain4energy.c4echain.cfeairdrop.MissionType" json:"missionType,omitempty"`
 	Weight      github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,6,opt,name=weight,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"weight"`
 }
 
@@ -327,11 +327,11 @@ func (m *MsgAddMissionToAidropCampaign) GetDescription() string {
 	return ""
 }
 
-func (m *MsgAddMissionToAidropCampaign) GetMissionType() string {
+func (m *MsgAddMissionToAidropCampaign) GetMissionType() MissionType {
 	if m != nil {
 		return m.MissionType
 	}
-	return ""
+	return MissionType_UNSPECIFIED
 }
 
 type MsgAddMissionToAidropCampaignResponse struct {
@@ -370,24 +370,24 @@ func (m *MsgAddMissionToAidropCampaignResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddMissionToAidropCampaignResponse proto.InternalMessageInfo
 
-type MsgCreateAirdropEntry struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	Amount  uint64 `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
+type MsgAddAirdropEntries struct {
+	Owner          string          `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	CampaignId     uint64          `protobuf:"varint,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	AirdropEntries []*AirdropEntry `protobuf:"bytes,3,rep,name=airdrop_entries,json=airdropEntries,proto3" json:"airdrop_entries,omitempty"`
 }
 
-func (m *MsgCreateAirdropEntry) Reset()         { *m = MsgCreateAirdropEntry{} }
-func (m *MsgCreateAirdropEntry) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateAirdropEntry) ProtoMessage()    {}
-func (*MsgCreateAirdropEntry) Descriptor() ([]byte, []int) {
+func (m *MsgAddAirdropEntries) Reset()         { *m = MsgAddAirdropEntries{} }
+func (m *MsgAddAirdropEntries) String() string { return proto.CompactTextString(m) }
+func (*MsgAddAirdropEntries) ProtoMessage()    {}
+func (*MsgAddAirdropEntries) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1316949aeac1227b, []int{6}
 }
-func (m *MsgCreateAirdropEntry) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddAirdropEntries) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateAirdropEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddAirdropEntries) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateAirdropEntry.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddAirdropEntries.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -397,55 +397,54 @@ func (m *MsgCreateAirdropEntry) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateAirdropEntry) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateAirdropEntry.Merge(m, src)
+func (m *MsgAddAirdropEntries) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddAirdropEntries.Merge(m, src)
 }
-func (m *MsgCreateAirdropEntry) XXX_Size() int {
+func (m *MsgAddAirdropEntries) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateAirdropEntry) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateAirdropEntry.DiscardUnknown(m)
+func (m *MsgAddAirdropEntries) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddAirdropEntries.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateAirdropEntry proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddAirdropEntries proto.InternalMessageInfo
 
-func (m *MsgCreateAirdropEntry) GetCreator() string {
+func (m *MsgAddAirdropEntries) GetOwner() string {
 	if m != nil {
-		return m.Creator
+		return m.Owner
 	}
 	return ""
 }
 
-func (m *MsgCreateAirdropEntry) GetAddress() string {
+func (m *MsgAddAirdropEntries) GetCampaignId() uint64 {
 	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
-func (m *MsgCreateAirdropEntry) GetAmount() uint64 {
-	if m != nil {
-		return m.Amount
+		return m.CampaignId
 	}
 	return 0
 }
 
-type MsgCreateAirdropEntryResponse struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+func (m *MsgAddAirdropEntries) GetAirdropEntries() []*AirdropEntry {
+	if m != nil {
+		return m.AirdropEntries
+	}
+	return nil
 }
 
-func (m *MsgCreateAirdropEntryResponse) Reset()         { *m = MsgCreateAirdropEntryResponse{} }
-func (m *MsgCreateAirdropEntryResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateAirdropEntryResponse) ProtoMessage()    {}
-func (*MsgCreateAirdropEntryResponse) Descriptor() ([]byte, []int) {
+type MsgAddAirdropEntriesResponse struct {
+}
+
+func (m *MsgAddAirdropEntriesResponse) Reset()         { *m = MsgAddAirdropEntriesResponse{} }
+func (m *MsgAddAirdropEntriesResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddAirdropEntriesResponse) ProtoMessage()    {}
+func (*MsgAddAirdropEntriesResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1316949aeac1227b, []int{7}
 }
-func (m *MsgCreateAirdropEntryResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddAirdropEntriesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateAirdropEntryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddAirdropEntriesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateAirdropEntryResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddAirdropEntriesResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -455,128 +454,17 @@ func (m *MsgCreateAirdropEntryResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateAirdropEntryResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateAirdropEntryResponse.Merge(m, src)
+func (m *MsgAddAirdropEntriesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddAirdropEntriesResponse.Merge(m, src)
 }
-func (m *MsgCreateAirdropEntryResponse) XXX_Size() int {
+func (m *MsgAddAirdropEntriesResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateAirdropEntryResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateAirdropEntryResponse.DiscardUnknown(m)
+func (m *MsgAddAirdropEntriesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddAirdropEntriesResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateAirdropEntryResponse proto.InternalMessageInfo
-
-func (m *MsgCreateAirdropEntryResponse) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-type MsgUpdateAirdropEntry struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id      uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
-	Address string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
-	Amount  uint64 `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
-}
-
-func (m *MsgUpdateAirdropEntry) Reset()         { *m = MsgUpdateAirdropEntry{} }
-func (m *MsgUpdateAirdropEntry) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateAirdropEntry) ProtoMessage()    {}
-func (*MsgUpdateAirdropEntry) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1316949aeac1227b, []int{8}
-}
-func (m *MsgUpdateAirdropEntry) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgUpdateAirdropEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgUpdateAirdropEntry.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgUpdateAirdropEntry) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateAirdropEntry.Merge(m, src)
-}
-func (m *MsgUpdateAirdropEntry) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgUpdateAirdropEntry) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateAirdropEntry.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgUpdateAirdropEntry proto.InternalMessageInfo
-
-func (m *MsgUpdateAirdropEntry) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgUpdateAirdropEntry) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *MsgUpdateAirdropEntry) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
-func (m *MsgUpdateAirdropEntry) GetAmount() uint64 {
-	if m != nil {
-		return m.Amount
-	}
-	return 0
-}
-
-type MsgUpdateAirdropEntryResponse struct {
-}
-
-func (m *MsgUpdateAirdropEntryResponse) Reset()         { *m = MsgUpdateAirdropEntryResponse{} }
-func (m *MsgUpdateAirdropEntryResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateAirdropEntryResponse) ProtoMessage()    {}
-func (*MsgUpdateAirdropEntryResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1316949aeac1227b, []int{9}
-}
-func (m *MsgUpdateAirdropEntryResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgUpdateAirdropEntryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgUpdateAirdropEntryResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgUpdateAirdropEntryResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateAirdropEntryResponse.Merge(m, src)
-}
-func (m *MsgUpdateAirdropEntryResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgUpdateAirdropEntryResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateAirdropEntryResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgUpdateAirdropEntryResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddAirdropEntriesResponse proto.InternalMessageInfo
 
 type MsgDeleteAirdropEntry struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
@@ -587,7 +475,7 @@ func (m *MsgDeleteAirdropEntry) Reset()         { *m = MsgDeleteAirdropEntry{} }
 func (m *MsgDeleteAirdropEntry) String() string { return proto.CompactTextString(m) }
 func (*MsgDeleteAirdropEntry) ProtoMessage()    {}
 func (*MsgDeleteAirdropEntry) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1316949aeac1227b, []int{10}
+	return fileDescriptor_1316949aeac1227b, []int{8}
 }
 func (m *MsgDeleteAirdropEntry) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -637,7 +525,7 @@ func (m *MsgDeleteAirdropEntryResponse) Reset()         { *m = MsgDeleteAirdropE
 func (m *MsgDeleteAirdropEntryResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgDeleteAirdropEntryResponse) ProtoMessage()    {}
 func (*MsgDeleteAirdropEntryResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1316949aeac1227b, []int{11}
+	return fileDescriptor_1316949aeac1227b, []int{9}
 }
 func (m *MsgDeleteAirdropEntryResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -673,10 +561,8 @@ func init() {
 	proto.RegisterType((*MsgCreateAirdropCampaignResponse)(nil), "chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaignResponse")
 	proto.RegisterType((*MsgAddMissionToAidropCampaign)(nil), "chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign")
 	proto.RegisterType((*MsgAddMissionToAidropCampaignResponse)(nil), "chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaignResponse")
-	proto.RegisterType((*MsgCreateAirdropEntry)(nil), "chain4energy.c4echain.cfeairdrop.MsgCreateAirdropEntry")
-	proto.RegisterType((*MsgCreateAirdropEntryResponse)(nil), "chain4energy.c4echain.cfeairdrop.MsgCreateAirdropEntryResponse")
-	proto.RegisterType((*MsgUpdateAirdropEntry)(nil), "chain4energy.c4echain.cfeairdrop.MsgUpdateAirdropEntry")
-	proto.RegisterType((*MsgUpdateAirdropEntryResponse)(nil), "chain4energy.c4echain.cfeairdrop.MsgUpdateAirdropEntryResponse")
+	proto.RegisterType((*MsgAddAirdropEntries)(nil), "chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntries")
+	proto.RegisterType((*MsgAddAirdropEntriesResponse)(nil), "chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntriesResponse")
 	proto.RegisterType((*MsgDeleteAirdropEntry)(nil), "chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntry")
 	proto.RegisterType((*MsgDeleteAirdropEntryResponse)(nil), "chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntryResponse")
 }
@@ -684,56 +570,55 @@ func init() {
 func init() { proto.RegisterFile("cfeairdrop/tx.proto", fileDescriptor_1316949aeac1227b) }
 
 var fileDescriptor_1316949aeac1227b = []byte{
-	// 776 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xcf, 0x4e, 0xdb, 0x4c,
-	0x10, 0x8f, 0x93, 0x10, 0xc8, 0xe4, 0x83, 0xef, 0xfb, 0x16, 0xa8, 0xd2, 0x48, 0x38, 0x91, 0xa5,
-	0xb6, 0xa8, 0x12, 0xb6, 0x44, 0x23, 0x55, 0xe2, 0x82, 0x12, 0xe8, 0x1f, 0x2a, 0xa5, 0xaa, 0x2c,
-	0x7a, 0xe9, 0x25, 0x32, 0xde, 0xc5, 0xac, 0x88, 0xbd, 0x96, 0xd7, 0x29, 0xe4, 0x25, 0xaa, 0xde,
-	0xda, 0x27, 0xe8, 0xb3, 0x70, 0xe4, 0x58, 0xf5, 0x90, 0x56, 0xa1, 0x4f, 0x80, 0xd4, 0x7b, 0xe5,
-	0xf5, 0x3a, 0x98, 0x26, 0xa1, 0x2e, 0x3d, 0x65, 0x67, 0x66, 0x7f, 0x33, 0x3f, 0xcf, 0x6f, 0x67,
-	0x00, 0x96, 0xed, 0x43, 0x62, 0xd1, 0x00, 0x07, 0xcc, 0x37, 0xc2, 0x53, 0xdd, 0x0f, 0x58, 0xc8,
-	0x50, 0xc3, 0x3e, 0xb2, 0xa8, 0xd7, 0x24, 0x1e, 0x09, 0x9c, 0x81, 0x6e, 0x37, 0x89, 0xb0, 0xf5,
-	0xab, 0xab, 0x35, 0xd5, 0x61, 0xcc, 0xe9, 0x11, 0x43, 0xdc, 0x3f, 0xe8, 0x1f, 0x1a, 0xb8, 0x1f,
-	0x58, 0x21, 0x65, 0x5e, 0x9c, 0xa1, 0xb6, 0xe2, 0x30, 0x87, 0x89, 0xa3, 0x11, 0x9d, 0xa4, 0x57,
-	0x4d, 0x15, 0x93, 0xbf, 0x5d, 0xe2, 0x85, 0xc1, 0x20, 0x8e, 0x6b, 0x18, 0x16, 0x3a, 0xdc, 0xd9,
-	0xe9, 0x59, 0xd4, 0x45, 0x55, 0x98, 0xb7, 0xa3, 0x03, 0x09, 0xaa, 0x4a, 0x43, 0x59, 0x2f, 0x9b,
-	0x89, 0x89, 0xea, 0x50, 0xb1, 0x2d, 0xd7, 0xb7, 0xa8, 0xe3, 0x75, 0x29, 0xae, 0xe6, 0x45, 0x14,
-	0x12, 0xd7, 0x1e, 0x46, 0x6b, 0x00, 0x2e, 0xe5, 0x9c, 0x32, 0x11, 0x2f, 0x88, 0x78, 0x59, 0x7a,
-	0xf6, 0xb0, 0x86, 0xe0, 0xbf, 0xa4, 0x8a, 0x49, 0xb8, 0xcf, 0x3c, 0x4e, 0xb4, 0x51, 0x1e, 0xaa,
-	0x91, 0x33, 0x20, 0x56, 0x48, 0x5a, 0x31, 0xb5, 0x1d, 0x99, 0x11, 0xad, 0xc0, 0x1c, 0x3b, 0xf1,
-	0xc6, 0x44, 0x62, 0x03, 0x21, 0x28, 0x7a, 0x96, 0x4b, 0x64, 0x7d, 0x71, 0x46, 0x0d, 0xa8, 0x60,
-	0xc2, 0xed, 0x80, 0xfa, 0x51, 0x2f, 0x64, 0xe9, 0xb4, 0x0b, 0x35, 0x01, 0x78, 0x68, 0x05, 0x61,
-	0x37, 0xa4, 0x2e, 0xa9, 0x16, 0x1b, 0xca, 0x7a, 0xa1, 0xbd, 0x7a, 0x39, 0xac, 0xff, 0x3f, 0xb0,
-	0xdc, 0xde, 0x96, 0x76, 0x15, 0xd3, 0xcc, 0xb2, 0x30, 0xf6, 0xa9, 0x4b, 0x90, 0x0e, 0x0b, 0xc4,
-	0xc3, 0x31, 0x66, 0x4e, 0x60, 0x96, 0x2f, 0x87, 0xf5, 0x7f, 0x63, 0x4c, 0x12, 0xd1, 0xcc, 0x79,
-	0xe2, 0x61, 0x71, 0xff, 0x39, 0x2c, 0xf6, 0x98, 0x7d, 0xdc, 0xf7, 0xbb, 0x3e, 0x09, 0x28, 0xc3,
-	0xd5, 0x52, 0x43, 0x59, 0xaf, 0x6c, 0xde, 0xd5, 0x63, 0xd9, 0xf4, 0x44, 0x36, 0x7d, 0x57, 0xca,
-	0xd6, 0x5e, 0x38, 0x1b, 0xd6, 0x73, 0x1f, 0xbf, 0xd6, 0x15, 0xf3, 0x9f, 0x18, 0xf9, 0x4a, 0x00,
-	0xd1, 0x0b, 0x58, 0x7a, 0x4b, 0x78, 0x48, 0x3d, 0x27, 0x49, 0x35, 0x9f, 0x3d, 0xd5, 0xa2, 0x84,
-	0xc6, 0xb9, 0x34, 0x0d, 0x1a, 0xb3, 0x7a, 0x3c, 0x16, 0xe2, 0x87, 0x02, 0x6b, 0x1d, 0xee, 0xb4,
-	0x30, 0xee, 0xc4, 0x82, 0xed, 0xb3, 0x16, 0xcd, 0xa0, 0x86, 0x0a, 0xa9, 0x17, 0x20, 0x34, 0x29,
-	0x5e, 0x7b, 0x13, 0x89, 0x5a, 0x85, 0xd9, 0x6a, 0x15, 0x27, 0xd5, 0x6a, 0x40, 0x45, 0xbe, 0x9b,
-	0xfd, 0x81, 0x1f, 0xb7, 0xbe, 0x6c, 0xa6, 0x5d, 0xe8, 0x29, 0x94, 0x4e, 0x08, 0x75, 0x8e, 0x42,
-	0xd1, 0xe2, 0x72, 0x5b, 0x8f, 0x3e, 0xfe, 0xcb, 0xb0, 0x7e, 0xdf, 0xa1, 0xe1, 0x51, 0xff, 0x40,
-	0xb7, 0x99, 0x6b, 0xd8, 0x8c, 0xbb, 0x8c, 0xcb, 0x9f, 0x0d, 0x8e, 0x8f, 0x8d, 0x70, 0xe0, 0x13,
-	0xae, 0xef, 0x12, 0xdb, 0x94, 0x68, 0xed, 0x01, 0xdc, 0xbb, 0xf1, 0xb3, 0xc7, 0x0d, 0xb2, 0x61,
-	0xf5, 0xd7, 0x26, 0x3e, 0x89, 0x46, 0x48, 0x0c, 0x4c, 0xe4, 0x65, 0x57, 0x03, 0x13, 0x9b, 0x51,
-	0xc4, 0xc2, 0x38, 0x20, 0x9c, 0xcb, 0xc7, 0x9a, 0x98, 0xe8, 0x0e, 0x94, 0x2c, 0x97, 0xf5, 0xbd,
-	0x50, 0xf4, 0xa5, 0x68, 0x4a, 0x4b, 0x33, 0x84, 0x08, 0x93, 0x45, 0x12, 0x16, 0x68, 0x09, 0xf2,
-	0x14, 0x8b, 0x3a, 0x45, 0x33, 0x4f, 0xb1, 0xc6, 0x05, 0xab, 0xd7, 0x3e, 0xce, 0xce, 0x2a, 0x4e,
-	0x91, 0x4f, 0x52, 0xa4, 0x59, 0x16, 0x66, 0xb1, 0x2c, 0x5e, 0x63, 0x59, 0x17, 0x2c, 0x27, 0x8b,
-	0x8e, 0x7b, 0xd5, 0x12, 0xac, 0x76, 0x49, 0x8f, 0xdc, 0x96, 0x95, 0xac, 0x31, 0x99, 0x22, 0xa9,
-	0xb1, 0xf9, 0xbd, 0x04, 0x85, 0x0e, 0x77, 0x90, 0x03, 0x73, 0xf1, 0xe2, 0x7a, 0xa8, 0xff, 0x6e,
-	0x7b, 0xea, 0xc9, 0xfa, 0xa9, 0x6d, 0x66, 0xbf, 0x3b, 0x6e, 0xfd, 0x07, 0x05, 0x56, 0xa7, 0xef,
-	0xa9, 0xad, 0x6c, 0xd9, 0xa6, 0x61, 0x6b, 0xed, 0xdb, 0x63, 0xc7, 0xcc, 0x3e, 0x29, 0x50, 0xbb,
-	0x61, 0x70, 0xb7, 0x33, 0x95, 0x98, 0x9d, 0xa0, 0xf6, 0xec, 0x2f, 0x13, 0x8c, 0x89, 0xbe, 0x53,
-	0x00, 0x4d, 0x99, 0xa0, 0xc7, 0x7f, 0xde, 0x03, 0x01, 0xac, 0x6d, 0xdf, 0x12, 0x78, 0x8d, 0xd0,
-	0x94, 0xe1, 0xc9, 0x46, 0x68, 0x12, 0x98, 0x91, 0xd0, 0xec, 0xc9, 0x11, 0x84, 0xa6, 0xcc, 0x4d,
-	0x36, 0x42, 0x93, 0xc0, 0x8c, 0x84, 0x66, 0x8f, 0x59, 0xfb, 0xe5, 0xd9, 0x48, 0x55, 0xce, 0x47,
-	0xaa, 0xf2, 0x6d, 0xa4, 0x2a, 0xef, 0x2f, 0xd4, 0xdc, 0xf9, 0x85, 0x9a, 0xfb, 0x7c, 0xa1, 0xe6,
-	0xde, 0x34, 0xd3, 0x9b, 0x36, 0x55, 0xc4, 0xb0, 0x9b, 0x64, 0x43, 0x38, 0x8c, 0x53, 0x23, 0xfd,
-	0x5f, 0x4e, 0xb4, 0x7b, 0x0f, 0x4a, 0xe2, 0xef, 0xd6, 0xa3, 0x9f, 0x01, 0x00, 0x00, 0xff, 0xff,
-	0x97, 0x76, 0x65, 0x55, 0x00, 0x09, 0x00, 0x00,
+	// 764 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xdd, 0x6a, 0xdb, 0x48,
+	0x14, 0xb6, 0xfc, 0x93, 0xc4, 0xc7, 0x1b, 0x67, 0x33, 0x49, 0x40, 0x2b, 0x36, 0xb2, 0x11, 0xec,
+	0xae, 0x59, 0x88, 0x04, 0x5e, 0xb3, 0x0b, 0xb9, 0xd8, 0x60, 0x27, 0xfb, 0x93, 0x05, 0x6f, 0x8b,
+	0x08, 0x14, 0x7a, 0x63, 0x14, 0x69, 0xa2, 0x0c, 0xb1, 0x34, 0x42, 0x23, 0x37, 0xf1, 0x33, 0x14,
+	0x4a, 0xef, 0xda, 0x07, 0x28, 0x79, 0x96, 0x5c, 0xe6, 0xb2, 0xf4, 0xc2, 0x2d, 0xce, 0x1b, 0xe4,
+	0x09, 0x8a, 0x47, 0x3f, 0x96, 0xb1, 0x9d, 0x88, 0xf4, 0x4a, 0x33, 0xe7, 0xcc, 0xf7, 0x9d, 0x33,
+	0xe7, 0x3b, 0x73, 0x10, 0x6c, 0x99, 0x67, 0xd8, 0x20, 0xbe, 0xe5, 0x53, 0x4f, 0x0b, 0xae, 0x54,
+	0xcf, 0xa7, 0x01, 0x45, 0x75, 0xf3, 0xdc, 0x20, 0x6e, 0x0b, 0xbb, 0xd8, 0xb7, 0x87, 0xaa, 0xd9,
+	0xc2, 0x7c, 0xaf, 0x4e, 0x8f, 0x4a, 0xb2, 0x4d, 0xa9, 0xdd, 0xc7, 0x1a, 0x3f, 0x7f, 0x3a, 0x38,
+	0xd3, 0xac, 0x81, 0x6f, 0x04, 0x84, 0xba, 0x21, 0x83, 0x24, 0xa6, 0x68, 0xa3, 0x6f, 0xe4, 0xd9,
+	0xb6, 0xa9, 0x4d, 0xf9, 0x52, 0x9b, 0xac, 0x42, 0xab, 0x62, 0xc1, 0x5a, 0x97, 0xd9, 0x87, 0x7d,
+	0x83, 0x38, 0x48, 0x84, 0x55, 0x73, 0xb2, 0xc0, 0xbe, 0x28, 0xd4, 0x85, 0x46, 0x59, 0x8f, 0xb7,
+	0xa8, 0x06, 0x15, 0xd3, 0x70, 0x3c, 0x83, 0xd8, 0x6e, 0x8f, 0x58, 0x62, 0x9e, 0x7b, 0x21, 0x36,
+	0x1d, 0x5b, 0x68, 0x17, 0xc0, 0x21, 0x8c, 0x11, 0xca, 0xfd, 0x05, 0xee, 0x2f, 0x47, 0x96, 0x63,
+	0x4b, 0x41, 0xf0, 0x7d, 0x1c, 0x45, 0xc7, 0xcc, 0xa3, 0x2e, 0xc3, 0xca, 0x38, 0x0f, 0xe2, 0xc4,
+	0xe8, 0x63, 0x23, 0xc0, 0xed, 0x30, 0xd5, 0xc3, 0x88, 0x11, 0x6d, 0x43, 0x89, 0x5e, 0xba, 0x49,
+	0x22, 0xe1, 0x06, 0x21, 0x28, 0xba, 0x86, 0x83, 0xa3, 0xf8, 0x7c, 0x8d, 0xea, 0x50, 0xb1, 0x30,
+	0x33, 0x7d, 0xe2, 0x4d, 0xaa, 0x10, 0x85, 0x4e, 0x9b, 0x50, 0x0b, 0x80, 0x05, 0x86, 0x1f, 0xf4,
+	0x02, 0xe2, 0x60, 0xb1, 0x58, 0x17, 0x1a, 0x85, 0xce, 0xce, 0xfd, 0xa8, 0xb6, 0x39, 0x34, 0x9c,
+	0xfe, 0xbe, 0x32, 0xf5, 0x29, 0x7a, 0x99, 0x6f, 0x4e, 0x88, 0x83, 0x91, 0x0a, 0x6b, 0xd8, 0xb5,
+	0x42, 0x4c, 0x89, 0x63, 0xb6, 0xee, 0x47, 0xb5, 0x8d, 0x10, 0x13, 0x7b, 0x14, 0x7d, 0x15, 0xbb,
+	0x16, 0x3f, 0xff, 0x2f, 0xac, 0xf7, 0xa9, 0x79, 0x31, 0xf0, 0x7a, 0x1e, 0xf6, 0x09, 0xb5, 0xc4,
+	0x95, 0xba, 0xd0, 0xa8, 0x34, 0x7f, 0x50, 0x43, 0xc1, 0xd4, 0x58, 0x30, 0xf5, 0x28, 0x12, 0xac,
+	0xb3, 0x76, 0x33, 0xaa, 0xe5, 0xde, 0x7f, 0xae, 0x09, 0xfa, 0x77, 0x21, 0xf2, 0x39, 0x07, 0xa2,
+	0xff, 0xa0, 0xfa, 0x0a, 0xb3, 0x80, 0xb8, 0x76, 0x4c, 0xb5, 0x9a, 0x9d, 0x6a, 0x3d, 0x82, 0x86,
+	0x5c, 0x8a, 0x02, 0xf5, 0x65, 0x35, 0x4e, 0x84, 0xf8, 0x90, 0x87, 0xdd, 0x2e, 0xb3, 0xdb, 0x96,
+	0xd5, 0x0d, 0x05, 0x3b, 0xa1, 0x6d, 0x92, 0x41, 0x0d, 0x19, 0x52, 0x1d, 0xc0, 0x35, 0x29, 0xce,
+	0xf4, 0x44, 0xac, 0x56, 0x61, 0xb9, 0x5a, 0xc5, 0x79, 0xb5, 0x9e, 0x41, 0x25, 0xea, 0x9b, 0x93,
+	0xa1, 0x17, 0x96, 0xbe, 0xda, 0xdc, 0x53, 0x1f, 0x7b, 0x18, 0x6a, 0x77, 0x0a, 0xd2, 0xd3, 0x0c,
+	0xe8, 0x6f, 0x58, 0xb9, 0xc4, 0xc4, 0x3e, 0x0f, 0xb8, 0x22, 0xe5, 0x8e, 0x3a, 0xa9, 0xd5, 0xa7,
+	0x51, 0xed, 0x67, 0x9b, 0x04, 0xe7, 0x83, 0x53, 0xd5, 0xa4, 0x8e, 0x66, 0x52, 0xe6, 0x50, 0x16,
+	0x7d, 0xf6, 0x98, 0x75, 0xa1, 0x05, 0x43, 0x0f, 0x33, 0xf5, 0x08, 0x9b, 0x7a, 0x84, 0x56, 0x7e,
+	0x81, 0x9f, 0x1e, 0xac, 0x52, 0x52, 0xcf, 0x6b, 0x01, 0xb6, 0xc3, 0x93, 0x51, 0xc5, 0xff, 0x72,
+	0x03, 0x9f, 0x60, 0xb6, 0xa4, 0x8c, 0x0b, 0xde, 0xd6, 0x6c, 0x1d, 0x5f, 0xc0, 0x46, 0x74, 0xc9,
+	0x1e, 0x0e, 0x99, 0xc4, 0x42, 0xbd, 0xd0, 0xa8, 0x34, 0xd5, 0xc7, 0xab, 0x92, 0xca, 0x60, 0xa8,
+	0x57, 0x8d, 0x99, 0x7c, 0x14, 0x19, 0x7e, 0x5c, 0x94, 0x67, 0x72, 0x91, 0x36, 0xec, 0x74, 0x99,
+	0x7d, 0x84, 0xfb, 0x38, 0x69, 0x1e, 0x4e, 0xc4, 0x07, 0xc5, 0xa4, 0xa5, 0xe8, 0x74, 0x50, 0x84,
+	0x5b, 0x54, 0x85, 0x7c, 0x72, 0x87, 0x3c, 0xb1, 0x94, 0x1a, 0x6f, 0xad, 0x79, 0x8a, 0x38, 0x46,
+	0xf3, 0xb6, 0x04, 0x85, 0x2e, 0xb3, 0x91, 0x0d, 0xa5, 0x70, 0x08, 0xfd, 0x9a, 0x41, 0xea, 0x68,
+	0x94, 0x48, 0xcd, 0xec, 0x67, 0xe3, 0x80, 0xe8, 0x9d, 0x00, 0x3b, 0x8b, 0x67, 0xce, 0x7e, 0x36,
+	0xb6, 0x45, 0x58, 0xa9, 0xf3, 0x74, 0x6c, 0x92, 0xd9, 0xb5, 0x00, 0xd2, 0x03, 0x8f, 0xf0, 0x20,
+	0x53, 0x88, 0xe5, 0x04, 0xd2, 0x3f, 0xdf, 0x48, 0x90, 0x24, 0xfa, 0x5a, 0x80, 0xcd, 0xf9, 0xee,
+	0xfe, 0x3d, 0x2b, 0xfd, 0x2c, 0x4e, 0xfa, 0xf3, 0x69, 0xb8, 0x24, 0x9b, 0x37, 0x02, 0xa0, 0x05,
+	0x3d, 0xfa, 0x47, 0x26, 0xda, 0x79, 0xa0, 0x74, 0xf0, 0x44, 0x60, 0x9c, 0x50, 0xe7, 0xff, 0x9b,
+	0xb1, 0x2c, 0xdc, 0x8e, 0x65, 0xe1, 0xcb, 0x58, 0x16, 0xde, 0xde, 0xc9, 0xb9, 0xdb, 0x3b, 0x39,
+	0xf7, 0xf1, 0x4e, 0xce, 0xbd, 0x6c, 0xa5, 0x47, 0x4e, 0x2a, 0x88, 0x66, 0xb6, 0xf0, 0x1e, 0x37,
+	0x68, 0x57, 0x5a, 0xfa, 0xbf, 0x60, 0x32, 0x84, 0x4e, 0x57, 0xf8, 0xbc, 0xff, 0xed, 0x6b, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x10, 0x00, 0x3b, 0x22, 0x32, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -751,8 +636,7 @@ type MsgClient interface {
 	Claim(ctx context.Context, in *MsgClaim, opts ...grpc.CallOption) (*MsgClaimResponse, error)
 	CreateAirdropCampaign(ctx context.Context, in *MsgCreateAirdropCampaign, opts ...grpc.CallOption) (*MsgCreateAirdropCampaignResponse, error)
 	AddMissionToAidropCampaign(ctx context.Context, in *MsgAddMissionToAidropCampaign, opts ...grpc.CallOption) (*MsgAddMissionToAidropCampaignResponse, error)
-	CreateAirdropEntry(ctx context.Context, in *MsgCreateAirdropEntry, opts ...grpc.CallOption) (*MsgCreateAirdropEntryResponse, error)
-	UpdateAirdropEntry(ctx context.Context, in *MsgUpdateAirdropEntry, opts ...grpc.CallOption) (*MsgUpdateAirdropEntryResponse, error)
+	AddAirdropEntries(ctx context.Context, in *MsgAddAirdropEntries, opts ...grpc.CallOption) (*MsgAddAirdropEntriesResponse, error)
 	DeleteAirdropEntry(ctx context.Context, in *MsgDeleteAirdropEntry, opts ...grpc.CallOption) (*MsgDeleteAirdropEntryResponse, error)
 }
 
@@ -791,18 +675,9 @@ func (c *msgClient) AddMissionToAidropCampaign(ctx context.Context, in *MsgAddMi
 	return out, nil
 }
 
-func (c *msgClient) CreateAirdropEntry(ctx context.Context, in *MsgCreateAirdropEntry, opts ...grpc.CallOption) (*MsgCreateAirdropEntryResponse, error) {
-	out := new(MsgCreateAirdropEntryResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Msg/CreateAirdropEntry", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) UpdateAirdropEntry(ctx context.Context, in *MsgUpdateAirdropEntry, opts ...grpc.CallOption) (*MsgUpdateAirdropEntryResponse, error) {
-	out := new(MsgUpdateAirdropEntryResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Msg/UpdateAirdropEntry", in, out, opts...)
+func (c *msgClient) AddAirdropEntries(ctx context.Context, in *MsgAddAirdropEntries, opts ...grpc.CallOption) (*MsgAddAirdropEntriesResponse, error) {
+	out := new(MsgAddAirdropEntriesResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Msg/AddAirdropEntries", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -823,8 +698,7 @@ type MsgServer interface {
 	Claim(context.Context, *MsgClaim) (*MsgClaimResponse, error)
 	CreateAirdropCampaign(context.Context, *MsgCreateAirdropCampaign) (*MsgCreateAirdropCampaignResponse, error)
 	AddMissionToAidropCampaign(context.Context, *MsgAddMissionToAidropCampaign) (*MsgAddMissionToAidropCampaignResponse, error)
-	CreateAirdropEntry(context.Context, *MsgCreateAirdropEntry) (*MsgCreateAirdropEntryResponse, error)
-	UpdateAirdropEntry(context.Context, *MsgUpdateAirdropEntry) (*MsgUpdateAirdropEntryResponse, error)
+	AddAirdropEntries(context.Context, *MsgAddAirdropEntries) (*MsgAddAirdropEntriesResponse, error)
 	DeleteAirdropEntry(context.Context, *MsgDeleteAirdropEntry) (*MsgDeleteAirdropEntryResponse, error)
 }
 
@@ -841,11 +715,8 @@ func (*UnimplementedMsgServer) CreateAirdropCampaign(ctx context.Context, req *M
 func (*UnimplementedMsgServer) AddMissionToAidropCampaign(ctx context.Context, req *MsgAddMissionToAidropCampaign) (*MsgAddMissionToAidropCampaignResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddMissionToAidropCampaign not implemented")
 }
-func (*UnimplementedMsgServer) CreateAirdropEntry(ctx context.Context, req *MsgCreateAirdropEntry) (*MsgCreateAirdropEntryResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateAirdropEntry not implemented")
-}
-func (*UnimplementedMsgServer) UpdateAirdropEntry(ctx context.Context, req *MsgUpdateAirdropEntry) (*MsgUpdateAirdropEntryResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateAirdropEntry not implemented")
+func (*UnimplementedMsgServer) AddAirdropEntries(ctx context.Context, req *MsgAddAirdropEntries) (*MsgAddAirdropEntriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddAirdropEntries not implemented")
 }
 func (*UnimplementedMsgServer) DeleteAirdropEntry(ctx context.Context, req *MsgDeleteAirdropEntry) (*MsgDeleteAirdropEntryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAirdropEntry not implemented")
@@ -909,38 +780,20 @@ func _Msg_AddMissionToAidropCampaign_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_CreateAirdropEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateAirdropEntry)
+func _Msg_AddAirdropEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddAirdropEntries)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).CreateAirdropEntry(ctx, in)
+		return srv.(MsgServer).AddAirdropEntries(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeairdrop.Msg/CreateAirdropEntry",
+		FullMethod: "/chain4energy.c4echain.cfeairdrop.Msg/AddAirdropEntries",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateAirdropEntry(ctx, req.(*MsgCreateAirdropEntry))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_UpdateAirdropEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateAirdropEntry)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).UpdateAirdropEntry(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeairdrop.Msg/UpdateAirdropEntry",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateAirdropEntry(ctx, req.(*MsgUpdateAirdropEntry))
+		return srv.(MsgServer).AddAirdropEntries(ctx, req.(*MsgAddAirdropEntries))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -980,12 +833,8 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_AddMissionToAidropCampaign_Handler,
 		},
 		{
-			MethodName: "CreateAirdropEntry",
-			Handler:    _Msg_CreateAirdropEntry_Handler,
-		},
-		{
-			MethodName: "UpdateAirdropEntry",
-			Handler:    _Msg_UpdateAirdropEntry_Handler,
+			MethodName: "AddAirdropEntries",
+			Handler:    _Msg_AddAirdropEntries_Handler,
 		},
 		{
 			MethodName: "DeleteAirdropEntry",
@@ -1016,10 +865,10 @@ func (m *MsgClaim) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Id)))
+	if len(m.MissionId) > 0 {
+		i -= len(m.MissionId)
+		copy(dAtA[i:], m.MissionId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.MissionId)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1186,12 +1035,10 @@ func (m *MsgAddMissionToAidropCampaign) MarshalToSizedBuffer(dAtA []byte) (int, 
 	}
 	i--
 	dAtA[i] = 0x32
-	if len(m.MissionType) > 0 {
-		i -= len(m.MissionType)
-		copy(dAtA[i:], m.MissionType)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.MissionType)))
+	if m.MissionType != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.MissionType))
 		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x28
 	}
 	if len(m.Description) > 0 {
 		i -= len(m.Description)
@@ -1245,7 +1092,7 @@ func (m *MsgAddMissionToAidropCampaignResponse) MarshalToSizedBuffer(dAtA []byte
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateAirdropEntry) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddAirdropEntries) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1255,114 +1102,46 @@ func (m *MsgCreateAirdropEntry) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateAirdropEntry) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddAirdropEntries) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateAirdropEntry) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddAirdropEntries) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Amount != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Amount))
-		i--
-		dAtA[i] = 0x18
+	if len(m.AirdropEntries) > 0 {
+		for iNdEx := len(m.AirdropEntries) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AirdropEntries[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
 	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgCreateAirdropEntryResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgCreateAirdropEntryResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgCreateAirdropEntryResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgUpdateAirdropEntry) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgUpdateAirdropEntry) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgUpdateAirdropEntry) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Amount != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Amount))
-		i--
-		dAtA[i] = 0x20
-	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+	if m.CampaignId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.CampaignId))
 		i--
 		dAtA[i] = 0x10
 	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateAirdropEntryResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddAirdropEntriesResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1372,12 +1151,12 @@ func (m *MsgUpdateAirdropEntryResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateAirdropEntryResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddAirdropEntriesResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateAirdropEntryResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddAirdropEntriesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1468,7 +1247,7 @@ func (m *MsgClaim) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Id)
+	l = len(m.MissionId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1545,9 +1324,8 @@ func (m *MsgAddMissionToAidropCampaign) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.MissionType)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.MissionType != 0 {
+		n += 1 + sovTx(uint64(m.MissionType))
 	}
 	l = m.Weight.Size()
 	n += 1 + l + sovTx(uint64(l))
@@ -1563,62 +1341,29 @@ func (m *MsgAddMissionToAidropCampaignResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateAirdropEntry) Size() (n int) {
+func (m *MsgAddAirdropEntries) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Creator)
+	l = len(m.Owner)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Address)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovTx(uint64(m.CampaignId))
 	}
-	if m.Amount != 0 {
-		n += 1 + sovTx(uint64(m.Amount))
+	if len(m.AirdropEntries) > 0 {
+		for _, e := range m.AirdropEntries {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
 	}
 	return n
 }
 
-func (m *MsgCreateAirdropEntryResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
-	}
-	return n
-}
-
-func (m *MsgUpdateAirdropEntry) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
-	}
-	l = len(m.Address)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.Amount != 0 {
-		n += 1 + sovTx(uint64(m.Amount))
-	}
-	return n
-}
-
-func (m *MsgUpdateAirdropEntryResponse) Size() (n int) {
+func (m *MsgAddAirdropEntriesResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1753,7 +1498,7 @@ func (m *MsgClaim) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MissionId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1781,7 +1526,7 @@ func (m *MsgClaim) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Id = string(dAtA[iNdEx:postIndex])
+			m.MissionId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2299,10 +2044,10 @@ func (m *MsgAddMissionToAidropCampaign) Unmarshal(dAtA []byte) error {
 			m.Description = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MissionType", wireType)
 			}
-			var stringLen uint64
+			m.MissionType = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2312,24 +2057,11 @@ func (m *MsgAddMissionToAidropCampaign) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.MissionType |= MissionType(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.MissionType = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Weight", wireType)
@@ -2435,7 +2167,7 @@ func (m *MsgAddMissionToAidropCampaignResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateAirdropEntry) Unmarshal(dAtA []byte) error {
+func (m *MsgAddAirdropEntries) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2458,15 +2190,15 @@ func (m *MsgCreateAirdropEntry) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateAirdropEntry: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddAirdropEntries: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateAirdropEntry: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddAirdropEntries: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2494,215 +2226,13 @@ func (m *MsgCreateAirdropEntry) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
-			}
-			m.Amount = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Amount |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgCreateAirdropEntryResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateAirdropEntryResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateAirdropEntryResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgUpdateAirdropEntry) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateAirdropEntry: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateAirdropEntry: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
+			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			m.Id = 0
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2712,16 +2242,16 @@ func (m *MsgUpdateAirdropEntry) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AirdropEntries", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2731,43 +2261,26 @@ func (m *MsgUpdateAirdropEntry) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Address = string(dAtA[iNdEx:postIndex])
+			m.AirdropEntries = append(m.AirdropEntries, &AirdropEntry{})
+			if err := m.AirdropEntries[len(m.AirdropEntries)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
-			}
-			m.Amount = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Amount |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -2789,7 +2302,7 @@ func (m *MsgUpdateAirdropEntry) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateAirdropEntryResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAddAirdropEntriesResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2812,10 +2325,10 @@ func (m *MsgUpdateAirdropEntryResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateAirdropEntryResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddAirdropEntriesResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateAirdropEntryResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddAirdropEntriesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

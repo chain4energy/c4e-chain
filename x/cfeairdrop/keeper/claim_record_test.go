@@ -17,8 +17,8 @@ import (
 // Prevent strconv unused error
 // var _ = strconv.IntSize
 
-func createNClaimRecord(keeper *keeper.Keeper, ctx sdk.Context, numOfClaimRecords int, numOfCampaignRecords int, addClaimAddr bool, addCompletedMissions bool) []types.ClaimRecord {
-	claimRecords := make([]types.ClaimRecord, numOfClaimRecords)
+func createNClaimRecord(keeper *keeper.Keeper, ctx sdk.Context, numOfClaimRecords int, numOfCampaignRecords int, addClaimAddr bool, addCompletedMissions bool) []types.UserAirdropEntries {
+	claimRecords := make([]types.UserAirdropEntries, numOfClaimRecords)
 	for i := range claimRecords {
 		claimRecords[i].Address = strconv.Itoa(i)
 		if addClaimAddr {
@@ -33,7 +33,7 @@ func createNClaimRecord(keeper *keeper.Keeper, ctx sdk.Context, numOfClaimRecord
 			}
 
 		}
-		keeper.SetClaimRecord(ctx, claimRecords[i])
+		keeper.SetUserAirdropEntries(ctx, claimRecords[i])
 	}
 	return claimRecords
 }
@@ -42,7 +42,7 @@ func TestClaimRecordGet(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)
 	items := createNClaimRecord(keeper, ctx, 10, 0, false, false)
 	for _, item := range items {
-		rst, found := keeper.GetClaimRecord(ctx,
+		rst, found := keeper.GetUserAirdropEntries(ctx,
 			item.Address,
 		)
 		require.True(t, found)
@@ -54,7 +54,7 @@ func TestClaimRecordGet(t *testing.T) {
 
 	items = createNClaimRecord(keeper, ctx, 10, 10, false, false)
 	for _, item := range items {
-		rst, found := keeper.GetClaimRecord(ctx,
+		rst, found := keeper.GetUserAirdropEntries(ctx,
 			item.Address,
 		)
 		require.True(t, found)
@@ -66,7 +66,7 @@ func TestClaimRecordGet(t *testing.T) {
 
 	items = createNClaimRecord(keeper, ctx, 10, 10, true, false)
 	for _, item := range items {
-		rst, found := keeper.GetClaimRecord(ctx,
+		rst, found := keeper.GetUserAirdropEntries(ctx,
 			item.Address,
 		)
 		require.True(t, found)
@@ -78,7 +78,7 @@ func TestClaimRecordGet(t *testing.T) {
 
 	items = createNClaimRecord(keeper, ctx, 10, 10, false, true)
 	for _, item := range items {
-		rst, found := keeper.GetClaimRecord(ctx,
+		rst, found := keeper.GetUserAirdropEntries(ctx,
 			item.Address,
 		)
 		require.True(t, found)
@@ -95,7 +95,7 @@ func TestClaimRecordRemove(t *testing.T) {
 		keeper.RemoveClaimRecord(ctx,
 			item.Address,
 		)
-		_, found := keeper.GetClaimRecord(ctx,
+		_, found := keeper.GetUserAirdropEntries(ctx,
 			item.Address,
 		)
 		require.False(t, found)
@@ -107,13 +107,13 @@ func TestClaimRecordGetAll(t *testing.T) {
 	items := createNClaimRecord(keeper, ctx, 10, 0, false, false)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllClaimRecord(ctx)),
+		nullify.Fill(keeper.GetUserAirdropEntries(ctx)),
 	)
 
 	items = createNClaimRecord(keeper, ctx, 10, 10, true, true)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllClaimRecord(ctx)),
+		nullify.Fill(keeper.GetUserAirdropEntries(ctx)),
 	)
 }
 

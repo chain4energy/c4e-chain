@@ -33,14 +33,14 @@ func TestClaimRecordQuerySingle(t *testing.T) {
 			request: &types.QueryClaimRecordRequest{
 				Address: msgs[0].Address,
 			},
-			response: &types.QueryClaimRecordResponse{ClaimRecord: msgs[0]},
+			response: &types.QueryClaimRecordResponse{UserAirdropEntries: msgs[0]},
 		},
 		{
 			desc: "Second",
 			request: &types.QueryClaimRecordRequest{
 				Address: msgs[1].Address,
 			},
-			response: &types.QueryClaimRecordResponse{ClaimRecord: msgs[1]},
+			response: &types.QueryClaimRecordResponse{UserAirdropEntries: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
@@ -55,7 +55,7 @@ func TestClaimRecordQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.ClaimRecord(wctx, tc.request)
+			response, err := keeper.UserAirdropEntries(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -89,10 +89,10 @@ func TestClaimRecordQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.ClaimRecords(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClaimRecord), step)
+			require.LessOrEqual(t, len(resp.UserAirdropEntries), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClaimRecord),
+				nullify.Fill(resp.UserAirdropEntries),
 			)
 		}
 	})
@@ -102,10 +102,10 @@ func TestClaimRecordQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.ClaimRecords(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.ClaimRecord), step)
+			require.LessOrEqual(t, len(resp.UserAirdropEntries), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.ClaimRecord),
+				nullify.Fill(resp.UserAirdropEntries),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -116,7 +116,7 @@ func TestClaimRecordQueryPaginated(t *testing.T) {
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.ClaimRecord),
+			nullify.Fill(resp.UserAirdropEntries),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {

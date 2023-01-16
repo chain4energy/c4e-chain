@@ -23,15 +23,13 @@ var _ stakingtypes.StakingHooks = MissionDelegationHooks{}
 
 // BeforeDelegationCreated completes mission when a delegation is performed
 func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, _ sdk.ValAddress) {
-
 	missions := h.k.GetAllMission(ctx)
 	for _, mission := range missions {
 		// TODO error handling
-		if mission.Id == uint64(types.DELEGATION) {
+		if mission.MissionType == types.MissionDelegation {
 			_ = h.k.CompleteMission(ctx, mission.CampaignId, mission.Id, delAddr.String(), true)
 		}
 	}
-
 }
 
 // AfterValidatorCreated implements StakingHooks

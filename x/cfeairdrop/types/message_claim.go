@@ -13,7 +13,7 @@ func NewMsgClaim(claimer string, campaignId string, missionId string) *MsgClaim 
 	return &MsgClaim{
 		Claimer:    claimer,
 		CampaignId: campaignId,
-		Id:         missionId,
+		MissionId:  missionId,
 	}
 }
 

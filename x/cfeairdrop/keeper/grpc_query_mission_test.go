@@ -32,7 +32,7 @@ func TestMissionQuerySingle(t *testing.T) {
 			desc: "First",
 			request: &types.QueryMissionRequest{
 				CampaignId: msgs[0].CampaignId,
-				Id:         msgs[0].Id,
+				MissionId:  msgs[0].Id,
 			},
 			response: &types.QueryMissionResponse{Mission: msgs[0]},
 		},
@@ -40,7 +40,7 @@ func TestMissionQuerySingle(t *testing.T) {
 			desc: "Second",
 			request: &types.QueryMissionRequest{
 				CampaignId: msgs[1].CampaignId,
-				Id:         msgs[1].Id,
+				MissionId:  msgs[1].Id,
 			},
 			response: &types.QueryMissionResponse{Mission: msgs[1]},
 		},
@@ -48,7 +48,7 @@ func TestMissionQuerySingle(t *testing.T) {
 			desc: "KeyNotFound",
 			request: &types.QueryMissionRequest{
 				CampaignId: 100000,
-				Id:         100000,
+				MissionId:  100000,
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},

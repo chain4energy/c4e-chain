@@ -5,12 +5,12 @@ import "encoding/binary"
 var _ binary.ByteOrder
 
 const (
-	// ClaimRecordKeyPrefix is the prefix to retrieve all ClaimRecord
-	ClaimRecordKeyPrefix = "ClaimRecord/value/"
+	// ClaimRecordKeyPrefix is the prefix to retrieve all UserAirdropEntries
+	ClaimRecordKeyPrefix = "UserAirdropEntries/value/"
 )
 
-// ClaimRecordKey returns the store key to retrieve a ClaimRecord from the index fields
-func ClaimRecordKey(
+// UserAirdropEntriesKey returns the store key to retrieve a UserAirdropEntries from the index fields
+func UserAirdropEntriesKey(
 	address string,
 ) []byte {
 	var key []byte

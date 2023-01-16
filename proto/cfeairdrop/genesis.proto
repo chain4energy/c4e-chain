@@ -4,7 +4,6 @@ package chain4energy.c4echain.cfeairdrop;
 import "gogoproto/gogo.proto";
 import "cfeairdrop/params.proto";
 import "cfeairdrop/airdrop.proto";
-import "cfeairdrop/airdrop_entry.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
@@ -15,7 +14,7 @@ message GenesisState {
     (gogoproto.nullable) = false
   ];
   repeated Campaign campaigns = 2;
-  repeated ClaimRecord claimRecords = 3 [
+  repeated UserAirdropEntries user_airdrop_entries = 3 [
     (gogoproto.nullable) = false
   ];
   repeated InitialClaim initialClaims = 4 [
@@ -24,7 +23,9 @@ message GenesisState {
   repeated Mission missions = 5 [
     (gogoproto.nullable) = false
   ];
-  repeated AirdropEntry airdropEntryList = 6 [(gogoproto.nullable) = false];
+  repeated AirdropEntry airdropEntryList = 6 [
+    (gogoproto.nullable) = false
+  ];
   uint64 airdropEntryCount = 7;
   // this line is used by starport scaffolding # genesis/proto/state
 }

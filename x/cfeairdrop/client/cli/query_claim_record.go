@@ -58,7 +58,7 @@ func CmdShowClaimRecord() *cobra.Command {
 				Address: argIndex,
 			}
 
-			res, err := queryClient.ClaimRecord(context.Background(), params)
+			res, err := queryClient.UserAirdropEntries(context.Background(), params)
 			if err != nil {
 				return err
 			}

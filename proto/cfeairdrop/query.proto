@@ -6,7 +6,6 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cfeairdrop/params.proto";
 import "cfeairdrop/airdrop.proto";
-import "cfeairdrop/airdrop_entry.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
@@ -17,12 +16,12 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/c4e/airdrop/params";
   }
-  // Queries a ClaimRecord by index.
-	rpc ClaimRecord(QueryClaimRecordRequest) returns (QueryClaimRecordResponse) {
+  // Queries a UserAirdropEntries by index.
+	rpc UserAirdropEntries(QueryClaimRecordRequest) returns (QueryClaimRecordResponse) {
 		option (google.api.http).get = "/c4e/airdrop/claim_record/{address}";
 	}
 
-	// Queries a list of ClaimRecord items.
+	// Queries a list of UserAirdropEntries items.
 	rpc ClaimRecords(QueryClaimRecordsRequest) returns (QueryClaimRecordsResponse) {
 		option (google.api.http).get = "/c4e/airdrop/claim_record";
 	}
@@ -84,7 +83,7 @@ message QueryClaimRecordRequest {
 }
 
 message QueryClaimRecordResponse {
-	ClaimRecord claimRecord = 1 [
+	UserAirdropEntries userAirdropEntries = 1 [
 		(gogoproto.nullable) = false
 	];
 }
@@ -94,7 +93,7 @@ message QueryClaimRecordsRequest {
 }
 
 message QueryClaimRecordsResponse {
-	repeated ClaimRecord claimRecord = 1 [
+	repeated UserAirdropEntries usersAirdropEntries = 1 [
 		(gogoproto.nullable) = false
 	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;

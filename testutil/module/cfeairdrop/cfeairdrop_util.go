@@ -121,20 +121,20 @@ func (h *C4eAirdropUtils) AddCampaignRecords(ctx sdk.Context, srcAddress sdk.Acc
 	for _, amount := range campaignRecord {
 		sum = sum.Add(amount)
 	}
-	allRecordsBefore := h.helpeCfeairdropkeeper.GetAllClaimRecord(ctx)
+	allRecordsBefore := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx)
 	h.BankUtils.AddDefaultDenomCoinToAccount(ctx, sum, srcAddress)
 	srcBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, srcAddress)
 
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 
-	require.NoError(h.t, h.helpeCfeairdropkeeper.AddCampaignRecords(ctx, srcAddress, campaignId, campaignRecord))
+	require.NoError(h.t, h.helpeCfeairdropkeeper.AddAirdropEntries(ctx, srcAddress, campaignId, campaignRecord))
 
-	allRecords := h.helpeCfeairdropkeeper.GetAllClaimRecord(ctx)
+	allRecords := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx)
 	require.EqualValues(h.t, len(campaignRecord), len(allRecords))
 	for address, claimable := range campaignRecord {
-		claimRecord, found := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, address)
+		claimRecord, found := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, address)
 		require.True(h.t, found)
-		var recordBefore *cfeairdroptypes.ClaimRecord = nil
+		var recordBefore *cfeairdroptypes.UserAirdropEntries = nil
 		for _, before := range allRecordsBefore {
 			if before.Address == address {
 				recordBefore = &before
@@ -142,20 +142,20 @@ func (h *C4eAirdropUtils) AddCampaignRecords(ctx sdk.Context, srcAddress sdk.Acc
 			}
 		}
 		if recordBefore == nil {
-			require.EqualValues(h.t, 1, len(claimRecord.CampaignRecords))
+			require.EqualValues(h.t, 1, len(claimRecord.AirdropEntriesState))
 		} else {
-			require.EqualValues(h.t, len(recordBefore.CampaignRecords)+1, len(claimRecord.CampaignRecords))
+			require.EqualValues(h.t, len(recordBefore.AirdropEntriesState)+1, len(claimRecord.AirdropEntriesState))
 		}
 		require.EqualValues(h.t, address, claimRecord.Address)
 		require.EqualValues(h.t, "", claimRecord.ClaimAddress)
 		if recordBefore == nil {
-			require.EqualValues(h.t, campaignId, claimRecord.CampaignRecords[0].CampaignId)
-			require.True(h.t, claimable.Equal(claimRecord.CampaignRecords[0].Claimable))
-			require.EqualValues(h.t, 0, len(claimRecord.CampaignRecords[0].CompletedMissions))
+			require.EqualValues(h.t, campaignId, claimRecord.AirdropEntriesState[0].CampaignId)
+			require.True(h.t, claimable.Equal(claimRecord.AirdropEntriesState[0].Claimable))
+			require.EqualValues(h.t, 0, len(claimRecord.AirdropEntriesState[0].CompletedMissions))
 		} else {
-			expectedCaipaignRecords := append(recordBefore.CampaignRecords, &cfeairdroptypes.CampaignRecord{CampaignId: campaignId, Claimable: claimable, CompletedMissions: nil})
+			expectedCaipaignRecords := append(recordBefore.AirdropEntriesState, &cfeairdroptypes.CampaignRecord{CampaignId: campaignId, Claimable: claimable, CompletedMissions: nil})
 
-			require.ElementsMatch(h.t, expectedCaipaignRecords, claimRecord.CampaignRecords)
+			require.ElementsMatch(h.t, expectedCaipaignRecords, claimRecord.AirdropEntriesState)
 		}
 
 	}
@@ -172,15 +172,15 @@ func (h *C4eAirdropUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sd
 		}
 		h.BankUtils.AddDefaultDenomCoinToAccount(ctx, sum, srcAddress)
 	}
-	allRecordsBefore := h.helpeCfeairdropkeeper.GetAllClaimRecord(ctx)
+	allRecordsBefore := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx)
 
 	srcBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, srcAddress)
 
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 
-	require.EqualError(h.t, h.helpeCfeairdropkeeper.AddCampaignRecords(ctx, srcAddress, campaignId, campaignRecord), errorMessage)
+	require.EqualError(h.t, h.helpeCfeairdropkeeper.AddAirdropEntries(ctx, srcAddress, campaignId, campaignRecord), errorMessage)
 
-	allRecords := h.helpeCfeairdropkeeper.GetAllClaimRecord(ctx)
+	allRecords := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx)
 	require.ElementsMatch(h.t, allRecordsBefore, allRecords)
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBalance)
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance)
@@ -203,8 +203,8 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 	initialClaim, foundIc := h.helpeCfeairdropkeeper.GetInitialClaim(ctx, campaignId)
 	require.True(h.t, foundIc)
 
-	mission, _ := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, initialClaim.Id)
-	claimRecord, _ := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	mission, _ := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, initialClaim.MissionId)
+	claimRecord, _ := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 
 	expectedAmount := mission.Weight.MulInt(claimRecord.GetCampaignRecord(campaignId).Claimable).TruncateInt()
 
@@ -228,17 +228,17 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 
 	require.EqualValues(h.t, claimerAccountBefore, claimerAccount)
 
-	claimRecord, found := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecord, found := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.True(h.t, found)
 	camapaignRecord := claimRecord.GetCampaignRecord(campaignId)
 	require.NotNil(h.t, camapaignRecord)
-	require.ElementsMatch(h.t, []uint64{initialClaim.Id}, camapaignRecord.CompletedMissions)
-	require.ElementsMatch(h.t, []uint64{initialClaim.Id}, camapaignRecord.ClaimedMissions)
+	require.ElementsMatch(h.t, []uint64{initialClaim.MissionId}, camapaignRecord.CompletedMissions)
+	require.ElementsMatch(h.t, []uint64{initialClaim.MissionId}, camapaignRecord.ClaimedMissions)
 }
 
 func (h *C4eAirdropUtils) ClaimInitialError(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, errorMessage string) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
-	claimRecordBefore, foundBefore := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecordBefore, foundBefore := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 
@@ -250,7 +250,7 @@ func (h *C4eAirdropUtils) ClaimInitialError(ctx sdk.Context, campaignId uint64, 
 
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
 
-	claimRecord, found := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecord, found := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.Equal(h.t, foundBefore, found)
 	if found {
 		require.EqualValues(h.t, claimRecordBefore, claimRecord)
@@ -261,8 +261,8 @@ func (h *C4eAirdropUtils) ClaimInitialError(ctx sdk.Context, campaignId uint64, 
 func (h *C4eAirdropUtils) GetClaimRecord(
 	ctx sdk.Context,
 	address string,
-) *cfeairdroptypes.ClaimRecord {
-	val, found := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, address)
+) *cfeairdroptypes.UserAirdropEntries {
+	val, found := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, address)
 	if found {
 		return &val
 	}
@@ -271,9 +271,9 @@ func (h *C4eAirdropUtils) GetClaimRecord(
 
 func (h *C4eAirdropUtils) SetClaimRecord(
 	ctx sdk.Context,
-	claimRecord *cfeairdroptypes.ClaimRecord,
+	claimRecord *cfeairdroptypes.UserAirdropEntries,
 ) {
-	h.helpeCfeairdropkeeper.SetClaimRecord(ctx, *claimRecord)
+	h.helpeCfeairdropkeeper.SetUserAirdropEntries(ctx, *claimRecord)
 }
 
 func (h *C4eAirdropUtils) CompleteDelegationMission(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
@@ -295,7 +295,7 @@ func (h *C4eAirdropUtils) CompleteDelegationMission(ctx sdk.Context, campaignId 
 		}
 		return veBefore, claimerAmountBefore.Sub(deleagtionAmount)
 	}
-	h.completeAnyMission(ctx, campaignId, uint64(cfeairdroptypes.DELEGATION), claimer, action, beforeCheck)
+	h.completeAnyMission(ctx, campaignId, uint64(cfeairdroptypes.MissionDelegation), claimer, action, beforeCheck)
 }
 
 func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress) {
@@ -314,7 +314,7 @@ func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64
 		return h.GovUtils.GovKeeper.AddVote(ctx, proposal.ProposalId,
 			claimer, []govtypes.WeightedVoteOption{{Option: govtypes.OptionAbstain, Weight: sdk.NewDec(1)}})
 	}
-	h.completeAnyMission(ctx, campaignId, uint64(cfeairdroptypes.VOTE), claimer, action, nil)
+	h.completeAnyMission(ctx, campaignId, uint64(cfeairdroptypes.MissionVote), claimer, action, nil)
 }
 
 func (h *C4eAirdropUtils) CompleteMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
@@ -329,7 +329,7 @@ func (h *C4eAirdropUtils) completeAnyMission(ctx sdk.Context, campaignId uint64,
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
-	claimRecordBefore, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecordBefore, foundCr := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.True(h.t, foundCr)
 
 	require.NoError(h.t, action())
@@ -341,7 +341,7 @@ func (h *C4eAirdropUtils) completeAnyMission(ctx sdk.Context, campaignId uint64,
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore)
 
-	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	claimRecordBefore.GetCampaignRecord(campaignId).CompletedMissions = append(claimRecordBefore.GetCampaignRecord(campaignId).CompletedMissions, missionId)
 
 	require.True(h.t, foundCr)
@@ -352,14 +352,14 @@ func (h *C4eAirdropUtils) CompleteMissionError(ctx sdk.Context, campaignId uint6
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
-	claimRecordBefore, foundCrBefore := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecordBefore, foundCrBefore := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 
 	require.EqualError(h.t, h.helpeCfeairdropkeeper.CompleteMission(ctx, campaignId, missionId, claimer.String(), false), errorMessage)
 
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore)
-	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.Equal(h.t, foundCrBefore, foundCr)
 	require.EqualValues(h.t, claimRecordBefore, claimRecord)
 }
@@ -374,13 +374,13 @@ func (h *C4eAirdropUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint
 	require.True(h.t, ok)
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimerDstAddress)
-	claimRecordBefore, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecordBefore, foundCr := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.True(h.t, foundCr)
 
 	require.NoError(h.t, h.helpeCfeairdropkeeper.ClaimMission(ctx, campaignId, missionId, claimer.String()))
 
 	claimRecordBefore.GetCampaignRecord(campaignId).ClaimedMissions = append(claimRecordBefore.GetCampaignRecord(campaignId).ClaimedMissions, missionId)
-	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.True(h.t, foundCr)
 	require.EqualValues(h.t, claimRecordBefore, claimRecord)
 
@@ -426,14 +426,14 @@ func (h *C4eAirdropUtils) ClaimMissionError(ctx sdk.Context, campaignId uint64, 
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
-	claimRecordBefore, foundCrBefore := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecordBefore, foundCrBefore := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 
 	require.EqualError(h.t, h.helpeCfeairdropkeeper.ClaimMission(ctx, campaignId, missionId, claimer.String()), errorMessage)
 
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore)
-	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetClaimRecord(ctx, claimer.String())
+	claimRecord, foundCr := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.Equal(h.t, foundCrBefore, foundCr)
 	require.EqualValues(h.t, claimRecordBefore, claimRecord)
 }

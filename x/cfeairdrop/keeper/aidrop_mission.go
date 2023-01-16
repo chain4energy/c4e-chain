@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64, missionId uint64, address string, isHook bool) (*types.Campaign, *types.Mission, *types.ClaimRecord, error) {
+func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64, missionId uint64, address string, isHook bool) (*types.Campaign, *types.Mission, *types.UserAirdropEntries, error) {
 	campaignConfig, campaignFound := k.GetCampaign(ctx, campaignId)
 	if !campaignFound {
 		k.Logger(ctx).Error(log+" - camapign not found", "campaignId", campaignId)
@@ -30,7 +30,7 @@ func (k Keeper) missionIntialStep(ctx sdk.Context, log string, campaignId uint64
 	}
 	k.Logger(ctx).Debug(log, "mission", mission)
 
-	claimRecord, found := k.GetClaimRecord(ctx, address)
+	claimRecord, found := k.GetUserAirdropEntries(ctx, address)
 	if !found {
 		if isHook {
 			k.Logger(ctx).Debug(log+" - claim record not found", "address", address)
@@ -64,7 +64,7 @@ func (k Keeper) ClaimInitialMission(ctx sdk.Context, campaignId uint64, missionI
 	if err != nil {
 		return err
 	}
-	k.SetClaimRecord(ctx, *claimRecord)
+	k.SetUserAirdropEntries(ctx, *claimRecord)
 	return nil
 }
 
@@ -78,11 +78,11 @@ func (k Keeper) ClaimMission(ctx sdk.Context, campaignId uint64, missionId uint6
 		return err
 	}
 
-	k.SetClaimRecord(ctx, *claimRecord)
+	k.SetUserAirdropEntries(ctx, *claimRecord)
 	return nil
 }
 
-func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig *types.Campaign, mission *types.Mission, claimRecord *types.ClaimRecord) (*types.ClaimRecord, error) {
+func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig *types.Campaign, mission *types.Mission, claimRecord *types.UserAirdropEntries) (*types.UserAirdropEntries, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
 	address := claimRecord.Address
@@ -148,13 +148,13 @@ func (k Keeper) CompleteMission(ctx sdk.Context, campaignId uint64, missionId ui
 	if err != nil {
 		return err
 	}
-	k.SetClaimRecord(ctx, *claimRecord)
+	k.SetUserAirdropEntries(ctx, *claimRecord)
 	return nil
 }
 
 // CompleteMission triggers the completion of the mission and distribute the claimable portion of airdrop to the user
 // the method fails if the mission has already been completed
-func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *types.Mission, claimRecord *types.ClaimRecord) (*types.ClaimRecord, error) {
+func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *types.Mission, claimRecord *types.UserAirdropEntries) (*types.UserAirdropEntries, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
 	address := claimRecord.Address
@@ -170,9 +170,9 @@ func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *t
 			k.Logger(ctx).Error("complete mission - initial claim not found", "campaignId", campaignId)
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "initial claim not found - campaignId %d", campaignId)
 		}
-		if !claimRecord.IsMissionClaimed(initialClaim.CampaignId, initialClaim.Id) {
+		if !claimRecord.IsMissionClaimed(initialClaim.CampaignId, initialClaim.MissionId) {
 			k.Logger(ctx).Error("complete mission - initial mission not completed", "address", address, "campaignId", campaignId, "missionId", missionId)
-			return nil, sdkerrors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d, missionId: %d", address, initialClaim.CampaignId, initialClaim.Id)
+			return nil, sdkerrors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d, missionId: %d", address, initialClaim.CampaignId, initialClaim.MissionId)
 		}
 	}
 
@@ -180,7 +180,7 @@ func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *t
 		k.Logger(ctx).Error("complete mission - cannot complete", "address", address, "campaignId", campaignId, "missionId", missionId)
 		return nil, sdkerrors.Wrapf(types.ErrMissionCompletion, err.Error())
 	}
-	// k.SetClaimRecord(ctx, claimRecord)
+	// k.SetUserAirdropEntries(ctx, claimRecord)
 
 	// err = ctx.EventManager().EmitTypedEvent(&types.EventMissionCompleted{
 	// 	MissionID: missionID,
@@ -190,7 +190,7 @@ func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *t
 	return claimRecord, nil
 }
 
-func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType string,
+func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType types.MissionType,
 	weight sdk.Dec) error {
 	k.Logger(ctx).Debug("add mission to airdrop campaign", "owner", owner, "campaignId", campaignId, "name", name,
 		"description", description, "missionType", missionType, "weight", weight)

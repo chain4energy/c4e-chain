@@ -23,7 +23,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.DefaultParams(),
 
-				ClaimRecords: []types.ClaimRecord{
+				UserAirdropEntries: []types.UserAirdropEntries{
 					{
 						Address: "0",
 					},
@@ -51,10 +51,10 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				AirdropEntryList: []types.AirdropEntry{
 					{
-						Id: 0,
+						Address: "0",
 					},
 					{
-						Id: 1,
+						Address: " 1",
 					},
 				},
 				AirdropEntryCount: 2,
@@ -65,7 +65,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "duplicated claimRecord",
 			genState: &types.GenesisState{
-				ClaimRecords: []types.ClaimRecord{
+				UserAirdropEntries: []types.UserAirdropEntries{
 					{
 						Address: "0",
 					},
@@ -111,10 +111,10 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				AirdropEntryList: []types.AirdropEntry{
 					{
-						Id: 0,
+						Address: "0",
 					},
 					{
-						Id: 0,
+						Address: "0",
 					},
 				},
 			},
@@ -125,7 +125,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				AirdropEntryList: []types.AirdropEntry{
 					{
-						Id: 1,
+						Address: "1",
 					},
 				},
 				AirdropEntryCount: 0,

@@ -64,7 +64,7 @@ func CmdShowMission() *cobra.Command {
 
 			params := &types.QueryMissionRequest{
 				CampaignId: argCampaignId,
-				Id:         argMissionId,
+				MissionId:  argMissionId,
 			}
 
 			res, err := queryClient.Mission(context.Background(), params)

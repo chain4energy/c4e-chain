@@ -1,4 +1,10 @@
 /* eslint-disable */
+import {
+  MissionType,
+  AirdropEntry,
+  missionTypeFromJSON,
+  missionTypeToJSON,
+} from "../cfeairdrop/airdrop";
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
 import { Duration } from "../google/protobuf/duration";
@@ -30,30 +36,19 @@ export interface MsgAddMissionToAidropCampaign {
   campaignId: number;
   name: string;
   description: string;
-  missionType: string;
+  missionType: MissionType;
   weight: string;
 }
 
 export interface MsgAddMissionToAidropCampaignResponse {}
 
-export interface MsgCreateAirdropEntry {
-  creator: string;
-  address: string;
-  amount: number;
+export interface MsgAddAirdropEntries {
+  owner: string;
+  campaign_id: number;
+  airdrop_entries: AirdropEntry[];
 }
 
-export interface MsgCreateAirdropEntryResponse {
-  id: number;
-}
-
-export interface MsgUpdateAirdropEntry {
-  creator: string;
-  id: number;
-  address: string;
-  amount: number;
-}
-
-export interface MsgUpdateAirdropEntryResponse {}
+export interface MsgAddAirdropEntriesResponse {}
 
 export interface MsgDeleteAirdropEntry {
   creator: string;
@@ -434,7 +429,7 @@ const baseMsgAddMissionToAidropCampaign: object = {
   campaignId: 0,
   name: "",
   description: "",
-  missionType: "",
+  missionType: 0,
   weight: "",
 };
 
@@ -455,8 +450,8 @@ export const MsgAddMissionToAidropCampaign = {
     if (message.description !== "") {
       writer.uint32(34).string(message.description);
     }
-    if (message.missionType !== "") {
-      writer.uint32(42).string(message.missionType);
+    if (message.missionType !== 0) {
+      writer.uint32(40).int32(message.missionType);
     }
     if (message.weight !== "") {
       writer.uint32(50).string(message.weight);
@@ -489,7 +484,7 @@ export const MsgAddMissionToAidropCampaign = {
           message.description = reader.string();
           break;
         case 5:
-          message.missionType = reader.string();
+          message.missionType = reader.int32() as any;
           break;
         case 6:
           message.weight = reader.string();
@@ -527,9 +522,9 @@ export const MsgAddMissionToAidropCampaign = {
       message.description = "";
     }
     if (object.missionType !== undefined && object.missionType !== null) {
-      message.missionType = String(object.missionType);
+      message.missionType = missionTypeFromJSON(object.missionType);
     } else {
-      message.missionType = "";
+      message.missionType = 0;
     }
     if (object.weight !== undefined && object.weight !== null) {
       message.weight = String(object.weight);
@@ -547,7 +542,7 @@ export const MsgAddMissionToAidropCampaign = {
     message.description !== undefined &&
       (obj.description = message.description);
     message.missionType !== undefined &&
-      (obj.missionType = message.missionType);
+      (obj.missionType = missionTypeToJSON(message.missionType));
     message.weight !== undefined && (obj.weight = message.weight);
     return obj;
   },
@@ -581,7 +576,7 @@ export const MsgAddMissionToAidropCampaign = {
     if (object.missionType !== undefined && object.missionType !== null) {
       message.missionType = object.missionType;
     } else {
-      message.missionType = "";
+      message.missionType = 0;
     }
     if (object.weight !== undefined && object.weight !== null) {
       message.weight = object.weight;
@@ -644,44 +639,43 @@ export const MsgAddMissionToAidropCampaignResponse = {
   },
 };
 
-const baseMsgCreateAirdropEntry: object = {
-  creator: "",
-  address: "",
-  amount: 0,
-};
+const baseMsgAddAirdropEntries: object = { owner: "", campaign_id: 0 };
 
-export const MsgCreateAirdropEntry = {
+export const MsgAddAirdropEntries = {
   encode(
-    message: MsgCreateAirdropEntry,
+    message: MsgAddAirdropEntries,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
+    if (message.owner !== "") {
+      writer.uint32(10).string(message.owner);
     }
-    if (message.address !== "") {
-      writer.uint32(18).string(message.address);
+    if (message.campaign_id !== 0) {
+      writer.uint32(16).uint64(message.campaign_id);
     }
-    if (message.amount !== 0) {
-      writer.uint32(24).uint64(message.amount);
+    for (const v of message.airdrop_entries) {
+      AirdropEntry.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgCreateAirdropEntry {
+  decode(input: Reader | Uint8Array, length?: number): MsgAddAirdropEntries {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCreateAirdropEntry } as MsgCreateAirdropEntry;
+    const message = { ...baseMsgAddAirdropEntries } as MsgAddAirdropEntries;
+    message.airdrop_entries = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.creator = reader.string();
+          message.owner = reader.string();
           break;
         case 2:
-          message.address = reader.string();
+          message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
         case 3:
-          message.amount = longToNumber(reader.uint64() as Long);
+          message.airdrop_entries.push(
+            AirdropEntry.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -691,247 +685,75 @@ export const MsgCreateAirdropEntry = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateAirdropEntry {
-    const message = { ...baseMsgCreateAirdropEntry } as MsgCreateAirdropEntry;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = String(object.creator);
+  fromJSON(object: any): MsgAddAirdropEntries {
+    const message = { ...baseMsgAddAirdropEntries } as MsgAddAirdropEntries;
+    message.airdrop_entries = [];
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner);
     } else {
-      message.creator = "";
+      message.owner = "";
     }
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = Number(object.campaign_id);
     } else {
-      message.address = "";
+      message.campaign_id = 0;
     }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Number(object.amount);
-    } else {
-      message.amount = 0;
-    }
-    return message;
-  },
-
-  toJSON(message: MsgCreateAirdropEntry): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.address !== undefined && (obj.address = message.address);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<MsgCreateAirdropEntry>
-  ): MsgCreateAirdropEntry {
-    const message = { ...baseMsgCreateAirdropEntry } as MsgCreateAirdropEntry;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = object.creator;
-    } else {
-      message.creator = "";
-    }
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
-    } else {
-      message.address = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = object.amount;
-    } else {
-      message.amount = 0;
-    }
-    return message;
-  },
-};
-
-const baseMsgCreateAirdropEntryResponse: object = { id: 0 };
-
-export const MsgCreateAirdropEntryResponse = {
-  encode(
-    message: MsgCreateAirdropEntryResponse,
-    writer: Writer = Writer.create()
-  ): Writer {
-    if (message.id !== 0) {
-      writer.uint32(8).uint64(message.id);
-    }
-    return writer;
-  },
-
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): MsgCreateAirdropEntryResponse {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgCreateAirdropEntryResponse,
-    } as MsgCreateAirdropEntryResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.id = longToNumber(reader.uint64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+    if (
+      object.airdrop_entries !== undefined &&
+      object.airdrop_entries !== null
+    ) {
+      for (const e of object.airdrop_entries) {
+        message.airdrop_entries.push(AirdropEntry.fromJSON(e));
       }
     }
     return message;
   },
 
-  fromJSON(object: any): MsgCreateAirdropEntryResponse {
-    const message = {
-      ...baseMsgCreateAirdropEntryResponse,
-    } as MsgCreateAirdropEntryResponse;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = Number(object.id);
-    } else {
-      message.id = 0;
-    }
-    return message;
-  },
-
-  toJSON(message: MsgCreateAirdropEntryResponse): unknown {
+  toJSON(message: MsgAddAirdropEntries): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
+    message.owner !== undefined && (obj.owner = message.owner);
+    message.campaign_id !== undefined &&
+      (obj.campaign_id = message.campaign_id);
+    if (message.airdrop_entries) {
+      obj.airdrop_entries = message.airdrop_entries.map((e) =>
+        e ? AirdropEntry.toJSON(e) : undefined
+      );
+    } else {
+      obj.airdrop_entries = [];
+    }
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<MsgCreateAirdropEntryResponse>
-  ): MsgCreateAirdropEntryResponse {
-    const message = {
-      ...baseMsgCreateAirdropEntryResponse,
-    } as MsgCreateAirdropEntryResponse;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = object.id;
+  fromPartial(object: DeepPartial<MsgAddAirdropEntries>): MsgAddAirdropEntries {
+    const message = { ...baseMsgAddAirdropEntries } as MsgAddAirdropEntries;
+    message.airdrop_entries = [];
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
     } else {
-      message.id = 0;
+      message.owner = "";
     }
-    return message;
-  },
-};
-
-const baseMsgUpdateAirdropEntry: object = {
-  creator: "",
-  id: 0,
-  address: "",
-  amount: 0,
-};
-
-export const MsgUpdateAirdropEntry = {
-  encode(
-    message: MsgUpdateAirdropEntry,
-    writer: Writer = Writer.create()
-  ): Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = object.campaign_id;
+    } else {
+      message.campaign_id = 0;
     }
-    if (message.id !== 0) {
-      writer.uint32(16).uint64(message.id);
-    }
-    if (message.address !== "") {
-      writer.uint32(26).string(message.address);
-    }
-    if (message.amount !== 0) {
-      writer.uint32(32).uint64(message.amount);
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): MsgUpdateAirdropEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgUpdateAirdropEntry } as MsgUpdateAirdropEntry;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
-          message.id = longToNumber(reader.uint64() as Long);
-          break;
-        case 3:
-          message.address = reader.string();
-          break;
-        case 4:
-          message.amount = longToNumber(reader.uint64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+    if (
+      object.airdrop_entries !== undefined &&
+      object.airdrop_entries !== null
+    ) {
+      for (const e of object.airdrop_entries) {
+        message.airdrop_entries.push(AirdropEntry.fromPartial(e));
       }
     }
     return message;
   },
-
-  fromJSON(object: any): MsgUpdateAirdropEntry {
-    const message = { ...baseMsgUpdateAirdropEntry } as MsgUpdateAirdropEntry;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = String(object.creator);
-    } else {
-      message.creator = "";
-    }
-    if (object.id !== undefined && object.id !== null) {
-      message.id = Number(object.id);
-    } else {
-      message.id = 0;
-    }
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
-    } else {
-      message.address = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Number(object.amount);
-    } else {
-      message.amount = 0;
-    }
-    return message;
-  },
-
-  toJSON(message: MsgUpdateAirdropEntry): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.id !== undefined && (obj.id = message.id);
-    message.address !== undefined && (obj.address = message.address);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<MsgUpdateAirdropEntry>
-  ): MsgUpdateAirdropEntry {
-    const message = { ...baseMsgUpdateAirdropEntry } as MsgUpdateAirdropEntry;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = object.creator;
-    } else {
-      message.creator = "";
-    }
-    if (object.id !== undefined && object.id !== null) {
-      message.id = object.id;
-    } else {
-      message.id = 0;
-    }
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
-    } else {
-      message.address = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = object.amount;
-    } else {
-      message.amount = 0;
-    }
-    return message;
-  },
 };
 
-const baseMsgUpdateAirdropEntryResponse: object = {};
+const baseMsgAddAirdropEntriesResponse: object = {};
 
-export const MsgUpdateAirdropEntryResponse = {
+export const MsgAddAirdropEntriesResponse = {
   encode(
-    _: MsgUpdateAirdropEntryResponse,
+    _: MsgAddAirdropEntriesResponse,
     writer: Writer = Writer.create()
   ): Writer {
     return writer;
@@ -940,12 +762,12 @@ export const MsgUpdateAirdropEntryResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): MsgUpdateAirdropEntryResponse {
+  ): MsgAddAirdropEntriesResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseMsgUpdateAirdropEntryResponse,
-    } as MsgUpdateAirdropEntryResponse;
+      ...baseMsgAddAirdropEntriesResponse,
+    } as MsgAddAirdropEntriesResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -957,24 +779,24 @@ export const MsgUpdateAirdropEntryResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateAirdropEntryResponse {
+  fromJSON(_: any): MsgAddAirdropEntriesResponse {
     const message = {
-      ...baseMsgUpdateAirdropEntryResponse,
-    } as MsgUpdateAirdropEntryResponse;
+      ...baseMsgAddAirdropEntriesResponse,
+    } as MsgAddAirdropEntriesResponse;
     return message;
   },
 
-  toJSON(_: MsgUpdateAirdropEntryResponse): unknown {
+  toJSON(_: MsgAddAirdropEntriesResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<MsgUpdateAirdropEntryResponse>
-  ): MsgUpdateAirdropEntryResponse {
+    _: DeepPartial<MsgAddAirdropEntriesResponse>
+  ): MsgAddAirdropEntriesResponse {
     const message = {
-      ...baseMsgUpdateAirdropEntryResponse,
-    } as MsgUpdateAirdropEntryResponse;
+      ...baseMsgAddAirdropEntriesResponse,
+    } as MsgAddAirdropEntriesResponse;
     return message;
   },
 };
@@ -1117,12 +939,9 @@ export interface Msg {
   AddMissionToAidropCampaign(
     request: MsgAddMissionToAidropCampaign
   ): Promise<MsgAddMissionToAidropCampaignResponse>;
-  CreateAirdropEntry(
-    request: MsgCreateAirdropEntry
-  ): Promise<MsgCreateAirdropEntryResponse>;
-  UpdateAirdropEntry(
-    request: MsgUpdateAirdropEntry
-  ): Promise<MsgUpdateAirdropEntryResponse>;
+  AddAirdropEntries(
+    request: MsgAddAirdropEntries
+  ): Promise<MsgAddAirdropEntriesResponse>;
   /** this line is used by starport scaffolding # proto/tx/rpc */
   DeleteAirdropEntry(
     request: MsgDeleteAirdropEntry
@@ -1172,31 +991,17 @@ export class MsgClientImpl implements Msg {
     );
   }
 
-  CreateAirdropEntry(
-    request: MsgCreateAirdropEntry
-  ): Promise<MsgCreateAirdropEntryResponse> {
-    const data = MsgCreateAirdropEntry.encode(request).finish();
+  AddAirdropEntries(
+    request: MsgAddAirdropEntries
+  ): Promise<MsgAddAirdropEntriesResponse> {
+    const data = MsgAddAirdropEntries.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Msg",
-      "CreateAirdropEntry",
+      "AddAirdropEntries",
       data
     );
     return promise.then((data) =>
-      MsgCreateAirdropEntryResponse.decode(new Reader(data))
-    );
-  }
-
-  UpdateAirdropEntry(
-    request: MsgUpdateAirdropEntry
-  ): Promise<MsgUpdateAirdropEntryResponse> {
-    const data = MsgUpdateAirdropEntry.encode(request).finish();
-    const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
-      "UpdateAirdropEntry",
-      data
-    );
-    return promise.then((data) =>
-      MsgUpdateAirdropEntryResponse.decode(new Reader(data))
+      MsgAddAirdropEntriesResponse.decode(new Reader(data))
     );
   }
 

@@ -9,12 +9,12 @@ const TypeMsgAddMissionToAidropCampaign = "add_mission_to_aidrop_campaign"
 
 var _ sdk.Msg = &MsgAddMissionToAidropCampaign{}
 
-func NewMsgAddMissionToAidropCampaign(owner string, name string, campaignId uint64, description string, missionType string, weight sdk.Dec) *MsgAddMissionToAidropCampaign {
+func NewMsgAddMissionToAidropCampaign(owner string, campaignId uint64, name string, description string, missionType MissionType, weight sdk.Dec) *MsgAddMissionToAidropCampaign {
 	return &MsgAddMissionToAidropCampaign{
 		Owner:       owner,
 		Name:        name,
-		CampaignId:  campaignId,
 		Description: description,
+		CampaignId:  campaignId,
 		MissionType: missionType,
 		Weight:      weight,
 	}

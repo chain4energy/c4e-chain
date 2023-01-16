@@ -6,47 +6,19 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) CreateAirdropEntry(goCtx context.Context, msg *types.MsgCreateAirdropEntry) (*types.MsgCreateAirdropEntryResponse, error) {
+func (k msgServer) AddAirdropEntries(goCtx context.Context, msg *types.MsgAddAirdropEntries) (*types.MsgAddAirdropEntriesResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	var airdropEntry = types.AirdropEntry{
-		Address: msg.Address,
-		Amount:  msg.Amount,
-	}
-
-	id := k.AppendAirdropEntry(
+	keeper := k.Keeper
+	if err := keeper.AddAirdropEntries(
 		ctx,
-		airdropEntry,
-	)
-
-	return &types.MsgCreateAirdropEntryResponse{
-		Id: id,
-	}, nil
-}
-
-func (k msgServer) UpdateAirdropEntry(goCtx context.Context, msg *types.MsgUpdateAirdropEntry) (*types.MsgUpdateAirdropEntryResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	var airdropEntry = types.AirdropEntry{
-		Id:      msg.Id,
-		Address: msg.Address,
-		Amount:  msg.Amount,
+		msg.Owner,
+		msg.CampaignId,
+		msg.AirdropEntries,
+	); err != nil {
+		return nil, err
 	}
 
-	// Checks that the element exists
-	//val, found := k.GetAirdropEntry(ctx, msg.Id)
-	//if !found {
-	//	return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
-	//}
-
-	// Checks if the msg creator is the same as the current owner
-	//if msg.Creator != val.Creator {
-	//	return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
-	//}
-
-	k.SetAirdropEntry(ctx, airdropEntry)
-
-	return &types.MsgUpdateAirdropEntryResponse{}, nil
+	return &types.MsgAddAirdropEntriesResponse{}, nil
 }
 
 func (k msgServer) DeleteAirdropEntry(goCtx context.Context, msg *types.MsgDeleteAirdropEntry) (*types.MsgDeleteAirdropEntryResponse, error) {

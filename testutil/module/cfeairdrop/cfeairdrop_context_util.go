@@ -55,11 +55,11 @@ func (h *ContextC4eAirdropUtils) ClaimInitialError(campaignId uint64, claimer sd
 	h.C4eAirdropUtils.ClaimInitialError(h.testContext.GetContext(), campaignId, claimer, errorMessage)
 }
 
-func (h *ContextC4eAirdropUtils) GetClaimRecord(address string) *cfeairdroptypes.ClaimRecord {
+func (h *ContextC4eAirdropUtils) GetClaimRecord(address string) *cfeairdroptypes.UserAirdropEntries {
 	return h.C4eAirdropUtils.GetClaimRecord(h.testContext.GetContext(), address)
 }
 
-func (h *ContextC4eAirdropUtils) SetClaimRecord(claimRecord *cfeairdroptypes.ClaimRecord) {
+func (h *ContextC4eAirdropUtils) SetClaimRecord(claimRecord *cfeairdroptypes.UserAirdropEntries) {
 	h.C4eAirdropUtils.SetClaimRecord(h.testContext.GetContext(), claimRecord)
 }
 

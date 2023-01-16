@@ -61,11 +61,9 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		Params: types.DefaultParams(),
 		AirdropEntryList: []types.AirdropEntry{
 			{
-				Id:      0,
 				Address: sample.AccAddress(),
 			},
 			{
-				Id:      1,
 				Address: sample.AccAddress(),
 			},
 		},
@@ -143,10 +141,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			weightMsgUpdateAirdropEntry = defaultWeightMsgUpdateAirdropEntry
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateAirdropEntry,
-		cfeairdropsimulation.SimulateMsgUpdateAirdropEntry(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
 
 	var weightMsgDeleteAirdropEntry int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteAirdropEntry, &weightMsgDeleteAirdropEntry, nil,
@@ -154,10 +148,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			weightMsgDeleteAirdropEntry = defaultWeightMsgDeleteAirdropEntry
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteAirdropEntry,
-		cfeairdropsimulation.SimulateMsgDeleteAirdropEntry(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

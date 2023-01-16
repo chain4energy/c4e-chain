@@ -4,11 +4,11 @@ import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import { Params } from "../cfeairdrop/params";
 import {
   Campaign,
-  ClaimRecord,
+  UserAirdropEntries,
   InitialClaim,
   Mission,
+  AirdropEntry,
 } from "../cfeairdrop/airdrop";
-import { AirdropEntry } from "../cfeairdrop/airdrop_entry";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
@@ -16,7 +16,7 @@ export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 export interface GenesisState {
   params: Params | undefined;
   campaigns: Campaign[];
-  claimRecords: ClaimRecord[];
+  user_airdrop_entries: UserAirdropEntries[];
   initialClaims: InitialClaim[];
   missions: Mission[];
   airdropEntryList: AirdropEntry[];
@@ -34,8 +34,8 @@ export const GenesisState = {
     for (const v of message.campaigns) {
       Campaign.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    for (const v of message.claimRecords) {
-      ClaimRecord.encode(v!, writer.uint32(26).fork()).ldelim();
+    for (const v of message.user_airdrop_entries) {
+      UserAirdropEntries.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     for (const v of message.initialClaims) {
       InitialClaim.encode(v!, writer.uint32(34).fork()).ldelim();
@@ -57,7 +57,7 @@ export const GenesisState = {
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
     message.campaigns = [];
-    message.claimRecords = [];
+    message.user_airdrop_entries = [];
     message.initialClaims = [];
     message.missions = [];
     message.airdropEntryList = [];
@@ -71,8 +71,8 @@ export const GenesisState = {
           message.campaigns.push(Campaign.decode(reader, reader.uint32()));
           break;
         case 3:
-          message.claimRecords.push(
-            ClaimRecord.decode(reader, reader.uint32())
+          message.user_airdrop_entries.push(
+            UserAirdropEntries.decode(reader, reader.uint32())
           );
           break;
         case 4:
@@ -102,7 +102,7 @@ export const GenesisState = {
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
     message.campaigns = [];
-    message.claimRecords = [];
+    message.user_airdrop_entries = [];
     message.initialClaims = [];
     message.missions = [];
     message.airdropEntryList = [];
@@ -116,9 +116,12 @@ export const GenesisState = {
         message.campaigns.push(Campaign.fromJSON(e));
       }
     }
-    if (object.claimRecords !== undefined && object.claimRecords !== null) {
-      for (const e of object.claimRecords) {
-        message.claimRecords.push(ClaimRecord.fromJSON(e));
+    if (
+      object.user_airdrop_entries !== undefined &&
+      object.user_airdrop_entries !== null
+    ) {
+      for (const e of object.user_airdrop_entries) {
+        message.user_airdrop_entries.push(UserAirdropEntries.fromJSON(e));
       }
     }
     if (object.initialClaims !== undefined && object.initialClaims !== null) {
@@ -161,12 +164,12 @@ export const GenesisState = {
     } else {
       obj.campaigns = [];
     }
-    if (message.claimRecords) {
-      obj.claimRecords = message.claimRecords.map((e) =>
-        e ? ClaimRecord.toJSON(e) : undefined
+    if (message.user_airdrop_entries) {
+      obj.user_airdrop_entries = message.user_airdrop_entries.map((e) =>
+        e ? UserAirdropEntries.toJSON(e) : undefined
       );
     } else {
-      obj.claimRecords = [];
+      obj.user_airdrop_entries = [];
     }
     if (message.initialClaims) {
       obj.initialClaims = message.initialClaims.map((e) =>
@@ -197,7 +200,7 @@ export const GenesisState = {
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
     message.campaigns = [];
-    message.claimRecords = [];
+    message.user_airdrop_entries = [];
     message.initialClaims = [];
     message.missions = [];
     message.airdropEntryList = [];
@@ -211,9 +214,12 @@ export const GenesisState = {
         message.campaigns.push(Campaign.fromPartial(e));
       }
     }
-    if (object.claimRecords !== undefined && object.claimRecords !== null) {
-      for (const e of object.claimRecords) {
-        message.claimRecords.push(ClaimRecord.fromPartial(e));
+    if (
+      object.user_airdrop_entries !== undefined &&
+      object.user_airdrop_entries !== null
+    ) {
+      for (const e of object.user_airdrop_entries) {
+        message.user_airdrop_entries.push(UserAirdropEntries.fromPartial(e));
       }
     }
     if (object.initialClaims !== undefined && object.initialClaims !== null) {

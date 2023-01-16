@@ -5,23 +5,19 @@ import { util, configure, Writer, Reader } from "protobufjs/minimal";
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
 export interface AirdropEntry {
-  id: number;
   address: string;
   amount: number;
 }
 
-const baseAirdropEntry: object = { id: 0, address: "", amount: 0 };
+const baseAirdropEntry: object = { address: "", amount: 0 };
 
 export const AirdropEntry = {
   encode(message: AirdropEntry, writer: Writer = Writer.create()): Writer {
-    if (message.id !== 0) {
-      writer.uint32(8).uint64(message.id);
-    }
     if (message.address !== "") {
-      writer.uint32(18).string(message.address);
+      writer.uint32(10).string(message.address);
     }
     if (message.amount !== 0) {
-      writer.uint32(24).uint64(message.amount);
+      writer.uint32(16).uint64(message.amount);
     }
     return writer;
   },
@@ -34,12 +30,9 @@ export const AirdropEntry = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.id = longToNumber(reader.uint64() as Long);
-          break;
-        case 2:
           message.address = reader.string();
           break;
-        case 3:
+        case 2:
           message.amount = longToNumber(reader.uint64() as Long);
           break;
         default:
@@ -52,11 +45,6 @@ export const AirdropEntry = {
 
   fromJSON(object: any): AirdropEntry {
     const message = { ...baseAirdropEntry } as AirdropEntry;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = Number(object.id);
-    } else {
-      message.id = 0;
-    }
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
     } else {
@@ -72,7 +60,6 @@ export const AirdropEntry = {
 
   toJSON(message: AirdropEntry): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
     message.address !== undefined && (obj.address = message.address);
     message.amount !== undefined && (obj.amount = message.amount);
     return obj;
@@ -80,11 +67,6 @@ export const AirdropEntry = {
 
   fromPartial(object: DeepPartial<AirdropEntry>): AirdropEntry {
     const message = { ...baseAirdropEntry } as AirdropEntry;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = object.id;
-    } else {
-      message.id = 0;
-    }
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     } else {

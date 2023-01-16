@@ -3,16 +3,16 @@ import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
 import { Params } from "../cfeairdrop/params";
 import {
-  ClaimRecord,
+  UserAirdropEntries,
   InitialClaim,
   Mission,
   Campaign,
+  AirdropEntry,
 } from "../cfeairdrop/airdrop";
 import {
   PageRequest,
   PageResponse,
 } from "../cosmos/base/query/v1beta1/pagination";
-import { AirdropEntry } from "../cfeairdrop/airdrop_entry";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
@@ -30,7 +30,7 @@ export interface QueryClaimRecordRequest {
 }
 
 export interface QueryClaimRecordResponse {
-  claimRecord: ClaimRecord | undefined;
+  userAirdropEntries: UserAirdropEntries | undefined;
 }
 
 export interface QueryClaimRecordsRequest {
@@ -38,7 +38,7 @@ export interface QueryClaimRecordsRequest {
 }
 
 export interface QueryClaimRecordsResponse {
-  claimRecord: ClaimRecord[];
+  usersAirdropEntries: UserAirdropEntries[];
   pagination: PageResponse | undefined;
 }
 
@@ -281,9 +281,9 @@ export const QueryClaimRecordResponse = {
     message: QueryClaimRecordResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.claimRecord !== undefined) {
-      ClaimRecord.encode(
-        message.claimRecord,
+    if (message.userAirdropEntries !== undefined) {
+      UserAirdropEntries.encode(
+        message.userAirdropEntries,
         writer.uint32(10).fork()
       ).ldelim();
     }
@@ -303,7 +303,10 @@ export const QueryClaimRecordResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.claimRecord = ClaimRecord.decode(reader, reader.uint32());
+          message.userAirdropEntries = UserAirdropEntries.decode(
+            reader,
+            reader.uint32()
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -317,19 +320,24 @@ export const QueryClaimRecordResponse = {
     const message = {
       ...baseQueryClaimRecordResponse,
     } as QueryClaimRecordResponse;
-    if (object.claimRecord !== undefined && object.claimRecord !== null) {
-      message.claimRecord = ClaimRecord.fromJSON(object.claimRecord);
+    if (
+      object.userAirdropEntries !== undefined &&
+      object.userAirdropEntries !== null
+    ) {
+      message.userAirdropEntries = UserAirdropEntries.fromJSON(
+        object.userAirdropEntries
+      );
     } else {
-      message.claimRecord = undefined;
+      message.userAirdropEntries = undefined;
     }
     return message;
   },
 
   toJSON(message: QueryClaimRecordResponse): unknown {
     const obj: any = {};
-    message.claimRecord !== undefined &&
-      (obj.claimRecord = message.claimRecord
-        ? ClaimRecord.toJSON(message.claimRecord)
+    message.userAirdropEntries !== undefined &&
+      (obj.userAirdropEntries = message.userAirdropEntries
+        ? UserAirdropEntries.toJSON(message.userAirdropEntries)
         : undefined);
     return obj;
   },
@@ -340,10 +348,15 @@ export const QueryClaimRecordResponse = {
     const message = {
       ...baseQueryClaimRecordResponse,
     } as QueryClaimRecordResponse;
-    if (object.claimRecord !== undefined && object.claimRecord !== null) {
-      message.claimRecord = ClaimRecord.fromPartial(object.claimRecord);
+    if (
+      object.userAirdropEntries !== undefined &&
+      object.userAirdropEntries !== null
+    ) {
+      message.userAirdropEntries = UserAirdropEntries.fromPartial(
+        object.userAirdropEntries
+      );
     } else {
-      message.claimRecord = undefined;
+      message.userAirdropEntries = undefined;
     }
     return message;
   },
@@ -428,8 +441,8 @@ export const QueryClaimRecordsResponse = {
     message: QueryClaimRecordsResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    for (const v of message.claimRecord) {
-      ClaimRecord.encode(v!, writer.uint32(10).fork()).ldelim();
+    for (const v of message.usersAirdropEntries) {
+      UserAirdropEntries.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     if (message.pagination !== undefined) {
       PageResponse.encode(
@@ -449,12 +462,14 @@ export const QueryClaimRecordsResponse = {
     const message = {
       ...baseQueryClaimRecordsResponse,
     } as QueryClaimRecordsResponse;
-    message.claimRecord = [];
+    message.usersAirdropEntries = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.claimRecord.push(ClaimRecord.decode(reader, reader.uint32()));
+          message.usersAirdropEntries.push(
+            UserAirdropEntries.decode(reader, reader.uint32())
+          );
           break;
         case 2:
           message.pagination = PageResponse.decode(reader, reader.uint32());
@@ -471,10 +486,13 @@ export const QueryClaimRecordsResponse = {
     const message = {
       ...baseQueryClaimRecordsResponse,
     } as QueryClaimRecordsResponse;
-    message.claimRecord = [];
-    if (object.claimRecord !== undefined && object.claimRecord !== null) {
-      for (const e of object.claimRecord) {
-        message.claimRecord.push(ClaimRecord.fromJSON(e));
+    message.usersAirdropEntries = [];
+    if (
+      object.usersAirdropEntries !== undefined &&
+      object.usersAirdropEntries !== null
+    ) {
+      for (const e of object.usersAirdropEntries) {
+        message.usersAirdropEntries.push(UserAirdropEntries.fromJSON(e));
       }
     }
     if (object.pagination !== undefined && object.pagination !== null) {
@@ -487,12 +505,12 @@ export const QueryClaimRecordsResponse = {
 
   toJSON(message: QueryClaimRecordsResponse): unknown {
     const obj: any = {};
-    if (message.claimRecord) {
-      obj.claimRecord = message.claimRecord.map((e) =>
-        e ? ClaimRecord.toJSON(e) : undefined
+    if (message.usersAirdropEntries) {
+      obj.usersAirdropEntries = message.usersAirdropEntries.map((e) =>
+        e ? UserAirdropEntries.toJSON(e) : undefined
       );
     } else {
-      obj.claimRecord = [];
+      obj.usersAirdropEntries = [];
     }
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
@@ -507,10 +525,13 @@ export const QueryClaimRecordsResponse = {
     const message = {
       ...baseQueryClaimRecordsResponse,
     } as QueryClaimRecordsResponse;
-    message.claimRecord = [];
-    if (object.claimRecord !== undefined && object.claimRecord !== null) {
-      for (const e of object.claimRecord) {
-        message.claimRecord.push(ClaimRecord.fromPartial(e));
+    message.usersAirdropEntries = [];
+    if (
+      object.usersAirdropEntries !== undefined &&
+      object.usersAirdropEntries !== null
+    ) {
+      for (const e of object.usersAirdropEntries) {
+        message.usersAirdropEntries.push(UserAirdropEntries.fromPartial(e));
       }
     }
     if (object.pagination !== undefined && object.pagination !== null) {
@@ -1729,11 +1750,11 @@ export const QueryAllAirdropEntryResponse = {
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
-  /** Queries a ClaimRecord by index. */
-  ClaimRecord(
+  /** Queries a UserAirdropEntries by index. */
+  UserAirdropEntries(
     request: QueryClaimRecordRequest
   ): Promise<QueryClaimRecordResponse>;
-  /** Queries a list of ClaimRecord items. */
+  /** Queries a list of UserAirdropEntries items. */
   ClaimRecords(
     request: QueryClaimRecordsRequest
   ): Promise<QueryClaimRecordsResponse>;
@@ -1778,13 +1799,13 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryParamsResponse.decode(new Reader(data)));
   }
 
-  ClaimRecord(
+  UserAirdropEntries(
     request: QueryClaimRecordRequest
   ): Promise<QueryClaimRecordResponse> {
     const data = QueryClaimRecordRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
-      "ClaimRecord",
+      "UserAirdropEntries",
       data
     );
     return promise.then((data) =>
