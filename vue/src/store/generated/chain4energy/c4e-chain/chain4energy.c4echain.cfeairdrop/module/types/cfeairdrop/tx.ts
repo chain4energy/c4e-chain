@@ -13,11 +13,19 @@ export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
 export interface MsgClaim {
   claimer: string;
-  campaign_id: string;
-  mission_id: string;
+  campaign_id: number;
+  mission_id: number;
 }
 
 export interface MsgClaimResponse {}
+
+export interface MsgInitialClaim {
+  claimer: string;
+  campaign_id: number;
+  addressToClaim: string;
+}
+
+export interface MsgInitialClaimResponse {}
 
 export interface MsgCreateAirdropCampaign {
   owner: string;
@@ -57,18 +65,27 @@ export interface MsgDeleteAirdropEntry {
 
 export interface MsgDeleteAirdropEntryResponse {}
 
-const baseMsgClaim: object = { claimer: "", campaign_id: "", mission_id: "" };
+export interface MsgCloseAirdropCampaign {
+  owner: string;
+  campaignId: number;
+  burn: boolean;
+  communityPoolSend: boolean;
+}
+
+export interface MsgCloseAirdropCampaignResponse {}
+
+const baseMsgClaim: object = { claimer: "", campaign_id: 0, mission_id: 0 };
 
 export const MsgClaim = {
   encode(message: MsgClaim, writer: Writer = Writer.create()): Writer {
     if (message.claimer !== "") {
       writer.uint32(10).string(message.claimer);
     }
-    if (message.campaign_id !== "") {
-      writer.uint32(18).string(message.campaign_id);
+    if (message.campaign_id !== 0) {
+      writer.uint32(16).uint64(message.campaign_id);
     }
-    if (message.mission_id !== "") {
-      writer.uint32(26).string(message.mission_id);
+    if (message.mission_id !== 0) {
+      writer.uint32(24).uint64(message.mission_id);
     }
     return writer;
   },
@@ -84,10 +101,10 @@ export const MsgClaim = {
           message.claimer = reader.string();
           break;
         case 2:
-          message.campaign_id = reader.string();
+          message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
         case 3:
-          message.mission_id = reader.string();
+          message.mission_id = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -105,14 +122,14 @@ export const MsgClaim = {
       message.claimer = "";
     }
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
-      message.campaign_id = String(object.campaign_id);
+      message.campaign_id = Number(object.campaign_id);
     } else {
-      message.campaign_id = "";
+      message.campaign_id = 0;
     }
     if (object.mission_id !== undefined && object.mission_id !== null) {
-      message.mission_id = String(object.mission_id);
+      message.mission_id = Number(object.mission_id);
     } else {
-      message.mission_id = "";
+      message.mission_id = 0;
     }
     return message;
   },
@@ -136,12 +153,12 @@ export const MsgClaim = {
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
       message.campaign_id = object.campaign_id;
     } else {
-      message.campaign_id = "";
+      message.campaign_id = 0;
     }
     if (object.mission_id !== undefined && object.mission_id !== null) {
       message.mission_id = object.mission_id;
     } else {
-      message.mission_id = "";
+      message.mission_id = 0;
     }
     return message;
   },
@@ -181,6 +198,147 @@ export const MsgClaimResponse = {
 
   fromPartial(_: DeepPartial<MsgClaimResponse>): MsgClaimResponse {
     const message = { ...baseMsgClaimResponse } as MsgClaimResponse;
+    return message;
+  },
+};
+
+const baseMsgInitialClaim: object = {
+  claimer: "",
+  campaign_id: 0,
+  addressToClaim: "",
+};
+
+export const MsgInitialClaim = {
+  encode(message: MsgInitialClaim, writer: Writer = Writer.create()): Writer {
+    if (message.claimer !== "") {
+      writer.uint32(10).string(message.claimer);
+    }
+    if (message.campaign_id !== 0) {
+      writer.uint32(16).uint64(message.campaign_id);
+    }
+    if (message.addressToClaim !== "") {
+      writer.uint32(34).string(message.addressToClaim);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgInitialClaim {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgInitialClaim } as MsgInitialClaim;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.claimer = reader.string();
+          break;
+        case 2:
+          message.campaign_id = longToNumber(reader.uint64() as Long);
+          break;
+        case 4:
+          message.addressToClaim = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgInitialClaim {
+    const message = { ...baseMsgInitialClaim } as MsgInitialClaim;
+    if (object.claimer !== undefined && object.claimer !== null) {
+      message.claimer = String(object.claimer);
+    } else {
+      message.claimer = "";
+    }
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = Number(object.campaign_id);
+    } else {
+      message.campaign_id = 0;
+    }
+    if (object.addressToClaim !== undefined && object.addressToClaim !== null) {
+      message.addressToClaim = String(object.addressToClaim);
+    } else {
+      message.addressToClaim = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgInitialClaim): unknown {
+    const obj: any = {};
+    message.claimer !== undefined && (obj.claimer = message.claimer);
+    message.campaign_id !== undefined &&
+      (obj.campaign_id = message.campaign_id);
+    message.addressToClaim !== undefined &&
+      (obj.addressToClaim = message.addressToClaim);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgInitialClaim>): MsgInitialClaim {
+    const message = { ...baseMsgInitialClaim } as MsgInitialClaim;
+    if (object.claimer !== undefined && object.claimer !== null) {
+      message.claimer = object.claimer;
+    } else {
+      message.claimer = "";
+    }
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = object.campaign_id;
+    } else {
+      message.campaign_id = 0;
+    }
+    if (object.addressToClaim !== undefined && object.addressToClaim !== null) {
+      message.addressToClaim = object.addressToClaim;
+    } else {
+      message.addressToClaim = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgInitialClaimResponse: object = {};
+
+export const MsgInitialClaimResponse = {
+  encode(_: MsgInitialClaimResponse, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgInitialClaimResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgInitialClaimResponse,
+    } as MsgInitialClaimResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgInitialClaimResponse {
+    const message = {
+      ...baseMsgInitialClaimResponse,
+    } as MsgInitialClaimResponse;
+    return message;
+  },
+
+  toJSON(_: MsgInitialClaimResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgInitialClaimResponse>
+  ): MsgInitialClaimResponse {
+    const message = {
+      ...baseMsgInitialClaimResponse,
+    } as MsgInitialClaimResponse;
     return message;
   },
 };
@@ -930,10 +1088,191 @@ export const MsgDeleteAirdropEntryResponse = {
   },
 };
 
+const baseMsgCloseAirdropCampaign: object = {
+  owner: "",
+  campaignId: 0,
+  burn: false,
+  communityPoolSend: false,
+};
+
+export const MsgCloseAirdropCampaign = {
+  encode(
+    message: MsgCloseAirdropCampaign,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.owner !== "") {
+      writer.uint32(10).string(message.owner);
+    }
+    if (message.campaignId !== 0) {
+      writer.uint32(16).uint64(message.campaignId);
+    }
+    if (message.burn === true) {
+      writer.uint32(24).bool(message.burn);
+    }
+    if (message.communityPoolSend === true) {
+      writer.uint32(32).bool(message.communityPoolSend);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgCloseAirdropCampaign {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgCloseAirdropCampaign,
+    } as MsgCloseAirdropCampaign;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.owner = reader.string();
+          break;
+        case 2:
+          message.campaignId = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.burn = reader.bool();
+          break;
+        case 4:
+          message.communityPoolSend = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgCloseAirdropCampaign {
+    const message = {
+      ...baseMsgCloseAirdropCampaign,
+    } as MsgCloseAirdropCampaign;
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner);
+    } else {
+      message.owner = "";
+    }
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = Number(object.campaignId);
+    } else {
+      message.campaignId = 0;
+    }
+    if (object.burn !== undefined && object.burn !== null) {
+      message.burn = Boolean(object.burn);
+    } else {
+      message.burn = false;
+    }
+    if (
+      object.communityPoolSend !== undefined &&
+      object.communityPoolSend !== null
+    ) {
+      message.communityPoolSend = Boolean(object.communityPoolSend);
+    } else {
+      message.communityPoolSend = false;
+    }
+    return message;
+  },
+
+  toJSON(message: MsgCloseAirdropCampaign): unknown {
+    const obj: any = {};
+    message.owner !== undefined && (obj.owner = message.owner);
+    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    message.burn !== undefined && (obj.burn = message.burn);
+    message.communityPoolSend !== undefined &&
+      (obj.communityPoolSend = message.communityPoolSend);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<MsgCloseAirdropCampaign>
+  ): MsgCloseAirdropCampaign {
+    const message = {
+      ...baseMsgCloseAirdropCampaign,
+    } as MsgCloseAirdropCampaign;
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    } else {
+      message.owner = "";
+    }
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = object.campaignId;
+    } else {
+      message.campaignId = 0;
+    }
+    if (object.burn !== undefined && object.burn !== null) {
+      message.burn = object.burn;
+    } else {
+      message.burn = false;
+    }
+    if (
+      object.communityPoolSend !== undefined &&
+      object.communityPoolSend !== null
+    ) {
+      message.communityPoolSend = object.communityPoolSend;
+    } else {
+      message.communityPoolSend = false;
+    }
+    return message;
+  },
+};
+
+const baseMsgCloseAirdropCampaignResponse: object = {};
+
+export const MsgCloseAirdropCampaignResponse = {
+  encode(
+    _: MsgCloseAirdropCampaignResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgCloseAirdropCampaignResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgCloseAirdropCampaignResponse,
+    } as MsgCloseAirdropCampaignResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgCloseAirdropCampaignResponse {
+    const message = {
+      ...baseMsgCloseAirdropCampaignResponse,
+    } as MsgCloseAirdropCampaignResponse;
+    return message;
+  },
+
+  toJSON(_: MsgCloseAirdropCampaignResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgCloseAirdropCampaignResponse>
+  ): MsgCloseAirdropCampaignResponse {
+    const message = {
+      ...baseMsgCloseAirdropCampaignResponse,
+    } as MsgCloseAirdropCampaignResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Claim(request: MsgClaim): Promise<MsgClaimResponse>;
-  /** rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse); */
+  InitialClaim(request: MsgInitialClaim): Promise<MsgInitialClaimResponse>;
   CreateAirdropCampaign(
     request: MsgCreateAirdropCampaign
   ): Promise<MsgCreateAirdropCampaignResponse>;
@@ -943,10 +1282,13 @@ export interface Msg {
   AddAirdropEntries(
     request: MsgAddAirdropEntries
   ): Promise<MsgAddAirdropEntriesResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   DeleteAirdropEntry(
     request: MsgDeleteAirdropEntry
   ): Promise<MsgDeleteAirdropEntryResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  CloseAirdropCampaign(
+    request: MsgCloseAirdropCampaign
+  ): Promise<MsgCloseAirdropCampaignResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -962,6 +1304,18 @@ export class MsgClientImpl implements Msg {
       data
     );
     return promise.then((data) => MsgClaimResponse.decode(new Reader(data)));
+  }
+
+  InitialClaim(request: MsgInitialClaim): Promise<MsgInitialClaimResponse> {
+    const data = MsgInitialClaim.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeairdrop.Msg",
+      "InitialClaim",
+      data
+    );
+    return promise.then((data) =>
+      MsgInitialClaimResponse.decode(new Reader(data))
+    );
   }
 
   CreateAirdropCampaign(
@@ -1017,6 +1371,20 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgDeleteAirdropEntryResponse.decode(new Reader(data))
+    );
+  }
+
+  CloseAirdropCampaign(
+    request: MsgCloseAirdropCampaign
+  ): Promise<MsgCloseAirdropCampaignResponse> {
+    const data = MsgCloseAirdropCampaign.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeairdrop.Msg",
+      "CloseAirdropCampaign",
+      data
+    );
+    return promise.then((data) =>
+      MsgCloseAirdropCampaignResponse.decode(new Reader(data))
     );
   }
 }

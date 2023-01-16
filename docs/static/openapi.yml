@@ -34271,9 +34271,13 @@ definitions:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgClaimResponse:
     type: object
+  chain4energy.c4echain.cfeairdrop.MsgCloseAirdropCampaignResponse:
+    type: object
   chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaignResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntryResponse:
+    type: object
+  chain4energy.c4echain.cfeairdrop.MsgInitialClaimResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.Params:
     type: object

@@ -9,19 +9,32 @@ import (
 
 func (k msgServer) Claim(goCtx context.Context, msg *types.MsgClaim) (*types.MsgClaimResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	keeper := k.Keeper
 
-	// TODO: Handling the message
-	_ = ctx
-
+	if err := keeper.ClaimMission(
+		ctx,
+		msg.CampaignId,
+		msg.MissionId,
+		msg.Claimer,
+	); err != nil {
+		return nil, err
+	}
 	return &types.MsgClaimResponse{}, nil
 }
 
-//
-//func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClaim) (*types.MsgInitialClaimResponse, error) {
-//	ctx := sdk.UnwrapSDKContext(goCtx)
-//
-//	// TODO: Handling the message
-//	_ = ctx
-//
-//	return &types.MsgInitialClaimResponse{}, nil
-//}
+func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClaim) (*types.MsgInitialClaimResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	keeper := k.Keeper
+	claimer := msg.Claimer
+	if msg.AddressToClaim != "" {
+		claimer = msg.AddressToClaim
+	}
+	if err := keeper.ClaimInitial(
+		ctx,
+		msg.CampaignId,
+		claimer,
+	); err != nil {
+		return nil, err
+	}
+	return &types.MsgInitialClaimResponse{}, nil
+}

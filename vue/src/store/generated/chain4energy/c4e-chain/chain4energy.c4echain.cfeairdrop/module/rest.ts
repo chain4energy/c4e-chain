@@ -75,9 +75,13 @@ export type CfeairdropMsgAddMissionToAidropCampaignResponse = object;
 
 export type CfeairdropMsgClaimResponse = object;
 
+export type CfeairdropMsgCloseAirdropCampaignResponse = object;
+
 export type CfeairdropMsgCreateAirdropCampaignResponse = object;
 
 export type CfeairdropMsgDeleteAirdropEntryResponse = object;
+
+export type CfeairdropMsgInitialClaimResponse = object;
 
 export interface CfeairdropQueryCampaignResponse {
   campaign?: CfeairdropCampaign;

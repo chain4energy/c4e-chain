@@ -11,30 +11,30 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 // Msg defines the Msg service.
 service Msg {
   rpc Claim(MsgClaim) returns (MsgClaimResponse);
-//  rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
+  rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
   rpc CreateAirdropCampaign(MsgCreateAirdropCampaign) returns (MsgCreateAirdropCampaignResponse);
   rpc AddMissionToAidropCampaign(MsgAddMissionToAidropCampaign) returns (MsgAddMissionToAidropCampaignResponse);
   rpc AddAirdropEntries(MsgAddAirdropEntries) returns (MsgAddAirdropEntriesResponse);
   rpc DeleteAirdropEntry(MsgDeleteAirdropEntry) returns (MsgDeleteAirdropEntryResponse);
+  rpc CloseAirdropCampaign(MsgCloseAirdropCampaign) returns (MsgCloseAirdropCampaignResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgClaim {
   string claimer = 1;
-  string campaign_id = 2;
-  string mission_id = 3;
+  uint64 campaign_id = 2;
+  uint64 mission_id = 3;
 }
 
 message MsgClaimResponse {}
-//
-//message MsgInitialClaim {
-//  string claimer = 1;
-//  string campaign_id = 2;
-//  string mission_id = 3;
-//  string addressToClaim = 4;
-//}
-//
-//message MsgInitialClaimResponse {}
+
+message MsgInitialClaim {
+  string claimer = 1;
+  uint64 campaign_id = 2;
+  string addressToClaim = 4;
+}
+
+message MsgInitialClaimResponse {}
 
 message MsgCreateAirdropCampaign {
   string owner = 1;
@@ -87,5 +87,14 @@ message MsgDeleteAirdropEntry {
 }
 
 message MsgDeleteAirdropEntryResponse {}
+
+message MsgCloseAirdropCampaign {
+  string owner = 1;
+  uint64 campaignId = 2;
+  bool burn = 3;
+  bool communityPoolSend = 4;
+}
+
+message MsgCloseAirdropCampaignResponse {}
 
 // this line is used by starport scaffolding # proto/tx/message

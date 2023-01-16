@@ -15,6 +15,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAddMissionToAidropCampaign{}, "cfeairdrop/AddMissionToAidropCampaign", nil)
 	cdc.RegisterConcrete(&MsgAddAirdropEntries{}, "cfeairdrop/AddUserAirdropEntries", nil)
 	cdc.RegisterConcrete(&MsgDeleteAirdropEntry{}, "cfeairdrop/DeleteAirdropEntry", nil)
+	cdc.RegisterConcrete(&MsgCloseAirdropCampaign{}, "cfeairdrop/CloseAirdropCampaign", nil)
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(&AirdropVestingAccount{}, "c4e/AirdropVestingAccount", nil)
 }
@@ -32,6 +33,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgAddAirdropEntries{},
 		&MsgDeleteAirdropEntry{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgCloseAirdropCampaign{},
 	)
 	// this line is used by starport scaffolding # 3
 

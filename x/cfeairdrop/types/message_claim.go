@@ -9,7 +9,7 @@ const TypeMsgClaim = "claim"
 
 var _ sdk.Msg = &MsgClaim{}
 
-func NewMsgClaim(claimer string, campaignId string, missionId string) *MsgClaim {
+func NewMsgClaim(claimer string, campaignId uint64, missionId uint64) *MsgClaim {
 	return &MsgClaim{
 		Claimer:    claimer,
 		CampaignId: campaignId,

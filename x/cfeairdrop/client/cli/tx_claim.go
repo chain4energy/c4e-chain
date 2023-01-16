@@ -18,9 +18,14 @@ func CmdClaim() *cobra.Command {
 		Short: "Broadcast message Claim",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argCampaignId := args[0]
-			argMissionId := args[1]
-
+			argCampaignId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			argMissionId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -30,6 +35,40 @@ func CmdClaim() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argCampaignId,
 				argMissionId,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdInitialClaim() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "initial-claim [campaign-id] [optional-address-to-claim]",
+		Short: "Broadcast message InitialClaim",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			argCampaignId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			argAddressToClaim := args[2]
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgInitialClaim(
+				clientCtx.GetFromAddress().String(),
+				argCampaignId,
+				argAddressToClaim,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

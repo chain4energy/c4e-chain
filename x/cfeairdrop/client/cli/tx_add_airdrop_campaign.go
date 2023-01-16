@@ -22,42 +22,35 @@ func CmdCreateAirdropCampaign() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argDescription := args[1]
-			argStartTime := args[2]
-			argEndTime := args[3]
-			argLockupPeriod := args[4]
-			argVestingPeriod := args[5]
-
+			argStartTime, err := strconv.ParseInt(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+			argEndTime, err := strconv.ParseInt(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+			argLockupPeriod, err := time.ParseDuration(args[4])
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+			}
+			argVestingPeriod, err := time.ParseDuration(args[5])
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+			}
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
-			}
-
-			startTime, err := strconv.ParseInt(argStartTime, 10, 64)
-			if err != nil {
-				return err
-			}
-			endTime, err := strconv.ParseInt(argEndTime, 10, 64)
-			if err != nil {
-				return err
-			}
-			lockupPeriod, err := time.ParseDuration(argLockupPeriod)
-			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
-			}
-
-			vestingPeriod, err := time.ParseDuration(argVestingPeriod)
-			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
 
 			msg := types.NewMsgCreateAirdropCampaign(
 				clientCtx.GetFromAddress().String(),
 				argName,
 				argDescription,
-				startTime,
-				endTime,
-				lockupPeriod,
-				vestingPeriod,
+				argStartTime,
+				argEndTime,
+				argLockupPeriod,
+				argVestingPeriod,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
