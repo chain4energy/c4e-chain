@@ -13,7 +13,7 @@ import (
 
 func CmdCreateAirdropEntry() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-airdrop-entry [campaignId] [airdrop-entries-list]",
+		Use:   "create-airdrop-entry [campaignId] [airdrop-entries-json-file]",
 		Short: "Create a new AirdropEntry",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -25,7 +25,7 @@ func CmdCreateAirdropEntry() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argAirdropEntries, err := parseAirdropEntries(clientCtx, args[1])
+			argAirdropEntries, err := parseAirdropEntries(clientCtx, argCampaignId, args[1])
 			if err != nil {
 				return err
 			}

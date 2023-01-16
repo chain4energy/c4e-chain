@@ -63,7 +63,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
-			desc: "duplicated claimRecord",
+			desc: "duplicated userAirdropEntries",
 			genState: &types.GenesisState{
 				UserAirdropEntries: []types.UserAirdropEntries{
 					{

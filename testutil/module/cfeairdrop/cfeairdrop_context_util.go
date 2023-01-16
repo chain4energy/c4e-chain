@@ -42,9 +42,8 @@ func (h *ContextC4eAirdropUtils) InitGenesis(genState cfeairdroptypes.GenesisSta
 	h.C4eAirdropKeeperUtils.InitGenesis(h.testContext.GetContext(), genState)
 }
 
-func (h *ContextC4eAirdropUtils) AddCampaignRecords(srcAddress sdk.AccAddress, campaignId uint64, campaignRecords map[string]sdk.Int) {
-	h.C4eAirdropUtils.AddCampaignRecords(h.testContext.GetContext(), srcAddress, campaignId, campaignRecords)
-
+func (h *ContextC4eAirdropUtils) AddAirdropEntries(srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry) {
+	h.C4eAirdropUtils.AddAirdropEntries(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries)
 }
 
 func (h *ContextC4eAirdropUtils) ClaimInitial(campaignId uint64, claimer sdk.AccAddress) {
@@ -55,12 +54,12 @@ func (h *ContextC4eAirdropUtils) ClaimInitialError(campaignId uint64, claimer sd
 	h.C4eAirdropUtils.ClaimInitialError(h.testContext.GetContext(), campaignId, claimer, errorMessage)
 }
 
-func (h *ContextC4eAirdropUtils) GetClaimRecord(address string) *cfeairdroptypes.UserAirdropEntries {
-	return h.C4eAirdropUtils.GetClaimRecord(h.testContext.GetContext(), address)
+func (h *ContextC4eAirdropUtils) GetUserAirdropEntries(address string) *cfeairdroptypes.UserAirdropEntries {
+	return h.C4eAirdropUtils.GetUserAirdropEntries(h.testContext.GetContext(), address)
 }
 
-func (h *ContextC4eAirdropUtils) SetClaimRecord(claimRecord *cfeairdroptypes.UserAirdropEntries) {
-	h.C4eAirdropUtils.SetClaimRecord(h.testContext.GetContext(), claimRecord)
+func (h *ContextC4eAirdropUtils) SetUserAirdropEntries(userAirdropEntries *cfeairdroptypes.UserAirdropEntries) {
+	h.C4eAirdropUtils.SetUserAirdropEntries(h.testContext.GetContext(), userAirdropEntries)
 }
 
 func (h *ContextC4eAirdropUtils) CompleteMission(campaignId uint64, missionId uint64, claimer sdk.AccAddress) {

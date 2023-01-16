@@ -114,10 +114,10 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		airdropKeeper.Logger(ctx).Error("source module account not found", "name", airdropSource)
 		return fmt.Errorf("source module account not found: %s", airdropSource)
 	}
-	if err = airdropKeeper.AddAirdropEntries(ctx, acc.GetAddress().String(), gleamCamapaignId, gleamContestRecords); err != nil {
+	if err = airdropKeeper.AddUserAirdropEntries(ctx, acc.GetAddress().String(), gleamCamapaignId, gleamContestRecords); err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddAirdropEntries(ctx, acc.GetAddress().String(), stakeCamapaignId, stakeRecords); err != nil {
+	if err = airdropKeeper.AddUserAirdropEntries(ctx, acc.GetAddress().String(), stakeCamapaignId, stakeRecords); err != nil {
 		return err
 	}
 	return nil

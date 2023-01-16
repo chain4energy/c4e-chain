@@ -8,12 +8,8 @@ import (
 
 type MessageId uint64
 
-func IsMessageId(id uint64) bool {
-	return id < uint64(end)
-}
-
-func (cr *UserAirdropEntries) GetAidropEntryState(camapaignId uint64) *AirdropEntryState {
-	for _, airdropEntryState := range cr.AirdropEntriesState {
+func (cr *UserAirdropEntries) GetAidropEntry(camapaignId uint64) *AirdropEntry {
+	for _, airdropEntryState := range cr.AirdropEntries {
 		if airdropEntryState.CampaignId == camapaignId {
 			return airdropEntryState
 		}

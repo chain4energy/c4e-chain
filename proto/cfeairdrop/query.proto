@@ -17,13 +17,13 @@ service Query {
     option (google.api.http).get = "/c4e/airdrop/params";
   }
   // Queries a UserAirdropEntries by index.
-	rpc UserAirdropEntries(QueryClaimRecordRequest) returns (QueryClaimRecordResponse) {
-		option (google.api.http).get = "/c4e/airdrop/claim_record/{address}";
+	rpc UserAirdropEntries(QueryUserAirdropEntriesRequest) returns (QueryUserAirdropEntriesResponse) {
+		option (google.api.http).get = "/c4e/airdrop/user_airdrop_entries/{address}";
 	}
 
 	// Queries a list of UserAirdropEntries items.
-	rpc ClaimRecords(QueryClaimRecordsRequest) returns (QueryClaimRecordsResponse) {
-		option (google.api.http).get = "/c4e/airdrop/claim_record";
+	rpc UsersAirdropEntries(QueryUsersAirdropEntriesRequest) returns (QueryUsersAirdropEntriesResponse) {
+		option (google.api.http).get = "/c4e/airdrop/users_airdrop_entries";
 	}
 
 // Queries a InitialClaim by index.
@@ -55,14 +55,14 @@ service Query {
 		option (google.api.http).get = "/c4e/airdrop/campaign/{campaignId}";
 	}
 // Queries a AirdropEntry by id.
-	rpc AirdropEntry(QueryGetAirdropEntryRequest) returns (QueryGetAirdropEntryResponse) {
-		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/airdrop_entry/{id}";
-	}
-
-	// Queries a list of AirdropEntry items.
-	rpc AirdropEntryAll(QueryAllAirdropEntryRequest) returns (QueryAllAirdropEntryResponse) {
-		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/airdrop_entry";
-	}
+//	rpc AirdropEntry(QueryGetAirdropEntryRequest) returns (QueryGetAirdropEntryResponse) {
+//		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/airdrop_entry/{id}";
+//	}
+//
+//	// Queries a list of AirdropEntry items.
+//	rpc AirdropEntryAll(QueryAllAirdropEntryRequest) returns (QueryAllAirdropEntryResponse) {
+//		option (google.api.http).get = "/chain4energy/c4e-chain/cfeairdrop/airdrop_entry";
+//	}
 
 // this line is used by starport scaffolding # 2
 }
@@ -78,21 +78,21 @@ message QueryParamsResponse {
 	];
 }
 
-message QueryClaimRecordRequest {
+message QueryUserAirdropEntriesRequest {
 	  string address = 1;
 }
 
-message QueryClaimRecordResponse {
+message QueryUserAirdropEntriesResponse {
 	UserAirdropEntries userAirdropEntries = 1 [
 		(gogoproto.nullable) = false
 	];
 }
 
-message QueryClaimRecordsRequest {
+message QueryUsersAirdropEntriesRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryClaimRecordsResponse {
+message QueryUsersAirdropEntriesResponse {
 	repeated UserAirdropEntries usersAirdropEntries = 1 [
 		(gogoproto.nullable) = false
 	];
@@ -162,22 +162,22 @@ message QueryCampaignResponse {
 		(gogoproto.nullable) = false
 	];
 }
-
-message QueryGetAirdropEntryRequest {
-	uint64 id = 1;
-}
-
-message QueryGetAirdropEntryResponse {
-	AirdropEntry AirdropEntry = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllAirdropEntryRequest {
-	cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllAirdropEntryResponse {
-	repeated AirdropEntry AirdropEntry = 1 [(gogoproto.nullable) = false];
-	cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
+//
+//message QueryGetAirdropEntryRequest {
+//	uint64 id = 1;
+//}
+//
+//message QueryGetAirdropEntryResponse {
+//	AirdropEntry AirdropEntry = 1 [(gogoproto.nullable) = false];
+//}
+//
+//message QueryAllAirdropEntryRequest {
+//	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+//}
+//
+//message QueryAllAirdropEntryResponse {
+//	repeated AirdropEntry AirdropEntry = 1 [(gogoproto.nullable) = false];
+//	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+//}
 
 // this line is used by starport scaffolding # 3

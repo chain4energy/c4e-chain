@@ -1,10 +1,10 @@
 package keeper_test
 
 import (
+	"strconv"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
@@ -15,30 +15,39 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 )
 
-func TestAirdropEntryQuerySingle(t *testing.T) {
+// Prevent strconv unused error
+var _ = strconv.IntSize
+
+func TestClaimRecordQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNAirdropEntry(keeper, ctx, 2)
+	msgs := createNClaimRecord(keeper, ctx, 2, 10, true, true)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryGetAirdropEntryRequest
-		response *types.QueryGetAirdropEntryResponse
+		request  *types.QueryUserAirdropEntriesRequest
+		response *types.QueryUserAirdropEntriesResponse
 		err      error
 	}{
 		{
-			desc:     "First",
-			request:  &types.QueryGetAirdropEntryRequest{Id: msgs[0].Id},
-			response: &types.QueryGetAirdropEntryResponse{AirdropEntry: msgs[0]},
+			desc: "First",
+			request: &types.QueryUserAirdropEntriesRequest{
+				Address: msgs[0].Address,
+			},
+			response: &types.QueryUserAirdropEntriesResponse{UserAirdropEntries: msgs[0]},
 		},
 		{
-			desc:     "Second",
-			request:  &types.QueryGetAirdropEntryRequest{Id: msgs[1].Id},
-			response: &types.QueryGetAirdropEntryResponse{AirdropEntry: msgs[1]},
+			desc: "Second",
+			request: &types.QueryUserAirdropEntriesRequest{
+				Address: msgs[1].Address,
+			},
+			response: &types.QueryUserAirdropEntriesResponse{UserAirdropEntries: msgs[1]},
 		},
 		{
-			desc:    "KeyNotFound",
-			request: &types.QueryGetAirdropEntryRequest{Id: uint64(len(msgs))},
-			err:     sdkerrors.ErrKeyNotFound,
+			desc: "KeyNotFound",
+			request: &types.QueryUserAirdropEntriesRequest{
+				Address: strconv.Itoa(100000),
+			},
+			err: status.Error(codes.NotFound, "not found"),
 		},
 		{
 			desc: "InvalidRequest",
@@ -46,7 +55,7 @@ func TestAirdropEntryQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.AirdropEntry(wctx, tc.request)
+			response, err := keeper.UserAirdropEntries(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -60,13 +69,13 @@ func TestAirdropEntryQuerySingle(t *testing.T) {
 	}
 }
 
-func TestAirdropEntryQueryPaginated(t *testing.T) {
+func TestClaimRecordQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNAirdropEntry(keeper, ctx, 5)
+	msgs := createNClaimRecord(keeper, ctx, 5, 0, false, false)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllAirdropEntryRequest {
-		return &types.QueryAllAirdropEntryRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryUsersAirdropEntriesRequest {
+		return &types.QueryUsersAirdropEntriesRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -78,12 +87,12 @@ func TestAirdropEntryQueryPaginated(t *testing.T) {
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.AirdropEntryAll(wctx, request(nil, uint64(i), uint64(step), false))
+			resp, err := keeper.UsersAirdropEntries(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.AirdropEntry), step)
+			require.LessOrEqual(t, len(resp.UsersAirdropEntries), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.AirdropEntry),
+				nullify.Fill(resp.UsersAirdropEntries),
 			)
 		}
 	})
@@ -91,27 +100,27 @@ func TestAirdropEntryQueryPaginated(t *testing.T) {
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.AirdropEntryAll(wctx, request(next, 0, uint64(step), false))
+			resp, err := keeper.UsersAirdropEntries(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.AirdropEntry), step)
+			require.LessOrEqual(t, len(resp.UsersAirdropEntries), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.AirdropEntry),
+				nullify.Fill(resp.UsersAirdropEntries),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.AirdropEntryAll(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.UsersAirdropEntries(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.AirdropEntry),
+			nullify.Fill(resp.UsersAirdropEntries),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.AirdropEntryAll(wctx, nil)
+		_, err := keeper.UsersAirdropEntries(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }

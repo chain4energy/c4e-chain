@@ -20,16 +20,16 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
-		claimRecord := types.UserAirdropEntries{
+		userAirdropEntries := types.UserAirdropEntries{
 			Address: strconv.Itoa(i),
 		}
-		nullify.Fill(&claimRecord)
-		state.ClaimRecords = append(state.ClaimRecords, claimRecord)
+		nullify.Fill(&userAirdropEntries)
+		state.UserAirdropEntries = append(state.UserAirdropEntries, userAirdropEntries)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.ClaimRecords
+	return network.New(t, cfg), state.UserAirdropEntries
 }
 
 //
@@ -68,7 +68,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //				tc.idIndex,
 //			}
 //			args = append(args, tc.args...)
-//			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowClaimRecord(), args)
+//			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowUserAirdropEntries(), args)
 //			if tc.err != nil {
 //				stat, ok := status.FromError(tc.err)
 //				require.True(t, ok)
@@ -110,7 +110,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //		step := 2
 //		for i := 0; i < len(objs); i += step {
 //			args := request(nil, uint64(i), uint64(step), false)
-//			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecord(), args)
+//			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListUserAirdropEntries(), args)
 //			require.NoError(t, err)
 //			var resp types.QueryClaimRecordsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
@@ -126,7 +126,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //		var next []byte
 //		for i := 0; i < len(objs); i += step {
 //			args := request(next, 0, uint64(step), false)
-//			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecord(), args)
+//			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListUserAirdropEntries(), args)
 //			require.NoError(t, err)
 //			var resp types.QueryClaimRecordsResponse
 //			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
@@ -140,7 +140,7 @@ func networkWithClaimRecordObjects(t *testing.T, n int) (*network.Network, []typ
 //	})
 //	t.Run("Total", func(t *testing.T) {
 //		args := request(nil, 0, uint64(len(objs)), true)
-//		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListClaimRecord(), args)
+//		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListUserAirdropEntries(), args)
 //		require.NoError(t, err)
 //		var resp types.QueryClaimRecordsResponse
 //		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))

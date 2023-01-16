@@ -3,7 +3,6 @@ import { txClient, queryClient, MissingWalletError , registry} from './module'
 import { ContinuousVestingPeriod } from "./module/types/cfeairdrop/account"
 import { AirdropVestingAccount } from "./module/types/cfeairdrop/account"
 import { UserAirdropEntries } from "./module/types/cfeairdrop/airdrop"
-import { AirdropEntryState } from "./module/types/cfeairdrop/airdrop"
 import { AirdropEntry } from "./module/types/cfeairdrop/airdrop"
 import { AirdropEntries } from "./module/types/cfeairdrop/airdrop"
 import { Campaign } from "./module/types/cfeairdrop/airdrop"
@@ -12,7 +11,7 @@ import { Mission } from "./module/types/cfeairdrop/airdrop"
 import { Params } from "./module/types/cfeairdrop/params"
 
 
-export { ContinuousVestingPeriod, AirdropVestingAccount, UserAirdropEntries, AirdropEntryState, AirdropEntry, AirdropEntries, Campaign, InitialClaim, Mission, Params };
+export { ContinuousVestingPeriod, AirdropVestingAccount, UserAirdropEntries, AirdropEntry, AirdropEntries, Campaign, InitialClaim, Mission, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -52,21 +51,18 @@ const getDefaultState = () => {
 	return {
 				Params: {},
 				UserAirdropEntries: {},
-				ClaimRecords: {},
+				UsersAirdropEntries: {},
 				InitialClaim: {},
 				InitialClaims: {},
 				Mission: {},
 				MissionAll: {},
 				Campaigns: {},
 				Campaign: {},
-				AirdropEntry: {},
-				AirdropEntryAll: {},
 				
 				_Structure: {
 						ContinuousVestingPeriod: getStructure(ContinuousVestingPeriod.fromPartial({})),
 						AirdropVestingAccount: getStructure(AirdropVestingAccount.fromPartial({})),
 						UserAirdropEntries: getStructure(UserAirdropEntries.fromPartial({})),
-						AirdropEntryState: getStructure(AirdropEntryState.fromPartial({})),
 						AirdropEntry: getStructure(AirdropEntry.fromPartial({})),
 						AirdropEntries: getStructure(AirdropEntries.fromPartial({})),
 						Campaign: getStructure(Campaign.fromPartial({})),
@@ -113,11 +109,11 @@ export default {
 					}
 			return state.UserAirdropEntries[JSON.stringify(params)] ?? {}
 		},
-				getClaimRecords: (state) => (params = { params: {}}) => {
+				getUsersAirdropEntries: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.ClaimRecords[JSON.stringify(params)] ?? {}
+			return state.UsersAirdropEntries[JSON.stringify(params)] ?? {}
 		},
 				getInitialClaim: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
@@ -154,18 +150,6 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Campaign[JSON.stringify(params)] ?? {}
-		},
-				getAirdropEntry: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.AirdropEntry[JSON.stringify(params)] ?? {}
-		},
-				getAirdropEntryAll: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.AirdropEntryAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -250,22 +234,22 @@ export default {
 		 		
 		
 		
-		async QueryClaimRecords({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryUsersAirdropEntries({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryClaimRecords(query)).data
+				let value= (await queryClient.queryUsersAirdropEntries(query)).data
 				
 					
 				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await queryClient.queryClaimRecords({...query, 'pagination.key':(<any> value).pagination.next_key})).data
+					let next_values=(await queryClient.queryUsersAirdropEntries({...query, 'pagination.key':(<any> value).pagination.next_key})).data
 					value = mergeResults(value, next_values);
 				}
-				commit('QUERY', { query: 'ClaimRecords', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryClaimRecords', payload: { options: { all }, params: {...key},query }})
-				return getters['getClaimRecords']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'UsersAirdropEntries', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryUsersAirdropEntries', payload: { options: { all }, params: {...key},query }})
+				return getters['getUsersAirdropEntries']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryClaimRecords API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryUsersAirdropEntries API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
@@ -415,54 +399,6 @@ export default {
 		},
 		
 		
-		
-		
-		 		
-		
-		
-		async QueryAirdropEntry({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
-			try {
-				const key = params ?? {};
-				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryAirdropEntry( key.id)).data
-				
-					
-				commit('QUERY', { query: 'AirdropEntry', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAirdropEntry', payload: { options: { all }, params: {...key},query }})
-				return getters['getAirdropEntry']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new Error('QueryClient:QueryAirdropEntry API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
-		
-		
-		 		
-		
-		
-		async QueryAirdropEntryAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
-			try {
-				const key = params ?? {};
-				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryAirdropEntryAll(query)).data
-				
-					
-				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await queryClient.queryAirdropEntryAll({...query, 'pagination.key':(<any> value).pagination.next_key})).data
-					value = mergeResults(value, next_values);
-				}
-				commit('QUERY', { query: 'AirdropEntryAll', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAirdropEntryAll', payload: { options: { all }, params: {...key},query }})
-				return getters['getAirdropEntryAll']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new Error('QueryClient:QueryAirdropEntryAll API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
 		async sendMsgAddAirdropEntries({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -475,6 +411,21 @@ export default {
 					throw new Error('TxClient:MsgAddAirdropEntries:Init Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new Error('TxClient:MsgAddAirdropEntries:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgClaim({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgClaim(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgClaim:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgClaim:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -523,21 +474,6 @@ export default {
 				}
 			}
 		},
-		async sendMsgClaim({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgClaim(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgClaim:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgClaim:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		
 		async MsgAddAirdropEntries({ rootGetters }, { value }) {
 			try {
@@ -549,6 +485,19 @@ export default {
 					throw new Error('TxClient:MsgAddAirdropEntries:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgAddAirdropEntries:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgClaim({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgClaim(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgClaim:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgClaim:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -588,19 +537,6 @@ export default {
 					throw new Error('TxClient:MsgDeleteAirdropEntry:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgDeleteAirdropEntry:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgClaim({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgClaim(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgClaim:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgClaim:Create Could not create message: ' + e.message)
 				}
 			}
 		},

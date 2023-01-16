@@ -5,8 +5,8 @@ import "encoding/binary"
 var _ binary.ByteOrder
 
 const (
-	// ClaimRecordKeyPrefix is the prefix to retrieve all UserAirdropEntries
-	ClaimRecordKeyPrefix = "UserAirdropEntries/value/"
+	// UserAirdropEntriesKeyPrefix is the prefix to retrieve all UserAirdropEntries
+	UserAirdropEntriesKeyPrefix = "UserAirdropEntries/value/"
 )
 
 // UserAirdropEntriesKey returns the store key to retrieve a UserAirdropEntries from the index fields

@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,12 +11,10 @@ import (
 
 func TestAirdropEntryMsgServerCreate(t *testing.T) {
 	srv, ctx := setupMsgServer(t)
-	creator := "A"
-	for i := 0; i < 5; i++ {
-		resp, err := srv.CreateAirdropEntry(ctx, &types.MsgCreateAirdropEntry{Creator: creator})
-		require.NoError(t, err)
-		require.Equal(t, i, int(resp.Id))
-	}
+	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	owner := acountsAddresses[0].String()
+	_, err := srv.AddAirdropEntries(ctx, &types.MsgAddAirdropEntries{Owner: owner})
+	require.NoError(t, err)
 }
 
 //

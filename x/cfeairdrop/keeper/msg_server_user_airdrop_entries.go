@@ -9,7 +9,7 @@ import (
 func (k msgServer) AddAirdropEntries(goCtx context.Context, msg *types.MsgAddAirdropEntries) (*types.MsgAddAirdropEntriesResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
-	if err := keeper.AddAirdropEntries(
+	if err := keeper.AddUserAirdropEntries(
 		ctx,
 		msg.Owner,
 		msg.CampaignId,

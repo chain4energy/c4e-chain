@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) ClaimRecords(c context.Context, req *types.QueryClaimRecordsRequest) (*types.QueryClaimRecordsResponse, error) {
+func (k Keeper) UsersAirdropEntries(c context.Context, req *types.QueryUsersAirdropEntriesRequest) (*types.QueryUsersAirdropEntriesResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -20,7 +20,7 @@ func (k Keeper) ClaimRecords(c context.Context, req *types.QueryClaimRecordsRequ
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	claimRecordStore := prefix.NewStore(store, types.KeyPrefix(types.ClaimRecordKeyPrefix))
+	claimRecordStore := prefix.NewStore(store, types.KeyPrefix(types.UserAirdropEntriesKeyPrefix))
 
 	pageRes, err := query.Paginate(claimRecordStore, req.Pagination, func(key []byte, value []byte) error {
 		var userAirdropEntry types.UserAirdropEntries
@@ -36,10 +36,10 @@ func (k Keeper) ClaimRecords(c context.Context, req *types.QueryClaimRecordsRequ
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryClaimRecordsResponse{UsersAirdropEntries: userAirdropEntries, Pagination: pageRes}, nil
+	return &types.QueryUsersAirdropEntriesResponse{UsersAirdropEntries: userAirdropEntries, Pagination: pageRes}, nil
 }
 
-func (k Keeper) UserAirdropEntries(c context.Context, req *types.QueryClaimRecordRequest) (*types.QueryClaimRecordResponse, error) {
+func (k Keeper) UserAirdropEntries(c context.Context, req *types.QueryUserAirdropEntriesRequest) (*types.QueryUserAirdropEntriesResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -53,5 +53,5 @@ func (k Keeper) UserAirdropEntries(c context.Context, req *types.QueryClaimRecor
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryClaimRecordResponse{UserAirdropEntries: val}, nil
+	return &types.QueryUserAirdropEntriesResponse{UserAirdropEntries: val}, nil
 }

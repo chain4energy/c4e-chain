@@ -96,8 +96,7 @@ func TestClaimInitial(t *testing.T) {
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
-	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
-	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 1, records)
+	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[1], 1, prepareAidropEntries(acountsAddresses[0].String()))
 
 	testHelper.C4eAirdropUtils.ClaimInitial(1, acountsAddresses[0])
 
@@ -127,8 +126,7 @@ func TestClaimInitialCampaignNotFound(t *testing.T) {
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
-	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
-	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 1, records)
+	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[1], 1, prepareAidropEntries(acountsAddresses[0].String()))
 
 	testHelper.C4eAirdropUtils.ClaimInitialError(2, acountsAddresses[0], "campaign not found: campaign id: 2 : not found")
 
@@ -159,11 +157,10 @@ func TestClaimInitialCampaignClaimError(t *testing.T) {
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
-	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
-	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 1, records)
-	claimRecord := testHelper.C4eAirdropUtils.GetClaimRecord(acountsAddresses[0].String())
-	claimRecord.GetCampaignRecords()[0].ClaimedMissions = []uint64{3}
-	testHelper.C4eAirdropUtils.SetClaimRecord(claimRecord)
+	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[1], 1, prepareAidropEntries(acountsAddresses[0].String()))
+	userAirdropEntries := testHelper.C4eAirdropUtils.GetUserAirdropEntries(acountsAddresses[0].String())
+	userAirdropEntries.GetAirdropEntries()[0].ClaimedMissions = []uint64{3}
+	testHelper.C4eAirdropUtils.SetUserAirdropEntries(userAirdropEntries)
 
 	testHelper.C4eAirdropUtils.ClaimInitialError(1, acountsAddresses[0], fmt.Sprintf("mission already claimed: address %s, campaignId: 1, missionId: 3: mission already claimed", acountsAddresses[0]))
 
@@ -209,9 +206,8 @@ func TestClaimInitialTwoCampaigns(t *testing.T) {
 	genesisState := types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
-	records := map[string]sdk.Int{acountsAddresses[0].String(): sdk.NewInt(10000)}
-	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 1, records)
-	testHelper.C4eAirdropUtils.AddCampaignRecords(acountsAddresses[1], 2, records)
+	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[1], 1, prepareAidropEntries(acountsAddresses[0].String()))
+	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[1], 2, prepareAidropEntries(acountsAddresses[0].String()))
 
 	testHelper.C4eAirdropUtils.ClaimInitial(1, acountsAddresses[0])
 	testHelper.C4eAirdropUtils.ClaimInitial(2, acountsAddresses[0])

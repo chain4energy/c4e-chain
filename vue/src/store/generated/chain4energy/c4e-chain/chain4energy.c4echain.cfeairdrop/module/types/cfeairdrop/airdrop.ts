@@ -54,19 +54,15 @@ export function missionTypeToJSON(object: MissionType): string {
 export interface UserAirdropEntries {
   address: string;
   claim_address: string;
-  airdrop_entries_state: AirdropEntryState[];
-}
-
-export interface AirdropEntryState {
-  campaign_id: number;
-  total_amount: string;
-  completedMissions: number[];
-  claimedMissions: number[];
+  airdrop_entries: AirdropEntry[];
 }
 
 export interface AirdropEntry {
+  campaign_id: number;
   address: string;
   amount: string;
+  completedMissions: number[];
+  claimedMissions: number[];
 }
 
 export interface AirdropEntries {
@@ -114,8 +110,8 @@ export const UserAirdropEntries = {
     if (message.claim_address !== "") {
       writer.uint32(18).string(message.claim_address);
     }
-    for (const v of message.airdrop_entries_state) {
-      AirdropEntryState.encode(v!, writer.uint32(26).fork()).ldelim();
+    for (const v of message.airdrop_entries) {
+      AirdropEntry.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -124,7 +120,7 @@ export const UserAirdropEntries = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseUserAirdropEntries } as UserAirdropEntries;
-    message.airdrop_entries_state = [];
+    message.airdrop_entries = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -135,8 +131,8 @@ export const UserAirdropEntries = {
           message.claim_address = reader.string();
           break;
         case 3:
-          message.airdrop_entries_state.push(
-            AirdropEntryState.decode(reader, reader.uint32())
+          message.airdrop_entries.push(
+            AirdropEntry.decode(reader, reader.uint32())
           );
           break;
         default:
@@ -149,7 +145,7 @@ export const UserAirdropEntries = {
 
   fromJSON(object: any): UserAirdropEntries {
     const message = { ...baseUserAirdropEntries } as UserAirdropEntries;
-    message.airdrop_entries_state = [];
+    message.airdrop_entries = [];
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
     } else {
@@ -161,11 +157,11 @@ export const UserAirdropEntries = {
       message.claim_address = "";
     }
     if (
-      object.airdrop_entries_state !== undefined &&
-      object.airdrop_entries_state !== null
+      object.airdrop_entries !== undefined &&
+      object.airdrop_entries !== null
     ) {
-      for (const e of object.airdrop_entries_state) {
-        message.airdrop_entries_state.push(AirdropEntryState.fromJSON(e));
+      for (const e of object.airdrop_entries) {
+        message.airdrop_entries.push(AirdropEntry.fromJSON(e));
       }
     }
     return message;
@@ -176,19 +172,19 @@ export const UserAirdropEntries = {
     message.address !== undefined && (obj.address = message.address);
     message.claim_address !== undefined &&
       (obj.claim_address = message.claim_address);
-    if (message.airdrop_entries_state) {
-      obj.airdrop_entries_state = message.airdrop_entries_state.map((e) =>
-        e ? AirdropEntryState.toJSON(e) : undefined
+    if (message.airdrop_entries) {
+      obj.airdrop_entries = message.airdrop_entries.map((e) =>
+        e ? AirdropEntry.toJSON(e) : undefined
       );
     } else {
-      obj.airdrop_entries_state = [];
+      obj.airdrop_entries = [];
     }
     return obj;
   },
 
   fromPartial(object: DeepPartial<UserAirdropEntries>): UserAirdropEntries {
     const message = { ...baseUserAirdropEntries } as UserAirdropEntries;
-    message.airdrop_entries_state = [];
+    message.airdrop_entries = [];
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     } else {
@@ -200,38 +196,42 @@ export const UserAirdropEntries = {
       message.claim_address = "";
     }
     if (
-      object.airdrop_entries_state !== undefined &&
-      object.airdrop_entries_state !== null
+      object.airdrop_entries !== undefined &&
+      object.airdrop_entries !== null
     ) {
-      for (const e of object.airdrop_entries_state) {
-        message.airdrop_entries_state.push(AirdropEntryState.fromPartial(e));
+      for (const e of object.airdrop_entries) {
+        message.airdrop_entries.push(AirdropEntry.fromPartial(e));
       }
     }
     return message;
   },
 };
 
-const baseAirdropEntryState: object = {
+const baseAirdropEntry: object = {
   campaign_id: 0,
-  total_amount: "",
+  address: "",
+  amount: "",
   completedMissions: 0,
   claimedMissions: 0,
 };
 
-export const AirdropEntryState = {
-  encode(message: AirdropEntryState, writer: Writer = Writer.create()): Writer {
+export const AirdropEntry = {
+  encode(message: AirdropEntry, writer: Writer = Writer.create()): Writer {
     if (message.campaign_id !== 0) {
       writer.uint32(8).uint64(message.campaign_id);
     }
-    if (message.total_amount !== "") {
-      writer.uint32(18).string(message.total_amount);
+    if (message.address !== "") {
+      writer.uint32(18).string(message.address);
     }
-    writer.uint32(26).fork();
+    if (message.amount !== "") {
+      writer.uint32(26).string(message.amount);
+    }
+    writer.uint32(34).fork();
     for (const v of message.completedMissions) {
       writer.uint64(v);
     }
     writer.ldelim();
-    writer.uint32(34).fork();
+    writer.uint32(42).fork();
     for (const v of message.claimedMissions) {
       writer.uint64(v);
     }
@@ -239,10 +239,10 @@ export const AirdropEntryState = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): AirdropEntryState {
+  decode(input: Reader | Uint8Array, length?: number): AirdropEntry {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAirdropEntryState } as AirdropEntryState;
+    const message = { ...baseAirdropEntry } as AirdropEntry;
     message.completedMissions = [];
     message.claimedMissions = [];
     while (reader.pos < end) {
@@ -252,9 +252,12 @@ export const AirdropEntryState = {
           message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.total_amount = reader.string();
+          message.address = reader.string();
           break;
         case 3:
+          message.amount = reader.string();
+          break;
+        case 4:
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
@@ -268,7 +271,7 @@ export const AirdropEntryState = {
             );
           }
           break;
-        case 4:
+        case 5:
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
@@ -288,8 +291,8 @@ export const AirdropEntryState = {
     return message;
   },
 
-  fromJSON(object: any): AirdropEntryState {
-    const message = { ...baseAirdropEntryState } as AirdropEntryState;
+  fromJSON(object: any): AirdropEntry {
+    const message = { ...baseAirdropEntry } as AirdropEntry;
     message.completedMissions = [];
     message.claimedMissions = [];
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
@@ -297,10 +300,15 @@ export const AirdropEntryState = {
     } else {
       message.campaign_id = 0;
     }
-    if (object.total_amount !== undefined && object.total_amount !== null) {
-      message.total_amount = String(object.total_amount);
+    if (object.address !== undefined && object.address !== null) {
+      message.address = String(object.address);
     } else {
-      message.total_amount = "";
+      message.address = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = String(object.amount);
+    } else {
+      message.amount = "";
     }
     if (
       object.completedMissions !== undefined &&
@@ -321,12 +329,12 @@ export const AirdropEntryState = {
     return message;
   },
 
-  toJSON(message: AirdropEntryState): unknown {
+  toJSON(message: AirdropEntry): unknown {
     const obj: any = {};
     message.campaign_id !== undefined &&
       (obj.campaign_id = message.campaign_id);
-    message.total_amount !== undefined &&
-      (obj.total_amount = message.total_amount);
+    message.address !== undefined && (obj.address = message.address);
+    message.amount !== undefined && (obj.amount = message.amount);
     if (message.completedMissions) {
       obj.completedMissions = message.completedMissions.map((e) => e);
     } else {
@@ -340,8 +348,8 @@ export const AirdropEntryState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<AirdropEntryState>): AirdropEntryState {
-    const message = { ...baseAirdropEntryState } as AirdropEntryState;
+  fromPartial(object: DeepPartial<AirdropEntry>): AirdropEntry {
+    const message = { ...baseAirdropEntry } as AirdropEntry;
     message.completedMissions = [];
     message.claimedMissions = [];
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
@@ -349,10 +357,15 @@ export const AirdropEntryState = {
     } else {
       message.campaign_id = 0;
     }
-    if (object.total_amount !== undefined && object.total_amount !== null) {
-      message.total_amount = object.total_amount;
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
     } else {
-      message.total_amount = "";
+      message.address = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    } else {
+      message.amount = "";
     }
     if (
       object.completedMissions !== undefined &&
@@ -369,78 +382,6 @@ export const AirdropEntryState = {
       for (const e of object.claimedMissions) {
         message.claimedMissions.push(e);
       }
-    }
-    return message;
-  },
-};
-
-const baseAirdropEntry: object = { address: "", amount: "" };
-
-export const AirdropEntry = {
-  encode(message: AirdropEntry, writer: Writer = Writer.create()): Writer {
-    if (message.address !== "") {
-      writer.uint32(10).string(message.address);
-    }
-    if (message.amount !== "") {
-      writer.uint32(18).string(message.amount);
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): AirdropEntry {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAirdropEntry } as AirdropEntry;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.address = reader.string();
-          break;
-        case 2:
-          message.amount = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): AirdropEntry {
-    const message = { ...baseAirdropEntry } as AirdropEntry;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
-    } else {
-      message.address = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = String(object.amount);
-    } else {
-      message.amount = "";
-    }
-    return message;
-  },
-
-  toJSON(message: AirdropEntry): unknown {
-    const obj: any = {};
-    message.address !== undefined && (obj.address = message.address);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<AirdropEntry>): AirdropEntry {
-    const message = { ...baseAirdropEntry } as AirdropEntry;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
-    } else {
-      message.address = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = object.amount;
-    } else {
-      message.amount = "";
     }
     return message;
   },

@@ -17,14 +17,10 @@ export interface C4EchaincfeairdropParams {
 }
 
 export interface CfeairdropAirdropEntry {
-  address?: string;
-  amount?: string;
-}
-
-export interface CfeairdropAirdropEntryState {
   /** @format uint64 */
   campaign_id?: string;
-  total_amount?: string;
+  address?: string;
+  amount?: string;
   completedMissions?: string[];
   claimedMissions?: string[];
 }
@@ -83,21 +79,6 @@ export type CfeairdropMsgCreateAirdropCampaignResponse = object;
 
 export type CfeairdropMsgDeleteAirdropEntryResponse = object;
 
-export interface CfeairdropQueryAllAirdropEntryResponse {
-  AirdropEntry?: CfeairdropAirdropEntry[];
-
-  /**
-   * PageResponse is to be embedded in gRPC response messages where the
-   * corresponding request message has used PageRequest.
-   *
-   *  message SomeResponse {
-   *          repeated Bar results = 1;
-   *          PageResponse page = 2;
-   *  }
-   */
-  pagination?: V1Beta1PageResponse;
-}
-
 export interface CfeairdropQueryCampaignResponse {
   campaign?: CfeairdropCampaign;
 }
@@ -115,29 +96,6 @@ export interface CfeairdropQueryCampaignsResponse {
    *  }
    */
   pagination?: V1Beta1PageResponse;
-}
-
-export interface CfeairdropQueryClaimRecordResponse {
-  userAirdropEntries?: CfeairdropUserAirdropEntries;
-}
-
-export interface CfeairdropQueryClaimRecordsResponse {
-  usersAirdropEntries?: CfeairdropUserAirdropEntries[];
-
-  /**
-   * PageResponse is to be embedded in gRPC response messages where the
-   * corresponding request message has used PageRequest.
-   *
-   *  message SomeResponse {
-   *          repeated Bar results = 1;
-   *          PageResponse page = 2;
-   *  }
-   */
-  pagination?: V1Beta1PageResponse;
-}
-
-export interface CfeairdropQueryGetAirdropEntryResponse {
-  AirdropEntry?: CfeairdropAirdropEntry;
 }
 
 export interface CfeairdropQueryInitialClaimResponse {
@@ -186,10 +144,29 @@ export interface CfeairdropQueryParamsResponse {
   params?: C4EchaincfeairdropParams;
 }
 
+export interface CfeairdropQueryUserAirdropEntriesResponse {
+  userAirdropEntries?: CfeairdropUserAirdropEntries;
+}
+
+export interface CfeairdropQueryUsersAirdropEntriesResponse {
+  usersAirdropEntries?: CfeairdropUserAirdropEntries[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
 export interface CfeairdropUserAirdropEntries {
   address?: string;
   claim_address?: string;
-  airdrop_entries_state?: CfeairdropAirdropEntryState[];
+  airdrop_entries?: CfeairdropAirdropEntry[];
 }
 
 /**
@@ -353,6 +330,13 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
+
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse?: boolean;
 }
 
 /**
@@ -598,6 +582,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -605,47 +590,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       path: `/c4e/airdrop/campaigns`,
       method: "GET",
       query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryClaimRecords
-   * @summary Queries a list of UserAirdropEntries items.
-   * @request GET:/c4e/airdrop/claim_record
-   */
-  queryClaimRecords = (
-    query?: {
-      "pagination.key"?: string;
-      "pagination.offset"?: string;
-      "pagination.limit"?: string;
-      "pagination.count_total"?: boolean;
-    },
-    params: RequestParams = {},
-  ) =>
-    this.request<CfeairdropQueryClaimRecordsResponse, RpcStatus>({
-      path: `/c4e/airdrop/claim_record`,
-      method: "GET",
-      query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryUserAirdropEntries
-   * @summary Queries a UserAirdropEntries by index.
-   * @request GET:/c4e/airdrop/claim_record/{address}
-   */
-  queryUserAirdropEntries = (address: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryClaimRecordResponse, RpcStatus>({
-      path: `/c4e/airdrop/claim_record/${address}`,
-      method: "GET",
       format: "json",
       ...params,
     });
@@ -664,6 +608,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -705,6 +650,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -752,23 +698,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryAirdropEntryAll
-   * @summary Queries a list of AirdropEntry items.
-   * @request GET:/chain4energy/c4e-chain/cfeairdrop/airdrop_entry
+   * @name QueryUserAirdropEntries
+   * @summary Queries a UserAirdropEntries by index.
+   * @request GET:/c4e/airdrop/user_airdrop_entries/{address}
    */
-  queryAirdropEntryAll = (
-    query?: {
-      "pagination.key"?: string;
-      "pagination.offset"?: string;
-      "pagination.limit"?: string;
-      "pagination.count_total"?: boolean;
-    },
-    params: RequestParams = {},
-  ) =>
-    this.request<CfeairdropQueryAllAirdropEntryResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfeairdrop/airdrop_entry`,
+  queryUserAirdropEntries = (address: string, params: RequestParams = {}) =>
+    this.request<CfeairdropQueryUserAirdropEntriesResponse, RpcStatus>({
+      path: `/c4e/airdrop/user_airdrop_entries/${address}`,
       method: "GET",
-      query: query,
       format: "json",
       ...params,
     });
@@ -777,14 +714,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryAirdropEntry
-   * @summary Queries a AirdropEntry by id.
-   * @request GET:/chain4energy/c4e-chain/cfeairdrop/airdrop_entry/{id}
+   * @name QueryUsersAirdropEntries
+   * @summary Queries a list of UserAirdropEntries items.
+   * @request GET:/c4e/airdrop/users_airdrop_entries
    */
-  queryAirdropEntry = (id: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryGetAirdropEntryResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfeairdrop/airdrop_entry/${id}`,
+  queryUsersAirdropEntries = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<CfeairdropQueryUsersAirdropEntriesResponse, RpcStatus>({
+      path: `/c4e/airdrop/users_airdrop_entries`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });

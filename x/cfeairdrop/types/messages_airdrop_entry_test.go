@@ -11,50 +11,19 @@ import (
 func TestMsgCreateAirdropEntry_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgCreateAirdropEntry
+		msg  MsgAddAirdropEntries
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgCreateAirdropEntry{
-				Creator: "invalid_address",
+			msg: MsgAddAirdropEntries{
+				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgCreateAirdropEntry{
-				Creator: sample.AccAddress(),
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.msg.ValidateBasic()
-			if tt.err != nil {
-				require.ErrorIs(t, err, tt.err)
-				return
-			}
-			require.NoError(t, err)
-		})
-	}
-}
-
-func TestMsgUpdateAirdropEntry_ValidateBasic(t *testing.T) {
-	tests := []struct {
-		name string
-		msg  MsgUpdateAirdropEntry
-		err  error
-	}{
-		{
-			name: "invalid address",
-			msg: MsgUpdateAirdropEntry{
-				Creator: "invalid_address",
-			},
-			err: sdkerrors.ErrInvalidAddress,
-		}, {
-			name: "valid address",
-			msg: MsgUpdateAirdropEntry{
-				Creator: sample.AccAddress(),
+			msg: MsgAddAirdropEntries{
+				Owner: sample.AccAddress(),
 			},
 		},
 	}

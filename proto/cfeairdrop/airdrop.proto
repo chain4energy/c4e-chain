@@ -10,25 +10,18 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 message UserAirdropEntries {
   string address = 1;
   string claim_address = 2;
-  repeated AirdropEntryState airdrop_entries_state = 3;
-}
-
-message AirdropEntryState {
-  uint64 campaign_id = 1;
-  string total_amount = 2 [
-    (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-  ];
-  repeated uint64 completedMissions = 3;
-  repeated uint64 claimedMissions = 4;
+  repeated AirdropEntry airdrop_entries = 3;
 }
 
 message AirdropEntry {
-  string address = 1;
-  string amount = 2 [
+  uint64 campaign_id = 1;
+  string address = 2;
+  string amount = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
+  repeated uint64 completedMissions = 4;
+  repeated uint64 claimedMissions = 5;
 }
 
 message AirdropEntries {

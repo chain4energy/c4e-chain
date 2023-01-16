@@ -7,7 +7,6 @@ import {
   InitialClaim,
   Mission,
   Campaign,
-  AirdropEntry,
 } from "../cfeairdrop/airdrop";
 import {
   PageRequest,
@@ -25,19 +24,19 @@ export interface QueryParamsResponse {
   params: Params | undefined;
 }
 
-export interface QueryClaimRecordRequest {
+export interface QueryUserAirdropEntriesRequest {
   address: string;
 }
 
-export interface QueryClaimRecordResponse {
+export interface QueryUserAirdropEntriesResponse {
   userAirdropEntries: UserAirdropEntries | undefined;
 }
 
-export interface QueryClaimRecordsRequest {
+export interface QueryUsersAirdropEntriesRequest {
   pagination: PageRequest | undefined;
 }
 
-export interface QueryClaimRecordsResponse {
+export interface QueryUsersAirdropEntriesResponse {
   usersAirdropEntries: UserAirdropEntries[];
   pagination: PageResponse | undefined;
 }
@@ -92,23 +91,6 @@ export interface QueryCampaignRequest {
 
 export interface QueryCampaignResponse {
   campaign: Campaign | undefined;
-}
-
-export interface QueryGetAirdropEntryRequest {
-  id: number;
-}
-
-export interface QueryGetAirdropEntryResponse {
-  AirdropEntry: AirdropEntry | undefined;
-}
-
-export interface QueryAllAirdropEntryRequest {
-  pagination: PageRequest | undefined;
-}
-
-export interface QueryAllAirdropEntryResponse {
-  AirdropEntry: AirdropEntry[];
-  pagination: PageResponse | undefined;
 }
 
 const baseQueryParamsRequest: object = {};
@@ -208,11 +190,11 @@ export const QueryParamsResponse = {
   },
 };
 
-const baseQueryClaimRecordRequest: object = { address: "" };
+const baseQueryUserAirdropEntriesRequest: object = { address: "" };
 
-export const QueryClaimRecordRequest = {
+export const QueryUserAirdropEntriesRequest = {
   encode(
-    message: QueryClaimRecordRequest,
+    message: QueryUserAirdropEntriesRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.address !== "") {
@@ -221,12 +203,15 @@ export const QueryClaimRecordRequest = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): QueryClaimRecordRequest {
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryUserAirdropEntriesRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryClaimRecordRequest,
-    } as QueryClaimRecordRequest;
+      ...baseQueryUserAirdropEntriesRequest,
+    } as QueryUserAirdropEntriesRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -241,10 +226,10 @@ export const QueryClaimRecordRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryClaimRecordRequest {
+  fromJSON(object: any): QueryUserAirdropEntriesRequest {
     const message = {
-      ...baseQueryClaimRecordRequest,
-    } as QueryClaimRecordRequest;
+      ...baseQueryUserAirdropEntriesRequest,
+    } as QueryUserAirdropEntriesRequest;
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
     } else {
@@ -253,18 +238,18 @@ export const QueryClaimRecordRequest = {
     return message;
   },
 
-  toJSON(message: QueryClaimRecordRequest): unknown {
+  toJSON(message: QueryUserAirdropEntriesRequest): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
     return obj;
   },
 
   fromPartial(
-    object: DeepPartial<QueryClaimRecordRequest>
-  ): QueryClaimRecordRequest {
+    object: DeepPartial<QueryUserAirdropEntriesRequest>
+  ): QueryUserAirdropEntriesRequest {
     const message = {
-      ...baseQueryClaimRecordRequest,
-    } as QueryClaimRecordRequest;
+      ...baseQueryUserAirdropEntriesRequest,
+    } as QueryUserAirdropEntriesRequest;
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     } else {
@@ -274,11 +259,11 @@ export const QueryClaimRecordRequest = {
   },
 };
 
-const baseQueryClaimRecordResponse: object = {};
+const baseQueryUserAirdropEntriesResponse: object = {};
 
-export const QueryClaimRecordResponse = {
+export const QueryUserAirdropEntriesResponse = {
   encode(
-    message: QueryClaimRecordResponse,
+    message: QueryUserAirdropEntriesResponse,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.userAirdropEntries !== undefined) {
@@ -293,12 +278,12 @@ export const QueryClaimRecordResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryClaimRecordResponse {
+  ): QueryUserAirdropEntriesResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryClaimRecordResponse,
-    } as QueryClaimRecordResponse;
+      ...baseQueryUserAirdropEntriesResponse,
+    } as QueryUserAirdropEntriesResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -316,10 +301,10 @@ export const QueryClaimRecordResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryClaimRecordResponse {
+  fromJSON(object: any): QueryUserAirdropEntriesResponse {
     const message = {
-      ...baseQueryClaimRecordResponse,
-    } as QueryClaimRecordResponse;
+      ...baseQueryUserAirdropEntriesResponse,
+    } as QueryUserAirdropEntriesResponse;
     if (
       object.userAirdropEntries !== undefined &&
       object.userAirdropEntries !== null
@@ -333,7 +318,7 @@ export const QueryClaimRecordResponse = {
     return message;
   },
 
-  toJSON(message: QueryClaimRecordResponse): unknown {
+  toJSON(message: QueryUserAirdropEntriesResponse): unknown {
     const obj: any = {};
     message.userAirdropEntries !== undefined &&
       (obj.userAirdropEntries = message.userAirdropEntries
@@ -343,11 +328,11 @@ export const QueryClaimRecordResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryClaimRecordResponse>
-  ): QueryClaimRecordResponse {
+    object: DeepPartial<QueryUserAirdropEntriesResponse>
+  ): QueryUserAirdropEntriesResponse {
     const message = {
-      ...baseQueryClaimRecordResponse,
-    } as QueryClaimRecordResponse;
+      ...baseQueryUserAirdropEntriesResponse,
+    } as QueryUserAirdropEntriesResponse;
     if (
       object.userAirdropEntries !== undefined &&
       object.userAirdropEntries !== null
@@ -362,11 +347,11 @@ export const QueryClaimRecordResponse = {
   },
 };
 
-const baseQueryClaimRecordsRequest: object = {};
+const baseQueryUsersAirdropEntriesRequest: object = {};
 
-export const QueryClaimRecordsRequest = {
+export const QueryUsersAirdropEntriesRequest = {
   encode(
-    message: QueryClaimRecordsRequest,
+    message: QueryUsersAirdropEntriesRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.pagination !== undefined) {
@@ -378,12 +363,12 @@ export const QueryClaimRecordsRequest = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryClaimRecordsRequest {
+  ): QueryUsersAirdropEntriesRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryClaimRecordsRequest,
-    } as QueryClaimRecordsRequest;
+      ...baseQueryUsersAirdropEntriesRequest,
+    } as QueryUsersAirdropEntriesRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -398,10 +383,10 @@ export const QueryClaimRecordsRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryClaimRecordsRequest {
+  fromJSON(object: any): QueryUsersAirdropEntriesRequest {
     const message = {
-      ...baseQueryClaimRecordsRequest,
-    } as QueryClaimRecordsRequest;
+      ...baseQueryUsersAirdropEntriesRequest,
+    } as QueryUsersAirdropEntriesRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromJSON(object.pagination);
     } else {
@@ -410,7 +395,7 @@ export const QueryClaimRecordsRequest = {
     return message;
   },
 
-  toJSON(message: QueryClaimRecordsRequest): unknown {
+  toJSON(message: QueryUsersAirdropEntriesRequest): unknown {
     const obj: any = {};
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
@@ -420,11 +405,11 @@ export const QueryClaimRecordsRequest = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryClaimRecordsRequest>
-  ): QueryClaimRecordsRequest {
+    object: DeepPartial<QueryUsersAirdropEntriesRequest>
+  ): QueryUsersAirdropEntriesRequest {
     const message = {
-      ...baseQueryClaimRecordsRequest,
-    } as QueryClaimRecordsRequest;
+      ...baseQueryUsersAirdropEntriesRequest,
+    } as QueryUsersAirdropEntriesRequest;
     if (object.pagination !== undefined && object.pagination !== null) {
       message.pagination = PageRequest.fromPartial(object.pagination);
     } else {
@@ -434,11 +419,11 @@ export const QueryClaimRecordsRequest = {
   },
 };
 
-const baseQueryClaimRecordsResponse: object = {};
+const baseQueryUsersAirdropEntriesResponse: object = {};
 
-export const QueryClaimRecordsResponse = {
+export const QueryUsersAirdropEntriesResponse = {
   encode(
-    message: QueryClaimRecordsResponse,
+    message: QueryUsersAirdropEntriesResponse,
     writer: Writer = Writer.create()
   ): Writer {
     for (const v of message.usersAirdropEntries) {
@@ -456,12 +441,12 @@ export const QueryClaimRecordsResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryClaimRecordsResponse {
+  ): QueryUsersAirdropEntriesResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryClaimRecordsResponse,
-    } as QueryClaimRecordsResponse;
+      ...baseQueryUsersAirdropEntriesResponse,
+    } as QueryUsersAirdropEntriesResponse;
     message.usersAirdropEntries = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -482,10 +467,10 @@ export const QueryClaimRecordsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryClaimRecordsResponse {
+  fromJSON(object: any): QueryUsersAirdropEntriesResponse {
     const message = {
-      ...baseQueryClaimRecordsResponse,
-    } as QueryClaimRecordsResponse;
+      ...baseQueryUsersAirdropEntriesResponse,
+    } as QueryUsersAirdropEntriesResponse;
     message.usersAirdropEntries = [];
     if (
       object.usersAirdropEntries !== undefined &&
@@ -503,7 +488,7 @@ export const QueryClaimRecordsResponse = {
     return message;
   },
 
-  toJSON(message: QueryClaimRecordsResponse): unknown {
+  toJSON(message: QueryUsersAirdropEntriesResponse): unknown {
     const obj: any = {};
     if (message.usersAirdropEntries) {
       obj.usersAirdropEntries = message.usersAirdropEntries.map((e) =>
@@ -520,11 +505,11 @@ export const QueryClaimRecordsResponse = {
   },
 
   fromPartial(
-    object: DeepPartial<QueryClaimRecordsResponse>
-  ): QueryClaimRecordsResponse {
+    object: DeepPartial<QueryUsersAirdropEntriesResponse>
+  ): QueryUsersAirdropEntriesResponse {
     const message = {
-      ...baseQueryClaimRecordsResponse,
-    } as QueryClaimRecordsResponse;
+      ...baseQueryUsersAirdropEntriesResponse,
+    } as QueryUsersAirdropEntriesResponse;
     message.usersAirdropEntries = [];
     if (
       object.usersAirdropEntries !== undefined &&
@@ -1427,337 +1412,18 @@ export const QueryCampaignResponse = {
   },
 };
 
-const baseQueryGetAirdropEntryRequest: object = { id: 0 };
-
-export const QueryGetAirdropEntryRequest = {
-  encode(
-    message: QueryGetAirdropEntryRequest,
-    writer: Writer = Writer.create()
-  ): Writer {
-    if (message.id !== 0) {
-      writer.uint32(8).uint64(message.id);
-    }
-    return writer;
-  },
-
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): QueryGetAirdropEntryRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryGetAirdropEntryRequest,
-    } as QueryGetAirdropEntryRequest;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.id = longToNumber(reader.uint64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryGetAirdropEntryRequest {
-    const message = {
-      ...baseQueryGetAirdropEntryRequest,
-    } as QueryGetAirdropEntryRequest;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = Number(object.id);
-    } else {
-      message.id = 0;
-    }
-    return message;
-  },
-
-  toJSON(message: QueryGetAirdropEntryRequest): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<QueryGetAirdropEntryRequest>
-  ): QueryGetAirdropEntryRequest {
-    const message = {
-      ...baseQueryGetAirdropEntryRequest,
-    } as QueryGetAirdropEntryRequest;
-    if (object.id !== undefined && object.id !== null) {
-      message.id = object.id;
-    } else {
-      message.id = 0;
-    }
-    return message;
-  },
-};
-
-const baseQueryGetAirdropEntryResponse: object = {};
-
-export const QueryGetAirdropEntryResponse = {
-  encode(
-    message: QueryGetAirdropEntryResponse,
-    writer: Writer = Writer.create()
-  ): Writer {
-    if (message.AirdropEntry !== undefined) {
-      AirdropEntry.encode(
-        message.AirdropEntry,
-        writer.uint32(10).fork()
-      ).ldelim();
-    }
-    return writer;
-  },
-
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): QueryGetAirdropEntryResponse {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryGetAirdropEntryResponse,
-    } as QueryGetAirdropEntryResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.AirdropEntry = AirdropEntry.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryGetAirdropEntryResponse {
-    const message = {
-      ...baseQueryGetAirdropEntryResponse,
-    } as QueryGetAirdropEntryResponse;
-    if (object.AirdropEntry !== undefined && object.AirdropEntry !== null) {
-      message.AirdropEntry = AirdropEntry.fromJSON(object.AirdropEntry);
-    } else {
-      message.AirdropEntry = undefined;
-    }
-    return message;
-  },
-
-  toJSON(message: QueryGetAirdropEntryResponse): unknown {
-    const obj: any = {};
-    message.AirdropEntry !== undefined &&
-      (obj.AirdropEntry = message.AirdropEntry
-        ? AirdropEntry.toJSON(message.AirdropEntry)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<QueryGetAirdropEntryResponse>
-  ): QueryGetAirdropEntryResponse {
-    const message = {
-      ...baseQueryGetAirdropEntryResponse,
-    } as QueryGetAirdropEntryResponse;
-    if (object.AirdropEntry !== undefined && object.AirdropEntry !== null) {
-      message.AirdropEntry = AirdropEntry.fromPartial(object.AirdropEntry);
-    } else {
-      message.AirdropEntry = undefined;
-    }
-    return message;
-  },
-};
-
-const baseQueryAllAirdropEntryRequest: object = {};
-
-export const QueryAllAirdropEntryRequest = {
-  encode(
-    message: QueryAllAirdropEntryRequest,
-    writer: Writer = Writer.create()
-  ): Writer {
-    if (message.pagination !== undefined) {
-      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): QueryAllAirdropEntryRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryAllAirdropEntryRequest,
-    } as QueryAllAirdropEntryRequest;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryAllAirdropEntryRequest {
-    const message = {
-      ...baseQueryAllAirdropEntryRequest,
-    } as QueryAllAirdropEntryRequest;
-    if (object.pagination !== undefined && object.pagination !== null) {
-      message.pagination = PageRequest.fromJSON(object.pagination);
-    } else {
-      message.pagination = undefined;
-    }
-    return message;
-  },
-
-  toJSON(message: QueryAllAirdropEntryRequest): unknown {
-    const obj: any = {};
-    message.pagination !== undefined &&
-      (obj.pagination = message.pagination
-        ? PageRequest.toJSON(message.pagination)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<QueryAllAirdropEntryRequest>
-  ): QueryAllAirdropEntryRequest {
-    const message = {
-      ...baseQueryAllAirdropEntryRequest,
-    } as QueryAllAirdropEntryRequest;
-    if (object.pagination !== undefined && object.pagination !== null) {
-      message.pagination = PageRequest.fromPartial(object.pagination);
-    } else {
-      message.pagination = undefined;
-    }
-    return message;
-  },
-};
-
-const baseQueryAllAirdropEntryResponse: object = {};
-
-export const QueryAllAirdropEntryResponse = {
-  encode(
-    message: QueryAllAirdropEntryResponse,
-    writer: Writer = Writer.create()
-  ): Writer {
-    for (const v of message.AirdropEntry) {
-      AirdropEntry.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    if (message.pagination !== undefined) {
-      PageResponse.encode(
-        message.pagination,
-        writer.uint32(18).fork()
-      ).ldelim();
-    }
-    return writer;
-  },
-
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): QueryAllAirdropEntryResponse {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryAllAirdropEntryResponse,
-    } as QueryAllAirdropEntryResponse;
-    message.AirdropEntry = [];
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.AirdropEntry.push(
-            AirdropEntry.decode(reader, reader.uint32())
-          );
-          break;
-        case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryAllAirdropEntryResponse {
-    const message = {
-      ...baseQueryAllAirdropEntryResponse,
-    } as QueryAllAirdropEntryResponse;
-    message.AirdropEntry = [];
-    if (object.AirdropEntry !== undefined && object.AirdropEntry !== null) {
-      for (const e of object.AirdropEntry) {
-        message.AirdropEntry.push(AirdropEntry.fromJSON(e));
-      }
-    }
-    if (object.pagination !== undefined && object.pagination !== null) {
-      message.pagination = PageResponse.fromJSON(object.pagination);
-    } else {
-      message.pagination = undefined;
-    }
-    return message;
-  },
-
-  toJSON(message: QueryAllAirdropEntryResponse): unknown {
-    const obj: any = {};
-    if (message.AirdropEntry) {
-      obj.AirdropEntry = message.AirdropEntry.map((e) =>
-        e ? AirdropEntry.toJSON(e) : undefined
-      );
-    } else {
-      obj.AirdropEntry = [];
-    }
-    message.pagination !== undefined &&
-      (obj.pagination = message.pagination
-        ? PageResponse.toJSON(message.pagination)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<QueryAllAirdropEntryResponse>
-  ): QueryAllAirdropEntryResponse {
-    const message = {
-      ...baseQueryAllAirdropEntryResponse,
-    } as QueryAllAirdropEntryResponse;
-    message.AirdropEntry = [];
-    if (object.AirdropEntry !== undefined && object.AirdropEntry !== null) {
-      for (const e of object.AirdropEntry) {
-        message.AirdropEntry.push(AirdropEntry.fromPartial(e));
-      }
-    }
-    if (object.pagination !== undefined && object.pagination !== null) {
-      message.pagination = PageResponse.fromPartial(object.pagination);
-    } else {
-      message.pagination = undefined;
-    }
-    return message;
-  },
-};
-
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
   /** Queries a UserAirdropEntries by index. */
   UserAirdropEntries(
-    request: QueryClaimRecordRequest
-  ): Promise<QueryClaimRecordResponse>;
+    request: QueryUserAirdropEntriesRequest
+  ): Promise<QueryUserAirdropEntriesResponse>;
   /** Queries a list of UserAirdropEntries items. */
-  ClaimRecords(
-    request: QueryClaimRecordsRequest
-  ): Promise<QueryClaimRecordsResponse>;
+  UsersAirdropEntries(
+    request: QueryUsersAirdropEntriesRequest
+  ): Promise<QueryUsersAirdropEntriesResponse>;
   /** Queries a InitialClaim by index. */
   InitialClaim(
     request: QueryInitialClaimRequest
@@ -1774,14 +1440,6 @@ export interface Query {
   Campaigns(request: QueryCampaignsRequest): Promise<QueryCampaignsResponse>;
   /** Queries a list of Campaigns items. */
   Campaign(request: QueryCampaignRequest): Promise<QueryCampaignResponse>;
-  /** Queries a AirdropEntry by id. */
-  AirdropEntry(
-    request: QueryGetAirdropEntryRequest
-  ): Promise<QueryGetAirdropEntryResponse>;
-  /** Queries a list of AirdropEntry items. */
-  AirdropEntryAll(
-    request: QueryAllAirdropEntryRequest
-  ): Promise<QueryAllAirdropEntryResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1800,30 +1458,30 @@ export class QueryClientImpl implements Query {
   }
 
   UserAirdropEntries(
-    request: QueryClaimRecordRequest
-  ): Promise<QueryClaimRecordResponse> {
-    const data = QueryClaimRecordRequest.encode(request).finish();
+    request: QueryUserAirdropEntriesRequest
+  ): Promise<QueryUserAirdropEntriesResponse> {
+    const data = QueryUserAirdropEntriesRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
       "UserAirdropEntries",
       data
     );
     return promise.then((data) =>
-      QueryClaimRecordResponse.decode(new Reader(data))
+      QueryUserAirdropEntriesResponse.decode(new Reader(data))
     );
   }
 
-  ClaimRecords(
-    request: QueryClaimRecordsRequest
-  ): Promise<QueryClaimRecordsResponse> {
-    const data = QueryClaimRecordsRequest.encode(request).finish();
+  UsersAirdropEntries(
+    request: QueryUsersAirdropEntriesRequest
+  ): Promise<QueryUsersAirdropEntriesResponse> {
+    const data = QueryUsersAirdropEntriesRequest.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Query",
-      "ClaimRecords",
+      "UsersAirdropEntries",
       data
     );
     return promise.then((data) =>
-      QueryClaimRecordsResponse.decode(new Reader(data))
+      QueryUsersAirdropEntriesResponse.decode(new Reader(data))
     );
   }
 
@@ -1900,34 +1558,6 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryCampaignResponse.decode(new Reader(data))
-    );
-  }
-
-  AirdropEntry(
-    request: QueryGetAirdropEntryRequest
-  ): Promise<QueryGetAirdropEntryResponse> {
-    const data = QueryGetAirdropEntryRequest.encode(request).finish();
-    const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
-      "AirdropEntry",
-      data
-    );
-    return promise.then((data) =>
-      QueryGetAirdropEntryResponse.decode(new Reader(data))
-    );
-  }
-
-  AirdropEntryAll(
-    request: QueryAllAirdropEntryRequest
-  ): Promise<QueryAllAirdropEntryResponse> {
-    const data = QueryAllAirdropEntryRequest.encode(request).finish();
-    const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
-      "AirdropEntryAll",
-      data
-    );
-    return promise.then((data) =>
-      QueryAllAirdropEntryResponse.decode(new Reader(data))
     );
   }
 }

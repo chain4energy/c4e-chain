@@ -36,7 +36,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
-	genesis.UserAirdropEntries = k.GetAllUserAirdropEntriesRecord(ctx)
+	genesis.UserAirdropEntries = k.GetUsersAirdropEntries(ctx)
 	genesis.InitialClaims = k.GetAllInitialClaim(ctx)
 	genesis.Missions = k.GetAllMission(ctx)
 	genesis.AirdropEntryList = k.GetAllAirdropEntry(ctx)
