@@ -68,8 +68,8 @@ func TestCompleteMission(t *testing.T) {
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
-	testHelper.C4eAirdropUtils.CompleteMission(1, 2, acountsAddresses[0])
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
+	testHelper.C4eAirdropUtils.CompleteMission(0, 1, acountsAddresses[0])
 }
 
 func TestCompleteMissionCamapignNotFound(t *testing.T) {
@@ -81,7 +81,7 @@ func TestCompleteMissionCamapignNotFound(t *testing.T) {
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
 	testHelper.C4eAirdropUtils.CompleteMissionError(3, 2, acountsAddresses[0], "camapign not found: campaignId 3: not found")
 }
 
@@ -97,7 +97,7 @@ func TestCompleteMissionCamapignDisabled(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
 
-	testHelper.C4eAirdropUtils.CompleteMissionError(1, 2, acountsAddresses[0], "campaign disabled - campaignId 1: campaignId 1: campaign is disabled")
+	testHelper.C4eAirdropUtils.CompleteMissionError(0, 2, acountsAddresses[0], "campaign disabled - campaignId 0: campaignId 0: campaign is disabled")
 }
 
 func TestCompleteMissionCamapignNotStarted(t *testing.T) {
@@ -111,10 +111,10 @@ func TestCompleteMissionCamapignNotStarted(t *testing.T) {
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
 
-	testHelper.C4eAirdropUtils.CompleteMissionError(1, 2, acountsAddresses[0],
-		fmt.Sprintf("campaign disabled - campaignId 1: campaignId 1 not started: time %s < startTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].StartTime))
+	testHelper.C4eAirdropUtils.CompleteMissionError(0, 2, acountsAddresses[0],
+		fmt.Sprintf("campaign disabled - campaignId 0: campaignId 0 not started: time %s < startTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].StartTime))
 }
 
 func TestCompleteMissionCamapignEnded(t *testing.T) {
@@ -130,10 +130,10 @@ func TestCompleteMissionCamapignEnded(t *testing.T) {
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
 
-	testHelper.C4eAirdropUtils.CompleteMissionError(1, 2, acountsAddresses[0],
-		fmt.Sprintf("campaign disabled - campaignId 1: campaignId 1 ended: time %s > endTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].EndTime))
+	testHelper.C4eAirdropUtils.CompleteMissionError(0, 2, acountsAddresses[0],
+		fmt.Sprintf("campaign disabled - campaignId 0: campaignId 0 ended: time %s > endTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].EndTime))
 }
 
 func TestCompleteMissionMissionNotFound(t *testing.T) {
@@ -145,9 +145,9 @@ func TestCompleteMissionMissionNotFound(t *testing.T) {
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
 
-	testHelper.C4eAirdropUtils.CompleteMissionError(1, 4, acountsAddresses[0], "mission not found - campaignId 1, missionId 4: not found")
+	testHelper.C4eAirdropUtils.CompleteMissionError(0, 4, acountsAddresses[0], "mission not found - campaignId 0, missionId 4: not found")
 }
 
 func TestCompleteMissionClaimRecordNotFound(t *testing.T) {
@@ -159,9 +159,9 @@ func TestCompleteMissionClaimRecordNotFound(t *testing.T) {
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
 
-	testHelper.C4eAirdropUtils.CompleteMissionError(1, uint64(types.MissionDelegation), acountsAddresses[2],
+	testHelper.C4eAirdropUtils.CompleteMissionError(0, uint64(types.MissionDelegation), acountsAddresses[2],
 		fmt.Sprintf("claim record not found for address %s: not found", acountsAddresses[2]))
 }
 
@@ -174,12 +174,12 @@ func TestCompleteMissionCampaignRecordNotFound(t *testing.T) {
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 
-	userAirdropEntries := prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
+	userAirdropEntries := prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
 	userAirdropEntries.GetAirdropEntries()[0].CampaignId = 2
 	testHelper.C4eAirdropUtils.SetUserAirdropEntries(userAirdropEntries)
 
-	testHelper.C4eAirdropUtils.CompleteMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
-		fmt.Sprintf("campaign record with id: 1 not found for address %s: not found", acountsAddresses[0]))
+	testHelper.C4eAirdropUtils.CompleteMissionError(0, 1, acountsAddresses[0],
+		fmt.Sprintf("campaign record with id: 0 not found for address %s: not found", acountsAddresses[0]))
 }
 
 func TestCompleteMissionAlreadeCompleted(t *testing.T) {
@@ -191,10 +191,10 @@ func TestCompleteMissionAlreadeCompleted(t *testing.T) {
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim), uint64(types.MissionDelegation)}, []uint64{uint64(types.MissionInitialClaim)})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0, 1}, []uint64{0})
 
-	testHelper.C4eAirdropUtils.CompleteMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
-		fmt.Sprintf("mission already completed: address %s, campaignId: 1, missionId: 2: mission already completed", acountsAddresses[0]))
+	testHelper.C4eAirdropUtils.CompleteMissionError(0, 1, acountsAddresses[0],
+		fmt.Sprintf("mission already completed: address %s, campaignId: 0, missionId: 1: mission already completed", acountsAddresses[0]))
 }
 
 func TestCompleteMissionNoInitialClaim(t *testing.T) {
@@ -208,8 +208,8 @@ func TestCompleteMissionNoInitialClaim(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
 
-	testHelper.C4eAirdropUtils.CompleteMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
-		"initial claim not found - campaignId 1: not found")
+	testHelper.C4eAirdropUtils.CompleteMissionError(0, uint64(types.MissionDelegation), acountsAddresses[0],
+		"initial claim not found - campaignId 0: not found")
 }
 
 func TestCompleteMissionInitialMissionNotClaimed(t *testing.T) {
@@ -221,10 +221,10 @@ func TestCompleteMissionInitialMissionNotClaimed(t *testing.T) {
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{})
 
-	testHelper.C4eAirdropUtils.CompleteMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
-		fmt.Sprintf("initial mission not completed: address %s, campaignId: 1, missionId: 1: mission not completed yet", acountsAddresses[0]))
+	testHelper.C4eAirdropUtils.CompleteMissionError(0, 1, acountsAddresses[0],
+		fmt.Sprintf("initial mission not completed: address %s, campaignId: 0, missionId: 0: mission not completed yet", acountsAddresses[0]))
 }
 
 func TestClaimMission(t *testing.T) {
@@ -240,7 +240,7 @@ func TestClaimMission(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[0], sdk.NewCoins(), 12312, 1555565657676576)
 
-	testHelper.C4eAirdropUtils.ClaimMission(1, 2, acountsAddresses[0])
+	testHelper.C4eAirdropUtils.ClaimMission(0, 2, acountsAddresses[0])
 
 }
 
@@ -269,7 +269,7 @@ func TestClaimMissionCamapignDisabled(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0], "campaign disabled - campaignId 1: campaignId 1: campaign is disabled")
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[0], "campaign disabled - campaignId 0: campaignId 0: campaign is disabled")
 }
 
 func TestClaimMissionCamapignNotStarted(t *testing.T) {
@@ -285,8 +285,8 @@ func TestClaimMissionCamapignNotStarted(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
-		fmt.Sprintf("campaign disabled - campaignId 1: campaignId 1 not started: time %s < startTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].StartTime))
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[0],
+		fmt.Sprintf("campaign disabled - campaignId 0: campaignId 0 not started: time %s < startTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].StartTime))
 }
 
 func TestClaimMissionCamapignEnded(t *testing.T) {
@@ -304,8 +304,8 @@ func TestClaimMissionCamapignEnded(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
-		fmt.Sprintf("campaign disabled - campaignId 1: campaignId 1 ended: time %s > endTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].EndTime))
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[0],
+		fmt.Sprintf("campaign disabled - campaignId 0: campaignId 0 ended: time %s > endTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].EndTime))
 }
 
 func TestClaimMissionMissionNotFound(t *testing.T) {
@@ -319,7 +319,7 @@ func TestClaimMissionMissionNotFound(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{1}, []uint64{1})
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, 4, acountsAddresses[0], "mission not found - campaignId 1, missionId 4: not found")
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, 4, acountsAddresses[0], "mission not found - campaignId 0, missionId 4: not found")
 }
 
 func TestClaimMissionClaimRecordNotFound(t *testing.T) {
@@ -333,7 +333,7 @@ func TestClaimMissionClaimRecordNotFound(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, uint64(types.MissionDelegation), acountsAddresses[2],
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[2],
 		fmt.Sprintf("claim record not found for address %s: not found", acountsAddresses[2]))
 }
 
@@ -350,8 +350,8 @@ func TestClaimMissionCampaignRecordNotFound(t *testing.T) {
 	userAirdropEntries.GetAirdropEntries()[0].CampaignId = 2
 	testHelper.C4eAirdropUtils.SetUserAirdropEntries(userAirdropEntries)
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
-		fmt.Sprintf("campaign record with id: 1 not found for address %s: not found", acountsAddresses[0]))
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[0],
+		fmt.Sprintf("campaign record with id: 0 not found for address %s: not found", acountsAddresses[0]))
 }
 
 func TestClaimMissionNotCompleted(t *testing.T) {
@@ -365,8 +365,8 @@ func TestClaimMissionNotCompleted(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
-		fmt.Sprintf("mission not completed: address %s, campaignId: 1, missionId: 2: mission not completed yet", acountsAddresses[0]))
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[0],
+		fmt.Sprintf("mission not completed: address %s, campaignId: 0, missionId: 2: mission not completed yet", acountsAddresses[0]))
 }
 
 func TestClaimMissionAlreadyClaimed(t *testing.T) {
@@ -380,8 +380,8 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim), uint64(types.MissionDelegation)}, []uint64{uint64(types.MissionInitialClaim), uint64(types.MissionDelegation)})
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
-		fmt.Sprintf("mission already claimed: address %s, campaignId: 1, missionId: 2: mission already claimed", acountsAddresses[0]))
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[0],
+		fmt.Sprintf("mission already claimed: address %s, campaignId: 0, missionId: 2: mission already claimed", acountsAddresses[0]))
 }
 
 func TestClaimMissionAccountNotExists(t *testing.T) {
@@ -395,7 +395,7 @@ func TestClaimMissionAccountNotExists(t *testing.T) {
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim), uint64(types.MissionDelegation)}, []uint64{uint64(types.MissionInitialClaim)})
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[0],
 		fmt.Sprintf("send to claiming address %s error: create airdrop account - account does not exist: %s: entity does not exist: failed to send coins", acountsAddresses[0], acountsAddresses[0]))
 }
 
@@ -415,7 +415,7 @@ func TestClaimMissionToAnotherAddress(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[2], sdk.NewCoins(), 12312, 1555565657676576)
 
-	testHelper.C4eAirdropUtils.ClaimMissionToAddress(1, uint64(types.MissionDelegation), acountsAddresses[0], acountsAddresses[2])
+	testHelper.C4eAirdropUtils.ClaimMissionToAddress(0, uint64(types.MissionDelegation), acountsAddresses[0], acountsAddresses[2])
 
 }
 
@@ -435,7 +435,7 @@ func TestClaimMissionToWrongAddress(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[2], sdk.NewCoins(), 12312, 1555565657676576)
 
-	testHelper.C4eAirdropUtils.ClaimMissionError(1, uint64(types.MissionDelegation), acountsAddresses[0],
+	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[0],
 		fmt.Sprintf("wrong claiming address %s: decoding bech32 failed: string not all lowercase or all uppercase: failed to parse", userAirdropEntries.ClaimAddress))
 }
 
@@ -447,13 +447,13 @@ func TestCompleteDelegationMission(t *testing.T) {
 	params, campaigns := prepareTestCampaign(testHelper.Context)
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{1}, []uint64{1})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
 
 	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[0], sdk.NewCoins(), 12312, 1555565657676576)
 	delagationAmount := sdk.NewInt(1000000)
 	testHelper.BankUtils.AddDefaultDenomCoinToAccount(delagationAmount, acountsAddresses[0])
 
-	testHelper.C4eAirdropUtils.CompleteDelegationMission(1, acountsAddresses[0], delagationAmount)
+	testHelper.C4eAirdropUtils.CompleteDelegationMission(0, acountsAddresses[0], delagationAmount)
 }
 
 func TestCompleteVoteMission(t *testing.T) {
@@ -474,9 +474,9 @@ func TestCompleteVoteMission(t *testing.T) {
 	params, campaigns := prepareTestCampaign(testHelper.Context)
 	initialClaims, missions := prepareMissions()
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
-	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
+	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
 
-	testHelper.C4eAirdropUtils.CompleteVoteMission(1, acountsAddresses[0])
+	testHelper.C4eAirdropUtils.CompleteVoteMission(0, acountsAddresses[0])
 
 }
 
@@ -492,18 +492,18 @@ func TestFullCampaign(t *testing.T) {
 	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{}, []uint64{})
 
-	testHelper.C4eAirdropUtils.ClaimInitial(1, acountsAddresses[0])
+	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[0])
 
 	delagationAmount := sdk.NewInt(1000000)
 	testHelper.BankUtils.AddDefaultDenomCoinToAccount(delagationAmount, acountsAddresses[0])
 
-	testHelper.C4eAirdropUtils.CompleteDelegationMission(1, acountsAddresses[0], delagationAmount)
+	testHelper.C4eAirdropUtils.CompleteDelegationMission(0, acountsAddresses[0], delagationAmount)
 
-	testHelper.C4eAirdropUtils.CompleteVoteMission(1, acountsAddresses[0])
+	testHelper.C4eAirdropUtils.CompleteVoteMission(0, acountsAddresses[0])
 
-	testHelper.C4eAirdropUtils.ClaimMission(1, uint64(types.MissionDelegation), acountsAddresses[0])
+	testHelper.C4eAirdropUtils.ClaimMission(0, 1, acountsAddresses[0])
 
-	testHelper.C4eAirdropUtils.ClaimMission(1, uint64(types.MissionVote), acountsAddresses[0])
+	testHelper.C4eAirdropUtils.ClaimMission(0, 2, acountsAddresses[0])
 
 }
 
@@ -529,7 +529,7 @@ func prepareTestCampaign(ctx sdk.Context) (types.Params, []*types.Campaign) {
 			Denom: commontestutils.DefaultTestDenom},
 		[]*types.Campaign{
 			{
-				Id:            1,
+				Id:            0,
 				Enabled:       true,
 				StartTime:     &start,
 				EndTime:       &end,
@@ -541,18 +541,18 @@ func prepareTestCampaign(ctx sdk.Context) (types.Params, []*types.Campaign) {
 }
 
 func prepareMissions() ([]types.InitialClaim, []types.Mission) {
-	initialClaims := []types.InitialClaim{{CampaignId: 1, MissionId: uint64(types.MissionInitialClaim)}}
+	initialClaims := []types.InitialClaim{{CampaignId: 0, MissionId: 0}}
 	missions := []types.Mission{
-		{CampaignId: 1, Id: uint64(types.MissionInitialClaim), Description: "initial-mission", Weight: sdk.MustNewDecFromStr("0.1")},
-		{CampaignId: 1, Id: uint64(types.MissionDelegation), Description: "test-delegation-mission", Weight: sdk.MustNewDecFromStr("0.2")},
-		{CampaignId: 1, Id: uint64(types.MissionVote), Description: "test-vote-mission", Weight: sdk.MustNewDecFromStr("0.3")},
+		{CampaignId: 0, Id: 0, MissionType: types.MissionInitialClaim, Description: "initial-mission", Weight: sdk.MustNewDecFromStr("0.1")},
+		{CampaignId: 0, Id: 1, MissionType: types.MissionDelegation, Description: "test-delegation-mission", Weight: sdk.MustNewDecFromStr("0.2")},
+		{CampaignId: 0, Id: 2, MissionType: types.MissionVote, Description: "test-vote-mission", Weight: sdk.MustNewDecFromStr("0.3")},
 	}
 	return initialClaims, missions
 }
 
 func prepareClaimRecord(testHelper *testapp.TestHelper, srcAddress sdk.AccAddress, recordAddress sdk.AccAddress,
 	completedMissions []uint64, claimedMissions []uint64) *types.UserAirdropEntries {
-	testHelper.C4eAirdropUtils.AddAirdropEntries(srcAddress, 1, prepareAidropEntries(recordAddress.String()))
+	testHelper.C4eAirdropUtils.AddAirdropEntries(srcAddress, 0, prepareAidropEntries(recordAddress.String()))
 	userAirdropEntries := testHelper.C4eAirdropUtils.GetUserAirdropEntries(recordAddress.String())
 	userAirdropEntries.GetAirdropEntries()[0].ClaimedMissions = claimedMissions
 	userAirdropEntries.GetAirdropEntries()[0].CompletedMissions = completedMissions

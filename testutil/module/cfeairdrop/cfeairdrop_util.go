@@ -293,7 +293,7 @@ func (h *C4eAirdropUtils) CompleteDelegationMission(ctx sdk.Context, campaignId 
 		}
 		return veBefore, claimerAmountBefore.Sub(deleagtionAmount)
 	}
-	h.completeAnyMission(ctx, campaignId, 0, claimer, action, beforeCheck)
+	h.completeAnyMission(ctx, campaignId, 1, claimer, action, beforeCheck)
 }
 
 func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress) {
@@ -312,7 +312,7 @@ func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64
 		return h.GovUtils.GovKeeper.AddVote(ctx, proposal.ProposalId,
 			claimer, []govtypes.WeightedVoteOption{{Option: govtypes.OptionAbstain, Weight: sdk.NewDec(1)}})
 	}
-	h.completeAnyMission(ctx, campaignId, uint64(cfeairdroptypes.MissionVote), claimer, action, nil)
+	h.completeAnyMission(ctx, campaignId, 2, claimer, action, nil)
 }
 
 func (h *C4eAirdropUtils) CompleteMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
@@ -342,7 +342,6 @@ func (h *C4eAirdropUtils) completeAnyMission(ctx sdk.Context, campaignId uint64,
 	userAirdropEntries, foundCr := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.True(h.t, foundCr)
 	claimRecordBefore.GetAidropEntry(campaignId).CompletedMissions = append(claimRecordBefore.GetAidropEntry(campaignId).CompletedMissions, missionId)
-
 	require.EqualValues(h.t, claimRecordBefore, userAirdropEntries)
 }
 

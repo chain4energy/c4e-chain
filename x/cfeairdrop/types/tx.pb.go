@@ -634,6 +634,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
 	Claim(ctx context.Context, in *MsgClaim, opts ...grpc.CallOption) (*MsgClaimResponse, error)
+	// rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
 	CreateAirdropCampaign(ctx context.Context, in *MsgCreateAirdropCampaign, opts ...grpc.CallOption) (*MsgCreateAirdropCampaignResponse, error)
 	AddMissionToAidropCampaign(ctx context.Context, in *MsgAddMissionToAidropCampaign, opts ...grpc.CallOption) (*MsgAddMissionToAidropCampaignResponse, error)
 	AddAirdropEntries(ctx context.Context, in *MsgAddAirdropEntries, opts ...grpc.CallOption) (*MsgAddAirdropEntriesResponse, error)
@@ -696,6 +697,7 @@ func (c *msgClient) DeleteAirdropEntry(ctx context.Context, in *MsgDeleteAirdrop
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	Claim(context.Context, *MsgClaim) (*MsgClaimResponse, error)
+	// rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
 	CreateAirdropCampaign(context.Context, *MsgCreateAirdropCampaign) (*MsgCreateAirdropCampaignResponse, error)
 	AddMissionToAidropCampaign(context.Context, *MsgAddMissionToAidropCampaign) (*MsgAddMissionToAidropCampaignResponse, error)
 	AddAirdropEntries(context.Context, *MsgAddAirdropEntries) (*MsgAddAirdropEntriesResponse, error)

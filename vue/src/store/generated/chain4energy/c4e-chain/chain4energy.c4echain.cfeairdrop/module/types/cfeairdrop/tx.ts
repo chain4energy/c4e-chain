@@ -933,6 +933,7 @@ export const MsgDeleteAirdropEntryResponse = {
 /** Msg defines the Msg service. */
 export interface Msg {
   Claim(request: MsgClaim): Promise<MsgClaimResponse>;
+  /** rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse); */
   CreateAirdropCampaign(
     request: MsgCreateAirdropCampaign
   ): Promise<MsgCreateAirdropCampaignResponse>;

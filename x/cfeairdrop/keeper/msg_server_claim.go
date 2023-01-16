@@ -15,3 +15,13 @@ func (k msgServer) Claim(goCtx context.Context, msg *types.MsgClaim) (*types.Msg
 
 	return &types.MsgClaimResponse{}, nil
 }
+
+//
+//func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClaim) (*types.MsgInitialClaimResponse, error) {
+//	ctx := sdk.UnwrapSDKContext(goCtx)
+//
+//	// TODO: Handling the message
+//	_ = ctx
+//
+//	return &types.MsgInitialClaimResponse{}, nil
+//}

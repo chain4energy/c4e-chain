@@ -11,6 +11,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 // Msg defines the Msg service.
 service Msg {
   rpc Claim(MsgClaim) returns (MsgClaimResponse);
+//  rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
   rpc CreateAirdropCampaign(MsgCreateAirdropCampaign) returns (MsgCreateAirdropCampaignResponse);
   rpc AddMissionToAidropCampaign(MsgAddMissionToAidropCampaign) returns (MsgAddMissionToAidropCampaignResponse);
   rpc AddAirdropEntries(MsgAddAirdropEntries) returns (MsgAddAirdropEntriesResponse);
@@ -25,6 +26,15 @@ message MsgClaim {
 }
 
 message MsgClaimResponse {}
+//
+//message MsgInitialClaim {
+//  string claimer = 1;
+//  string campaign_id = 2;
+//  string mission_id = 3;
+//  string addressToClaim = 4;
+//}
+//
+//message MsgInitialClaimResponse {}
 
 message MsgCreateAirdropCampaign {
   string owner = 1;
