@@ -29,9 +29,10 @@ func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClai
 	if msg.AddressToClaim != "" {
 		claimer = msg.AddressToClaim
 	}
-	if err := keeper.ClaimInitial(
+	if err := keeper.ClaimInitialMission(
 		ctx,
 		msg.CampaignId,
+		0,
 		claimer,
 	); err != nil {
 		return nil, err

@@ -20,6 +20,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgClaim:
 			res, err := msgServer.Claim(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgInitialClaim:
+			res, err := msgServer.InitialClaim(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCreateAirdropCampaign:
 			res, err := msgServer.CreateAirdropCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
@@ -36,6 +39,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 
 		case *types.MsgCloseAirdropCampaign:
 			res, err := msgServer.CloseAirdropCampaign(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgStartAirdropCampaign:
+			res, err := msgServer.StartAirdropCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 			// this line is used by starport scaffolding # 1
 		default:

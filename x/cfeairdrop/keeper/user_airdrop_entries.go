@@ -71,21 +71,21 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 		return sdkerrors.Wrap(errortypes.ErrParsing, sdkerrors.Wrapf(err, "add mission to airdrop campaign - owner parsing error: %s", owner).Error())
 	}
 
-	var records []*types.UserAirdropEntries
+	var usersAirdropEntries []*types.UserAirdropEntries
 	sum := sdk.ZeroInt()
 	for _, airdropEntry := range airdropEntries {
-		record, err := k.addUserAirdropEntry(ctx, campaignId, airdropEntry.Address, airdropEntry.Amount)
+		userAirdropEntries, err := k.addUserAirdropEntry(ctx, campaignId, airdropEntry.Address, airdropEntry.Amount)
 		if err != nil {
 			return err
 		}
-		records = append(records, record)
+		usersAirdropEntries = append(usersAirdropEntries, userAirdropEntries)
 		sum = sum.Add(airdropEntry.Amount)
 	}
 	coins := sdk.NewCoins(sdk.NewCoin("uc4e", sum)) // TODO remove hardcoded uc4e
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, coins); err != nil {
+	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, coins); err != nil {
 		return err
 	}
-	for _, record := range records {
+	for _, record := range usersAirdropEntries {
 		k.SetUserAirdropEntries(ctx, *record)
 	}
 	return nil

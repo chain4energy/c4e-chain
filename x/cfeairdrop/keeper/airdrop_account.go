@@ -27,7 +27,7 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	}
 
 	acc := ak.GetAccount(ctx, toAddress)
-	if createAccount && acc == nil {
+	if createAccount {
 		baseAccount := ak.NewAccountWithAddress(ctx, toAddress)
 		if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
 			k.Logger(ctx).Error("send to airdrop account invalid account type; expected: BaseAccount", "notExpectedAccount", baseAccount)

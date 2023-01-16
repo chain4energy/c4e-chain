@@ -58,7 +58,7 @@ func CmdInitialClaim() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argAddressToClaim := args[2]
+			argAddressToClaim := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

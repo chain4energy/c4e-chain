@@ -74,6 +74,13 @@ export interface MsgCloseAirdropCampaign {
 
 export interface MsgCloseAirdropCampaignResponse {}
 
+export interface MsgStartAirdropCampaign {
+  owner: string;
+  campaignId: number;
+}
+
+export interface MsgStartAirdropCampaignResponse {}
+
 const baseMsgClaim: object = { claimer: "", campaign_id: 0, mission_id: 0 };
 
 export const MsgClaim = {
@@ -1269,6 +1276,141 @@ export const MsgCloseAirdropCampaignResponse = {
   },
 };
 
+const baseMsgStartAirdropCampaign: object = { owner: "", campaignId: 0 };
+
+export const MsgStartAirdropCampaign = {
+  encode(
+    message: MsgStartAirdropCampaign,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.owner !== "") {
+      writer.uint32(10).string(message.owner);
+    }
+    if (message.campaignId !== 0) {
+      writer.uint32(16).uint64(message.campaignId);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgStartAirdropCampaign {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgStartAirdropCampaign,
+    } as MsgStartAirdropCampaign;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.owner = reader.string();
+          break;
+        case 2:
+          message.campaignId = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgStartAirdropCampaign {
+    const message = {
+      ...baseMsgStartAirdropCampaign,
+    } as MsgStartAirdropCampaign;
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner);
+    } else {
+      message.owner = "";
+    }
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = Number(object.campaignId);
+    } else {
+      message.campaignId = 0;
+    }
+    return message;
+  },
+
+  toJSON(message: MsgStartAirdropCampaign): unknown {
+    const obj: any = {};
+    message.owner !== undefined && (obj.owner = message.owner);
+    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<MsgStartAirdropCampaign>
+  ): MsgStartAirdropCampaign {
+    const message = {
+      ...baseMsgStartAirdropCampaign,
+    } as MsgStartAirdropCampaign;
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    } else {
+      message.owner = "";
+    }
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = object.campaignId;
+    } else {
+      message.campaignId = 0;
+    }
+    return message;
+  },
+};
+
+const baseMsgStartAirdropCampaignResponse: object = {};
+
+export const MsgStartAirdropCampaignResponse = {
+  encode(
+    _: MsgStartAirdropCampaignResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgStartAirdropCampaignResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgStartAirdropCampaignResponse,
+    } as MsgStartAirdropCampaignResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgStartAirdropCampaignResponse {
+    const message = {
+      ...baseMsgStartAirdropCampaignResponse,
+    } as MsgStartAirdropCampaignResponse;
+    return message;
+  },
+
+  toJSON(_: MsgStartAirdropCampaignResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgStartAirdropCampaignResponse>
+  ): MsgStartAirdropCampaignResponse {
+    const message = {
+      ...baseMsgStartAirdropCampaignResponse,
+    } as MsgStartAirdropCampaignResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Claim(request: MsgClaim): Promise<MsgClaimResponse>;
@@ -1285,10 +1427,13 @@ export interface Msg {
   DeleteAirdropEntry(
     request: MsgDeleteAirdropEntry
   ): Promise<MsgDeleteAirdropEntryResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   CloseAirdropCampaign(
     request: MsgCloseAirdropCampaign
   ): Promise<MsgCloseAirdropCampaignResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  StartAirdropCampaign(
+    request: MsgStartAirdropCampaign
+  ): Promise<MsgStartAirdropCampaignResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1385,6 +1530,20 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgCloseAirdropCampaignResponse.decode(new Reader(data))
+    );
+  }
+
+  StartAirdropCampaign(
+    request: MsgStartAirdropCampaign
+  ): Promise<MsgStartAirdropCampaignResponse> {
+    const data = MsgStartAirdropCampaign.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeairdrop.Msg",
+      "StartAirdropCampaign",
+      data
+    );
+    return promise.then((data) =>
+      MsgStartAirdropCampaignResponse.decode(new Reader(data))
     );
   }
 }

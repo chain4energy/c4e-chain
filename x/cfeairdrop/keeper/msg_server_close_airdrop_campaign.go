@@ -10,8 +10,16 @@ import (
 func (k msgServer) CloseAirdropCampaign(goCtx context.Context, msg *types.MsgCloseAirdropCampaign) (*types.MsgCloseAirdropCampaignResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
+	keeper := k.Keeper
+	if err := keeper.CloseAirdropCampaign(
+		ctx,
+		msg.Owner,
+		msg.CampaignId,
+		msg.Burn,
+		msg.CommunityPoolSend,
+	); err != nil {
+		return nil, err
+	}
 
 	return &types.MsgCloseAirdropCampaignResponse{}, nil
 }

@@ -34279,6 +34279,8 @@ definitions:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgInitialClaimResponse:
     type: object
+  chain4energy.c4echain.cfeairdrop.MsgStartAirdropCampaignResponse:
+    type: object
   chain4energy.c4echain.cfeairdrop.Params:
     type: object
     properties:

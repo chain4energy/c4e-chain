@@ -11,11 +11,13 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgClaim{}, "cfeairdrop/Claim", nil)
+	cdc.RegisterConcrete(&MsgInitialClaim{}, "cfeairdrop/InitialClaim", nil)
 	cdc.RegisterConcrete(&MsgCreateAirdropCampaign{}, "cfeairdrop/CreateAirdropCampaign", nil)
 	cdc.RegisterConcrete(&MsgAddMissionToAidropCampaign{}, "cfeairdrop/AddMissionToAidropCampaign", nil)
 	cdc.RegisterConcrete(&MsgAddAirdropEntries{}, "cfeairdrop/AddUserAirdropEntries", nil)
 	cdc.RegisterConcrete(&MsgDeleteAirdropEntry{}, "cfeairdrop/DeleteAirdropEntry", nil)
 	cdc.RegisterConcrete(&MsgCloseAirdropCampaign{}, "cfeairdrop/CloseAirdropCampaign", nil)
+	cdc.RegisterConcrete(&MsgStartAirdropCampaign{}, "cfeairdrop/StartAirdropCampaign", nil)
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(&AirdropVestingAccount{}, "c4e/AirdropVestingAccount", nil)
 }
@@ -23,19 +25,13 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgClaim{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgInitialClaim{},
 		&MsgCreateAirdropCampaign{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgAddMissionToAidropCampaign{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgAddAirdropEntries{},
 		&MsgDeleteAirdropEntry{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCloseAirdropCampaign{},
+		&MsgStartAirdropCampaign{},
 	)
 	// this line is used by starport scaffolding # 3
 
