@@ -74,7 +74,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 			Description: "Claim gleam contest airdrop", // TODO description ??
 		},
 	)
-	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: gleamCamapaignId, MissionId: 0})
+	//airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: gleamCamapaignId, MissionId: 0})
 
 	// ATOM stakers missions
 	airdropKeeper.SetMission(
@@ -107,7 +107,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		},
 	)
 
-	airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: stakeCamapaignId, MissionId: 0})
+	//airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: stakeCamapaignId, MissionId: 0})
 
 	acc := accountKeeper.GetModuleAccount(ctx, airdropSource)
 	if acc == nil {

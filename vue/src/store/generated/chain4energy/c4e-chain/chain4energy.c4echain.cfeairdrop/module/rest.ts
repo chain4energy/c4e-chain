@@ -42,14 +42,6 @@ export interface CfeairdropCampaign {
   vesting_period?: string;
 }
 
-export interface CfeairdropInitialClaim {
-  /** @format uint64 */
-  campaign_id?: string;
-
-  /** @format uint64 */
-  mission_id?: string;
-}
-
 export interface CfeairdropMission {
   /** @format uint64 */
   id?: string;
@@ -91,25 +83,6 @@ export interface CfeairdropQueryCampaignResponse {
 
 export interface CfeairdropQueryCampaignsResponse {
   campaign?: CfeairdropCampaign[];
-
-  /**
-   * PageResponse is to be embedded in gRPC response messages where the
-   * corresponding request message has used PageRequest.
-   *
-   *  message SomeResponse {
-   *          repeated Bar results = 1;
-   *          PageResponse page = 2;
-   *  }
-   */
-  pagination?: V1Beta1PageResponse;
-}
-
-export interface CfeairdropQueryInitialClaimResponse {
-  initialClaim?: CfeairdropInitialClaim;
-}
-
-export interface CfeairdropQueryInitialClaimsResponse {
-  initialClaim?: CfeairdropInitialClaim[];
 
   /**
    * PageResponse is to be embedded in gRPC response messages where the
@@ -336,6 +309,13 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
+
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse?: boolean;
 }
 
 /**
@@ -581,6 +561,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -588,47 +569,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       path: `/c4e/airdrop/campaigns`,
       method: "GET",
       query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryInitialClaims
-   * @summary Queries a list of InitialClaim items.
-   * @request GET:/c4e/airdrop/initial_claim
-   */
-  queryInitialClaims = (
-    query?: {
-      "pagination.key"?: string;
-      "pagination.offset"?: string;
-      "pagination.limit"?: string;
-      "pagination.count_total"?: boolean;
-    },
-    params: RequestParams = {},
-  ) =>
-    this.request<CfeairdropQueryInitialClaimsResponse, RpcStatus>({
-      path: `/c4e/airdrop/initial_claim`,
-      method: "GET",
-      query: query,
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryInitialClaim
-   * @summary Queries a InitialClaim by index.
-   * @request GET:/c4e/airdrop/initial_claim/{campaignId}
-   */
-  queryInitialClaim = (campaignId: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryInitialClaimResponse, RpcStatus>({
-      path: `/c4e/airdrop/initial_claim/${campaignId}`,
-      method: "GET",
       format: "json",
       ...params,
     });
@@ -647,6 +587,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -720,6 +661,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>

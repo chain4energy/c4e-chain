@@ -11,7 +11,7 @@ func (k msgServer) Claim(goCtx context.Context, msg *types.MsgClaim) (*types.Msg
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
-	if err := keeper.ClaimMission(
+	if err := keeper.Claim(
 		ctx,
 		msg.CampaignId,
 		msg.MissionId,
@@ -25,15 +25,12 @@ func (k msgServer) Claim(goCtx context.Context, msg *types.MsgClaim) (*types.Msg
 func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClaim) (*types.MsgInitialClaimResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
-	claimer := msg.Claimer
-	if msg.AddressToClaim != "" {
-		claimer = msg.AddressToClaim
-	}
-	if err := keeper.ClaimInitialMission(
+
+	if err := keeper.InitialClaim(
 		ctx,
+		msg.Claimer,
 		msg.CampaignId,
-		0,
-		claimer,
+		msg.AddressToClaim,
 	); err != nil {
 		return nil, err
 	}

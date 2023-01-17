@@ -83,11 +83,6 @@ export interface Campaign {
   vesting_period: Duration | undefined;
 }
 
-export interface InitialClaim {
-  campaign_id: number;
-  mission_id: number;
-}
-
 export interface Mission {
   id: number;
   campaign_id: number;
@@ -677,79 +672,6 @@ export const Campaign = {
       message.vesting_period = Duration.fromPartial(object.vesting_period);
     } else {
       message.vesting_period = undefined;
-    }
-    return message;
-  },
-};
-
-const baseInitialClaim: object = { campaign_id: 0, mission_id: 0 };
-
-export const InitialClaim = {
-  encode(message: InitialClaim, writer: Writer = Writer.create()): Writer {
-    if (message.campaign_id !== 0) {
-      writer.uint32(8).uint64(message.campaign_id);
-    }
-    if (message.mission_id !== 0) {
-      writer.uint32(16).uint64(message.mission_id);
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): InitialClaim {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseInitialClaim } as InitialClaim;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.campaign_id = longToNumber(reader.uint64() as Long);
-          break;
-        case 2:
-          message.mission_id = longToNumber(reader.uint64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): InitialClaim {
-    const message = { ...baseInitialClaim } as InitialClaim;
-    if (object.campaign_id !== undefined && object.campaign_id !== null) {
-      message.campaign_id = Number(object.campaign_id);
-    } else {
-      message.campaign_id = 0;
-    }
-    if (object.mission_id !== undefined && object.mission_id !== null) {
-      message.mission_id = Number(object.mission_id);
-    } else {
-      message.mission_id = 0;
-    }
-    return message;
-  },
-
-  toJSON(message: InitialClaim): unknown {
-    const obj: any = {};
-    message.campaign_id !== undefined &&
-      (obj.campaign_id = message.campaign_id);
-    message.mission_id !== undefined && (obj.mission_id = message.mission_id);
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<InitialClaim>): InitialClaim {
-    const message = { ...baseInitialClaim } as InitialClaim;
-    if (object.campaign_id !== undefined && object.campaign_id !== null) {
-      message.campaign_id = object.campaign_id;
-    } else {
-      message.campaign_id = 0;
-    }
-    if (object.mission_id !== undefined && object.mission_id !== null) {
-      message.mission_id = object.mission_id;
-    } else {
-      message.mission_id = 0;
     }
     return message;
   },

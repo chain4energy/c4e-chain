@@ -71,6 +71,25 @@ func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 	return
 }
 
+// GetAllMissionForCampaign returns all mission
+func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list []types.Mission, weightSum sdk.Dec) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Mission
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		if val.CampaignId == campaignId {
+			list = append(list, val)
+			weightSum = weightSum.Add(val.Weight)
+		}
+	}
+
+	return
+}
+
 func (k Keeper) AppendNewMission(
 	ctx sdk.Context,
 	campaignId uint64,

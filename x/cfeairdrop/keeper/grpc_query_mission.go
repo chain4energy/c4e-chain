@@ -56,3 +56,31 @@ func (k Keeper) Mission(c context.Context, req *types.QueryMissionRequest) (*typ
 
 	return &types.QueryMissionResponse{Mission: val}, nil
 }
+
+func (k Keeper) MissionsForCampaign(c context.Context, req *types.QueryMissionsRequest) (*types.QueryMissionsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var missions []types.Mission
+	ctx := sdk.UnwrapSDKContext(c)
+
+	store := ctx.KVStore(k.storeKey)
+	missionStore := prefix.NewStore(store, types.KeyPrefix(types.MissionKeyPrefix))
+
+	pageRes, err := query.Paginate(missionStore, req.Pagination, func(key []byte, value []byte) error {
+		var mission types.Mission
+		if err := k.cdc.Unmarshal(value, &mission); err != nil {
+			return err
+		}
+
+		missions = append(missions, mission)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryMissionsResponse{Mission: missions, Pagination: pageRes}, nil
+}

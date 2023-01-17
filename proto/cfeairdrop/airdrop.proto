@@ -54,11 +54,6 @@ message Campaign {
   ];
 }
 
-message InitialClaim {
-  uint64 campaign_id = 1;
-  uint64 mission_id = 2;
-}
-
 message Mission {
   uint64 id = 1;
   uint64 campaign_id = 2;

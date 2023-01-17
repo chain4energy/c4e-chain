@@ -10,9 +10,9 @@ import (
 )
 
 func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
-	amount sdk.Coins, startTime int64, endTime int64, createAccount bool) error {
+	amount sdk.Coins, startTime int64, endTime int64, initialClaim bool) error {
 	k.Logger(ctx).Debug("send to airdrop account", "toAddress", toAddress,
-		"amount", amount, "startTime", startTime, "endTime", endTime, "createAccount", createAccount)
+		"amount", amount, "startTime", startTime, "endTime", endTime, "initialClaim", initialClaim)
 	ak := k.accountKeeper
 	bk := k.bankKeeper
 
@@ -27,7 +27,7 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	}
 
 	acc := ak.GetAccount(ctx, toAddress)
-	if createAccount {
+	if initialClaim {
 		baseAccount := ak.NewAccountWithAddress(ctx, toAddress)
 		if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
 			k.Logger(ctx).Error("send to airdrop account invalid account type; expected: BaseAccount", "notExpectedAccount", baseAccount)
@@ -64,13 +64,6 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	if !hadPariods || startTime < airdropAccount.StartTime {
 		airdropAccount.StartTime = startTime
 	}
-
-	// err = ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
-	// 	Address: acc.Address,
-	// })
-	// if err != nil {
-	// 	k.Logger(ctx).Error("new vestig account emit event error", "error", err.Error())
-	// }
 
 	if err := bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, toAddress, amount); err != nil {
 		k.Logger(ctx).Debug("send to airdrop account send coins to vesting account error", "toAddress", toAddress,

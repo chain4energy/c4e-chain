@@ -13,11 +13,10 @@ message GenesisState {
   Params params = 1 [
     (gogoproto.nullable) = false
   ];
-  repeated Campaign campaigns = 2;
-  repeated UserAirdropEntries user_airdrop_entries = 3 [
+  repeated Campaign campaigns = 2 [
     (gogoproto.nullable) = false
   ];
-  repeated InitialClaim initialClaims = 4 [
+  repeated UserAirdropEntries user_airdrop_entries = 3 [
     (gogoproto.nullable) = false
   ];
   repeated Mission missions = 5 [

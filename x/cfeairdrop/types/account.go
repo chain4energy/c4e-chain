@@ -229,8 +229,21 @@ func (m *UserAirdropEntries) IsMissionCompleted(campaignId uint64, missionID uin
 func (m *UserAirdropEntries) IsMissionClaimed(campaignId uint64, missionID uint64) bool {
 	for _, airdropEntry := range m.AirdropEntries {
 		if airdropEntry.CampaignId == campaignId {
-			for _, completed := range airdropEntry.ClaimedMissions {
-				if completed == missionID {
+			for _, claimed := range airdropEntry.ClaimedMissions {
+				if claimed == missionID {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (m *UserAirdropEntries) IsInitialMissionClaimed(campaignId uint64) bool {
+	for _, airdropEntry := range m.AirdropEntries {
+		if airdropEntry.CampaignId == campaignId {
+			for _, claimed := range airdropEntry.ClaimedMissions {
+				if claimed == InitialMissionId {
 					return true
 				}
 			}
@@ -275,5 +288,6 @@ func (m UserAirdropEntries) ClaimableFromMission(mission *Mission) sdk.Int {
 	if airdropEntry == nil {
 		return sdk.ZeroInt() // TODO error ??
 	}
+
 	return mission.Weight.Mul(sdk.NewDecFromInt(airdropEntry.Amount)).TruncateInt()
 }

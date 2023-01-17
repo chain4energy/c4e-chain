@@ -26,17 +26,7 @@ service Query {
 		option (google.api.http).get = "/c4e/airdrop/users_airdrop_entries";
 	}
 
-// Queries a InitialClaim by index.
-	rpc InitialClaim(QueryInitialClaimRequest) returns (QueryInitialClaimResponse) {
-		option (google.api.http).get = "/c4e/airdrop/initial_claim/{campaignId}";
-	}
-
-	// Queries a list of InitialClaim items.
-	rpc InitialClaims(QueryInitialClaimsRequest) returns (QueryInitialClaimsResponse) {
-		option (google.api.http).get = "/c4e/airdrop/initial_claim";
-	}
-
-// Queries a Mission by index.
+	// Queries a Mission by index.
 	rpc Mission(QueryMissionRequest) returns (QueryMissionResponse) {
 		option (google.api.http).get = "/c4e/airdrop/mission/{campaignId}/{missionId}";
 	}
@@ -46,7 +36,7 @@ service Query {
 		option (google.api.http).get = "/c4e/airdrop/mission";
 	}
 
-// Queries a list of Campaigns items.
+	// Queries a list of Campaigns items.
 	rpc Campaigns(QueryCampaignsRequest) returns (QueryCampaignsResponse) {
 		option (google.api.http).get = "/c4e/airdrop/campaigns";
 	}
@@ -94,27 +84,6 @@ message QueryUsersAirdropEntriesRequest {
 
 message QueryUsersAirdropEntriesResponse {
 	repeated UserAirdropEntries usersAirdropEntries = 1 [
-		(gogoproto.nullable) = false
-	];
-	cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryInitialClaimRequest {
-	  uint64 campaignId = 1;
-}
-
-message QueryInitialClaimResponse {
-	InitialClaim initialClaim = 1 [
-		(gogoproto.nullable) = false
-	];
-}
-
-message QueryInitialClaimsRequest {
-	cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryInitialClaimsResponse {
-	repeated InitialClaim initialClaim = 1 [
 		(gogoproto.nullable) = false
 	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;

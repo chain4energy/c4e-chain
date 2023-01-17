@@ -19,3 +19,35 @@ func (k msgServer) CreateAirdropCampaign(goCtx context.Context, msg *types.MsgCr
 
 	return &types.MsgCreateAirdropCampaignResponse{}, nil
 }
+
+func (k msgServer) CloseAirdropCampaign(goCtx context.Context, msg *types.MsgCloseAirdropCampaign) (*types.MsgCloseAirdropCampaignResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	keeper := k.Keeper
+	if err := keeper.CloseAirdropCampaign(
+		ctx,
+		msg.Owner,
+		msg.CampaignId,
+		msg.Burn,
+		msg.CommunityPoolSend,
+	); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgCloseAirdropCampaignResponse{}, nil
+}
+
+func (k msgServer) StartAirdropCampaign(goCtx context.Context, msg *types.MsgStartAirdropCampaign) (*types.MsgStartAirdropCampaignResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	keeper := k.Keeper
+	if err := keeper.StartAirdropCampaign(
+		ctx,
+		msg.Owner,
+		msg.CampaignId,
+	); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgStartAirdropCampaignResponse{}, nil
+}

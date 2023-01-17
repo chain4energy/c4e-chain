@@ -6,6 +6,7 @@ import (
 )
 
 const TypeMsgClaim = "claim"
+const InitialMissionId = 0
 
 var _ sdk.Msg = &MsgClaim{}
 
