@@ -34,21 +34,22 @@ message Campaign {
   string name = 3;
   string description = 4;
   bool enabled = 5;
-  google.protobuf.Timestamp start_time = 6 [
+  string denom = 6;
+  google.protobuf.Timestamp start_time = 7 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Timestamp end_time = 7 [
+  google.protobuf.Timestamp end_time = 8 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
   // period of locked coins from claim
-  google.protobuf.Duration lockup_period = 8 [
+  google.protobuf.Duration lockup_period = 9 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
   // period of vesting coins after lockup period
-  google.protobuf.Duration vesting_period = 9 [
+  google.protobuf.Duration vesting_period = 10 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
@@ -61,7 +62,7 @@ message Mission {
   string description = 4;
   MissionType missionType = 5;
   string weight = 6 [
-    (gogoproto.nullable) = false,
+    (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
   ];
 }

@@ -66,7 +66,7 @@ func TestCompleteMission(t *testing.T) {
 
 	params, campaigns := prepareTestCampaign(testHelper.Context)
 	initialClaims, missions := prepareMissions()
-	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, InitialClaims: initialClaims, Missions: missions, Campaigns: campaigns})
+	testHelper.C4eAirdropUtils.InitGenesis(types.GenesisState{Params: params, Missions: missions, Campaigns: campaigns})
 
 	prepareClaimRecord(testHelper, acountsAddresses[1], acountsAddresses[0], []uint64{0}, []uint64{0})
 	testHelper.C4eAirdropUtils.CompleteMission(0, 1, acountsAddresses[0])

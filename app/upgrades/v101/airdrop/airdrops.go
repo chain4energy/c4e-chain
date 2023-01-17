@@ -65,34 +65,37 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	airdropKeeper.SetCampaign(ctx, stakeCampaign)
 
 	// Gleam contests missions
+	weight := sdk.NewDec(1)
 	airdropKeeper.SetMission(
 		ctx,
 		cfeairdroptypes.Mission{
 			Id:          0,
 			CampaignId:  gleamCamapaignId,
-			Weight:      sdk.NewDec(1),
+			Weight:      &weight,
 			Description: "Claim gleam contest airdrop", // TODO description ??
 		},
 	)
 	//airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: gleamCamapaignId, MissionId: 0})
 
 	// ATOM stakers missions
+	weight = sdk.MustNewDecFromStr("0.2")
 	airdropKeeper.SetMission(
 		ctx,
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
 			Id:          0,
-			Weight:      sdk.MustNewDecFromStr("0.2"),
+			Weight:      &weight,
 			Description: "Claim initial stakers airdrop", // TODO description ??
 		},
 	)
 
+	weight = sdk.MustNewDecFromStr("0.4")
 	airdropKeeper.SetMission(
 		ctx,
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
 			Id:          1,
-			Weight:      sdk.MustNewDecFromStr("0.4"),
+			Weight:      &weight,
 			Description: "Claim delegtion stakers airdrop", // TODO description ??
 		},
 	)
@@ -102,7 +105,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
 			Id:          2,
-			Weight:      sdk.MustNewDecFromStr("0.4"),
+			Weight:      &weight,
 			Description: "Claim voting stakers airdrop", // TODO description ??
 		},
 	)

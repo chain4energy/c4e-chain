@@ -1,6 +1,7 @@
 package cfeairdrop
 
 import (
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
@@ -34,7 +35,7 @@ func (h *ContextC4eAirdropUtils) SendToAirdropAccountError(toAddress sdk.AccAddr
 }
 
 func (h *ContextC4eAirdropUtils) VerifyAirdropAccount(address sdk.AccAddress,
-	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfeairdroptypes.ContinuousVestingPeriod) {
+	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod) {
 	h.C4eAirdropUtils.VerifyAirdropAccount(h.testContext.GetContext(), address, expectedOriginalVesting, expectedStartTime, expectedEndTime, expectedPeriods)
 }
 
@@ -85,7 +86,7 @@ func (h *ContextC4eAirdropUtils) ClaimMissionError(campaignId uint64, missionId 
 }
 
 func (h *ContextC4eAirdropUtils) CreateAirdropAccout(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64,
-	endTime int64, periods ...cfeairdroptypes.ContinuousVestingPeriod) *cfeairdroptypes.AirdropVestingAccount {
+	endTime int64, periods ...cfevestingtypes.ContinuousVestingPeriod) *cfevestingtypes.RepeatedContinuousVestingAccount {
 	return h.C4eAirdropUtils.CreateAirdropAccout(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
 }
 

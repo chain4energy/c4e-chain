@@ -75,6 +75,7 @@ export interface Campaign {
   name: string;
   description: string;
   enabled: boolean;
+  denom: string;
   start_time: Date | undefined;
   end_time: Date | undefined;
   /** period of locked coins from claim */
@@ -460,6 +461,7 @@ const baseCampaign: object = {
   name: "",
   description: "",
   enabled: false,
+  denom: "",
 };
 
 export const Campaign = {
@@ -479,25 +481,28 @@ export const Campaign = {
     if (message.enabled === true) {
       writer.uint32(40).bool(message.enabled);
     }
+    if (message.denom !== "") {
+      writer.uint32(50).string(message.denom);
+    }
     if (message.start_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.start_time),
-        writer.uint32(50).fork()
+        writer.uint32(58).fork()
       ).ldelim();
     }
     if (message.end_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.end_time),
-        writer.uint32(58).fork()
+        writer.uint32(66).fork()
       ).ldelim();
     }
     if (message.lockup_period !== undefined) {
-      Duration.encode(message.lockup_period, writer.uint32(66).fork()).ldelim();
+      Duration.encode(message.lockup_period, writer.uint32(74).fork()).ldelim();
     }
     if (message.vesting_period !== undefined) {
       Duration.encode(
         message.vesting_period,
-        writer.uint32(74).fork()
+        writer.uint32(82).fork()
       ).ldelim();
     }
     return writer;
@@ -526,19 +531,22 @@ export const Campaign = {
           message.enabled = reader.bool();
           break;
         case 6:
+          message.denom = reader.string();
+          break;
+        case 7:
           message.start_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 7:
+        case 8:
           message.end_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 8:
+        case 9:
           message.lockup_period = Duration.decode(reader, reader.uint32());
           break;
-        case 9:
+        case 10:
           message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         default:
@@ -576,6 +584,11 @@ export const Campaign = {
     } else {
       message.enabled = false;
     }
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = String(object.denom);
+    } else {
+      message.denom = "";
+    }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = fromJsonTimestamp(object.start_time);
     } else {
@@ -607,6 +620,7 @@ export const Campaign = {
     message.description !== undefined &&
       (obj.description = message.description);
     message.enabled !== undefined && (obj.enabled = message.enabled);
+    message.denom !== undefined && (obj.denom = message.denom);
     message.start_time !== undefined &&
       (obj.start_time =
         message.start_time !== undefined
@@ -652,6 +666,11 @@ export const Campaign = {
       message.enabled = object.enabled;
     } else {
       message.enabled = false;
+    }
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    } else {
+      message.denom = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = object.start_time;

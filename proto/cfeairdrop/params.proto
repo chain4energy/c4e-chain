@@ -8,8 +8,4 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-
-  string denom = 1 [
-    (gogoproto.moretags) = "yaml:\"denom\""
-  ];
 }

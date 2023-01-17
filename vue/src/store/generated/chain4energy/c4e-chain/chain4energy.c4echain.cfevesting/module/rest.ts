@@ -9,6 +9,13 @@
  * ---------------------------------------------------------------
  */
 
+/**
+ * Params defines the parameters for the module.
+ */
+export interface C4EchaincfevestingParams {
+  denom?: string;
+}
+
 export interface CfevestingGenesisVestingType {
   name?: string;
 
@@ -32,18 +39,11 @@ export interface CfevestingMsgWithdrawAllAvailableResponse {
 }
 
 /**
- * Params defines the parameters for the module.
- */
-export interface CfevestingParams {
-  denom?: string;
-}
-
-/**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CfevestingQueryParamsResponse {
   /** params holds all the parameters of this module. */
-  params?: CfevestingParams;
+  params?: C4EchaincfevestingParams;
 }
 
 export interface CfevestingQueryVestingPoolsResponse {

@@ -22,9 +22,5 @@ message GenesisState {
   repeated Mission missions = 5 [
     (gogoproto.nullable) = false
   ];
-  repeated AirdropEntry airdropEntryList = 6 [
-    (gogoproto.nullable) = false
-  ];
-  uint64 airdropEntryCount = 7;
   // this line is used by starport scaffolding # genesis/proto/state
 }

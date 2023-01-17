@@ -9,13 +9,6 @@
  * ---------------------------------------------------------------
  */
 
-/**
- * Params defines the parameters for the module.
- */
-export interface C4EchaincfeairdropParams {
-  denom?: string;
-}
-
 export interface CfeairdropAirdropEntry {
   /** @format uint64 */
   campaign_id?: string;
@@ -32,6 +25,7 @@ export interface CfeairdropCampaign {
   name?: string;
   description?: string;
   enabled?: boolean;
+  denom?: string;
 
   /** @format date-time */
   start_time?: string;
@@ -77,6 +71,11 @@ export type CfeairdropMsgInitialClaimResponse = object;
 
 export type CfeairdropMsgStartAirdropCampaignResponse = object;
 
+/**
+ * Params defines the parameters for the module.
+ */
+export type CfeairdropParams = object;
+
 export interface CfeairdropQueryCampaignResponse {
   campaign?: CfeairdropCampaign;
 }
@@ -120,7 +119,7 @@ export interface CfeairdropQueryMissionsResponse {
  */
 export interface CfeairdropQueryParamsResponse {
   /** params holds all the parameters of this module. */
-  params?: C4EchaincfeairdropParams;
+  params?: CfeairdropParams;
 }
 
 export interface CfeairdropQueryUserAirdropEntriesResponse {
@@ -148,120 +147,7 @@ export interface CfeairdropUserAirdropEntries {
   airdrop_entries?: CfeairdropAirdropEntry[];
 }
 
-/**
-* `Any` contains an arbitrary serialized protocol buffer message along with a
-URL that describes the type of the serialized message.
-
-Protobuf library provides support to pack/unpack Any values in the form
-of utility functions or additional generated methods of the Any type.
-
-Example 1: Pack and unpack a message in C++.
-
-    Foo foo = ...;
-    Any any;
-    any.PackFrom(foo);
-    ...
-    if (any.UnpackTo(&foo)) {
-      ...
-    }
-
-Example 2: Pack and unpack a message in Java.
-
-    Foo foo = ...;
-    Any any = Any.pack(foo);
-    ...
-    if (any.is(Foo.class)) {
-      foo = any.unpack(Foo.class);
-    }
-
- Example 3: Pack and unpack a message in Python.
-
-    foo = Foo(...)
-    any = Any()
-    any.Pack(foo)
-    ...
-    if any.Is(Foo.DESCRIPTOR):
-      any.Unpack(foo)
-      ...
-
- Example 4: Pack and unpack a message in Go
-
-     foo := &pb.Foo{...}
-     any, err := anypb.New(foo)
-     if err != nil {
-       ...
-     }
-     ...
-     foo := &pb.Foo{}
-     if err := any.UnmarshalTo(foo); err != nil {
-       ...
-     }
-
-The pack methods provided by protobuf library will by default use
-'type.googleapis.com/full.type.name' as the type URL and the unpack
-methods only use the fully qualified type name after the last '/'
-in the type URL, for example "foo.bar.com/x/y.z" will yield type
-name "y.z".
-
-
-JSON
-====
-The JSON representation of an `Any` value uses the regular
-representation of the deserialized, embedded message, with an
-additional field `@type` which contains the type URL. Example:
-
-    package google.profile;
-    message Person {
-      string first_name = 1;
-      string last_name = 2;
-    }
-
-    {
-      "@type": "type.googleapis.com/google.profile.Person",
-      "firstName": <string>,
-      "lastName": <string>
-    }
-
-If the embedded message type is well-known and has a custom JSON
-representation, that representation will be embedded adding a field
-`value` which holds the custom JSON in addition to the `@type`
-field. Example (for message [google.protobuf.Duration][]):
-
-    {
-      "@type": "type.googleapis.com/google.protobuf.Duration",
-      "value": "1.212s"
-    }
-*/
 export interface ProtobufAny {
-  /**
-   * A URL/resource name that uniquely identifies the type of the serialized
-   * protocol buffer message. This string must contain at least
-   * one "/" character. The last segment of the URL's path must represent
-   * the fully qualified name of the type (as in
-   * `path/google.protobuf.Duration`). The name should be in a canonical form
-   * (e.g., leading "." is not accepted).
-   *
-   * In practice, teams usually precompile into the binary all types that they
-   * expect it to use in the context of Any. However, for URLs which use the
-   * scheme `http`, `https`, or no scheme, one can optionally set up a type
-   * server that maps type URLs to message definitions as follows:
-   *
-   * * If no scheme is provided, `https` is assumed.
-   * * An HTTP GET on the URL must yield a [google.protobuf.Type][]
-   *   value in binary format, or produce an error.
-   * * Applications are allowed to cache lookup results based on the
-   *   URL, or have them precompiled into a binary to avoid any
-   *   lookup. Therefore, binary compatibility needs to be preserved
-   *   on changes to types. (Use versioned type names to manage
-   *   breaking changes.)
-   *
-   * Note: this functionality is not currently available in the official
-   * protobuf release, and it is not used for type URLs beginning with
-   * type.googleapis.com.
-   *
-   * Schemes other than `http`, `https` (or the empty scheme) might be
-   * used with implementation specific semantics.
-   */
   "@type"?: string;
 }
 
@@ -527,7 +413,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title cfeairdrop/account.proto
+ * @title cfeairdrop/airdrop.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -537,11 +423,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCampaign
    * @summary Queries a list of Campaigns items.
-   * @request GET:/c4e/airdrop/campaign/{campaignId}
+   * @request GET:/c4e/airdrop/v1beta1/campaign/{campaignId}
    */
   queryCampaign = (campaignId: string, params: RequestParams = {}) =>
     this.request<CfeairdropQueryCampaignResponse, RpcStatus>({
-      path: `/c4e/airdrop/campaign/${campaignId}`,
+      path: `/c4e/airdrop/v1beta1/campaign/${campaignId}`,
       method: "GET",
       format: "json",
       ...params,
@@ -553,7 +439,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCampaigns
    * @summary Queries a list of Campaigns items.
-   * @request GET:/c4e/airdrop/campaigns
+   * @request GET:/c4e/airdrop/v1beta1/campaigns
    */
   queryCampaigns = (
     query?: {
@@ -566,7 +452,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<CfeairdropQueryCampaignsResponse, RpcStatus>({
-      path: `/c4e/airdrop/campaigns`,
+      path: `/c4e/airdrop/v1beta1/campaigns`,
       method: "GET",
       query: query,
       format: "json",
@@ -579,7 +465,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryMissionAll
    * @summary Queries a list of Mission items.
-   * @request GET:/c4e/airdrop/mission
+   * @request GET:/c4e/airdrop/v1beta1/mission
    */
   queryMissionAll = (
     query?: {
@@ -592,7 +478,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<CfeairdropQueryMissionsResponse, RpcStatus>({
-      path: `/c4e/airdrop/mission`,
+      path: `/c4e/airdrop/v1beta1/mission`,
       method: "GET",
       query: query,
       format: "json",
@@ -605,11 +491,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryMission
    * @summary Queries a Mission by index.
-   * @request GET:/c4e/airdrop/mission/{campaignId}/{missionId}
+   * @request GET:/c4e/airdrop/v1beta1/mission/{campaignId}/{missionId}
    */
   queryMission = (campaignId: string, missionId: string, params: RequestParams = {}) =>
     this.request<CfeairdropQueryMissionResponse, RpcStatus>({
-      path: `/c4e/airdrop/mission/${campaignId}/${missionId}`,
+      path: `/c4e/airdrop/v1beta1/mission/${campaignId}/${missionId}`,
       method: "GET",
       format: "json",
       ...params,
@@ -621,11 +507,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/airdrop/params
+   * @request GET:/c4e/airdrop/v1beta1/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfeairdropQueryParamsResponse, RpcStatus>({
-      path: `/c4e/airdrop/params`,
+      path: `/c4e/airdrop/v1beta1/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -637,11 +523,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryUserAirdropEntries
    * @summary Queries a UserAirdropEntries by index.
-   * @request GET:/c4e/airdrop/user_airdrop_entries/{address}
+   * @request GET:/c4e/airdrop/v1beta1/user_airdrop_entries/{address}
    */
   queryUserAirdropEntries = (address: string, params: RequestParams = {}) =>
     this.request<CfeairdropQueryUserAirdropEntriesResponse, RpcStatus>({
-      path: `/c4e/airdrop/user_airdrop_entries/${address}`,
+      path: `/c4e/airdrop/v1beta1/user_airdrop_entries/${address}`,
       method: "GET",
       format: "json",
       ...params,
@@ -653,7 +539,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryUsersAirdropEntries
    * @summary Queries a list of UserAirdropEntries items.
-   * @request GET:/c4e/airdrop/users_airdrop_entries
+   * @request GET:/c4e/airdrop/v1beta1/users_airdrop_entries
    */
   queryUsersAirdropEntries = (
     query?: {
@@ -666,7 +552,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<CfeairdropQueryUsersAirdropEntriesResponse, RpcStatus>({
-      path: `/c4e/airdrop/users_airdrop_entries`,
+      path: `/c4e/airdrop/v1beta1/users_airdrop_entries`,
       method: "GET",
       query: query,
       format: "json",

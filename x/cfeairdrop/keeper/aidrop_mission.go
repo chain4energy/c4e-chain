@@ -47,7 +47,7 @@ func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *t
 	return userAirdropEntries, nil
 }
 
-func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig *types.Campaign, mission *types.Mission, userAirdropEntries *types.UserAirdropEntries) (*types.UserAirdropEntries, error) {
+func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaign *types.Campaign, mission *types.Mission, userAirdropEntries *types.UserAirdropEntries) (*types.UserAirdropEntries, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
 	address := userAirdropEntries.Address
@@ -81,7 +81,7 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig 
 
 	// TODO initial mission claim should have not waight but get whats left from ther missions
 
-	claimable := sdk.NewCoins(sdk.NewCoin(k.Denom(ctx), claimableAmount))
+	claimable := sdk.NewCoins(sdk.NewCoin(campaign.Denom, claimableAmount))
 
 	// calculate claimable after decay factor
 	// decayInfo := k.GetParams(ctx).DecayInformation
@@ -103,8 +103,8 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaignConfig 
 	if err != nil {
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userAirdropEntries.ClaimAddress)
 	}
-	start := ctx.BlockTime().Add(campaignConfig.LockupPeriod)
-	end := start.Add(campaignConfig.VestingPeriod)
+	start := ctx.BlockTime().Add(campaign.LockupPeriod)
+	end := start.Add(campaign.VestingPeriod)
 	if err = k.SendToAirdropAccount(ctx, claimer, claimable, start.Unix(), end.Unix(), initialClaim); err != nil {
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userAirdropEntries.ClaimAddress)
 	}
@@ -169,7 +169,7 @@ func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campa
 		Name:        name,
 		Description: description,
 		MissionType: missionType,
-		Weight:      weight,
+		Weight:      &weight,
 	}
 
 	k.AppendNewMission(ctx, campaignId, mission)
@@ -223,7 +223,7 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, log string, campaignId uint64,
 func (k Keeper) missionsWeightGreaterThan1(missions []types.Mission, newMissionWeight sdk.Dec) (bool, sdk.Dec) {
 	weightSum := newMissionWeight
 	for _, mission := range missions {
-		weightSum = weightSum.Add(mission.Weight)
+		weightSum = weightSum.Add(*mission.Weight)
 	}
 	if weightSum.GT(sdk.NewDec(1)) {
 		return true, weightSum

@@ -14,10 +14,10 @@ export interface ContinuousVestingPeriod {
 }
 
 /**
- * AirdropVestingAccount implements the VestingAccount interface. It
+ * RepeatedContinuousVestingAccount implements the VestingAccount interface. It
  * periodically vests by unlocking coins during each specified period.
  */
-export interface AirdropVestingAccount {
+export interface RepeatedContinuousVestingAccount {
   base_vesting_account: BaseVestingAccount | undefined;
   start_time: number;
   vesting_periods: ContinuousVestingPeriod[];
@@ -132,9 +132,9 @@ export const ContinuousVestingPeriod = {
 
 const baseAirdropVestingAccount: object = { start_time: 0 };
 
-export const AirdropVestingAccount = {
+export const RepeatedContinuousVestingAccount = {
   encode(
-    message: AirdropVestingAccount,
+    message: RepeatedContinuousVestingAccount,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.base_vesting_account !== undefined) {
@@ -152,10 +152,10 @@ export const AirdropVestingAccount = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): AirdropVestingAccount {
+  decode(input: Reader | Uint8Array, length?: number): RepeatedContinuousVestingAccount {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAirdropVestingAccount } as AirdropVestingAccount;
+    const message = { ...baseAirdropVestingAccount } as RepeatedContinuousVestingAccount;
     message.vesting_periods = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -182,8 +182,8 @@ export const AirdropVestingAccount = {
     return message;
   },
 
-  fromJSON(object: any): AirdropVestingAccount {
-    const message = { ...baseAirdropVestingAccount } as AirdropVestingAccount;
+  fromJSON(object: any): RepeatedContinuousVestingAccount {
+    const message = { ...baseAirdropVestingAccount } as RepeatedContinuousVestingAccount;
     message.vesting_periods = [];
     if (
       object.base_vesting_account !== undefined &&
@@ -211,7 +211,7 @@ export const AirdropVestingAccount = {
     return message;
   },
 
-  toJSON(message: AirdropVestingAccount): unknown {
+  toJSON(message: RepeatedContinuousVestingAccount): unknown {
     const obj: any = {};
     message.base_vesting_account !== undefined &&
       (obj.base_vesting_account = message.base_vesting_account
@@ -229,9 +229,9 @@ export const AirdropVestingAccount = {
   },
 
   fromPartial(
-    object: DeepPartial<AirdropVestingAccount>
-  ): AirdropVestingAccount {
-    const message = { ...baseAirdropVestingAccount } as AirdropVestingAccount;
+    object: DeepPartial<RepeatedContinuousVestingAccount>
+  ): RepeatedContinuousVestingAccount {
+    const message = { ...baseAirdropVestingAccount } as RepeatedContinuousVestingAccount;
     message.vesting_periods = [];
     if (
       object.base_vesting_account !== undefined &&

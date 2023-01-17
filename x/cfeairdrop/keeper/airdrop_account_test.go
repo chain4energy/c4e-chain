@@ -163,14 +163,14 @@ func TestCreateAirdropAccountWrongAccountType(t *testing.T) {
 	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
 		amount,
 		startTimeUnix,
-		endTimeUnix, true, "send to airdrop account - expected AirdropVestingAccount, got: *types.BaseAccount: invalid account type",
+		endTimeUnix, true, "send to airdrop account - expected RepeatedContinuousVestingAccount, got: *types.BaseAccount: invalid account type",
 		false,
 	)
 
 	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
 		amount,
 		startTimeUnix,
-		endTimeUnix, false, "send to airdrop account - expected AirdropVestingAccount, got: *types.BaseAccount: invalid account type",
+		endTimeUnix, false, "send to airdrop account - expected RepeatedContinuousVestingAccount, got: *types.BaseAccount: invalid account type",
 		false,
 	)
 }

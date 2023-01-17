@@ -67,15 +67,6 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	}
 	cfeairdropGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
-		AirdropEntryList: []types.AirdropEntry{
-			{
-				Address: sample.AccAddress(),
-			},
-			{
-				Address: sample.AccAddress(),
-			},
-		},
-		AirdropEntryCount: 2,
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfeairdropGenesis)

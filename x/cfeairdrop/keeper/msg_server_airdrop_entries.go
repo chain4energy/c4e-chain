@@ -23,19 +23,8 @@ func (k msgServer) AddAirdropEntries(goCtx context.Context, msg *types.MsgAddAir
 
 func (k msgServer) DeleteAirdropEntry(goCtx context.Context, msg *types.MsgDeleteAirdropEntry) (*types.MsgDeleteAirdropEntryResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// Checks that the element exists
-	//val, found := k.GetAirdropEntry(ctx, msg.Id)
-	//if !found {
-	//	return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Id))
-	//}
-
-	// Checks if the msg creator is the same as the current owner
-	//if msg.Creator != val.Creator {
-	//	return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
-	//}
-
-	k.RemoveAirdropEntry(ctx, msg.Id)
+	_ = ctx
+	// TODO: add logic
 
 	return &types.MsgDeleteAirdropEntryResponse{}, nil
 }

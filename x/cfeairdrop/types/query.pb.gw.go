@@ -695,19 +695,19 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "airdrop", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "airdrop", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_UserAirdropEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4e", "airdrop", "user_airdrop_entries", "address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_UserAirdropEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "airdrop", "v1beta1", "user_airdrop_entries", "address"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_UsersAirdropEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "airdrop", "users_airdrop_entries"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_UsersAirdropEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "airdrop", "v1beta1", "users_airdrop_entries"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Mission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "airdrop", "mission", "campaignId", "missionId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Mission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"c4e", "airdrop", "v1beta1", "mission", "campaignId", "missionId"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_MissionAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "airdrop", "mission"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_MissionAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "airdrop", "v1beta1", "mission"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Campaigns_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4e", "airdrop", "campaigns"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Campaigns_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "airdrop", "v1beta1", "campaigns"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Campaign_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4e", "airdrop", "campaign", "campaignId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Campaign_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "airdrop", "v1beta1", "campaign", "campaignId"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

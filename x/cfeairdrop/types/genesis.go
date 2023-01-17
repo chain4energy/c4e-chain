@@ -13,7 +13,6 @@ func DefaultGenesis() *GenesisState {
 		Campaigns:          []Campaign{},
 		UserAirdropEntries: []UserAirdropEntries{},
 		Missions:           []Mission{},
-		AirdropEntryList:   []AirdropEntry{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}

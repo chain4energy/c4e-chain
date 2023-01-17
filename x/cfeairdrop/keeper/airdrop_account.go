@@ -3,6 +3,7 @@ package keeper
 import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -36,7 +37,7 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 
 		baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), endTime)
 
-		newAirdropAcc := types.NewAirdropVestingAccountRaw(baseVestingAccount, startTime)
+		newAirdropAcc := cfevestingtypes.NewRepeatedContinuousVestingAccountRaw(baseVestingAccount, startTime)
 		newAirdropAcc.EndTime = endTime
 		acc = newAirdropAcc
 		k.Logger(ctx).Debug("send to airdrop account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
@@ -48,15 +49,15 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 		k.Logger(ctx).Error("send to airdrop account - account not exists error", "toAddress", toAddress)
 		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "create airdrop account - account does not exist: %s", toAddress)
 	}
-	airdropAccount, ok := acc.(*types.AirdropVestingAccount)
+	airdropAccount, ok := acc.(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	if !ok {
-		k.Logger(ctx).Error("send to airdrop account invalid account type; expected: AirdropVestingAccount", "notExpectedAccount", acc)
-		return sdkerrors.Wrapf(c4eerrors.ErrInvalidAccountType, "send to airdrop account - expected AirdropVestingAccount, got: %T", acc)
+		k.Logger(ctx).Error("send to airdrop account invalid account type; expected: RepeatedContinuousVestingAccount", "notExpectedAccount", acc)
+		return sdkerrors.Wrapf(c4eerrors.ErrInvalidAccountType, "send to airdrop account - expected RepeatedContinuousVestingAccount, got: %T", acc)
 	}
 	ak.SetAccount(ctx, airdropAccount)
 	hadPariods := len(airdropAccount.VestingPeriods) > 0
 	airdropAccount.VestingPeriods = append(airdropAccount.VestingPeriods,
-		types.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
+		cfevestingtypes.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
 	airdropAccount.BaseVestingAccount.OriginalVesting = airdropAccount.BaseVestingAccount.OriginalVesting.Add(amount...)
 	if !hadPariods || endTime > airdropAccount.BaseVestingAccount.EndTime {
 		airdropAccount.BaseVestingAccount.EndTime = endTime

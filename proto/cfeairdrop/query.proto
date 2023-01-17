@@ -14,35 +14,35 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/c4e/airdrop/params";
+    option (google.api.http).get = "/c4e/airdrop/v1beta1/params";
   }
   // Queries a UserAirdropEntries by index.
 	rpc UserAirdropEntries(QueryUserAirdropEntriesRequest) returns (QueryUserAirdropEntriesResponse) {
-		option (google.api.http).get = "/c4e/airdrop/user_airdrop_entries/{address}";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/user_airdrop_entries/{address}";
 	}
 
 	// Queries a list of UserAirdropEntries items.
 	rpc UsersAirdropEntries(QueryUsersAirdropEntriesRequest) returns (QueryUsersAirdropEntriesResponse) {
-		option (google.api.http).get = "/c4e/airdrop/users_airdrop_entries";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/users_airdrop_entries";
 	}
 
 	// Queries a Mission by index.
 	rpc Mission(QueryMissionRequest) returns (QueryMissionResponse) {
-		option (google.api.http).get = "/c4e/airdrop/mission/{campaignId}/{missionId}";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/mission/{campaignId}/{missionId}";
 	}
 
 	// Queries a list of Mission items.
 	rpc MissionAll(QueryMissionsRequest) returns (QueryMissionsResponse) {
-		option (google.api.http).get = "/c4e/airdrop/mission";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/mission";
 	}
 
 	// Queries a list of Campaigns items.
 	rpc Campaigns(QueryCampaignsRequest) returns (QueryCampaignsResponse) {
-		option (google.api.http).get = "/c4e/airdrop/campaigns";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/campaigns";
 	}
 	// Queries a list of Campaigns items.
 	rpc Campaign(QueryCampaignRequest) returns (QueryCampaignResponse) {
-		option (google.api.http).get = "/c4e/airdrop/campaign/{campaignId}";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/campaign/{campaignId}";
 	}
 // Queries a AirdropEntry by id.
 //	rpc AirdropEntry(QueryGetAirdropEntryRequest) returns (QueryGetAirdropEntryResponse) {
