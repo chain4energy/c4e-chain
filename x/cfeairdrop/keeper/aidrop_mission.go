@@ -72,31 +72,16 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaign *types
 		airdropEntry := userAirdropEntries.GetAidropEntry(campaignId)
 		amountSum := sdk.ZeroInt()
 		for _, mission := range missions {
-			amountSum.Add(mission.Weight.Mul(sdk.NewDecFromInt(airdropEntry.Amount)).TruncateInt())
+			amountSum = amountSum.Add(mission.Weight.Mul(sdk.NewDecFromInt(airdropEntry.Amount)).TruncateInt())
 		}
 		claimableAmount = airdropEntry.Amount.Sub(amountSum)
 	} else {
 		claimableAmount = userAirdropEntries.ClaimableFromMission(mission)
 	}
 
-	// TODO initial mission claim should have not waight but get whats left from ther missions
-
-	claimable := sdk.NewCoins(sdk.NewCoin(campaign.Denom, claimableAmount))
-
-	// calculate claimable after decay factor
-	// decayInfo := k.GetParams(ctx).DecayInformation
-	// claimable = decayInfo.ApplyDecayFactor(claimable, ctx.BlockTime())
-
-	// check final claimable non-zero
-	// if claimable.Empty() {
-	// 	return types.ErrNoClaimable
-	// }
-
-	// decrease airdrop supply
-	// airdropSupply.Amount = airdropSupply.Amount.Sub(claimable.AmountOf(airdropSupply.Denom))
-	// if airdropSupply.Amount.IsNegative() {
-	// 	return errors.Critical("airdrop supply is lower than total claimable")
-	// }
+	coin := sdk.NewCoin(campaign.Denom, claimableAmount)
+	k.DecrementAirdropClaimsLeft(ctx, campaignId, coin)
+	claimable := sdk.NewCoins(coin)
 
 	// send claimable to the user
 	claimer, err := sdk.AccAddressFromBech32(userAirdropEntries.ClaimAddress)

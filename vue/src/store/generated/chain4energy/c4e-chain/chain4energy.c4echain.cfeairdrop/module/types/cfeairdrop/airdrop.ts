@@ -74,6 +74,10 @@ export interface AirdropDistrubitions {
   amount: Coin | undefined;
 }
 
+export interface AirdropClaimsLeft {
+  amount: Coin | undefined;
+}
+
 export interface Campaign {
   id: number;
   owner: string;
@@ -510,6 +514,62 @@ export const AirdropDistrubitions = {
 
   fromPartial(object: DeepPartial<AirdropDistrubitions>): AirdropDistrubitions {
     const message = { ...baseAirdropDistrubitions } as AirdropDistrubitions;
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = Coin.fromPartial(object.amount);
+    } else {
+      message.amount = undefined;
+    }
+    return message;
+  },
+};
+
+const baseAirdropClaimsLeft: object = {};
+
+export const AirdropClaimsLeft = {
+  encode(message: AirdropClaimsLeft, writer: Writer = Writer.create()): Writer {
+    if (message.amount !== undefined) {
+      Coin.encode(message.amount, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): AirdropClaimsLeft {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAirdropClaimsLeft } as AirdropClaimsLeft;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 3:
+          message.amount = Coin.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AirdropClaimsLeft {
+    const message = { ...baseAirdropClaimsLeft } as AirdropClaimsLeft;
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = Coin.fromJSON(object.amount);
+    } else {
+      message.amount = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: AirdropClaimsLeft): unknown {
+    const obj: any = {};
+    message.amount !== undefined &&
+      (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<AirdropClaimsLeft>): AirdropClaimsLeft {
+    const message = { ...baseAirdropClaimsLeft } as AirdropClaimsLeft;
     if (object.amount !== undefined && object.amount !== null) {
       message.amount = Coin.fromPartial(object.amount);
     } else {

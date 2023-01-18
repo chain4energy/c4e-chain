@@ -45,9 +45,13 @@ service Query {
 	rpc Campaign(QueryCampaignRequest) returns (QueryCampaignResponse) {
 		option (google.api.http).get = "/c4e/airdrop/v1beta1/campaign/{campaignId}";
 	}
-	// Queries a UserAirdropEntries by index.
+	// Queries a AirdropDistrubitions by campaignId.
 	rpc AirdropDistrubitions(QueryAirdropDistrubitionsRequest) returns (QueryAirdropDistrubitionsResponse) {
 		option (google.api.http).get = "/c4e/airdrop/v1beta1/airdrop_distributions/{campaignId}";
+	}
+	// Queries a AirdropDistrubitions by campaignId.
+	rpc AirdropClaimsLeft(QueryAirdropClaimsLeftRequest) returns (QueryAirdropClaimsLeftResponse) {
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/airdrop_claims_left/{campaignId}";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -82,6 +86,13 @@ message QueryAirdropDistrubitionsResponse {
 	cosmos.base.v1beta1.Coin amount = 7;
 }
 
+message QueryAirdropClaimsLeftRequest {
+	uint64 campaignId = 1;
+}
+
+message QueryAirdropClaimsLeftResponse {
+	cosmos.base.v1beta1.Coin amount = 7;
+}
 
 message QueryUsersAirdropEntriesRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;

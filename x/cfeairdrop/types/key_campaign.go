@@ -8,6 +8,7 @@ const (
 	// CampaignKeyPrefix is the prefix to retrieve all CampaignO
 	CampaignKeyPrefix          = "Campaign/value/"
 	AirdropDistributionsPrefix = "AirdropDistrubitions/value/"
+	AirdropClaimsLeftPrefix    = "AirdropClaimsLeft/value/"
 	CampaignCountKey           = "AidropCampaignCountKey-count-"
 )
 
@@ -23,8 +24,20 @@ func CampaignKey(
 	return key
 }
 
-// CampaignKey returns the store key to retrieve a CampaignO from the index fields
+// AirdropDistributionsKey returns the store key to retrieve a CampaignO from the index fields
 func AirdropDistributionsKey(
+	campaignId uint64,
+) []byte {
+	key := make([]byte, 8)
+	binary.BigEndian.PutUint64(key, campaignId)
+
+	key = append(key, []byte("/")...)
+
+	return key
+}
+
+// AirdropClaimsLeftKey returns the store key to retrieve a CampaignO from the index fields
+func AirdropClaimsLeftKey(
 	campaignId uint64,
 ) []byte {
 	key := make([]byte, 8)

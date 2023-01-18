@@ -28,6 +28,8 @@ func TestClaimInitial(t *testing.T) {
 	campaigns := []types.Campaign{
 		{
 			Id:            0,
+			Owner:         acountsAddresses[0].String(),
+			Denom:         commontestutils.DefaultTestDenom,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -36,12 +38,28 @@ func TestClaimInitial(t *testing.T) {
 			Description:   "test-campaign",
 		},
 	}
-	weight := sdk.MustNewDecFromStr("0.2")
-	missions := []types.Mission{{CampaignId: 0, Id: 3, Description: "test-mission", Weight: &weight}}
+	weight := sdk.MustNewDecFromStr("0")
+	weight2 := sdk.MustNewDecFromStr("0.2")
+	missions := []types.Mission{
+		{
+			CampaignId:  0,
+			Id:          0,
+			Description: "test-mission",
+			Weight:      &weight,
+			MissionType: types.MissionInitialClaim,
+		},
+		{
+			CampaignId:  0,
+			Id:          1,
+			Description: "test-mission",
+			Weight:      &weight2,
+			MissionType: types.MissionVote,
+		},
+	}
 	genesisState := types.GenesisState{Missions: missions, Campaigns: campaigns}
 	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[1], 0, prepareAidropEntries(acountsAddresses[1].String()))
+	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, prepareAidropEntries(acountsAddresses[1].String()))
 
 	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1])
 

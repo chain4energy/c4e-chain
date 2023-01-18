@@ -72,3 +72,20 @@ func (k Keeper) AirdropDistrubitions(c context.Context, req *types.QueryAirdropD
 
 	return &types.QueryAirdropDistrubitionsResponse{Amount: &val.Amount}, nil
 }
+
+func (k Keeper) AirdropClaimsLeft(c context.Context, req *types.QueryAirdropClaimsLeftRequest) (*types.QueryAirdropClaimsLeftResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	val, found := k.GetAirdropClaimsLeft(
+		ctx,
+		req.CampaignId,
+	)
+	if !found {
+		return nil, status.Error(codes.NotFound, "not found")
+	}
+
+	return &types.QueryAirdropClaimsLeftResponse{Amount: &val.Amount}, nil
+}

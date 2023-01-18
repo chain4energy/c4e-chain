@@ -36,6 +36,13 @@ message AirdropDistrubitions {
   ];
 }
 
+message AirdropClaimsLeft {
+  cosmos.base.v1beta1.Coin amount = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+}
+
 message Campaign {
   uint64 id = 1;
   string owner = 2;

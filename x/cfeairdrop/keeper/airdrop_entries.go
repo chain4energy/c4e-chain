@@ -83,6 +83,7 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 	coin := sdk.NewCoin(campaign.Denom, sum)
 	coins := sdk.NewCoins(coin)
 	k.IncrementAirdropDistrubitions(ctx, campaignId, coin)
+	k.IncrementAirdropClaimsLeft(ctx, campaignId, coin)
 	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, coins); err != nil {
 		return err
 	}
@@ -129,7 +130,7 @@ func (k Keeper) DeleteUserAirdropEntry(ctx sdk.Context, owner string, campaignId
 	)
 	if !found {
 		k.Logger(ctx).Error("delete user airdrop entry userAirdropEntries doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(errortypes.ErrParsing, "delete user airdrop entry -  userAirdropEntries doesn't exist", campaignId)
+		return sdkerrors.Wrapf(errortypes.ErrParsing, "delete user airdrop entry -  campaign id %d userAirdropEntries doesn't exist", campaignId)
 	}
 	airdropEntryAmount := sdk.ZeroInt()
 	for i, airdropEntry := range userAirdropEntries.AirdropEntries {

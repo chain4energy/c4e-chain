@@ -88,19 +88,6 @@ func TestClaimRecordGet(t *testing.T) {
 		)
 	}
 }
-func TestClaimRecordRemove(t *testing.T) {
-	keeper, ctx := keepertest.CfeairdropKeeper(t)
-	items := createNClaimRecord(keeper, ctx, 10, 0, false, false)
-	for _, item := range items {
-		keeper.RemoveUserAirdropEntry(ctx,
-			item.Address,
-		)
-		_, found := keeper.GetUserAirdropEntries(ctx,
-			item.Address,
-		)
-		require.False(t, found)
-	}
-}
 
 func TestClaimRecordGetAll(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)

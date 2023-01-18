@@ -142,22 +142,6 @@ func (k Keeper) GetAllAirdropDistrubitions(ctx sdk.Context) (list []types.Airdro
 	return
 }
 
-// AppendNewCampaign appends a campaign in the store with a new id and update the count
-func (k Keeper) AppendirdropDistrubitions(
-	ctx sdk.Context,
-	campaignId uint64,
-	distribution types.AirdropDistrubitions,
-) {
-
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropDistributionsPrefix))
-	appendedValue := k.cdc.MustMarshal(&distribution)
-	store.Set(types.AirdropDistributionsKey(
-		campaignId,
-	), appendedValue)
-
-	return
-}
-
 // GetCampaign returns a campaignO from its index
 func (k Keeper) IncrementAirdropDistrubitions(
 	ctx sdk.Context,
@@ -195,6 +179,93 @@ func (k Keeper) DecrementAirdropDistrubitions(
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropDistributionsPrefix))
 
 	b := store.Get(types.AirdropDistributionsKey(
+		campaignId,
+	))
+
+	if b == nil {
+		return val
+	}
+	k.cdc.MustUnmarshal(b, &val)
+	val.Amount = val.Amount.Sub(amount)
+
+	appendedValue := k.cdc.MustMarshal(&val)
+	store.Set(types.AirdropDistributionsKey(
+		campaignId,
+	), appendedValue)
+	return val
+}
+
+// GetCampaign returns a campaignO from its index
+func (k Keeper) GetAirdropClaimsLeft(
+	ctx sdk.Context,
+	campaignId uint64,
+) (val types.AirdropClaimsLeft, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropClaimsLeftPrefix))
+
+	b := store.Get(types.AirdropClaimsLeftKey(
+		campaignId,
+	))
+	if b == nil {
+		return val, false
+	}
+
+	k.cdc.MustUnmarshal(b, &val)
+	return val, true
+}
+
+// GetCampaigns returns all campaignO
+func (k Keeper) GetAllAirdropClaimsLeft(ctx sdk.Context) (list []types.AirdropClaimsLeft) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropClaimsLeftPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.AirdropClaimsLeft
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, val)
+	}
+
+	return
+}
+
+// GetCampaign returns a campaignO from its index
+func (k Keeper) IncrementAirdropClaimsLeft(
+	ctx sdk.Context,
+	campaignId uint64,
+	amount sdk.Coin,
+) (val types.AirdropClaimsLeft) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropClaimsLeftPrefix))
+
+	b := store.Get(types.AirdropDistributionsKey(
+		campaignId,
+	))
+
+	if b != nil {
+		k.cdc.MustUnmarshal(b, &val)
+		val.Amount = val.Amount.Add(amount)
+	} else {
+		val = types.AirdropClaimsLeft{
+			Amount: amount,
+		}
+	}
+
+	appendedValue := k.cdc.MustMarshal(&val)
+	store.Set(types.AirdropClaimsLeftKey(
+		campaignId,
+	), appendedValue)
+	return val
+}
+
+// GetCampaign returns a campaignO from its index
+func (k Keeper) DecrementAirdropClaimsLeft(
+	ctx sdk.Context,
+	campaignId uint64,
+	amount sdk.Coin,
+) (val types.AirdropClaimsLeft) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropClaimsLeftPrefix))
+
+	b := store.Get(types.AirdropClaimsLeftKey(
 		campaignId,
 	))
 
