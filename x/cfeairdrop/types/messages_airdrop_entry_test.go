@@ -48,13 +48,13 @@ func TestMsgDeleteAirdropEntry_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgDeleteAirdropEntry{
-				Creator: "invalid_address",
+				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgDeleteAirdropEntry{
-				Creator: sample.AccAddress(),
+				Owner: sample.AccAddress(),
 			},
 		},
 	}

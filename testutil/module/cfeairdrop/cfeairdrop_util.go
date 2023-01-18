@@ -186,7 +186,7 @@ func (h *C4eAirdropUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sd
 
 }
 
-func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress) {
+func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, expectedAmount int64) {
 	acc := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	claimerAccountBefore, ok := acc.(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	accExisted := acc != nil
@@ -198,22 +198,20 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
 
-	mission, _ := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, cfeairdroptypes.InitialMissionId)
 	userAirdropEntries, _ := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	err := h.helpeCfeairdropkeeper.InitialClaim(ctx, claimer.String(), campaignId, claimer.String())
 	require.NoError(h.t, err)
-	expectedAmount := mission.Weight.MulInt(userAirdropEntries.GetAidropEntry(campaignId).Amount).TruncateInt()
 
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore.Add(expectedAmount))
+	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore.AddRaw(expectedAmount))
 
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore.Sub(expectedAmount))
+	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore.SubRaw(expectedAmount))
 
 	if claimerAccountBefore == nil {
 		baseAccount := h.helperAccountKeeper.NewAccountWithAddress(ctx, claimer)
 		claimerAccountBefore = cfevestingtypes.NewRepeatedContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), 100000000, 100000000, nil)
 	}
 
-	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, expectedAmount)
+	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, sdk.NewInt(expectedAmount))
 
 	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimer).(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	if !accExisted {

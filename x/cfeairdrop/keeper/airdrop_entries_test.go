@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"testing"
+	"time"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
@@ -110,8 +111,24 @@ func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
 	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
 
 	airdropEntries := generateAirdropEntries(acountsAddresses, 100)
-	campaignId := uint64(23)
-	testUtil.AddAirdropEntries(ctx, srcAddr, campaignId, airdropEntries)
+
+	start := ctx.BlockTime()
+	end := ctx.BlockTime().Add(1000)
+	lockupPeriod := time.Hour
+	vestingPeriod := 3 * time.Hour
+	campaign := types.Campaign{
+		Owner:         srcAddr.String(),
+		Denom:         commontestutils.DefaultTestDenom,
+		Enabled:       true,
+		Name:          "NewCampaign",
+		StartTime:     &start,
+		EndTime:       &end,
+		LockupPeriod:  lockupPeriod,
+		VestingPeriod: vestingPeriod,
+		Description:   "test-campaign",
+	}
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	testUtil.AddAirdropEntries(ctx, srcAddr, 0, airdropEntries)
 
 }
 
@@ -120,12 +137,29 @@ func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
 	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
 	airdropEntries := generateAirdropEntries(acountsAddresses, 100)
-	campaignId := uint64(23)
-	testUtil.AddAirdropEntries(ctx, srcAddr, campaignId, airdropEntries)
+
+	start := ctx.BlockTime()
+	end := ctx.BlockTime().Add(1000)
+	lockupPeriod := time.Hour
+	vestingPeriod := 3 * time.Hour
+	campaign := types.Campaign{
+		Owner:         srcAddr.String(),
+		Denom:         commontestutils.DefaultTestDenom,
+		Enabled:       true,
+		Name:          "NewCampaign",
+		StartTime:     &start,
+		EndTime:       &end,
+		LockupPeriod:  lockupPeriod,
+		VestingPeriod: vestingPeriod,
+		Description:   "test-campaign",
+	}
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+
+	testUtil.AddAirdropEntries(ctx, srcAddr, 0, airdropEntries)
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 
 	airdropEntries = generateAirdropEntries(acountsAddresses, 500)
-	campaignId = uint64(24)
-	testUtil.AddAirdropEntries(ctx, srcAddr, campaignId, airdropEntries)
+	testUtil.AddAirdropEntries(ctx, srcAddr, 1, airdropEntries)
 }
 
 func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
@@ -133,16 +167,32 @@ func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
 	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
 	airdropEntries := generateAirdropEntries(acountsAddresses, 100)
-	campaignId := uint64(23)
-	testUtil.AddAirdropEntries(ctx, srcAddr, campaignId, airdropEntries)
+	start := ctx.BlockTime()
+	end := ctx.BlockTime().Add(1000)
+	lockupPeriod := time.Hour
+	vestingPeriod := 3 * time.Hour
+	campaign := types.Campaign{
+		Owner:         srcAddr.String(),
+		Denom:         commontestutils.DefaultTestDenom,
+		Enabled:       true,
+		Name:          "NewCampaign",
+		StartTime:     &start,
+		EndTime:       &end,
+		LockupPeriod:  lockupPeriod,
+		VestingPeriod: vestingPeriod,
+		Description:   "test-campaign",
+	}
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 
-	testUtil.AddCampaignRecordsError(ctx, srcAddr, campaignId, []*types.AirdropEntry{
+	testUtil.AddAirdropEntries(ctx, srcAddr, 0, airdropEntries)
+
+	testUtil.AddCampaignRecordsError(ctx, srcAddr, 0, []*types.AirdropEntry{
 		{
 			Address: airdropEntries[5].Address,
 			Amount:  airdropEntries[5].Amount,
 		},
 	},
-		fmt.Sprintf("campaignId 23 already exists for address: %s: entity already exists", acountsAddresses[5]), true)
+		fmt.Sprintf("campaignId 0 already exists for address: %s: entity already exists", acountsAddresses[5]), true)
 }
 
 func TestAddCampaignRecordsSendError(t *testing.T) {
@@ -150,9 +200,24 @@ func TestAddCampaignRecordsSendError(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
 	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
 	airdropEntries := generateAirdropEntries(acountsAddresses, 100)
-	campaignId := uint64(23)
+	start := ctx.BlockTime()
+	end := ctx.BlockTime().Add(1000)
+	lockupPeriod := time.Hour
+	vestingPeriod := 3 * time.Hour
+	campaign := types.Campaign{
+		Owner:         srcAddr.String(),
+		Denom:         commontestutils.DefaultTestDenom,
+		Enabled:       true,
+		Name:          "NewCampaign",
+		StartTime:     &start,
+		EndTime:       &end,
+		LockupPeriod:  lockupPeriod,
+		VestingPeriod: vestingPeriod,
+		Description:   "test-campaign",
+	}
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 
-	testUtil.AddCampaignRecordsError(ctx, srcAddr, campaignId, []*types.AirdropEntry{
+	testUtil.AddCampaignRecordsError(ctx, srcAddr, 0, []*types.AirdropEntry{
 		{
 			Address: airdropEntries[5].Address,
 			Amount:  airdropEntries[5].Amount,

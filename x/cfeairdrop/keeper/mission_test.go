@@ -129,6 +129,7 @@ func TestCompleteMissionCamapignEnded(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
+	campaigns[0].Owner = acountsAddresses[0].String()
 	startTime := testHelper.Context.BlockTime().Add(-10000)
 	campaigns[0].StartTime = &startTime
 	endTime := testHelper.Context.BlockTime().Add(-1000)
@@ -302,6 +303,7 @@ func TestClaimMissionCamapignEnded(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
+	campaigns[0].Owner = acountsAddresses[0].String()
 	startTime := testHelper.Context.BlockTime().Add(-10000)
 	campaigns[0].StartTime = &startTime
 	endTime := testHelper.Context.BlockTime().Add(-1000)
@@ -503,7 +505,7 @@ func TestFullCampaign(t *testing.T) {
 
 	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{}, []uint64{})
 
-	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1])
+	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1], 5000)
 
 	delagationAmount := sdk.NewInt(1000000)
 	testHelper.BankUtils.AddDefaultDenomCoinToAccount(delagationAmount, acountsAddresses[1])
