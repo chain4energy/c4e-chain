@@ -134,7 +134,8 @@ func TestCompleteMissionCamapignEnded(t *testing.T) {
 	endTime := testHelper.Context.BlockTime().Add(-1000)
 	campaigns[0].EndTime = &endTime
 	missions := prepareMissions()
-	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
+	genesisState := types.GenesisState{Missions: missions, Campaigns: campaigns}
+	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
 	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
 
@@ -306,7 +307,8 @@ func TestClaimMissionCamapignEnded(t *testing.T) {
 	endTime := testHelper.Context.BlockTime().Add(-1000)
 	campaigns[0].EndTime = &endTime
 	missions := prepareMissions()
-	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
+	genesisState := types.GenesisState{Missions: missions, Campaigns: campaigns}
+	testHelper.C4eAirdropUtils.InitGenesis(genesisState)
 
 	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
 
@@ -530,17 +532,17 @@ func createNMission(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Missi
 	return items
 }
 
-func prepareTestCampaign(ctx sdk.Context) []*types.Campaign {
+func prepareTestCampaign(ctx sdk.Context) []types.Campaign {
 	start := ctx.BlockTime()
 	end := ctx.BlockTime().Add(time.Second * 10)
 	lockupPeriod := time.Hour
 	vestingPeriod := 3 * time.Hour
-	return []*types.Campaign{
+	return []types.Campaign{
 		{
 			Id:            0,
 			Name:          "Name",
 			Description:   "test-campaign",
-			Denom:         "uc4e",
+			Denom:         commontestutils.DefaultTestDenom,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -602,7 +604,7 @@ func prepareAidropEntries(address string) []*types.AirdropEntry {
 	return airdropEntries
 }
 
-func addCampaignsAndMissions(utils *cfeairdrop.ContextC4eAirdropUtils, ownerAddress string, campaigns []*types.Campaign, missions []types.Mission) {
+func addCampaignsAndMissions(utils *cfeairdrop.ContextC4eAirdropUtils, ownerAddress string, campaigns []types.Campaign, missions []types.Mission) {
 	for _, campaign := range campaigns {
 		utils.CreateAirdropCampaign(ownerAddress, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 		if campaign.Enabled == true {

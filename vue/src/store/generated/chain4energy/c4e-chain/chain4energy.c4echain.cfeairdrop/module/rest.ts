@@ -76,6 +76,16 @@ export type CfeairdropMsgStartAirdropCampaignResponse = object;
  */
 export type CfeairdropParams = object;
 
+export interface CfeairdropQueryAirdropDistrubitionsResponse {
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  amount?: V1Beta1Coin;
+}
+
 export interface CfeairdropQueryCampaignResponse {
   campaign?: CfeairdropCampaign;
 }
@@ -159,6 +169,17 @@ export interface RpcStatus {
 }
 
 /**
+* Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+*/
+export interface V1Beta1Coin {
+  denom?: string;
+  amount?: string;
+}
+
+/**
 * message SomeRequest {
          Foo some_parameter = 1;
          PageRequest pagination = 2;
@@ -195,13 +216,6 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
-
-  /**
-   * reverse is set to true if results are to be returned in the descending order.
-   *
-   * Since: cosmos-sdk 0.43
-   */
-  reverse?: boolean;
 }
 
 /**
@@ -421,6 +435,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
+   * @name QueryAirdropDistrubitions
+   * @summary Queries a UserAirdropEntries by index.
+   * @request GET:/c4e/airdrop/v1beta1/airdrop_distributions/{campaignId}
+   */
+  queryAirdropDistrubitions = (campaignId: string, params: RequestParams = {}) =>
+    this.request<CfeairdropQueryAirdropDistrubitionsResponse, RpcStatus>({
+      path: `/c4e/airdrop/v1beta1/airdrop_distributions/${campaignId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryCampaign
    * @summary Queries a list of Campaigns items.
    * @request GET:/c4e/airdrop/v1beta1/campaign/{campaignId}
@@ -447,7 +477,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -473,7 +502,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -547,7 +575,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>

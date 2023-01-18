@@ -60,8 +60,9 @@ export interface MsgAddAirdropEntries {
 export interface MsgAddAirdropEntriesResponse {}
 
 export interface MsgDeleteAirdropEntry {
-  creator: string;
-  id: number;
+  owner: string;
+  campaignId: number;
+  userAddress: string;
 }
 
 export interface MsgDeleteAirdropEntryResponse {}
@@ -985,18 +986,25 @@ export const MsgAddAirdropEntriesResponse = {
   },
 };
 
-const baseMsgDeleteAirdropEntry: object = { creator: "", id: 0 };
+const baseMsgDeleteAirdropEntry: object = {
+  owner: "",
+  campaignId: 0,
+  userAddress: "",
+};
 
 export const MsgDeleteAirdropEntry = {
   encode(
     message: MsgDeleteAirdropEntry,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
+    if (message.owner !== "") {
+      writer.uint32(10).string(message.owner);
     }
-    if (message.id !== 0) {
-      writer.uint32(16).uint64(message.id);
+    if (message.campaignId !== 0) {
+      writer.uint32(16).uint64(message.campaignId);
+    }
+    if (message.userAddress !== "") {
+      writer.uint32(26).string(message.userAddress);
     }
     return writer;
   },
@@ -1009,10 +1017,13 @@ export const MsgDeleteAirdropEntry = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.creator = reader.string();
+          message.owner = reader.string();
           break;
         case 2:
-          message.id = longToNumber(reader.uint64() as Long);
+          message.campaignId = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.userAddress = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -1024,23 +1035,30 @@ export const MsgDeleteAirdropEntry = {
 
   fromJSON(object: any): MsgDeleteAirdropEntry {
     const message = { ...baseMsgDeleteAirdropEntry } as MsgDeleteAirdropEntry;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = String(object.creator);
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner);
     } else {
-      message.creator = "";
+      message.owner = "";
     }
-    if (object.id !== undefined && object.id !== null) {
-      message.id = Number(object.id);
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = Number(object.campaignId);
     } else {
-      message.id = 0;
+      message.campaignId = 0;
+    }
+    if (object.userAddress !== undefined && object.userAddress !== null) {
+      message.userAddress = String(object.userAddress);
+    } else {
+      message.userAddress = "";
     }
     return message;
   },
 
   toJSON(message: MsgDeleteAirdropEntry): unknown {
     const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.id !== undefined && (obj.id = message.id);
+    message.owner !== undefined && (obj.owner = message.owner);
+    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    message.userAddress !== undefined &&
+      (obj.userAddress = message.userAddress);
     return obj;
   },
 
@@ -1048,15 +1066,20 @@ export const MsgDeleteAirdropEntry = {
     object: DeepPartial<MsgDeleteAirdropEntry>
   ): MsgDeleteAirdropEntry {
     const message = { ...baseMsgDeleteAirdropEntry } as MsgDeleteAirdropEntry;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = object.creator;
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
     } else {
-      message.creator = "";
+      message.owner = "";
     }
-    if (object.id !== undefined && object.id !== null) {
-      message.id = object.id;
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = object.campaignId;
     } else {
-      message.id = 0;
+      message.campaignId = 0;
+    }
+    if (object.userAddress !== undefined && object.userAddress !== null) {
+      message.userAddress = object.userAddress;
+    } else {
+      message.userAddress = "";
     }
     return message;
   },

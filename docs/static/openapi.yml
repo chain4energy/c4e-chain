@@ -4,6 +4,57 @@ info:
   name: ''
   description: ''
 paths:
+  '/c4e/airdrop/v1beta1/airdrop_distributions/{campaignId}':
+    get:
+      summary: Queries a UserAirdropEntries by index.
+      operationId: Chain4EnergyC4EchainCfeairdropAirdropDistrubitions
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
   '/c4e/airdrop/v1beta1/campaign/{campaignId}':
     get:
       summary: Queries a list of Campaigns items.
@@ -32575,6 +32626,21 @@ definitions:
   chain4energy.c4echain.cfeairdrop.Params:
     type: object
     description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfeairdrop.QueryAirdropDistrubitionsResponse:
+    type: object
+    properties:
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
   chain4energy.c4echain.cfeairdrop.QueryCampaignResponse:
     type: object
     properties:
@@ -32948,6 +33014,18 @@ definitions:
                repeated Bar results = 1;
                PageResponse page = 2;
        }
+  cosmos.base.v1beta1.Coin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      Coin defines a token with a denomination and an amount.
+
+      NOTE: The amount field is an Int which implements the custom method
+      signatures required by gogoproto.
   google.protobuf.Any:
     type: object
     properties:
@@ -33537,18 +33615,6 @@ definitions:
                       type: string
                     type:
                       type: string
-  cosmos.base.v1beta1.Coin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      Coin defines a token with a denomination and an amount.
-
-      NOTE: The amount field is an Int which implements the custom method
-      signatures required by gogoproto.
   cosmos.base.v1beta1.DecCoin:
     type: object
     properties:

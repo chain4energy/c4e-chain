@@ -4,6 +4,7 @@ package chain4energy.c4echain.cfeairdrop;
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 
@@ -26,6 +27,13 @@ message AirdropEntry {
 
 message AirdropEntries {
   repeated AirdropEntry airdrop_entries = 1;
+}
+
+message AirdropDistrubitions {
+  cosmos.base.v1beta1.Coin amount = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
 }
 
 message Campaign {

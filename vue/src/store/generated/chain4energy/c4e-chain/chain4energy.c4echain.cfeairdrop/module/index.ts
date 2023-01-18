@@ -6,23 +6,23 @@ import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "
 import { Api } from "./rest";
 import { MsgCreateAirdropCampaign } from "./types/cfeairdrop/tx";
 import { MsgCloseAirdropCampaign } from "./types/cfeairdrop/tx";
-import { MsgInitialClaim } from "./types/cfeairdrop/tx";
-import { MsgAddAirdropEntries } from "./types/cfeairdrop/tx";
-import { MsgAddMissionToAidropCampaign } from "./types/cfeairdrop/tx";
-import { MsgDeleteAirdropEntry } from "./types/cfeairdrop/tx";
-import { MsgStartAirdropCampaign } from "./types/cfeairdrop/tx";
 import { MsgClaim } from "./types/cfeairdrop/tx";
+import { MsgInitialClaim } from "./types/cfeairdrop/tx";
+import { MsgStartAirdropCampaign } from "./types/cfeairdrop/tx";
+import { MsgDeleteAirdropEntry } from "./types/cfeairdrop/tx";
+import { MsgAddMissionToAidropCampaign } from "./types/cfeairdrop/tx";
+import { MsgAddAirdropEntries } from "./types/cfeairdrop/tx";
 
 
 const types = [
   ["/chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaign", MsgCreateAirdropCampaign],
   ["/chain4energy.c4echain.cfeairdrop.MsgCloseAirdropCampaign", MsgCloseAirdropCampaign],
-  ["/chain4energy.c4echain.cfeairdrop.MsgInitialClaim", MsgInitialClaim],
-  ["/chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntries", MsgAddAirdropEntries],
-  ["/chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign", MsgAddMissionToAidropCampaign],
-  ["/chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntry", MsgDeleteAirdropEntry],
-  ["/chain4energy.c4echain.cfeairdrop.MsgStartAirdropCampaign", MsgStartAirdropCampaign],
   ["/chain4energy.c4echain.cfeairdrop.MsgClaim", MsgClaim],
+  ["/chain4energy.c4echain.cfeairdrop.MsgInitialClaim", MsgInitialClaim],
+  ["/chain4energy.c4echain.cfeairdrop.MsgStartAirdropCampaign", MsgStartAirdropCampaign],
+  ["/chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntry", MsgDeleteAirdropEntry],
+  ["/chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign", MsgAddMissionToAidropCampaign],
+  ["/chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntries", MsgAddAirdropEntries],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -57,12 +57,12 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
     msgCreateAirdropCampaign: (data: MsgCreateAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaign", value: MsgCreateAirdropCampaign.fromPartial( data ) }),
     msgCloseAirdropCampaign: (data: MsgCloseAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCloseAirdropCampaign", value: MsgCloseAirdropCampaign.fromPartial( data ) }),
-    msgInitialClaim: (data: MsgInitialClaim): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgInitialClaim", value: MsgInitialClaim.fromPartial( data ) }),
-    msgAddAirdropEntries: (data: MsgAddAirdropEntries): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntries", value: MsgAddAirdropEntries.fromPartial( data ) }),
-    msgAddMissionToAidropCampaign: (data: MsgAddMissionToAidropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign", value: MsgAddMissionToAidropCampaign.fromPartial( data ) }),
-    msgDeleteAirdropEntry: (data: MsgDeleteAirdropEntry): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntry", value: MsgDeleteAirdropEntry.fromPartial( data ) }),
-    msgStartAirdropCampaign: (data: MsgStartAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgStartAirdropCampaign", value: MsgStartAirdropCampaign.fromPartial( data ) }),
     msgClaim: (data: MsgClaim): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgClaim", value: MsgClaim.fromPartial( data ) }),
+    msgInitialClaim: (data: MsgInitialClaim): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgInitialClaim", value: MsgInitialClaim.fromPartial( data ) }),
+    msgStartAirdropCampaign: (data: MsgStartAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgStartAirdropCampaign", value: MsgStartAirdropCampaign.fromPartial( data ) }),
+    msgDeleteAirdropEntry: (data: MsgDeleteAirdropEntry): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntry", value: MsgDeleteAirdropEntry.fromPartial( data ) }),
+    msgAddMissionToAidropCampaign: (data: MsgAddMissionToAidropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign", value: MsgAddMissionToAidropCampaign.fromPartial( data ) }),
+    msgAddAirdropEntries: (data: MsgAddAirdropEntries): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntries", value: MsgAddAirdropEntries.fromPartial( data ) }),
     
   };
 };

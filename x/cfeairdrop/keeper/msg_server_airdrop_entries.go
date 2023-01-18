@@ -23,8 +23,15 @@ func (k msgServer) AddAirdropEntries(goCtx context.Context, msg *types.MsgAddAir
 
 func (k msgServer) DeleteAirdropEntry(goCtx context.Context, msg *types.MsgDeleteAirdropEntry) (*types.MsgDeleteAirdropEntryResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	_ = ctx
-	// TODO: add logic
+	keeper := k.Keeper
+	if err := keeper.DeleteUserAirdropEntry(
+		ctx,
+		msg.Owner,
+		msg.CampaignId,
+		msg.UserAddress,
+	); err != nil {
+		return nil, err
+	}
 
 	return &types.MsgDeleteAirdropEntryResponse{}, nil
 }

@@ -3,6 +3,7 @@ import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
 import { Params } from "../cfeairdrop/params";
 import { UserAirdropEntries, Mission, Campaign } from "../cfeairdrop/airdrop";
+import { Coin } from "../cosmos/base/v1beta1/coin";
 import {
   PageRequest,
   PageResponse,
@@ -25,6 +26,14 @@ export interface QueryUserAirdropEntriesRequest {
 
 export interface QueryUserAirdropEntriesResponse {
   userAirdropEntries: UserAirdropEntries | undefined;
+}
+
+export interface QueryAirdropDistrubitionsRequest {
+  campaignId: number;
+}
+
+export interface QueryAirdropDistrubitionsResponse {
+  amount: Coin | undefined;
 }
 
 export interface QueryUsersAirdropEntriesRequest {
@@ -320,6 +329,145 @@ export const QueryUserAirdropEntriesResponse = {
       );
     } else {
       message.userAirdropEntries = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryAirdropDistrubitionsRequest: object = { campaignId: 0 };
+
+export const QueryAirdropDistrubitionsRequest = {
+  encode(
+    message: QueryAirdropDistrubitionsRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.campaignId !== 0) {
+      writer.uint32(8).uint64(message.campaignId);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryAirdropDistrubitionsRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryAirdropDistrubitionsRequest,
+    } as QueryAirdropDistrubitionsRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.campaignId = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAirdropDistrubitionsRequest {
+    const message = {
+      ...baseQueryAirdropDistrubitionsRequest,
+    } as QueryAirdropDistrubitionsRequest;
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = Number(object.campaignId);
+    } else {
+      message.campaignId = 0;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryAirdropDistrubitionsRequest): unknown {
+    const obj: any = {};
+    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryAirdropDistrubitionsRequest>
+  ): QueryAirdropDistrubitionsRequest {
+    const message = {
+      ...baseQueryAirdropDistrubitionsRequest,
+    } as QueryAirdropDistrubitionsRequest;
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = object.campaignId;
+    } else {
+      message.campaignId = 0;
+    }
+    return message;
+  },
+};
+
+const baseQueryAirdropDistrubitionsResponse: object = {};
+
+export const QueryAirdropDistrubitionsResponse = {
+  encode(
+    message: QueryAirdropDistrubitionsResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.amount !== undefined) {
+      Coin.encode(message.amount, writer.uint32(58).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): QueryAirdropDistrubitionsResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseQueryAirdropDistrubitionsResponse,
+    } as QueryAirdropDistrubitionsResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 7:
+          message.amount = Coin.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAirdropDistrubitionsResponse {
+    const message = {
+      ...baseQueryAirdropDistrubitionsResponse,
+    } as QueryAirdropDistrubitionsResponse;
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = Coin.fromJSON(object.amount);
+    } else {
+      message.amount = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryAirdropDistrubitionsResponse): unknown {
+    const obj: any = {};
+    message.amount !== undefined &&
+      (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryAirdropDistrubitionsResponse>
+  ): QueryAirdropDistrubitionsResponse {
+    const message = {
+      ...baseQueryAirdropDistrubitionsResponse,
+    } as QueryAirdropDistrubitionsResponse;
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = Coin.fromPartial(object.amount);
+    } else {
+      message.amount = undefined;
     }
     return message;
   },
@@ -1091,6 +1239,10 @@ export interface Query {
   Campaigns(request: QueryCampaignsRequest): Promise<QueryCampaignsResponse>;
   /** Queries a list of Campaigns items. */
   Campaign(request: QueryCampaignRequest): Promise<QueryCampaignResponse>;
+  /** Queries a UserAirdropEntries by index. */
+  AirdropDistrubitions(
+    request: QueryAirdropDistrubitionsRequest
+  ): Promise<QueryAirdropDistrubitionsResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1181,6 +1333,20 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryCampaignResponse.decode(new Reader(data))
+    );
+  }
+
+  AirdropDistrubitions(
+    request: QueryAirdropDistrubitionsRequest
+  ): Promise<QueryAirdropDistrubitionsResponse> {
+    const data = QueryAirdropDistrubitionsRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeairdrop.Query",
+      "AirdropDistrubitions",
+      data
+    );
+    return promise.then((data) =>
+      QueryAirdropDistrubitionsResponse.decode(new Reader(data))
     );
   }
 }

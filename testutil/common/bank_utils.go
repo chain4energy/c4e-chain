@@ -1,7 +1,6 @@
 package common
 
 import (
-	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -197,8 +196,6 @@ func (bu *ContextBankUtils) VerifyAccountLockedByDenom(addr sdk.AccAddress, deno
 }
 
 func (bu *ContextBankUtils) VerifyAccountDefultDenomLocked(addr sdk.AccAddress, expectedAmount sdk.Int) {
-	fmt.Printf("VerifyAccountDefultDenomLocked: %s\r\n", bu.testContext.GetContext().BlockTime())
-
 	bu.BankUtils.VerifyAccountDefultDenomLocked(bu.testContext.GetContext(), addr, expectedAmount)
 }
 

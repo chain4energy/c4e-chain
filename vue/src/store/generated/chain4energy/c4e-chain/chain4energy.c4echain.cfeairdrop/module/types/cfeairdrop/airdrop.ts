@@ -2,6 +2,7 @@
 import { Timestamp } from "../google/protobuf/timestamp";
 import * as Long from "long";
 import { util, configure, Writer, Reader } from "protobufjs/minimal";
+import { Coin } from "../cosmos/base/v1beta1/coin";
 import { Duration } from "../google/protobuf/duration";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -67,6 +68,10 @@ export interface AirdropEntry {
 
 export interface AirdropEntries {
   airdrop_entries: AirdropEntry[];
+}
+
+export interface AirdropDistrubitions {
+  amount: Coin | undefined;
 }
 
 export interface Campaign {
@@ -450,6 +455,65 @@ export const AirdropEntries = {
       for (const e of object.airdrop_entries) {
         message.airdrop_entries.push(AirdropEntry.fromPartial(e));
       }
+    }
+    return message;
+  },
+};
+
+const baseAirdropDistrubitions: object = {};
+
+export const AirdropDistrubitions = {
+  encode(
+    message: AirdropDistrubitions,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.amount !== undefined) {
+      Coin.encode(message.amount, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): AirdropDistrubitions {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAirdropDistrubitions } as AirdropDistrubitions;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 3:
+          message.amount = Coin.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AirdropDistrubitions {
+    const message = { ...baseAirdropDistrubitions } as AirdropDistrubitions;
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = Coin.fromJSON(object.amount);
+    } else {
+      message.amount = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: AirdropDistrubitions): unknown {
+    const obj: any = {};
+    message.amount !== undefined &&
+      (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<AirdropDistrubitions>): AirdropDistrubitions {
+    const message = { ...baseAirdropDistrubitions } as AirdropDistrubitions;
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = Coin.fromPartial(object.amount);
+    } else {
+      message.amount = undefined;
     }
     return message;
   },

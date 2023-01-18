@@ -52,25 +52,24 @@ func (k Keeper) GetUsersAirdropEntries(ctx sdk.Context) (list []types.UserAirdro
 	return
 }
 
-// RemoveClaimRecordXX removes a claimRecordXX from the store
-func (k Keeper) RemoveUserAirdropEntry(
-	ctx sdk.Context,
-	address string,
-
-) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserAirdropEntriesKeyPrefix))
-	store.Delete(types.UserAirdropEntriesKey(
-		address,
-	))
-}
-
 func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId uint64, airdropEntries []*types.AirdropEntry) error {
 	ownerAddress, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		k.Logger(ctx).Error("add campaign entries owner parsing error", "owner", owner, "error", err.Error())
-		return sdkerrors.Wrap(errortypes.ErrParsing, sdkerrors.Wrapf(err, "add mission to airdrop campaign - owner parsing error: %s", owner).Error())
+		return sdkerrors.Wrap(errortypes.ErrParsing, sdkerrors.Wrapf(err, "add campaign entries  - owner parsing error: %s", owner).Error())
 	}
-
+	campaign, found := k.GetCampaign(
+		ctx,
+		campaignId,
+	)
+	if !found {
+		k.Logger(ctx).Error("add campaign entries campaign doesn't exist", "campaignId", campaignId)
+		return sdkerrors.Wrapf(errortypes.ErrParsing, "add campaign entries -  campaign with id %d doesn't exist", campaignId)
+	}
+	if campaign.Owner != owner {
+		k.Logger(ctx).Error("add campaign entries you are not the owner of this campaign", "campaignId", campaignId)
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - you are not the owner of campaign with id %d", campaignId)
+	}
 	var usersAirdropEntries []*types.UserAirdropEntries
 	sum := sdk.ZeroInt()
 	for _, airdropEntry := range airdropEntries {
@@ -81,12 +80,14 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 		usersAirdropEntries = append(usersAirdropEntries, userAirdropEntries)
 		sum = sum.Add(airdropEntry.Amount)
 	}
-	coins := sdk.NewCoins(sdk.NewCoin("uc4e", sum)) // TODO remove hardcoded uc4e
+	coin := sdk.NewCoin(campaign.Denom, sum)
+	coins := sdk.NewCoins(coin)
+	k.IncrementAirdropDistrubitions(ctx, campaignId, coin)
 	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, coins); err != nil {
 		return err
 	}
-	for _, record := range usersAirdropEntries {
-		k.SetUserAirdropEntries(ctx, *record)
+	for _, userAirdropEntries := range usersAirdropEntries {
+		k.SetUserAirdropEntries(ctx, *userAirdropEntries)
 	}
 	return nil
 }
@@ -102,6 +103,47 @@ func (k Keeper) addUserAirdropEntry(ctx sdk.Context, campaignId uint64, address 
 	}
 	userAirdropEntries.AirdropEntries = append(userAirdropEntries.AirdropEntries, &types.AirdropEntry{CampaignId: campaignId, Amount: totalAmount})
 	return &userAirdropEntries, nil
+}
+
+func (k Keeper) DeleteUserAirdropEntry(ctx sdk.Context, owner string, campaignId uint64, userAddress string) error {
+	_, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		k.Logger(ctx).Error("delete user airdrop entry owner parsing error", "owner", owner, "error", err.Error())
+		return sdkerrors.Wrap(errortypes.ErrParsing, sdkerrors.Wrapf(err, "delete user airdrop entry - owner parsing error: %s", owner).Error())
+	}
+	campaign, found := k.GetCampaign(
+		ctx,
+		campaignId,
+	)
+	if !found {
+		k.Logger(ctx).Error("delete user airdrop entry campaign doesn't exist", "campaignId", campaignId)
+		return sdkerrors.Wrapf(errortypes.ErrParsing, "delete user airdrop entry -  campaign with id %d doesn't exist", campaignId)
+	}
+	if campaign.Owner != owner {
+		k.Logger(ctx).Error("delete user airdrop entry you are not the owner of this campaign", "campaignId", campaignId)
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "delete user airdrop entry - you are not the owner of campaign with id %d", campaignId)
+	}
+	userAirdropEntries, found := k.GetUserAirdropEntries(
+		ctx,
+		userAddress,
+	)
+	if !found {
+		k.Logger(ctx).Error("delete user airdrop entry userAirdropEntries doesn't exist", "campaignId", campaignId)
+		return sdkerrors.Wrapf(errortypes.ErrParsing, "delete user airdrop entry -  userAirdropEntries doesn't exist", campaignId)
+	}
+	airdropEntryAmount := sdk.ZeroInt()
+	for i, airdropEntry := range userAirdropEntries.AirdropEntries {
+		if airdropEntry.CampaignId == campaignId {
+			airdropEntryAmount = airdropEntry.Amount
+			userAirdropEntries.AirdropEntries = append(userAirdropEntries.AirdropEntries[:i], userAirdropEntries.AirdropEntries[i+1:]...)
+			break
+		}
+	}
+	k.SetUserAirdropEntries(ctx, userAirdropEntries)
+	coin := sdk.NewCoin(campaign.Denom, airdropEntryAmount)
+	k.DecrementAirdropDistrubitions(ctx, campaignId, coin)
+
+	return nil
 }
 
 func (k Keeper) grantFeeAllowance(ctx sdk.Context, grantee string) error {

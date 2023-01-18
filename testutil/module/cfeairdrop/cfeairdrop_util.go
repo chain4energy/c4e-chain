@@ -225,11 +225,8 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 
 	userAirdropEntries, found := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.True(h.t, found)
-	camapaignRecord := userAirdropEntries.GetAidropEntry(campaignId)
-	require.NotNil(h.t, camapaignRecord)
-	//require.ElementsMatch(h.t, []uint64{initialClaim.MissionId}, camapaignRecord.CompletedMissions)
-	//require.ElementsMatch(h.t, []uint64{initialClaim.MissionId}, camapaignRecord.ClaimedMissions)
-	// TODO: fix
+	airdropEntry := userAirdropEntries.GetAidropEntry(campaignId)
+	require.NotNil(h.t, airdropEntry)
 }
 
 func (h *C4eAirdropUtils) ClaimInitialError(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, errorMessage string) {

@@ -22,11 +22,12 @@ func networkWithMissionObjects(t *testing.T, n int) (*network.Network, []types.M
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
+		weight := sdk.NewDec(int64(i))
 		mission := types.Mission{
 			CampaignId:  uint64(i),
 			Id:          uint64(i),
 			Description: fmt.Sprintf("Desc %d", i),
-			Weight:      sdk.NewDec(int64(i)),
+			Weight:      &weight,
 		}
 		nullify.Fill(&mission)
 		state.Missions = append(state.Missions, mission)

@@ -52,10 +52,11 @@ func (msg *MsgAddAirdropEntries) ValidateBasic() error {
 
 var _ sdk.Msg = &MsgDeleteAirdropEntry{}
 
-func NewMsgDeleteAirdropEntry(creator string, id uint64) *MsgDeleteAirdropEntry {
+func NewMsgDeleteAirdropEntry(onwer string, campaignId uint64, userAddress string) *MsgDeleteAirdropEntry {
 	return &MsgDeleteAirdropEntry{
-		Id:      id,
-		Creator: creator,
+		CampaignId:  campaignId,
+		Owner:       onwer,
+		UserAddress: userAddress,
 	}
 }
 func (msg *MsgDeleteAirdropEntry) Route() string {
@@ -67,7 +68,7 @@ func (msg *MsgDeleteAirdropEntry) Type() string {
 }
 
 func (msg *MsgDeleteAirdropEntry) GetSigners() []sdk.AccAddress {
-	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
@@ -80,7 +81,7 @@ func (msg *MsgDeleteAirdropEntry) GetSignBytes() []byte {
 }
 
 func (msg *MsgDeleteAirdropEntry) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}

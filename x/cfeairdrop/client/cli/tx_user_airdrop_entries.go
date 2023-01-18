@@ -45,21 +45,21 @@ func CmdCreateAirdropEntry() *cobra.Command {
 
 func CmdDeleteAirdropEntry() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "delete-airdrop-entry [id]",
+		Use:   "delete-airdrop-entry [campaign-id] [user-address]",
 		Short: "Delete a AirdropEntry by id",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			campaignId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-
+			userAddress := args[1]
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgDeleteAirdropEntry(clientCtx.GetFromAddress().String(), id)
+			msg := types.NewMsgDeleteAirdropEntry(clientCtx.GetFromAddress().String(), campaignId, userAddress)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

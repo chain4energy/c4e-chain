@@ -84,8 +84,9 @@ message MsgAddAirdropEntries {
 message MsgAddAirdropEntriesResponse {}
 
 message MsgDeleteAirdropEntry {
-  string creator = 1;
-  uint64 id = 2;
+  string owner = 1;
+  uint64 campaignId = 2;
+  string userAddress = 3;
 }
 
 message MsgDeleteAirdropEntryResponse {}
