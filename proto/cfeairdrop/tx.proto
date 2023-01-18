@@ -41,17 +41,18 @@ message MsgCreateAirdropCampaign {
   string owner = 1;
   string name = 2;
   string description = 3;
-  int64 start_time = 4 [
+  string denom = 4;
+  int64 start_time = 5 [
     (gogoproto.moretags) = "yaml:\"start_time\""
   ];
-  int64 end_time = 5 [
+  int64 end_time = 6 [
     (gogoproto.moretags) = "yaml:\"end_time\""
   ];
-  google.protobuf.Duration lockup_period = 6 [
+  google.protobuf.Duration lockup_period = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
-  google.protobuf.Duration vesting_period = 7 [
+  google.protobuf.Duration vesting_period = 8 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];

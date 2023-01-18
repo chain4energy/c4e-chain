@@ -2,11 +2,11 @@ package types_test
 
 import (
 	"fmt"
-	types2 "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
@@ -17,7 +17,7 @@ import (
 func TestSinglePeriod(t *testing.T) {
 	startTime := time.Now()
 	endTime := time.Now().Add(100 * 100 * time.Hour)
-	periods := types2.ContinuousVestingPeriods{
+	periods := types.ContinuousVestingPeriods{
 		{
 			Amount:    sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(10000000))),
 			StartTime: startTime.Unix(),
@@ -89,7 +89,7 @@ func TestMultiplePeriods(t *testing.T) {
 	p2EndTime := p1EndTime.Add(timeShift)
 	p3StartTime := p1StartTime.Add(2 * timeShift)
 	p3EndTime := p1EndTime.Add(2 * timeShift)
-	periods := types2.ContinuousVestingPeriods{
+	periods := types.ContinuousVestingPeriods{
 		{
 			Amount:    sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(10000000))),
 			StartTime: p1StartTime.Unix(),
@@ -231,7 +231,7 @@ func periodEndLessThanStartAirdropVestingAccount() AirdropAccountTc {
 }
 
 func createCorrectAirdropAccout() *types.RepeatedContinuousVestingAccount {
-	periods := types2.ContinuousVestingPeriods{
+	periods := types.ContinuousVestingPeriods{
 		{
 			Amount:    sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(1000))),
 			StartTime: time.Now().Add(-24 * 100 * time.Hour).Unix(),
@@ -258,8 +258,8 @@ func createCorrectAirdropAccout() *types.RepeatedContinuousVestingAccount {
 
 }
 
-func createAirdropAccout(originalVesting sdk.Coins, startTime int64, endTime int64, periods types2.ContinuousVestingPeriods) *types.RepeatedContinuousVestingAccount {
-	return types2.NewAirdropVestingAccount(&authtypes.BaseAccount{}, originalVesting, startTime, endTime, periods)
+func createAirdropAccout(originalVesting sdk.Coins, startTime int64, endTime int64, periods types.ContinuousVestingPeriods) *types.RepeatedContinuousVestingAccount {
+	return types.NewRepeatedContinuousVestingAccount(&authtypes.BaseAccount{}, originalVesting, startTime, endTime, periods)
 }
 
 type AirdropAccountTc struct {
@@ -269,7 +269,7 @@ type AirdropAccountTc struct {
 	message string
 }
 
-func periodsSum(periods *types2.ContinuousVestingPeriods) (sum sdk.Coins) {
+func periodsSum(periods *types.ContinuousVestingPeriods) (sum sdk.Coins) {
 	for _, period := range *periods {
 		sum = sum.Add(period.Amount...)
 	}

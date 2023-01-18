@@ -3,6 +3,7 @@ package cfeairdrop
 import (
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
+	"time"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	cfeairdropmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
@@ -61,7 +62,6 @@ func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.Ac
 	newPeriods := append(previousPeriods, cfevestingtypes.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: coins})
 	h.VerifyAirdropAccount(ctx, toAddress, previousOriginalVesting.Add(coins...), startTime, endTime, newPeriods)
 	require.NoError(h.t, airdropAccount.Validate())
-
 }
 
 func (h *C4eAirdropUtils) SendToAirdropAccountError(ctx sdk.Context, toAddress sdk.AccAddress,
@@ -198,11 +198,7 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
 
-	//require.NoError(h.t, h.helpeCfeairdropkeeper.ClaimInitial(ctx, campaignId, claimer.String()))
-	//initialClaim, foundIc := h.helpeCfeairdropkeeper.GetInitialClaim(ctx, campaignId)
-	//require.True(h.t, foundIc)
-	// TODO: Fix
-	mission, _ := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, 0) // TODO: fix!!! (mission id)
+	mission, _ := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, cfeairdroptypes.InitialMissionId)
 	userAirdropEntries, _ := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 
 	expectedAmount := mission.Weight.MulInt(userAirdropEntries.GetAidropEntry(campaignId).Amount).TruncateInt()
@@ -368,7 +364,6 @@ func (h *C4eAirdropUtils) ClaimMission(ctx sdk.Context, campaignId uint64, missi
 }
 
 func (h *C4eAirdropUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, claimerDstAddress sdk.AccAddress) {
-
 	claimerAccountBefore, ok := h.helperAccountKeeper.GetAccount(ctx, claimerDstAddress).(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	require.True(h.t, ok)
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
@@ -443,4 +438,22 @@ func (h *C4eAirdropUtils) CreateAirdropAccout(ctx sdk.Context, address sdk.AccAd
 	h.helperAccountKeeper.SetAccount(ctx, airdropAcc)
 	require.NoError(h.t, airdropAcc.Validate())
 	return airdropAcc
+}
+
+func (h *C4eAirdropUtils) CreateAirdropCampaign(ctx sdk.Context, owner string, name string, description string, denom string, startTime time.Time,
+	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
+
+	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, denom, startTime, endTime, lockupPeriod, vestingPeriod)
+	require.NoError(h.t, err)
+}
+func (h *C4eAirdropUtils) StartAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64) {
+	err := h.helpeCfeairdropkeeper.StartAirdropCampaign(ctx, owner, campaignId)
+	require.NoError(h.t, err)
+}
+
+func (h *C4eAirdropUtils) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
+	weight sdk.Dec) {
+
+	err := h.helpeCfeairdropkeeper.AddMissionToAirdropCampaign(ctx, owner, campaignId, name, description, missionType, weight)
+	require.NoError(h.t, err)
 }

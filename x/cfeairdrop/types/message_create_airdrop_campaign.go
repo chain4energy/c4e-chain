@@ -10,12 +10,13 @@ const TypeMsgCreateAirdropCampaign = "create_airdrop_campaign"
 
 var _ sdk.Msg = &MsgCreateAirdropCampaign{}
 
-func NewMsgCreateAirdropCampaign(owner string, name string, description string, startTime int64,
+func NewMsgCreateAirdropCampaign(owner string, name string, description string, denom string, startTime int64,
 	endTime int64, lockupPeriod time.Duration, vestingPeriod time.Duration) *MsgCreateAirdropCampaign {
 	return &MsgCreateAirdropCampaign{
 		Owner:         owner,
 		Name:          name,
 		Description:   description,
+		Denom:         denom,
 		StartTime:     startTime,
 		EndTime:       endTime,
 		LockupPeriod:  lockupPeriod,

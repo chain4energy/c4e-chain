@@ -31,6 +31,7 @@ export interface MsgCreateAirdropCampaign {
   owner: string;
   name: string;
   description: string;
+  denom: string;
   start_time: number;
   end_time: number;
   lockup_period: Duration | undefined;
@@ -354,6 +355,7 @@ const baseMsgCreateAirdropCampaign: object = {
   owner: "",
   name: "",
   description: "",
+  denom: "",
   start_time: 0,
   end_time: 0,
 };
@@ -372,19 +374,22 @@ export const MsgCreateAirdropCampaign = {
     if (message.description !== "") {
       writer.uint32(26).string(message.description);
     }
+    if (message.denom !== "") {
+      writer.uint32(34).string(message.denom);
+    }
     if (message.start_time !== 0) {
-      writer.uint32(32).int64(message.start_time);
+      writer.uint32(40).int64(message.start_time);
     }
     if (message.end_time !== 0) {
-      writer.uint32(40).int64(message.end_time);
+      writer.uint32(48).int64(message.end_time);
     }
     if (message.lockup_period !== undefined) {
-      Duration.encode(message.lockup_period, writer.uint32(50).fork()).ldelim();
+      Duration.encode(message.lockup_period, writer.uint32(58).fork()).ldelim();
     }
     if (message.vesting_period !== undefined) {
       Duration.encode(
         message.vesting_period,
-        writer.uint32(58).fork()
+        writer.uint32(66).fork()
       ).ldelim();
     }
     return writer;
@@ -412,15 +417,18 @@ export const MsgCreateAirdropCampaign = {
           message.description = reader.string();
           break;
         case 4:
-          message.start_time = longToNumber(reader.int64() as Long);
+          message.denom = reader.string();
           break;
         case 5:
-          message.end_time = longToNumber(reader.int64() as Long);
+          message.start_time = longToNumber(reader.int64() as Long);
           break;
         case 6:
-          message.lockup_period = Duration.decode(reader, reader.uint32());
+          message.end_time = longToNumber(reader.int64() as Long);
           break;
         case 7:
+          message.lockup_period = Duration.decode(reader, reader.uint32());
+          break;
+        case 8:
           message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         default:
@@ -449,6 +457,11 @@ export const MsgCreateAirdropCampaign = {
       message.description = String(object.description);
     } else {
       message.description = "";
+    }
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = String(object.denom);
+    } else {
+      message.denom = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = Number(object.start_time);
@@ -479,6 +492,7 @@ export const MsgCreateAirdropCampaign = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
+    message.denom !== undefined && (obj.denom = message.denom);
     message.start_time !== undefined && (obj.start_time = message.start_time);
     message.end_time !== undefined && (obj.end_time = message.end_time);
     message.lockup_period !== undefined &&
@@ -512,6 +526,11 @@ export const MsgCreateAirdropCampaign = {
       message.description = object.description;
     } else {
       message.description = "";
+    }
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    } else {
+      message.denom = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = object.start_time;

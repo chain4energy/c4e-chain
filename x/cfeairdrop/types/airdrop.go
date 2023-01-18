@@ -33,7 +33,7 @@ func (c *Campaign) IsEnabled(blockTime time.Time) error {
 	return nil
 }
 
-func NewAirdropCampaign(owner string, name string, description string, startTime time.Time,
+func NewAirdropCampaign(owner string, name string, description string, denom string, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) *Campaign {
 
 	return &Campaign{
@@ -42,6 +42,7 @@ func NewAirdropCampaign(owner string, name string, description string, startTime
 		Name:          name,
 		Description:   description,
 		Enabled:       false,
+		Denom:         denom,
 		StartTime:     &startTime,
 		EndTime:       &endTime,
 		LockupPeriod:  lockupPeriod,

@@ -31,14 +31,6 @@ func TestGenesisState_Validate(t *testing.T) {
 						Address: "1",
 					},
 				},
-				InitialClaims: []types.InitialClaim{
-					{
-						CampaignId: 0,
-					},
-					{
-						CampaignId: 1,
-					},
-				},
 				Missions: []types.Mission{
 					{
 						CampaignId: 0,
@@ -49,15 +41,6 @@ func TestGenesisState_Validate(t *testing.T) {
 						Id:         1,
 					},
 				},
-				AirdropEntryList: []types.AirdropEntry{
-					{
-						Address: "0",
-					},
-					{
-						Address: " 1",
-					},
-				},
-				AirdropEntryCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -77,20 +60,6 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: false,
 		},
 		{
-			desc: "duplicated initialClaim",
-			genState: &types.GenesisState{
-				InitialClaims: []types.InitialClaim{
-					{
-						CampaignId: 0,
-					},
-					{
-						CampaignId: 0,
-					},
-				},
-			},
-			valid: false,
-		},
-		{
 			desc: "duplicated mission",
 			genState: &types.GenesisState{
 				Missions: []types.Mission{
@@ -103,32 +72,6 @@ func TestGenesisState_Validate(t *testing.T) {
 						Id:         0,
 					},
 				},
-			},
-			valid: false,
-		},
-		{
-			desc: "duplicated airdropEntry",
-			genState: &types.GenesisState{
-				AirdropEntryList: []types.AirdropEntry{
-					{
-						Address: "0",
-					},
-					{
-						Address: "0",
-					},
-				},
-			},
-			valid: false,
-		},
-		{
-			desc: "invalid airdropEntry count",
-			genState: &types.GenesisState{
-				AirdropEntryList: []types.AirdropEntry{
-					{
-						Address: "1",
-					},
-				},
-				AirdropEntryCount: 0,
 			},
 			valid: false,
 		},

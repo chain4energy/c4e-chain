@@ -75,7 +75,7 @@ func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list []types.Mission, weightSum sdk.Dec) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
+	weightSum = sdk.ZeroDec()
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {

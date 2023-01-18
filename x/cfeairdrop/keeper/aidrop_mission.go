@@ -50,7 +50,7 @@ func (k Keeper) completeMission(ctx sdk.Context, isInitialClaim bool, mission *t
 func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaign *types.Campaign, mission *types.Mission, userAirdropEntries *types.UserAirdropEntries) (*types.UserAirdropEntries, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
-	address := userAirdropEntries.Address
+	address := userAirdropEntries.ClaimAddress
 
 	if !userAirdropEntries.IsMissionCompleted(campaignId, missionId) {
 		k.Logger(ctx).Error("claim mission - mission not completed", "address", address, "campaignId", campaignId, "missionId", missionId)
@@ -184,8 +184,8 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, log string, campaignId uint64,
 			k.Logger(ctx).Debug(log+" - claim record not found", "claimerAddress", claimerAddress)
 			return nil, nil, nil, nil
 		}
-		k.Logger(ctx).Error(log+" - claim record not found", "claimerAddress", claimerAddress)
-		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "claim record not found for claimerAddress %s", claimerAddress)
+		k.Logger(ctx).Error(log+" - claim record not found", "address", claimerAddress)
+		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "claim record not found for address %s", claimerAddress)
 	}
 	if !campaignFound {
 		k.Logger(ctx).Error(log+" - camapign not found", "campaignId", campaignId)
@@ -213,8 +213,8 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, log string, campaignId uint64,
 			k.Logger(ctx).Error(log+" - campaign record not found", "claimerAddress", claimerAddress, "campaignId", campaignId)
 			return nil, nil, nil, nil
 		}
-		k.Logger(ctx).Error(log+" - campaign record not found", "claimerAddress", claimerAddress, "campaignId", campaignId)
-		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id: %d not found for claimerAddress %s", campaignId, claimerAddress)
+		k.Logger(ctx).Error(log+" - campaign record not found", "address", claimerAddress, "campaignId", campaignId)
+		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id: %d not found for address %s", campaignId, claimerAddress)
 	}
 
 	return &campaignConfig, &mission, &userAirdropEntries, nil

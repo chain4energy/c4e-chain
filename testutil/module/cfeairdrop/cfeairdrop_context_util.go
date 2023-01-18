@@ -3,6 +3,7 @@ package cfeairdrop
 import (
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
+	"time"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
 	cfeairdropmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
@@ -28,10 +29,23 @@ func (h *ContextC4eAirdropUtils) SendToAirdropAccount(toAddress sdk.AccAddress,
 	h.C4eAirdropUtils.SendToAirdropAccount(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount)
 }
 
+func (h *ContextC4eAirdropUtils) CreateAirdropCampaign(owner string, name string, description string, denom string, startTime time.Time,
+	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
+	h.C4eAirdropUtils.CreateAirdropCampaign(h.testContext.GetContext(), owner, name, description, denom, startTime, endTime, lockupPeriod, vestingPeriod)
+}
+
+func (h *ContextC4eAirdropUtils) StartAirdropCampaign(owner string, campaignId uint64) {
+	h.C4eAirdropUtils.StartAirdropCampaign(h.testContext.GetContext(), owner, campaignId)
+}
+
+func (h *ContextC4eAirdropUtils) AddMissionToAirdropCampaign(owner string, campaignId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
+	weight sdk.Dec) {
+	h.C4eAirdropUtils.AddMissionToAirdropCampaign(h.testContext.GetContext(), owner, campaignId, name, description, missionType, weight)
+}
+
 func (h *ContextC4eAirdropUtils) SendToAirdropAccountError(toAddress sdk.AccAddress,
 	amount sdk.Int, startTime int64, endTime int64, createAccount bool, errorMessage string, expectNewAccount bool) {
 	h.C4eAirdropUtils.SendToAirdropAccountError(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount, errorMessage, expectNewAccount)
-
 }
 
 func (h *ContextC4eAirdropUtils) VerifyAirdropAccount(address sdk.AccAddress,
