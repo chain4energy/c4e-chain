@@ -31,7 +31,7 @@ func NewC4eAirdropUtils(t *testing.T, helpeCfeairdropmodulekeeper *cfeairdropmod
 }
 
 func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
-	amount sdk.Int, startTime int64, endTime int64, createAccount bool) {
+	amount sdk.Int, startTime int64, endTime int64, initialClaim bool) {
 	coins := sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, amount))
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	accBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, toAddress)
@@ -51,7 +51,7 @@ func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.Ac
 		toAddress,
 		coins,
 		startTime,
-		endTime, createAccount,
+		endTime, initialClaim,
 	))
 
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, toAddress, accBalance.Add(amount))
@@ -60,12 +60,12 @@ func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.Ac
 	airdropAccount, ok := h.helperAccountKeeper.GetAccount(ctx, toAddress).(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	require.True(h.t, ok)
 	newPeriods := append(previousPeriods, cfevestingtypes.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: coins})
-	h.VerifyAirdropAccount(ctx, toAddress, previousOriginalVesting.Add(coins...), startTime, endTime, newPeriods)
+	h.VerifyAirdropAccount(ctx, toAddress, previousOriginalVesting.Add(coins...), startTime, endTime, newPeriods, initialClaim)
 	require.NoError(h.t, airdropAccount.Validate())
 }
 
 func (h *C4eAirdropUtils) SendToAirdropAccountError(ctx sdk.Context, toAddress sdk.AccAddress,
-	amount sdk.Int, startTime int64, endTime int64, createAccount bool, errorMessage string, expectNewAccount bool) {
+	amount sdk.Int, startTime int64, endTime int64, createAccount bool, errorMessage string, initialClaim bool) {
 	coins := sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, amount))
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	accBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, toAddress)
@@ -89,9 +89,9 @@ func (h *C4eAirdropUtils) SendToAirdropAccountError(ctx sdk.Context, toAddress s
 	accountAfter := h.helperAccountKeeper.GetAccount(ctx, toAddress)
 	_, isAirdropAccount := h.helperAccountKeeper.GetAccount(ctx, toAddress).(*cfevestingtypes.RepeatedContinuousVestingAccount)
 
-	if accountBefore == nil && expectNewAccount {
+	if accountBefore == nil && initialClaim {
 		require.EqualValues(h.t, true, isAirdropAccount)
-		h.VerifyAirdropAccount(ctx, toAddress, sdk.NewCoins(), startTime, endTime, []cfevestingtypes.ContinuousVestingPeriod{})
+		h.VerifyAirdropAccount(ctx, toAddress, sdk.NewCoins(), startTime, endTime, []cfevestingtypes.ContinuousVestingPeriod{}, initialClaim)
 
 	} else {
 		require.EqualValues(h.t, wasAirdropAccount, isAirdropAccount)
@@ -101,8 +101,10 @@ func (h *C4eAirdropUtils) SendToAirdropAccountError(ctx sdk.Context, toAddress s
 }
 
 func (h *C4eAirdropUtils) VerifyAirdropAccount(ctx sdk.Context, address sdk.AccAddress,
-	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod) {
-
+	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod, intitialClaim bool) {
+	if intitialClaim && len(expectedOriginalVesting) > 0 {
+		expectedOriginalVesting = expectedOriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(expectedOriginalVesting[0].Denom, cfeairdroptypes.OneToken)))
+	}
 	airdropAccount, ok := h.helperAccountKeeper.GetAccount(ctx, address).(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	require.True(h.t, ok)
 
@@ -111,7 +113,12 @@ func (h *C4eAirdropUtils) VerifyAirdropAccount(ctx sdk.Context, address sdk.AccA
 	require.EqualValues(h.t, expectedEndTime, airdropAccount.EndTime)
 	require.True(h.t, expectedOriginalVesting.IsEqual(airdropAccount.OriginalVesting))
 	for i := 0; i < len(expectedPeriods); i++ {
-		require.EqualValues(h.t, expectedPeriods[i], airdropAccount.VestingPeriods[i])
+		require.EqualValues(h.t, expectedPeriods[i].StartTime, airdropAccount.VestingPeriods[i].StartTime)
+		require.EqualValues(h.t, expectedPeriods[i].EndTime, airdropAccount.VestingPeriods[i].EndTime)
+		if intitialClaim {
+			expectedPeriods[i].Amount = expectedPeriods[i].Amount.Sub(sdk.NewCoins(sdk.NewCoin(expectedOriginalVesting[0].Denom, cfeairdroptypes.OneToken)))
+		}
+		require.EqualValues(h.t, expectedPeriods[i].Amount, airdropAccount.VestingPeriods[i].Amount)
 	}
 	require.NoError(h.t, airdropAccount.Validate())
 
@@ -211,7 +218,7 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 		claimerAccountBefore = cfevestingtypes.NewRepeatedContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), 100000000, 100000000, nil)
 	}
 
-	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, sdk.NewInt(expectedAmount))
+	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, sdk.NewInt(expectedAmount).Sub(cfeairdroptypes.OneToken))
 
 	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimer).(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	if !accExisted {
@@ -450,6 +457,6 @@ func (h *C4eAirdropUtils) StartAirdropCampaign(ctx sdk.Context, owner string, ca
 func (h *C4eAirdropUtils) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
 	weight sdk.Dec) {
 
-	err := h.helpeCfeairdropkeeper.AddMissionToAirdropCampaign(ctx, owner, campaignId, name, description, missionType, weight)
+	err := h.helpeCfeairdropkeeper.AddMissionToAirdropCampaign(ctx, owner, campaignId, name, description, missionType, weight, nil)
 	require.NoError(h.t, err)
 }

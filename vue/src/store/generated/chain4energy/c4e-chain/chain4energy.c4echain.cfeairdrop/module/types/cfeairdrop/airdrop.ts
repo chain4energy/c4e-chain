@@ -100,6 +100,7 @@ export interface Mission {
   description: string;
   missionType: MissionType;
   weight: string;
+  claim_start_date: Date | undefined;
 }
 
 const baseUserAirdropEntries: object = { address: "", claim_address: "" };
@@ -849,6 +850,12 @@ export const Mission = {
     if (message.weight !== "") {
       writer.uint32(50).string(message.weight);
     }
+    if (message.claim_start_date !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.claim_start_date),
+        writer.uint32(58).fork()
+      ).ldelim();
+    }
     return writer;
   },
 
@@ -876,6 +883,11 @@ export const Mission = {
           break;
         case 6:
           message.weight = reader.string();
+          break;
+        case 7:
+          message.claim_start_date = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -917,6 +929,14 @@ export const Mission = {
     } else {
       message.weight = "";
     }
+    if (
+      object.claim_start_date !== undefined &&
+      object.claim_start_date !== null
+    ) {
+      message.claim_start_date = fromJsonTimestamp(object.claim_start_date);
+    } else {
+      message.claim_start_date = undefined;
+    }
     return message;
   },
 
@@ -931,6 +951,11 @@ export const Mission = {
     message.missionType !== undefined &&
       (obj.missionType = missionTypeToJSON(message.missionType));
     message.weight !== undefined && (obj.weight = message.weight);
+    message.claim_start_date !== undefined &&
+      (obj.claim_start_date =
+        message.claim_start_date !== undefined
+          ? message.claim_start_date.toISOString()
+          : null);
     return obj;
   },
 
@@ -965,6 +990,14 @@ export const Mission = {
       message.weight = object.weight;
     } else {
       message.weight = "";
+    }
+    if (
+      object.claim_start_date !== undefined &&
+      object.claim_start_date !== null
+    ) {
+      message.claim_start_date = object.claim_start_date;
+    } else {
+      message.claim_start_date = undefined;
     }
     return message;
   },

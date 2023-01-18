@@ -61,7 +61,7 @@ func TestClaimInitial(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, prepareAidropEntries(acountsAddresses[1].String()))
 
-	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1], 8000)
+	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1], 800000000)
 
 }
 
@@ -237,6 +237,6 @@ func TestClaimInitialTwoCampaigns(t *testing.T) {
 	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, prepareAidropEntries(acountsAddresses[1].String()))
 	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 1, prepareAidropEntries(acountsAddresses[1].String()))
 
-	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1], 8000)
-	testHelper.C4eAirdropUtils.ClaimInitial(1, acountsAddresses[1], 7000)
+	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1], 800000000)
+	testHelper.C4eAirdropUtils.ClaimInitial(1, acountsAddresses[1], 700000000)
 }

@@ -9,6 +9,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+var OneToken = sdk.NewInt(1000000)
+
 type MessageId uint64
 
 func (cr *UserAirdropEntries) GetAidropEntry(camapaignId uint64) *AirdropEntry {
@@ -29,6 +31,16 @@ func (c *Campaign) IsEnabled(blockTime time.Time) error {
 	}
 	if c.EndTime != nil && blockTime.After(*c.EndTime) {
 		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaignId %d ended: time %s > endTime %s", c.Id, blockTime, c.EndTime)
+	}
+	return nil
+}
+
+func (c *Mission) IsEnabled(blockTime time.Time) error {
+	if c.ClaimStartDate == nil {
+		return nil
+	}
+	if c.ClaimStartDate.Before(blockTime) {
+		return sdkerrors.Wrapf(ErrCampaignDisabled, "missionId %d not started: time %s < startTime %s", c.Id, blockTime, c.ClaimStartDate)
 	}
 	return nil
 }

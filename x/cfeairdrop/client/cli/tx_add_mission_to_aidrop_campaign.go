@@ -3,6 +3,7 @@ package cli
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strconv"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -15,31 +16,30 @@ var _ = strconv.Itoa(0)
 
 func CmdAddMissionToAidropCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-mission-to-aidrop-campaign [campaign-id] [name] [description] [mission-type] [weight]",
+		Use:   "add-mission-to-aidrop-campaign [campaign-id] [name] [description] [mission-type] [weight] [claim-start-date]",
 		Short: "Broadcast message AddMissionToAidropCampaign",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argCampaignId := args[0]
+			argCampaignId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
 			argName := args[1]
 			argDescription := args[2]
-			argMissionType := args[3]
-			argWeight := args[4]
 
-			campaignId, err := strconv.ParseUint(argCampaignId, 10, 64)
+			argMissionType, err := types.MissionTypeFromString(types.NormalizeMissionType(args[3]))
 			if err != nil {
 				return err
 			}
-
-			weight, err := sdk.NewDecFromStr(argWeight)
+			argWeight, err := sdk.NewDecFromStr(args[4])
 			if err != nil {
 				return err
 			}
-
-			missionType, err := types.MissionTypeFromString(types.NormalizeMissionType(argMissionType))
+			timeLayout := "2006-01-02 15:04:05 -0700 MST"
+			argClaimStartDate, err := time.Parse(timeLayout, args[5])
 			if err != nil {
 				return err
 			}
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -47,11 +47,12 @@ func CmdAddMissionToAidropCampaign() *cobra.Command {
 
 			msg := types.NewMsgAddMissionToAidropCampaign(
 				clientCtx.GetFromAddress().String(),
-				campaignId,
+				argCampaignId,
 				argName,
 				argDescription,
-				missionType,
-				weight,
+				argMissionType,
+				argWeight,
+				argClaimStartDate,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

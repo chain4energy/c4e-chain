@@ -54,11 +54,22 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 		k.Logger(ctx).Error("send to airdrop account invalid account type; expected: RepeatedContinuousVestingAccount", "notExpectedAccount", acc)
 		return sdkerrors.Wrapf(c4eerrors.ErrInvalidAccountType, "send to airdrop account - expected RepeatedContinuousVestingAccount, got: %T", acc)
 	}
+
+	vestingAmount := amount
+	if initialClaim {
+		for _, coin := range amount {
+			if coin.Amount.Sub(types.OneToken).IsNegative() {
+				k.Logger(ctx).Error("send to airdrop account wrong send coins amount. Amount < 1 token (1000000)", "amount", coin.Amount, "denom", coin.Denom)
+				return sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to airdrop account  wrong send coins amount. %s < 1 token (1000000 %s)", coin.String(), coin.Denom)
+			}
+			vestingAmount = vestingAmount.Sub(sdk.NewCoins(sdk.NewCoin(coin.Denom, types.OneToken)))
+		}
+	}
 	ak.SetAccount(ctx, airdropAccount)
 	hadPariods := len(airdropAccount.VestingPeriods) > 0
 	airdropAccount.VestingPeriods = append(airdropAccount.VestingPeriods,
-		cfevestingtypes.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
-	airdropAccount.BaseVestingAccount.OriginalVesting = airdropAccount.BaseVestingAccount.OriginalVesting.Add(amount...)
+		cfevestingtypes.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: vestingAmount})
+	airdropAccount.BaseVestingAccount.OriginalVesting = airdropAccount.BaseVestingAccount.OriginalVesting.Add(vestingAmount...)
 	if !hadPariods || endTime > airdropAccount.BaseVestingAccount.EndTime {
 		airdropAccount.BaseVestingAccount.EndTime = endTime
 	}

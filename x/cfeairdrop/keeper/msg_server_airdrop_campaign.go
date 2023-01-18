@@ -2,10 +2,8 @@ package keeper
 
 import (
 	"context"
-	"github.com/cosmos/cosmos-sdk/telemetry"
-	"time"
-
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -20,8 +18,8 @@ func (k msgServer) CreateAirdropCampaign(goCtx context.Context, msg *types.MsgCr
 		msg.Name,
 		msg.Description,
 		msg.Denom,
-		time.Unix(msg.StartTime, 0),
-		time.Unix(msg.EndTime, 0),
+		msg.StartTime,
+		msg.EndTime,
 		msg.LockupPeriod,
 		msg.VestingPeriod,
 	); err != nil {

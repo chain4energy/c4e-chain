@@ -6,6 +6,7 @@ import {
   missionTypeToJSON,
 } from "../cfeairdrop/airdrop";
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
+import { Timestamp } from "../google/protobuf/timestamp";
 import * as Long from "long";
 import { Duration } from "../google/protobuf/duration";
 
@@ -32,8 +33,8 @@ export interface MsgCreateAirdropCampaign {
   name: string;
   description: string;
   denom: string;
-  start_time: number;
-  end_time: number;
+  start_time: Date | undefined;
+  end_time: Date | undefined;
   lockup_period: Duration | undefined;
   vesting_period: Duration | undefined;
 }
@@ -47,6 +48,7 @@ export interface MsgAddMissionToAidropCampaign {
   description: string;
   missionType: MissionType;
   weight: string;
+  claim_start_date: Date | undefined;
 }
 
 export interface MsgAddMissionToAidropCampaignResponse {}
@@ -357,8 +359,6 @@ const baseMsgCreateAirdropCampaign: object = {
   name: "",
   description: "",
   denom: "",
-  start_time: 0,
-  end_time: 0,
 };
 
 export const MsgCreateAirdropCampaign = {
@@ -378,11 +378,17 @@ export const MsgCreateAirdropCampaign = {
     if (message.denom !== "") {
       writer.uint32(34).string(message.denom);
     }
-    if (message.start_time !== 0) {
-      writer.uint32(40).int64(message.start_time);
+    if (message.start_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.start_time),
+        writer.uint32(42).fork()
+      ).ldelim();
     }
-    if (message.end_time !== 0) {
-      writer.uint32(48).int64(message.end_time);
+    if (message.end_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.end_time),
+        writer.uint32(50).fork()
+      ).ldelim();
     }
     if (message.lockup_period !== undefined) {
       Duration.encode(message.lockup_period, writer.uint32(58).fork()).ldelim();
@@ -421,10 +427,14 @@ export const MsgCreateAirdropCampaign = {
           message.denom = reader.string();
           break;
         case 5:
-          message.start_time = longToNumber(reader.int64() as Long);
+          message.start_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 6:
-          message.end_time = longToNumber(reader.int64() as Long);
+          message.end_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 7:
           message.lockup_period = Duration.decode(reader, reader.uint32());
@@ -465,14 +475,14 @@ export const MsgCreateAirdropCampaign = {
       message.denom = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
-      message.start_time = Number(object.start_time);
+      message.start_time = fromJsonTimestamp(object.start_time);
     } else {
-      message.start_time = 0;
+      message.start_time = undefined;
     }
     if (object.end_time !== undefined && object.end_time !== null) {
-      message.end_time = Number(object.end_time);
+      message.end_time = fromJsonTimestamp(object.end_time);
     } else {
-      message.end_time = 0;
+      message.end_time = undefined;
     }
     if (object.lockup_period !== undefined && object.lockup_period !== null) {
       message.lockup_period = Duration.fromJSON(object.lockup_period);
@@ -494,8 +504,14 @@ export const MsgCreateAirdropCampaign = {
     message.description !== undefined &&
       (obj.description = message.description);
     message.denom !== undefined && (obj.denom = message.denom);
-    message.start_time !== undefined && (obj.start_time = message.start_time);
-    message.end_time !== undefined && (obj.end_time = message.end_time);
+    message.start_time !== undefined &&
+      (obj.start_time =
+        message.start_time !== undefined
+          ? message.start_time.toISOString()
+          : null);
+    message.end_time !== undefined &&
+      (obj.end_time =
+        message.end_time !== undefined ? message.end_time.toISOString() : null);
     message.lockup_period !== undefined &&
       (obj.lockup_period = message.lockup_period
         ? Duration.toJSON(message.lockup_period)
@@ -536,12 +552,12 @@ export const MsgCreateAirdropCampaign = {
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = object.start_time;
     } else {
-      message.start_time = 0;
+      message.start_time = undefined;
     }
     if (object.end_time !== undefined && object.end_time !== null) {
       message.end_time = object.end_time;
     } else {
-      message.end_time = 0;
+      message.end_time = undefined;
     }
     if (object.lockup_period !== undefined && object.lockup_period !== null) {
       message.lockup_period = Duration.fromPartial(object.lockup_period);
@@ -641,6 +657,12 @@ export const MsgAddMissionToAidropCampaign = {
     if (message.weight !== "") {
       writer.uint32(50).string(message.weight);
     }
+    if (message.claim_start_date !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.claim_start_date),
+        writer.uint32(58).fork()
+      ).ldelim();
+    }
     return writer;
   },
 
@@ -673,6 +695,11 @@ export const MsgAddMissionToAidropCampaign = {
           break;
         case 6:
           message.weight = reader.string();
+          break;
+        case 7:
+          message.claim_start_date = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -716,6 +743,14 @@ export const MsgAddMissionToAidropCampaign = {
     } else {
       message.weight = "";
     }
+    if (
+      object.claim_start_date !== undefined &&
+      object.claim_start_date !== null
+    ) {
+      message.claim_start_date = fromJsonTimestamp(object.claim_start_date);
+    } else {
+      message.claim_start_date = undefined;
+    }
     return message;
   },
 
@@ -729,6 +764,11 @@ export const MsgAddMissionToAidropCampaign = {
     message.missionType !== undefined &&
       (obj.missionType = missionTypeToJSON(message.missionType));
     message.weight !== undefined && (obj.weight = message.weight);
+    message.claim_start_date !== undefined &&
+      (obj.claim_start_date =
+        message.claim_start_date !== undefined
+          ? message.claim_start_date.toISOString()
+          : null);
     return obj;
   },
 
@@ -767,6 +807,14 @@ export const MsgAddMissionToAidropCampaign = {
       message.weight = object.weight;
     } else {
       message.weight = "";
+    }
+    if (
+      object.claim_start_date !== undefined &&
+      object.claim_start_date !== null
+    ) {
+      message.claim_start_date = object.claim_start_date;
+    } else {
+      message.claim_start_date = undefined;
     }
     return message;
   },
@@ -1618,6 +1666,28 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = date.getTime() / 1_000;
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = t.seconds * 1_000;
+  millis += t.nanos / 1_000_000;
+  return new Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {

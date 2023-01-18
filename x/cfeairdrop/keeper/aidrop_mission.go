@@ -5,6 +5,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 )
 
 func (k Keeper) CompleteMission(ctx sdk.Context, campaignId uint64, missionId uint64, address string, isHook bool) error {
@@ -98,7 +99,7 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaign *types
 }
 
 func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType types.MissionType,
-	weight sdk.Dec) error {
+	weight sdk.Dec, claimStartDate *time.Time) error {
 	k.Logger(ctx).Debug("add mission to airdrop campaign", "owner", owner, "campaignId", campaignId, "name", name,
 		"description", description, "missionType", missionType, "weight", weight)
 
@@ -150,11 +151,12 @@ func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campa
 	}
 
 	mission := types.Mission{
-		CampaignId:  campaignId,
-		Name:        name,
-		Description: description,
-		MissionType: missionType,
-		Weight:      &weight,
+		CampaignId:     campaignId,
+		Name:           name,
+		Description:    description,
+		MissionType:    missionType,
+		Weight:         &weight,
+		ClaimStartDate: claimStartDate,
 	}
 
 	k.AppendNewMission(ctx, campaignId, mission)
@@ -163,6 +165,11 @@ func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campa
 
 func (k Keeper) missionFirstStep(ctx sdk.Context, log string, campaignId uint64, missionId uint64, claimerAddress string, isHook bool) (*types.Campaign, *types.Mission, *types.UserAirdropEntries, error) {
 	campaignConfig, campaignFound := k.GetCampaign(ctx, campaignId)
+	if !campaignFound {
+		k.Logger(ctx).Error(log+" - camapign not found", "campaignId", campaignId)
+		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
+	}
+
 	userAirdropEntries, found := k.GetUserAirdropEntries(ctx, claimerAddress)
 	if !found {
 		if isHook {
@@ -172,10 +179,7 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, log string, campaignId uint64,
 		k.Logger(ctx).Error(log+" - claim record not found", "address", claimerAddress)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "claim record not found for address %s", claimerAddress)
 	}
-	if !campaignFound {
-		k.Logger(ctx).Error(log+" - camapign not found", "campaignId", campaignId)
-		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
-	}
+
 	if err := campaignConfig.IsEnabled(ctx.BlockTime()); err != nil {
 		if isHook {
 			k.Logger(ctx).Debug(log+" - camapign disabled", "campaignId", campaignId, "err", err)

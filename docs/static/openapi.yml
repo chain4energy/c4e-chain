@@ -302,16 +302,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /c4e/airdrop/v1beta1/mission:
@@ -352,6 +342,9 @@ paths:
                         false;
                     weight:
                       type: string
+                    claim_start_date:
+                      type: string
+                      format: date-time
               pagination:
                 type: object
                 properties:
@@ -444,16 +437,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   '/c4e/airdrop/v1beta1/mission/{campaignId}/{missionId}':
@@ -492,6 +475,9 @@ paths:
                       false;
                   weight:
                     type: string
+                  claim_start_date:
+                    type: string
+                    format: date-time
         default:
           description: An unexpected error response.
           schema:
@@ -753,16 +739,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -32679,6 +32655,9 @@ definitions:
         title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
       weight:
         type: string
+      claim_start_date:
+        type: string
+        format: date-time
   chain4energy.c4echain.cfeairdrop.MissionType:
     type: string
     enum:
@@ -32853,6 +32832,9 @@ definitions:
             title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
           weight:
             type: string
+          claim_start_date:
+            type: string
+            format: date-time
   chain4energy.c4echain.cfeairdrop.QueryMissionsResponse:
     type: object
     properties:
@@ -32882,6 +32864,9 @@ definitions:
               title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
             weight:
               type: string
+            claim_start_date:
+              type: string
+              format: date-time
       pagination:
         type: object
         properties:

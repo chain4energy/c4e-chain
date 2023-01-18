@@ -49,8 +49,8 @@ func (h *ContextC4eAirdropUtils) SendToAirdropAccountError(toAddress sdk.AccAddr
 }
 
 func (h *ContextC4eAirdropUtils) VerifyAirdropAccount(address sdk.AccAddress,
-	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod) {
-	h.C4eAirdropUtils.VerifyAirdropAccount(h.testContext.GetContext(), address, expectedOriginalVesting, expectedStartTime, expectedEndTime, expectedPeriods)
+	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod, initialClaim bool) {
+	h.C4eAirdropUtils.VerifyAirdropAccount(h.testContext.GetContext(), address, expectedOriginalVesting, expectedStartTime, expectedEndTime, expectedPeriods, initialClaim)
 }
 
 func (h *ContextC4eAirdropUtils) InitGenesis(genState cfeairdroptypes.GenesisState) {

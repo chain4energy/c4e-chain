@@ -393,36 +393,6 @@ export default {
 		},
 		
 		
-		async sendMsgStartAirdropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgStartAirdropCampaign(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStartAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgStartAirdropCampaign:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgCreateAirdropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateAirdropCampaign(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgCreateAirdropCampaign:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		async sendMsgAddAirdropEntries({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -435,6 +405,36 @@ export default {
 					throw new Error('TxClient:MsgAddAirdropEntries:Init Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new Error('TxClient:MsgAddAirdropEntries:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgInitialClaim({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgInitialClaim(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgInitialClaim:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgInitialClaim:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgAddMissionToAidropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgAddMissionToAidropCampaign(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgAddMissionToAidropCampaign:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgAddMissionToAidropCampaign:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -468,18 +468,33 @@ export default {
 				}
 			}
 		},
-		async sendMsgInitialClaim({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgCreateAirdropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgInitialClaim(value)
+				const msg = await txClient.msgCreateAirdropCampaign(value)
 				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
 	gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgInitialClaim:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgCreateAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgInitialClaim:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgCreateAirdropCampaign:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgStartAirdropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgStartAirdropCampaign(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgStartAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgStartAirdropCampaign:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -498,48 +513,7 @@ export default {
 				}
 			}
 		},
-		async sendMsgAddMissionToAidropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgAddMissionToAidropCampaign(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddMissionToAidropCampaign:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgAddMissionToAidropCampaign:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		
-		async MsgStartAirdropCampaign({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgStartAirdropCampaign(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStartAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgStartAirdropCampaign:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgCreateAirdropCampaign({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreateAirdropCampaign(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgCreateAirdropCampaign:Create Could not create message: ' + e.message)
-				}
-			}
-		},
 		async MsgAddAirdropEntries({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -550,6 +524,32 @@ export default {
 					throw new Error('TxClient:MsgAddAirdropEntries:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgAddAirdropEntries:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgInitialClaim({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgInitialClaim(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgInitialClaim:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgInitialClaim:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgAddMissionToAidropCampaign({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgAddMissionToAidropCampaign(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgAddMissionToAidropCampaign:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgAddMissionToAidropCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -579,16 +579,29 @@ export default {
 				}
 			}
 		},
-		async MsgInitialClaim({ rootGetters }, { value }) {
+		async MsgCreateAirdropCampaign({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgInitialClaim(value)
+				const msg = await txClient.msgCreateAirdropCampaign(value)
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgInitialClaim:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgCreateAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgInitialClaim:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgCreateAirdropCampaign:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgStartAirdropCampaign({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgStartAirdropCampaign(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgStartAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgStartAirdropCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -602,19 +615,6 @@ export default {
 					throw new Error('TxClient:MsgDeleteAirdropEntry:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgDeleteAirdropEntry:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgAddMissionToAidropCampaign({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgAddMissionToAidropCampaign(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddMissionToAidropCampaign:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgAddMissionToAidropCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},

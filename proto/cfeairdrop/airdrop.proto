@@ -80,6 +80,10 @@ message Mission {
     (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
   ];
+  google.protobuf.Timestamp claim_start_date = 7 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
 }
 
 enum MissionType {

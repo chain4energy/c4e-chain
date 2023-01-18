@@ -23,11 +23,15 @@ func CmdCreateAirdropCampaign() *cobra.Command {
 			argName := args[0]
 			argDescription := args[1]
 			argDenom := args[2]
-			argStartTime, err := strconv.ParseInt(args[3], 10, 64)
+			timeLayout := "2006-01-02 15:04:05 -0700 MST"
+			argStartTime, err := time.Parse(timeLayout, args[3])
 			if err != nil {
 				return err
 			}
-			argEndTime, err := strconv.ParseInt(args[4], 10, 64)
+			argEndTime, err := time.Parse(timeLayout, args[4])
+			if err != nil {
+				return err
+			}
 			if err != nil {
 				return err
 			}

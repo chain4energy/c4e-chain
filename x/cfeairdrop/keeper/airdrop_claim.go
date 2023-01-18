@@ -37,6 +37,10 @@ func (k Keeper) InitialClaim(ctx sdk.Context, owner string, campaignId uint64, a
 	if err != nil {
 		return err
 	}
+	if err = mission.IsEnabled(ctx.BlockTime()); err != nil {
+		k.Logger(ctx).Error("claim initial mission - mission disabled", "campaignId", campaignId, "missionId", mission.Id, "err", err)
+		return sdkerrors.Wrapf(err, "mission disabled - campaignId %d, missionId %d", campaignId, mission.Id)
+	}
 	userAirdropEntries.ClaimAddress = addressToClaim
 	userAirdropEntries, err = k.completeMission(ctx, true, mission, userAirdropEntries)
 	if err != nil {
@@ -54,6 +58,10 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 	campaign, mission, userAirdropEntries, err := k.missionFirstStep(ctx, "claim mission", campaignId, missionId, claimer, false)
 	if err != nil {
 		return err
+	}
+	if err = mission.IsEnabled(ctx.BlockTime()); err != nil {
+		k.Logger(ctx).Error("claim mission - mission disabled", "campaignId", campaignId, "missionId", missionId, "err", err)
+		return sdkerrors.Wrapf(err, "mission disabled - campaignId %d, missionId %d", campaignId, missionId)
 	}
 	userAirdropEntries, err = k.claimMission(ctx, false, campaign, mission, userAirdropEntries)
 	if err != nil {

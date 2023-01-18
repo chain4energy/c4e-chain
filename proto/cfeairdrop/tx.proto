@@ -3,7 +3,7 @@ package chain4energy.c4echain.cfeairdrop;
 import "google/protobuf/duration.proto";
 import "cfeairdrop/airdrop.proto";
 import "gogoproto/gogo.proto";
-
+import "google/protobuf/timestamp.proto";
 // this line is used by starport scaffolding # proto/tx/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
@@ -42,11 +42,13 @@ message MsgCreateAirdropCampaign {
   string name = 2;
   string description = 3;
   string denom = 4;
-  int64 start_time = 5 [
-    (gogoproto.moretags) = "yaml:\"start_time\""
+  google.protobuf.Timestamp start_time = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
   ];
-  int64 end_time = 6 [
-    (gogoproto.moretags) = "yaml:\"end_time\""
+  google.protobuf.Timestamp end_time = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
   ];
   google.protobuf.Duration lockup_period = 7 [
     (gogoproto.nullable) = false,
@@ -69,6 +71,10 @@ message MsgAddMissionToAidropCampaign {
   string weight = 6 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
+  ];
+  google.protobuf.Timestamp claim_start_date = 7 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
   ];
 }
 

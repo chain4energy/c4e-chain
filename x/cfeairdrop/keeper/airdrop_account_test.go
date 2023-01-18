@@ -22,8 +22,8 @@ func TestCreateAirdropAccount(t *testing.T) {
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
 
-	moduleAmount := sdk.NewInt(10000)
-	amount := sdk.NewInt(1000)
+	moduleAmount := sdk.NewInt(1000000000000)
+	amount := sdk.NewInt(10000000000)
 
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
@@ -35,9 +35,9 @@ func TestCreateAirdropAccount(t *testing.T) {
 		endTimeUnix, true,
 	)
 
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount)
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.Sub(types.OneToken))
 	testHelper.SetContextBlockTime(commontestutils.TestEnvTime)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.QuoRaw(2))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.Sub(types.OneToken).QuoRaw(2))
 	testHelper.SetContextBlockTime(endTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
 
@@ -47,9 +47,9 @@ func TestCreateAirdropAccount(t *testing.T) {
 		startTimeUnix,
 		endTimeUnix, false,
 	)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(2))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(2).Sub(types.OneToken))
 	testHelper.SetContextBlockTime(commontestutils.TestEnvTime)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount)
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.Sub(types.OneToken).Add(types.OneToken.QuoRaw(2)))
 	testHelper.SetContextBlockTime(endTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
 
@@ -59,9 +59,9 @@ func TestCreateAirdropAccount(t *testing.T) {
 		startTimeUnix,
 		endTimeUnix, false,
 	)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(3))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(3).Sub(types.OneToken))
 	testHelper.SetContextBlockTime(commontestutils.TestEnvTime)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.QuoRaw(2).MulRaw(3))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.QuoRaw(2).MulRaw(3).Sub(types.OneToken).Add(types.OneToken.QuoRaw(2)))
 	testHelper.SetContextBlockTime(endTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
 }
@@ -155,7 +155,7 @@ func TestCreateAirdropAccountWrongAccountType(t *testing.T) {
 	baseAccount := testHelper.App.AccountKeeper.NewAccountWithAddress(testHelper.Context, acountsAddresses[0])
 	testHelper.App.AccountKeeper.SetAccount(testHelper.Context, baseAccount)
 	moduleAmount := sdk.NewInt(10000)
-	amount := sdk.NewInt(1000)
+	amount := sdk.NewInt(10000000000)
 
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
@@ -183,7 +183,7 @@ func TestCreateAirdropAccountSendError(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
 
 	// moduleAmount := sdk.NewInt(10000)
-	amount := sdk.NewInt(1000)
+	amount := sdk.NewInt(10000000000)
 
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
@@ -197,14 +197,14 @@ func TestCreateAirdropAccountSendError(t *testing.T) {
 	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
 		amount.AddRaw(1),
 		startTimeUnix,
-		endTimeUnix, true, "send to airdrop account - send coins to airdrop account error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 1001uc4e): 1000uc4e is smaller than 1001uc4e: insufficient funds: failed to send coins",
+		endTimeUnix, true, "send to airdrop account - send coins to airdrop account error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 10000000001uc4e): 10000000000uc4e is smaller than 10000000001uc4e: insufficient funds: failed to send coins",
 		true,
 	)
 
 	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
 		amount.AddRaw(1),
 		startTimeUnix,
-		endTimeUnix, false, "send to airdrop account - send coins to airdrop account error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 1001uc4e): 1000uc4e is smaller than 1001uc4e: insufficient funds: failed to send coins",
+		endTimeUnix, false, "send to airdrop account - send coins to airdrop account error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 10000000001uc4e): 10000000000uc4e is smaller than 10000000001uc4e: insufficient funds: failed to send coins",
 		false,
 	)
 }

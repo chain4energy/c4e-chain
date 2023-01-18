@@ -68,13 +68,11 @@ func TestCompleteMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
-	fmt.Println(testHelper.Context.BlockTime())
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
-	fmt.Println(testHelper.Context.BlockTime())
 	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
-	fmt.Println(testHelper.Context.BlockTime())
+
 	testHelper.C4eAirdropUtils.CompleteMission(0, 1, acountsAddresses[1])
 }
 
@@ -505,7 +503,7 @@ func TestFullCampaign(t *testing.T) {
 
 	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{}, []uint64{})
 
-	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1], 5000)
+	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1], 500000000)
 
 	delagationAmount := sdk.NewInt(1000000)
 	testHelper.BankUtils.AddDefaultDenomCoinToAccount(delagationAmount, acountsAddresses[1])
@@ -598,7 +596,7 @@ func prepareUserAirdropEntries(testHelper *testapp.TestHelper, srcAddress sdk.Ac
 func prepareAidropEntries(address string) []*types.AirdropEntry {
 	airdropEntries := []*types.AirdropEntry{
 		{
-			Amount:  sdk.NewInt(10000),
+			Amount:  sdk.NewInt(1000000000),
 			Address: address,
 		},
 	}
