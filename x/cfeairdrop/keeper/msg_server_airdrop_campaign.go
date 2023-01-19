@@ -29,7 +29,31 @@ func (k msgServer) CreateAirdropCampaign(goCtx context.Context, msg *types.MsgCr
 	return &types.MsgCreateAirdropCampaignResponse{}, nil
 }
 
+func (k msgServer) EditAirdropCampaign(goCtx context.Context, msg *types.MsgEditAirdropCampaign) (*types.MsgEditAirdropCampaignResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "edit aidrop campaign message")
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	keeper := k.Keeper
+
+	if err := keeper.EditAirdropCampaign(
+		ctx,
+		msg.Owner,
+		msg.CampaignId,
+		msg.Name,
+		msg.Description,
+		msg.Denom,
+		msg.StartTime,
+		msg.EndTime,
+		msg.LockupPeriod,
+		msg.VestingPeriod,
+	); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgEditAirdropCampaignResponse{}, nil
+}
+
 func (k msgServer) CloseAirdropCampaign(goCtx context.Context, msg *types.MsgCloseAirdropCampaign) (*types.MsgCloseAirdropCampaignResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "close airdrop campaign message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	keeper := k.Keeper
@@ -47,6 +71,7 @@ func (k msgServer) CloseAirdropCampaign(goCtx context.Context, msg *types.MsgClo
 }
 
 func (k msgServer) StartAirdropCampaign(goCtx context.Context, msg *types.MsgStartAirdropCampaign) (*types.MsgStartAirdropCampaignResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "start airdrop campaign message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	keeper := k.Keeper

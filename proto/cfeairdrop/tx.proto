@@ -13,6 +13,7 @@ service Msg {
   rpc Claim(MsgClaim) returns (MsgClaimResponse);
   rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
   rpc CreateAirdropCampaign(MsgCreateAirdropCampaign) returns (MsgCreateAirdropCampaignResponse);
+  rpc EditAirdropCampaign(MsgEditAirdropCampaign) returns (MsgEditAirdropCampaignResponse);
   rpc AddMissionToAidropCampaign(MsgAddMissionToAidropCampaign) returns (MsgAddMissionToAidropCampaignResponse);
   rpc AddAirdropEntries(MsgAddAirdropEntries) returns (MsgAddAirdropEntriesResponse);
   rpc DeleteAirdropEntry(MsgDeleteAirdropEntry) returns (MsgDeleteAirdropEntryResponse);
@@ -113,4 +114,29 @@ message MsgStartAirdropCampaign {
 
 message MsgStartAirdropCampaignResponse {}
 
+message MsgEditAirdropCampaign {
+  string owner = 1;
+  uint64 campaignId = 2;
+  string name = 3;
+  string description = 4;
+  string denom = 5;
+  google.protobuf.Timestamp start_time = 6 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp end_time = 7 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Duration lockup_period = 8 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdduration) = true
+  ];
+  google.protobuf.Duration vesting_period = 9 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdduration) = true
+  ];
+}
+
+message MsgEditAirdropCampaignResponse {}
 // this line is used by starport scaffolding # proto/tx/message

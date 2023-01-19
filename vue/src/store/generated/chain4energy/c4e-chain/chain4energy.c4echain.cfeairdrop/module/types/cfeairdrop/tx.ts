@@ -85,6 +85,20 @@ export interface MsgStartAirdropCampaign {
 
 export interface MsgStartAirdropCampaignResponse {}
 
+export interface MsgEditAirdropCampaign {
+  owner: string;
+  campaignId: number;
+  name: string;
+  description: string;
+  denom: string;
+  start_time: Date | undefined;
+  end_time: Date | undefined;
+  lockup_period: Duration | undefined;
+  vesting_period: Duration | undefined;
+}
+
+export interface MsgEditAirdropCampaignResponse {}
+
 const baseMsgClaim: object = { claimer: "", campaign_id: 0, mission_id: 0 };
 
 export const MsgClaim = {
@@ -1501,6 +1515,286 @@ export const MsgStartAirdropCampaignResponse = {
   },
 };
 
+const baseMsgEditAirdropCampaign: object = {
+  owner: "",
+  campaignId: 0,
+  name: "",
+  description: "",
+  denom: "",
+};
+
+export const MsgEditAirdropCampaign = {
+  encode(
+    message: MsgEditAirdropCampaign,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.owner !== "") {
+      writer.uint32(10).string(message.owner);
+    }
+    if (message.campaignId !== 0) {
+      writer.uint32(16).uint64(message.campaignId);
+    }
+    if (message.name !== "") {
+      writer.uint32(26).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(34).string(message.description);
+    }
+    if (message.denom !== "") {
+      writer.uint32(42).string(message.denom);
+    }
+    if (message.start_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.start_time),
+        writer.uint32(50).fork()
+      ).ldelim();
+    }
+    if (message.end_time !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.end_time),
+        writer.uint32(58).fork()
+      ).ldelim();
+    }
+    if (message.lockup_period !== undefined) {
+      Duration.encode(message.lockup_period, writer.uint32(66).fork()).ldelim();
+    }
+    if (message.vesting_period !== undefined) {
+      Duration.encode(
+        message.vesting_period,
+        writer.uint32(74).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgEditAirdropCampaign {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgEditAirdropCampaign } as MsgEditAirdropCampaign;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.owner = reader.string();
+          break;
+        case 2:
+          message.campaignId = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.name = reader.string();
+          break;
+        case 4:
+          message.description = reader.string();
+          break;
+        case 5:
+          message.denom = reader.string();
+          break;
+        case 6:
+          message.start_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 7:
+          message.end_time = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 8:
+          message.lockup_period = Duration.decode(reader, reader.uint32());
+          break;
+        case 9:
+          message.vesting_period = Duration.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgEditAirdropCampaign {
+    const message = { ...baseMsgEditAirdropCampaign } as MsgEditAirdropCampaign;
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner);
+    } else {
+      message.owner = "";
+    }
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = Number(object.campaignId);
+    } else {
+      message.campaignId = 0;
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = String(object.description);
+    } else {
+      message.description = "";
+    }
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = String(object.denom);
+    } else {
+      message.denom = "";
+    }
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.start_time = fromJsonTimestamp(object.start_time);
+    } else {
+      message.start_time = undefined;
+    }
+    if (object.end_time !== undefined && object.end_time !== null) {
+      message.end_time = fromJsonTimestamp(object.end_time);
+    } else {
+      message.end_time = undefined;
+    }
+    if (object.lockup_period !== undefined && object.lockup_period !== null) {
+      message.lockup_period = Duration.fromJSON(object.lockup_period);
+    } else {
+      message.lockup_period = undefined;
+    }
+    if (object.vesting_period !== undefined && object.vesting_period !== null) {
+      message.vesting_period = Duration.fromJSON(object.vesting_period);
+    } else {
+      message.vesting_period = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: MsgEditAirdropCampaign): unknown {
+    const obj: any = {};
+    message.owner !== undefined && (obj.owner = message.owner);
+    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    message.name !== undefined && (obj.name = message.name);
+    message.description !== undefined &&
+      (obj.description = message.description);
+    message.denom !== undefined && (obj.denom = message.denom);
+    message.start_time !== undefined &&
+      (obj.start_time =
+        message.start_time !== undefined
+          ? message.start_time.toISOString()
+          : null);
+    message.end_time !== undefined &&
+      (obj.end_time =
+        message.end_time !== undefined ? message.end_time.toISOString() : null);
+    message.lockup_period !== undefined &&
+      (obj.lockup_period = message.lockup_period
+        ? Duration.toJSON(message.lockup_period)
+        : undefined);
+    message.vesting_period !== undefined &&
+      (obj.vesting_period = message.vesting_period
+        ? Duration.toJSON(message.vesting_period)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<MsgEditAirdropCampaign>
+  ): MsgEditAirdropCampaign {
+    const message = { ...baseMsgEditAirdropCampaign } as MsgEditAirdropCampaign;
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    } else {
+      message.owner = "";
+    }
+    if (object.campaignId !== undefined && object.campaignId !== null) {
+      message.campaignId = object.campaignId;
+    } else {
+      message.campaignId = 0;
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
+    }
+    if (object.description !== undefined && object.description !== null) {
+      message.description = object.description;
+    } else {
+      message.description = "";
+    }
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    } else {
+      message.denom = "";
+    }
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.start_time = object.start_time;
+    } else {
+      message.start_time = undefined;
+    }
+    if (object.end_time !== undefined && object.end_time !== null) {
+      message.end_time = object.end_time;
+    } else {
+      message.end_time = undefined;
+    }
+    if (object.lockup_period !== undefined && object.lockup_period !== null) {
+      message.lockup_period = Duration.fromPartial(object.lockup_period);
+    } else {
+      message.lockup_period = undefined;
+    }
+    if (object.vesting_period !== undefined && object.vesting_period !== null) {
+      message.vesting_period = Duration.fromPartial(object.vesting_period);
+    } else {
+      message.vesting_period = undefined;
+    }
+    return message;
+  },
+};
+
+const baseMsgEditAirdropCampaignResponse: object = {};
+
+export const MsgEditAirdropCampaignResponse = {
+  encode(
+    _: MsgEditAirdropCampaignResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgEditAirdropCampaignResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgEditAirdropCampaignResponse,
+    } as MsgEditAirdropCampaignResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgEditAirdropCampaignResponse {
+    const message = {
+      ...baseMsgEditAirdropCampaignResponse,
+    } as MsgEditAirdropCampaignResponse;
+    return message;
+  },
+
+  toJSON(_: MsgEditAirdropCampaignResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgEditAirdropCampaignResponse>
+  ): MsgEditAirdropCampaignResponse {
+    const message = {
+      ...baseMsgEditAirdropCampaignResponse,
+    } as MsgEditAirdropCampaignResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Claim(request: MsgClaim): Promise<MsgClaimResponse>;
@@ -1508,6 +1802,9 @@ export interface Msg {
   CreateAirdropCampaign(
     request: MsgCreateAirdropCampaign
   ): Promise<MsgCreateAirdropCampaignResponse>;
+  EditAirdropCampaign(
+    request: MsgEditAirdropCampaign
+  ): Promise<MsgEditAirdropCampaignResponse>;
   AddMissionToAidropCampaign(
     request: MsgAddMissionToAidropCampaign
   ): Promise<MsgAddMissionToAidropCampaignResponse>;
@@ -1564,6 +1861,20 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgCreateAirdropCampaignResponse.decode(new Reader(data))
+    );
+  }
+
+  EditAirdropCampaign(
+    request: MsgEditAirdropCampaign
+  ): Promise<MsgEditAirdropCampaignResponse> {
+    const data = MsgEditAirdropCampaign.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfeairdrop.Msg",
+      "EditAirdropCampaign",
+      data
+    );
+    return promise.then((data) =>
+      MsgEditAirdropCampaignResponse.decode(new Reader(data))
     );
   }
 

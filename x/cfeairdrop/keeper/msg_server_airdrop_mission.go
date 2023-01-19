@@ -9,7 +9,7 @@ import (
 )
 
 func (k msgServer) AddMissionToAidropCampaign(goCtx context.Context, msg *types.MsgAddMissionToAidropCampaign) (*types.MsgAddMissionToAidropCampaignResponse, error) {
-	defer telemetry.IncrCounter(1, types.ModuleName, "create aidrop campaign message")
+	defer telemetry.IncrCounter(1, types.ModuleName, "add mission to aidrop campaign message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 

@@ -71,6 +71,8 @@ export type CfeairdropMsgCreateAirdropCampaignResponse = object;
 
 export type CfeairdropMsgDeleteAirdropEntryResponse = object;
 
+export type CfeairdropMsgEditAirdropCampaignResponse = object;
+
 export type CfeairdropMsgInitialClaimResponse = object;
 
 export type CfeairdropMsgStartAirdropCampaignResponse = object;
