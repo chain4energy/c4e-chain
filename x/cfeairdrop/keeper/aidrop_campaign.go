@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	errortypes "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,21 +61,27 @@ func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId ui
 		k.Logger(ctx).Error("add campaign entries campaign doesn't exist", "campaignId", campaignId)
 		return sdkerrors.Wrapf(errortypes.ErrParsing, "add campaign entries -  campaign with id %d doesn't exist", campaignId)
 	}
+	fmt.Println(campaign)
 	if campaign.Owner != owner {
 		k.Logger(ctx).Error("add campaign entries you are not the owner of this campaign", "campaignId", campaignId)
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - you are not the owner of campaign with id %d", campaignId)
 	}
-	if name == "" {
+	if name != "" {
 		campaign.Name = name
+		fmt.Println(name)
+		fmt.Println(campaign.Name)
+		fmt.Println(campaign.Name)
 	}
-	if denom == "" {
+	fmt.Println(campaign)
+	fmt.Println(name)
+	if denom != "" {
 		campaign.Denom = denom
 	}
-	if description == "" {
+	fmt.Println(campaign)
+	if description != "" {
 		campaign.Description = description
 	}
 	if startTime != nil {
-
 		if endTime != nil {
 			if startTime.After(*endTime) {
 				k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)

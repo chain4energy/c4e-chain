@@ -16,7 +16,7 @@ var _ = strconv.Itoa(0)
 
 func CmdEditAirdropCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-airdrop-campaign [campaignId] [name] [description] [denom] [start-time] [end-time] [lockup-period] [vesting-period]",
+		Use:   "edit-airdrop-campaign [campaignId] [name] [description] [denom] [start-time] [end-time] [lockup-period] [vesting-period]",
 		Short: "Broadcast message CreateAirdropCampaign",
 		Args:  cobra.ExactArgs(8),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -24,29 +24,59 @@ func CmdEditAirdropCampaign() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argName := args[0]
-			argDescription := args[1]
-			argDenom := args[2]
+			argName := args[1]
+			argDescription := args[2]
+			argDenom := args[3]
 			timeLayout := "2006-01-02 15:04:05 -0700 MST"
-			argStartTime, err := time.Parse(timeLayout, args[3])
-			if err != nil {
-				return err
+
+			var argStartTime *time.Time
+			if args[4] != "" {
+				parsedTime, err := time.Parse(timeLayout, args[4])
+				if err != nil {
+					return err
+				}
+				argStartTime = &parsedTime
+
+			} else {
+				argStartTime = nil
 			}
-			argEndTime, err := time.Parse(timeLayout, args[4])
-			if err != nil {
-				return err
+
+			var argEndTime *time.Time
+			if args[5] != "" {
+				parsedTime, err := time.Parse(timeLayout, args[5])
+				if err != nil {
+					return err
+				}
+				argEndTime = &parsedTime
+
+			} else {
+				argEndTime = nil
 			}
-			if err != nil {
-				return err
+
+			var argLockupPeriod *time.Duration
+			if args[6] != "" {
+				parsedTime, err := time.ParseDuration(args[6])
+				if err != nil {
+					return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+				}
+				argLockupPeriod = &parsedTime
+
+			} else {
+				argLockupPeriod = nil
 			}
-			argLockupPeriod, err := time.ParseDuration(args[5])
-			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+
+			var argVestingPeriod *time.Duration
+			if args[6] != "" {
+				parsedTime, err := time.ParseDuration(args[6])
+				if err != nil {
+					return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+				}
+				argVestingPeriod = &parsedTime
+
+			} else {
+				argVestingPeriod = nil
 			}
-			argVestingPeriod, err := time.ParseDuration(args[6])
-			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
-			}
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -58,10 +88,10 @@ func CmdEditAirdropCampaign() *cobra.Command {
 				argName,
 				argDescription,
 				argDenom,
-				&argStartTime,
-				&argEndTime,
-				&argLockupPeriod,
-				&argVestingPeriod,
+				argStartTime,
+				argEndTime,
+				argLockupPeriod,
+				argVestingPeriod,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
