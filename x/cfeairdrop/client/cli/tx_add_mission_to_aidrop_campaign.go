@@ -35,11 +35,18 @@ func CmdAddMissionToAidropCampaign() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			timeLayout := "2006-01-02 15:04:05 -0700 MST"
-			argClaimStartDate, err := time.Parse(timeLayout, args[5])
-			if err != nil {
-				return err
+			var argClaimStartDate *time.Time
+			if args[5] == "" {
+				argClaimStartDate = nil
+			} else {
+				timeLayout := "2006-01-02 15:04:05 -0700 MST"
+				parsedTime, err := time.Parse(timeLayout, args[5])
+				if err != nil {
+					return err
+				}
+				argClaimStartDate = &parsedTime
 			}
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err

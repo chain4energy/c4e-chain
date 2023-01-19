@@ -72,7 +72,11 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 	}
 	var usersAirdropEntries []*types.UserAirdropEntries
 	sum := sdk.ZeroInt()
-	for _, airdropEntry := range airdropEntries {
+	for i, airdropEntry := range airdropEntries {
+		if airdropEntry.Amount.LT(types.OneToken) {
+			k.Logger(ctx).Error("add campaign entries airdrop entry amount < 1000000 (One token)", "amount", airdropEntry.Amount, "airdropEntryIndex", i)
+			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - airdrop entry at index %d amount %s < 1000000 (One token)", i, airdropEntry.Amount.String())
+		}
 		userAirdropEntries, err := k.addUserAirdropEntry(ctx, campaignId, airdropEntry.Address, airdropEntry.Amount)
 		if err != nil {
 			return err

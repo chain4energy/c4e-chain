@@ -110,7 +110,7 @@ func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
 	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
 
-	airdropEntries := generateAirdropEntries(acountsAddresses, 100)
+	airdropEntries := generateAirdropEntries(acountsAddresses, 100000000)
 
 	start := ctx.BlockTime()
 	end := ctx.BlockTime().Add(1000)
@@ -136,7 +136,7 @@ func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
 	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
-	airdropEntries := generateAirdropEntries(acountsAddresses, 100)
+	airdropEntries := generateAirdropEntries(acountsAddresses, 100000000)
 
 	start := ctx.BlockTime()
 	end := ctx.BlockTime().Add(1000)
@@ -158,7 +158,7 @@ func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	testUtil.AddAirdropEntries(ctx, srcAddr, 0, airdropEntries)
 	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 
-	airdropEntries = generateAirdropEntries(acountsAddresses, 500)
+	airdropEntries = generateAirdropEntries(acountsAddresses, 500000000)
 	testUtil.AddAirdropEntries(ctx, srcAddr, 1, airdropEntries)
 }
 
@@ -166,7 +166,7 @@ func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
 	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
-	airdropEntries := generateAirdropEntries(acountsAddresses, 100)
+	airdropEntries := generateAirdropEntries(acountsAddresses, 100000000)
 	start := ctx.BlockTime()
 	end := ctx.BlockTime().Add(1000)
 	lockupPeriod := time.Hour
@@ -199,7 +199,7 @@ func TestAddCampaignRecordsSendError(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
 	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
-	airdropEntries := generateAirdropEntries(acountsAddresses, 100)
+	airdropEntries := generateAirdropEntries(acountsAddresses, 100000000)
 	start := ctx.BlockTime()
 	end := ctx.BlockTime().Add(1000)
 	lockupPeriod := time.Hour
@@ -223,7 +223,7 @@ func TestAddCampaignRecordsSendError(t *testing.T) {
 			Amount:  airdropEntries[5].Amount,
 		},
 	},
-		"0uc4e is smaller than 105uc4e: insufficient funds", false)
+		"0uc4e is smaller than 100000005uc4e: insufficient funds", false)
 }
 
 func generateAirdropEntries(addresses []sdk.AccAddress, startAmount int) []*types.AirdropEntry {

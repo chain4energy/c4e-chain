@@ -52,3 +52,16 @@ func NewKeeper(
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
+
+func (k Keeper) GetAccountCoins(ctx sdk.Context, account sdk.AccAddress) sdk.Coins {
+	return k.bankKeeper.GetAllBalances(ctx, account)
+}
+
+func (k Keeper) GetAccountAddressModuleAccount(ctx sdk.Context, accountName string) sdk.AccAddress {
+	return k.accountKeeper.GetModuleAccount(ctx, accountName).GetAddress()
+}
+
+func (k Keeper) GetAccountCoinsForModuleAccount(ctx sdk.Context, accountName string) sdk.Coins {
+	accAddress := k.GetAccountAddressModuleAccount(ctx, accountName)
+	return k.GetAccountCoins(ctx, accAddress)
+}

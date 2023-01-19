@@ -2,11 +2,11 @@
   "airdropEntries":[
     {
       "address": "c4e1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8fdd9gs",
-      "amount": "1500"
+      "amount": "1500000000"
     },
     {
       "address": "c4e1uqenz7vu5xyxfsr70was6zzf5g3spsy52lenlc",
-      "amount": "20000"
+      "amount": "20000000000"
     }
   ]
 }

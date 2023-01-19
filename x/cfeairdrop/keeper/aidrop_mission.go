@@ -145,7 +145,8 @@ func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campa
 	}
 
 	_, weightSum := k.AllMissionForCampaign(ctx, campaignId)
-	if weightSum.Add(weight).GT(sdk.NewDec(1)) {
+	weightSum = weightSum.Add(weight)
+	if weightSum.GT(sdk.NewDec(1)) {
 		k.Logger(ctx).Error("add mission to airdrop campaign weight is >= 1", "weightSum", weightSum)
 		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add mission to airdrop campaign campaign missions weight sum is >= 1 (%s > 1)", weightSum.String())
 	}
