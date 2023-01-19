@@ -86,11 +86,19 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 	}
 	coin := sdk.NewCoin(campaign.Denom, sum)
 	coins := sdk.NewCoins(coin)
-	k.IncrementAirdropDistrubitions(ctx, campaignId, coin)
-	k.IncrementAirdropClaimsLeft(ctx, campaignId, coin)
 	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, coins); err != nil {
 		return err
 	}
+	airdropClaimsLeft := types.AirdropClaimsLeft{
+		CampaignId: campaignId,
+		Amount:     coin,
+	}
+	airdropDistrubitions := types.AirdropDistrubitions{
+		CampaignId: campaignId,
+		Amount:     coin,
+	}
+	k.IncrementAirdropDistrubitions(ctx, airdropDistrubitions)
+	k.IncrementAirdropClaimsLeft(ctx, airdropClaimsLeft)
 	for _, userAirdropEntries := range usersAirdropEntries {
 		k.SetUserAirdropEntries(ctx, *userAirdropEntries)
 	}

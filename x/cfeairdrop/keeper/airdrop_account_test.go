@@ -166,13 +166,6 @@ func TestCreateAirdropAccountWrongAccountType(t *testing.T) {
 		endTimeUnix, false, "send to airdrop account - expected RepeatedContinuousVestingAccount, got: *types.BaseAccount: invalid account type",
 		false,
 	)
-	// TODO: verify
-	//testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
-	//	amount,
-	//	startTimeUnix,
-	//	endTimeUnix, true, "send to airdrop account - expected RepeatedContinuousVestingAccount, got: *types.BaseAccount: invalid account type",
-	//	false,
-	//)
 }
 
 func TestCreateAirdropAccountSendError(t *testing.T) {
@@ -181,30 +174,16 @@ func TestCreateAirdropAccountSendError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
 
 	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
-
-	// moduleAmount := sdk.NewInt(10000)
 	amount := sdk.NewInt(10000000000)
 
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(amount, types.ModuleName)
 
-	// testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
-	// 	amount.MulRaw(2),
-	// 	startTimeUnix,
-	// 	endTimeUnix, true,
-	// )
 	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
 		amount.AddRaw(1),
 		startTimeUnix,
-		endTimeUnix, true, "send to airdrop account - send coins to airdrop account error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 10000000001uc4e): 10000000000uc4e is smaller than 10000000001uc4e: insufficient funds: failed to send coins",
+		endTimeUnix, true, "send to airdrop account - send coins to airdrop account insufficient funds error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 10000000001uc4e): insufficient funds",
 		true,
-	)
-
-	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
-		amount.AddRaw(1),
-		startTimeUnix,
-		endTimeUnix, false, "send to airdrop account - send coins to airdrop account error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 10000000001uc4e): 10000000000uc4e is smaller than 10000000001uc4e: insufficient funds: failed to send coins",
-		false,
 	)
 }

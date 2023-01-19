@@ -336,6 +336,7 @@ paths:
                         - INITIAL_CLAIM
                         - DELEGATION
                         - VOTE
+                        - CLAIM
                       default: UNSPECIFIED
                       title: >-
                         - UNSPECIFIED: option (gogoproto.goproto_enum_prefix) =
@@ -469,6 +470,7 @@ paths:
                       - INITIAL_CLAIM
                       - DELEGATION
                       - VOTE
+                      - CLAIM
                     default: UNSPECIFIED
                     title: >-
                       - UNSPECIFIED: option (gogoproto.goproto_enum_prefix) =
@@ -32651,6 +32653,7 @@ definitions:
           - INITIAL_CLAIM
           - DELEGATION
           - VOTE
+          - CLAIM
         default: UNSPECIFIED
         title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
       weight:
@@ -32665,6 +32668,7 @@ definitions:
       - INITIAL_CLAIM
       - DELEGATION
       - VOTE
+      - CLAIM
     default: UNSPECIFIED
     title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
   chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntriesResponse:
@@ -32828,6 +32832,7 @@ definitions:
               - INITIAL_CLAIM
               - DELEGATION
               - VOTE
+              - CLAIM
             default: UNSPECIFIED
             title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
           weight:
@@ -32860,6 +32865,7 @@ definitions:
                 - INITIAL_CLAIM
                 - DELEGATION
                 - VOTE
+                - CLAIM
               default: UNSPECIFIED
               title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
             weight:

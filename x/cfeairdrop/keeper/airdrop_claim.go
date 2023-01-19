@@ -63,6 +63,12 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 		k.Logger(ctx).Error("claim mission - mission disabled", "campaignId", campaignId, "missionId", missionId, "err", err)
 		return sdkerrors.Wrapf(err, "mission disabled - campaignId %d, missionId %d", campaignId, missionId)
 	}
+	if mission.MissionType == types.MissionClaim {
+		userAirdropEntries, err = k.completeMission(ctx, false, mission, userAirdropEntries)
+		if err != nil {
+			return err
+		}
+	}
 	userAirdropEntries, err = k.claimMission(ctx, false, campaign, mission, userAirdropEntries)
 	if err != nil {
 		return err

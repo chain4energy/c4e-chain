@@ -30,14 +30,16 @@ message AirdropEntries {
 }
 
 message AirdropDistrubitions {
-  cosmos.base.v1beta1.Coin amount = 3 [
+  uint64 campaignId = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 }
 
 message AirdropClaimsLeft {
-  cosmos.base.v1beta1.Coin amount = 3 [
+  uint64 campaignId = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
@@ -92,4 +94,5 @@ enum MissionType {
   INITIAL_CLAIM = 1;
   DELEGATION = 2;
   VOTE = 3;
+  CLAIM = 4;
 }

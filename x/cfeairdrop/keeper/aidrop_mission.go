@@ -85,13 +85,11 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaign *types
 	claimable := sdk.NewCoins(coin)
 
 	// send claimable to the user
-	claimer, err := sdk.AccAddressFromBech32(userAirdropEntries.ClaimAddress)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userAirdropEntries.ClaimAddress)
-	}
+
 	start := ctx.BlockTime().Add(campaign.LockupPeriod)
 	end := start.Add(campaign.VestingPeriod)
-	if err = k.SendToAirdropAccount(ctx, claimer, claimable, start.Unix(), end.Unix(), initialClaim); err != nil {
+
+	if err := k.SendToAirdropAccount(ctx, userAirdropEntries, claimable, start.Unix(), end.Unix(), initialClaim); err != nil {
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userAirdropEntries.ClaimAddress)
 	}
 	return userAirdropEntries, nil

@@ -46,9 +46,12 @@ func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.Ac
 			previousPeriods = airdropAccount.VestingPeriods
 		}
 	}
-
+	userAirdropEntries := &cfeairdroptypes.UserAirdropEntries{
+		Address:      toAddress.String(),
+		ClaimAddress: toAddress.String(),
+	}
 	require.NoError(h.t, h.helpeCfeairdropkeeper.SendToAirdropAccount(ctx,
-		toAddress,
+		userAirdropEntries,
 		coins,
 		startTime,
 		endTime, initialClaim,
@@ -75,9 +78,12 @@ func (h *C4eAirdropUtils) SendToAirdropAccountError(ctx sdk.Context, toAddress s
 	if accountBefore != nil {
 		_, wasAirdropAccount = accountBefore.(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	}
-
+	userAirdropEntries := &cfeairdroptypes.UserAirdropEntries{
+		Address:      toAddress.String(),
+		ClaimAddress: toAddress.String(),
+	}
 	require.EqualError(h.t, h.helpeCfeairdropkeeper.SendToAirdropAccount(ctx,
-		toAddress,
+		userAirdropEntries,
 		coins,
 		startTime,
 		endTime, createAccount,
@@ -88,8 +94,8 @@ func (h *C4eAirdropUtils) SendToAirdropAccountError(ctx sdk.Context, toAddress s
 
 	accountAfter := h.helperAccountKeeper.GetAccount(ctx, toAddress)
 	_, isAirdropAccount := h.helperAccountKeeper.GetAccount(ctx, toAddress).(*cfevestingtypes.RepeatedContinuousVestingAccount)
-
-	if accountBefore == nil && initialClaim {
+	_, ok := accountBefore.(*cfevestingtypes.RepeatedContinuousVestingAccount)
+	if ok && initialClaim {
 		require.EqualValues(h.t, true, isAirdropAccount)
 		h.VerifyAirdropAccount(ctx, toAddress, sdk.NewCoins(), startTime, endTime, []cfevestingtypes.ContinuousVestingPeriod{}, initialClaim)
 

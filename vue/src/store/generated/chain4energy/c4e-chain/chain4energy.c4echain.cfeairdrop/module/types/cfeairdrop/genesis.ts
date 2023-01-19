@@ -1,6 +1,12 @@
 /* eslint-disable */
 import { Params } from "../cfeairdrop/params";
-import { Campaign, UserAirdropEntries, Mission } from "../cfeairdrop/airdrop";
+import {
+  Campaign,
+  UserAirdropEntries,
+  Mission,
+  AirdropClaimsLeft,
+  AirdropDistrubitions,
+} from "../cfeairdrop/airdrop";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -10,8 +16,10 @@ export interface GenesisState {
   params: Params | undefined;
   campaigns: Campaign[];
   user_airdrop_entries: UserAirdropEntries[];
-  /** this line is used by starport scaffolding # genesis/proto/state */
   missions: Mission[];
+  airdrop_claims_left: AirdropClaimsLeft[];
+  /** this line is used by starport scaffolding # genesis/proto/state */
+  airdrop_distrubitions: AirdropDistrubitions[];
 }
 
 const baseGenesisState: object = {};
@@ -30,6 +38,12 @@ export const GenesisState = {
     for (const v of message.missions) {
       Mission.encode(v!, writer.uint32(42).fork()).ldelim();
     }
+    for (const v of message.airdrop_claims_left) {
+      AirdropClaimsLeft.encode(v!, writer.uint32(50).fork()).ldelim();
+    }
+    for (const v of message.airdrop_distrubitions) {
+      AirdropDistrubitions.encode(v!, writer.uint32(58).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -40,6 +54,8 @@ export const GenesisState = {
     message.campaigns = [];
     message.user_airdrop_entries = [];
     message.missions = [];
+    message.airdrop_claims_left = [];
+    message.airdrop_distrubitions = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -57,6 +73,16 @@ export const GenesisState = {
         case 5:
           message.missions.push(Mission.decode(reader, reader.uint32()));
           break;
+        case 6:
+          message.airdrop_claims_left.push(
+            AirdropClaimsLeft.decode(reader, reader.uint32())
+          );
+          break;
+        case 7:
+          message.airdrop_distrubitions.push(
+            AirdropDistrubitions.decode(reader, reader.uint32())
+          );
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -70,6 +96,8 @@ export const GenesisState = {
     message.campaigns = [];
     message.user_airdrop_entries = [];
     message.missions = [];
+    message.airdrop_claims_left = [];
+    message.airdrop_distrubitions = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
@@ -91,6 +119,22 @@ export const GenesisState = {
     if (object.missions !== undefined && object.missions !== null) {
       for (const e of object.missions) {
         message.missions.push(Mission.fromJSON(e));
+      }
+    }
+    if (
+      object.airdrop_claims_left !== undefined &&
+      object.airdrop_claims_left !== null
+    ) {
+      for (const e of object.airdrop_claims_left) {
+        message.airdrop_claims_left.push(AirdropClaimsLeft.fromJSON(e));
+      }
+    }
+    if (
+      object.airdrop_distrubitions !== undefined &&
+      object.airdrop_distrubitions !== null
+    ) {
+      for (const e of object.airdrop_distrubitions) {
+        message.airdrop_distrubitions.push(AirdropDistrubitions.fromJSON(e));
       }
     }
     return message;
@@ -121,6 +165,20 @@ export const GenesisState = {
     } else {
       obj.missions = [];
     }
+    if (message.airdrop_claims_left) {
+      obj.airdrop_claims_left = message.airdrop_claims_left.map((e) =>
+        e ? AirdropClaimsLeft.toJSON(e) : undefined
+      );
+    } else {
+      obj.airdrop_claims_left = [];
+    }
+    if (message.airdrop_distrubitions) {
+      obj.airdrop_distrubitions = message.airdrop_distrubitions.map((e) =>
+        e ? AirdropDistrubitions.toJSON(e) : undefined
+      );
+    } else {
+      obj.airdrop_distrubitions = [];
+    }
     return obj;
   },
 
@@ -129,6 +187,8 @@ export const GenesisState = {
     message.campaigns = [];
     message.user_airdrop_entries = [];
     message.missions = [];
+    message.airdrop_claims_left = [];
+    message.airdrop_distrubitions = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
@@ -150,6 +210,22 @@ export const GenesisState = {
     if (object.missions !== undefined && object.missions !== null) {
       for (const e of object.missions) {
         message.missions.push(Mission.fromPartial(e));
+      }
+    }
+    if (
+      object.airdrop_claims_left !== undefined &&
+      object.airdrop_claims_left !== null
+    ) {
+      for (const e of object.airdrop_claims_left) {
+        message.airdrop_claims_left.push(AirdropClaimsLeft.fromPartial(e));
+      }
+    }
+    if (
+      object.airdrop_distrubitions !== undefined &&
+      object.airdrop_distrubitions !== null
+    ) {
+      for (const e of object.airdrop_distrubitions) {
+        message.airdrop_distrubitions.push(AirdropDistrubitions.fromPartial(e));
       }
     }
     return message;

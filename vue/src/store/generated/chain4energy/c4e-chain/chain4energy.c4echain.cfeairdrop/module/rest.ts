@@ -56,6 +56,7 @@ export enum CfeairdropMissionType {
   INITIAL_CLAIM = "INITIAL_CLAIM",
   DELEGATION = "DELEGATION",
   VOTE = "VOTE",
+  CLAIM = "CLAIM",
 }
 
 export type CfeairdropMsgAddAirdropEntriesResponse = object;

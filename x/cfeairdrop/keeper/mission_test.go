@@ -444,7 +444,7 @@ func TestClaimMissionToWrongAddress(t *testing.T) {
 	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[2], sdk.NewCoins(), 12312, 1555565657676576)
 
 	testHelper.C4eAirdropUtils.ClaimMissionError(0, uint64(types.MissionDelegation), acountsAddresses[1],
-		fmt.Sprintf("wrong claiming address %s: decoding bech32 failed: string not all lowercase or all uppercase: failed to parse", userAirdropEntries.ClaimAddress))
+		fmt.Sprintf("send to claiming address %s error: wrong claiming address %s: decoding bech32 failed: string not all lowercase or all uppercase: failed to parse: failed to send coins", userAirdropEntries.ClaimAddress, userAirdropEntries.ClaimAddress))
 }
 
 func TestCompleteDelegationMission(t *testing.T) {

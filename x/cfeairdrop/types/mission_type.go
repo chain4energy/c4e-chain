@@ -7,6 +7,7 @@ const (
 	MissionInitialClaim = MissionType_INITIAL_CLAIM
 	MissionDelegation   = MissionType_DELEGATION
 	MissionVote         = MissionType_VOTE
+	MissionClaim        = MissionType_CLAIM
 	//VOTE
 	end
 )

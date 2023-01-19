@@ -145,27 +145,24 @@ func (k Keeper) GetAllAirdropDistrubitions(ctx sdk.Context) (list []types.Airdro
 // GetCampaign returns a campaignO from its index
 func (k Keeper) IncrementAirdropDistrubitions(
 	ctx sdk.Context,
-	campaignId uint64,
-	amount sdk.Coin,
+	airdropDistrubitions types.AirdropDistrubitions,
 ) (val types.AirdropDistrubitions) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropDistributionsPrefix))
 
 	b := store.Get(types.AirdropDistributionsKey(
-		campaignId,
+		airdropDistrubitions.CampaignId,
 	))
 
 	if b != nil {
 		k.cdc.MustUnmarshal(b, &val)
-		val.Amount = val.Amount.Add(amount)
+		val.Amount = val.Amount.Add(airdropDistrubitions.Amount)
 	} else {
-		val = types.AirdropDistrubitions{
-			Amount: amount,
-		}
+		val = airdropDistrubitions
 	}
 
 	appendedValue := k.cdc.MustMarshal(&val)
 	store.Set(types.AirdropDistributionsKey(
-		campaignId,
+		val.CampaignId,
 	), appendedValue)
 	return val
 }
@@ -232,27 +229,24 @@ func (k Keeper) GetAllAirdropClaimsLeft(ctx sdk.Context) (list []types.AirdropCl
 // GetCampaign returns a campaignO from its index
 func (k Keeper) IncrementAirdropClaimsLeft(
 	ctx sdk.Context,
-	campaignId uint64,
-	amount sdk.Coin,
+	airdropClaimsLeft types.AirdropClaimsLeft,
 ) (val types.AirdropClaimsLeft) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropClaimsLeftPrefix))
 
 	b := store.Get(types.AirdropDistributionsKey(
-		campaignId,
+		airdropClaimsLeft.CampaignId,
 	))
 
 	if b != nil {
 		k.cdc.MustUnmarshal(b, &val)
-		val.Amount = val.Amount.Add(amount)
+		val.Amount = val.Amount.Add(airdropClaimsLeft.Amount)
 	} else {
-		val = types.AirdropClaimsLeft{
-			Amount: amount,
-		}
+		val = airdropClaimsLeft
 	}
 
 	appendedValue := k.cdc.MustMarshal(&val)
 	store.Set(types.AirdropClaimsLeftKey(
-		campaignId,
+		val.CampaignId,
 	), appendedValue)
 	return val
 }

@@ -54,5 +54,7 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.UserAirdropEntries, got.UserAirdropEntries)
 	require.ElementsMatch(t, genesisState.Missions, got.Missions)
 	require.ElementsMatch(t, genesisState.Campaigns, got.Campaigns)
+	require.ElementsMatch(t, genesisState.AirdropDistrubitions, got.AirdropDistrubitions)
+	require.ElementsMatch(t, genesisState.AirdropClaimsLeft, got.AirdropClaimsLeft)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

@@ -22,5 +22,11 @@ message GenesisState {
   repeated Mission missions = 5 [
     (gogoproto.nullable) = false
   ];
+  repeated AirdropClaimsLeft airdrop_claims_left = 6 [
+    (gogoproto.nullable) = false
+  ];
+  repeated AirdropDistrubitions airdrop_distrubitions = 7 [
+    (gogoproto.nullable) = false
+  ];
   // this line is used by starport scaffolding # genesis/proto/state
 }
