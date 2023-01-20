@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	errortypes "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -28,7 +27,6 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 	if startTime.Before(ctx.BlockTime()) {
 		k.Logger(ctx).Error("create airdrop campaign start time in the past", "startTime", startTime)
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time in the past error  (%s < %s)", startTime, ctx.BlockTime())
-
 	}
 	if startTime.After(endTime) {
 		k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
@@ -47,51 +45,44 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 
 func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, denom string, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
-	k.Logger(ctx).Debug("create aidrop campaign", "owner", owner, "name", name, "description", description,
+	k.Logger(ctx).Debug("edit airdrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
 	campaign, found := k.GetCampaign(
 		ctx,
 		campaignId,
 	)
 	if !found {
-		k.Logger(ctx).Error("add campaign entries campaign doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(errortypes.ErrParsing, "add campaign entries -  campaign with id %d doesn't exist", campaignId)
+		k.Logger(ctx).Error("edit airdrop campaign campaign doesn't exist", "campaignId", campaignId)
+		return sdkerrors.Wrapf(errortypes.ErrParsing, "edit airdrop campaign -  campaign with id %d doesn't exist", campaignId)
 	}
 	if campaign.Enabled == true {
-		k.Logger(ctx).Error("add campaign entries campaign doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(errortypes.ErrParsing, "add campaign entries -  campaign with id %d doesn't exist", campaignId)
+		k.Logger(ctx).Error("edit airdrop campaign campaign doesn't exist", "campaignId", campaignId)
+		return sdkerrors.Wrapf(errortypes.ErrParsing, "edit airdrop campaign -  campaign with id %d doesn't exist", campaignId)
 	}
-	fmt.Println(campaign)
 	if campaign.Owner != owner {
-		k.Logger(ctx).Error("add campaign entries you are not the owner of this campaign", "campaignId", campaignId)
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - you are not the owner of campaign with id %d", campaignId)
+		k.Logger(ctx).Error("edit airdrop campaign you are not the owner of this campaign", "campaignId", campaignId)
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "edit airdrop campaign - you are not the owner of campaign with id %d", campaignId)
 	}
 	if name != "" {
 		campaign.Name = name
-		fmt.Println(name)
-		fmt.Println(campaign.Name)
-		fmt.Println(campaign.Name)
 	}
-	fmt.Println(campaign)
-	fmt.Println(name)
 	if denom != "" {
 		campaign.Denom = denom
 	}
-	fmt.Println(campaign)
 	if description != "" {
 		campaign.Description = description
 	}
 	if startTime != nil {
 		if endTime != nil {
 			if startTime.After(*endTime) {
-				k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
-				return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
+				k.Logger(ctx).Error("edit airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
+				return sdkerrors.Wrapf(errortypes.ErrParam, "edit airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
 			}
 			campaign.EndTime = endTime
 		} else {
 			if startTime.After(*campaign.EndTime) {
-				k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
-				return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
+				k.Logger(ctx).Error("edit airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
+				return sdkerrors.Wrapf(errortypes.ErrParam, "cedit airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
 			}
 		}
 		campaign.StartTime = startTime
@@ -118,6 +109,10 @@ func (k Keeper) CloseAirdropCampaign(ctx sdk.Context, owner string, campaignId u
 		k.Logger(ctx).Error("close airdrop campaign you are not the owner")
 		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "close airdrop campaign you are not the owner")
 	}
+	if campaign.Enabled == false {
+		k.Logger(ctx).Error("close airdrop campaign campaign is already closed")
+		return sdkerrors.Wrap(types.ErrCampaignDisabled, "close airdrop campaign campaign is already closed")
+	}
 	campaign.Enabled = false
 	k.SetCampaign(ctx, campaign)
 	return nil
@@ -133,6 +128,14 @@ func (k Keeper) StartAirdropCampaign(ctx sdk.Context, owner string, campaignId u
 	if campaign.Owner != owner {
 		k.Logger(ctx).Error("start airdrop campaign you are not the owner")
 		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "start airdrop campaign you are not the owner")
+	}
+	if campaign.Enabled == true {
+		k.Logger(ctx).Error("start airdrop campaign campaign has already started")
+		return sdkerrors.Wrap(errortypes.ErrAlreadyExists, "start airdrop campaign campaign has already started")
+	}
+	if campaign.StartTime.Before(ctx.BlockTime()) {
+		k.Logger(ctx).Error("start airdrop campaign start time in the past", "startTime", campaign.StartTime)
+		return sdkerrors.Wrapf(errortypes.ErrParam, "start airdrop campaign - start time in the past error  (%s < %s)", campaign.StartTime, ctx.BlockTime())
 	}
 	campaign.Enabled = true
 	k.SetCampaign(ctx, campaign)

@@ -110,8 +110,6 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		},
 	)
 
-	//airdropKeeper.SetInitialClaim(ctx, cfeairdroptypes.InitialClaim{CampaignId: stakeCamapaignId, MissionId: 0})
-
 	acc := accountKeeper.GetModuleAccount(ctx, airdropSource)
 	if acc == nil {
 		airdropKeeper.Logger(ctx).Error("source module account not found", "name", airdropSource)

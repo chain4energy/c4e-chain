@@ -37,5 +37,6 @@ func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClai
 	); err != nil {
 		return nil, err
 	}
+
 	return &types.MsgInitialClaimResponse{}, nil
 }

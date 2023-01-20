@@ -3,54 +3,10 @@ package keeper
 import (
 	errortypes "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 )
-
-// SetClaimRecordXX set a specific claimRecordXX in the store from its index
-func (k Keeper) SetUserAirdropEntries(ctx sdk.Context, userAirdropEntries types.UserAirdropEntries) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserAirdropEntriesKeyPrefix))
-	b := k.cdc.MustMarshal(&userAirdropEntries)
-	store.Set(types.UserAirdropEntriesKey(
-		userAirdropEntries.Address,
-	), b)
-}
-
-// GetClaimRecordXX returns a claimRecordXX from its index
-func (k Keeper) GetUserAirdropEntries(
-	ctx sdk.Context,
-	address string,
-) (val types.UserAirdropEntries, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserAirdropEntriesKeyPrefix))
-
-	b := store.Get(types.UserAirdropEntriesKey(
-		address,
-	))
-	if b == nil {
-		return val, false
-	}
-
-	k.cdc.MustUnmarshal(b, &val)
-	return val, true
-}
-
-// GetAllClaimRecordXX returns all claimRecordXX
-func (k Keeper) GetUsersAirdropEntries(ctx sdk.Context) (list []types.UserAirdropEntries) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserAirdropEntriesKeyPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.UserAirdropEntries
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
-	}
-
-	return
-}
 
 func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId uint64, airdropEntries []*types.AirdropEntry) error {
 	ownerAddress, err := sdk.AccAddressFromBech32(owner)
@@ -71,8 +27,12 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - you are not the owner of campaign with id %d", campaignId)
 	}
 	var usersAirdropEntries []*types.UserAirdropEntries
-	sum := sdk.ZeroInt()
+	entriesAmountSum := sdk.ZeroInt()
 	for i, airdropEntry := range airdropEntries {
+		if airdropEntry.Address == "" {
+			k.Logger(ctx).Error("add campaign entries airdrop entry empty address", "airdropEntryIndex", i)
+			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - airdrop entry empty address on index %d", i)
+		}
 		if airdropEntry.Amount.LT(types.OneToken) {
 			k.Logger(ctx).Error("add campaign entries airdrop entry amount < 1000000 (One token)", "amount", airdropEntry.Amount, "airdropEntryIndex", i)
 			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - airdrop entry at index %d amount %s < 1000000 (One token)", i, airdropEntry.Amount.String())
@@ -82,9 +42,9 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 			return err
 		}
 		usersAirdropEntries = append(usersAirdropEntries, userAirdropEntries)
-		sum = sum.Add(airdropEntry.Amount)
+		entriesAmountSum = entriesAmountSum.Add(airdropEntry.Amount)
 	}
-	coin := sdk.NewCoin(campaign.Denom, sum)
+	coin := sdk.NewCoin(campaign.Denom, entriesAmountSum)
 	coins := sdk.NewCoins(coin)
 	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, coins); err != nil {
 		return err
@@ -145,12 +105,18 @@ func (k Keeper) DeleteUserAirdropEntry(ctx sdk.Context, owner string, campaignId
 		return sdkerrors.Wrapf(errortypes.ErrParsing, "delete user airdrop entry -  campaign id %d userAirdropEntries doesn't exist", campaignId)
 	}
 	airdropEntryAmount := sdk.ZeroInt()
+	airdropEntryFound := false
 	for i, airdropEntry := range userAirdropEntries.AirdropEntries {
 		if airdropEntry.CampaignId == campaignId {
+			airdropEntryFound = true
 			airdropEntryAmount = airdropEntry.Amount
 			userAirdropEntries.AirdropEntries = append(userAirdropEntries.AirdropEntries[:i], userAirdropEntries.AirdropEntries[i+1:]...)
 			break
 		}
+	}
+	if !airdropEntryFound {
+		k.Logger(ctx).Error("delete user airdrop entry airdrop entry doesn't exist", "campaignId", campaignId)
+		return sdkerrors.Wrapf(errortypes.ErrParsing, "delete user airdrop entry -  campaign id %d airdrop entry doesn't exist", campaignId)
 	}
 	k.SetUserAirdropEntries(ctx, userAirdropEntries)
 	coin := sdk.NewCoin(campaign.Denom, airdropEntryAmount)
@@ -166,8 +132,10 @@ func (k Keeper) grantFeeAllowance(ctx sdk.Context, grantee string) error {
 		return nil // TODO
 	}
 	modAcc := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
-	k.feeGrantKeeper.GrantAllowance(ctx, modAcc.GetAddress(), address, &allowance)
-	return nil // TODO error handling
+	if err = k.feeGrantKeeper.GrantAllowance(ctx, modAcc.GetAddress(), address, &allowance); err != nil {
+		return err
+	}
+	return nil
 }
 
 // func (k Keeper) revokeFeeAllowance(ctx sdk.Context, grantee sdk.AccAddress) error  {

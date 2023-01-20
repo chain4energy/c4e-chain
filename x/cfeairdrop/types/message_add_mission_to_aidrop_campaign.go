@@ -22,6 +22,17 @@ func NewMsgAddMissionToAidropCampaign(owner string, campaignId uint64, name stri
 	}
 }
 
+func NewInitialMission(owner string, campaignId uint64, claimStartDate *time.Time) *MsgAddMissionToAidropCampaign {
+	return &MsgAddMissionToAidropCampaign{
+		Owner:          owner,
+		CampaignId:     campaignId,
+		Name:           "Initial mission",
+		Description:    "Initial mission - basic mission that must be claimed first",
+		MissionType:    MissionInitialClaim,
+		ClaimStartDate: claimStartDate,
+	}
+}
+
 func (msg *MsgAddMissionToAidropCampaign) Route() string {
 	return RouterKey
 }
