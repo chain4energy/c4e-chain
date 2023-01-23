@@ -70,7 +70,7 @@ func (k Keeper) AirdropDistrubitions(c context.Context, req *types.QueryAirdropD
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryAirdropDistrubitionsResponse{Amount: &val.Amount}, nil
+	return &types.QueryAirdropDistrubitionsResponse{AirdropCoins: val.AirdropCoins}, nil
 }
 
 func (k Keeper) AirdropClaimsLeft(c context.Context, req *types.QueryAirdropClaimsLeftRequest) (*types.QueryAirdropClaimsLeftResponse, error) {
@@ -87,5 +87,5 @@ func (k Keeper) AirdropClaimsLeft(c context.Context, req *types.QueryAirdropClai
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryAirdropClaimsLeftResponse{Amount: &val.Amount}, nil
+	return &types.QueryAirdropClaimsLeftResponse{AirdropCoins: val.AirdropCoins}, nil
 }

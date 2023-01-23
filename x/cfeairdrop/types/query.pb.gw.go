@@ -152,26 +152,26 @@ func request_Query_Mission_0(ctx context.Context, marshaler runtime.Marshaler, c
 		_   = err
 	)
 
-	val, ok = pathParams["campaignId"]
+	val, ok = pathParams["campaign_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaignId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaign_id")
 	}
 
 	protoReq.CampaignId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaignId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaign_id", err)
 	}
 
-	val, ok = pathParams["missionId"]
+	val, ok = pathParams["mission_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "missionId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "mission_id")
 	}
 
 	protoReq.MissionId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "missionId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "mission_id", err)
 	}
 
 	msg, err := client.Mission(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -190,26 +190,26 @@ func local_request_Query_Mission_0(ctx context.Context, marshaler runtime.Marsha
 		_   = err
 	)
 
-	val, ok = pathParams["campaignId"]
+	val, ok = pathParams["campaign_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaignId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaign_id")
 	}
 
 	protoReq.CampaignId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaignId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaign_id", err)
 	}
 
-	val, ok = pathParams["missionId"]
+	val, ok = pathParams["mission_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "missionId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "mission_id")
 	}
 
 	protoReq.MissionId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "missionId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "mission_id", err)
 	}
 
 	msg, err := server.Mission(ctx, &protoReq)
@@ -300,15 +300,15 @@ func request_Query_Campaign_0(ctx context.Context, marshaler runtime.Marshaler, 
 		_   = err
 	)
 
-	val, ok = pathParams["campaignId"]
+	val, ok = pathParams["campaign_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaignId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaign_id")
 	}
 
 	protoReq.CampaignId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaignId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaign_id", err)
 	}
 
 	msg, err := client.Campaign(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -327,15 +327,15 @@ func local_request_Query_Campaign_0(ctx context.Context, marshaler runtime.Marsh
 		_   = err
 	)
 
-	val, ok = pathParams["campaignId"]
+	val, ok = pathParams["campaign_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaignId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaign_id")
 	}
 
 	protoReq.CampaignId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaignId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaign_id", err)
 	}
 
 	msg, err := server.Campaign(ctx, &protoReq)
@@ -354,15 +354,15 @@ func request_Query_AirdropDistrubitions_0(ctx context.Context, marshaler runtime
 		_   = err
 	)
 
-	val, ok = pathParams["campaignId"]
+	val, ok = pathParams["campaign_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaignId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaign_id")
 	}
 
 	protoReq.CampaignId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaignId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaign_id", err)
 	}
 
 	msg, err := client.AirdropDistrubitions(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -381,15 +381,15 @@ func local_request_Query_AirdropDistrubitions_0(ctx context.Context, marshaler r
 		_   = err
 	)
 
-	val, ok = pathParams["campaignId"]
+	val, ok = pathParams["campaign_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaignId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaign_id")
 	}
 
 	protoReq.CampaignId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaignId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaign_id", err)
 	}
 
 	msg, err := server.AirdropDistrubitions(ctx, &protoReq)
@@ -408,15 +408,15 @@ func request_Query_AirdropClaimsLeft_0(ctx context.Context, marshaler runtime.Ma
 		_   = err
 	)
 
-	val, ok = pathParams["campaignId"]
+	val, ok = pathParams["campaign_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaignId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaign_id")
 	}
 
 	protoReq.CampaignId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaignId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaign_id", err)
 	}
 
 	msg, err := client.AirdropClaimsLeft(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -435,15 +435,15 @@ func local_request_Query_AirdropClaimsLeft_0(ctx context.Context, marshaler runt
 		_   = err
 	)
 
-	val, ok = pathParams["campaignId"]
+	val, ok = pathParams["campaign_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaignId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "campaign_id")
 	}
 
 	protoReq.CampaignId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaignId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "campaign_id", err)
 	}
 
 	msg, err := server.AirdropClaimsLeft(ctx, &protoReq)
@@ -895,17 +895,17 @@ var (
 
 	pattern_Query_UsersAirdropEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "airdrop", "v1beta1", "users_airdrop_entries"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Mission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"c4e", "airdrop", "v1beta1", "mission", "campaignId", "missionId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Mission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"c4e", "airdrop", "v1beta1", "mission", "campaign_id", "mission_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_MissionAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "airdrop", "v1beta1", "mission"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_Campaigns_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "airdrop", "v1beta1", "campaigns"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Campaign_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "airdrop", "v1beta1", "campaign", "campaignId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Campaign_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "airdrop", "v1beta1", "campaign", "campaign_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_AirdropDistrubitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "airdrop", "v1beta1", "airdrop_distributions", "campaignId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AirdropDistrubitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "airdrop", "v1beta1", "airdrop_distributions", "campaign_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_AirdropClaimsLeft_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "airdrop", "v1beta1", "airdrop_claims_left", "campaignId"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AirdropClaimsLeft_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "airdrop", "v1beta1", "airdrop_claims_left", "campaign_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

@@ -83,7 +83,9 @@ func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list 
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		if val.CampaignId == campaignId {
 			list = append(list, val)
-			weightSum = weightSum.Add(*val.Weight)
+			if val.Weight != nil {
+				weightSum = weightSum.Add(*val.Weight)
+			}
 		}
 	}
 

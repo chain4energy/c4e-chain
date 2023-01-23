@@ -11,16 +11,18 @@ const TypeMsgCreateAirdropCampaign = "create_airdrop_campaign"
 
 var _ sdk.Msg = &MsgCreateAirdropCampaign{}
 
-func NewMsgCreateAirdropCampaign(owner string, name string, description string, startTime time.Time,
+func NewMsgCreateAirdropCampaign(owner string, name string, description string, allowFeegrant bool, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) *MsgCreateAirdropCampaign {
 	return &MsgCreateAirdropCampaign{
-		Owner:         owner,
-		Name:          name,
-		Description:   description,
-		StartTime:     startTime,
-		EndTime:       endTime,
-		LockupPeriod:  lockupPeriod,
-		VestingPeriod: vestingPeriod,
+		Owner:                  owner,
+		Name:                   name,
+		Description:            description,
+		AllowFeegrant:          allowFeegrant,
+		InitialClaimFreeAmount: initialClaimFreeAmount,
+		StartTime:              startTime,
+		EndTime:                endTime,
+		LockupPeriod:           lockupPeriod,
+		VestingPeriod:          vestingPeriod,
 	}
 }
 

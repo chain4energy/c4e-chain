@@ -2,15 +2,7 @@
   "airdropEntries":[
     {
       "address": "c4e1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8fdd9gs",
-      "amount": "1500000000"
-    },
-    {
-      "address": "c4e1asgp8qrlznsjs7ww5f60lf64gx04s6nsrte4dv",
-      "amount": "1500000000"
-    },
-    {
-      "address": "c4e1uqenz7vu5xyxfsr70was6zzf5g3spsy52lenlc",
-      "amount": "20000000000"
+      "airdrop_coins": ["10000uc4e"]
     }
   ]
 }

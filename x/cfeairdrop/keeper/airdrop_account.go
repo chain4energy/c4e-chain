@@ -12,7 +12,7 @@ import (
 )
 
 func (k Keeper) SendToAirdropAccount(ctx sdk.Context, userAirdropEntries *types.UserAirdropEntries,
-	amount sdk.Coins, startTime int64, endTime int64, initialClaim bool) error {
+	amount sdk.Coins, startTime int64, endTime int64, freeamount sdk.Int, initialClaim bool) error {
 	k.Logger(ctx).Debug("send to airdrop account", "userAirdropEntries", userAirdropEntries,
 		"amount", amount, "startTime", startTime, "endTime", endTime, "initialClaim", initialClaim)
 	ak := k.accountKeeper
@@ -68,12 +68,17 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, userAirdropEntries *types.
 	vestingAmount := amount
 	if initialClaim {
 		for _, coin := range amount {
-			if coin.Amount.Sub(types.OneToken).IsNegative() {
+			if coin.Sub(types.OneForthC4e).IsNegative() {
 				k.Logger(ctx).Error("send to airdrop account wrong send coins amount. Amount < 1 token (1000000)", "amount", coin.Amount, "denom", coin.Denom)
 				return sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to airdrop account  wrong send coins amount. %s < 1 token (1000000 %s)", coin.String(), coin.Denom)
 			}
-			oneCoin := sdk.NewCoins(sdk.NewCoin(coin.Denom, types.OneToken))
-			vestingAmount = vestingAmount.Sub(oneCoin)
+			freeVestingAmount := sdk.NewCoins()
+			for _, amount := range vestingAmount {
+				coin := sdk.NewCoins(sdk.NewCoin(amount.Denom, freeamount))
+				freeVestingAmount.Add(coin...)
+				vestingAmount = vestingAmount.Sub(coin)
+			}
+
 			mainAddress, err := sdk.AccAddressFromBech32(userAirdropEntries.Address)
 			if err != nil {
 				return sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userAirdropEntries.Address)
@@ -82,7 +87,7 @@ func (k Keeper) SendToAirdropAccount(ctx sdk.Context, userAirdropEntries *types.
 				k.Logger(ctx).Error("send to airdrop account account is not allowed to receive funds error", "mainAddress", mainAddress)
 				return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "send to airdrop account - account address: %s is not allowed to receive funds error", mainAddress)
 			}
-			if err := bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, mainAddress, oneCoin); err != nil {
+			if err := bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, mainAddress, freeVestingAmount); err != nil {
 				k.Logger(ctx).Debug("send to airdrop account send coins to vesting account error", "toAddress", mainAddress,
 					"amount", amount, "error", err.Error())
 				return sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err,

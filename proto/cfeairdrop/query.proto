@@ -29,7 +29,7 @@ service Query {
 
 	// Queries a Mission by index.
 	rpc Mission(QueryMissionRequest) returns (QueryMissionResponse) {
-		option (google.api.http).get = "/c4e/airdrop/v1beta1/mission/{campaignId}/{missionId}";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/mission/{campaign_id}/{mission_id}";
 	}
 
 	// Queries a list of Mission items.
@@ -43,15 +43,15 @@ service Query {
 	}
 	// Queries a list of Campaigns items.
 	rpc Campaign(QueryCampaignRequest) returns (QueryCampaignResponse) {
-		option (google.api.http).get = "/c4e/airdrop/v1beta1/campaign/{campaignId}";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/campaign/{campaign_id}";
 	}
 	// Queries a AirdropDistrubitions by campaignId.
 	rpc AirdropDistrubitions(QueryAirdropDistrubitionsRequest) returns (QueryAirdropDistrubitionsResponse) {
-		option (google.api.http).get = "/c4e/airdrop/v1beta1/airdrop_distributions/{campaignId}";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/airdrop_distributions/{campaign_id}";
 	}
 	// Queries a AirdropDistrubitions by campaignId.
 	rpc AirdropClaimsLeft(QueryAirdropClaimsLeftRequest) returns (QueryAirdropClaimsLeftResponse) {
-		option (google.api.http).get = "/c4e/airdrop/v1beta1/airdrop_claims_left/{campaignId}";
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/airdrop_claims_left/{campaign_id}";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -79,19 +79,25 @@ message QueryUserAirdropEntriesResponse {
 }
 
 message QueryAirdropDistrubitionsRequest {
-	uint64 campaignId = 1;
+	uint64 campaign_id = 1;
 }
 
 message QueryAirdropDistrubitionsResponse {
-	cosmos.base.v1beta1.Coin amount = 7;
+	repeated cosmos.base.v1beta1.Coin airdrop_coins = 1 [
+		(gogoproto.nullable) = false,
+		(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+	];
 }
 
 message QueryAirdropClaimsLeftRequest {
-	uint64 campaignId = 1;
+	uint64 campaign_id = 1;
 }
 
 message QueryAirdropClaimsLeftResponse {
-	cosmos.base.v1beta1.Coin amount = 7;
+	repeated cosmos.base.v1beta1.Coin airdrop_coins = 1 [
+		(gogoproto.nullable) = false,
+		(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+	];
 }
 
 message QueryUsersAirdropEntriesRequest {
@@ -106,8 +112,8 @@ message QueryUsersAirdropEntriesResponse {
 }
 
 message QueryMissionRequest {
-	uint64 campaignId = 1;
-	uint64 missionId = 2;
+	uint64 campaign_id = 1;
+	uint64 mission_id = 2;
 }
 
 message QueryMissionResponse {
@@ -139,7 +145,7 @@ message QueryCampaignsResponse {
 }
 
 message QueryCampaignRequest {
-	uint64 campaignId = 1;
+	uint64 campaign_id = 1;
 }
 
 message QueryCampaignResponse {

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 	"time"
@@ -16,9 +17,9 @@ var _ = strconv.Itoa(0)
 
 func CmdEditAirdropCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-airdrop-campaign [campaignId] [name] [description] [denom] [start-time] [end-time] [lockup-period] [vesting-period]",
+		Use:   "edit-airdrop-campaign [campaignId] [name] [description] [allow-feegrant] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period]",
 		Short: "Broadcast message CreateAirdropCampaign",
-		Args:  cobra.ExactArgs(8),
+		Args:  cobra.ExactArgs(9),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -26,12 +27,33 @@ func CmdEditAirdropCampaign() *cobra.Command {
 			}
 			argName := args[1]
 			argDescription := args[2]
-			argDenom := args[3]
+			var argAllowFeegrant *bool
+			if args[3] != "" {
+				parsedBool, err := strconv.ParseBool(args[3])
+				if err != nil {
+					return err
+				}
+				argAllowFeegrant = &parsedBool
+
+			} else {
+				argAllowFeegrant = nil
+			}
+			var argInitialClaimFreeAmount *sdk.Int
+			if args[4] != "" {
+				parsed, ok := sdk.NewIntFromString(args[4])
+				if !ok {
+					return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
+				}
+				argInitialClaimFreeAmount = &parsed
+			} else {
+				argInitialClaimFreeAmount = nil
+			}
+
 			timeLayout := "2006-01-02 15:04:05 -0700 MST"
 
 			var argStartTime *time.Time
 			if args[4] != "" {
-				parsedTime, err := time.Parse(timeLayout, args[4])
+				parsedTime, err := time.Parse(timeLayout, args[5])
 				if err != nil {
 					return err
 				}
@@ -43,7 +65,7 @@ func CmdEditAirdropCampaign() *cobra.Command {
 
 			var argEndTime *time.Time
 			if args[5] != "" {
-				parsedTime, err := time.Parse(timeLayout, args[5])
+				parsedTime, err := time.Parse(timeLayout, args[6])
 				if err != nil {
 					return err
 				}
@@ -55,7 +77,7 @@ func CmdEditAirdropCampaign() *cobra.Command {
 
 			var argLockupPeriod *time.Duration
 			if args[6] != "" {
-				parsedTime, err := time.ParseDuration(args[6])
+				parsedTime, err := time.ParseDuration(args[7])
 				if err != nil {
 					return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 				}
@@ -67,7 +89,7 @@ func CmdEditAirdropCampaign() *cobra.Command {
 
 			var argVestingPeriod *time.Duration
 			if args[6] != "" {
-				parsedTime, err := time.ParseDuration(args[6])
+				parsedTime, err := time.ParseDuration(args[8])
 				if err != nil {
 					return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 				}
@@ -87,7 +109,8 @@ func CmdEditAirdropCampaign() *cobra.Command {
 				argCampaignId,
 				argName,
 				argDescription,
-				argDenom,
+				argAllowFeegrant,
+				argInitialClaimFreeAmount,
 				argStartTime,
 				argEndTime,
 				argLockupPeriod,

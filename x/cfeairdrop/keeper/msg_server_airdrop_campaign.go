@@ -39,7 +39,6 @@ func (k msgServer) EditAirdropCampaign(goCtx context.Context, msg *types.MsgEdit
 		msg.CampaignId,
 		msg.Name,
 		msg.Description,
-		msg.Denom,
 		msg.StartTime,
 		msg.EndTime,
 		msg.LockupPeriod,

@@ -20,7 +20,7 @@ export interface CfeairdropAirdropEntry {
   /** @format uint64 */
   campaign_id?: string;
   address?: string;
-  amount?: V1Beta1Coin[];
+  airdrop_coins?: V1Beta1Coin[];
   completedMissions?: string[];
   claimedMissions?: string[];
 }
@@ -91,23 +91,11 @@ export type CfeairdropMsgStartAirdropCampaignResponse = object;
 export type CfeairdropParams = object;
 
 export interface CfeairdropQueryAirdropClaimsLeftResponse {
-  /**
-   * Coin defines a token with a denomination and an amount.
-   *
-   * NOTE: The amount field is an Int which implements the custom method
-   * signatures required by gogoproto.
-   */
-  amount?: V1Beta1Coin;
+  airdrop_coins?: V1Beta1Coin[];
 }
 
 export interface CfeairdropQueryAirdropDistrubitionsResponse {
-  /**
-   * Coin defines a token with a denomination and an amount.
-   *
-   * NOTE: The amount field is an Int which implements the custom method
-   * signatures required by gogoproto.
-   */
-  amount?: V1Beta1Coin;
+  airdrop_coins?: V1Beta1Coin[];
 }
 
 export interface CfeairdropQueryCampaignResponse {
@@ -240,13 +228,6 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
-
-  /**
-   * reverse is set to true if results are to be returned in the descending order.
-   *
-   * Since: cosmos-sdk 0.43
-   */
-  reverse?: boolean;
 }
 
 /**
@@ -468,11 +449,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryAirdropClaimsLeft
    * @summary Queries a AirdropDistrubitions by campaignId.
-   * @request GET:/c4e/airdrop/v1beta1/airdrop_claims_left/{campaignId}
+   * @request GET:/c4e/airdrop/v1beta1/airdrop_claims_left/{campaign_id}
    */
-  queryAirdropClaimsLeft = (campaignId: string, params: RequestParams = {}) =>
+  queryAirdropClaimsLeft = (campaign_id: string, params: RequestParams = {}) =>
     this.request<CfeairdropQueryAirdropClaimsLeftResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/airdrop_claims_left/${campaignId}`,
+      path: `/c4e/airdrop/v1beta1/airdrop_claims_left/${campaign_id}`,
       method: "GET",
       format: "json",
       ...params,
@@ -484,11 +465,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryAirdropDistrubitions
    * @summary Queries a AirdropDistrubitions by campaignId.
-   * @request GET:/c4e/airdrop/v1beta1/airdrop_distributions/{campaignId}
+   * @request GET:/c4e/airdrop/v1beta1/airdrop_distributions/{campaign_id}
    */
-  queryAirdropDistrubitions = (campaignId: string, params: RequestParams = {}) =>
+  queryAirdropDistrubitions = (campaign_id: string, params: RequestParams = {}) =>
     this.request<CfeairdropQueryAirdropDistrubitionsResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/airdrop_distributions/${campaignId}`,
+      path: `/c4e/airdrop/v1beta1/airdrop_distributions/${campaign_id}`,
       method: "GET",
       format: "json",
       ...params,
@@ -500,11 +481,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCampaign
    * @summary Queries a list of Campaigns items.
-   * @request GET:/c4e/airdrop/v1beta1/campaign/{campaignId}
+   * @request GET:/c4e/airdrop/v1beta1/campaign/{campaign_id}
    */
-  queryCampaign = (campaignId: string, params: RequestParams = {}) =>
+  queryCampaign = (campaign_id: string, params: RequestParams = {}) =>
     this.request<CfeairdropQueryCampaignResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/campaign/${campaignId}`,
+      path: `/c4e/airdrop/v1beta1/campaign/${campaign_id}`,
       method: "GET",
       format: "json",
       ...params,
@@ -524,7 +505,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -550,7 +530,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -568,11 +547,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryMission
    * @summary Queries a Mission by index.
-   * @request GET:/c4e/airdrop/v1beta1/mission/{campaignId}/{missionId}
+   * @request GET:/c4e/airdrop/v1beta1/mission/{campaign_id}/{mission_id}
    */
-  queryMission = (campaignId: string, missionId: string, params: RequestParams = {}) =>
+  queryMission = (campaign_id: string, mission_id: string, params: RequestParams = {}) =>
     this.request<CfeairdropQueryMissionResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/mission/${campaignId}/${missionId}`,
+      path: `/c4e/airdrop/v1beta1/mission/${campaign_id}/${mission_id}`,
       method: "GET",
       format: "json",
       ...params,
@@ -624,7 +603,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>

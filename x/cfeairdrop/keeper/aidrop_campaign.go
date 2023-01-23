@@ -20,11 +20,11 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 		k.Logger(ctx).Error("create airdrop campaign campaign: empty description ")
 		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty description")
 	}
-	if startTime.After(ctx.BlockTime()) {
+	if startTime.Before(ctx.BlockTime()) {
 		k.Logger(ctx).Error("create airdrop campaign start time in the past", "startTime", startTime)
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time in the past error  (%s < %s)", startTime, ctx.BlockTime())
 	}
-	if startTime.Before(endTime) {
+	if startTime.After(endTime) {
 		k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
 	}
@@ -35,11 +35,13 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 	}
 
 	campaign := types.NewAirdropCampaign(owner, name, description, startTime, endTime, lockupPeriod, vestingPeriod)
-	k.AppendNewCampaign(ctx, *campaign)
+	campaignId := k.AppendNewCampaign(ctx, *campaign)
+	missionInitial := types.NewInitialMission(campaignId)
+	k.AppendNewMission(ctx, campaignId, *missionInitial)
 	return nil
 }
 
-func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, denom string, startTime *time.Time,
+func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
 	k.Logger(ctx).Debug("edit airdrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
@@ -61,9 +63,6 @@ func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId ui
 	}
 	if name != "" {
 		campaign.Name = name
-	}
-	if denom != "" {
-		campaign.Denom = denom
 	}
 	if description != "" {
 		campaign.Description = description
@@ -94,8 +93,7 @@ func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId ui
 }
 
 func (k Keeper) CloseAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, airdropCloseAction types.AirdropCloseAction) error {
-	k.Logger(ctx).Debug("close airdrop campaign", "owner", owner, "campaignId", campaignId, "burn", burn,
-		"communityPoolSend", communityPoolSend)
+	k.Logger(ctx).Debug("close airdrop campaign", "owner", owner, "campaignId", campaignId, "airdropCloseAction", airdropCloseAction)
 	campaign, found := k.GetCampaign(ctx, campaignId)
 	if !found {
 		k.Logger(ctx).Error("close airdrop campaign campaign: campaign not found", "campaignId", campaignId)

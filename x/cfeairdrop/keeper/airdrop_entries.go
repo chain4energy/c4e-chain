@@ -7,7 +7,9 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
+	"strconv"
 )
 
 func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId uint64, airdropEntries []*types.AirdropEntry) error {
@@ -29,39 +31,58 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - you are not the owner of campaign with id %d", campaignId)
 	}
 	var usersAirdropEntries []*types.UserAirdropEntries
-	entriesAmountSum := sdk.ZeroInt()
+	entriesAmountSum := sdk.NewCoins()
+	feegrantAndEntriesSum := sdk.NewCoins()
 	for i, airdropEntry := range airdropEntries {
 		if airdropEntry.Address == "" {
 			k.Logger(ctx).Error("add campaign entries airdrop entry empty address", "airdropEntryIndex", i)
 			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - airdrop entry empty address on index %d", i)
 		}
-		if airdropEntry.Amount.LT(types.OneToken) {
-			k.Logger(ctx).Error("add campaign entries airdrop entry amount < 1000000 (One token)", "amount", airdropEntry.Amount, "airdropEntryIndex", i)
-			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - airdrop entry at index %d amount %s < 1000000 (One token)", i, airdropEntry.Amount.String())
+		for _, coin := range airdropEntry.AirdropCoins {
+			if coin.Amount.LT(campaign.InitialClaimFreeAmount) {
+				k.Logger(ctx).Error("add campaign entries airdrop entry amount < campaign initial claim free amount", "amount", coin.Amount, "initialClaimFreeAmount", campaign.InitialClaimFreeAmount, "airdropEntryIndex", i)
+				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - airdrop entry at index %d amount %s  < campaign initial claim free amount (%s)", i, coin.Amount.String(), campaign.InitialClaimFreeAmount.String())
+			}
+			entriesAmountSum = entriesAmountSum.Add(coin)
 		}
-		userAirdropEntries, err := k.addUserAirdropEntry(ctx, campaignId, airdropEntry.Address, airdropEntry.Amount)
-		if err != nil {
-			return err
-		}
-		err = k.grantFeeAllowance(ctx, owner, airdropEntry.Address, campaign.Denom)
+
+		userAirdropEntries, err := k.addUserAirdropEntry(ctx, campaignId, airdropEntry.Address, airdropEntry.AirdropCoins)
 		if err != nil {
 			return err
 		}
 		usersAirdropEntries = append(usersAirdropEntries, userAirdropEntries)
-		entriesAmountSum = entriesAmountSum.Add(airdropEntry.Amount)
 	}
-	coin := sdk.NewCoin(campaign.Denom, entriesAmountSum)
-	coins := sdk.NewCoins(coin)
-	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, coins); err != nil {
+	feesSum := sdk.NewCoins()
+	if campaign.AllowFeegrant {
+		feesSum = sdk.NewCoins(sdk.NewCoin(types.OneForthC4e.Denom, types.OneForthC4e.Amount.MulRaw(int64(len(airdropEntries)))))
+		feegrantAndEntriesSum.Add(entriesAmountSum...)
+		feegrantAndEntriesSum.Add(feesSum...)
+	}
+	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
+	if !allBalances.IsAllGT(feegrantAndEntriesSum) {
+		k.Logger(ctx).Error("add campaign entries airdrop entry owner balance is too small")
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - owner balance is too small")
+	}
+	feesModuleAccountName := "cfe-airdrop-fee-" + strconv.Itoa(int(campaign.Id))
+	if campaign.AllowFeegrant {
+		if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, feesModuleAccountName, feesSum); err != nil {
+			return err
+		}
+		err := k.grantAllFeeAllowance(ctx, feesModuleAccountName, airdropEntries, sdk.NewCoins(types.OneForthC4e))
+		if err != nil {
+			return err
+		}
+	}
+	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, entriesAmountSum); err != nil {
 		return err
 	}
 	airdropClaimsLeft := types.AirdropClaimsLeft{
-		CampaignId: campaignId,
-		Amount:     coin,
+		CampaignId:   campaignId,
+		AirdropCoins: entriesAmountSum,
 	}
 	airdropDistrubitions := types.AirdropDistrubitions{
-		CampaignId: campaignId,
-		Amount:     coin,
+		CampaignId:   campaignId,
+		AirdropCoins: entriesAmountSum,
 	}
 	k.IncrementAirdropDistrubitions(ctx, airdropDistrubitions)
 	k.IncrementAirdropClaimsLeft(ctx, airdropClaimsLeft)
@@ -71,16 +92,15 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 	return nil
 }
 
-func (k Keeper) addUserAirdropEntry(ctx sdk.Context, campaignId uint64, address string, totalAmount sdk.Int) (*types.UserAirdropEntries, error) {
+func (k Keeper) addUserAirdropEntry(ctx sdk.Context, campaignId uint64, address string, allCoins sdk.Coins) (*types.UserAirdropEntries, error) {
 	userAirdropEntries, found := k.GetUserAirdropEntries(ctx, address)
 	if !found {
 		userAirdropEntries = types.UserAirdropEntries{Address: address}
-		// k.grantFeeAllowance(ctx, address)
 	}
 	if userAirdropEntries.HasCampaign(campaignId) {
 		return nil, sdkerrors.Wrapf(errortypes.ErrAlreadyExists, "campaignId %d already exists for address: %s", campaignId, address)
 	}
-	userAirdropEntries.AirdropEntries = append(userAirdropEntries.AirdropEntries, &types.AirdropEntry{CampaignId: campaignId, Amount: totalAmount})
+	userAirdropEntries.AirdropEntries = append(userAirdropEntries.AirdropEntries, &types.AirdropEntry{CampaignId: campaignId, AirdropCoins: allCoins})
 	return &userAirdropEntries, nil
 }
 
@@ -110,12 +130,12 @@ func (k Keeper) DeleteUserAirdropEntry(ctx sdk.Context, owner string, campaignId
 		k.Logger(ctx).Error("delete user airdrop entry userAirdropEntries doesn't exist", "campaignId", campaignId)
 		return sdkerrors.Wrapf(errortypes.ErrParsing, "delete user airdrop entry -  campaign id %d userAirdropEntries doesn't exist", campaignId)
 	}
-	airdropEntryAmount := sdk.ZeroInt()
+	airdropEntryAmount := sdk.NewCoins()
 	airdropEntryFound := false
 	for i, airdropEntry := range userAirdropEntries.AirdropEntries {
 		if airdropEntry.CampaignId == campaignId {
 			airdropEntryFound = true
-			airdropEntryAmount = airdropEntry.Amount
+			airdropEntryAmount = airdropEntry.AirdropCoins
 			userAirdropEntries.AirdropEntries = append(userAirdropEntries.AirdropEntries[:i], userAirdropEntries.AirdropEntries[i+1:]...)
 			break
 		}
@@ -125,19 +145,49 @@ func (k Keeper) DeleteUserAirdropEntry(ctx sdk.Context, owner string, campaignId
 		return sdkerrors.Wrapf(errortypes.ErrParsing, "delete user airdrop entry -  campaign id %d airdrop entry doesn't exist", campaignId)
 	}
 	k.SetUserAirdropEntries(ctx, userAirdropEntries)
-	coin := sdk.NewCoin(campaign.Denom, airdropEntryAmount)
-	k.DecrementAirdropDistrubitions(ctx, campaignId, coin)
+	k.DecrementAirdropDistrubitions(ctx, campaignId, airdropEntryAmount)
 
 	return nil
 }
 
-func (k Keeper) grantFeeAllowance(ctx sdk.Context, granter string, grantee string, denom string) error {
+func (k Keeper) grantAllFeeAllowance(ctx sdk.Context, moduleName string, airdropEntries []*types.AirdropEntry, grantAmount sdk.Coins) error {
+	moduleAddress := authtypes.NewModuleAddress(moduleName)
+	basicAllowance, err := codectypes.NewAnyWithValue(&feegranttypes.BasicAllowance{
+		SpendLimit: grantAmount,
+	})
+	if err != nil {
+		return err // TODO
+	}
+	allowedMsgAllowance := feegranttypes.AllowedMsgAllowance{
+		Allowance:       basicAllowance,
+		AllowedMessages: []string{"/chain4energy.c4echain.cfeairdrop.MsgInitialClaim"},
+	}
+	for _, airdropEntry := range airdropEntries {
+		granteeAddress, err := sdk.AccAddressFromBech32(airdropEntry.Address)
+		if err != nil {
+			return err // TODO
+		}
+		f, err := k.feeGrantKeeper.GetAllowance(ctx, moduleAddress, granteeAddress)
+		if f != nil {
+			fmt.Println(err.Error())
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "fee allowance already exists")
+		}
+
+		if err = k.feeGrantKeeper.GrantAllowance(ctx, moduleAddress, granteeAddress, &allowedMsgAllowance); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (k Keeper) grantFeeAllowance(ctx sdk.Context, granter string, grantee string) error {
 	granteeAddr, err := sdk.AccAddressFromBech32(grantee)
 	if err != nil {
 		return err // TODO
 	}
 	spendable := k.bankKeeper.SpendableCoins(ctx, granteeAddr)
-	grantedAmount := sdk.NewCoins(sdk.NewCoin(denom, sdk.NewInt(100000000)))
+	grantedAmount := sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(100000000)))
 	if spendable.IsAnyGT(grantedAmount) {
 		return nil
 	}

@@ -108,6 +108,10 @@ func (k Keeper) SetCampaignCount(ctx sdk.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
+func (k Keeper) GetWhitelistedVestingAccounts() []string {
+	return []string{"c4e1asgp8qrlznsjs7ww5f60lf64gx04s6nsrte4dv"}
+}
+
 // GetCampaign returns a campaignO from its index
 func (k Keeper) GetAirdropDistrubitions(
 	ctx sdk.Context,
@@ -155,7 +159,7 @@ func (k Keeper) IncrementAirdropDistrubitions(
 
 	if b != nil {
 		k.cdc.MustUnmarshal(b, &val)
-		val.Amount = val.Amount.Add(airdropDistrubitions.Amount)
+		val.AirdropCoins = val.AirdropCoins.Add(airdropDistrubitions.AirdropCoins...)
 	} else {
 		val = airdropDistrubitions
 	}
@@ -171,7 +175,7 @@ func (k Keeper) IncrementAirdropDistrubitions(
 func (k Keeper) DecrementAirdropDistrubitions(
 	ctx sdk.Context,
 	campaignId uint64,
-	amount sdk.Coin,
+	airdropCoins sdk.Coins,
 ) (val types.AirdropDistrubitions) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropDistributionsPrefix))
 
@@ -183,7 +187,7 @@ func (k Keeper) DecrementAirdropDistrubitions(
 		return val
 	}
 	k.cdc.MustUnmarshal(b, &val)
-	val.Amount = val.Amount.Sub(amount)
+	val.AirdropCoins = val.AirdropCoins.Sub(airdropCoins)
 
 	appendedValue := k.cdc.MustMarshal(&val)
 	store.Set(types.AirdropDistributionsKey(
@@ -239,7 +243,7 @@ func (k Keeper) IncrementAirdropClaimsLeft(
 
 	if b != nil {
 		k.cdc.MustUnmarshal(b, &val)
-		val.Amount = val.Amount.Add(airdropClaimsLeft.Amount)
+		val.AirdropCoins = val.AirdropCoins.Add(airdropClaimsLeft.AirdropCoins...)
 	} else {
 		val = airdropClaimsLeft
 	}
@@ -267,7 +271,7 @@ func (k Keeper) DecrementAirdropClaimsLeft(
 		return val
 	}
 	k.cdc.MustUnmarshal(b, &val)
-	val.Amount = val.Amount.Sub(amount)
+	val.AirdropCoins = val.AirdropCoins.Sub(amount)
 
 	appendedValue := k.cdc.MustMarshal(&val)
 	store.Set(types.AirdropDistributionsKey(

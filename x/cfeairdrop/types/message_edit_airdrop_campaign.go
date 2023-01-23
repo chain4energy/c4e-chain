@@ -10,18 +10,19 @@ const TypeMsgEditAirdropCampaign = "edit_airdrop_campaign"
 
 var _ sdk.Msg = &MsgEditAirdropCampaign{}
 
-func NewMsgEditAirdropCampaign(owner string, campaignId uint64, name string, description string, denom string, startTime *time.Time,
+func NewMsgEditAirdropCampaign(owner string, campaignId uint64, name string, description string, allowFeegrant *bool, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) *MsgEditAirdropCampaign {
 	return &MsgEditAirdropCampaign{
-		Owner:         owner,
-		CampaignId:    campaignId,
-		Name:          name,
-		Description:   description,
-		Denom:         denom,
-		StartTime:     startTime,
-		EndTime:       endTime,
-		LockupPeriod:  lockupPeriod,
-		VestingPeriod: vestingPeriod,
+		Owner:                  owner,
+		CampaignId:             campaignId,
+		Name:                   name,
+		Description:            description,
+		AllowFeegrant:          *allowFeegrant,
+		InitialClaimFreeAmount: initialClaimFreeAmount,
+		StartTime:              startTime,
+		EndTime:                endTime,
+		LockupPeriod:           lockupPeriod,
+		VestingPeriod:          vestingPeriod,
 	}
 }
 

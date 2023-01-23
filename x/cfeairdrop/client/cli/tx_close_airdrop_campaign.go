@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 
 func CmdCloseAirdropCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "close-airdrop-campaign [campaign-id] [burn] [community-pool-send]",
+		Use:   "close-airdrop-campaign [campaign-id] [argAirdropCloseAction]",
 		Short: "Broadcast message CloseAirdropCampaign",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -23,11 +23,7 @@ func CmdCloseAirdropCampaign() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argBurn, err := cast.ToBoolE(args[1])
-			if err != nil {
-				return err
-			}
-			argCommunityPoolSend, err := cast.ToBoolE(args[2])
+			argAirdropCloseAction, err := types.AirdropCloseActionFromString(args[1])
 			if err != nil {
 				return err
 			}
@@ -40,8 +36,7 @@ func CmdCloseAirdropCampaign() *cobra.Command {
 			msg := types.NewMsgCloseAirdropCampaign(
 				clientCtx.GetFromAddress().String(),
 				argCampaignId,
-				argBurn,
-				argCommunityPoolSend,
+				argAirdropCloseAction,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -9,7 +9,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var OneToken = sdk.NewInt(1000000)
+var OneForthC4e = sdk.NewCoin("uc4e", sdk.NewInt(250000))
 
 type MessageId uint64
 
@@ -80,7 +80,7 @@ func (m *UserAirdropEntries) Validate() error {
 	}
 
 	for _, airdropEntry := range m.AirdropEntries {
-		if !airdropEntry.Amount.IsAllPositive() {
+		if !airdropEntry.AirdropCoins.IsAllPositive() {
 			return errors.New("claimable amount must be positive")
 		}
 
@@ -172,8 +172,16 @@ func (m UserAirdropEntries) ClaimableFromMission(mission *Mission) (coinSum sdk.
 	if airdropEntry == nil {
 		return sdk.NewCoins() // TODO error ??
 	}
-	for _, amount := range airdropEntry.Amount {
-		coinSum = coinSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
+	for _, coin := range airdropEntry.AirdropCoins {
+		coinSum = coinSum.Add(sdk.NewCoin(coin.Denom, mission.Weight.Mul(sdk.NewDecFromInt(coin.Amount)).TruncateInt()))
 	}
 	return
+}
+
+func AirdropCloseActionFromString(str string) (AirdropCloseAction, error) {
+	option, ok := AirdropCloseAction_value[str]
+	if !ok {
+		return AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, fmt.Errorf("'%s' is not a valid mission type, available options: initial_claim/vote/delegation", str)
+	}
+	return AirdropCloseAction(option), nil
 }

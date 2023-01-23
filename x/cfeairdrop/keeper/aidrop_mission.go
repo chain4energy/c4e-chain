@@ -74,11 +74,11 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaign *types
 		airdropEntry := userAirdropEntries.GetAidropEntry(campaignId)
 		amountSum := sdk.NewCoins()
 		for _, mission := range missions {
-			for _, amount := range airdropEntry.Amount {
+			for _, amount := range airdropEntry.AirdropCoins {
 				amountSum = amountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
 			}
 		}
-		claimableAmount = airdropEntry.Amount.Sub(amountSum)
+		claimableAmount = airdropEntry.AirdropCoins.Sub(amountSum)
 	} else {
 		claimableAmount = userAirdropEntries.ClaimableFromMission(mission)
 	}
@@ -90,7 +90,7 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaign *types
 	start := ctx.BlockTime().Add(campaign.LockupPeriod)
 	end := start.Add(campaign.VestingPeriod)
 
-	if err := k.SendToAirdropAccount(ctx, userAirdropEntries, claimableAmount, start.Unix(), end.Unix(), initialClaim); err != nil {
+	if err := k.SendToAirdropAccount(ctx, userAirdropEntries, claimableAmount, start.Unix(), end.Unix(), campaign.InitialClaimFreeAmount, initialClaim); err != nil {
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userAirdropEntries.ClaimAddress)
 	}
 	return userAirdropEntries, nil
@@ -132,15 +132,6 @@ func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campa
 	if campaign.Owner != owner {
 		k.Logger(ctx).Error("add mission to airdrop you are not the owner of this campaign", "campaignId", campaignId)
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add mission to airdrop campaign - you are not the owner of campaign with id %d", campaignId)
-	}
-
-	_, found = k.GetMission(ctx, campaignId, 0)
-	if !found {
-		weight = sdk.ZeroDec()
-		if missionType != types.MissionInitialClaim {
-			k.Logger(ctx).Error("add mission to airdrop first mission must be of INITIAL_CLAIM type", "campaignId", campaignId, "missionType", missionType)
-			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add mission to airdrop campaign - first mission must be of INITIAL_CLAIM type, campaign id: %d, mission type: %s", campaignId, missionType)
-		}
 	}
 
 	_, weightSum := k.AllMissionForCampaign(ctx, campaignId)

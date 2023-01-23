@@ -29,19 +29,19 @@ export interface QueryUserAirdropEntriesResponse {
 }
 
 export interface QueryAirdropDistrubitionsRequest {
-  campaignId: number;
+  campaign_id: number;
 }
 
 export interface QueryAirdropDistrubitionsResponse {
-  amount: Coin | undefined;
+  airdrop_coins: Coin[];
 }
 
 export interface QueryAirdropClaimsLeftRequest {
-  campaignId: number;
+  campaign_id: number;
 }
 
 export interface QueryAirdropClaimsLeftResponse {
-  amount: Coin | undefined;
+  airdrop_coins: Coin[];
 }
 
 export interface QueryUsersAirdropEntriesRequest {
@@ -54,8 +54,8 @@ export interface QueryUsersAirdropEntriesResponse {
 }
 
 export interface QueryMissionRequest {
-  campaignId: number;
-  missionId: number;
+  campaign_id: number;
+  mission_id: number;
 }
 
 export interface QueryMissionResponse {
@@ -81,7 +81,7 @@ export interface QueryCampaignsResponse {
 }
 
 export interface QueryCampaignRequest {
-  campaignId: number;
+  campaign_id: number;
 }
 
 export interface QueryCampaignResponse {
@@ -342,15 +342,15 @@ export const QueryUserAirdropEntriesResponse = {
   },
 };
 
-const baseQueryAirdropDistrubitionsRequest: object = { campaignId: 0 };
+const baseQueryAirdropDistrubitionsRequest: object = { campaign_id: 0 };
 
 export const QueryAirdropDistrubitionsRequest = {
   encode(
     message: QueryAirdropDistrubitionsRequest,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.campaignId !== 0) {
-      writer.uint32(8).uint64(message.campaignId);
+    if (message.campaign_id !== 0) {
+      writer.uint32(8).uint64(message.campaign_id);
     }
     return writer;
   },
@@ -368,7 +368,7 @@ export const QueryAirdropDistrubitionsRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.campaignId = longToNumber(reader.uint64() as Long);
+          message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -382,17 +382,18 @@ export const QueryAirdropDistrubitionsRequest = {
     const message = {
       ...baseQueryAirdropDistrubitionsRequest,
     } as QueryAirdropDistrubitionsRequest;
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = Number(object.campaignId);
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = Number(object.campaign_id);
     } else {
-      message.campaignId = 0;
+      message.campaign_id = 0;
     }
     return message;
   },
 
   toJSON(message: QueryAirdropDistrubitionsRequest): unknown {
     const obj: any = {};
-    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    message.campaign_id !== undefined &&
+      (obj.campaign_id = message.campaign_id);
     return obj;
   },
 
@@ -402,10 +403,10 @@ export const QueryAirdropDistrubitionsRequest = {
     const message = {
       ...baseQueryAirdropDistrubitionsRequest,
     } as QueryAirdropDistrubitionsRequest;
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = object.campaignId;
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = object.campaign_id;
     } else {
-      message.campaignId = 0;
+      message.campaign_id = 0;
     }
     return message;
   },
@@ -418,8 +419,8 @@ export const QueryAirdropDistrubitionsResponse = {
     message: QueryAirdropDistrubitionsResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.amount !== undefined) {
-      Coin.encode(message.amount, writer.uint32(58).fork()).ldelim();
+    for (const v of message.airdrop_coins) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -433,11 +434,12 @@ export const QueryAirdropDistrubitionsResponse = {
     const message = {
       ...baseQueryAirdropDistrubitionsResponse,
     } as QueryAirdropDistrubitionsResponse;
+    message.airdrop_coins = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 7:
-          message.amount = Coin.decode(reader, reader.uint32());
+        case 1:
+          message.airdrop_coins.push(Coin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -451,18 +453,24 @@ export const QueryAirdropDistrubitionsResponse = {
     const message = {
       ...baseQueryAirdropDistrubitionsResponse,
     } as QueryAirdropDistrubitionsResponse;
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Coin.fromJSON(object.amount);
-    } else {
-      message.amount = undefined;
+    message.airdrop_coins = [];
+    if (object.airdrop_coins !== undefined && object.airdrop_coins !== null) {
+      for (const e of object.airdrop_coins) {
+        message.airdrop_coins.push(Coin.fromJSON(e));
+      }
     }
     return message;
   },
 
   toJSON(message: QueryAirdropDistrubitionsResponse): unknown {
     const obj: any = {};
-    message.amount !== undefined &&
-      (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
+    if (message.airdrop_coins) {
+      obj.airdrop_coins = message.airdrop_coins.map((e) =>
+        e ? Coin.toJSON(e) : undefined
+      );
+    } else {
+      obj.airdrop_coins = [];
+    }
     return obj;
   },
 
@@ -472,24 +480,25 @@ export const QueryAirdropDistrubitionsResponse = {
     const message = {
       ...baseQueryAirdropDistrubitionsResponse,
     } as QueryAirdropDistrubitionsResponse;
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Coin.fromPartial(object.amount);
-    } else {
-      message.amount = undefined;
+    message.airdrop_coins = [];
+    if (object.airdrop_coins !== undefined && object.airdrop_coins !== null) {
+      for (const e of object.airdrop_coins) {
+        message.airdrop_coins.push(Coin.fromPartial(e));
+      }
     }
     return message;
   },
 };
 
-const baseQueryAirdropClaimsLeftRequest: object = { campaignId: 0 };
+const baseQueryAirdropClaimsLeftRequest: object = { campaign_id: 0 };
 
 export const QueryAirdropClaimsLeftRequest = {
   encode(
     message: QueryAirdropClaimsLeftRequest,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.campaignId !== 0) {
-      writer.uint32(8).uint64(message.campaignId);
+    if (message.campaign_id !== 0) {
+      writer.uint32(8).uint64(message.campaign_id);
     }
     return writer;
   },
@@ -507,7 +516,7 @@ export const QueryAirdropClaimsLeftRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.campaignId = longToNumber(reader.uint64() as Long);
+          message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -521,17 +530,18 @@ export const QueryAirdropClaimsLeftRequest = {
     const message = {
       ...baseQueryAirdropClaimsLeftRequest,
     } as QueryAirdropClaimsLeftRequest;
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = Number(object.campaignId);
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = Number(object.campaign_id);
     } else {
-      message.campaignId = 0;
+      message.campaign_id = 0;
     }
     return message;
   },
 
   toJSON(message: QueryAirdropClaimsLeftRequest): unknown {
     const obj: any = {};
-    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    message.campaign_id !== undefined &&
+      (obj.campaign_id = message.campaign_id);
     return obj;
   },
 
@@ -541,10 +551,10 @@ export const QueryAirdropClaimsLeftRequest = {
     const message = {
       ...baseQueryAirdropClaimsLeftRequest,
     } as QueryAirdropClaimsLeftRequest;
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = object.campaignId;
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = object.campaign_id;
     } else {
-      message.campaignId = 0;
+      message.campaign_id = 0;
     }
     return message;
   },
@@ -557,8 +567,8 @@ export const QueryAirdropClaimsLeftResponse = {
     message: QueryAirdropClaimsLeftResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.amount !== undefined) {
-      Coin.encode(message.amount, writer.uint32(58).fork()).ldelim();
+    for (const v of message.airdrop_coins) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -572,11 +582,12 @@ export const QueryAirdropClaimsLeftResponse = {
     const message = {
       ...baseQueryAirdropClaimsLeftResponse,
     } as QueryAirdropClaimsLeftResponse;
+    message.airdrop_coins = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 7:
-          message.amount = Coin.decode(reader, reader.uint32());
+        case 1:
+          message.airdrop_coins.push(Coin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -590,18 +601,24 @@ export const QueryAirdropClaimsLeftResponse = {
     const message = {
       ...baseQueryAirdropClaimsLeftResponse,
     } as QueryAirdropClaimsLeftResponse;
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Coin.fromJSON(object.amount);
-    } else {
-      message.amount = undefined;
+    message.airdrop_coins = [];
+    if (object.airdrop_coins !== undefined && object.airdrop_coins !== null) {
+      for (const e of object.airdrop_coins) {
+        message.airdrop_coins.push(Coin.fromJSON(e));
+      }
     }
     return message;
   },
 
   toJSON(message: QueryAirdropClaimsLeftResponse): unknown {
     const obj: any = {};
-    message.amount !== undefined &&
-      (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
+    if (message.airdrop_coins) {
+      obj.airdrop_coins = message.airdrop_coins.map((e) =>
+        e ? Coin.toJSON(e) : undefined
+      );
+    } else {
+      obj.airdrop_coins = [];
+    }
     return obj;
   },
 
@@ -611,10 +628,11 @@ export const QueryAirdropClaimsLeftResponse = {
     const message = {
       ...baseQueryAirdropClaimsLeftResponse,
     } as QueryAirdropClaimsLeftResponse;
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Coin.fromPartial(object.amount);
-    } else {
-      message.amount = undefined;
+    message.airdrop_coins = [];
+    if (object.airdrop_coins !== undefined && object.airdrop_coins !== null) {
+      for (const e of object.airdrop_coins) {
+        message.airdrop_coins.push(Coin.fromPartial(e));
+      }
     }
     return message;
   },
@@ -801,18 +819,18 @@ export const QueryUsersAirdropEntriesResponse = {
   },
 };
 
-const baseQueryMissionRequest: object = { campaignId: 0, missionId: 0 };
+const baseQueryMissionRequest: object = { campaign_id: 0, mission_id: 0 };
 
 export const QueryMissionRequest = {
   encode(
     message: QueryMissionRequest,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.campaignId !== 0) {
-      writer.uint32(8).uint64(message.campaignId);
+    if (message.campaign_id !== 0) {
+      writer.uint32(8).uint64(message.campaign_id);
     }
-    if (message.missionId !== 0) {
-      writer.uint32(16).uint64(message.missionId);
+    if (message.mission_id !== 0) {
+      writer.uint32(16).uint64(message.mission_id);
     }
     return writer;
   },
@@ -825,10 +843,10 @@ export const QueryMissionRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.campaignId = longToNumber(reader.uint64() as Long);
+          message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.missionId = longToNumber(reader.uint64() as Long);
+          message.mission_id = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -840,37 +858,38 @@ export const QueryMissionRequest = {
 
   fromJSON(object: any): QueryMissionRequest {
     const message = { ...baseQueryMissionRequest } as QueryMissionRequest;
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = Number(object.campaignId);
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = Number(object.campaign_id);
     } else {
-      message.campaignId = 0;
+      message.campaign_id = 0;
     }
-    if (object.missionId !== undefined && object.missionId !== null) {
-      message.missionId = Number(object.missionId);
+    if (object.mission_id !== undefined && object.mission_id !== null) {
+      message.mission_id = Number(object.mission_id);
     } else {
-      message.missionId = 0;
+      message.mission_id = 0;
     }
     return message;
   },
 
   toJSON(message: QueryMissionRequest): unknown {
     const obj: any = {};
-    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
-    message.missionId !== undefined && (obj.missionId = message.missionId);
+    message.campaign_id !== undefined &&
+      (obj.campaign_id = message.campaign_id);
+    message.mission_id !== undefined && (obj.mission_id = message.mission_id);
     return obj;
   },
 
   fromPartial(object: DeepPartial<QueryMissionRequest>): QueryMissionRequest {
     const message = { ...baseQueryMissionRequest } as QueryMissionRequest;
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = object.campaignId;
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = object.campaign_id;
     } else {
-      message.campaignId = 0;
+      message.campaign_id = 0;
     }
-    if (object.missionId !== undefined && object.missionId !== null) {
-      message.missionId = object.missionId;
+    if (object.mission_id !== undefined && object.mission_id !== null) {
+      message.mission_id = object.mission_id;
     } else {
-      message.missionId = 0;
+      message.mission_id = 0;
     }
     return message;
   },
@@ -1245,15 +1264,15 @@ export const QueryCampaignsResponse = {
   },
 };
 
-const baseQueryCampaignRequest: object = { campaignId: 0 };
+const baseQueryCampaignRequest: object = { campaign_id: 0 };
 
 export const QueryCampaignRequest = {
   encode(
     message: QueryCampaignRequest,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.campaignId !== 0) {
-      writer.uint32(8).uint64(message.campaignId);
+    if (message.campaign_id !== 0) {
+      writer.uint32(8).uint64(message.campaign_id);
     }
     return writer;
   },
@@ -1266,7 +1285,7 @@ export const QueryCampaignRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.campaignId = longToNumber(reader.uint64() as Long);
+          message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1278,26 +1297,27 @@ export const QueryCampaignRequest = {
 
   fromJSON(object: any): QueryCampaignRequest {
     const message = { ...baseQueryCampaignRequest } as QueryCampaignRequest;
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = Number(object.campaignId);
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = Number(object.campaign_id);
     } else {
-      message.campaignId = 0;
+      message.campaign_id = 0;
     }
     return message;
   },
 
   toJSON(message: QueryCampaignRequest): unknown {
     const obj: any = {};
-    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
+    message.campaign_id !== undefined &&
+      (obj.campaign_id = message.campaign_id);
     return obj;
   },
 
   fromPartial(object: DeepPartial<QueryCampaignRequest>): QueryCampaignRequest {
     const message = { ...baseQueryCampaignRequest } as QueryCampaignRequest;
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = object.campaignId;
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = object.campaign_id;
     } else {
-      message.campaignId = 0;
+      message.campaign_id = 0;
     }
     return message;
   },

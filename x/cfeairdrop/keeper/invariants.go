@@ -18,7 +18,7 @@ func AirdropClaimsLeftSumCheckInvariant(k Keeper) sdk.Invariant {
 		airdropClaimsLeftList := k.GetAllAirdropClaimsLeft(ctx)
 		airdropClaimsLeftSum := sdk.NewCoins()
 		for _, airdropClaimsLeft := range airdropClaimsLeftList {
-			airdropClaimsLeftSum.Add(airdropClaimsLeft.Amount)
+			airdropClaimsLeftSum.Add(airdropClaimsLeft.AirdropCoins...)
 		}
 		cfeaidropAccountCoins := k.GetAccountCoinsForModuleAccount(ctx, types.ModuleName)
 		if !cfeaidropAccountCoins.IsEqual(airdropClaimsLeftSum) {

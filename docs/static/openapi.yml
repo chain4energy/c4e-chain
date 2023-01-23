@@ -4,7 +4,7 @@ info:
   name: ''
   description: ''
 paths:
-  '/c4e/airdrop/v1beta1/airdrop_claims_left/{campaignId}':
+  '/c4e/airdrop/v1beta1/airdrop_claims_left/{campaign_id}':
     get:
       summary: Queries a AirdropDistrubitions by campaignId.
       operationId: Chain4EnergyC4EchainCfeairdropAirdropClaimsLeft
@@ -14,21 +14,23 @@ paths:
           schema:
             type: object
             properties:
-              amount:
-                type: object
-                properties:
-                  denom:
-                    type: string
-                  amount:
-                    type: string
-                description: >-
-                  Coin defines a token with a denomination and an amount.
+              airdrop_coins:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
 
 
-                  NOTE: The amount field is an Int which implements the custom
-                  method
+                    NOTE: The amount field is an Int which implements the custom
+                    method
 
-                  signatures required by gogoproto.
+                    signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -48,14 +50,14 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: campaignId
+        - name: campaign_id
           in: path
           required: true
           type: string
           format: uint64
       tags:
         - Query
-  '/c4e/airdrop/v1beta1/airdrop_distributions/{campaignId}':
+  '/c4e/airdrop/v1beta1/airdrop_distributions/{campaign_id}':
     get:
       summary: Queries a AirdropDistrubitions by campaignId.
       operationId: Chain4EnergyC4EchainCfeairdropAirdropDistrubitions
@@ -65,21 +67,23 @@ paths:
           schema:
             type: object
             properties:
-              amount:
-                type: object
-                properties:
-                  denom:
-                    type: string
-                  amount:
-                    type: string
-                description: >-
-                  Coin defines a token with a denomination and an amount.
+              airdrop_coins:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
 
 
-                  NOTE: The amount field is an Int which implements the custom
-                  method
+                    NOTE: The amount field is an Int which implements the custom
+                    method
 
-                  signatures required by gogoproto.
+                    signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -99,14 +103,14 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: campaignId
+        - name: campaign_id
           in: path
           required: true
           type: string
           format: uint64
       tags:
         - Query
-  '/c4e/airdrop/v1beta1/campaign/{campaignId}':
+  '/c4e/airdrop/v1beta1/campaign/{campaign_id}':
     get:
       summary: Queries a list of Campaigns items.
       operationId: Chain4EnergyC4EchainCfeairdropCampaign
@@ -165,7 +169,7 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: campaignId
+        - name: campaign_id
           in: path
           required: true
           type: string
@@ -306,16 +310,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /c4e/airdrop/v1beta1/mission:
@@ -449,19 +443,9 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
-  '/c4e/airdrop/v1beta1/mission/{campaignId}/{missionId}':
+  '/c4e/airdrop/v1beta1/mission/{campaign_id}/{mission_id}':
     get:
       summary: Queries a Mission by index.
       operationId: Chain4EnergyC4EchainCfeairdropMission
@@ -517,12 +501,12 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: campaignId
+        - name: campaign_id
           in: path
           required: true
           type: string
           format: uint64
-        - name: missionId
+        - name: mission_id
           in: path
           required: true
           type: string
@@ -592,7 +576,7 @@ paths:
                           format: uint64
                         address:
                           type: string
-                        amount:
+                        airdrop_coins:
                           type: array
                           items:
                             type: object
@@ -674,7 +658,7 @@ paths:
                             format: uint64
                           address:
                             type: string
-                          amount:
+                          airdrop_coins:
                             type: array
                             items:
                               type: object
@@ -791,16 +775,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -32661,7 +32635,7 @@ definitions:
         format: uint64
       address:
         type: string
-      amount:
+      airdrop_coins:
         type: array
         items:
           type: object
@@ -32775,33 +32749,37 @@ definitions:
   chain4energy.c4echain.cfeairdrop.QueryAirdropClaimsLeftResponse:
     type: object
     properties:
-      amount:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
+      airdrop_coins:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
 
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cfeairdrop.QueryAirdropDistrubitionsResponse:
     type: object
     properties:
-      amount:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
+      airdrop_coins:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
 
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cfeairdrop.QueryCampaignResponse:
     type: object
     properties:
@@ -33009,7 +32987,7 @@ definitions:
                   format: uint64
                 address:
                   type: string
-                amount:
+                airdrop_coins:
                   type: array
                   items:
                     type: object
@@ -33058,7 +33036,7 @@ definitions:
                     format: uint64
                   address:
                     type: string
-                  amount:
+                  airdrop_coins:
                     type: array
                     items:
                       type: object
@@ -33127,7 +33105,7 @@ definitions:
               format: uint64
             address:
               type: string
-            amount:
+            airdrop_coins:
               type: array
               items:
                 type: object
