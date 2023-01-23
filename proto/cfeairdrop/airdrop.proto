@@ -17,9 +17,9 @@ message UserAirdropEntries {
 message AirdropEntry {
   uint64 campaign_id = 1;
   string address = 2;
-  string amount = 3 [
+  repeated cosmos.base.v1beta1.Coin amount = 3[
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
   repeated uint64 completedMissions = 4;
   repeated uint64 claimedMissions = 5;
@@ -31,17 +31,17 @@ message AirdropEntries {
 
 message AirdropDistrubitions {
   uint64 campaignId = 1;
-  cosmos.base.v1beta1.Coin amount = 2 [
+  repeated cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin"
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }
 
 message AirdropClaimsLeft {
   uint64 campaignId = 1;
-  cosmos.base.v1beta1.Coin amount = 2 [
+  repeated cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin"
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }
 
@@ -50,23 +50,27 @@ message Campaign {
   string owner = 2;
   string name = 3;
   string description = 4;
-  bool enabled = 5;
-  string denom = 6;
-  google.protobuf.Timestamp start_time = 7 [
+  bool allow_feegrant = 5;
+  string initial_claim_free_amount = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  bool enabled = 7;
+  google.protobuf.Timestamp start_time = 8 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Timestamp end_time = 8 [
+  google.protobuf.Timestamp end_time = 9 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
   // period of locked coins from claim
-  google.protobuf.Duration lockup_period = 9 [
+  google.protobuf.Duration lockup_period = 10 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
   // period of vesting coins after lockup period
-  google.protobuf.Duration vesting_period = 10 [
+  google.protobuf.Duration vesting_period = 11 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
@@ -89,10 +93,16 @@ message Mission {
 }
 
 enum MissionType {
-//  option (gogoproto.goproto_enum_prefix) = false;
-  UNSPECIFIED = 0;
+  MISSION_TYPE_UNSPECIFIED = 0;
   INITIAL_CLAIM = 1;
   DELEGATION = 2;
   VOTE = 3;
   CLAIM = 4;
+}
+
+enum AirdropCloseAction {
+  AIRDROP_CLOSE_ACTION_UNSPECIFIED = 0;
+  SEND_TO_COMMUNITY_POOL = 1;
+  BURN = 2;
+  SEND_TO_OWNER = 3;
 }

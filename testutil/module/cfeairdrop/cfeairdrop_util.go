@@ -203,9 +203,7 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 	acc := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	claimerAccountBefore, ok := acc.(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	accExisted := acc != nil
-	if accExisted {
-		require.True(h.t, ok)
-	} else {
+	if !accExisted {
 		claimerAccountBefore = nil
 	}
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)

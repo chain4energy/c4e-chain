@@ -9,12 +9,11 @@ const TypeMsgCloseAirdropCampaign = "close_airdrop_campaign"
 
 var _ sdk.Msg = &MsgCloseAirdropCampaign{}
 
-func NewMsgCloseAirdropCampaign(owner string, campaignId uint64, burn bool, communityPoolSend bool) *MsgCloseAirdropCampaign {
+func NewMsgCloseAirdropCampaign(owner string, campaignId uint64, airdropCloseAction AirdropCloseAction) *MsgCloseAirdropCampaign {
 	return &MsgCloseAirdropCampaign{
-		Owner:             owner,
-		CampaignId:        campaignId,
-		Burn:              burn,
-		CommunityPoolSend: communityPoolSend,
+		Owner:              owner,
+		CampaignId:         campaignId,
+		AirdropCloseAction: airdropCloseAction,
 	}
 }
 

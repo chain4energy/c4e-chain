@@ -45,7 +45,7 @@ func (c *Mission) IsEnabled(blockTime time.Time) error {
 	return nil
 }
 
-func NewAirdropCampaign(owner string, name string, description string, denom string, startTime time.Time,
+func NewAirdropCampaign(owner string, name string, description string, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) *Campaign {
 
 	return &Campaign{
@@ -54,7 +54,6 @@ func NewAirdropCampaign(owner string, name string, description string, denom str
 		Name:          name,
 		Description:   description,
 		Enabled:       false,
-		Denom:         denom,
 		StartTime:     &startTime,
 		EndTime:       &endTime,
 		LockupPeriod:  lockupPeriod,
@@ -81,7 +80,7 @@ func (m *UserAirdropEntries) Validate() error {
 	}
 
 	for _, airdropEntry := range m.AirdropEntries {
-		if !airdropEntry.Amount.IsPositive() {
+		if !airdropEntry.Amount.IsAllPositive() {
 			return errors.New("claimable amount must be positive")
 		}
 
@@ -168,11 +167,13 @@ func (m *UserAirdropEntries) ClaimMission(campaignId uint64, missionID uint64) e
 }
 
 // ClaimableFromMission returns the amount claimable for this claim record from the provided mission completion
-func (m UserAirdropEntries) ClaimableFromMission(mission *Mission) sdk.Int {
+func (m UserAirdropEntries) ClaimableFromMission(mission *Mission) (coinSum sdk.Coins) {
 	airdropEntry := m.GetAidropEntry(mission.CampaignId)
 	if airdropEntry == nil {
-		return sdk.ZeroInt() // TODO error ??
+		return sdk.NewCoins() // TODO error ??
 	}
-
-	return mission.Weight.Mul(sdk.NewDecFromInt(airdropEntry.Amount)).TruncateInt()
+	for _, amount := range airdropEntry.Amount {
+		coinSum = coinSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
+	}
+	return
 }

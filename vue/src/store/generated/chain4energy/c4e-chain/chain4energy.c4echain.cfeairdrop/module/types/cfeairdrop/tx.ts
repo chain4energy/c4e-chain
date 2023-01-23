@@ -1,9 +1,12 @@
 /* eslint-disable */
 import {
   MissionType,
+  AirdropCloseAction,
   AirdropEntry,
   missionTypeFromJSON,
   missionTypeToJSON,
+  airdropCloseActionFromJSON,
+  airdropCloseActionToJSON,
 } from "../cfeairdrop/airdrop";
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import { Timestamp } from "../google/protobuf/timestamp";
@@ -32,7 +35,8 @@ export interface MsgCreateAirdropCampaign {
   owner: string;
   name: string;
   description: string;
-  denom: string;
+  allow_feegrant: boolean;
+  initial_claim_free_amount: string;
   start_time: Date | undefined;
   end_time: Date | undefined;
   lockup_period: Duration | undefined;
@@ -71,9 +75,8 @@ export interface MsgDeleteAirdropEntryResponse {}
 
 export interface MsgCloseAirdropCampaign {
   owner: string;
-  campaignId: number;
-  burn: boolean;
-  communityPoolSend: boolean;
+  campaign_id: number;
+  airdrop_close_action: AirdropCloseAction;
 }
 
 export interface MsgCloseAirdropCampaignResponse {}
@@ -372,7 +375,8 @@ const baseMsgCreateAirdropCampaign: object = {
   owner: "",
   name: "",
   description: "",
-  denom: "",
+  allow_feegrant: false,
+  initial_claim_free_amount: "",
 };
 
 export const MsgCreateAirdropCampaign = {
@@ -389,28 +393,31 @@ export const MsgCreateAirdropCampaign = {
     if (message.description !== "") {
       writer.uint32(26).string(message.description);
     }
-    if (message.denom !== "") {
-      writer.uint32(34).string(message.denom);
+    if (message.allow_feegrant === true) {
+      writer.uint32(32).bool(message.allow_feegrant);
+    }
+    if (message.initial_claim_free_amount !== "") {
+      writer.uint32(42).string(message.initial_claim_free_amount);
     }
     if (message.start_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.start_time),
-        writer.uint32(42).fork()
+        writer.uint32(50).fork()
       ).ldelim();
     }
     if (message.end_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.end_time),
-        writer.uint32(50).fork()
+        writer.uint32(58).fork()
       ).ldelim();
     }
     if (message.lockup_period !== undefined) {
-      Duration.encode(message.lockup_period, writer.uint32(58).fork()).ldelim();
+      Duration.encode(message.lockup_period, writer.uint32(66).fork()).ldelim();
     }
     if (message.vesting_period !== undefined) {
       Duration.encode(
         message.vesting_period,
-        writer.uint32(66).fork()
+        writer.uint32(74).fork()
       ).ldelim();
     }
     return writer;
@@ -438,22 +445,25 @@ export const MsgCreateAirdropCampaign = {
           message.description = reader.string();
           break;
         case 4:
-          message.denom = reader.string();
+          message.allow_feegrant = reader.bool();
           break;
         case 5:
+          message.initial_claim_free_amount = reader.string();
+          break;
+        case 6:
           message.start_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 6:
+        case 7:
           message.end_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 7:
+        case 8:
           message.lockup_period = Duration.decode(reader, reader.uint32());
           break;
-        case 8:
+        case 9:
           message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         default:
@@ -483,10 +493,20 @@ export const MsgCreateAirdropCampaign = {
     } else {
       message.description = "";
     }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = String(object.denom);
+    if (object.allow_feegrant !== undefined && object.allow_feegrant !== null) {
+      message.allow_feegrant = Boolean(object.allow_feegrant);
     } else {
-      message.denom = "";
+      message.allow_feegrant = false;
+    }
+    if (
+      object.initial_claim_free_amount !== undefined &&
+      object.initial_claim_free_amount !== null
+    ) {
+      message.initial_claim_free_amount = String(
+        object.initial_claim_free_amount
+      );
+    } else {
+      message.initial_claim_free_amount = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = fromJsonTimestamp(object.start_time);
@@ -517,7 +537,10 @@ export const MsgCreateAirdropCampaign = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.denom !== undefined && (obj.denom = message.denom);
+    message.allow_feegrant !== undefined &&
+      (obj.allow_feegrant = message.allow_feegrant);
+    message.initial_claim_free_amount !== undefined &&
+      (obj.initial_claim_free_amount = message.initial_claim_free_amount);
     message.start_time !== undefined &&
       (obj.start_time =
         message.start_time !== undefined
@@ -558,10 +581,18 @@ export const MsgCreateAirdropCampaign = {
     } else {
       message.description = "";
     }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = object.denom;
+    if (object.allow_feegrant !== undefined && object.allow_feegrant !== null) {
+      message.allow_feegrant = object.allow_feegrant;
     } else {
-      message.denom = "";
+      message.allow_feegrant = false;
+    }
+    if (
+      object.initial_claim_free_amount !== undefined &&
+      object.initial_claim_free_amount !== null
+    ) {
+      message.initial_claim_free_amount = object.initial_claim_free_amount;
+    } else {
+      message.initial_claim_free_amount = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = object.start_time;
@@ -1201,9 +1232,8 @@ export const MsgDeleteAirdropEntryResponse = {
 
 const baseMsgCloseAirdropCampaign: object = {
   owner: "",
-  campaignId: 0,
-  burn: false,
-  communityPoolSend: false,
+  campaign_id: 0,
+  airdrop_close_action: 0,
 };
 
 export const MsgCloseAirdropCampaign = {
@@ -1214,14 +1244,11 @@ export const MsgCloseAirdropCampaign = {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
-    if (message.campaignId !== 0) {
-      writer.uint32(16).uint64(message.campaignId);
+    if (message.campaign_id !== 0) {
+      writer.uint32(16).uint64(message.campaign_id);
     }
-    if (message.burn === true) {
-      writer.uint32(24).bool(message.burn);
-    }
-    if (message.communityPoolSend === true) {
-      writer.uint32(32).bool(message.communityPoolSend);
+    if (message.airdrop_close_action !== 0) {
+      writer.uint32(24).int32(message.airdrop_close_action);
     }
     return writer;
   },
@@ -1239,13 +1266,10 @@ export const MsgCloseAirdropCampaign = {
           message.owner = reader.string();
           break;
         case 2:
-          message.campaignId = longToNumber(reader.uint64() as Long);
+          message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
         case 3:
-          message.burn = reader.bool();
-          break;
-        case 4:
-          message.communityPoolSend = reader.bool();
+          message.airdrop_close_action = reader.int32() as any;
           break;
         default:
           reader.skipType(tag & 7);
@@ -1264,23 +1288,20 @@ export const MsgCloseAirdropCampaign = {
     } else {
       message.owner = "";
     }
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = Number(object.campaignId);
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = Number(object.campaign_id);
     } else {
-      message.campaignId = 0;
-    }
-    if (object.burn !== undefined && object.burn !== null) {
-      message.burn = Boolean(object.burn);
-    } else {
-      message.burn = false;
+      message.campaign_id = 0;
     }
     if (
-      object.communityPoolSend !== undefined &&
-      object.communityPoolSend !== null
+      object.airdrop_close_action !== undefined &&
+      object.airdrop_close_action !== null
     ) {
-      message.communityPoolSend = Boolean(object.communityPoolSend);
+      message.airdrop_close_action = airdropCloseActionFromJSON(
+        object.airdrop_close_action
+      );
     } else {
-      message.communityPoolSend = false;
+      message.airdrop_close_action = 0;
     }
     return message;
   },
@@ -1288,10 +1309,12 @@ export const MsgCloseAirdropCampaign = {
   toJSON(message: MsgCloseAirdropCampaign): unknown {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
-    message.campaignId !== undefined && (obj.campaignId = message.campaignId);
-    message.burn !== undefined && (obj.burn = message.burn);
-    message.communityPoolSend !== undefined &&
-      (obj.communityPoolSend = message.communityPoolSend);
+    message.campaign_id !== undefined &&
+      (obj.campaign_id = message.campaign_id);
+    message.airdrop_close_action !== undefined &&
+      (obj.airdrop_close_action = airdropCloseActionToJSON(
+        message.airdrop_close_action
+      ));
     return obj;
   },
 
@@ -1306,23 +1329,18 @@ export const MsgCloseAirdropCampaign = {
     } else {
       message.owner = "";
     }
-    if (object.campaignId !== undefined && object.campaignId !== null) {
-      message.campaignId = object.campaignId;
+    if (object.campaign_id !== undefined && object.campaign_id !== null) {
+      message.campaign_id = object.campaign_id;
     } else {
-      message.campaignId = 0;
-    }
-    if (object.burn !== undefined && object.burn !== null) {
-      message.burn = object.burn;
-    } else {
-      message.burn = false;
+      message.campaign_id = 0;
     }
     if (
-      object.communityPoolSend !== undefined &&
-      object.communityPoolSend !== null
+      object.airdrop_close_action !== undefined &&
+      object.airdrop_close_action !== null
     ) {
-      message.communityPoolSend = object.communityPoolSend;
+      message.airdrop_close_action = object.airdrop_close_action;
     } else {
-      message.communityPoolSend = false;
+      message.airdrop_close_action = 0;
     }
     return message;
   },

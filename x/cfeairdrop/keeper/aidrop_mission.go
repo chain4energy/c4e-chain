@@ -67,29 +67,30 @@ func (k Keeper) claimMission(ctx sdk.Context, initialClaim bool, campaign *types
 		k.Logger(ctx).Error("claim mission - cannot claime", "address", address, "campaignId", campaignId, "missionId", missionId)
 		return nil, sdkerrors.Wrapf(types.ErrMissionClaiming, err.Error())
 	}
-	claimableAmount := sdk.ZeroInt()
+
+	claimableAmount := sdk.NewCoins()
 	if mission.MissionType == types.MissionInitialClaim {
 		missions, _ := k.AllMissionForCampaign(ctx, campaignId)
 		airdropEntry := userAirdropEntries.GetAidropEntry(campaignId)
-		amountSum := sdk.ZeroInt()
+		amountSum := sdk.NewCoins()
 		for _, mission := range missions {
-			amountSum = amountSum.Add(mission.Weight.Mul(sdk.NewDecFromInt(airdropEntry.Amount)).TruncateInt())
+			for _, amount := range airdropEntry.Amount {
+				amountSum = amountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
+			}
 		}
 		claimableAmount = airdropEntry.Amount.Sub(amountSum)
 	} else {
 		claimableAmount = userAirdropEntries.ClaimableFromMission(mission)
 	}
 
-	coin := sdk.NewCoin(campaign.Denom, claimableAmount)
-	k.DecrementAirdropClaimsLeft(ctx, campaignId, coin)
-	claimable := sdk.NewCoins(coin)
+	k.DecrementAirdropClaimsLeft(ctx, campaignId, claimableAmount)
 
 	// send claimable to the user
 
 	start := ctx.BlockTime().Add(campaign.LockupPeriod)
 	end := start.Add(campaign.VestingPeriod)
 
-	if err := k.SendToAirdropAccount(ctx, userAirdropEntries, claimable, start.Unix(), end.Unix(), initialClaim); err != nil {
+	if err := k.SendToAirdropAccount(ctx, userAirdropEntries, claimableAmount, start.Unix(), end.Unix(), initialClaim); err != nil {
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userAirdropEntries.ClaimAddress)
 	}
 	return userAirdropEntries, nil

@@ -128,10 +128,12 @@ paths:
                     type: string
                   description:
                     type: string
+                  allow_feegrant:
+                    type: boolean
+                  initial_claim_free_amount:
+                    type: string
                   enabled:
                     type: boolean
-                  denom:
-                    type: string
                   start_time:
                     type: string
                     format: date-time
@@ -194,10 +196,12 @@ paths:
                       type: string
                     description:
                       type: string
+                    allow_feegrant:
+                      type: boolean
+                    initial_claim_free_amount:
+                      type: string
                     enabled:
                       type: boolean
-                    denom:
-                      type: string
                     start_time:
                       type: string
                       format: date-time
@@ -342,15 +346,12 @@ paths:
                     missionType:
                       type: string
                       enum:
-                        - UNSPECIFIED
+                        - MISSION_TYPE_UNSPECIFIED
                         - INITIAL_CLAIM
                         - DELEGATION
                         - VOTE
                         - CLAIM
-                      default: UNSPECIFIED
-                      title: >-
-                        - UNSPECIFIED: option (gogoproto.goproto_enum_prefix) =
-                        false;
+                      default: MISSION_TYPE_UNSPECIFIED
                     weight:
                       type: string
                     claim_start_date:
@@ -486,15 +487,12 @@ paths:
                   missionType:
                     type: string
                     enum:
-                      - UNSPECIFIED
+                      - MISSION_TYPE_UNSPECIFIED
                       - INITIAL_CLAIM
                       - DELEGATION
                       - VOTE
                       - CLAIM
-                    default: UNSPECIFIED
-                    title: >-
-                      - UNSPECIFIED: option (gogoproto.goproto_enum_prefix) =
-                      false;
+                    default: MISSION_TYPE_UNSPECIFIED
                   weight:
                     type: string
                   claim_start_date:
@@ -595,7 +593,23 @@ paths:
                         address:
                           type: string
                         amount:
-                          type: string
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              denom:
+                                type: string
+                              amount:
+                                type: string
+                            description: >-
+                              Coin defines a token with a denomination and an
+                              amount.
+
+
+                              NOTE: The amount field is an Int which implements
+                              the custom method
+
+                              signatures required by gogoproto.
                         completedMissions:
                           type: array
                           items:
@@ -661,7 +675,23 @@ paths:
                           address:
                             type: string
                           amount:
-                            type: string
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                denom:
+                                  type: string
+                                amount:
+                                  type: string
+                              description: >-
+                                Coin defines a token with a denomination and an
+                                amount.
+
+
+                                NOTE: The amount field is an Int which
+                                implements the custom method
+
+                                signatures required by gogoproto.
                           completedMissions:
                             type: array
                             items:
@@ -32615,6 +32645,14 @@ paths:
       tags:
         - Query
 definitions:
+  chain4energy.c4echain.cfeairdrop.AirdropCloseAction:
+    type: string
+    enum:
+      - AIRDROP_CLOSE_ACTION_UNSPECIFIED
+      - SEND_TO_COMMUNITY_POOL
+      - BURN
+      - SEND_TO_OWNER
+    default: AIRDROP_CLOSE_ACTION_UNSPECIFIED
   chain4energy.c4echain.cfeairdrop.AirdropEntry:
     type: object
     properties:
@@ -32624,7 +32662,19 @@ definitions:
       address:
         type: string
       amount:
-        type: string
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
       completedMissions:
         type: array
         items:
@@ -32647,10 +32697,12 @@ definitions:
         type: string
       description:
         type: string
+      allow_feegrant:
+        type: boolean
+      initial_claim_free_amount:
+        type: string
       enabled:
         type: boolean
-      denom:
-        type: string
       start_time:
         type: string
         format: date-time
@@ -32679,13 +32731,12 @@ definitions:
       missionType:
         type: string
         enum:
-          - UNSPECIFIED
+          - MISSION_TYPE_UNSPECIFIED
           - INITIAL_CLAIM
           - DELEGATION
           - VOTE
           - CLAIM
-        default: UNSPECIFIED
-        title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
+        default: MISSION_TYPE_UNSPECIFIED
       weight:
         type: string
       claim_start_date:
@@ -32694,13 +32745,12 @@ definitions:
   chain4energy.c4echain.cfeairdrop.MissionType:
     type: string
     enum:
-      - UNSPECIFIED
+      - MISSION_TYPE_UNSPECIFIED
       - INITIAL_CLAIM
       - DELEGATION
       - VOTE
       - CLAIM
-    default: UNSPECIFIED
-    title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
+    default: MISSION_TYPE_UNSPECIFIED
   chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntriesResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaignResponse:
@@ -32767,10 +32817,12 @@ definitions:
             type: string
           description:
             type: string
+          allow_feegrant:
+            type: boolean
+          initial_claim_free_amount:
+            type: string
           enabled:
             type: boolean
-          denom:
-            type: string
           start_time:
             type: string
             format: date-time
@@ -32800,10 +32852,12 @@ definitions:
               type: string
             description:
               type: string
+            allow_feegrant:
+              type: boolean
+            initial_claim_free_amount:
+              type: string
             enabled:
               type: boolean
-            denom:
-              type: string
             start_time:
               type: string
               format: date-time
@@ -32860,13 +32914,12 @@ definitions:
           missionType:
             type: string
             enum:
-              - UNSPECIFIED
+              - MISSION_TYPE_UNSPECIFIED
               - INITIAL_CLAIM
               - DELEGATION
               - VOTE
               - CLAIM
-            default: UNSPECIFIED
-            title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
+            default: MISSION_TYPE_UNSPECIFIED
           weight:
             type: string
           claim_start_date:
@@ -32893,13 +32946,12 @@ definitions:
             missionType:
               type: string
               enum:
-                - UNSPECIFIED
+                - MISSION_TYPE_UNSPECIFIED
                 - INITIAL_CLAIM
                 - DELEGATION
                 - VOTE
                 - CLAIM
-              default: UNSPECIFIED
-              title: '- UNSPECIFIED: option (gogoproto.goproto_enum_prefix) = false;'
+              default: MISSION_TYPE_UNSPECIFIED
             weight:
               type: string
             claim_start_date:
@@ -32958,7 +33010,22 @@ definitions:
                 address:
                   type: string
                 amount:
-                  type: string
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
                 completedMissions:
                   type: array
                   items:
@@ -32992,7 +33059,22 @@ definitions:
                   address:
                     type: string
                   amount:
-                    type: string
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
                   completedMissions:
                     type: array
                     items:
@@ -33046,7 +33128,22 @@ definitions:
             address:
               type: string
             amount:
-              type: string
+              type: array
+              items:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
             completedMissions:
               type: array
               items:

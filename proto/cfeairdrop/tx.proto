@@ -42,20 +42,24 @@ message MsgCreateAirdropCampaign {
   string owner = 1;
   string name = 2;
   string description = 3;
-  string denom = 4;
-  google.protobuf.Timestamp start_time = 5 [
+  bool allow_feegrant = 4;
+  string initial_claim_free_amount = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  google.protobuf.Timestamp start_time = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Timestamp end_time = 6 [
+  google.protobuf.Timestamp end_time = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Duration lockup_period = 7 [
+  google.protobuf.Duration lockup_period = 8 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
-  google.protobuf.Duration vesting_period = 8 [
+  google.protobuf.Duration vesting_period = 9 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
@@ -66,7 +70,7 @@ message MsgCreateAirdropCampaignResponse {}
 message MsgAddMissionToAidropCampaign {
   string owner = 1;
   uint64 campaignId = 2;
-  string name =3;
+  string name = 3;
   string description = 4;
   MissionType missionType = 5;
   string weight = 6 [
@@ -79,13 +83,12 @@ message MsgAddMissionToAidropCampaign {
   ];
 }
 
-message MsgAddMissionToAidropCampaignResponse {
-}
+message MsgAddMissionToAidropCampaignResponse {}
 
 message MsgAddAirdropEntries {
   string owner = 1;
   uint64 campaign_id = 2;
-  repeated AirdropEntry airdrop_entries = 3;
+  repeated AirdropEntry airdrop_entries = 3 ;
 }
 
 message MsgAddAirdropEntriesResponse {}
@@ -100,9 +103,8 @@ message MsgDeleteAirdropEntryResponse {}
 
 message MsgCloseAirdropCampaign {
   string owner = 1;
-  uint64 campaignId = 2;
-  bool burn = 3;
-  bool communityPoolSend = 4;
+  uint64 campaign_id = 2;
+  AirdropCloseAction airdrop_close_action = 3;
 }
 
 message MsgCloseAirdropCampaignResponse {}

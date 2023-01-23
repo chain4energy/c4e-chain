@@ -3,13 +3,11 @@ package types
 import "fmt"
 
 const (
-	MissionEmpty        = MissionType_UNSPECIFIED
+	MissionEmpty        = MissionType_MISSION_TYPE_UNSPECIFIED
 	MissionInitialClaim = MissionType_INITIAL_CLAIM
 	MissionDelegation   = MissionType_DELEGATION
 	MissionVote         = MissionType_VOTE
 	MissionClaim        = MissionType_CLAIM
-	//VOTE
-	end
 )
 
 func MissionTypeFromString(str string) (MissionType, error) {

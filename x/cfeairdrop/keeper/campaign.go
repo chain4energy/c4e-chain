@@ -255,7 +255,7 @@ func (k Keeper) IncrementAirdropClaimsLeft(
 func (k Keeper) DecrementAirdropClaimsLeft(
 	ctx sdk.Context,
 	campaignId uint64,
-	amount sdk.Coin,
+	amount sdk.Coins,
 ) (val types.AirdropClaimsLeft) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AirdropClaimsLeftPrefix))
 

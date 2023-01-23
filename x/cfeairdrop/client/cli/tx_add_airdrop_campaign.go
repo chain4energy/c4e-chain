@@ -22,7 +22,6 @@ func CmdCreateAirdropCampaign() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argDescription := args[1]
-			argDenom := args[2]
 			timeLayout := "2006-01-02 15:04:05 -0700 MST"
 			argStartTime, err := time.Parse(timeLayout, args[3])
 			if err != nil {
@@ -52,7 +51,6 @@ func CmdCreateAirdropCampaign() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argName,
 				argDescription,
-				argDenom,
 				argStartTime,
 				argEndTime,
 				argLockupPeriod,

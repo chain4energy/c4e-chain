@@ -17,7 +17,6 @@ func (k msgServer) CreateAirdropCampaign(goCtx context.Context, msg *types.MsgCr
 		msg.Owner,
 		msg.Name,
 		msg.Description,
-		msg.Denom,
 		msg.StartTime,
 		msg.EndTime,
 		msg.LockupPeriod,
@@ -61,8 +60,7 @@ func (k msgServer) CloseAirdropCampaign(goCtx context.Context, msg *types.MsgClo
 		ctx,
 		msg.Owner,
 		msg.CampaignId,
-		msg.Burn,
-		msg.CommunityPoolSend,
+		msg.AirdropCloseAction,
 	); err != nil {
 		return nil, err
 	}

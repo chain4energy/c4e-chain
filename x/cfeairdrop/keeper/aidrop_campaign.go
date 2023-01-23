@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, denom string, startTime time.Time,
+func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) error {
 	k.Logger(ctx).Debug("create aidrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
@@ -16,19 +16,15 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 		k.Logger(ctx).Error("create airdrop campaign campaign: empty name ")
 		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty name")
 	}
-	if denom == "" {
-		k.Logger(ctx).Error("create airdrop campaign campaign: empty denom ")
-		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty denom")
-	}
 	if description == "" {
 		k.Logger(ctx).Error("create airdrop campaign campaign: empty description ")
 		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty description")
 	}
-	if startTime.Before(ctx.BlockTime()) {
+	if startTime.After(ctx.BlockTime()) {
 		k.Logger(ctx).Error("create airdrop campaign start time in the past", "startTime", startTime)
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time in the past error  (%s < %s)", startTime, ctx.BlockTime())
 	}
-	if startTime.After(endTime) {
+	if startTime.Before(endTime) {
 		k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
 	}
@@ -38,7 +34,7 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 		return sdkerrors.Wrap(errortypes.ErrParsing, sdkerrors.Wrapf(err, "create vesting account - owner parsing error: %s", owner).Error())
 	}
 
-	campaign := types.NewAirdropCampaign(owner, name, description, denom, startTime, endTime, lockupPeriod, vestingPeriod)
+	campaign := types.NewAirdropCampaign(owner, name, description, startTime, endTime, lockupPeriod, vestingPeriod)
 	k.AppendNewCampaign(ctx, *campaign)
 	return nil
 }
@@ -97,7 +93,7 @@ func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId ui
 	return nil
 }
 
-func (k Keeper) CloseAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, burn bool, communityPoolSend bool) error {
+func (k Keeper) CloseAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, airdropCloseAction types.AirdropCloseAction) error {
 	k.Logger(ctx).Debug("close airdrop campaign", "owner", owner, "campaignId", campaignId, "burn", burn,
 		"communityPoolSend", communityPoolSend)
 	campaign, found := k.GetCampaign(ctx, campaignId)

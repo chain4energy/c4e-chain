@@ -9,11 +9,18 @@
  * ---------------------------------------------------------------
  */
 
+export enum CfeairdropAirdropCloseAction {
+  AIRDROP_CLOSE_ACTION_UNSPECIFIED = "AIRDROP_CLOSE_ACTION_UNSPECIFIED",
+  SEND_TO_COMMUNITY_POOL = "SEND_TO_COMMUNITY_POOL",
+  BURN = "BURN",
+  SEND_TO_OWNER = "SEND_TO_OWNER",
+}
+
 export interface CfeairdropAirdropEntry {
   /** @format uint64 */
   campaign_id?: string;
   address?: string;
-  amount?: string;
+  amount?: V1Beta1Coin[];
   completedMissions?: string[];
   claimedMissions?: string[];
 }
@@ -24,8 +31,9 @@ export interface CfeairdropCampaign {
   owner?: string;
   name?: string;
   description?: string;
+  allow_feegrant?: boolean;
+  initial_claim_free_amount?: string;
   enabled?: boolean;
-  denom?: string;
 
   /** @format date-time */
   start_time?: string;
@@ -52,7 +60,7 @@ export interface CfeairdropMission {
 }
 
 export enum CfeairdropMissionType {
-  UNSPECIFIED = "UNSPECIFIED",
+  MISSION_TYPE_UNSPECIFIED = "MISSION_TYPE_UNSPECIFIED",
   INITIAL_CLAIM = "INITIAL_CLAIM",
   DELEGATION = "DELEGATION",
   VOTE = "VOTE",
@@ -232,6 +240,13 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
+
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse?: boolean;
 }
 
 /**
@@ -509,6 +524,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -534,6 +550,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -607,6 +624,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>

@@ -8,8 +8,7 @@ import { Duration } from "../google/protobuf/duration";
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
 export enum MissionType {
-  /** UNSPECIFIED - option (gogoproto.goproto_enum_prefix) = false; */
-  UNSPECIFIED = 0,
+  MISSION_TYPE_UNSPECIFIED = 0,
   INITIAL_CLAIM = 1,
   DELEGATION = 2,
   VOTE = 3,
@@ -20,8 +19,8 @@ export enum MissionType {
 export function missionTypeFromJSON(object: any): MissionType {
   switch (object) {
     case 0:
-    case "UNSPECIFIED":
-      return MissionType.UNSPECIFIED;
+    case "MISSION_TYPE_UNSPECIFIED":
+      return MissionType.MISSION_TYPE_UNSPECIFIED;
     case 1:
     case "INITIAL_CLAIM":
       return MissionType.INITIAL_CLAIM;
@@ -43,8 +42,8 @@ export function missionTypeFromJSON(object: any): MissionType {
 
 export function missionTypeToJSON(object: MissionType): string {
   switch (object) {
-    case MissionType.UNSPECIFIED:
-      return "UNSPECIFIED";
+    case MissionType.MISSION_TYPE_UNSPECIFIED:
+      return "MISSION_TYPE_UNSPECIFIED";
     case MissionType.INITIAL_CLAIM:
       return "INITIAL_CLAIM";
     case MissionType.DELEGATION:
@@ -53,6 +52,50 @@ export function missionTypeToJSON(object: MissionType): string {
       return "VOTE";
     case MissionType.CLAIM:
       return "CLAIM";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+export enum AirdropCloseAction {
+  AIRDROP_CLOSE_ACTION_UNSPECIFIED = 0,
+  SEND_TO_COMMUNITY_POOL = 1,
+  BURN = 2,
+  SEND_TO_OWNER = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function airdropCloseActionFromJSON(object: any): AirdropCloseAction {
+  switch (object) {
+    case 0:
+    case "AIRDROP_CLOSE_ACTION_UNSPECIFIED":
+      return AirdropCloseAction.AIRDROP_CLOSE_ACTION_UNSPECIFIED;
+    case 1:
+    case "SEND_TO_COMMUNITY_POOL":
+      return AirdropCloseAction.SEND_TO_COMMUNITY_POOL;
+    case 2:
+    case "BURN":
+      return AirdropCloseAction.BURN;
+    case 3:
+    case "SEND_TO_OWNER":
+      return AirdropCloseAction.SEND_TO_OWNER;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return AirdropCloseAction.UNRECOGNIZED;
+  }
+}
+
+export function airdropCloseActionToJSON(object: AirdropCloseAction): string {
+  switch (object) {
+    case AirdropCloseAction.AIRDROP_CLOSE_ACTION_UNSPECIFIED:
+      return "AIRDROP_CLOSE_ACTION_UNSPECIFIED";
+    case AirdropCloseAction.SEND_TO_COMMUNITY_POOL:
+      return "SEND_TO_COMMUNITY_POOL";
+    case AirdropCloseAction.BURN:
+      return "BURN";
+    case AirdropCloseAction.SEND_TO_OWNER:
+      return "SEND_TO_OWNER";
     default:
       return "UNKNOWN";
   }
@@ -67,7 +110,7 @@ export interface UserAirdropEntries {
 export interface AirdropEntry {
   campaign_id: number;
   address: string;
-  amount: string;
+  amount: Coin[];
   completedMissions: number[];
   claimedMissions: number[];
 }
@@ -78,12 +121,12 @@ export interface AirdropEntries {
 
 export interface AirdropDistrubitions {
   campaignId: number;
-  amount: Coin | undefined;
+  amount: Coin[];
 }
 
 export interface AirdropClaimsLeft {
   campaignId: number;
-  amount: Coin | undefined;
+  amount: Coin[];
 }
 
 export interface Campaign {
@@ -91,8 +134,9 @@ export interface Campaign {
   owner: string;
   name: string;
   description: string;
+  allow_feegrant: boolean;
+  initial_claim_free_amount: string;
   enabled: boolean;
-  denom: string;
   start_time: Date | undefined;
   end_time: Date | undefined;
   /** period of locked coins from claim */
@@ -224,7 +268,6 @@ export const UserAirdropEntries = {
 const baseAirdropEntry: object = {
   campaign_id: 0,
   address: "",
-  amount: "",
   completedMissions: 0,
   claimedMissions: 0,
 };
@@ -237,8 +280,8 @@ export const AirdropEntry = {
     if (message.address !== "") {
       writer.uint32(18).string(message.address);
     }
-    if (message.amount !== "") {
-      writer.uint32(26).string(message.amount);
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     writer.uint32(34).fork();
     for (const v of message.completedMissions) {
@@ -257,6 +300,7 @@ export const AirdropEntry = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAirdropEntry } as AirdropEntry;
+    message.amount = [];
     message.completedMissions = [];
     message.claimedMissions = [];
     while (reader.pos < end) {
@@ -269,7 +313,7 @@ export const AirdropEntry = {
           message.address = reader.string();
           break;
         case 3:
-          message.amount = reader.string();
+          message.amount.push(Coin.decode(reader, reader.uint32()));
           break;
         case 4:
           if ((tag & 7) === 2) {
@@ -307,6 +351,7 @@ export const AirdropEntry = {
 
   fromJSON(object: any): AirdropEntry {
     const message = { ...baseAirdropEntry } as AirdropEntry;
+    message.amount = [];
     message.completedMissions = [];
     message.claimedMissions = [];
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
@@ -320,9 +365,9 @@ export const AirdropEntry = {
       message.address = "";
     }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = String(object.amount);
-    } else {
-      message.amount = "";
+      for (const e of object.amount) {
+        message.amount.push(Coin.fromJSON(e));
+      }
     }
     if (
       object.completedMissions !== undefined &&
@@ -348,7 +393,11 @@ export const AirdropEntry = {
     message.campaign_id !== undefined &&
       (obj.campaign_id = message.campaign_id);
     message.address !== undefined && (obj.address = message.address);
-    message.amount !== undefined && (obj.amount = message.amount);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => (e ? Coin.toJSON(e) : undefined));
+    } else {
+      obj.amount = [];
+    }
     if (message.completedMissions) {
       obj.completedMissions = message.completedMissions.map((e) => e);
     } else {
@@ -364,6 +413,7 @@ export const AirdropEntry = {
 
   fromPartial(object: DeepPartial<AirdropEntry>): AirdropEntry {
     const message = { ...baseAirdropEntry } as AirdropEntry;
+    message.amount = [];
     message.completedMissions = [];
     message.claimedMissions = [];
     if (object.campaign_id !== undefined && object.campaign_id !== null) {
@@ -377,9 +427,9 @@ export const AirdropEntry = {
       message.address = "";
     }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = object.amount;
-    } else {
-      message.amount = "";
+      for (const e of object.amount) {
+        message.amount.push(Coin.fromPartial(e));
+      }
     }
     if (
       object.completedMissions !== undefined &&
@@ -483,8 +533,8 @@ export const AirdropDistrubitions = {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
     }
-    if (message.amount !== undefined) {
-      Coin.encode(message.amount, writer.uint32(18).fork()).ldelim();
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -493,6 +543,7 @@ export const AirdropDistrubitions = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAirdropDistrubitions } as AirdropDistrubitions;
+    message.amount = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -500,7 +551,7 @@ export const AirdropDistrubitions = {
           message.campaignId = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.amount = Coin.decode(reader, reader.uint32());
+          message.amount.push(Coin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -512,15 +563,16 @@ export const AirdropDistrubitions = {
 
   fromJSON(object: any): AirdropDistrubitions {
     const message = { ...baseAirdropDistrubitions } as AirdropDistrubitions;
+    message.amount = [];
     if (object.campaignId !== undefined && object.campaignId !== null) {
       message.campaignId = Number(object.campaignId);
     } else {
       message.campaignId = 0;
     }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Coin.fromJSON(object.amount);
-    } else {
-      message.amount = undefined;
+      for (const e of object.amount) {
+        message.amount.push(Coin.fromJSON(e));
+      }
     }
     return message;
   },
@@ -528,22 +580,26 @@ export const AirdropDistrubitions = {
   toJSON(message: AirdropDistrubitions): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = message.campaignId);
-    message.amount !== undefined &&
-      (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => (e ? Coin.toJSON(e) : undefined));
+    } else {
+      obj.amount = [];
+    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<AirdropDistrubitions>): AirdropDistrubitions {
     const message = { ...baseAirdropDistrubitions } as AirdropDistrubitions;
+    message.amount = [];
     if (object.campaignId !== undefined && object.campaignId !== null) {
       message.campaignId = object.campaignId;
     } else {
       message.campaignId = 0;
     }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Coin.fromPartial(object.amount);
-    } else {
-      message.amount = undefined;
+      for (const e of object.amount) {
+        message.amount.push(Coin.fromPartial(e));
+      }
     }
     return message;
   },
@@ -556,8 +612,8 @@ export const AirdropClaimsLeft = {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
     }
-    if (message.amount !== undefined) {
-      Coin.encode(message.amount, writer.uint32(18).fork()).ldelim();
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -566,6 +622,7 @@ export const AirdropClaimsLeft = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseAirdropClaimsLeft } as AirdropClaimsLeft;
+    message.amount = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -573,7 +630,7 @@ export const AirdropClaimsLeft = {
           message.campaignId = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.amount = Coin.decode(reader, reader.uint32());
+          message.amount.push(Coin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -585,15 +642,16 @@ export const AirdropClaimsLeft = {
 
   fromJSON(object: any): AirdropClaimsLeft {
     const message = { ...baseAirdropClaimsLeft } as AirdropClaimsLeft;
+    message.amount = [];
     if (object.campaignId !== undefined && object.campaignId !== null) {
       message.campaignId = Number(object.campaignId);
     } else {
       message.campaignId = 0;
     }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Coin.fromJSON(object.amount);
-    } else {
-      message.amount = undefined;
+      for (const e of object.amount) {
+        message.amount.push(Coin.fromJSON(e));
+      }
     }
     return message;
   },
@@ -601,22 +659,26 @@ export const AirdropClaimsLeft = {
   toJSON(message: AirdropClaimsLeft): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = message.campaignId);
-    message.amount !== undefined &&
-      (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => (e ? Coin.toJSON(e) : undefined));
+    } else {
+      obj.amount = [];
+    }
     return obj;
   },
 
   fromPartial(object: DeepPartial<AirdropClaimsLeft>): AirdropClaimsLeft {
     const message = { ...baseAirdropClaimsLeft } as AirdropClaimsLeft;
+    message.amount = [];
     if (object.campaignId !== undefined && object.campaignId !== null) {
       message.campaignId = object.campaignId;
     } else {
       message.campaignId = 0;
     }
     if (object.amount !== undefined && object.amount !== null) {
-      message.amount = Coin.fromPartial(object.amount);
-    } else {
-      message.amount = undefined;
+      for (const e of object.amount) {
+        message.amount.push(Coin.fromPartial(e));
+      }
     }
     return message;
   },
@@ -627,8 +689,9 @@ const baseCampaign: object = {
   owner: "",
   name: "",
   description: "",
+  allow_feegrant: false,
+  initial_claim_free_amount: "",
   enabled: false,
-  denom: "",
 };
 
 export const Campaign = {
@@ -645,31 +708,34 @@ export const Campaign = {
     if (message.description !== "") {
       writer.uint32(34).string(message.description);
     }
-    if (message.enabled === true) {
-      writer.uint32(40).bool(message.enabled);
+    if (message.allow_feegrant === true) {
+      writer.uint32(40).bool(message.allow_feegrant);
     }
-    if (message.denom !== "") {
-      writer.uint32(50).string(message.denom);
+    if (message.initial_claim_free_amount !== "") {
+      writer.uint32(50).string(message.initial_claim_free_amount);
+    }
+    if (message.enabled === true) {
+      writer.uint32(56).bool(message.enabled);
     }
     if (message.start_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.start_time),
-        writer.uint32(58).fork()
+        writer.uint32(66).fork()
       ).ldelim();
     }
     if (message.end_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.end_time),
-        writer.uint32(66).fork()
+        writer.uint32(74).fork()
       ).ldelim();
     }
     if (message.lockup_period !== undefined) {
-      Duration.encode(message.lockup_period, writer.uint32(74).fork()).ldelim();
+      Duration.encode(message.lockup_period, writer.uint32(82).fork()).ldelim();
     }
     if (message.vesting_period !== undefined) {
       Duration.encode(
         message.vesting_period,
-        writer.uint32(82).fork()
+        writer.uint32(90).fork()
       ).ldelim();
     }
     return writer;
@@ -695,25 +761,28 @@ export const Campaign = {
           message.description = reader.string();
           break;
         case 5:
-          message.enabled = reader.bool();
+          message.allow_feegrant = reader.bool();
           break;
         case 6:
-          message.denom = reader.string();
+          message.initial_claim_free_amount = reader.string();
           break;
         case 7:
+          message.enabled = reader.bool();
+          break;
+        case 8:
           message.start_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 8:
+        case 9:
           message.end_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 9:
+        case 10:
           message.lockup_period = Duration.decode(reader, reader.uint32());
           break;
-        case 10:
+        case 11:
           message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         default:
@@ -746,15 +815,25 @@ export const Campaign = {
     } else {
       message.description = "";
     }
+    if (object.allow_feegrant !== undefined && object.allow_feegrant !== null) {
+      message.allow_feegrant = Boolean(object.allow_feegrant);
+    } else {
+      message.allow_feegrant = false;
+    }
+    if (
+      object.initial_claim_free_amount !== undefined &&
+      object.initial_claim_free_amount !== null
+    ) {
+      message.initial_claim_free_amount = String(
+        object.initial_claim_free_amount
+      );
+    } else {
+      message.initial_claim_free_amount = "";
+    }
     if (object.enabled !== undefined && object.enabled !== null) {
       message.enabled = Boolean(object.enabled);
     } else {
       message.enabled = false;
-    }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = String(object.denom);
-    } else {
-      message.denom = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = fromJsonTimestamp(object.start_time);
@@ -786,8 +865,11 @@ export const Campaign = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
+    message.allow_feegrant !== undefined &&
+      (obj.allow_feegrant = message.allow_feegrant);
+    message.initial_claim_free_amount !== undefined &&
+      (obj.initial_claim_free_amount = message.initial_claim_free_amount);
     message.enabled !== undefined && (obj.enabled = message.enabled);
-    message.denom !== undefined && (obj.denom = message.denom);
     message.start_time !== undefined &&
       (obj.start_time =
         message.start_time !== undefined
@@ -829,15 +911,23 @@ export const Campaign = {
     } else {
       message.description = "";
     }
+    if (object.allow_feegrant !== undefined && object.allow_feegrant !== null) {
+      message.allow_feegrant = object.allow_feegrant;
+    } else {
+      message.allow_feegrant = false;
+    }
+    if (
+      object.initial_claim_free_amount !== undefined &&
+      object.initial_claim_free_amount !== null
+    ) {
+      message.initial_claim_free_amount = object.initial_claim_free_amount;
+    } else {
+      message.initial_claim_free_amount = "";
+    }
     if (object.enabled !== undefined && object.enabled !== null) {
       message.enabled = object.enabled;
     } else {
       message.enabled = false;
-    }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = object.denom;
-    } else {
-      message.denom = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = object.start_time;
