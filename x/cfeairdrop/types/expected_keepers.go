@@ -30,4 +30,5 @@ type BankKeeper interface {
 // FeeGrantKeeper defines the expected feegrant keeper interface
 type FeeGrantKeeper interface {
 	GrantAllowance(ctx sdk.Context, granter, grantee sdk.AccAddress, feeAllowance feegrant.FeeAllowanceI) error
+	GetAllowance(ctx sdk.Context, granter, grantee sdk.AccAddress) (feegrant.FeeAllowanceI, error)
 }

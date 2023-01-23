@@ -374,7 +374,7 @@ func New(
 		app.BankKeeper,
 		app.FeeGrantKeeper,
 	)
-	cfeairdropModule := cfeairdropmodule.NewAppModule(appCodec, app.CfeairdropKeeper, app.AccountKeeper, app.BankKeeper)
+	cfeairdropModule := cfeairdropmodule.NewAppModule(appCodec, app.CfeairdropKeeper, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper)
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks

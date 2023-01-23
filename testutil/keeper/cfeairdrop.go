@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	"testing"
 	"time"
 
@@ -61,6 +63,7 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 
 	authStoreKey := sdk.NewKVStoreKey(authtypes.StoreKey)
 	bankStoreKey := sdk.NewKVStoreKey(banktypes.StoreKey)
+	feegrantStoreKey := sdk.NewKVStoreKey(feegrant.StoreKey)
 
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
@@ -68,6 +71,7 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
 	stateStore.MountStoreWithDB(authStoreKey, sdk.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(bankStoreKey, sdk.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(feegrantStoreKey, sdk.StoreTypeIAVL, db)
 	require.NoError(t, stateStore.LoadLatestVersion())
 
 	registry := codectypes.NewInterfaceRegistry()
@@ -102,6 +106,9 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 	bankKeeper := bankkeeper.NewBaseKeeper(
 		cdc, bankStoreKey, accountKeeper, bankParamsSubspace, map[string]bool{},
 	)
+	feegrantKeeper := feegrantkeeper.NewKeeper(
+		cdc, feegrantStoreKey, accountKeeper,
+	)
 
 	k := keeper.NewKeeper(
 		cdc,
@@ -110,7 +117,7 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 		paramsSubspace,
 		accountKeeper,
 		bankKeeper,
-		nil,
+		feegrantKeeper,
 	)
 
 	header := tmproto.Header{}

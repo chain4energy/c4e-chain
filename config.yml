@@ -25,6 +25,7 @@ faucet:
 init:
   home: "./.data"
   app:
+    minimum-gas-prices: "0.025uc4e"
     telemetry:
       enabled: true
       prometheus-retention-time: "60"

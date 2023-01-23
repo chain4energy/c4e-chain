@@ -1,8 +1,10 @@
 package keeper
 
 import (
+	"fmt"
 	errortypes "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
@@ -38,6 +40,10 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "add campaign entries - airdrop entry at index %d amount %s < 1000000 (One token)", i, airdropEntry.Amount.String())
 		}
 		userAirdropEntries, err := k.addUserAirdropEntry(ctx, campaignId, airdropEntry.Address, airdropEntry.Amount)
+		if err != nil {
+			return err
+		}
+		err = k.grantFeeAllowance(ctx, owner, airdropEntry.Address, campaign.Denom)
 		if err != nil {
 			return err
 		}
@@ -125,23 +131,47 @@ func (k Keeper) DeleteUserAirdropEntry(ctx sdk.Context, owner string, campaignId
 	return nil
 }
 
-func (k Keeper) grantFeeAllowance(ctx sdk.Context, grantee string) error {
-	allowance := feegranttypes.BasicAllowance{}
-	address, err := sdk.AccAddressFromBech32(grantee)
+func (k Keeper) grantFeeAllowance(ctx sdk.Context, granter string, grantee string, denom string) error {
+	granteeAddr, err := sdk.AccAddressFromBech32(grantee)
 	if err != nil {
-		return nil // TODO
+		return err // TODO
 	}
-	modAcc := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
-	if err = k.feeGrantKeeper.GrantAllowance(ctx, modAcc.GetAddress(), address, &allowance); err != nil {
+	spendable := k.bankKeeper.SpendableCoins(ctx, granteeAddr)
+	grantedAmount := sdk.NewCoins(sdk.NewCoin(denom, sdk.NewInt(100000000)))
+	if spendable.IsAnyGT(grantedAmount) {
+		return nil
+	}
+	granterAddr, err := sdk.AccAddressFromBech32(granter)
+	if err != nil {
+		return err // TODO
+	}
+
+	f, err := k.feeGrantKeeper.GetAllowance(ctx, granterAddr, granteeAddr)
+	if f != nil {
+		fmt.Println(err.Error())
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "fee allowance already exists")
+	}
+
+	basicAllowance, err := codectypes.NewAnyWithValue(&feegranttypes.BasicAllowance{
+		SpendLimit: grantedAmount,
+	})
+	if err != nil {
+		return err // TODO
+	}
+	allowedMsgAllowance := feegranttypes.AllowedMsgAllowance{
+		Allowance:       basicAllowance,
+		AllowedMessages: []string{"/chain4energy.c4echain.cfeairdrop.MsgInitialClaim"},
+	}
+	if err = k.feeGrantKeeper.GrantAllowance(ctx, granterAddr, granteeAddr, &allowedMsgAllowance); err != nil {
 		return err
 	}
 	return nil
 }
 
-// func (k Keeper) revokeFeeAllowance(ctx sdk.Context, grantee sdk.AccAddress) error  {
-// 	allowance := feegranttypes.BasicAllowance{}
+func (k Keeper) revokeFeeAllowance(ctx sdk.Context, grantee sdk.AccAddress) error {
+	allowance := feegranttypes.BasicAllowance{}
 
-// 	modAcc := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
-// 	k.feeGrantKeeper.GrantAllowance(ctx, modAcc.GetAddress(), grantee, &allowance)
-// 	return nil // TODO error handling
-// }
+	modAcc := k.accountKeeper.GetModuleAccount(ctx, types.ModuleName)
+	k.feeGrantKeeper.GrantAllowance(ctx, modAcc.GetAddress(), grantee, &allowance)
+	return nil // TODO error handling
+}

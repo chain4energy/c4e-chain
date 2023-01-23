@@ -8,15 +8,15 @@ import (
 	types2 "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
-func (k Keeper) InitialClaim(ctx sdk.Context, owner string, campaignId uint64, additionalAddress string) error {
+func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64, additionalAddress string) error {
 	ak := k.accountKeeper
 	bk := k.bankKeeper
-	var addressToClaim = owner
+	var addressToClaim = claimer
 	if additionalAddress != "" {
 		accAddress, err := sdk.AccAddressFromBech32(additionalAddress)
 		if err != nil {
-			k.Logger(ctx).Error("add mission to airdrop campaign owner parsing error", "owner", owner, "error", err.Error())
-			return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "add mission to airdrop campaign - owner parsing error: %s", owner).Error())
+			k.Logger(ctx).Error("add mission to airdrop campaign claimer parsing error", "claimer", claimer, "error", err.Error())
+			return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "add mission to airdrop campaign - claimer parsing error: %s", claimer).Error())
 		}
 		if bk.BlockedAddr(accAddress) {
 			k.Logger(ctx).Error("new vesting account is not allowed to receive funds error", "address", additionalAddress)
