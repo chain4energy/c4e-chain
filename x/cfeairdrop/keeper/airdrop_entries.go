@@ -206,8 +206,7 @@ func (k Keeper) revokeFeeAllowance(ctx sdk.Context, granter sdk.Address, grantee
 }
 
 func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) *authtypes.ModuleAccount {
-	moduleAddressName := "fee-grant-" + strconv.FormatUint(campaignId, 10)
-	accountAddr := authtypes.NewModuleAddress(moduleAddressName)
+	moduleAddressName, accountAddr := feegrantAccountAddress(campaignId)
 	macc := &authtypes.ModuleAccount{
 		BaseAccount: &authtypes.BaseAccount{
 			Address: accountAddr.String(),
@@ -216,4 +215,9 @@ func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) *authtyp
 	}
 	k.accountKeeper.SetAccount(ctx, k.accountKeeper.NewAccount(ctx, macc))
 	return macc
+}
+
+func feegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
+	moduleAddressName := "fee-grant-" + strconv.FormatUint(campaignId, 10)
+	return moduleAddressName, authtypes.NewModuleAddress(moduleAddressName)
 }

@@ -30,7 +30,8 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 
 	claimableAmount := k.calculateInitialClaimClaimableAmount(ctx, campaignId, userAirdropEntries)
 
-	if err = k.calculateAndSendInitialClaimFreeAmount(ctx, campaignId, userAirdropEntries, claimableAmount, campaign.InitialClaimFreeAmount); err != nil {
+	claimableAmount, err = k.calculateAndSendInitialClaimFreeAmount(ctx, campaignId, userAirdropEntries, claimableAmount, campaign.InitialClaimFreeAmount)
+	if err != nil {
 		return err
 	}
 
@@ -40,9 +41,16 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 	}
 
 	k.SetUserAirdropEntries(ctx, *userAirdropEntries)
-	//if err = k.revokeFeeAllowance(ctx, sdk.AccAddress{}, sdk.AccAddress{}); err != nil {
-	//	return err
-	//}
+	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+		granteeAddr, err := sdk.AccAddressFromBech32(userAirdropEntries.Address)
+		if err != nil {
+			return err
+		}
+		_, accountAddr := feegrantAccountAddress(campaignId)
+		if err = k.revokeFeeAllowance(ctx, accountAddr, granteeAddr); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -96,10 +104,10 @@ func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddr
 	return nil
 }
 
-func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId uint64, userAirdropEntries *types.UserAirdropEntries) (allMissionsAmountSum sdk.Coins) {
+func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId uint64, userAirdropEntries *types.UserAirdropEntries) sdk.Coins {
 	allCampaignMissions, _ := k.AllMissionForCampaign(ctx, campaignId)
 	airdropEntry := userAirdropEntries.GetAidropEntry(campaignId)
-
+	allMissionsAmountSum := sdk.NewCoins()
 	for _, mission := range allCampaignMissions {
 		for _, amount := range airdropEntry.AirdropCoins {
 			if mission.Weight != nil {
@@ -107,36 +115,37 @@ func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId
 			}
 		}
 	}
-	return
+	return airdropEntry.AirdropCoins.Sub(allMissionsAmountSum)
 }
 
-func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaignId uint64, userAirdropEntries *types.UserAirdropEntries, claimableAmount sdk.Coins, initialClaimFreeAmount sdk.Int) error {
+func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaignId uint64, userAirdropEntries *types.UserAirdropEntries, claimableAmount sdk.Coins, initialClaimFreeAmount sdk.Int) (sdk.Coins, error) {
 	userMainAddress, err := sdk.AccAddressFromBech32(userAirdropEntries.Address)
 	if err != nil {
-		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userAirdropEntries.Address)
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userAirdropEntries.Address)
 	}
 	if k.bankKeeper.BlockedAddr(userMainAddress) {
 		k.Logger(ctx).Error("send to airdrop account account is not allowed to receive funds error", "userMainAddress", userMainAddress)
-		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "send to airdrop account - account address: %s is not allowed to receive funds error", userMainAddress)
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "send to airdrop account - account address: %s is not allowed to receive funds error", userMainAddress)
 	}
 
 	freeVestingAmount := sdk.NewCoins()
 	for _, claimableAmountCoin := range claimableAmount {
-		if claimableAmountCoin.Sub(sdk.NewCoin("uc4e", initialClaimFreeAmount)).IsNegative() {
+		if claimableAmountCoin.Sub(sdk.NewCoin(claimableAmountCoin.Denom, initialClaimFreeAmount)).IsNegative() {
 			k.Logger(ctx).Error("send to airdrop account wrong send coins amount. Amount < 1 token (1000000)", "amount", claimableAmountCoin.Amount, "denom", claimableAmountCoin.Denom)
-			return sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to airdrop account  wrong send coins amount. %s < 1 token (1000000 %s)", claimableAmountCoin.String(), claimableAmountCoin.Denom)
+			return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to airdrop account  wrong send coins amount. %s < 1 token (1000000 %s)", claimableAmountCoin.String(), claimableAmountCoin.Denom)
 		}
 		coin := sdk.NewCoins(sdk.NewCoin(claimableAmountCoin.Denom, initialClaimFreeAmount))
 		freeVestingAmount = freeVestingAmount.Add(coin...)
-		claimableAmount = claimableAmount.Sub(coin)
+
 	}
+	claimableAmount = claimableAmount.Sub(freeVestingAmount)
 
 	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userMainAddress, freeVestingAmount); err != nil {
 		k.Logger(ctx).Debug("send to airdrop account send coins to vesting account error", "toAddress", userMainAddress,
 			"freeVestingAmount", freeVestingAmount, "error", err.Error())
-		return sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err,
+		return nil, sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err,
 			"send to airdrop account - send coins to airdrop account error (to: %s, amount: %s)", userMainAddress, freeVestingAmount.String()).Error())
 	}
 	k.DecrementAirdropClaimsLeft(ctx, campaignId, freeVestingAmount)
-	return nil
+	return claimableAmount, nil
 }

@@ -65,16 +65,15 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 		return nil, sdkerrors.Wrapf(types.ErrMissionClaiming, err.Error())
 	}
 
-	k.DecrementAirdropClaimsLeft(ctx, campaignId, claimableAmount)
-
 	start := ctx.BlockTime().Add(campaign.LockupPeriod)
 	end := start.Add(campaign.VestingPeriod)
 
 	if err := k.SendToAirdropAccount(ctx, userAirdropEntries, claimableAmount, start.Unix(), end.Unix(), mission.MissionType); err != nil {
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userAirdropEntries.ClaimAddress)
 	}
-	return userAirdropEntries, nil
 
+	k.DecrementAirdropClaimsLeft(ctx, campaignId, claimableAmount)
+	return userAirdropEntries, nil
 }
 
 func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType types.MissionType,
