@@ -447,10 +447,10 @@ func (h *C4eAirdropUtils) CreateAirdropAccout(ctx sdk.Context, address sdk.AccAd
 	return airdropAcc
 }
 
-func (h *C4eAirdropUtils) CreateAirdropCampaign(ctx sdk.Context, owner string, name string, description string, denom string, startTime time.Time,
+func (h *C4eAirdropUtils) CreateAirdropCampaign(ctx sdk.Context, owner string, name string, description string, allowFeegrant bool, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
 
-	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, denom, startTime, endTime, lockupPeriod, vestingPeriod)
+	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, allowFeegrant, initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
 	require.NoError(h.t, err)
 }
 func (h *C4eAirdropUtils) StartAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64) {

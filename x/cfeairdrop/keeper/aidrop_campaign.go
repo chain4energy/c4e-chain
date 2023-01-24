@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, startTime time.Time,
+func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) error {
 	k.Logger(ctx).Debug("create aidrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
@@ -28,14 +28,34 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 		k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
 	}
+	if initialClaimFreeAmount.IsNegative() {
+		k.Logger(ctx).Error("create airdrop campaign initial claim free amount cannot be negative", "initialClaimFreeAmount", initialClaimFreeAmount)
+		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - initial claim free amount (%s) cannot be negative", initialClaimFreeAmount.String())
+	}
+	if feegrantAmount.IsNegative() {
+		k.Logger(ctx).Error("create airdrop campaign initial feegrant amount cannot be negative", "initialClaimFreeAmount", feegrantAmount)
+		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - feegrant amount (%s) cannot be negative", feegrantAmount.String())
+	}
 	_, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		k.Logger(ctx).Error("create vesting account owner parsing error", "owner", owner, "error", err.Error())
 		return sdkerrors.Wrap(errortypes.ErrParsing, sdkerrors.Wrapf(err, "create vesting account - owner parsing error: %s", owner).Error())
 	}
 
-	campaign := types.NewAirdropCampaign(owner, name, description, startTime, endTime, lockupPeriod, vestingPeriod)
-	campaignId := k.AppendNewCampaign(ctx, *campaign)
+	campaign := types.Campaign{
+		Owner:                  owner,
+		Name:                   name,
+		Description:            description,
+		FeegrantAmount:         feegrantAmount,
+		InitialClaimFreeAmount: initialClaimFreeAmount,
+		Enabled:                false,
+		StartTime:              &startTime,
+		EndTime:                &endTime,
+		LockupPeriod:           lockupPeriod,
+		VestingPeriod:          vestingPeriod,
+	}
+
+	campaignId := k.AppendNewCampaign(ctx, campaign)
 	missionInitial := types.NewInitialMission(campaignId)
 	k.AppendNewMission(ctx, campaignId, *missionInitial)
 	return nil

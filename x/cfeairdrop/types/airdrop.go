@@ -45,22 +45,6 @@ func (c *Mission) IsEnabled(blockTime time.Time) error {
 	return nil
 }
 
-func NewAirdropCampaign(owner string, name string, description string, startTime time.Time,
-	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) *Campaign {
-
-	return &Campaign{
-		Id:            0,
-		Owner:         owner,
-		Name:          name,
-		Description:   description,
-		Enabled:       false,
-		StartTime:     &startTime,
-		EndTime:       &endTime,
-		LockupPeriod:  lockupPeriod,
-		VestingPeriod: vestingPeriod,
-	}
-}
-
 // Validate checks the userAirdropEntries is valid
 func (m *UserAirdropEntries) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {

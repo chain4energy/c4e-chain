@@ -23,7 +23,10 @@ func CmdCreateAirdropCampaign() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argDescription := args[1]
-			argAllowFeegrant, err := strconv.ParseBool(args[2])
+			argFeegrantAmount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
+			}
 			if err != nil {
 				return err
 			}
@@ -60,7 +63,7 @@ func CmdCreateAirdropCampaign() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argName,
 				argDescription,
-				argAllowFeegrant,
+				argFeegrantAmount,
 				argInitialClaimFreeAmount,
 				argStartTime,
 				argEndTime,

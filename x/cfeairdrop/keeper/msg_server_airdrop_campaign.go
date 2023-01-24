@@ -17,6 +17,8 @@ func (k msgServer) CreateAirdropCampaign(goCtx context.Context, msg *types.MsgCr
 		msg.Owner,
 		msg.Name,
 		msg.Description,
+		msg.FeegrantAmount,
+		msg.InitialClaimFreeAmount,
 		msg.StartTime,
 		msg.EndTime,
 		msg.LockupPeriod,

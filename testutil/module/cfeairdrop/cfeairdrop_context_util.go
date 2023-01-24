@@ -29,9 +29,9 @@ func (h *ContextC4eAirdropUtils) SendToAirdropAccount(toAddress sdk.AccAddress,
 	h.C4eAirdropUtils.SendToAirdropAccount(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount)
 }
 
-func (h *ContextC4eAirdropUtils) CreateAirdropCampaign(owner string, name string, description string, denom string, startTime time.Time,
+func (h *ContextC4eAirdropUtils) CreateAirdropCampaign(owner string, name string, description string, allowFeegrant bool, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
-	h.C4eAirdropUtils.CreateAirdropCampaign(h.testContext.GetContext(), owner, name, description, denom, startTime, endTime, lockupPeriod, vestingPeriod)
+	h.C4eAirdropUtils.CreateAirdropCampaign(h.testContext.GetContext(), owner, name, description, allowFeegrant, initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
 }
 
 func (h *ContextC4eAirdropUtils) StartAirdropCampaign(owner string, campaignId uint64) {

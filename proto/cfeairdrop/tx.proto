@@ -19,7 +19,7 @@ service Msg {
   rpc DeleteAirdropEntry(MsgDeleteAirdropEntry) returns (MsgDeleteAirdropEntryResponse);
   rpc CloseAirdropCampaign(MsgCloseAirdropCampaign) returns (MsgCloseAirdropCampaignResponse);
   rpc StartAirdropCampaign(MsgStartAirdropCampaign) returns (MsgStartAirdropCampaignResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
+  // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgClaim {
@@ -42,7 +42,10 @@ message MsgCreateAirdropCampaign {
   string owner = 1;
   string name = 2;
   string description = 3;
-  bool allow_feegrant = 4;
+  string feegrant_amount = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
   string initial_claim_free_amount = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"

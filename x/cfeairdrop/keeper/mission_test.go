@@ -542,7 +542,6 @@ func prepareTestCampaign(ctx sdk.Context) []types.Campaign {
 			Id:            0,
 			Name:          "Name",
 			Description:   "test-campaign",
-			Denom:         commontestutils.DefaultTestDenom,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -596,8 +595,8 @@ func prepareUserAirdropEntries(testHelper *testapp.TestHelper, srcAddress sdk.Ac
 func prepareAidropEntries(address string) []*types.AirdropEntry {
 	airdropEntries := []*types.AirdropEntry{
 		{
-			Amount:  sdk.NewInt(1000000000),
-			Address: address,
+			AirdropCoins: sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(1000000000))),
+			Address:      address,
 		},
 	}
 
@@ -606,7 +605,7 @@ func prepareAidropEntries(address string) []*types.AirdropEntry {
 
 func addCampaignsAndMissions(utils *cfeairdrop.ContextC4eAirdropUtils, ownerAddress string, campaigns []types.Campaign, missions []types.Mission) {
 	for _, campaign := range campaigns {
-		utils.CreateAirdropCampaign(ownerAddress, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+		utils.CreateAirdropCampaign(ownerAddress, campaign.Name, campaign.Description, campaign.AllowFeegrant, campaign.InitialClaimFreeAmount, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 		if campaign.Enabled == true {
 			utils.StartAirdropCampaign(ownerAddress, campaign.Id)
 		}

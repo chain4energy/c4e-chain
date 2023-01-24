@@ -35,7 +35,7 @@ export interface MsgCreateAirdropCampaign {
   owner: string;
   name: string;
   description: string;
-  allow_feegrant: boolean;
+  feegrant_amount: string;
   initial_claim_free_amount: string;
   start_time: Date | undefined;
   end_time: Date | undefined;
@@ -377,7 +377,7 @@ const baseMsgCreateAirdropCampaign: object = {
   owner: "",
   name: "",
   description: "",
-  allow_feegrant: false,
+  feegrant_amount: "",
   initial_claim_free_amount: "",
 };
 
@@ -395,8 +395,8 @@ export const MsgCreateAirdropCampaign = {
     if (message.description !== "") {
       writer.uint32(26).string(message.description);
     }
-    if (message.allow_feegrant === true) {
-      writer.uint32(32).bool(message.allow_feegrant);
+    if (message.feegrant_amount !== "") {
+      writer.uint32(34).string(message.feegrant_amount);
     }
     if (message.initial_claim_free_amount !== "") {
       writer.uint32(42).string(message.initial_claim_free_amount);
@@ -447,7 +447,7 @@ export const MsgCreateAirdropCampaign = {
           message.description = reader.string();
           break;
         case 4:
-          message.allow_feegrant = reader.bool();
+          message.feegrant_amount = reader.string();
           break;
         case 5:
           message.initial_claim_free_amount = reader.string();
@@ -495,10 +495,13 @@ export const MsgCreateAirdropCampaign = {
     } else {
       message.description = "";
     }
-    if (object.allow_feegrant !== undefined && object.allow_feegrant !== null) {
-      message.allow_feegrant = Boolean(object.allow_feegrant);
+    if (
+      object.feegrant_amount !== undefined &&
+      object.feegrant_amount !== null
+    ) {
+      message.feegrant_amount = String(object.feegrant_amount);
     } else {
-      message.allow_feegrant = false;
+      message.feegrant_amount = "";
     }
     if (
       object.initial_claim_free_amount !== undefined &&
@@ -539,8 +542,8 @@ export const MsgCreateAirdropCampaign = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.allow_feegrant !== undefined &&
-      (obj.allow_feegrant = message.allow_feegrant);
+    message.feegrant_amount !== undefined &&
+      (obj.feegrant_amount = message.feegrant_amount);
     message.initial_claim_free_amount !== undefined &&
       (obj.initial_claim_free_amount = message.initial_claim_free_amount);
     message.start_time !== undefined &&
@@ -583,10 +586,13 @@ export const MsgCreateAirdropCampaign = {
     } else {
       message.description = "";
     }
-    if (object.allow_feegrant !== undefined && object.allow_feegrant !== null) {
-      message.allow_feegrant = object.allow_feegrant;
+    if (
+      object.feegrant_amount !== undefined &&
+      object.feegrant_amount !== null
+    ) {
+      message.feegrant_amount = object.feegrant_amount;
     } else {
-      message.allow_feegrant = false;
+      message.feegrant_amount = "";
     }
     if (
       object.initial_claim_free_amount !== undefined &&

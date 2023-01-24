@@ -1,7 +1,6 @@
 import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-client-ts'
 
 import { AccountVestingPools } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
-import { AccountVestingPools } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingPool } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { NewVestingAccount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { NewVestingPool } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
@@ -11,11 +10,13 @@ import { GenesisVestingType } from "chain4energy-c4e-chain-client-ts/chain4energ
 import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingPoolInfo } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingAccount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
+import { ContinuousVestingPeriod } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
+import { RepeatedContinuousVestingAccount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingTypes } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingType } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 
 
-export { AccountVestingPools, AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, VestingTypes, VestingType };
+export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, ContinuousVestingPeriod, RepeatedContinuousVestingAccount, VestingTypes, VestingType };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -49,10 +50,9 @@ const getDefaultState = () => {
 				Params: {},
 				VestingType: {},
 				VestingPools: {},
-				Vestings: {},
+				VestingsSummary: {},
 				
 				_Structure: {
-						AccountVestingPools: getStructure(AccountVestingPools.fromPartial({})),
 						AccountVestingPools: getStructure(AccountVestingPools.fromPartial({})),
 						VestingPool: getStructure(VestingPool.fromPartial({})),
 						NewVestingAccount: getStructure(NewVestingAccount.fromPartial({})),
@@ -63,6 +63,8 @@ const getDefaultState = () => {
 						Params: getStructure(Params.fromPartial({})),
 						VestingPoolInfo: getStructure(VestingPoolInfo.fromPartial({})),
 						VestingAccount: getStructure(VestingAccount.fromPartial({})),
+						ContinuousVestingPeriod: getStructure(ContinuousVestingPeriod.fromPartial({})),
+						RepeatedContinuousVestingAccount: getStructure(RepeatedContinuousVestingAccount.fromPartial({})),
 						VestingTypes: getStructure(VestingTypes.fromPartial({})),
 						VestingType: getStructure(VestingType.fromPartial({})),
 						
@@ -111,11 +113,11 @@ export default {
 					}
 			return state.VestingPools[JSON.stringify(params)] ?? {}
 		},
-				getVestings: (state) => (params = { params: {}}) => {
+				getVestingsSummary: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.Vestings[JSON.stringify(params)] ?? {}
+			return state.VestingsSummary[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -222,36 +224,23 @@ export default {
 		 		
 		
 		
-		async QueryVestings({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryVestingsSummary({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfevesting.query.queryVestings()).data
+				let value= (await client.Chain4EnergyC4EchainCfevesting.query.queryVestingsSummary()).data
 				
 					
-				commit('QUERY', { query: 'Vestings', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryVestings', payload: { options: { all }, params: {...key},query }})
-				return getters['getVestings']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'VestingsSummary', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryVestingsSummary', payload: { options: { all }, params: {...key},query }})
+				return getters['getVestingsSummary']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryVestings API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryVestingsSummary API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
 		
 		
-		async sendMsgWithdrawAllAvailable({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgWithdrawAllAvailable({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgWithdrawAllAvailable:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		async sendMsgSendToVestingAccount({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -262,19 +251,6 @@ export default {
 					throw new Error('TxClient:MsgSendToVestingAccount:Init Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new Error('TxClient:MsgSendToVestingAccount:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgCreateVestingPool({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgCreateVestingPool({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateVestingPool:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgCreateVestingPool:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -291,20 +267,33 @@ export default {
 				}
 			}
 		},
-		
-		async MsgWithdrawAllAvailable({ rootGetters }, { value }) {
+		async sendMsgCreateVestingPool({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
-				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgWithdrawAllAvailable({value})
-				return msg
+				const client=await initClient(rootGetters)
+				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgCreateVestingPool({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgWithdrawAllAvailable:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgCreateVestingPool:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgCreateVestingPool:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
+		async sendMsgWithdrawAllAvailable({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgWithdrawAllAvailable({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgWithdrawAllAvailable:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		
 		async MsgSendToVestingAccount({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -315,6 +304,19 @@ export default {
 					throw new Error('TxClient:MsgSendToVestingAccount:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgSendToVestingAccount:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgCreateVestingAccount({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgCreateVestingAccount({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCreateVestingAccount:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -331,16 +333,16 @@ export default {
 				}
 			}
 		},
-		async MsgCreateVestingAccount({ rootGetters }, { value }) {
+		async MsgWithdrawAllAvailable({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgCreateVestingAccount({value})
+				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgWithdrawAllAvailable({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgCreateVestingAccount:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgWithdrawAllAvailable:Create Could not create message: ' + e.message)
 				}
 			}
 		},

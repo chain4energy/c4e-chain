@@ -11,13 +11,13 @@ const TypeMsgCreateAirdropCampaign = "create_airdrop_campaign"
 
 var _ sdk.Msg = &MsgCreateAirdropCampaign{}
 
-func NewMsgCreateAirdropCampaign(owner string, name string, description string, allowFeegrant bool, initialClaimFreeAmount sdk.Int, startTime time.Time,
+func NewMsgCreateAirdropCampaign(owner string, name string, description string, argFeegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) *MsgCreateAirdropCampaign {
 	return &MsgCreateAirdropCampaign{
 		Owner:                  owner,
 		Name:                   name,
 		Description:            description,
-		AllowFeegrant:          allowFeegrant,
+		FeegrantAmount:         argFeegrantAmount,
 		InitialClaimFreeAmount: initialClaimFreeAmount,
 		StartTime:              startTime,
 		EndTime:                endTime,
@@ -58,12 +58,10 @@ func (msg *MsgCreateAirdropCampaign) ValidateBasic() error {
 	if msg.Description == "" {
 		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty description")
 	}
-	//if msg.StartTime.Before(ctx.BlockTime()) {
-	//	k.Logger(ctx).Error("create airdrop campaign start time in the past", "startTime", startTime)
-	//	return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time in the past error  (%s < %s)", startTime, ctx.BlockTime())
-	//}
+	if msg.StartTime.Before(time.Now()) {
+		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time in the past error  (%s < %s)", msg.StartTime)
+	}
 	if msg.StartTime.After(msg.EndTime) {
-		//k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", msg.StartTime, msg.EndTime)
 	}
 	return nil

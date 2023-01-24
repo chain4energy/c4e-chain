@@ -2,17 +2,19 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 )
 
 // AccountKeeper defines the expected account keeper interface
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
-	GetModuleAccount(ctx sdk.Context, moduleName string) types.ModuleAccountI
+	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	GetModuleAccount(ctx sdk.Context, moduleName string) authtypes.ModuleAccountI
+	SetModuleAccount(ctx sdk.Context, macc authtypes.ModuleAccountI)
 	// Methods imported from account should be defined here
-	NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
-	SetAccount(ctx sdk.Context, acc types.AccountI)
+	NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	SetAccount(ctx sdk.Context, acc authtypes.AccountI)
+	NewAccount(sdk.Context, authtypes.AccountI) authtypes.AccountI
 }
 
 // BankKeeper defines the expected interface needed to retrieve account balances.
@@ -31,4 +33,9 @@ type BankKeeper interface {
 type FeeGrantKeeper interface {
 	GrantAllowance(ctx sdk.Context, granter, grantee sdk.AccAddress, feeAllowance feegrant.FeeAllowanceI) error
 	GetAllowance(ctx sdk.Context, granter, grantee sdk.AccAddress) (feegrant.FeeAllowanceI, error)
+}
+
+// FeeGrantKeeper defines the expected feegrant keeper interface
+type StakingKeeper interface {
+	BondDenom(ctx sdk.Context) (res string)
 }

@@ -21,6 +21,7 @@ type (
 		accountKeeper  types.AccountKeeper
 		bankKeeper     types.BankKeeper
 		feeGrantKeeper types.FeeGrantKeeper
+		stakingKeeper  types.StakingKeeper
 	}
 )
 
@@ -32,6 +33,7 @@ func NewKeeper(
 
 	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper,
 	feeGrantKeeper types.FeeGrantKeeper,
+	stakingKeeper types.StakingKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -46,6 +48,7 @@ func NewKeeper(
 		paramstore:    ps,
 		accountKeeper: accountKeeper, bankKeeper: bankKeeper,
 		feeGrantKeeper: feeGrantKeeper,
+		stakingKeeper:  stakingKeeper,
 	}
 }
 

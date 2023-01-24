@@ -50,7 +50,10 @@ message Campaign {
   string owner = 2;
   string name = 3;
   string description = 4;
-  bool allow_feegrant = 5;
+  string feegrant_amount = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
   string initial_claim_free_amount = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
