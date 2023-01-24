@@ -114,7 +114,7 @@ import (
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
-	v101 "github.com/chain4energy/c4e-chain/app/upgrades/v101"
+	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
 )
 
 const (
@@ -198,7 +198,7 @@ var (
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v101.Upgrade}
+	Upgrades = []upgrades.Upgrade{v110.Upgrade}
 )
 
 func init() {
@@ -208,6 +208,7 @@ func init() {
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, "."+HomeName)
+	cfedistributormoduletypes.SetMaccPerms(maccPerms) // TODO: workaround, change the way maccPerms is passed when switching to the new way of storing parameters
 }
 
 // App extends an ABCI application, but with most of its parameters exported.
@@ -349,7 +350,7 @@ func New(
 		appCodec, keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
 	)
 	app.CrisisKeeper = crisiskeeper.NewKeeper(
-		app.GetSubspace(crisistypes.ModuleName), invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName, // TODO verify if authtypes.FeeCollectorName  is ok
+		app.GetSubspace(crisistypes.ModuleName), invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName,
 	)
 
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)

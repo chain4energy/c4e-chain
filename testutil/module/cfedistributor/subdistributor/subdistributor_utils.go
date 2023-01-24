@@ -1,7 +1,7 @@
 package subdistributor
 
 import (
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,7 +20,7 @@ const (
 const C4eDistributorCollectorName = types.GreenEnergyBoosterCollector
 const NoValidatorsCollectorName = types.GovernanceBoosterCollector
 
-var accAdresses, _ = commontestutils.CreateAccounts(3, 0)
+var accAdresses, _ = testcosmos.CreateAccounts(3, 0)
 
 var BaseAccountAddress = accAdresses[0]
 var ShareDevelopmentFundAccountAddress = accAdresses[1]
@@ -32,13 +32,13 @@ var HelperDestinationAccountAddressString = HelperDestinationAccountAddress.Stri
 
 func PreparareMainDefaultDistributor() types.SubDistributor {
 	helperDestination := types.Destinations{
-		PrimaryShare: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BASE_ACCOUNT},
+		PrimaryShare: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BaseAccount},
 		Shares:       nil,
 		BurnShare:    sdk.ZeroDec(),
 	}
 	distributor1 := types.SubDistributor{
 		Name:         "default_main_distributor",
-		Sources:      []*types.Account{{Id: "", Type: types.MAIN}},
+		Sources:      []*types.Account{{Id: "", Type: types.Main}},
 		Destinations: helperDestination,
 	}
 
@@ -47,7 +47,7 @@ func PreparareMainDefaultDistributor() types.SubDistributor {
 
 func PreparareHelperDistributorForDestination(destination types.Account) types.SubDistributor {
 	helperDestination := types.Destinations{
-		PrimaryShare: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BASE_ACCOUNT},
+		PrimaryShare: types.Account{Id: HelperDestinationAccountAddressString, Type: types.BaseAccount},
 		Shares:       nil,
 		BurnShare:    sdk.ZeroDec(),
 	}
@@ -72,15 +72,15 @@ func PrepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 	destAccount.Id = address
 
 	if destinationType == ModuleAccount {
-		destAccount.Type = types.MODULE_ACCOUNT
+		destAccount.Type = types.ModuleAccount
 	} else if destinationType == InternalAccount {
-		destAccount.Type = types.INTERNAL_ACCOUNT
+		destAccount.Type = types.InternalAccount
 	} else {
-		destAccount.Type = types.BASE_ACCOUNT
+		destAccount.Type = types.BaseAccount
 	}
 
 	if destinationType == MainCollector {
-		destAccount.Type = types.MAIN
+		destAccount.Type = types.Main
 	}
 
 	burnShare := sdk.MustNewDecFromStr("0.51")
@@ -93,7 +93,7 @@ func PrepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 
 	distributor1 := types.SubDistributor{
 		Name:         helpers.RandStringOfLength(10),
-		Sources:      []*types.Account{{Id: authtypes.FeeCollectorName, Type: types.MODULE_ACCOUNT}},
+		Sources:      []*types.Account{{Id: authtypes.FeeCollectorName, Type: types.ModuleAccount}},
 		Destinations: destination,
 	}
 
@@ -103,7 +103,7 @@ func PrepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 func PrepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) types.SubDistributor {
 	source := types.Account{
 		Id:   "c4e",
-		Type: types.MAIN,
+		Type: types.Main,
 	}
 
 	var address string
@@ -118,15 +118,15 @@ func PrepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) 
 	}
 
 	if passThroughAccoutType == ModuleAccount {
-		destAccount.Type = types.MODULE_ACCOUNT
+		destAccount.Type = types.ModuleAccount
 	} else if passThroughAccoutType == InternalAccount {
-		destAccount.Type = types.INTERNAL_ACCOUNT
+		destAccount.Type = types.InternalAccount
 	} else {
-		destAccount.Type = types.BASE_ACCOUNT
+		destAccount.Type = types.BaseAccount
 	}
 
 	if passThroughAccoutType == MainCollector {
-		destAccount.Type = types.MAIN
+		destAccount.Type = types.Main
 	}
 
 	burnShare := sdk.ZeroDec()
@@ -157,15 +157,15 @@ func PrepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 	}
 
 	if sourceAccoutType == ModuleAccount {
-		source.Type = types.MODULE_ACCOUNT
+		source.Type = types.ModuleAccount
 	} else if sourceAccoutType == InternalAccount {
-		source.Type = types.INTERNAL_ACCOUNT
+		source.Type = types.InternalAccount
 	} else {
-		source.Type = types.BASE_ACCOUNT
+		source.Type = types.BaseAccount
 	}
 
 	if sourceAccoutType == MainCollector {
-		source.Type = types.MAIN
+		source.Type = types.Main
 	}
 
 	burnShare := sdk.ZeroDec()
@@ -179,12 +179,12 @@ func PrepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 
 	var destAccount = types.Account{
 		Id:   destName,
-		Type: types.MODULE_ACCOUNT,
+		Type: types.ModuleAccount,
 	}
 
 	var shareDevelopmentFundAccount = types.Account{
 		Id:   ShareDevelopmentFundAccountAddressString,
-		Type: types.BASE_ACCOUNT,
+		Type: types.BaseAccount,
 	}
 
 	shareDevelopmentFund := types.DestinationShare{

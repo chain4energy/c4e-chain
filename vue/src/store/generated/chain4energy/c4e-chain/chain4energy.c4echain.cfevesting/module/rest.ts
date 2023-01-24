@@ -421,11 +421,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/vesting/params
+   * @request GET:/c4e/vesting/v1beta1/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfevestingQueryParamsResponse, RpcStatus>({
-      path: `/c4e/vesting/params`,
+      path: `/c4e/vesting/v1beta1/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -437,11 +437,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVestingsSummary
    * @summary Queries a summary of the entire vesting.
-   * @request GET:/c4e/vesting/summary
+   * @request GET:/c4e/vesting/v1beta1/summary
    */
   queryVestingsSummary = (params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingsSummaryResponse, RpcStatus>({
-      path: `/c4e/vesting/summary`,
+      path: `/c4e/vesting/v1beta1/summary`,
       method: "GET",
       format: "json",
       ...params,
@@ -453,11 +453,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVestingPools
    * @summary Queries a list of Vesting items.
-   * @request GET:/c4e/vesting/vesting_pools/{address}
+   * @request GET:/c4e/vesting/v1beta1/vesting_pools/{address}
    */
   queryVestingPools = (address: string, params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingPoolsResponse, RpcStatus>({
-      path: `/c4e/vesting/vesting_pools/${address}`,
+      path: `/c4e/vesting/v1beta1/vesting_pools/${address}`,
       method: "GET",
       format: "json",
       ...params,
@@ -469,11 +469,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVestingType
    * @summary Queries a list of VestingType items.
-   * @request GET:/c4e/vesting/vesting_type
+   * @request GET:/c4e/vesting/v1beta1/vesting_type
    */
   queryVestingType = (params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingTypeResponse, RpcStatus>({
-      path: `/c4e/vesting/vesting_type`,
+      path: `/c4e/vesting/v1beta1/vesting_type`,
       method: "GET",
       format: "json",
       ...params,

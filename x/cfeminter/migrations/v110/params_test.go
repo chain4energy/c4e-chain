@@ -1,14 +1,16 @@
 package v110_test
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/common"
+	"time"
+
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v110"
+	v101 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
+	v110 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v110"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/stretchr/testify/require"
-	"time"
 
 	"testing"
 
@@ -27,7 +29,7 @@ func TestMigrationLinearMinting(t *testing.T) {
 		createV100MinterPeriod(2, nil, "NO_MINTING", nil, nil),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, "")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, false, "")
 }
 
 func TestMigrationExponentialStepMinting(t *testing.T) {
@@ -40,7 +42,7 @@ func TestMigrationExponentialStepMinting(t *testing.T) {
 		createV100MinterPeriod(2, nil, "NO_MINTING", nil, nil),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, "")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, false, "")
 }
 
 func TestMigrationLinearMintingAndExponentialStepMinting(t *testing.T) {
@@ -56,7 +58,7 @@ func TestMigrationLinearMintingAndExponentialStepMinting(t *testing.T) {
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, "")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, false, "")
 }
 
 func TestMigrationNoMinters(t *testing.T) {
@@ -64,7 +66,7 @@ func TestMigrationNoMinters(t *testing.T) {
 	startTime := time.Now()
 	V101MintingPeriods := []*v101.MintingPeriod{}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, "no minters defined")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "no minters defined")
 }
 
 func TestMigrationWrongMinterPosition(t *testing.T) {
@@ -80,7 +82,7 @@ func TestMigrationWrongMinterPosition(t *testing.T) {
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, "missing minter with sequence id 2")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "missing minter with sequence id 2")
 }
 
 func TestMigrationWrongMintingStartTime(t *testing.T) {
@@ -96,7 +98,7 @@ func TestMigrationWrongMintingStartTime(t *testing.T) {
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, endTime2, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, "first minter end must be bigger than minter start")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "first minter end must be bigger than minter start")
 }
 
 func TestMigrationWrongMinterType(t *testing.T) {
@@ -108,7 +110,7 @@ func TestMigrationWrongMinterType(t *testing.T) {
 		createV100MinterPeriod(1, &endTime1, "WRONG_MINTER_TYPE", nil, timeLinearMinter),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, "wrong minting period type")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "wrong minting period type")
 }
 
 func TestMigrationWrongExponentialStepMinting(t *testing.T) {
@@ -121,7 +123,7 @@ func TestMigrationWrongExponentialStepMinting(t *testing.T) {
 		createV100MinterPeriod(2, nil, "NO_MINTING", nil, nil),
 	}
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, "minter sequence id: 1 - ExponentialStepMinting StepDuration must be bigger than 0")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: ExponentialStepMintingType error: stepDuration must be bigger than 0")
 }
 
 func TestMigrationWrongLinearMinting(t *testing.T) {
@@ -133,11 +135,12 @@ func TestMigrationWrongLinearMinting(t *testing.T) {
 		createV100MinterPeriod(1, &endTime1, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
+
 	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, "minter sequence id: 1 - LinearMinting amount cannot be less than 0")
+	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: LinearMintingType error: amount cannot be less than 0")
 }
 
-func setV101MinterConfig(t *testing.T, ctx sdk.Context, keeperData *common.AdditionalKeeperData, startTime time.Time, mintingPeriods []*v101.MintingPeriod) {
+func setV101MinterConfig(t *testing.T, ctx sdk.Context, keeperData *testenv.AdditionalKeeperData, startTime time.Time, mintingPeriods []*v101.MintingPeriod) {
 	minter := v101.Minter{
 		Start:   startTime,
 		Periods: mintingPeriods,
@@ -148,11 +151,11 @@ func setV101MinterConfig(t *testing.T, ctx sdk.Context, keeperData *common.Addit
 	store.Set(v101.KeyMinter, bz)
 }
 
-func newStore(ctx sdk.Context, testUtil *common.AdditionalKeeperData) prefix.Store {
+func newStore(ctx sdk.Context, testUtil *testenv.AdditionalKeeperData) prefix.Store {
 	return prefix.NewStore(ctx.KVStore(testUtil.StoreKey), append([]byte((testUtil.Subspace.Name())), '/'))
 }
 
-func getV101MinterConfig(ctx sdk.Context, keeperData *common.AdditionalKeeperData) (oldMinterConfig v101.Minter) {
+func getV101MinterConfig(ctx sdk.Context, keeperData *testenv.AdditionalKeeperData) (oldMinterConfig v101.Minter) {
 	oldMinterConfigRaw := keeperData.Subspace.GetRaw(ctx, v101.KeyMinter)
 	if err := codec.NewLegacyAmino().UnmarshalJSON(oldMinterConfigRaw, &oldMinterConfig); err != nil {
 		panic(err)
@@ -164,14 +167,14 @@ func MigrateParamsV100ToV101(
 	t *testing.T,
 	ctx sdk.Context,
 	keeper keeper.Keeper,
-	keeperData *common.AdditionalKeeperData,
-	errorMessage string,
+	keeperData *testenv.AdditionalKeeperData,
+	expectError bool, errorMessage string,
 ) {
 	oldMinterConfig := getV101MinterConfig(ctx, keeperData)
 
 	err := v110.MigrateParams(ctx, &keeperData.Subspace)
-	if len(errorMessage) > 0 {
-		require.Equal(t, err.Error(), errorMessage)
+	if expectError {
+		require.EqualError(t, err, errorMessage)
 		return
 	}
 	require.NoError(t, err)
@@ -187,13 +190,13 @@ func MigrateParamsV100ToV101(
 
 		switch oldMinterPeriod.Type {
 		case "TIME_LINEAR_MINTER":
-			require.EqualValues(t, newMinters[i].Type, types.LINEAR_MINTING)
+			require.EqualValues(t, newMinters[i].Type, types.LinearMintingType)
 			break
 		case "PERIODIC_REDUCTION_MINTER":
-			require.EqualValues(t, newMinters[i].Type, types.EXPONENTIAL_STEP_MINTING)
+			require.EqualValues(t, newMinters[i].Type, types.ExponentialStepMintingType)
 			break
 		case "NO_MINTING":
-			require.EqualValues(t, newMinters[i].Type, types.NO_MINTING)
+			require.EqualValues(t, newMinters[i].Type, types.NoMintingType)
 			break
 		}
 

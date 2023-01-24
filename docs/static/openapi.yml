@@ -4,7 +4,7 @@ info:
   name: ''
   description: ''
 paths:
-  /c4e/distributor/params:
+  /c4e/distributor/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfedistributorParams
@@ -85,7 +85,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4e/distributor/states:
+  /c4e/distributor/v1beta1/states:
     get:
       summary: Queries a list of States items.
       operationId: Chain4EnergyC4EchainCfedistributorStates
@@ -164,7 +164,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4e/minter/inflation:
+  /c4e/minter/v1beta1/inflation:
     get:
       summary: Queries a list of Inflation items.
       operationId: Chain4EnergyC4EchainCfeminterInflation
@@ -196,7 +196,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4e/minter/params:
+  /c4e/minter/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfeminterParams
@@ -273,7 +273,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4e/minter/state:
+  /c4e/minter/v1beta1/state:
     get:
       summary: Queries a list of State items.
       operationId: Chain4EnergyC4EchainCfeminterState
@@ -335,7 +335,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  '/c4e/signature/create_reference_id/{creator}':
+  '/c4e/signature/v1beta1/create_reference_id/{creator}':
     get:
       summary: Queries a list of CreateReferenceId items.
       operationId: Chain4EnergyC4EchainCfesignatureCreateReferenceId
@@ -372,7 +372,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/create_reference_payload_link/{referenceId}/{payloadHash}':
+  '/c4e/signature/v1beta1/create_reference_payload_link/{referenceId}/{payloadHash}':
     get:
       summary: Queries a list of CreateReferencePayloadLink items.
       operationId: Chain4EnergyC4EchainCfesignatureCreateReferencePayloadLink
@@ -415,7 +415,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/create_storage_key/{targetAccAddress}/{referenceId}':
+  '/c4e/signature/v1beta1/create_storage_key/{targetAccAddress}/{referenceId}':
     get:
       summary: Queries a list of CreateStorageKey items.
       operationId: Chain4EnergyC4EchainCfesignatureCreateStorageKey
@@ -456,7 +456,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/get_account_info/{accAddressString}':
+  '/c4e/signature/v1beta1/get_account_info/{accAddressString}':
     get:
       summary: Queries a list of GetAccountInfo items.
       operationId: Chain4EnergyC4EchainCfesignatureGetAccountInfo
@@ -495,7 +495,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/get_reference_payload_link/{referenceId}':
+  '/c4e/signature/v1beta1/get_reference_payload_link/{referenceId}':
     get:
       summary: Queries a list of GetReferencePayloadLink items.
       operationId: Chain4EnergyC4EchainCfesignatureGetReferencePayloadLink
@@ -532,7 +532,7 @@ paths:
           type: string
       tags:
         - Query
-  /c4e/signature/params:
+  /c4e/signature/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfesignatureParams
@@ -568,7 +568,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  '/c4e/signature/verify_reference_payload_link/{referenceId}/{payloadHash}':
+  '/c4e/signature/v1beta1/verify_reference_payload_link/{referenceId}/{payloadHash}':
     get:
       summary: Queries a list of VerifyReferencePayloadLink items.
       operationId: Chain4EnergyC4EchainCfesignatureVerifyReferencePayloadLink
@@ -609,7 +609,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/verify_signature/{referenceId}/{targetAccAddress}':
+  '/c4e/signature/v1beta1/verify_signature/{referenceId}/{targetAccAddress}':
     get:
       summary: Queries a list of VerifySignature items.
       operationId: Chain4EnergyC4EchainCfesignatureVerifySignature
@@ -658,7 +658,7 @@ paths:
           type: string
       tags:
         - Query
-  /c4e/vesting/params:
+  /c4e/vesting/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfevestingParams
@@ -864,7 +864,7 @@ paths:
                         }
       tags:
         - Query
-  /c4e/vesting/summary:
+  /c4e/vesting/v1beta1/summary:
     get:
       summary: Queries a summary of the entire vesting.
       operationId: Chain4EnergyC4EchainCfevestingVestingsSummary
@@ -1069,7 +1069,7 @@ paths:
                         }
       tags:
         - Query
-  '/c4e/vesting/vesting_pools/{address}':
+  '/c4e/vesting/v1beta1/vesting_pools/{address}':
     get:
       summary: Queries a list of Vesting items.
       operationId: Chain4EnergyC4EchainCfevestingVestingPools
@@ -1307,7 +1307,7 @@ paths:
           type: string
       tags:
         - Query
-  /c4e/vesting/vesting_type:
+  /c4e/vesting/v1beta1/vesting_type:
     get:
       summary: Queries a list of VestingType items.
       operationId: Chain4EnergyC4EchainCfevestingVestingType

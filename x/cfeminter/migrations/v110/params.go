@@ -64,13 +64,10 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 			LinearMinting:          linearMinting,
 			ExponentialStepMinting: exponentialStepMinting,
 		}
-		if err := newMinter.Validate(); err != nil {
-			return err
-		}
 		newMinters = append(newMinters, &newMinter)
 	}
 	newMinterConfig.Minters = newMinters
-	if err := newMinterConfig.ValidateMinters(); err != nil {
+	if err := newMinterConfig.Validate(); err != nil {
 		return err
 	}
 	paramStore.Set(ctx, types.KeyMinterConfig, newMinterConfig)

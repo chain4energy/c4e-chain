@@ -1,12 +1,14 @@
 package v110_test
 
 import (
+	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
+	"strconv"
+
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
+	v101 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
+	v110 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/stretchr/testify/require"
-	"strconv"
 
 	"testing"
 
@@ -19,57 +21,66 @@ import (
 func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
 
-	subDistributorSourceMain := createOldSubDistributor(types.MODULE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID")
+	subDistributorSourceMain := createOldSubDistributor(types.ModuleAccount, types.Main, types.BaseAccount, "CUSTOM_ID")
 	subDistributorSourceMain.Sources = subDistributorSourceMain.Sources[:1]
 
-	subDistributorShareMain := createOldSubDistributor(types.BASE_ACCOUNT, types.MODULE_ACCOUNT, types.MAIN, "CUSTOM_ID")
+	subDistributorShareMain := createOldSubDistributor(types.BaseAccount, types.ModuleAccount, types.Main, "CUSTOM_ID")
 	subDistributorShareMain.Destination.Share = subDistributorShareMain.Destination.Share[:1]
 
 	oldSubDistributors := []v101.SubDistributor{
-		createOldSubDistributor(types.MODULE_ACCOUNT, types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, types.BASE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.MAIN, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.ModuleAccount, types.BaseAccount, types.InternalAccount, "CUSTOM_ID"),
+		createOldSubDistributor(types.InternalAccount, types.ModuleAccount, types.BaseAccount, "CUSTOM_ID"),
+		createOldSubDistributor(types.BaseAccount, types.InternalAccount, types.ModuleAccount, "CUSTOM_ID"),
+		createOldSubDistributor(types.Main, types.InternalAccount, types.ModuleAccount, "CUSTOM_ID"),
 		subDistributorShareMain,
 		subDistributorSourceMain,
 	}
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, false)
+	MigrateParamsV101ToV110(t, ctx, testUtil, false, "")
 }
 
 func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
 	oldSubDistributors := []v101.SubDistributor{
-		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.InternalAccount, types.BaseAccount, types.ModuleAccount, "CUSTOM_ID"),
+		createOldSubDistributor(types.Main, types.InternalAccount, types.ModuleAccount, "CUSTOM_ID"),
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true)
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: MAIN")
 }
 
 func TestMigrationSubDistributorsDuplicates(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
 	oldSubDistributors := []v101.SubDistributor{
-		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.BASE_ACCOUNT, types.INTERNAL_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.BASE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.InternalAccount, types.BaseAccount, types.ModuleAccount, "CUSTOM_ID"),
+		createOldSubDistributor(types.BaseAccount, types.InternalAccount, types.ModuleAccount, "CUSTOM_ID"),
+		createOldSubDistributor(types.BaseAccount, types.Main, types.BaseAccount, "CUSTOM_ID"),
 	}
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true)
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "same MAIN account cannot occur twice within one subdistributor, subdistributor name: "+oldSubDistributors[2].Name)
 }
 
 func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
 	oldSubDistributors := []v101.SubDistributor{
-		createOldSubDistributor(types.INTERNAL_ACCOUNT, types.BASE_ACCOUNT, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.BASE_ACCOUNT, types.MAIN, types.MODULE_ACCOUNT, "CUSTOM_ID"),
-		createOldSubDistributor(types.BASE_ACCOUNT, "WRONG_ACCOUNT_TYPE", types.MODULE_ACCOUNT, "CUSTOM_ID"),
+		createOldSubDistributor(types.InternalAccount, types.BaseAccount, types.ModuleAccount, "CUSTOM_ID"),
+		createOldSubDistributor(types.BaseAccount, types.Main, types.ModuleAccount, "CUSTOM_ID"),
+		createOldSubDistributor(types.BaseAccount, "WRONG_ACCOUNT_TYPE", types.ModuleAccount, "CUSTOM_ID"),
 	}
 
 	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true)
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[2].Name+" source with id \"CUSTOM_ID\" validation error: account \"CUSTOM_ID\" is of the wrong type: WRONG_ACCOUNT_TYPE")
+}
+
+func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
+	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
+	oldSubDistributors := []v101.SubDistributor{
+		createOldSubDistributor(types.BaseAccount, types.Main, types.ModuleAccount, "WRONG_CUSTOM_ID"),
+	}
+
+	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV101ToV110(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[0].Name+" destinations validation error: destination share "+oldSubDistributors[0].Destination.Share[0].Name+" destination account validation error: module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
 }
 
 func setV101Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v101.SubDistributor) {
@@ -87,8 +98,9 @@ func MigrateParamsV101ToV110(
 	t *testing.T,
 	ctx sdk.Context,
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
-	wantError bool,
+	expectError bool, errorMessage string,
 ) {
+	cfedistributortestutils.SetTestMaccPerms()
 	var oldSubDistributors []v101.SubDistributor
 	store := newStore(ctx, testUtil)
 	distributors := store.Get(types.KeySubDistributors)
@@ -96,8 +108,8 @@ func MigrateParamsV101ToV110(
 	require.NoError(t, err)
 
 	err = v110.MigrateParams(ctx, &testUtil.Subspace)
-	if wantError {
-		require.Error(t, err)
+	if expectError {
+		require.EqualError(t, err, errorMessage)
 		return
 	}
 	require.NoError(t, err)
@@ -136,13 +148,13 @@ func createOldSubDistributor(
 ) v101.SubDistributor {
 	var sources []*v101.Account
 	mainAcc := v101.Account{
-		Id:   id,
+		Id:   cfedistributortestutils.GetAccountTestId(id, "", sourceType),
 		Type: sourceType,
 	}
 	sources = append(sources, &mainAcc)
 	for i := 0; i < 5; i++ {
 		randomAccount := v101.Account{
-			Id:   id + "custom_siffix_" + strconv.Itoa(i),
+			Id:   cfedistributortestutils.GetAccountTestId(id+"_custom_siffix_"+strconv.Itoa(i), "", sourceType),
 			Type: sourceType,
 		}
 		sources = append(sources, &randomAccount)
@@ -154,7 +166,7 @@ func createOldSubDistributor(
 		share := v101.Share{
 			Name: helpers.RandStringOfLength(10),
 			Account: v101.Account{
-				Id:   id + "custom_siffix_" + strconv.Itoa(i),
+				Id:   cfedistributortestutils.GetAccountTestId(id+"_custom_siffix_"+strconv.Itoa(i), "", destinationShareType),
 				Type: destinationShareType,
 			},
 			Percent: sdk.NewDec(5),
@@ -166,7 +178,7 @@ func createOldSubDistributor(
 		Name: helpers.RandStringOfLength(10),
 		Destination: v101.Destination{
 			Account: v101.Account{
-				Id:   id,
+				Id:   cfedistributortestutils.GetAccountTestId(id, "", destinationType),
 				Type: destinationType,
 			},
 			BurnShare: &v101.BurnShare{

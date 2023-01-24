@@ -7,7 +7,8 @@ import (
 
 	"github.com/chain4energy/c4e-chain/testutil/nullify"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -56,17 +57,17 @@ func (h *C4eVestingKeeperUtils) SetupAccountVestingPoolsWithModification(ctx sdk
 
 func (h *C4eVestingKeeperUtils) CheckNonNegativeVestingPoolAmountsInvariant(ctx sdk.Context, failed bool, message string) {
 	invariant := cfevestingmodulekeeper.NonNegativeVestingPoolAmountsInvariant(*h.helperCfevestingKeeper)
-	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
+	testcosmos.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
 func (h *C4eVestingKeeperUtils) CheckVestingPoolConsistentDataInvariant(ctx sdk.Context, failed bool, message string) {
 	invariant := cfevestingmodulekeeper.VestingPoolConsistentDataInvariant(*h.helperCfevestingKeeper)
-	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
+	testcosmos.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
 func (h *C4eVestingKeeperUtils) CheckModuleAccountInvariant(ctx sdk.Context, failed bool, message string) {
 	invariant := cfevestingmodulekeeper.ModuleAccountInvariant(*h.helperCfevestingKeeper)
-	commontestutils.CheckInvariant(h.t, ctx, invariant, failed, message)
+	testcosmos.CheckInvariant(h.t, ctx, invariant, failed, message)
 }
 
 func (h *C4eVestingUtils) SetupVestingTypesForAccountsVestingPools(ctx sdk.Context) {
@@ -80,15 +81,15 @@ type C4eVestingUtils struct {
 	helperAccountKeeper *authkeeper.AccountKeeper
 	helperBankKeeper    *bankkeeper.Keeper
 	helperStakingKeeper *stakingkeeper.Keeper
-	bankUtils           *commontestutils.BankUtils
-	authUtils           *commontestutils.AuthUtils
+	bankUtils           *testcosmos.BankUtils
+	authUtils           *testcosmos.AuthUtils
 }
 
 func NewC4eVestingUtils(t *testing.T, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	helperBankKeeper *bankkeeper.Keeper,
-	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *commontestutils.BankUtils,
-	authUtils *commontestutils.AuthUtils) C4eVestingUtils {
+	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *testcosmos.BankUtils,
+	authUtils *testcosmos.AuthUtils) C4eVestingUtils {
 	return C4eVestingUtils{C4eVestingKeeperUtils: NewC4eVestingKeeperUtils(t, helperCfevestingKeeper), helperAccountKeeper: helperAccountKeeper,
 		helperBankKeeper: helperBankKeeper, helperStakingKeeper: helperStakingKeeper, bankUtils: bankUtils, authUtils: authUtils}
 }
@@ -306,7 +307,7 @@ func (m *C4eVestingUtils) ValidateInvariants(ctx sdk.Context) {
 		cfevestingmodulekeeper.VestingPoolConsistentDataInvariant(*m.helperCfevestingKeeper),
 		cfevestingmodulekeeper.NonNegativeVestingPoolAmountsInvariant(*m.helperCfevestingKeeper),
 	}
-	commontestutils.ValidateManyInvariants(m.t, ctx, invariants)
+	testcosmos.ValidateManyInvariants(m.t, ctx, invariants)
 }
 
 func (h *C4eVestingUtils) QueryVestingsSummary(wctx context.Context, expectedResponse cfevestingtypes.QueryVestingsSummaryResponse) {
@@ -377,14 +378,14 @@ func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, from
 
 type ContextC4eVestingUtils struct {
 	C4eVestingUtils
-	testContext commontestutils.TestContext
+	testContext testenv.TestContext
 }
 
-func NewContextC4eVestingUtils(t *testing.T, testContext commontestutils.TestContext, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
+func NewContextC4eVestingUtils(t *testing.T, testContext testenv.TestContext, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	helperBankKeeper *bankkeeper.Keeper,
-	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *commontestutils.BankUtils,
-	authUtils *commontestutils.AuthUtils) *ContextC4eVestingUtils {
+	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *testcosmos.BankUtils,
+	authUtils *testcosmos.AuthUtils) *ContextC4eVestingUtils {
 	c4eVestingUtils := NewC4eVestingUtils(t, helperCfevestingKeeper, helperAccountKeeper, helperBankKeeper, helperStakingKeeper, bankUtils, authUtils)
 	return &ContextC4eVestingUtils{C4eVestingUtils: c4eVestingUtils, testContext: testContext}
 }
@@ -533,8 +534,8 @@ func (h *C4eVestingUtils) MessageCreateVestingAccount(
 	vestingAccountCountAfter := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
 	require.EqualValues(h.t, vestingAccountCountBefore+1, vestingAccountCountAfter)
 
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore.Sub(coins.AmountOf(commontestutils.DefaultTestDenom)))
-	h.authUtils.VerifyVestingAccount(ctx, toAddress, commontestutils.DefaultTestDenom, coins.AmountOf(commontestutils.DefaultTestDenom), startTime, endTime)
+	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore.Sub(coins.AmountOf(testenv.DefaultTestDenom)))
+	h.authUtils.VerifyVestingAccount(ctx, toAddress, testenv.DefaultTestDenom, coins.AmountOf(testenv.DefaultTestDenom), startTime, endTime)
 	accFromList, found := h.helperCfevestingKeeper.GetVestingAccount(ctx, vestingAccountCountBefore)
 	require.Equal(h.t, true, found)
 	require.Equal(h.t, toAddress.String(), accFromList.Address)

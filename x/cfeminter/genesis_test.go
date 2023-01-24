@@ -19,7 +19,7 @@ func TestGenesis(t *testing.T) {
 	layout := "2006-01-02T15:04:05.000Z"
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
-	minterConfig := &types.MinterConfig{
+	minterConfig := types.MinterConfig{
 		StartTime: time.Now(),
 		Minters:   createMinter(time.Now()),
 	}
@@ -46,7 +46,7 @@ func TestGenesisWithHistory(t *testing.T) {
 	layout := "2006-01-02T15:04:05.000Z"
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
-	minterConfig := &types.MinterConfig{
+	minterConfig := types.MinterConfig{
 		StartTime: time.Now(),
 		Minters:   createMinter(time.Now()),
 	}
@@ -102,9 +102,9 @@ func createMinter(startTime time.Time) []*types.Minter {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
+	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
 
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }

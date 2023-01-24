@@ -11,7 +11,7 @@ import (
 func TestGenesis(t *testing.T) {
 	account := types.Account{
 		Id:   "usage_incentives_collector",
-		Type: "INTERNAL_ACCOUNT",
+		Type: "InternalAccount",
 	}
 
 	state := types.State{
@@ -42,7 +42,7 @@ func TestGenesis(t *testing.T) {
 func TestGenesisImport(t *testing.T) {
 	account := types.Account{
 		Id:   "usage_incentives_collector",
-		Type: "INTERNAL_ACCOUNT",
+		Type: "InternalAccount",
 	}
 
 	state := types.State{
@@ -88,7 +88,7 @@ func TestGenesisNoStates(t *testing.T) {
 func TestGenesisBurnStateAccNotNil(t *testing.T) {
 	account := types.Account{
 		Id:   "usage_incentives_collector",
-		Type: "INTERNAL_ACCOUNT",
+		Type: "InternalAccount",
 	}
 
 	state := types.State{

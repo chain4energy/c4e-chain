@@ -1,15 +1,16 @@
 package genesis
 
 import (
-	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
+	"time"
+
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	mintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
 )
 
 var (
-	accountsAddresses, _ = testcommon.CreateAccounts(2, 0)
+	accountsAddresses, _ = testcosmos.CreateAccounts(2, 0)
 	DevelopmentFundAddr  = accountsAddresses[0]
 	LpAccountAddr        = accountsAddresses[1]
 )
@@ -21,14 +22,14 @@ var CfeDistributorParams = distributortypes.Params{
 			Destinations: distributortypes.Destinations{
 				PrimaryShare: distributortypes.Account{
 					Id:   "c4e_distributor",
-					Type: distributortypes.MAIN,
+					Type: distributortypes.Main,
 				},
 				BurnShare: sdk.ZeroDec(),
 			},
 			Sources: []*distributortypes.Account{
 				{
 					Id:   "fee_collector",
-					Type: distributortypes.MODULE_ACCOUNT,
+					Type: distributortypes.ModuleAccount,
 				},
 			},
 		},
@@ -37,7 +38,7 @@ var CfeDistributorParams = distributortypes.Params{
 			Destinations: distributortypes.Destinations{
 				PrimaryShare: distributortypes.Account{
 					Id:   distributortypes.ValidatorsRewardsCollector,
-					Type: distributortypes.MODULE_ACCOUNT,
+					Type: distributortypes.ModuleAccount,
 				},
 				BurnShare: sdk.ZeroDec(),
 				Shares: []*distributortypes.DestinationShare{
@@ -46,7 +47,7 @@ var CfeDistributorParams = distributortypes.Params{
 						Share: sdk.MustNewDecFromStr("0.05"),
 						Destination: distributortypes.Account{
 							Id:   DevelopmentFundAddr.String(),
-							Type: distributortypes.BASE_ACCOUNT,
+							Type: distributortypes.BaseAccount,
 						},
 					},
 					{
@@ -54,7 +55,7 @@ var CfeDistributorParams = distributortypes.Params{
 						Share: sdk.MustNewDecFromStr("0.35"),
 						Destination: distributortypes.Account{
 							Id:   "usage_incentives_collector",
-							Type: distributortypes.INTERNAL_ACCOUNT,
+							Type: distributortypes.InternalAccount,
 						},
 					},
 				},
@@ -62,7 +63,7 @@ var CfeDistributorParams = distributortypes.Params{
 			Sources: []*distributortypes.Account{
 				{
 					Id:   "c4e_distributor",
-					Type: distributortypes.MAIN,
+					Type: distributortypes.Main,
 				},
 			},
 		},
@@ -71,7 +72,7 @@ var CfeDistributorParams = distributortypes.Params{
 			Destinations: distributortypes.Destinations{
 				PrimaryShare: distributortypes.Account{
 					Id:   LpAccountAddr.String(),
-					Type: distributortypes.BASE_ACCOUNT,
+					Type: distributortypes.BaseAccount,
 				},
 				BurnShare: sdk.ZeroDec(),
 				Shares: []*distributortypes.DestinationShare{
@@ -80,7 +81,7 @@ var CfeDistributorParams = distributortypes.Params{
 						Share: sdk.MustNewDecFromStr("0.34"),
 						Destination: distributortypes.Account{
 							Id:   "green_energy_booster_collector",
-							Type: distributortypes.MODULE_ACCOUNT,
+							Type: distributortypes.ModuleAccount,
 						},
 					},
 					{
@@ -88,7 +89,7 @@ var CfeDistributorParams = distributortypes.Params{
 						Share: sdk.MustNewDecFromStr("0.33"),
 						Destination: distributortypes.Account{
 							Id:   "governance_booster_collector",
-							Type: distributortypes.MODULE_ACCOUNT,
+							Type: distributortypes.ModuleAccount,
 						},
 					},
 				},
@@ -96,7 +97,7 @@ var CfeDistributorParams = distributortypes.Params{
 			Sources: []*distributortypes.Account{
 				{
 					Id:   "usage_incentives_collector",
-					Type: distributortypes.INTERNAL_ACCOUNT,
+					Type: distributortypes.InternalAccount,
 				},
 			},
 		},
@@ -105,12 +106,12 @@ var CfeDistributorParams = distributortypes.Params{
 
 var CfeMinterrParams = mintertypes.Params{
 	MintDenom: "uc4e",
-	MinterConfig: &mintertypes.MinterConfig{
+	MinterConfig: mintertypes.MinterConfig{
 		StartTime: time.Now(),
 		Minters: []*mintertypes.Minter{
 			{
 				SequenceId: 1,
-				Type:       mintertypes.EXPONENTIAL_STEP_MINTING,
+				Type:       mintertypes.ExponentialStepMintingType,
 				ExponentialStepMinting: &mintertypes.ExponentialStepMinting{
 					StepDuration:     time.Hour * 24 * 365 * 4, // 4 years
 					Amount:           sdk.NewInt(160000000000000),

@@ -1,13 +1,15 @@
 package v110_test
 
 import (
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
+	"testing"
+
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
+	v101 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
+	v110 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/stretchr/testify/require"
-	"testing"
 
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -16,32 +18,32 @@ import (
 
 func TestMigrationStatesBurnFalse(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	coin := sdk.NewDecCoin(commontestutils.DefaultTestDenom, sdk.NewInt(0))
+	coin := sdk.NewDecCoin(testenv.DefaultTestDenom, sdk.NewInt(0))
 	states := []v101.State{
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
 	}
 	setV101States(ctx, testUtil.StoreKey, testUtil.Cdc, states)
-	MigrateStoreV101ToV110(t, testUtil, ctx, false)
+	MigrateStoreV101ToV110(t, testUtil, ctx)
 }
 
 func TestMigrationStatesBurnTrue(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	coin := sdk.NewDecCoin(commontestutils.DefaultTestDenom, sdk.NewInt(100))
+	coin := sdk.NewDecCoin(testenv.DefaultTestDenom, sdk.NewInt(100))
 	states := []v101.State{
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
 	}
 	setV101States(ctx, testUtil.StoreKey, testUtil.Cdc, states)
-	MigrateStoreV101ToV110(t, testUtil, ctx, false)
+	MigrateStoreV101ToV110(t, testUtil, ctx)
 }
 
 func TestMigrationStatesBurnTrueAndFalse(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	coin := sdk.NewDecCoin(commontestutils.DefaultTestDenom, sdk.NewInt(100))
-	coin2 := sdk.NewDecCoin(commontestutils.DefaultTestDenom, sdk.NewInt(300))
+	coin := sdk.NewDecCoin(testenv.DefaultTestDenom, sdk.NewInt(100))
+	coin2 := sdk.NewDecCoin(testenv.DefaultTestDenom, sdk.NewInt(300))
 	states := []v101.State{
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin2),
@@ -50,7 +52,7 @@ func TestMigrationStatesBurnTrueAndFalse(t *testing.T) {
 		createV101SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
 	}
 	setV101States(ctx, testUtil.StoreKey, testUtil.Cdc, states)
-	MigrateStoreV101ToV110(t, testUtil, ctx, false)
+	MigrateStoreV101ToV110(t, testUtil, ctx)
 }
 
 func setV101States(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, states []v101.State) {
@@ -73,16 +75,11 @@ func MigrateStoreV101ToV110(
 	t *testing.T,
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,
 	ctx sdk.Context,
-	wantError bool,
 ) {
 	store := prefix.NewStore(ctx.KVStore(testUtil.StoreKey), v101.RemainsKeyPrefix)
 	oldStates := GetAllV101States(store, testUtil.Cdc)
 
 	err := v110.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)
-	if wantError {
-		require.Error(t, err)
-		return
-	}
 	require.NoError(t, err)
 
 	newStates := testUtil.GetC4eDistributorKeeper().GetAllStates(ctx)

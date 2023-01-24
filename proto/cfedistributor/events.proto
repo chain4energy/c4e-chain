@@ -16,7 +16,8 @@ message Distribution {
   repeated cosmos.base.v1beta1.DecCoin amount = 5 [
     (gogoproto.moretags) = "yaml:\"amount\"",
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
-    (gogoproto.nullable) = false];
+    (gogoproto.nullable) = false
+  ];
 }
 
 message DistributionBurn {
@@ -25,5 +26,6 @@ message DistributionBurn {
   repeated cosmos.base.v1beta1.DecCoin amount = 3 [
     (gogoproto.moretags) = "yaml:\"amount\"",
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
-    (gogoproto.nullable) = false];
+    (gogoproto.nullable) = false
+  ];
 }

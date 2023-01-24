@@ -5,7 +5,7 @@ import (
 	"time"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -236,7 +236,7 @@ func TestMintWithExponentialStepMintingMinterStateAmountTooBig(t *testing.T) {
 func prepareApp(t *testing.T, initialBlockTime time.Time, mintingStartTime time.Time, minters []*types.Minter) *testapp.TestHelper {
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, initialBlockTime)
 	params := types.DefaultParams()
-	params.MintDenom = commontestutils.DefaultTestDenom
+	params.MintDenom = testenv.DefaultTestDenom
 	params.MinterConfig.StartTime = mintingStartTime
 	params.MinterConfig.Minters = minters
 
@@ -252,9 +252,9 @@ func createLinearMintings(startTime time.Time) []*types.Minter {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
-	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
+	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
 
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }
@@ -268,15 +268,15 @@ func createExponentialStepMintingWithRemainingPassing(startTime time.Time) []*ty
 	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(4000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	linearMinting := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &exponentialStepMinting}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &linearMinting}
-	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.ExponentialStepMintingType, ExponentialStepMinting: &exponentialStepMinting}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &linearMinting}
+	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
 
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }
 
 func createExponentialStepMinting() []*types.Minter {
 	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(1000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
-	minter1 := types.Minter{SequenceId: 1, Type: types.EXPONENTIAL_STEP_MINTING, ExponentialStepMinting: &exponentialStepMinting}
+	minter1 := types.Minter{SequenceId: 1, Type: types.ExponentialStepMintingType, ExponentialStepMinting: &exponentialStepMinting}
 	return []*types.Minter{&minter1}
 }

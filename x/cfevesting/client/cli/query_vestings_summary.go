@@ -33,7 +33,7 @@ $ %s query %s summary
 				types.ModuleName, types.ModuleName, types.ModuleName, version.AppName, types.ModuleName,
 			),
 		),
-		Args:  cobra.ExactArgs(0),
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			clientCtx, err := client.GetClientTxContext(cmd)

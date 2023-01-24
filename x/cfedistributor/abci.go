@@ -15,21 +15,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	states := k.GetAllStates(ctx)
 
 	for _, subDistributor := range subDistributors {
-		allCoinsToDistribute := sdk.NewDecCoins()
-		for _, source := range subDistributor.Sources {
-			var coinsToDistribute sdk.DecCoins
-			if source.Type == types.MAIN {
-				coinsToDistribute = k.PrepareCoinToDistributeForMainAccount(ctx, states, subDistributor.Name)
-			} else {
-				coinsToDistribute = k.PrepareCoinToDistributeForNotMainAccount(ctx, *source, states, subDistributor.Name)
-			}
-
-			if len(coinsToDistribute) == 0 {
-				continue
-			}
-			allCoinsToDistribute = allCoinsToDistribute.Add(coinsToDistribute...)
-		}
-
+		allCoinsToDistribute := k.PrepareCoinsToDistribute(subDistributor.Sources, ctx, states, subDistributor.Name)
 		if allCoinsToDistribute.IsZero() {
 			continue
 		}
@@ -49,8 +35,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		}
 		states = *newStates
 	}
-
-
 
 	k.SendCoinsFromStates(ctx, states)
 }

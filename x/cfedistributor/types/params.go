@@ -9,6 +9,12 @@ import (
 
 var _ paramtypes.ParamSet = (*Params)(nil)
 
+var maccPerms map[string][]string
+
+func SetMaccPerms(perms map[string][]string) {
+	maccPerms = perms
+}
+
 var (
 	KeySubDistributors     = []byte("SubDistributors")
 	DefaultSubDistributors = []SubDistributor{
@@ -17,14 +23,14 @@ var (
 			Destinations: Destinations{
 				PrimaryShare: Account{
 					Id:   ValidatorsRewardsCollector,
-					Type: MODULE_ACCOUNT,
+					Type: ModuleAccount,
 				},
 				BurnShare: sdk.ZeroDec(),
 			},
 			Sources: []*Account{
 				{
 					Id:   "",
-					Type: MAIN,
+					Type: Main,
 				},
 			},
 		},

@@ -1,17 +1,18 @@
 package v110_test
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 	"strconv"
 	"testing"
 	"time"
 
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v101"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v110"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -22,7 +23,7 @@ import (
 )
 
 func TestMigrationManyAccountVestingPoolsWithManyPools(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(5, 0)
+	accounts, _ := testcosmos.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[1].String(), 10)
@@ -38,7 +39,7 @@ func TestMigrationNoAccountVestingPoolsAndNoVestingTypes(t *testing.T) {
 }
 
 func TestMigrationManyAccountVestingPoolsWithNoPools(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(5, 0)
+	accounts, _ := testcosmos.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 0)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[1].String(), 0)
@@ -49,7 +50,7 @@ func TestMigrationManyAccountVestingPoolsWithNoPools(t *testing.T) {
 }
 
 func TestMigrationOneAccountVestingPoolsWithOnePool(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(5, 0)
+	accounts, _ := testcosmos.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 1)
 	MigrateV101ToV110(t, testUtil, ctx)
@@ -79,7 +80,7 @@ func TestMigrationValidatorsVestingType(t *testing.T) {
 }
 
 func TestMigrationAccountVestingPoolsAndVestingTypes(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(5, 0)
+	accounts, _ := testcosmos.CreateAccounts(5, 0)
 	vts := testutils.GenerateVestingTypes(10, 1)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
@@ -92,7 +93,7 @@ func TestMigrationAccountVestingPoolsAndVestingTypes(t *testing.T) {
 }
 
 func TestMigrationWrongSentAmount(t *testing.T) {
-	accounts, _ := commontestutils.CreateAccounts(5, 0)
+	accounts, _ := testcosmos.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[0].String(), 10)
 	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[1].String(), 10)
@@ -201,7 +202,7 @@ func generateOldAccountVestingPoolsWithRandomVestingPools(numberOfAccounts int, 
 func generateOldAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
 	accountStartId int, vestingStartId int, generateVesting func(accuntId int, vestingId int) v101.VestingPool) []*v101.AccountVestingPools {
 	accountVestingPoolsArr := []*v101.AccountVestingPools{}
-	accountsAddresses, _ := commontestutils.CreateAccounts(2*numberOfAccounts, 0)
+	accountsAddresses, _ := testcosmos.CreateAccounts(2*numberOfAccounts, 0)
 
 	for i := 0; i < numberOfAccounts; i++ {
 		accountVestingPools := v101.AccountVestingPools{}

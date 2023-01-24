@@ -17,7 +17,7 @@ var _ = strconv.Itoa(0)
 func CmdVestingType() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vesting-type",
-		Short: "Query for all vesting types",
+		Short: "Query all vesting types",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all vesting types.
 
@@ -27,7 +27,7 @@ $ %s query %s vesting-type
 				version.AppName, types.ModuleName,
 			),
 		),
-		Args:  cobra.ExactArgs(0),
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			clientCtx, err := client.GetClientTxContext(cmd)

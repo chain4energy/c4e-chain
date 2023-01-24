@@ -15,15 +15,15 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/c4e/minter/params";
+    option (google.api.http).get = "/c4e/minter/v1beta1/params";
   }
   // Queries a list of Inflation items.
 	rpc Inflation(QueryInflationRequest) returns (QueryInflationResponse) {
-		option (google.api.http).get = "/c4e/minter/inflation";
+		option (google.api.http).get = "/c4e/minter/v1beta1/inflation";
 	}
   // Queries a list of State items.
 	rpc State(QueryStateRequest) returns (QueryStateResponse) {
-		option (google.api.http).get = "/c4e/minter/state";
+		option (google.api.http).get = "/c4e/minter/v1beta1/state";
 	}
 // this line is used by starport scaffolding # 2
 }
@@ -34,7 +34,9 @@ message QueryParamsRequest {}
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
   // params holds all the parameters of this module.
-  Params params = 1 [(gogoproto.nullable) = false];
+  Params params = 1 [
+    (gogoproto.nullable) = false
+  ];
 }
 
 message QueryInflationRequest {
@@ -47,8 +49,7 @@ message QueryInflationResponse {
   ];
 }
 
-message QueryStateRequest {
-}
+message QueryStateRequest {}
 
 message QueryStateResponse {
   MinterState minter_state = 1 [

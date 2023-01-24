@@ -19,7 +19,7 @@ func CmdState() *cobra.Command {
 		Use:   "state",
 		Short: fmt.Sprintf("Query current %s state", types.ModuleName),
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query current %s state.
+			fmt.Sprintf(`Query the current %s state.
 
 Example:
 $ %s query %s state
@@ -27,7 +27,7 @@ $ %s query %s state
 				types.ModuleName, version.AppName, types.ModuleName,
 			),
 		),
-		Args:  cobra.ExactArgs(0),
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			clientCtx, err := client.GetClientTxContext(cmd)

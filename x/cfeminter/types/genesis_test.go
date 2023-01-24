@@ -34,7 +34,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "no minters in params",
 			genState: &types.GenesisState{
-				Params: types.NewParams("myc4e", &types.MinterConfig{StartTime: time.Now(), Minters: []*types.Minter{}}),
+				Params: types.NewParams("myc4e", types.MinterConfig{StartTime: time.Now(), Minters: []*types.Minter{}}),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
 					AmountMinted:                sdk.NewInt(123),
@@ -97,7 +97,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state amount cannot be less than 0",
+			errorMassage: "minter state validation error: amountMinted cannot be less than 0",
 		},
 		{
 			desc: "invalid genesis state - wrong minter state - reminder to mint",
@@ -113,7 +113,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter remainder to mint amount cannot be less than 0",
+			errorMassage: "minter state validation error: remainderToMint cannot be less than 0",
 		},
 		{
 			desc: "invalid genesis state - wrong minter state - remainder from previous minter",
@@ -129,7 +129,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter remainder from previous period amount cannot be less than 0",
+			errorMassage: "minter state validation error: remainderFromPreviousPeriod cannot be less than 0",
 		},
 		{
 			desc: "invalid genesis state - wrong minter state SequenceId",
@@ -145,7 +145,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid:        false,
-			errorMassage: "minter state current sequence id not found in minters",
+			errorMassage: "cfeminter genesis validation error: minter state sequence id 6 not found in minters",
 		},
 		{
 			desc: "valid genesis state with history",
@@ -162,6 +162,54 @@ func TestGenesisState_Validate(t *testing.T) {
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "invalid genesis state - wrong minter state - RemainderFromPreviousPeriod is nil",
+			genState: &types.GenesisState{
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
+				MinterState: types.MinterState{
+					SequenceId:                  2,
+					AmountMinted:                sdk.NewInt(100),
+					RemainderToMint:             sdk.MustNewDecFromStr("324.543"),
+					LastMintBlockTime:           time.Now(),
+					RemainderFromPreviousPeriod: sdk.Dec{},
+				},
+				// this line is used by starport scaffolding # types/genesis/validField
+			},
+			valid:        false,
+			errorMassage: "minter state validation error: remainderFromPreviousPeriod cannot be nil",
+		},
+		{
+			desc: "invalid genesis state - wrong minter state - RemainderToMint is nil",
+			genState: &types.GenesisState{
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
+				MinterState: types.MinterState{
+					SequenceId:                  2,
+					AmountMinted:                sdk.NewInt(100),
+					RemainderToMint:             sdk.Dec{},
+					LastMintBlockTime:           time.Now(),
+					RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("324.543"),
+				},
+				// this line is used by starport scaffolding # types/genesis/validField
+			},
+			valid:        false,
+			errorMassage: "minter state validation error: remainderToMint cannot be nil",
+		},
+		{
+			desc: "invalid genesis state - wrong minter state - AmountMinted is nil",
+			genState: &types.GenesisState{
+				Params: types.NewParams("myc4e", createOkMinterConfig()),
+				MinterState: types.MinterState{
+					SequenceId:                  2,
+					AmountMinted:                sdk.Int{},
+					RemainderToMint:             sdk.MustNewDecFromStr("324.543"),
+					LastMintBlockTime:           time.Now(),
+					RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("324.543"),
+				},
+				// this line is used by starport scaffolding # types/genesis/validField
+			},
+			valid:        false,
+			errorMassage: "minter state validation error: amountMinted cannot be nil",
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
@@ -195,7 +243,7 @@ func createHistory() []*types.MinterState {
 	return append(history, &state1, &state2)
 }
 
-func createOkMinterConfig() *types.MinterConfig {
+func createOkMinterConfig() types.MinterConfig {
 	startTime := time.Now()
 
 	endTime1 := startTime.Add(PeriodDuration)
@@ -204,18 +252,18 @@ func createOkMinterConfig() *types.MinterConfig {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
 
-	minter3 := types.Minter{SequenceId: 3, Type: types.NO_MINTING}
+	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
-	return &types.MinterConfig{
+	return types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
 	}
 }
 
-func createNotOkMinterConfig() *types.MinterConfig {
+func createNotOkMinterConfig() types.MinterConfig {
 	startTime := time.Now()
 
 	endTime1 := startTime.Add(PeriodDuration)
@@ -224,13 +272,13 @@ func createNotOkMinterConfig() *types.MinterConfig {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LINEAR_MINTING, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
 
-	minter3 := types.Minter{SequenceId: 5, Type: types.NO_MINTING}
+	minter3 := types.Minter{SequenceId: 5, Type: types.NoMintingType}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
 
-	return &types.MinterConfig{
+	return types.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
 	}

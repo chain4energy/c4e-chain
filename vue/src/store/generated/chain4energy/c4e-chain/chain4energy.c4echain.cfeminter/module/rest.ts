@@ -285,11 +285,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryInflation
    * @summary Queries a list of Inflation items.
-   * @request GET:/c4e/minter/inflation
+   * @request GET:/c4e/minter/v1beta1/inflation
    */
   queryInflation = (params: RequestParams = {}) =>
     this.request<CfeminterQueryInflationResponse, RpcStatus>({
-      path: `/c4e/minter/inflation`,
+      path: `/c4e/minter/v1beta1/inflation`,
       method: "GET",
       format: "json",
       ...params,
@@ -301,11 +301,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/minter/params
+   * @request GET:/c4e/minter/v1beta1/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfeminterQueryParamsResponse, RpcStatus>({
-      path: `/c4e/minter/params`,
+      path: `/c4e/minter/v1beta1/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -317,11 +317,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryState
    * @summary Queries a list of State items.
-   * @request GET:/c4e/minter/state
+   * @request GET:/c4e/minter/v1beta1/state
    */
   queryState = (params: RequestParams = {}) =>
     this.request<CfeminterQueryStateResponse, RpcStatus>({
-      path: `/c4e/minter/state`,
+      path: `/c4e/minter/v1beta1/state`,
       method: "GET",
       format: "json",
       ...params,

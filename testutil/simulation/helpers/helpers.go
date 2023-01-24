@@ -5,5 +5,3 @@ const (
 	DefaultGenTxGas = 10000000
 	SimAppChainID   = "simulation-app"
 )
-
-

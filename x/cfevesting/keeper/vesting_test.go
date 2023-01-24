@@ -17,12 +17,12 @@ func TestCalculateWithdrawable(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 
 	vesting := types.VestingPool{
-		VestingType:               "test",
-		LockStart:                 start,
-		LockEnd:                   lockEnd,
-		InitiallyLocked:                    amount,
-		Withdrawn:                 sdk.ZeroInt(),
-		Sent:                      sdk.ZeroInt(),
+		VestingType:     "test",
+		LockStart:       start,
+		LockEnd:         lockEnd,
+		InitiallyLocked: amount,
+		Withdrawn:       sdk.ZeroInt(),
+		Sent:            sdk.ZeroInt(),
 	}
 
 	// current block less than lock start - witdrawable 0
@@ -50,12 +50,12 @@ func TestCalculateWithdrawableAfterSendSendingSideBeforeLockEnd(t *testing.T) {
 	withdrawn := sdk.NewInt(500000)
 
 	vesting := types.VestingPool{
-		VestingType:               "test",
-		LockStart:                 startHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
-		LockEnd:                   lockEndHeight,
-		InitiallyLocked:           amount.AddRaw(50000),
-		Withdrawn:                 withdrawn,
-		Sent:                      sdk.NewInt(50000),
+		VestingType:     "test",
+		LockStart:       startHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
+		LockEnd:         lockEndHeight,
+		InitiallyLocked: amount.AddRaw(50000),
+		Withdrawn:       withdrawn,
+		Sent:            sdk.NewInt(50000),
 	}
 
 	// current block less than lock start - witdrawable 0
@@ -82,12 +82,12 @@ func TestCalculateWithdrawableAfterSendSendingSideAfterLockEnd(t *testing.T) {
 	amount := sdk.NewInt(1000000)
 	withdrawn := sdk.NewInt(500000)
 	vesting := types.VestingPool{
-		VestingType:               "test",
-		LockStart:                 lockEndHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
-		LockEnd:                   lockEndHeight,
-		InitiallyLocked:           amount.AddRaw(50000),
-		Withdrawn:                 withdrawn,
-		Sent:                      sdk.NewInt(50000),
+		VestingType:     "test",
+		LockStart:       lockEndHeight.Add(testutils.CreateDurationFromNumOfHours(-300)),
+		LockEnd:         lockEndHeight,
+		InitiallyLocked: amount.AddRaw(50000),
+		Withdrawn:       withdrawn,
+		Sent:            sdk.NewInt(50000),
 	}
 
 	// current block less than lock start - witdrawable 0

@@ -15,9 +15,9 @@ import (
 func CmdQueryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
-		Short: fmt.Sprintf("Query %s params", types.ModuleName),
+		Short: fmt.Sprintf("Query the %s params", types.ModuleName),
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query %s params.
+			fmt.Sprintf(`Query the %s params.
 
 Example:
 $ %s query %s params
@@ -25,7 +25,7 @@ $ %s query %s params
 				types.ModuleName, version.AppName, types.ModuleName,
 			),
 		),
-		Args:  cobra.NoArgs,
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 

@@ -1,16 +1,16 @@
 package simulation
 
 import (
+	"math/rand"
+	"time"
+
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"math/rand"
-	"time"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-
 )
 
 func SimulateMsgCreateVestingAccount(
@@ -22,7 +22,7 @@ func SimulateMsgCreateVestingAccount(
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		randInt := helpers.RandomInt(r, 100000)
-		simAccount2Address := commontestutils.CreateRandomAccAddressNoBalance(randInt)
+		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
 
 		randCoinsAmount := sdk.NewInt(helpers.RandomInt(r, 1000))
 		coin := sdk.NewCoin("stake", randCoinsAmount)

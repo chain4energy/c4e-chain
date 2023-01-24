@@ -1,8 +1,9 @@
-package common
+package cosmossdk
 
 import (
 	"testing"
 
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/stretchr/testify/require"
 
@@ -34,7 +35,7 @@ func (su *StakingUtils) CreateValidator(ctx sdk.Context, addr sdk.ValAddress, pk
 func (su *StakingUtils) SetupValidators(ctx sdk.Context, validators []sdk.ValAddress, delegatePerValidator sdk.Int) {
 	PKs := CreateTestPubKeys(len(validators))
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
-	delCoin := sdk.NewCoin(DefaultTestDenom, delegatePerValidator)
+	delCoin := sdk.NewCoin(testenv.DefaultTestDenom, delegatePerValidator)
 	for i, valAddr := range validators {
 		su.bankUtils.AddCoinsToAccount(ctx, delCoin, valAddr.Bytes())
 		su.CreateValidator(ctx, valAddr, PKs[i], delCoin, commission)
@@ -77,10 +78,10 @@ func (su *StakingUtils) VerifyNumberOfUnbondingDelegations(ctx sdk.Context, expe
 
 type ContextStakingUtils struct {
 	StakingUtils
-	testContext TestContext
+	testContext testenv.TestContext
 }
 
-func NewContextStakingUtils(t *testing.T, testContext TestContext, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) *ContextStakingUtils {
+func NewContextStakingUtils(t *testing.T, testContext testenv.TestContext, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) *ContextStakingUtils {
 	stakingUtils := NewStakingUtils(t, helperStakingkeeper, bankUtils)
 	return &ContextStakingUtils{StakingUtils: stakingUtils, testContext: testContext}
 }

@@ -1,9 +1,11 @@
 package cfeminter
 
 import (
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
+
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"testing"
 
@@ -20,12 +22,12 @@ type C4eMinterUtils struct {
 	t                     *testing.T
 	helperCfeminterKeeper *cfemintermodulekeeper.Keeper
 	helperAccountKeeper   *authkeeper.AccountKeeper
-	bankUtils             *commontestutils.BankUtils
+	bankUtils             *testcosmos.BankUtils
 }
 
 func NewC4eMinterUtils(t *testing.T, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils) C4eMinterUtils {
+	bankUtils *testcosmos.BankUtils) C4eMinterUtils {
 	return C4eMinterUtils{t: t, helperCfeminterKeeper: helperCfeminterKeeper, helperAccountKeeper: helperAccountKeeper,
 		bankUtils: bankUtils}
 }
@@ -118,12 +120,12 @@ func (m *C4eMinterUtils) SetParams(ctx sdk.Context, params cfemintertypes.Params
 
 type ContextC4eMinterUtils struct {
 	C4eMinterUtils
-	testContext commontestutils.TestContext
+	testContext testenv.TestContext
 }
 
-func NewContextC4eMinterUtils(t *testing.T, testContext commontestutils.TestContext, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
+func NewContextC4eMinterUtils(t *testing.T, testContext testenv.TestContext, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils) *ContextC4eMinterUtils {
+	bankUtils *testcosmos.BankUtils) *ContextC4eMinterUtils {
 	c4eMinterUtils := NewC4eMinterUtils(t, helperCfeminterKeeper, helperAccountKeeper, bankUtils)
 	return &ContextC4eMinterUtils{C4eMinterUtils: c4eMinterUtils, testContext: testContext}
 }

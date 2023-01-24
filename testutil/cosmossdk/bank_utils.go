@@ -1,8 +1,9 @@
-package common
+package cosmossdk
 
 import (
 	"testing"
 
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -40,9 +41,9 @@ func (bu *BankUtils) AddCoinsToAccount(ctx sdk.Context, coinsToMint sdk.Coin, to
 }
 
 func (bu *BankUtils) AddDefaultDenomCoinsToAccount(ctx sdk.Context, amount sdk.Int, toAddr sdk.AccAddress) (denom string) {
-	coinsToMint := sdk.NewCoin(DefaultTestDenom, amount)
+	coinsToMint := sdk.NewCoin(testenv.DefaultTestDenom, amount)
 	bu.AddCoinsToAccount(ctx, coinsToMint, toAddr)
-	return DefaultTestDenom
+	return testenv.DefaultTestDenom
 }
 
 func (bu *BankUtils) AddCoinsToModule(ctx sdk.Context, coinsToMint sdk.Coin, moduleName string) {
@@ -52,9 +53,9 @@ func (bu *BankUtils) AddCoinsToModule(ctx sdk.Context, coinsToMint sdk.Coin, mod
 }
 
 func (bu *BankUtils) AddDefaultDenomCoinsToModule(ctx sdk.Context, amount sdk.Int, moduleName string) (denom string) {
-	coinsToMint := sdk.NewCoin(DefaultTestDenom, amount)
+	coinsToMint := sdk.NewCoin(testenv.DefaultTestDenom, amount)
 	bu.AddCoinsToModule(ctx, coinsToMint, moduleName)
-	return DefaultTestDenom
+	return testenv.DefaultTestDenom
 }
 
 func (bu *BankUtils) GetModuleAccountBalanceByDenom(ctx sdk.Context, accName string, denom string) sdk.Int {
@@ -63,7 +64,7 @@ func (bu *BankUtils) GetModuleAccountBalanceByDenom(ctx sdk.Context, accName str
 }
 
 func (bu *BankUtils) GetModuleAccountDefultDenomBalance(ctx sdk.Context, accName string) sdk.Int {
-	return bu.GetModuleAccountBalanceByDenom(ctx, accName, DefaultTestDenom)
+	return bu.GetModuleAccountBalanceByDenom(ctx, accName, testenv.DefaultTestDenom)
 }
 
 func (bu *BankUtils) GetAccountBalanceByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Int {
@@ -71,7 +72,7 @@ func (bu *BankUtils) GetAccountBalanceByDenom(ctx sdk.Context, addr sdk.AccAddre
 }
 
 func (bu *BankUtils) GetAccountDefultDenomBalance(ctx sdk.Context, addr sdk.AccAddress) sdk.Int {
-	return bu.GetAccountBalanceByDenom(ctx, addr, DefaultTestDenom)
+	return bu.GetAccountBalanceByDenom(ctx, addr, testenv.DefaultTestDenom)
 
 }
 
@@ -82,7 +83,7 @@ func (bu *BankUtils) VerifyModuleAccountBalanceByDenom(ctx sdk.Context, accName 
 }
 
 func (bu *BankUtils) VerifyModuleAccountDefultDenomBalance(ctx sdk.Context, accName string, expectedAmount sdk.Int) {
-	bu.VerifyModuleAccountBalanceByDenom(ctx, accName, DefaultTestDenom, expectedAmount)
+	bu.VerifyModuleAccountBalanceByDenom(ctx, accName, testenv.DefaultTestDenom, expectedAmount)
 }
 
 func (bu *BankUtils) VerifyAccountBalanceByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string, expectedAmount sdk.Int) {
@@ -91,7 +92,7 @@ func (bu *BankUtils) VerifyAccountBalanceByDenom(ctx sdk.Context, addr sdk.AccAd
 }
 
 func (bu *BankUtils) VerifyAccountDefultDenomBalance(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {
-	bu.VerifyAccountBalanceByDenom(ctx, addr, DefaultTestDenom, expectedAmount)
+	bu.VerifyAccountBalanceByDenom(ctx, addr, testenv.DefaultTestDenom, expectedAmount)
 }
 
 func (bu *BankUtils) VerifyTotalSupplyByDenom(ctx sdk.Context, denom string, expectedAmount sdk.Int) {
@@ -100,15 +101,15 @@ func (bu *BankUtils) VerifyTotalSupplyByDenom(ctx sdk.Context, denom string, exp
 }
 
 func (bu *BankUtils) VerifyDefultDenomTotalSupply(ctx sdk.Context, expectedAmount sdk.Int) {
-	bu.VerifyTotalSupplyByDenom(ctx, DefaultTestDenom, expectedAmount)
+	bu.VerifyTotalSupplyByDenom(ctx, testenv.DefaultTestDenom, expectedAmount)
 }
 
 type ContextBankUtils struct {
 	BankUtils
-	testContext TestContext
+	testContext testenv.TestContext
 }
 
-func NewContextBankUtils(t *testing.T, testContext TestContext, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) *ContextBankUtils {
+func NewContextBankUtils(t *testing.T, testContext testenv.TestContext, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) *ContextBankUtils {
 	bankUtils := NewBankUtils(t, testContext.GetContext(), helperAccountKeeper, helperBankKeeper)
 	return &ContextBankUtils{BankUtils: bankUtils, testContext: testContext}
 }

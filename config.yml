@@ -161,11 +161,11 @@ genesis:
               - name: usage_incentives
                 share: "0.35"
                 destination:
-                  id: "usage_incentives_collector"
+                  id: "usage_incentives_collector" #c4e17uu8ruy0jc3rjdypdeq6c8uqzv9jqgzvx292ra
                   type: INTERNAL_ACCOUNT
         - name: usage_incentives_distributor
           sources:
-            - id: usage_incentives_collector
+            - id: usage_incentives_collector #c4e17uu8ruy0jc3rjdypdeq6c8uqzv9jqgzvx292ra
               type: INTERNAL_ACCOUNT
           destinations:
             burn_share: "0"
@@ -177,12 +177,12 @@ genesis:
               - name: green_energy_booster
                 share: "0.34"
                 destination:
-                  id: "green_energy_booster_collector"
+                  id: "green_energy_booster_collector" #c4e16r2tvpquak29tq3jpc5872upz9mvtr8aal58zk
                   type: MODULE_ACCOUNT
               - name: governance_booster
                 share: "0.33"
                 destination:
-                  id: "governance_booster_collector"
+                  id: "governance_booster_collector" #c4e17hjqm36lerxsgvz6a0e6r08yjl2e9fdr059nw2
                   type: MODULE_ACCOUNT
     cfevesting:
       params:

@@ -19,7 +19,7 @@ func CmdInflation() *cobra.Command {
 		Use:   "inflation",
 		Short: "Query current inflation",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query current inflation.
+			fmt.Sprintf(`Query the current inflation.
 
 Example:
 $ %s query %s inflation
@@ -27,7 +27,7 @@ $ %s query %s inflation
 				version.AppName, types.ModuleName,
 			),
 		),
-		Args:  cobra.ExactArgs(0),
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			clientCtx, err := client.GetClientTxContext(cmd)
