@@ -18,9 +18,9 @@ var _ = strconv.Itoa(0)
 func CmdWithdrawAllAvailable() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw-all-available",
-		Short: "Withdraws all available tokens from all vesting pools of broadcaster address.",
-		Long: strings.TrimSpace(fmt.Sprintf(`Withdraws all available tokens from all vesting pools of broadcaster address.
-Token ara available when vesting pool lock period expires.
+		Short: "Withdraw all available tokens from all vesting pools of the broadcaster's address.",
+		Long: strings.TrimSpace(fmt.Sprintf(`Withdraw all available tokens from all vesting pools of the broadcaster's' address.
+Token are available when vesting pool lock period expires.
 
 Example:
 $ %s tx %s withdraw-all-available --from mykey

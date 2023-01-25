@@ -1,28 +1,17 @@
 package e2e
 
 import (
+	testgenesis "github.com/chain4energy/c4e-chain/tests/app/genesis"
 	"testing"
 	"time"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
 	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
-	mintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-const developmentFundAddrParamName = "development_fund_address"
-const lpAccountAddrParamName = "lp_address"
-
-var accountsAddresses, _ = testcommon.CreateAccounts(2, 0)
-var developmentFundAddr = accountsAddresses[0]
-var lpAccountAddr = accountsAddresses[1]
-
-var distributorsJsonParams = map[string]string{
-	developmentFundAddrParamName: developmentFundAddr.String(),
-	lpAccountAddrParamName:       lpAccountAddr.String(),
-}
+const oneYearDuration = time.Hour * 24 * 365
 
 type testResult struct {
 	developmentFundCoinsInt   sdk.Int
@@ -67,22 +56,12 @@ func TestMinterWithDistributor(t *testing.T) {
 }
 
 func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults testResult) {
-	//read distributor params from json
-	var distributorParams distributortypes.Params
-	testcommon.UnmarshalJsonFileWithParams("test-resources/distributors.json", &distributorParams, distributorsJsonParams)
+	var distributorParams = testgenesis.CfeDistributorParams
+	var minterParams = testgenesis.CfeMinterrParams
 
-	//read minter params from json
-	var minterParams mintertypes.Params
-	testcommon.UnmarshalJsonFile("test-resources/periodic_reduction_minter.json", &minterParams)
-
-	startTime := time.Now()
-	minterParams.Minter.Start = startTime
-
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, startTime)
+	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, minterParams.MinterConfig.StartTime)
 	testHelper.C4eMinterUtils.SetParams(minterParams)
 	testHelper.C4eDistributorUtils.SetParams(distributorParams)
-
-	oneYearDuration := 365 * 24 * time.Hour
 
 	for i := 1; i <= timeInYear; i++ {
 		testHelper.SetContextBlockHeightAndAddTime(int64(i), oneYearDuration)
@@ -90,10 +69,10 @@ func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults tes
 		testHelper.EndBlocker(abci.RequestEndBlock{})
 	}
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(developmentFundAddr, expectedResults.developmentFundCoinsInt)
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(testgenesis.DevelopmentFundAddr, expectedResults.developmentFundCoinsInt)
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(distributortypes.GovernanceBoosterCollector, expectedResults.governanceBoosterCoinInt)
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(distributortypes.GreenEnergyBoosterCollector, expectedResults.greenEnergyBoosterCoinInt)
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(lpAccountAddr, expectedResults.lpProviders)
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(testgenesis.LpAccountAddr, expectedResults.lpProviders)
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(expectedResults.totalSupply.Add(testHelper.InitialValidatorsCoin.Amount))
 }

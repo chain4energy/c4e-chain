@@ -12,6 +12,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"math/rand"
+	"time"
 )
 
 // avoid unused import issue
@@ -29,36 +30,35 @@ const SecondsInYear = int32(3600 * 24 * 365)
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	randMintAmount := helpers.RandomInt(simState.Rand, 40000000000000)
-	randMintPeriod := helpers.RandomInt(simState.Rand, 31536000)
-	randReductionPeriodLength := helpers.RandIntBetween(simState.Rand, 1, 8)
+	randAmount := helpers.RandomInt(simState.Rand, 40000000000000)
+	randStepDuration := helpers.RandomInt(simState.Rand, int(31536000*time.Second*4))
 	randomIntBetween := helpers.RandIntBetween(simState.Rand, 1, 100)
-	reductionFloat := float64(randomIntBetween) / float64(100)
-	randReductionFactor := fmt.Sprintf("%f", reductionFloat)
+	amountMultiplierFloat := float64(randomIntBetween) / float64(100)
+	randAmountMultiplierFactor := fmt.Sprintf("%f", amountMultiplierFloat)
 	now := simState.GenTimestamp
 
-	prminter := types.PeriodicReductionMinter{
-		MintAmount:            sdk.NewInt(randMintAmount),
-		MintPeriod:            int32(randMintPeriod),
-		ReductionPeriodLength: int32(randReductionPeriodLength),
-		ReductionFactor:       sdk.MustNewDecFromStr(randReductionFactor),
+	prminter := types.ExponentialStepMinting{
+		Amount:           sdk.NewInt(randAmount),
+		StepDuration:     time.Duration(randStepDuration),
+		AmountMultiplier: sdk.MustNewDecFromStr(randAmountMultiplierFactor),
 	}
 
-	minter := types.Minter{
-		Start: now,
-		Periods: []*types.MintingPeriod{
-			{
-				Position:                1,
-				Type:                    types.PERIODIC_REDUCTION_MINTER,
-				PeriodicReductionMinter: &prminter,
-			},
+	minters := []*types.Minter{
+		{
+			SequenceId:             1,
+			Type:                   types.ExponentialStepMintingType,
+			ExponentialStepMinting: &prminter,
 		},
 	}
 
+	minterConfig := types.MinterConfig{
+		StartTime: now,
+		Minters:   minters,
+	}
 	genesisState := types.GenesisState{
-		Params: types.NewParams("stake", minter),
+		Params: types.NewParams("stake", minterConfig),
 		MinterState: types.MinterState{
-			Position:     1,
+			SequenceId:   1,
 			AmountMinted: sdk.NewInt(0),
 		},
 	}

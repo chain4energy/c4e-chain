@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -24,11 +25,23 @@ func (s State) Validate() error {
 func (s State) IsNegative() error {
 	for _, coinState := range s.Remains {
 		if coinState.IsNegative() {
-			return fmt.Errorf("\tnegative coin state %s in state %s", coinState, s.StateIdString())
+			return fmt.Errorf("\tnegative coin state %s in state %s", coinState, s.stateIdString())
 		}
 	}
 
 	return nil
+}
+
+func (s State) stateIdString() string {
+	if s.Burn {
+		return Burn
+	} else if s.Account != nil && s.Account.Type == Main {
+		return Main
+	} else if s.Account != nil {
+		return s.Account.Type + "-" + s.Account.Id
+	} else {
+		return UnknownAccount
+	}
 }
 
 func StateSumIsInteger(states []State) (error, sdk.Coins) {
@@ -47,7 +60,7 @@ func StateSumIsInteger(states []State) (error, sdk.Coins) {
 
 func (state State) GetStateKey() string {
 	if state.Account != nil && state.Account.Id != "" && state.Account.Type != "" {
-		return state.Account.GetAccounteKey()
+		return state.Account.GetAccountKey()
 	} else {
 		return BurnStateKey
 	}

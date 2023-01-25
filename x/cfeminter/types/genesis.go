@@ -18,7 +18,7 @@ func DefaultGenesis() *GenesisState {
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 		MinterState: MinterState{
-			Position:                    1,
+			SequenceId:                  1,
 			AmountMinted:                sdk.ZeroInt(),
 			RemainderToMint:             sdk.ZeroDec(),
 			LastMintBlockTime:           time.Now(),
@@ -31,20 +31,14 @@ func DefaultGenesis() *GenesisState {
 // failure.
 func (gs GenesisState) Validate() error {
 	// this line is used by starport scaffolding # genesis/types/validate
-	err := gs.Params.Validate()
-	if err != nil {
+	if err := gs.Params.Validate(); err != nil {
 		return err
 	}
-
-	minterState := gs.MinterState
-	err = minterState.Validate()
-	if err != nil {
+	if err := gs.MinterState.Validate(); err != nil {
 		return err
 	}
-
-	if !gs.Params.Minter.ContainsId(minterState.Position) {
-		return fmt.Errorf("minter state Current Ordering Id not found in minter periods")
+	if !gs.Params.MinterConfig.ContainsMinter(gs.MinterState.SequenceId) {
+		return fmt.Errorf("cfeminter genesis validation error: minter state sequence id %d not found in minters", gs.MinterState.SequenceId)
 	}
 	return nil
-
 }

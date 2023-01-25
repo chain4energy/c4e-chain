@@ -8,14 +8,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 )
 
 func TestCreateVestingPool(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
 	accAddr := acountsAddresses[0]
 
@@ -41,7 +41,7 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
 	accAddr := acountsAddresses[0]
 
@@ -59,7 +59,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
 	accAddr := acountsAddresses[0]
 
@@ -83,7 +83,7 @@ func TestCreateVestingPoolEmptyName(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
 	accAddr := acountsAddresses[0]
 

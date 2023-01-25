@@ -17,7 +17,7 @@ func CmdQueryParams() *cobra.Command {
 		Use:   "params",
 		Short: fmt.Sprintf("Query %s params", types.ModuleName),
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query %s params. Params contain a configuration of the distribution process.
+			fmt.Sprintf(`Query the %s params. Params contain a configuration of the distribution process.
 
 Example:
 $ %s query %s params

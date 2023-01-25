@@ -3,6 +3,8 @@ package keeper
 import (
 	"testing"
 
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -17,7 +19,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 )
 
-func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, testenv.AdditionalKeeperData) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -51,5 +53,9 @@ func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())
 
-	return k, ctx
+	return k, ctx, testenv.AdditionalKeeperData{
+		Cdc:      cdc,
+		StoreKey: storeKey,
+		Subspace: paramsSubspace,
+	}
 }

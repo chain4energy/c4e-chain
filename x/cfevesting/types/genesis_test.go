@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,7 +19,7 @@ type TcData struct {
 }
 
 func TestGenesisState_Validate(t *testing.T) {
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	for _, tc := range []TcData{
 		defaultGenesisTest(),
@@ -46,6 +46,10 @@ func TestGenesisState_Validate(t *testing.T) {
 		invalidVestingTypesEmptyNameTest(),
 		invalidVestingTypesNegativeLockupPeriodTest(),
 		invalidVestingTypesNegativeVestingPeriodTest(),
+		validVestingTypesFreeEquals1(),
+		validVestingTypesFreeEquals0(),
+		invalidVestingTypesFreeGreaterThan1(),
+		invalidVestingTypesFreeLowerThan0(),
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -485,4 +489,58 @@ func getWrongUnitMessageCodeLineInfo() string {
 	startLen := len("Unknown PeriodUnit: " + unit + ": invalid type")
 	errLen := len(err.Error())
 	return err.Error()[startLen:errLen]
+}
+
+func invalidVestingTypesFreeGreaterThan1() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("1.1")
+	return TcData{
+		desc: "invalid vestingTypes initial bonus greater than 100",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid:        false,
+		errorMassage: "Free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
+	}
+}
+
+func invalidVestingTypesFreeLowerThan0() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("-1")
+	return TcData{
+		desc: "invalid vestingTypes initial bonus lower than 100",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid:        false,
+		errorMassage: "Free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
+	}
+}
+
+func validVestingTypesFreeEquals1() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("1")
+	return TcData{
+		desc: "valid vestingTypes initial bonus equals 1",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid: true,
+	}
+}
+
+func validVestingTypesFreeEquals0() TcData {
+	vestingTypes := testutils.GenerateGenesisVestingTypes(10, 1)
+	vestingTypes[6].Free = sdk.MustNewDecFromStr("0")
+	return TcData{
+		desc: "valid vestingTypes initial bonus equals 0",
+		genState: &types.GenesisState{
+			Params:       types.NewParams("test_denom"),
+			VestingTypes: vestingTypes,
+		},
+		valid: true,
+	}
 }

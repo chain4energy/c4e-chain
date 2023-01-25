@@ -42,7 +42,25 @@ func getRamainsSum(states *[]types.State) sdk.DecCoins {
 	return sum
 }
 
-func (k Keeper) PrepareCoinToDistributeForMainAccount(ctx sdk.Context, states []types.State, subDistributorName string) sdk.DecCoins {
+func (k Keeper) PrepareCoinsToDistribute(sources []*types.Account, ctx sdk.Context, states []types.State, subDistributorName string) sdk.DecCoins {
+	allCoinsToDistribute := sdk.NewDecCoins()
+	for _, source := range sources {
+		var coinsToDistribute sdk.DecCoins
+		if source.Type == types.Main {
+			coinsToDistribute = k.prepareCoinToDistributeForMainAccount(ctx, states, subDistributorName)
+		} else {
+			coinsToDistribute = k.prepareCoinToDistributeForNotMainAccount(ctx, *source, states, subDistributorName)
+		}
+
+		if len(coinsToDistribute) == 0 {
+			continue
+		}
+		allCoinsToDistribute = allCoinsToDistribute.Add(coinsToDistribute...)
+	}
+	return allCoinsToDistribute
+}
+
+func (k Keeper) prepareCoinToDistributeForMainAccount(ctx sdk.Context, states []types.State, subDistributorName string) sdk.DecCoins {
 	coinsToDistribute := sdk.NewDecCoinsFromCoins(k.GetAccountCoinsForModuleAccount(ctx, types.DistributorMainAccount)...)
 	if len(coinsToDistribute) > 0 {
 		sum := getRamainsSum(&states)
@@ -51,6 +69,19 @@ func (k Keeper) PrepareCoinToDistributeForMainAccount(ctx sdk.Context, states []
 	k.Logger(ctx).Debug("prepare coins to distribute for main account", "subDistr", subDistributorName, "coins", coinsToDistribute.String())
 
 	return coinsToDistribute
+}
+
+func (k Keeper) prepareCoinToDistributeForNotMainAccount(ctx sdk.Context, source types.Account, states []types.State, subDistributorName string) sdk.DecCoins {
+	var coinsToDistribute sdk.DecCoins
+	if types.ModuleAccount == source.Type {
+		coinsToDistribute = k.prepareCoinToDistributeForModuleAccount(ctx, source, subDistributorName)
+	} else if types.InternalAccount != source.Type {
+		coinsToDistribute = k.prepareCoinToDistributeForBaseAccount(ctx, source, subDistributorName)
+	} else {
+		coinsToDistribute = sdk.NewDecCoins()
+
+	}
+	return prepareLeftCoinToDistribute(coinsToDistribute, source, states)
 }
 
 func (k Keeper) prepareCoinToDistributeForModuleAccount(ctx sdk.Context, source types.Account, subDistributorName string) sdk.DecCoins {
@@ -99,18 +130,6 @@ func prepareLeftCoinToDistribute(coinsToDistribute sdk.DecCoins, source types.Ac
 	return coinsToDistribute
 }
 
-func (k Keeper) PrepareCoinToDistributeForNotMainAccount(ctx sdk.Context, source types.Account, states []types.State, subDistributorName string) sdk.DecCoins {
-	var coinsToDistribute sdk.DecCoins
-	if types.MODULE_ACCOUNT == source.Type {
-		coinsToDistribute = k.prepareCoinToDistributeForModuleAccount(ctx, source, subDistributorName)
-	} else if types.INTERNAL_ACCOUNT != source.Type {
-		coinsToDistribute = k.prepareCoinToDistributeForBaseAccount(ctx, source, subDistributorName)
-	} else {
-		coinsToDistribute = sdk.NewDecCoins()
-
-	}
-	return prepareLeftCoinToDistribute(coinsToDistribute, source, states)
-}
 func (k Keeper) burnCoins(ctx sdk.Context, state *types.State) {
 	toSend, change := state.Remains.TruncateDecimal()
 
@@ -163,10 +182,10 @@ func (k Keeper) sendCoinsToBaseAccount(ctx sdk.Context, state *types.State) {
 
 func (k Keeper) SendCoinsFromStates(ctx sdk.Context, states []types.State) {
 	for _, state := range states {
-		if types.INTERNAL_ACCOUNT != state.Account.Type && checkIfAnyCoinIsGTE1(state.Remains) {
+		if types.InternalAccount != state.Account.Type && checkIfAnyCoinIsGTE1(state.Remains) {
 			if state.Burn {
 				k.burnCoins(ctx, &state)
-			} else if types.MODULE_ACCOUNT == state.Account.Type {
+			} else if types.ModuleAccount == state.Account.Type {
 				k.sendCoinsToModuleAccount(ctx, &state)
 			} else {
 				k.sendCoinsToBaseAccount(ctx, &state)
@@ -226,7 +245,7 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 	localRemains = states
 	defaultShare := coinsToDistributeDec
 	for _, share := range subDistributor.Destinations.Shares {
-		if share.Destination.Type == types.MAIN {
+		if share.Destination.Type == types.Main {
 			continue
 		}
 		calculatedShare := calculatePercentage(share.Share, coinsToDistributeDec)
@@ -265,7 +284,7 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 
 	accountDefault := subDistributor.Destinations.GetPrimaryShare()
 
-	if accountDefault.Type != types.MAIN {
+	if accountDefault.Type != types.Main {
 		findFunc := func() int {
 			return findAccountState(localRemains, &accountDefault)
 		}

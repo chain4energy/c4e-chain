@@ -13,41 +13,41 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfesignature/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/c4e/signature/params";
+    option (google.api.http).get = "/c4e/signature/v1beta1/params";
   }
   // Queries a list of CreateReferenceId items.
 	rpc CreateReferenceId(QueryCreateReferenceIdRequest) returns (QueryCreateReferenceIdResponse) {
-		option (google.api.http).get = "/c4e/signature/create_reference_id/{creator}";
+		option (google.api.http).get = "/c4e/signature/v1beta1/create_reference_id/{creator}";
 	}
 
 // Queries a list of CreateStorageKey items.
 	rpc CreateStorageKey(QueryCreateStorageKeyRequest) returns (QueryCreateStorageKeyResponse) {
-		option (google.api.http).get = "/c4e/signature/create_storage_key/{targetAccAddress}/{referenceId}";
+		option (google.api.http).get = "/c4e/signature/v1beta1/create_storage_key/{targetAccAddress}/{referenceId}";
 	}
 
 // Queries a list of CreateReferencePayloadLink items.
 	rpc CreateReferencePayloadLink(QueryCreateReferencePayloadLinkRequest) returns (QueryCreateReferencePayloadLinkResponse) {
-		option (google.api.http).get = "/c4e/signature/create_reference_payload_link/{referenceId}/{payloadHash}";
+		option (google.api.http).get = "/c4e/signature/v1beta1/create_reference_payload_link/{referenceId}/{payloadHash}";
 	}
 
 // Queries a list of VerifySignature items.
 	rpc VerifySignature(QueryVerifySignatureRequest) returns (QueryVerifySignatureResponse) {
-		option (google.api.http).get = "/c4e/signature/verify_signature/{referenceId}/{targetAccAddress}";
+		option (google.api.http).get = "/c4e/signature/v1beta1/verify_signature/{referenceId}/{targetAccAddress}";
 	}
 
 // Queries a list of GetAccountInfo items.
 	rpc GetAccountInfo(QueryGetAccountInfoRequest) returns (QueryGetAccountInfoResponse) {
-		option (google.api.http).get = "/c4e/signature/get_account_info/{accAddressString}";
+		option (google.api.http).get = "/c4e/signature/v1beta1/get_account_info/{accAddressString}";
 	}
 
 // Queries a list of VerifyReferencePayloadLink items.
 	rpc VerifyReferencePayloadLink(QueryVerifyReferencePayloadLinkRequest) returns (QueryVerifyReferencePayloadLinkResponse) {
-		option (google.api.http).get = "/c4e/signature/verify_reference_payload_link/{referenceId}/{payloadHash}";
+		option (google.api.http).get = "/c4e/signature/v1beta1/verify_reference_payload_link/{referenceId}/{payloadHash}";
 	}
 
 // Queries a list of GetReferencePayloadLink items.
 	rpc GetReferencePayloadLink(QueryGetReferencePayloadLinkRequest) returns (QueryGetReferencePayloadLinkResponse) {
-		option (google.api.http).get = "/c4e/signature/get_reference_payload_link/{referenceId}";
+		option (google.api.http).get = "/c4e/signature/v1beta1/get_reference_payload_link/{referenceId}";
 	}
 
 // this line is used by starport scaffolding # 2

@@ -13,8 +13,8 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	lastBlockTime := ctx.BlockTime()
 	params := k.GetParams(ctx)
 
-	if lastBlockTime.Before(params.Minter.Start) {
-		k.Logger(ctx).Info("minter start in the future. %d > %d", "minterStart", params.Minter.Start, "currentBlockTime", lastBlockTime)
+	if lastBlockTime.Before(params.MinterConfig.StartTime) {
+		k.Logger(ctx).Info("minter start in the future", "minterStart", params.MinterConfig.StartTime, "currentBlockTime", lastBlockTime)
 		return sdk.ZeroInt(), nil
 	}
 	if lastBlockTimeForMinter.After(lastBlockTime) || lastBlockTimeForMinter.Equal(lastBlockTime) {
@@ -28,28 +28,31 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int, error) {
 	minterState := k.GetMinterState(ctx)
 
-	minter := params.Minter
+	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.MinterConfig, &minterState)
 
-	currentPeriod, previousPeriod := getCurrentAndPreviousPeriod(minter, &minterState)
-
-	if currentPeriod == nil {
-		k.Logger(ctx).Error("mint - current period not found error", "lev", level, "position", minterState.Position)
-		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter - mint - current period for position %d not found", minterState.Position)
+	if currentMinter == nil {
+		k.Logger(ctx).Error("mint - current minter not found error", "lev", level, "SequenceId", minterState.SequenceId)
+		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter - mint - current minter for sequence id %d not found", minterState.SequenceId)
 	}
 
-	var periodStart time.Time
-	if previousPeriod == nil {
-		periodStart = minter.Start
+	var startTime time.Time
+	if previousMinter == nil {
+		startTime = params.MinterConfig.StartTime
 	} else {
-		periodStart = *previousPeriod.PeriodEnd
+		startTime = *previousMinter.EndTime
 	}
 
-	expectedAmountToMint := currentPeriod.AmountToMint(k.Logger(ctx), &minterState, periodStart, ctx.BlockTime())
+	expectedAmountToMint := currentMinter.AmountToMint(k.Logger(ctx), &minterState, startTime, ctx.BlockTime())
 	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousPeriod)
 
 	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
-	k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "periodStart", periodStart, "currentPeriod", currentPeriod,
-		"previousPeriod", previousPeriod, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
+	if amount.IsNegative() {
+		k.Logger(ctx).Error("mint negative amount", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter,
+			"previousMinter", previousMinter, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
+		return sdk.ZeroInt(), nil
+	}
+	k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter,
+		"previousMinter", previousMinter, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
 
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
 
@@ -73,14 +76,14 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 	minterState.RemainderToMint = remainder
 
 	var result sdk.Int
-	if currentPeriod.PeriodEnd == nil || ctx.BlockTime().Before(*currentPeriod.PeriodEnd) {
+	if currentMinter.EndTime == nil || ctx.BlockTime().Before(*currentMinter.EndTime) {
 		k.SetMinterState(ctx, minterState)
 		result = amount
 	} else {
 		k.SetMinterStateHistory(ctx, minterState)
 		k.Logger(ctx).Debug("mint - set minter state history", "lev", level, "minterState", minterState.String())
 		minterState = types.MinterState{
-			Position:                    minterState.Position + 1,
+			SequenceId:                  minterState.SequenceId + 1,
 			AmountMinted:                sdk.ZeroInt(),
 			RemainderToMint:             sdk.ZeroDec(),
 			RemainderFromPreviousPeriod: remainder,
@@ -99,21 +102,21 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 	return result, nil
 }
 
-func getCurrentAndPreviousPeriod(minter types.Minter, state *types.MinterState) (currentPeriod *types.MintingPeriod, previousPeriod *types.MintingPeriod) {
-	currentId := state.Position
-	for _, period := range minter.Periods {
-		if period.Position == currentId {
-			currentPeriod = period
+func getCurrentAndPreviousMinter(minterConfig types.MinterConfig, state *types.MinterState) (currentMinter *types.Minter, previousMinter *types.Minter) {
+	currentId := state.SequenceId
+	for _, minter := range minterConfig.Minters {
+		if minter.SequenceId == currentId {
+			currentMinter = minter
 		}
-		if previousPeriod == nil {
-			if period.Position < currentId {
-				previousPeriod = period
+		if previousMinter == nil {
+			if minter.SequenceId < currentId {
+				previousMinter = minter
 			}
 		} else {
-			if period.Position < currentId && period.Position > previousPeriod.Position {
-				previousPeriod = period
+			if minter.SequenceId < currentId && minter.SequenceId > previousMinter.SequenceId {
+				previousMinter = minter
 			}
 		}
 	}
-	return currentPeriod, previousPeriod
+	return currentMinter, previousMinter
 }

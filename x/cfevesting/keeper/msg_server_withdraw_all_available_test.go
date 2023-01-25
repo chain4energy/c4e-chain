@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 )
@@ -18,7 +18,7 @@ func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
 
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(vested, types.ModuleName)
 
@@ -37,7 +37,7 @@ func TestWithdrawAllAvailableManyVestingPoolsOnLockStart(t *testing.T) {
 	vested := sdk.NewInt(1000000)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(vested.MulRaw(3), types.ModuleName)
 
@@ -57,7 +57,7 @@ func TestWithdrawAllAvailableDuringLock(t *testing.T) {
 	withdrawable := sdk.ZeroInt()
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(vested, types.ModuleName)
 
 	accAddr := acountsAddresses[0]
@@ -77,7 +77,7 @@ func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
 	withdrawable := sdk.ZeroInt()
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(vested.MulRaw(3), types.ModuleName)
 
 	accAddr := acountsAddresses[0]
@@ -102,7 +102,7 @@ func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 110000, testutils.CreateTimeFromNumOfHours(110000))
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(balance, types.ModuleName)
 
 	accAddr := acountsAddresses[0]
@@ -126,7 +126,7 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 110000, testutils.CreateTimeFromNumOfHours(110000))
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(balance, types.ModuleName)
 
 	accAddr := acountsAddresses[0]
@@ -147,7 +147,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	vested := sdk.NewInt(1000000)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(1, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	accAddr := acountsAddresses[0]
 
 	testHelper.BankUtils.AddDefaultDenomCoinToAccount(vested, accAddr)

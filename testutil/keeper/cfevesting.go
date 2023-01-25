@@ -4,7 +4,8 @@ import (
 	"testing"
 	"time"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+
 	cfevestingtestutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -34,9 +35,7 @@ func NewExtendedC4eVestingKeeperUtils(t *testing.T, helperCfevestingKeeper *keep
 		StoreKey: storeKey}
 }
 
-func cfevestingKeeperWithBlockHeightAndTime(t *testing.T, blockHeight int64, blockTime time.Time) (*keeper.Keeper, sdk.Context, *codec.ProtoCodec, *storetypes.KVStoreKey) {
-	db := tmdb.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db)
+func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight int64, blockTime time.Time, db *tmdb.MemDB, stateStore storetypes.CommitMultiStore) (*keeper.Keeper, sdk.Context, *codec.ProtoCodec, *storetypes.KVStoreKey) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -78,17 +77,23 @@ func cfevestingKeeperWithBlockHeightAndTime(t *testing.T, blockHeight int64, blo
 }
 
 func CfevestingKeeperWithBlockHeightAndTime(t *testing.T, blockHeight int64, blockTime time.Time) (*keeper.Keeper, sdk.Context) {
-	k, ctx, _, _ := cfevestingKeeperWithBlockHeightAndTime(t, blockHeight, blockTime)
+	db := tmdb.NewMemDB()
+	stateStore := store.NewCommitMultiStore(db)
+	k, ctx, _, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, blockTime, db, stateStore)
 	return k, ctx
 }
 
 func CfevestingKeeperWithBlockHeight(t *testing.T, blockHeight int64) (*keeper.Keeper, sdk.Context) {
-	k, ctx, _, _ := cfevestingKeeperWithBlockHeightAndTime(t, blockHeight, commontestutils.TestEnvTime)
+	db := tmdb.NewMemDB()
+	stateStore := store.NewCommitMultiStore(db)
+	k, ctx, _, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, testenv.TestEnvTime, db, stateStore)
 	return k, ctx
 }
 
 func CfevestingKeeper(t *testing.T) (*keeper.Keeper, sdk.Context) {
-	k, ctx, _, _ := cfevestingKeeperWithBlockHeightAndTime(t, 0, commontestutils.TestEnvTime)
+	db := tmdb.NewMemDB()
+	stateStore := store.NewCommitMultiStore(db)
+	k, ctx, _, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, testenv.TestEnvTime, db, stateStore)
 	return k, ctx
 }
 
@@ -99,7 +104,9 @@ func CfevestingKeeperTestUtil(t *testing.T) (*cfevestingtestutils.C4eVestingKeep
 }
 
 func CfevestingKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eVestingKeeperUtils, *keeper.Keeper, sdk.Context) {
-	k, ctx, cdc, key := cfevestingKeeperWithBlockHeightAndTime(t, 0, commontestutils.TestEnvTime)
+	db := tmdb.NewMemDB()
+	stateStore := store.NewCommitMultiStore(db)
+	k, ctx, cdc, key := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, testenv.TestEnvTime, db, stateStore)
 	utils := NewExtendedC4eVestingKeeperUtils(t, k, cdc, key)
 	return &utils, k, ctx
 }

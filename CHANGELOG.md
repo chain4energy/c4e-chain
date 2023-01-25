@@ -48,7 +48,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Misc Improvements
 
-## [v1.0.1](https://github.com/chain4energy/c4e-chain/releases/tag/v1.0.1) - 2022-??-??
+## [v1.1.0](https://github.com/chain4energy/c4e-chain/releases/tag/v1.1.0) - 2023-01-24
+### Misc Improvements
+1. Distribution
+   - 1st token distribution ready version
+   - tokens distribution mechanism based on the list of configured subdistributors [README](https://github.com/chain4energy/c4e-chain/blob/master/x/cfedistributor/README.md).
+   - new params structure
+   - new state structure
+   - extended validation
+   - new emit events types
+2. Minting
+   - 1st minting (inflation) ready version
+   - new params structure
+       * Linear Minting type
+       * Exponential Ste pMinting type
+   - new state structure
+   - extended validation
+   - new emit events types
+3. Vesting
+   - vesting pool params changed
+   - extended validation
+   - new emit events types
+     vesting type percentage of tokens that are released initially
+4. Simulation tests
+5. Performance/stability tested
+6. Other
+   - rest api versioning
+
+### Bug fixes
+- vesting pool sent tokens calculation bug
+- cfeminter init genesis time e’rror
+
+
+## [v1.0.1](https://github.com/chain4energy/c4e-chain/releases/tag/v1.0.1) - 2022-11-24
 
 * **Upgrade Cosmos SDK for [Dragonbarry patch](https://forum.cosmos.network/t/ibc-security-advisory-dragonberry/7702)**
 

@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	v101cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
+	v110cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -17,9 +17,9 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate1to2 migrates from version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	if err := v101cfedistributor.MigrateParams(ctx, m.keeper.storeKey, &m.keeper.paramstore); err != nil {
+	if err := v110cfedistributor.MigrateParams(ctx, &m.keeper.paramstore); err != nil {
 		return err
 	}
 
-	return v101cfedistributor.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
+	return v110cfedistributor.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
 }

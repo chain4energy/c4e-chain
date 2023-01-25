@@ -1,0 +1,12 @@
+@startuml
+"Source 1" --> ===B1===
+"Source 2" --> ===B1===
+"Source n" --> ===B1===
+
+===B1=== --> ===B2===
+
+===B2=== -->[x% share] "Destination 1"
+===B2=== -->[y% share]  "Destination 2"
+===B2=== -->[z% share]  "Destination n"
+===B2=== -->[v% share]  "Burn"
+@enduml

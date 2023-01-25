@@ -9,6 +9,7 @@ import (
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	_ "google.golang.org/protobuf/types/known/durationpb"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
@@ -28,16 +29,76 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type MinterConfig struct {
+	StartTime time.Time `protobuf:"bytes,2,opt,name=start_time,json=startTime,proto3,stdtime" json:"start_time"`
+	Minters   []*Minter `protobuf:"bytes,3,rep,name=minters,proto3" json:"minters,omitempty"`
+}
+
+func (m *MinterConfig) Reset()         { *m = MinterConfig{} }
+func (m *MinterConfig) String() string { return proto.CompactTextString(m) }
+func (*MinterConfig) ProtoMessage()    {}
+func (*MinterConfig) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1112145d4942e936, []int{0}
+}
+func (m *MinterConfig) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MinterConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MinterConfig.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MinterConfig) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MinterConfig.Merge(m, src)
+}
+func (m *MinterConfig) XXX_Size() int {
+	return m.Size()
+}
+func (m *MinterConfig) XXX_DiscardUnknown() {
+	xxx_messageInfo_MinterConfig.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MinterConfig proto.InternalMessageInfo
+
+func (m *MinterConfig) GetStartTime() time.Time {
+	if m != nil {
+		return m.StartTime
+	}
+	return time.Time{}
+}
+
+func (m *MinterConfig) GetMinters() []*Minter {
+	if m != nil {
+		return m.Minters
+	}
+	return nil
+}
+
 type Minter struct {
-	Start   time.Time        `protobuf:"bytes,1,opt,name=start,proto3,stdtime" json:"start"`
-	Periods []*MintingPeriod `protobuf:"bytes,2,rep,name=periods,proto3" json:"periods,omitempty"`
+	SequenceId uint32     `protobuf:"varint,1,opt,name=sequence_id,json=sequenceId,proto3" json:"sequence_id,omitempty"`
+	EndTime    *time.Time `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time,omitempty"`
+	// types:
+	//
+	//	NO_MINTING;
+	//	LINEAR_MINTING;
+	//	EXPONENTIAL_STEP_MINTING;
+	Type                   string                  `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
+	LinearMinting          *LinearMinting          `protobuf:"bytes,4,opt,name=linear_minting,json=linearMinting,proto3" json:"linear_minting,omitempty"`
+	ExponentialStepMinting *ExponentialStepMinting `protobuf:"bytes,5,opt,name=exponential_step_minting,json=exponentialStepMinting,proto3" json:"exponential_step_minting,omitempty"`
 }
 
 func (m *Minter) Reset()         { *m = Minter{} }
 func (m *Minter) String() string { return proto.CompactTextString(m) }
 func (*Minter) ProtoMessage()    {}
 func (*Minter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1112145d4942e936, []int{0}
+	return fileDescriptor_1112145d4942e936, []int{1}
 }
 func (m *Minter) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -66,117 +127,57 @@ func (m *Minter) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Minter proto.InternalMessageInfo
 
-func (m *Minter) GetStart() time.Time {
+func (m *Minter) GetSequenceId() uint32 {
 	if m != nil {
-		return m.Start
-	}
-	return time.Time{}
-}
-
-func (m *Minter) GetPeriods() []*MintingPeriod {
-	if m != nil {
-		return m.Periods
-	}
-	return nil
-}
-
-type MintingPeriod struct {
-	Position  int32      `protobuf:"varint,1,opt,name=position,proto3" json:"position,omitempty"`
-	PeriodEnd *time.Time `protobuf:"bytes,2,opt,name=period_end,json=periodEnd,proto3,stdtime" json:"period_end,omitempty"`
-	// types:
-	//
-	//	NO_MINTING;
-	//	TIME_LINEAR_MINTER;
-	//	PERIODIC_REDUCTION_MINTER;
-	Type                    string                   `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
-	TimeLinearMinter        *TimeLinearMinter        `protobuf:"bytes,4,opt,name=time_linear_minter,json=timeLinearMinter,proto3" json:"time_linear_minter,omitempty"`
-	PeriodicReductionMinter *PeriodicReductionMinter `protobuf:"bytes,5,opt,name=periodic_reduction_minter,json=periodicReductionMinter,proto3" json:"periodic_reduction_minter,omitempty"`
-}
-
-func (m *MintingPeriod) Reset()         { *m = MintingPeriod{} }
-func (m *MintingPeriod) String() string { return proto.CompactTextString(m) }
-func (*MintingPeriod) ProtoMessage()    {}
-func (*MintingPeriod) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1112145d4942e936, []int{1}
-}
-func (m *MintingPeriod) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MintingPeriod) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MintingPeriod.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MintingPeriod) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MintingPeriod.Merge(m, src)
-}
-func (m *MintingPeriod) XXX_Size() int {
-	return m.Size()
-}
-func (m *MintingPeriod) XXX_DiscardUnknown() {
-	xxx_messageInfo_MintingPeriod.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MintingPeriod proto.InternalMessageInfo
-
-func (m *MintingPeriod) GetPosition() int32 {
-	if m != nil {
-		return m.Position
+		return m.SequenceId
 	}
 	return 0
 }
 
-func (m *MintingPeriod) GetPeriodEnd() *time.Time {
+func (m *Minter) GetEndTime() *time.Time {
 	if m != nil {
-		return m.PeriodEnd
+		return m.EndTime
 	}
 	return nil
 }
 
-func (m *MintingPeriod) GetType() string {
+func (m *Minter) GetType() string {
 	if m != nil {
 		return m.Type
 	}
 	return ""
 }
 
-func (m *MintingPeriod) GetTimeLinearMinter() *TimeLinearMinter {
+func (m *Minter) GetLinearMinting() *LinearMinting {
 	if m != nil {
-		return m.TimeLinearMinter
+		return m.LinearMinting
 	}
 	return nil
 }
 
-func (m *MintingPeriod) GetPeriodicReductionMinter() *PeriodicReductionMinter {
+func (m *Minter) GetExponentialStepMinting() *ExponentialStepMinting {
 	if m != nil {
-		return m.PeriodicReductionMinter
+		return m.ExponentialStepMinting
 	}
 	return nil
 }
 
-type TimeLinearMinter struct {
+type LinearMinting struct {
 	Amount github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount"`
 }
 
-func (m *TimeLinearMinter) Reset()         { *m = TimeLinearMinter{} }
-func (m *TimeLinearMinter) String() string { return proto.CompactTextString(m) }
-func (*TimeLinearMinter) ProtoMessage()    {}
-func (*TimeLinearMinter) Descriptor() ([]byte, []int) {
+func (m *LinearMinting) Reset()         { *m = LinearMinting{} }
+func (m *LinearMinting) String() string { return proto.CompactTextString(m) }
+func (*LinearMinting) ProtoMessage()    {}
+func (*LinearMinting) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1112145d4942e936, []int{2}
 }
-func (m *TimeLinearMinter) XXX_Unmarshal(b []byte) error {
+func (m *LinearMinting) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *TimeLinearMinter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *LinearMinting) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_TimeLinearMinter.Marshal(b, m, deterministic)
+		return xxx_messageInfo_LinearMinting.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -186,38 +187,36 @@ func (m *TimeLinearMinter) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *TimeLinearMinter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TimeLinearMinter.Merge(m, src)
+func (m *LinearMinting) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LinearMinting.Merge(m, src)
 }
-func (m *TimeLinearMinter) XXX_Size() int {
+func (m *LinearMinting) XXX_Size() int {
 	return m.Size()
 }
-func (m *TimeLinearMinter) XXX_DiscardUnknown() {
-	xxx_messageInfo_TimeLinearMinter.DiscardUnknown(m)
+func (m *LinearMinting) XXX_DiscardUnknown() {
+	xxx_messageInfo_LinearMinting.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_TimeLinearMinter proto.InternalMessageInfo
+var xxx_messageInfo_LinearMinting proto.InternalMessageInfo
 
-type PeriodicReductionMinter struct {
-	// mint_period in seconds
-	MintPeriod            int32                                  `protobuf:"varint,1,opt,name=mint_period,json=mintPeriod,proto3" json:"mint_period,omitempty"`
-	MintAmount            github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=mint_amount,json=mintAmount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"mint_amount"`
-	ReductionPeriodLength int32                                  `protobuf:"varint,3,opt,name=reduction_period_length,json=reductionPeriodLength,proto3" json:"reduction_period_length,omitempty"`
-	ReductionFactor       github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=reduction_factor,json=reductionFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reduction_factor"`
+type ExponentialStepMinting struct {
+	Amount           github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount"`
+	StepDuration     time.Duration                          `protobuf:"bytes,1,opt,name=step_duration,json=stepDuration,proto3,stdduration" json:"step_duration"`
+	AmountMultiplier github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=amount_multiplier,json=amountMultiplier,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"amount_multiplier"`
 }
 
-func (m *PeriodicReductionMinter) Reset()         { *m = PeriodicReductionMinter{} }
-func (m *PeriodicReductionMinter) String() string { return proto.CompactTextString(m) }
-func (*PeriodicReductionMinter) ProtoMessage()    {}
-func (*PeriodicReductionMinter) Descriptor() ([]byte, []int) {
+func (m *ExponentialStepMinting) Reset()         { *m = ExponentialStepMinting{} }
+func (m *ExponentialStepMinting) String() string { return proto.CompactTextString(m) }
+func (*ExponentialStepMinting) ProtoMessage()    {}
+func (*ExponentialStepMinting) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1112145d4942e936, []int{3}
 }
-func (m *PeriodicReductionMinter) XXX_Unmarshal(b []byte) error {
+func (m *ExponentialStepMinting) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *PeriodicReductionMinter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ExponentialStepMinting) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_PeriodicReductionMinter.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ExponentialStepMinting.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -227,34 +226,27 @@ func (m *PeriodicReductionMinter) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *PeriodicReductionMinter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PeriodicReductionMinter.Merge(m, src)
+func (m *ExponentialStepMinting) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ExponentialStepMinting.Merge(m, src)
 }
-func (m *PeriodicReductionMinter) XXX_Size() int {
+func (m *ExponentialStepMinting) XXX_Size() int {
 	return m.Size()
 }
-func (m *PeriodicReductionMinter) XXX_DiscardUnknown() {
-	xxx_messageInfo_PeriodicReductionMinter.DiscardUnknown(m)
+func (m *ExponentialStepMinting) XXX_DiscardUnknown() {
+	xxx_messageInfo_ExponentialStepMinting.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PeriodicReductionMinter proto.InternalMessageInfo
+var xxx_messageInfo_ExponentialStepMinting proto.InternalMessageInfo
 
-func (m *PeriodicReductionMinter) GetMintPeriod() int32 {
+func (m *ExponentialStepMinting) GetStepDuration() time.Duration {
 	if m != nil {
-		return m.MintPeriod
-	}
-	return 0
-}
-
-func (m *PeriodicReductionMinter) GetReductionPeriodLength() int32 {
-	if m != nil {
-		return m.ReductionPeriodLength
+		return m.StepDuration
 	}
 	return 0
 }
 
 type MinterState struct {
-	Position                    int32                                  `protobuf:"varint,1,opt,name=position,proto3" json:"position,omitempty"`
+	SequenceId                  uint32                                 `protobuf:"varint,1,opt,name=sequence_id,json=sequenceId,proto3" json:"sequence_id,omitempty"`
 	AmountMinted                github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=amount_minted,json=amountMinted,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount_minted"`
 	RemainderToMint             github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=remainder_to_mint,json=remainderToMint,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"remainder_to_mint"`
 	LastMintBlockTime           time.Time                              `protobuf:"bytes,4,opt,name=last_mint_block_time,json=lastMintBlockTime,proto3,stdtime" json:"last_mint_block_time"`
@@ -294,9 +286,9 @@ func (m *MinterState) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MinterState proto.InternalMessageInfo
 
-func (m *MinterState) GetPosition() int32 {
+func (m *MinterState) GetSequenceId() uint32 {
 	if m != nil {
-		return m.Position
+		return m.SequenceId
 	}
 	return 0
 }
@@ -309,57 +301,102 @@ func (m *MinterState) GetLastMintBlockTime() time.Time {
 }
 
 func init() {
+	proto.RegisterType((*MinterConfig)(nil), "chain4energy.c4echain.cfeminter.MinterConfig")
 	proto.RegisterType((*Minter)(nil), "chain4energy.c4echain.cfeminter.Minter")
-	proto.RegisterType((*MintingPeriod)(nil), "chain4energy.c4echain.cfeminter.MintingPeriod")
-	proto.RegisterType((*TimeLinearMinter)(nil), "chain4energy.c4echain.cfeminter.TimeLinearMinter")
-	proto.RegisterType((*PeriodicReductionMinter)(nil), "chain4energy.c4echain.cfeminter.PeriodicReductionMinter")
+	proto.RegisterType((*LinearMinting)(nil), "chain4energy.c4echain.cfeminter.LinearMinting")
+	proto.RegisterType((*ExponentialStepMinting)(nil), "chain4energy.c4echain.cfeminter.ExponentialStepMinting")
 	proto.RegisterType((*MinterState)(nil), "chain4energy.c4echain.cfeminter.MinterState")
 }
 
 func init() { proto.RegisterFile("cfeminter/minter.proto", fileDescriptor_1112145d4942e936) }
 
 var fileDescriptor_1112145d4942e936 = []byte{
-	// 627 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0x4f, 0x6f, 0xd3, 0x30,
-	0x18, 0xc6, 0x9b, 0x6e, 0x1d, 0x9b, 0xcb, 0x44, 0x67, 0x0d, 0x5a, 0x8a, 0x94, 0x54, 0x3d, 0xa0,
-	0x5e, 0xe6, 0x88, 0xad, 0x42, 0x88, 0x0b, 0xa2, 0x82, 0x0a, 0xa4, 0x4d, 0x54, 0xd9, 0x38, 0xd0,
-	0x4b, 0x94, 0x26, 0x6e, 0x6a, 0xad, 0xb1, 0x23, 0xc7, 0x45, 0xec, 0x4b, 0xa0, 0x7d, 0x02, 0x8e,
-	0x7c, 0x96, 0x1d, 0x77, 0x03, 0x71, 0x18, 0xa8, 0xfd, 0x22, 0xc8, 0x7f, 0xd2, 0x8e, 0x09, 0x28,
-	0xf4, 0x94, 0xd8, 0x7e, 0x9f, 0xe7, 0xfd, 0xf9, 0x7d, 0xdf, 0x04, 0xdc, 0x0b, 0x87, 0x38, 0x21,
-	0x54, 0x60, 0xee, 0xea, 0x07, 0x4a, 0x39, 0x13, 0x0c, 0x3a, 0xe1, 0x28, 0x20, 0xb4, 0x8d, 0x29,
-	0xe6, 0xf1, 0x19, 0x0a, 0xdb, 0x58, 0xad, 0xd1, 0x3c, 0xba, 0xbe, 0x1b, 0xb3, 0x98, 0xa9, 0x58,
-	0x57, 0xbe, 0x69, 0x59, 0xdd, 0x89, 0x19, 0x8b, 0xc7, 0xd8, 0x55, 0xab, 0xc1, 0x64, 0xe8, 0x0a,
-	0x92, 0xe0, 0x4c, 0x04, 0x49, 0xaa, 0x03, 0x9a, 0x1f, 0x2d, 0xb0, 0x71, 0xa4, 0x1c, 0xe0, 0x53,
-	0x50, 0xca, 0x44, 0xc0, 0x45, 0xcd, 0x6a, 0x58, 0xad, 0xf2, 0x7e, 0x1d, 0x69, 0x2d, 0xca, 0xb5,
-	0xe8, 0x24, 0xd7, 0x76, 0x36, 0x2f, 0xae, 0x9c, 0xc2, 0xf9, 0x77, 0xc7, 0xf2, 0xb4, 0x04, 0xbe,
-	0x02, 0xb7, 0x52, 0xcc, 0x09, 0x8b, 0xb2, 0x5a, 0xb1, 0xb1, 0xd6, 0x2a, 0xef, 0x23, 0xb4, 0x04,
-	0x18, 0xc9, 0xac, 0x84, 0xc6, 0x3d, 0x25, 0xf3, 0x72, 0x79, 0xf3, 0x4b, 0x11, 0x6c, 0xff, 0x72,
-	0x04, 0xeb, 0x60, 0x33, 0x65, 0x19, 0x11, 0x84, 0x51, 0x85, 0x56, 0xf2, 0xe6, 0x6b, 0xf8, 0x0c,
-	0x00, 0x2d, 0xf4, 0x31, 0x8d, 0x6a, 0xc5, 0xa5, 0xe0, 0xeb, 0x0a, 0x7a, 0x4b, 0x6b, 0x5e, 0xd2,
-	0x08, 0x42, 0xb0, 0x2e, 0xce, 0x52, 0x5c, 0x5b, 0x6b, 0x58, 0xad, 0x2d, 0x4f, 0xbd, 0x43, 0x1f,
-	0x40, 0x59, 0x26, 0x7f, 0x4c, 0x28, 0x0e, 0xb8, 0xaf, 0x79, 0x6b, 0xeb, 0xca, 0xfc, 0xd1, 0xd2,
-	0x7b, 0xc9, 0x64, 0x87, 0x4a, 0xa9, 0xeb, 0xea, 0x55, 0xc4, 0x8d, 0x1d, 0x28, 0xc0, 0x7d, 0x4d,
-	0x40, 0x42, 0x9f, 0xe3, 0x68, 0x12, 0xca, 0xbb, 0xe4, 0x79, 0x4a, 0x2a, 0xcf, 0x93, 0xa5, 0x79,
-	0x7a, 0xc6, 0xc1, 0xcb, 0x0d, 0x4c, 0xba, 0x6a, 0xfa, 0xfb, 0x83, 0x66, 0x1f, 0x54, 0x6e, 0xb2,
-	0xc1, 0x2e, 0xd8, 0x08, 0x12, 0x36, 0xa1, 0xba, 0xe9, 0x5b, 0x1d, 0x24, 0x1b, 0xfb, 0xed, 0xca,
-	0x79, 0x18, 0x13, 0x31, 0x9a, 0x0c, 0x50, 0xc8, 0x12, 0x37, 0x64, 0x59, 0xc2, 0x32, 0xf3, 0xd8,
-	0xcb, 0xa2, 0x53, 0x57, 0x56, 0x29, 0x43, 0xaf, 0xa9, 0xf0, 0x8c, 0xba, 0xf9, 0xa9, 0x08, 0xaa,
-	0x7f, 0x00, 0x82, 0x0e, 0x28, 0x4b, 0x64, 0x5f, 0x73, 0x99, 0x16, 0x02, 0xb9, 0x65, 0x1a, 0xfc,
-	0xc6, 0x04, 0x18, 0x92, 0xe2, 0x4a, 0x24, 0xca, 0xf0, 0xb9, 0x72, 0x80, 0x8f, 0x41, 0x75, 0x51,
-	0x56, 0x33, 0x1f, 0x63, 0x4c, 0x63, 0x31, 0x52, 0x7d, 0x2e, 0x79, 0x77, 0xe7, 0xc7, 0x1a, 0xe1,
-	0x50, 0x1d, 0xc2, 0x77, 0xa0, 0xb2, 0xd0, 0x0d, 0x83, 0x50, 0x30, 0xdd, 0xf6, 0xff, 0xa3, 0x79,
-	0x81, 0x43, 0xef, 0xce, 0xdc, 0xa7, 0xab, 0x6c, 0x9a, 0x9f, 0xd7, 0x40, 0x59, 0xd7, 0xe3, 0x58,
-	0x04, 0x02, 0xff, 0x75, 0xa8, 0x8f, 0xc1, 0xb6, 0x2e, 0x85, 0x1e, 0x89, 0x68, 0xc5, 0x8a, 0xdc,
-	0xd6, 0x26, 0x2a, 0x6b, 0x04, 0xfb, 0x60, 0x87, 0xe3, 0x24, 0x20, 0x34, 0xc2, 0xdc, 0x17, 0x4c,
-	0x59, 0xeb, 0xa9, 0x5f, 0xe5, 0x72, 0xc6, 0xe8, 0x84, 0x49, 0x77, 0xf8, 0x16, 0xec, 0x8e, 0x83,
-	0x4c, 0xe3, 0xfa, 0x83, 0x31, 0x0b, 0x4f, 0x7d, 0x39, 0xf3, 0xe6, 0x93, 0xf9, 0xb7, 0x1f, 0xc9,
-	0x8e, 0x74, 0x90, 0x6e, 0x1d, 0xa9, 0x97, 0x11, 0x30, 0x03, 0xf6, 0x02, 0x79, 0xc8, 0x59, 0xe2,
-	0xa7, 0x1c, 0xbf, 0x27, 0x6c, 0x92, 0xe5, 0xb3, 0x54, 0x5a, 0x89, 0xff, 0xc1, 0xdc, 0xb5, 0xcb,
-	0x59, 0xd2, 0x33, 0x9e, 0x7a, 0x12, 0x3a, 0x47, 0x17, 0x53, 0xdb, 0xba, 0x9c, 0xda, 0xd6, 0x8f,
-	0xa9, 0x6d, 0x9d, 0xcf, 0xec, 0xc2, 0xe5, 0xcc, 0x2e, 0x7c, 0x9d, 0xd9, 0x85, 0xfe, 0xc1, 0x75,
-	0xfb, 0x6b, 0x1f, 0xa7, 0x1b, 0xb6, 0xf1, 0x9e, 0xda, 0x70, 0x3f, 0xb8, 0x8b, 0xdf, 0xb7, 0xca,
-	0x37, 0xd8, 0x50, 0x97, 0x3e, 0xf8, 0x19, 0x00, 0x00, 0xff, 0xff, 0x89, 0x56, 0x30, 0xf0, 0xd8,
-	0x05, 0x00, 0x00,
+	// 638 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x94, 0x4f, 0x6f, 0xd3, 0x3e,
+	0x18, 0xc7, 0x9b, 0xb6, 0xbf, 0xfd, 0x71, 0xd7, 0x1f, 0xcc, 0x9a, 0xa6, 0x32, 0xa4, 0xb4, 0xea,
+	0x01, 0x7a, 0x59, 0x22, 0x6d, 0x93, 0x38, 0x70, 0xa2, 0x1b, 0x13, 0x93, 0xa8, 0x34, 0x65, 0x9b,
+	0x90, 0xc6, 0x21, 0x4a, 0x93, 0xa7, 0x99, 0xb5, 0xc4, 0xce, 0x6c, 0x07, 0x6d, 0xaf, 0x80, 0xeb,
+	0x4e, 0x88, 0xf7, 0xc0, 0xdb, 0xe0, 0xb0, 0xe3, 0x8e, 0x88, 0xc3, 0x40, 0xdb, 0x1b, 0x41, 0xb6,
+	0x9b, 0xb6, 0xc0, 0xa4, 0x52, 0x38, 0x25, 0x76, 0x9e, 0xef, 0xe7, 0xfb, 0xb5, 0xfd, 0x38, 0x68,
+	0x35, 0x1c, 0x40, 0x4a, 0xa8, 0x04, 0xee, 0x9a, 0x87, 0x93, 0x71, 0x26, 0x19, 0x6e, 0x86, 0x27,
+	0x01, 0xa1, 0x5b, 0x40, 0x81, 0xc7, 0x17, 0x4e, 0xb8, 0x05, 0x7a, 0xec, 0x8c, 0xaa, 0xd7, 0x56,
+	0x62, 0x16, 0x33, 0x5d, 0xeb, 0xaa, 0x37, 0x23, 0x5b, 0x6b, 0xc6, 0x8c, 0xc5, 0x09, 0xb8, 0x7a,
+	0xd4, 0xcf, 0x07, 0xae, 0x24, 0x29, 0x08, 0x19, 0xa4, 0xd9, 0xb0, 0xc0, 0xfe, 0xb5, 0x20, 0xca,
+	0x79, 0x20, 0x09, 0xa3, 0xe6, 0x7b, 0xfb, 0x83, 0x85, 0x96, 0x7a, 0xda, 0x61, 0x9b, 0xd1, 0x01,
+	0x89, 0xf1, 0x36, 0x42, 0x42, 0x06, 0x5c, 0xfa, 0x8a, 0xd4, 0x28, 0xb7, 0xac, 0x4e, 0x6d, 0x63,
+	0xcd, 0x31, 0x14, 0xa7, 0xa0, 0x38, 0x87, 0x85, 0x4d, 0x77, 0xe1, 0xea, 0xa6, 0x59, 0xba, 0xfc,
+	0xd6, 0xb4, 0xbc, 0x45, 0xad, 0x53, 0x5f, 0xf0, 0x0b, 0x34, 0x6f, 0x62, 0x8b, 0x46, 0xa5, 0x55,
+	0xe9, 0xd4, 0x36, 0x9e, 0x3a, 0x53, 0xd6, 0xe7, 0x98, 0x10, 0x5e, 0xa1, 0x6b, 0x7f, 0x2e, 0xa3,
+	0x39, 0x33, 0x87, 0x9b, 0xa8, 0x26, 0xe0, 0x2c, 0x07, 0x1a, 0x82, 0x4f, 0xa2, 0x86, 0xd5, 0xb2,
+	0x3a, 0x75, 0x0f, 0x15, 0x53, 0x7b, 0x11, 0x7e, 0x8e, 0x16, 0x80, 0x46, 0x7f, 0x9a, 0xb8, 0xaa,
+	0xd3, 0xce, 0x03, 0x8d, 0x74, 0x56, 0x8c, 0xaa, 0xf2, 0x22, 0x83, 0x46, 0xa5, 0x65, 0x75, 0x16,
+	0x3d, 0xfd, 0x8e, 0x8f, 0xd0, 0xff, 0x09, 0xa1, 0x10, 0x70, 0x5f, 0xc5, 0x21, 0x34, 0x6e, 0x54,
+	0x35, 0xd6, 0x99, 0xba, 0x8c, 0xd7, 0x5a, 0xd6, 0x33, 0x2a, 0xaf, 0x9e, 0x4c, 0x0e, 0xf1, 0x19,
+	0x6a, 0xc0, 0x79, 0xc6, 0x28, 0x50, 0x49, 0x82, 0xc4, 0x17, 0x12, 0xb2, 0x91, 0xc1, 0x7f, 0xda,
+	0xe0, 0xd9, 0x54, 0x83, 0x97, 0x63, 0xc0, 0x81, 0x84, 0xac, 0x70, 0x5a, 0x85, 0x7b, 0xe7, 0xdb,
+	0x6f, 0x50, 0xfd, 0xa7, 0x48, 0x78, 0x17, 0xcd, 0x05, 0x29, 0xcb, 0xa9, 0xd4, 0xfb, 0xb8, 0xd8,
+	0x75, 0xd4, 0xf9, 0x7d, 0xbd, 0x69, 0x3e, 0x89, 0x89, 0x3c, 0xc9, 0xfb, 0x4e, 0xc8, 0x52, 0x37,
+	0x64, 0x22, 0x65, 0x62, 0xf8, 0x58, 0x17, 0xd1, 0xa9, 0xab, 0x76, 0x45, 0x38, 0x7b, 0x54, 0x7a,
+	0x43, 0x75, 0xfb, 0x7d, 0x19, 0xad, 0xde, 0x9f, 0x65, 0xc2, 0xa2, 0xfc, 0x2f, 0x16, 0xf8, 0x15,
+	0xaa, 0xeb, 0x2d, 0x2a, 0x5a, 0x56, 0x27, 0xae, 0x6d, 0x3c, 0xfa, 0xed, 0x6c, 0x77, 0x86, 0x05,
+	0xa6, 0x19, 0x3f, 0xaa, 0xe3, 0x5d, 0x52, 0xca, 0x62, 0x1e, 0xbf, 0x45, 0xcb, 0x86, 0xe9, 0xa7,
+	0x79, 0x22, 0x49, 0x96, 0x10, 0xe0, 0xfa, 0x48, 0x67, 0x0b, 0xb7, 0x03, 0xa1, 0xf7, 0xd0, 0x80,
+	0x7a, 0x23, 0x4e, 0xfb, 0x53, 0x05, 0xd5, 0x4c, 0xa7, 0x1e, 0xc8, 0x40, 0xc2, 0xf4, 0x76, 0x3d,
+	0x40, 0xf5, 0x22, 0x8d, 0x92, 0x45, 0x7f, 0xb9, 0x4d, 0x4b, 0xc3, 0x24, 0x9a, 0x81, 0x8f, 0xd1,
+	0x32, 0x87, 0x34, 0x20, 0x34, 0x02, 0xee, 0x4b, 0xa6, 0xd1, 0xa6, 0xa7, 0x67, 0x5e, 0xe2, 0x83,
+	0x11, 0xe8, 0x90, 0x29, 0x3a, 0x3e, 0x42, 0x2b, 0x49, 0x20, 0x4c, 0x5c, 0xbf, 0x9f, 0xb0, 0xf0,
+	0xd4, 0xdc, 0xb5, 0xea, 0x0c, 0x7f, 0x87, 0x65, 0x45, 0x50, 0xb4, 0xae, 0xd2, 0xeb, 0x9b, 0x27,
+	0x90, 0x3d, 0x8e, 0x3c, 0xe0, 0x2c, 0xf5, 0x33, 0x0e, 0xef, 0x08, 0xcb, 0x85, 0x9f, 0x01, 0x27,
+	0x2c, 0xd2, 0x97, 0x62, 0xf6, 0xfc, 0x8f, 0x47, 0xd4, 0x5d, 0xce, 0xd2, 0xfd, 0x21, 0x73, 0x5f,
+	0x23, 0xbb, 0xbd, 0xab, 0x5b, 0xdb, 0xba, 0xbe, 0xb5, 0xad, 0xef, 0xb7, 0xb6, 0x75, 0x79, 0x67,
+	0x97, 0xae, 0xef, 0xec, 0xd2, 0x97, 0x3b, 0xbb, 0x74, 0xbc, 0x39, 0x89, 0x9f, 0xb8, 0x85, 0x6e,
+	0xb8, 0x05, 0xeb, 0x7a, 0xc2, 0x3d, 0x77, 0xc7, 0xbf, 0x6f, 0xed, 0xd7, 0x9f, 0xd3, 0x8b, 0xde,
+	0xfc, 0x11, 0x00, 0x00, 0xff, 0xff, 0x64, 0x1c, 0xad, 0xfd, 0xd8, 0x05, 0x00, 0x00,
+}
+
+func (m *MinterConfig) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MinterConfig) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MinterConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Minters) > 0 {
+		for iNdEx := len(m.Minters) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Minters[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintMinter(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
+	if err1 != nil {
+		return 0, err1
+	}
+	i -= n1
+	i = encodeVarintMinter(dAtA, i, uint64(n1))
+	i--
+	dAtA[i] = 0x12
+	return len(dAtA) - i, nil
 }
 
 func (m *Minter) Marshal() (dAtA []byte, err error) {
@@ -382,54 +419,9 @@ func (m *Minter) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Periods) > 0 {
-		for iNdEx := len(m.Periods) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Periods[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintMinter(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Start, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Start):])
-	if err1 != nil {
-		return 0, err1
-	}
-	i -= n1
-	i = encodeVarintMinter(dAtA, i, uint64(n1))
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *MintingPeriod) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MintingPeriod) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MintingPeriod) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.PeriodicReductionMinter != nil {
+	if m.ExponentialStepMinting != nil {
 		{
-			size, err := m.PeriodicReductionMinter.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.ExponentialStepMinting.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -439,9 +431,9 @@ func (m *MintingPeriod) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x2a
 	}
-	if m.TimeLinearMinter != nil {
+	if m.LinearMinting != nil {
 		{
-			size, err := m.TimeLinearMinter.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.LinearMinting.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -458,8 +450,8 @@ func (m *MintingPeriod) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.PeriodEnd != nil {
-		n4, err4 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.PeriodEnd, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.PeriodEnd):])
+	if m.EndTime != nil {
+		n4, err4 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndTime):])
 		if err4 != nil {
 			return 0, err4
 		}
@@ -468,15 +460,15 @@ func (m *MintingPeriod) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.Position != 0 {
-		i = encodeVarintMinter(dAtA, i, uint64(m.Position))
+	if m.SequenceId != 0 {
+		i = encodeVarintMinter(dAtA, i, uint64(m.SequenceId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *TimeLinearMinter) Marshal() (dAtA []byte, err error) {
+func (m *LinearMinting) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -486,12 +478,12 @@ func (m *TimeLinearMinter) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *TimeLinearMinter) MarshalTo(dAtA []byte) (int, error) {
+func (m *LinearMinting) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *TimeLinearMinter) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *LinearMinting) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -509,7 +501,7 @@ func (m *TimeLinearMinter) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *PeriodicReductionMinter) Marshal() (dAtA []byte, err error) {
+func (m *ExponentialStepMinting) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -519,46 +511,44 @@ func (m *PeriodicReductionMinter) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *PeriodicReductionMinter) MarshalTo(dAtA []byte) (int, error) {
+func (m *ExponentialStepMinting) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *PeriodicReductionMinter) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ExponentialStepMinting) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size := m.ReductionFactor.Size()
+		size := m.AmountMultiplier.Size()
 		i -= size
-		if _, err := m.ReductionFactor.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.AmountMultiplier.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintMinter(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x22
-	if m.ReductionPeriodLength != 0 {
-		i = encodeVarintMinter(dAtA, i, uint64(m.ReductionPeriodLength))
-		i--
-		dAtA[i] = 0x18
-	}
 	{
-		size := m.MintAmount.Size()
+		size := m.Amount.Size()
 		i -= size
-		if _, err := m.MintAmount.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.Amount.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintMinter(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x12
-	if m.MintPeriod != 0 {
-		i = encodeVarintMinter(dAtA, i, uint64(m.MintPeriod))
-		i--
-		dAtA[i] = 0x8
+	n5, err5 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.StepDuration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.StepDuration):])
+	if err5 != nil {
+		return 0, err5
 	}
+	i -= n5
+	i = encodeVarintMinter(dAtA, i, uint64(n5))
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -592,12 +582,12 @@ func (m *MinterState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x2a
-	n5, err5 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastMintBlockTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastMintBlockTime):])
-	if err5 != nil {
-		return 0, err5
+	n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastMintBlockTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastMintBlockTime):])
+	if err6 != nil {
+		return 0, err6
 	}
-	i -= n5
-	i = encodeVarintMinter(dAtA, i, uint64(n5))
+	i -= n6
+	i = encodeVarintMinter(dAtA, i, uint64(n6))
 	i--
 	dAtA[i] = 0x22
 	{
@@ -620,8 +610,8 @@ func (m *MinterState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x12
-	if m.Position != 0 {
-		i = encodeVarintMinter(dAtA, i, uint64(m.Position))
+	if m.SequenceId != 0 {
+		i = encodeVarintMinter(dAtA, i, uint64(m.SequenceId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -639,16 +629,16 @@ func encodeVarintMinter(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Minter) Size() (n int) {
+func (m *MinterConfig) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Start)
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime)
 	n += 1 + l + sovMinter(uint64(l))
-	if len(m.Periods) > 0 {
-		for _, e := range m.Periods {
+	if len(m.Minters) > 0 {
+		for _, e := range m.Minters {
 			l = e.Size()
 			n += 1 + l + sovMinter(uint64(l))
 		}
@@ -656,35 +646,35 @@ func (m *Minter) Size() (n int) {
 	return n
 }
 
-func (m *MintingPeriod) Size() (n int) {
+func (m *Minter) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Position != 0 {
-		n += 1 + sovMinter(uint64(m.Position))
+	if m.SequenceId != 0 {
+		n += 1 + sovMinter(uint64(m.SequenceId))
 	}
-	if m.PeriodEnd != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.PeriodEnd)
+	if m.EndTime != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndTime)
 		n += 1 + l + sovMinter(uint64(l))
 	}
 	l = len(m.Type)
 	if l > 0 {
 		n += 1 + l + sovMinter(uint64(l))
 	}
-	if m.TimeLinearMinter != nil {
-		l = m.TimeLinearMinter.Size()
+	if m.LinearMinting != nil {
+		l = m.LinearMinting.Size()
 		n += 1 + l + sovMinter(uint64(l))
 	}
-	if m.PeriodicReductionMinter != nil {
-		l = m.PeriodicReductionMinter.Size()
+	if m.ExponentialStepMinting != nil {
+		l = m.ExponentialStepMinting.Size()
 		n += 1 + l + sovMinter(uint64(l))
 	}
 	return n
 }
 
-func (m *TimeLinearMinter) Size() (n int) {
+func (m *LinearMinting) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -695,21 +685,17 @@ func (m *TimeLinearMinter) Size() (n int) {
 	return n
 }
 
-func (m *PeriodicReductionMinter) Size() (n int) {
+func (m *ExponentialStepMinting) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.MintPeriod != 0 {
-		n += 1 + sovMinter(uint64(m.MintPeriod))
-	}
-	l = m.MintAmount.Size()
+	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.StepDuration)
 	n += 1 + l + sovMinter(uint64(l))
-	if m.ReductionPeriodLength != 0 {
-		n += 1 + sovMinter(uint64(m.ReductionPeriodLength))
-	}
-	l = m.ReductionFactor.Size()
+	l = m.Amount.Size()
+	n += 1 + l + sovMinter(uint64(l))
+	l = m.AmountMultiplier.Size()
 	n += 1 + l + sovMinter(uint64(l))
 	return n
 }
@@ -720,8 +706,8 @@ func (m *MinterState) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Position != 0 {
-		n += 1 + sovMinter(uint64(m.Position))
+	if m.SequenceId != 0 {
+		n += 1 + sovMinter(uint64(m.SequenceId))
 	}
 	l = m.AmountMinted.Size()
 	n += 1 + l + sovMinter(uint64(l))
@@ -739,6 +725,123 @@ func sovMinter(x uint64) (n int) {
 }
 func sozMinter(x uint64) (n int) {
 	return sovMinter(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *MinterConfig) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMinter
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MinterConfig: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MinterConfig: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StartTime", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMinter
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMinter
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMinter
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTime, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Minters", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMinter
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMinter
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMinter
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Minters = append(m.Minters, &Minter{})
+			if err := m.Minters[len(m.Minters)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMinter(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMinter
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *Minter) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -770,127 +873,10 @@ func (m *Minter) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Start", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMinter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthMinter
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthMinter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Start, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Periods", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMinter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthMinter
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthMinter
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Periods = append(m.Periods, &MintingPeriod{})
-			if err := m.Periods[len(m.Periods)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipMinter(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthMinter
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MintingPeriod) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowMinter
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MintingPeriod: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MintingPeriod: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Position", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SequenceId", wireType)
 			}
-			m.Position = 0
+			m.SequenceId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMinter
@@ -900,14 +886,14 @@ func (m *MintingPeriod) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Position |= int32(b&0x7F) << shift
+				m.SequenceId |= uint32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PeriodEnd", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field EndTime", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -934,10 +920,10 @@ func (m *MintingPeriod) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.PeriodEnd == nil {
-				m.PeriodEnd = new(time.Time)
+			if m.EndTime == nil {
+				m.EndTime = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.PeriodEnd, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.EndTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -975,7 +961,7 @@ func (m *MintingPeriod) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TimeLinearMinter", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field LinearMinting", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1002,16 +988,16 @@ func (m *MintingPeriod) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.TimeLinearMinter == nil {
-				m.TimeLinearMinter = &TimeLinearMinter{}
+			if m.LinearMinting == nil {
+				m.LinearMinting = &LinearMinting{}
 			}
-			if err := m.TimeLinearMinter.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.LinearMinting.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PeriodicReductionMinter", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ExponentialStepMinting", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1038,10 +1024,10 @@ func (m *MintingPeriod) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.PeriodicReductionMinter == nil {
-				m.PeriodicReductionMinter = &PeriodicReductionMinter{}
+			if m.ExponentialStepMinting == nil {
+				m.ExponentialStepMinting = &ExponentialStepMinting{}
 			}
-			if err := m.PeriodicReductionMinter.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.ExponentialStepMinting.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1066,7 +1052,7 @@ func (m *MintingPeriod) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *TimeLinearMinter) Unmarshal(dAtA []byte) error {
+func (m *LinearMinting) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1089,10 +1075,10 @@ func (m *TimeLinearMinter) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: TimeLinearMinter: wiretype end group for non-group")
+			return fmt.Errorf("proto: LinearMinting: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: TimeLinearMinter: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: LinearMinting: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1150,7 +1136,7 @@ func (m *TimeLinearMinter) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *PeriodicReductionMinter) Unmarshal(dAtA []byte) error {
+func (m *ExponentialStepMinting) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1173,36 +1159,17 @@ func (m *PeriodicReductionMinter) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: PeriodicReductionMinter: wiretype end group for non-group")
+			return fmt.Errorf("proto: ExponentialStepMinting: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PeriodicReductionMinter: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ExponentialStepMinting: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintPeriod", wireType)
-			}
-			m.MintPeriod = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMinter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MintPeriod |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MintAmount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field StepDuration", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMinter
@@ -1212,48 +1179,28 @@ func (m *PeriodicReductionMinter) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthMinter
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthMinter
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.MintAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.StepDuration, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReductionPeriodLength", wireType)
-			}
-			m.ReductionPeriodLength = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMinter
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ReductionPeriodLength |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 4:
+		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReductionFactor", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1281,7 +1228,41 @@ func (m *PeriodicReductionMinter) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.ReductionFactor.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Amount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AmountMultiplier", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMinter
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMinter
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMinter
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.AmountMultiplier.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1337,9 +1318,9 @@ func (m *MinterState) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Position", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SequenceId", wireType)
 			}
-			m.Position = 0
+			m.SequenceId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMinter
@@ -1349,7 +1330,7 @@ func (m *MinterState) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Position |= int32(b&0x7F) << shift
+				m.SequenceId |= uint32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

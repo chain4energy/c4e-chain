@@ -1,6 +1,7 @@
 package cfevesting
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"math/rand"
 	"strconv"
 	"time"
@@ -22,6 +23,7 @@ func Generate10BasedVestingTypes(numberOfVestingTypes int, amountOf10BasedVestin
 				Name:          "test-vesting-type-" + strconv.Itoa(i+startId),
 				LockupPeriod:  CreateDurationFromNumOfHours(1000),
 				VestingPeriod: CreateDurationFromNumOfHours(5000),
+				Free:          sdk.MustNewDecFromStr("0.05"),
 			}
 			vestingTypes = append(vestingTypes, &vestingType)
 		} else {
@@ -29,6 +31,7 @@ func Generate10BasedVestingTypes(numberOfVestingTypes int, amountOf10BasedVestin
 				Name:          "test-vesting-type-" + strconv.Itoa(i+startId),
 				LockupPeriod:  CreateDurationFromNumOfHours(int64(rgen.Intn(100000))),
 				VestingPeriod: CreateDurationFromNumOfHours(int64(rgen.Intn(100000))),
+				Free:          sdk.MustNewDecFromStr("0.05"),
 			}
 			vestingTypes = append(vestingTypes, &vestingType)
 		}

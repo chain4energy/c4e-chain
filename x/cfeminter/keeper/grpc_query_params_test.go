@@ -12,17 +12,16 @@ import (
 )
 
 func TestParamsQuery(t *testing.T) {
-	keeper, ctx := testkeeper.CfeminterKeeper(t)
+	keeper, ctx, _ := testkeeper.CfeminterKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
 	params.MintDenom = "denom"
-	params.Minter = createLinearMinters(time.Now())
+	params.MinterConfig.Minters = createLinearMintings(time.Now())
 
 	keeper.SetParams(ctx, params)
 
 	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})
 	require.NoError(t, err)
 	require.EqualValues(t, params.MintDenom, response.Params.MintDenom)
-	testminter.CompareMinters(t, params.Minter, response.Params.Minter)
-
+	testminter.CompareMinterConfigs(t, params.MinterConfig, response.Params.MinterConfig)
 }

@@ -4,813 +4,7 @@ info:
   name: ''
   description: ''
 paths:
-  '/c4e/airdrop/v1beta1/airdrop_claims_left/{campaign_id}':
-    get:
-      summary: Queries a AirdropDistrubitions by campaignId.
-      operationId: Chain4EnergyC4EchainCfeairdropAirdropClaimsLeft
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              airdrop_coins:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  '/c4e/airdrop/v1beta1/airdrop_distributions/{campaign_id}':
-    get:
-      summary: Queries a AirdropDistrubitions by campaignId.
-      operationId: Chain4EnergyC4EchainCfeairdropAirdropDistrubitions
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              airdrop_coins:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  '/c4e/airdrop/v1beta1/campaign/{campaign_id}':
-    get:
-      summary: Queries a list of Campaigns items.
-      operationId: Chain4EnergyC4EchainCfeairdropCampaign
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              campaign:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uint64
-                  owner:
-                    type: string
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  feegrant_amount:
-                    type: string
-                  initial_claim_free_amount:
-                    type: string
-                  enabled:
-                    type: boolean
-                  start_time:
-                    type: string
-                    format: date-time
-                  end_time:
-                    type: string
-                    format: date-time
-                  lockup_period:
-                    type: string
-                    title: period of locked coins from claim
-                  vesting_period:
-                    type: string
-                    title: period of vesting coins after lockup period
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /c4e/airdrop/v1beta1/campaigns:
-    get:
-      summary: Queries a list of Campaigns items.
-      operationId: Chain4EnergyC4EchainCfeairdropCampaigns
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              campaign:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uint64
-                    owner:
-                      type: string
-                    name:
-                      type: string
-                    description:
-                      type: string
-                    feegrant_amount:
-                      type: string
-                    initial_claim_free_amount:
-                      type: string
-                    enabled:
-                      type: boolean
-                    start_time:
-                      type: string
-                      format: date-time
-                    end_time:
-                      type: string
-                      format: date-time
-                    lockup_period:
-                      type: string
-                      title: period of locked coins from claim
-                    vesting_period:
-                      type: string
-                      title: period of vesting coins after lockup period
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /c4e/airdrop/v1beta1/mission:
-    get:
-      summary: Queries a list of Mission items.
-      operationId: Chain4EnergyC4EchainCfeairdropMissionAll
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              mission:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uint64
-                    campaign_id:
-                      type: string
-                      format: uint64
-                    name:
-                      type: string
-                    description:
-                      type: string
-                    missionType:
-                      type: string
-                      enum:
-                        - MISSION_TYPE_UNSPECIFIED
-                        - INITIAL_CLAIM
-                        - DELEGATION
-                        - VOTE
-                        - CLAIM
-                      default: MISSION_TYPE_UNSPECIFIED
-                    weight:
-                      type: string
-                    claim_start_date:
-                      type: string
-                      format: date-time
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  '/c4e/airdrop/v1beta1/mission/{campaign_id}/{mission_id}':
-    get:
-      summary: Queries a Mission by index.
-      operationId: Chain4EnergyC4EchainCfeairdropMission
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              mission:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uint64
-                  campaign_id:
-                    type: string
-                    format: uint64
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  missionType:
-                    type: string
-                    enum:
-                      - MISSION_TYPE_UNSPECIFIED
-                      - INITIAL_CLAIM
-                      - DELEGATION
-                      - VOTE
-                      - CLAIM
-                    default: MISSION_TYPE_UNSPECIFIED
-                  weight:
-                    type: string
-                  claim_start_date:
-                    type: string
-                    format: date-time
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-        - name: mission_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /c4e/airdrop/v1beta1/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCfeairdropParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  '/c4e/airdrop/v1beta1/user_airdrop_entries/{address}':
-    get:
-      summary: Queries a UserAirdropEntries by index.
-      operationId: Chain4EnergyC4EchainCfeairdropUserAirdropEntries
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              userAirdropEntries:
-                type: object
-                properties:
-                  address:
-                    type: string
-                  claim_address:
-                    type: string
-                  airdrop_entries:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        campaign_id:
-                          type: string
-                          format: uint64
-                        address:
-                          type: string
-                        airdrop_coins:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              denom:
-                                type: string
-                              amount:
-                                type: string
-                            description: >-
-                              Coin defines a token with a denomination and an
-                              amount.
-
-
-                              NOTE: The amount field is an Int which implements
-                              the custom method
-
-                              signatures required by gogoproto.
-                        completedMissions:
-                          type: array
-                          items:
-                            type: string
-                            format: uint64
-                        claimedMissions:
-                          type: array
-                          items:
-                            type: string
-                            format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: address
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/airdrop/v1beta1/users_airdrop_entries:
-    get:
-      summary: Queries a list of UserAirdropEntries items.
-      operationId: Chain4EnergyC4EchainCfeairdropUsersAirdropEntries
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              usersAirdropEntries:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    address:
-                      type: string
-                    claim_address:
-                      type: string
-                    airdrop_entries:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          campaign_id:
-                            type: string
-                            format: uint64
-                          address:
-                            type: string
-                          airdrop_coins:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                denom:
-                                  type: string
-                                amount:
-                                  type: string
-                              description: >-
-                                Coin defines a token with a denomination and an
-                                amount.
-
-
-                                NOTE: The amount field is an Int which
-                                implements the custom method
-
-                                signatures required by gogoproto.
-                          completedMissions:
-                            type: array
-                            items:
-                              type: string
-                              format: uint64
-                          claimedMissions:
-                            type: array
-                            items:
-                              type: string
-                              format: uint64
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /c4e/distributor/params:
+  /c4e/distributor/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfedistributorParams
@@ -891,7 +85,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4e/distributor/states:
+  /c4e/distributor/v1beta1/states:
     get:
       summary: Queries a list of States items.
       operationId: Chain4EnergyC4EchainCfedistributorStates
@@ -970,7 +164,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4e/minter/inflation:
+  /c4e/minter/v1beta1/inflation:
     get:
       summary: Queries a list of Inflation items.
       operationId: Chain4EnergyC4EchainCfeminterInflation
@@ -1002,7 +196,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4e/minter/params:
+  /c4e/minter/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfeminterParams
@@ -1018,21 +212,21 @@ paths:
                 properties:
                   mint_denom:
                     type: string
-                  minter:
+                  minter_config:
                     type: object
                     properties:
-                      start:
+                      start_time:
                         type: string
                         format: date-time
-                      periods:
+                      minters:
                         type: array
                         items:
                           type: object
                           properties:
-                            position:
+                            sequence_id:
                               type: integer
-                              format: int32
-                            period_end:
+                              format: int64
+                            end_time:
                               type: string
                               format: date-time
                             type:
@@ -1040,26 +234,21 @@ paths:
                               title: |-
                                 types:
                                   NO_MINTING;
-                                  TIME_LINEAR_MINTER;
-                                  PERIODIC_REDUCTION_MINTER;
-                            time_linear_minter:
+                                  LINEAR_MINTING;
+                                  EXPONENTIAL_STEP_MINTING;
+                            linear_minting:
                               type: object
                               properties:
                                 amount:
                                   type: string
-                            periodic_reduction_minter:
+                            exponential_step_minting:
                               type: object
                               properties:
-                                mint_period:
-                                  type: integer
-                                  format: int32
-                                  title: mint_period in seconds
-                                mint_amount:
+                                amount:
                                   type: string
-                                reduction_period_length:
-                                  type: integer
-                                  format: int32
-                                reduction_factor:
+                                step_duration:
+                                  type: string
+                                amount_multiplier:
                                   type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
@@ -1084,7 +273,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4e/minter/state:
+  /c4e/minter/v1beta1/state:
     get:
       summary: Queries a list of State items.
       operationId: Chain4EnergyC4EchainCfeminterState
@@ -1097,9 +286,9 @@ paths:
               minter_state:
                 type: object
                 properties:
-                  position:
+                  sequence_id:
                     type: integer
-                    format: int32
+                    format: int64
                   amount_minted:
                     type: string
                   remainder_to_mint:
@@ -1114,9 +303,9 @@ paths:
                 items:
                   type: object
                   properties:
-                    position:
+                    sequence_id:
                       type: integer
-                      format: int32
+                      format: int64
                     amount_minted:
                       type: string
                     remainder_to_mint:
@@ -1146,7 +335,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  '/c4e/signature/create_reference_id/{creator}':
+  '/c4e/signature/v1beta1/create_reference_id/{creator}':
     get:
       summary: Queries a list of CreateReferenceId items.
       operationId: Chain4EnergyC4EchainCfesignatureCreateReferenceId
@@ -1183,7 +372,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/create_reference_payload_link/{referenceId}/{payloadHash}':
+  '/c4e/signature/v1beta1/create_reference_payload_link/{referenceId}/{payloadHash}':
     get:
       summary: Queries a list of CreateReferencePayloadLink items.
       operationId: Chain4EnergyC4EchainCfesignatureCreateReferencePayloadLink
@@ -1226,7 +415,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/create_storage_key/{targetAccAddress}/{referenceId}':
+  '/c4e/signature/v1beta1/create_storage_key/{targetAccAddress}/{referenceId}':
     get:
       summary: Queries a list of CreateStorageKey items.
       operationId: Chain4EnergyC4EchainCfesignatureCreateStorageKey
@@ -1267,7 +456,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/get_account_info/{accAddressString}':
+  '/c4e/signature/v1beta1/get_account_info/{accAddressString}':
     get:
       summary: Queries a list of GetAccountInfo items.
       operationId: Chain4EnergyC4EchainCfesignatureGetAccountInfo
@@ -1306,7 +495,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/get_reference_payload_link/{referenceId}':
+  '/c4e/signature/v1beta1/get_reference_payload_link/{referenceId}':
     get:
       summary: Queries a list of GetReferencePayloadLink items.
       operationId: Chain4EnergyC4EchainCfesignatureGetReferencePayloadLink
@@ -1343,7 +532,7 @@ paths:
           type: string
       tags:
         - Query
-  /c4e/signature/params:
+  /c4e/signature/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfesignatureParams
@@ -1379,7 +568,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  '/c4e/signature/verify_reference_payload_link/{referenceId}/{payloadHash}':
+  '/c4e/signature/v1beta1/verify_reference_payload_link/{referenceId}/{payloadHash}':
     get:
       summary: Queries a list of VerifyReferencePayloadLink items.
       operationId: Chain4EnergyC4EchainCfesignatureVerifyReferencePayloadLink
@@ -1420,7 +609,7 @@ paths:
           type: string
       tags:
         - Query
-  '/c4e/signature/verify_signature/{referenceId}/{targetAccAddress}':
+  '/c4e/signature/v1beta1/verify_signature/{referenceId}/{targetAccAddress}':
     get:
       summary: Queries a list of VerifySignature items.
       operationId: Chain4EnergyC4EchainCfesignatureVerifySignature
@@ -1469,7 +658,7 @@ paths:
           type: string
       tags:
         - Query
-  /c4e/vesting/params:
+  /c4e/vesting/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfevestingParams
@@ -1675,7 +864,7 @@ paths:
                         }
       tags:
         - Query
-  /c4e/vesting/summary:
+  /c4e/vesting/v1beta1/summary:
     get:
       summary: Queries a summary of the entire vesting.
       operationId: Chain4EnergyC4EchainCfevestingVestingsSummary
@@ -1880,7 +1069,7 @@ paths:
                         }
       tags:
         - Query
-  '/c4e/vesting/vesting_pools/{address}':
+  '/c4e/vesting/v1beta1/vesting_pools/{address}':
     get:
       summary: Queries a list of Vesting items.
       operationId: Chain4EnergyC4EchainCfevestingVestingPools
@@ -1890,8 +1079,6 @@ paths:
           schema:
             type: object
             properties:
-              delegable_address:
-                type: string
               vesting_pools:
                 type: array
                 items:
@@ -2120,7 +1307,7 @@ paths:
           type: string
       tags:
         - Query
-  /c4e/vesting/vesting_type:
+  /c4e/vesting/v1beta1/vesting_type:
     get:
       summary: Queries a list of VestingType items.
       operationId: Chain4EnergyC4EchainCfevestingVestingType
@@ -2150,6 +1337,14 @@ paths:
                       title: period of veesting coins from lockup period end
                     vesting_period_unit:
                       type: string
+                    free:
+                      type: string
+                      title: |-
+                        units to select:
+                         days
+                         hours
+                         minutes
+                         seconds
         default:
           description: An unexpected error response.
           schema:
@@ -32649,493 +31844,173 @@ paths:
       tags:
         - Query
 definitions:
-  chain4energy.c4echain.cfeairdrop.AirdropCloseAction:
-    type: string
-    enum:
-      - AIRDROP_CLOSE_ACTION_UNSPECIFIED
-      - SEND_TO_COMMUNITY_POOL
-      - BURN
-      - SEND_TO_OWNER
-    default: AIRDROP_CLOSE_ACTION_UNSPECIFIED
-  chain4energy.c4echain.cfeairdrop.AirdropEntry:
+  chain4energy.c4echain.cfedistributor.Account:
     type: object
     properties:
-      campaign_id:
+      id:
         type: string
-        format: uint64
-      address:
+      type:
         type: string
-      airdrop_coins:
+  chain4energy.c4echain.cfedistributor.DestinationShare:
+    type: object
+    properties:
+      name:
+        type: string
+      share:
+        type: string
+      destination:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+  chain4energy.c4echain.cfedistributor.Destinations:
+    type: object
+    properties:
+      primary_share:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+      burn_share:
+        type: string
+      shares:
         type: array
         items:
           type: object
           properties:
-            denom:
+            name:
               type: string
-            amount:
+            share:
               type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-      completedMissions:
-        type: array
-        items:
-          type: string
-          format: uint64
-      claimedMissions:
-        type: array
-        items:
-          type: string
-          format: uint64
-  chain4energy.c4echain.cfeairdrop.Campaign:
+            destination:
+              type: object
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+  chain4energy.c4echain.cfedistributor.Params:
     type: object
     properties:
-      id:
-        type: string
-        format: uint64
-      owner:
-        type: string
-      name:
-        type: string
-      description:
-        type: string
-      feegrant_amount:
-        type: string
-      initial_claim_free_amount:
-        type: string
-      enabled:
-        type: boolean
-      start_time:
-        type: string
-        format: date-time
-      end_time:
-        type: string
-        format: date-time
-      lockup_period:
-        type: string
-        title: period of locked coins from claim
-      vesting_period:
-        type: string
-        title: period of vesting coins after lockup period
-  chain4energy.c4echain.cfeairdrop.Mission:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uint64
-      campaign_id:
-        type: string
-        format: uint64
-      name:
-        type: string
-      description:
-        type: string
-      missionType:
-        type: string
-        enum:
-          - MISSION_TYPE_UNSPECIFIED
-          - INITIAL_CLAIM
-          - DELEGATION
-          - VOTE
-          - CLAIM
-        default: MISSION_TYPE_UNSPECIFIED
-      weight:
-        type: string
-      claim_start_date:
-        type: string
-        format: date-time
-  chain4energy.c4echain.cfeairdrop.MissionType:
-    type: string
-    enum:
-      - MISSION_TYPE_UNSPECIFIED
-      - INITIAL_CLAIM
-      - DELEGATION
-      - VOTE
-      - CLAIM
-    default: MISSION_TYPE_UNSPECIFIED
-  chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntriesResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.MsgClaimResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.MsgCloseAirdropCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntryResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.MsgEditAirdropCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.MsgInitialClaimResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.MsgStartAirdropCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeairdrop.Params:
-    type: object
+      sub_distributors:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            sources:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  type:
+                    type: string
+            destinations:
+              type: object
+              properties:
+                primary_share:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+                burn_share:
+                  type: string
+                shares:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      share:
+                        type: string
+                      destination:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          type:
+                            type: string
     description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeairdrop.QueryAirdropClaimsLeftResponse:
-    type: object
-    properties:
-      airdrop_coins:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cfeairdrop.QueryAirdropDistrubitionsResponse:
-    type: object
-    properties:
-      airdrop_coins:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cfeairdrop.QueryCampaignResponse:
-    type: object
-    properties:
-      campaign:
-        type: object
-        properties:
-          id:
-            type: string
-            format: uint64
-          owner:
-            type: string
-          name:
-            type: string
-          description:
-            type: string
-          feegrant_amount:
-            type: string
-          initial_claim_free_amount:
-            type: string
-          enabled:
-            type: boolean
-          start_time:
-            type: string
-            format: date-time
-          end_time:
-            type: string
-            format: date-time
-          lockup_period:
-            type: string
-            title: period of locked coins from claim
-          vesting_period:
-            type: string
-            title: period of vesting coins after lockup period
-  chain4energy.c4echain.cfeairdrop.QueryCampaignsResponse:
-    type: object
-    properties:
-      campaign:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uint64
-            owner:
-              type: string
-            name:
-              type: string
-            description:
-              type: string
-            feegrant_amount:
-              type: string
-            initial_claim_free_amount:
-              type: string
-            enabled:
-              type: boolean
-            start_time:
-              type: string
-              format: date-time
-            end_time:
-              type: string
-              format: date-time
-            lockup_period:
-              type: string
-              title: period of locked coins from claim
-            vesting_period:
-              type: string
-              title: period of vesting coins after lockup period
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-  chain4energy.c4echain.cfeairdrop.QueryMissionResponse:
-    type: object
-    properties:
-      mission:
-        type: object
-        properties:
-          id:
-            type: string
-            format: uint64
-          campaign_id:
-            type: string
-            format: uint64
-          name:
-            type: string
-          description:
-            type: string
-          missionType:
-            type: string
-            enum:
-              - MISSION_TYPE_UNSPECIFIED
-              - INITIAL_CLAIM
-              - DELEGATION
-              - VOTE
-              - CLAIM
-            default: MISSION_TYPE_UNSPECIFIED
-          weight:
-            type: string
-          claim_start_date:
-            type: string
-            format: date-time
-  chain4energy.c4echain.cfeairdrop.QueryMissionsResponse:
-    type: object
-    properties:
-      mission:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uint64
-            campaign_id:
-              type: string
-              format: uint64
-            name:
-              type: string
-            description:
-              type: string
-            missionType:
-              type: string
-              enum:
-                - MISSION_TYPE_UNSPECIFIED
-                - INITIAL_CLAIM
-                - DELEGATION
-                - VOTE
-                - CLAIM
-              default: MISSION_TYPE_UNSPECIFIED
-            weight:
-              type: string
-            claim_start_date:
-              type: string
-              format: date-time
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-  chain4energy.c4echain.cfeairdrop.QueryParamsResponse:
+  chain4energy.c4echain.cfedistributor.QueryParamsResponse:
     type: object
     properties:
       params:
         description: params holds all the parameters of this module.
         type: object
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfeairdrop.QueryUserAirdropEntriesResponse:
-    type: object
-    properties:
-      userAirdropEntries:
-        type: object
         properties:
-          address:
-            type: string
-          claim_address:
-            type: string
-          airdrop_entries:
+          sub_distributors:
             type: array
             items:
               type: object
               properties:
-                campaign_id:
+                name:
                   type: string
-                  format: uint64
-                address:
-                  type: string
-                airdrop_coins:
+                sources:
                   type: array
                   items:
                     type: object
                     properties:
-                      denom:
+                      id:
                         type: string
-                      amount:
+                      type:
                         type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
-                completedMissions:
-                  type: array
-                  items:
-                    type: string
-                    format: uint64
-                claimedMissions:
-                  type: array
-                  items:
-                    type: string
-                    format: uint64
-  chain4energy.c4echain.cfeairdrop.QueryUsersAirdropEntriesResponse:
-    type: object
-    properties:
-      usersAirdropEntries:
-        type: array
-        items:
-          type: object
-          properties:
-            address:
-              type: string
-            claim_address:
-              type: string
-            airdrop_entries:
-              type: array
-              items:
-                type: object
-                properties:
-                  campaign_id:
-                    type: string
-                    format: uint64
-                  address:
-                    type: string
-                  airdrop_coins:
-                    type: array
-                    items:
+                destinations:
+                  type: object
+                  properties:
+                    primary_share:
                       type: object
                       properties:
-                        denom:
+                        id:
                           type: string
-                        amount:
+                        type:
                           type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-                  completedMissions:
-                    type: array
-                    items:
+                    burn_share:
                       type: string
-                      format: uint64
-                  claimedMissions:
-                    type: array
-                    items:
-                      type: string
-                      format: uint64
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-  chain4energy.c4echain.cfeairdrop.UserAirdropEntries:
+                    shares:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          share:
+                            type: string
+                          destination:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              type:
+                                type: string
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cfedistributor.QueryStatesResponse:
     type: object
     properties:
-      address:
-        type: string
-      claim_address:
-        type: string
-      airdrop_entries:
+      states:
         type: array
         items:
           type: object
           properties:
-            campaign_id:
-              type: string
-              format: uint64
-            address:
-              type: string
-            airdrop_coins:
+            account:
+              type: object
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+            burn:
+              type: boolean
+            remains:
               type: array
               items:
                 type: object
@@ -33145,99 +32020,96 @@ definitions:
                   amount:
                     type: string
                 description: >-
-                  Coin defines a token with a denomination and an amount.
+                  DecCoin defines a token with a denomination and a decimal
+                  amount.
 
 
-                  NOTE: The amount field is an Int which implements the custom
+                  NOTE: The amount field is an Dec which implements the custom
                   method
 
                   signatures required by gogoproto.
-            completedMissions:
-              type: array
-              items:
-                type: string
-                format: uint64
-            claimedMissions:
-              type: array
-              items:
-                type: string
-                format: uint64
-  cosmos.base.query.v1beta1.PageRequest:
+      coins_on_distributor_account:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
+  chain4energy.c4echain.cfedistributor.State:
     type: object
     properties:
-      key:
-        type: string
-        format: byte
-        description: |-
-          key is a value returned in PageResponse.next_key to begin
-          querying the next page most efficiently. Only one of offset or key
-          should be set.
-      offset:
-        type: string
-        format: uint64
-        description: |-
-          offset is a numeric offset that can be used when key is unavailable.
-          It is less efficient than using key. Only one of offset or key should
-          be set.
-      limit:
-        type: string
-        format: uint64
-        description: >-
-          limit is the total number of results to be returned in the result
-          page.
-
-          If left empty it will default to a value to be set by each app.
-      count_total:
+      account:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+      burn:
         type: boolean
-        description: >-
-          count_total is set to true  to indicate that the result set should
-          include
+      remains:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            DecCoin defines a token with a denomination and a decimal amount.
 
-          a count of the total number of items available for pagination in UIs.
-
-          count_total is only respected when offset is used. It is ignored when
-          key
-
-          is set.
-      reverse:
-        type: boolean
-        description: >-
-          reverse is set to true if results are to be returned in the descending
-          order.
-
-
-          Since: cosmos-sdk 0.43
-    description: |-
-      message SomeRequest {
-               Foo some_parameter = 1;
-               PageRequest pagination = 2;
-       }
-    title: |-
-      PageRequest is to be embedded in gRPC request messages for efficient
-      pagination. Ex:
-  cosmos.base.query.v1beta1.PageResponse:
+            NOTE: The amount field is an Dec which implements the custom method
+            signatures required by gogoproto.
+  chain4energy.c4echain.cfedistributor.SubDistributor:
     type: object
     properties:
-      next_key:
+      name:
         type: string
-        format: byte
-        title: |-
-          next_key is the key to be passed to PageRequest.key to
-          query the next page most efficiently
-      total:
-        type: string
-        format: uint64
-        title: |-
-          total is total number of results available if PageRequest.count_total
-          was set, its value is undefined otherwise
-    description: |-
-      PageResponse is to be embedded in gRPC response messages where the
-      corresponding request message has used PageRequest.
-
-       message SomeResponse {
-               repeated Bar results = 1;
-               PageResponse page = 2;
-       }
+      sources:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+      destinations:
+        type: object
+        properties:
+          primary_share:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+          burn_share:
+            type: string
+          shares:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                share:
+                  type: string
+                destination:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
   cosmos.base.v1beta1.Coin:
     type: object
     properties:
@@ -33249,6 +32121,18 @@ definitions:
       Coin defines a token with a denomination and an amount.
 
       NOTE: The amount field is an Int which implements the custom method
+      signatures required by gogoproto.
+  cosmos.base.v1beta1.DecCoin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      DecCoin defines a token with a denomination and a decimal amount.
+
+      NOTE: The amount field is an Dec which implements the custom method
       signatures required by gogoproto.
   google.protobuf.Any:
     type: object
@@ -33573,299 +32457,65 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
-  chain4energy.c4echain.cfedistributor.Account:
+  chain4energy.c4echain.cfeminter.ExponentialStepMinting:
     type: object
     properties:
-      id:
-        type: string
-      type:
-        type: string
-  chain4energy.c4echain.cfedistributor.DestinationShare:
-    type: object
-    properties:
-      name:
-        type: string
-      share:
-        type: string
-      destination:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-  chain4energy.c4echain.cfedistributor.Destinations:
-    type: object
-    properties:
-      primary_share:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-      burn_share:
-        type: string
-      shares:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            share:
-              type: string
-            destination:
-              type: object
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-  chain4energy.c4echain.cfedistributor.Params:
-    type: object
-    properties:
-      sub_distributors:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            sources:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  type:
-                    type: string
-            destinations:
-              type: object
-              properties:
-                primary_share:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    type:
-                      type: string
-                burn_share:
-                  type: string
-                shares:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                      share:
-                        type: string
-                      destination:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                          type:
-                            type: string
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfedistributor.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params holds all the parameters of this module.
-        type: object
-        properties:
-          sub_distributors:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                sources:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      type:
-                        type: string
-                destinations:
-                  type: object
-                  properties:
-                    primary_share:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        type:
-                          type: string
-                    burn_share:
-                      type: string
-                    shares:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                          share:
-                            type: string
-                          destination:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              type:
-                                type: string
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfedistributor.QueryStatesResponse:
-    type: object
-    properties:
-      states:
-        type: array
-        items:
-          type: object
-          properties:
-            account:
-              type: object
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-            burn:
-              type: boolean
-            remains:
-              type: array
-              items:
-                type: object
-                properties:
-                  denom:
-                    type: string
-                  amount:
-                    type: string
-                description: >-
-                  DecCoin defines a token with a denomination and a decimal
-                  amount.
-
-
-                  NOTE: The amount field is an Dec which implements the custom
-                  method
-
-                  signatures required by gogoproto.
-      coins_on_distributor_account:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cfedistributor.State:
-    type: object
-    properties:
-      account:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-      burn:
-        type: boolean
-      remains:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cfedistributor.SubDistributor:
-    type: object
-    properties:
-      name:
-        type: string
-      sources:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-            type:
-              type: string
-      destinations:
-        type: object
-        properties:
-          primary_share:
-            type: object
-            properties:
-              id:
-                type: string
-              type:
-                type: string
-          burn_share:
-            type: string
-          shares:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                share:
-                  type: string
-                destination:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    type:
-                      type: string
-  cosmos.base.v1beta1.DecCoin:
-    type: object
-    properties:
-      denom:
-        type: string
       amount:
         type: string
-    description: |-
-      DecCoin defines a token with a denomination and a decimal amount.
-
-      NOTE: The amount field is an Dec which implements the custom method
-      signatures required by gogoproto.
+      step_duration:
+        type: string
+      amount_multiplier:
+        type: string
+  chain4energy.c4echain.cfeminter.LinearMinting:
+    type: object
+    properties:
+      amount:
+        type: string
   chain4energy.c4echain.cfeminter.Minter:
     type: object
     properties:
-      start:
+      sequence_id:
+        type: integer
+        format: int64
+      end_time:
         type: string
         format: date-time
-      periods:
+      type:
+        type: string
+        title: |-
+          types:
+            NO_MINTING;
+            LINEAR_MINTING;
+            EXPONENTIAL_STEP_MINTING;
+      linear_minting:
+        type: object
+        properties:
+          amount:
+            type: string
+      exponential_step_minting:
+        type: object
+        properties:
+          amount:
+            type: string
+          step_duration:
+            type: string
+          amount_multiplier:
+            type: string
+  chain4energy.c4echain.cfeminter.MinterConfig:
+    type: object
+    properties:
+      start_time:
+        type: string
+        format: date-time
+      minters:
         type: array
         items:
           type: object
           properties:
-            position:
+            sequence_id:
               type: integer
-              format: int32
-            period_end:
+              format: int64
+            end_time:
               type: string
               format: date-time
             type:
@@ -33873,33 +32523,28 @@ definitions:
               title: |-
                 types:
                   NO_MINTING;
-                  TIME_LINEAR_MINTER;
-                  PERIODIC_REDUCTION_MINTER;
-            time_linear_minter:
+                  LINEAR_MINTING;
+                  EXPONENTIAL_STEP_MINTING;
+            linear_minting:
               type: object
               properties:
                 amount:
                   type: string
-            periodic_reduction_minter:
+            exponential_step_minting:
               type: object
               properties:
-                mint_period:
-                  type: integer
-                  format: int32
-                  title: mint_period in seconds
-                mint_amount:
+                amount:
                   type: string
-                reduction_period_length:
-                  type: integer
-                  format: int32
-                reduction_factor:
+                step_duration:
+                  type: string
+                amount_multiplier:
                   type: string
   chain4energy.c4echain.cfeminter.MinterState:
     type: object
     properties:
-      position:
+      sequence_id:
         type: integer
-        format: int32
+        format: int64
       amount_minted:
         type: string
       remainder_to_mint:
@@ -33909,61 +32554,26 @@ definitions:
         format: date-time
       remainder_from_previous_period:
         type: string
-  chain4energy.c4echain.cfeminter.MintingPeriod:
-    type: object
-    properties:
-      position:
-        type: integer
-        format: int32
-      period_end:
-        type: string
-        format: date-time
-      type:
-        type: string
-        title: |-
-          types:
-            NO_MINTING;
-            TIME_LINEAR_MINTER;
-            PERIODIC_REDUCTION_MINTER;
-      time_linear_minter:
-        type: object
-        properties:
-          amount:
-            type: string
-      periodic_reduction_minter:
-        type: object
-        properties:
-          mint_period:
-            type: integer
-            format: int32
-            title: mint_period in seconds
-          mint_amount:
-            type: string
-          reduction_period_length:
-            type: integer
-            format: int32
-          reduction_factor:
-            type: string
   chain4energy.c4echain.cfeminter.Params:
     type: object
     properties:
       mint_denom:
         type: string
-      minter:
+      minter_config:
         type: object
         properties:
-          start:
+          start_time:
             type: string
             format: date-time
-          periods:
+          minters:
             type: array
             items:
               type: object
               properties:
-                position:
+                sequence_id:
                   type: integer
-                  format: int32
-                period_end:
+                  format: int64
+                end_time:
                   type: string
                   format: date-time
                 type:
@@ -33971,42 +32581,23 @@ definitions:
                   title: |-
                     types:
                       NO_MINTING;
-                      TIME_LINEAR_MINTER;
-                      PERIODIC_REDUCTION_MINTER;
-                time_linear_minter:
+                      LINEAR_MINTING;
+                      EXPONENTIAL_STEP_MINTING;
+                linear_minting:
                   type: object
                   properties:
                     amount:
                       type: string
-                periodic_reduction_minter:
+                exponential_step_minting:
                   type: object
                   properties:
-                    mint_period:
-                      type: integer
-                      format: int32
-                      title: mint_period in seconds
-                    mint_amount:
+                    amount:
                       type: string
-                    reduction_period_length:
-                      type: integer
-                      format: int32
-                    reduction_factor:
+                    step_duration:
+                      type: string
+                    amount_multiplier:
                       type: string
     description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeminter.PeriodicReductionMinter:
-    type: object
-    properties:
-      mint_period:
-        type: integer
-        format: int32
-        title: mint_period in seconds
-      mint_amount:
-        type: string
-      reduction_period_length:
-        type: integer
-        format: int32
-      reduction_factor:
-        type: string
   chain4energy.c4echain.cfeminter.QueryInflationResponse:
     type: object
     properties:
@@ -34021,21 +32612,21 @@ definitions:
         properties:
           mint_denom:
             type: string
-          minter:
+          minter_config:
             type: object
             properties:
-              start:
+              start_time:
                 type: string
                 format: date-time
-              periods:
+              minters:
                 type: array
                 items:
                   type: object
                   properties:
-                    position:
+                    sequence_id:
                       type: integer
-                      format: int32
-                    period_end:
+                      format: int64
+                    end_time:
                       type: string
                       format: date-time
                     type:
@@ -34043,26 +32634,21 @@ definitions:
                       title: |-
                         types:
                           NO_MINTING;
-                          TIME_LINEAR_MINTER;
-                          PERIODIC_REDUCTION_MINTER;
-                    time_linear_minter:
+                          LINEAR_MINTING;
+                          EXPONENTIAL_STEP_MINTING;
+                    linear_minting:
                       type: object
                       properties:
                         amount:
                           type: string
-                    periodic_reduction_minter:
+                    exponential_step_minting:
                       type: object
                       properties:
-                        mint_period:
-                          type: integer
-                          format: int32
-                          title: mint_period in seconds
-                        mint_amount:
+                        amount:
                           type: string
-                        reduction_period_length:
-                          type: integer
-                          format: int32
-                        reduction_factor:
+                        step_duration:
+                          type: string
+                        amount_multiplier:
                           type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfeminter.QueryStateResponse:
@@ -34071,9 +32657,9 @@ definitions:
       minter_state:
         type: object
         properties:
-          position:
+          sequence_id:
             type: integer
-            format: int32
+            format: int64
           amount_minted:
             type: string
           remainder_to_mint:
@@ -34088,9 +32674,9 @@ definitions:
         items:
           type: object
           properties:
-            position:
+            sequence_id:
               type: integer
-              format: int32
+              format: int64
             amount_minted:
               type: string
             remainder_to_mint:
@@ -34100,11 +32686,6 @@ definitions:
               format: date-time
             remainder_from_previous_period:
               type: string
-  chain4energy.c4echain.cfeminter.TimeLinearMinter:
-    type: object
-    properties:
-      amount:
-        type: string
   chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
     type: object
     properties:
@@ -34197,6 +32778,14 @@ definitions:
         title: period of veesting coins from lockup period end
       vesting_period_unit:
         type: string
+      free:
+        type: string
+        title: |-
+          units to select:
+           days
+           hours
+           minutes
+           seconds
   chain4energy.c4echain.cfevesting.MsgCreateVestingAccountResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgCreateVestingPoolResponse:
@@ -34227,8 +32816,6 @@ definitions:
   chain4energy.c4echain.cfevesting.QueryVestingPoolsResponse:
     type: object
     properties:
-      delegable_address:
-        type: string
       vesting_pools:
         type: array
         items:
@@ -34288,6 +32875,14 @@ definitions:
               title: period of veesting coins from lockup period end
             vesting_period_unit:
               type: string
+            free:
+              type: string
+              title: |-
+                units to select:
+                 days
+                 hours
+                 minutes
+                 seconds
   chain4energy.c4echain.cfevesting.QueryVestingsSummaryResponse:
     type: object
     properties:
@@ -34725,6 +33320,82 @@ definitions:
             type: string
             format: uint64
     description: QueryParamsResponse is the response type for the Query/Params RPC method.
+  cosmos.base.query.v1beta1.PageRequest:
+    type: object
+    properties:
+      key:
+        type: string
+        format: byte
+        description: |-
+          key is a value returned in PageResponse.next_key to begin
+          querying the next page most efficiently. Only one of offset or key
+          should be set.
+      offset:
+        type: string
+        format: uint64
+        description: |-
+          offset is a numeric offset that can be used when key is unavailable.
+          It is less efficient than using key. Only one of offset or key should
+          be set.
+      limit:
+        type: string
+        format: uint64
+        description: >-
+          limit is the total number of results to be returned in the result
+          page.
+
+          If left empty it will default to a value to be set by each app.
+      count_total:
+        type: boolean
+        description: >-
+          count_total is set to true  to indicate that the result set should
+          include
+
+          a count of the total number of items available for pagination in UIs.
+
+          count_total is only respected when offset is used. It is ignored when
+          key
+
+          is set.
+      reverse:
+        type: boolean
+        description: >-
+          reverse is set to true if results are to be returned in the descending
+          order.
+
+
+          Since: cosmos-sdk 0.43
+    description: |-
+      message SomeRequest {
+               Foo some_parameter = 1;
+               PageRequest pagination = 2;
+       }
+    title: |-
+      PageRequest is to be embedded in gRPC request messages for efficient
+      pagination. Ex:
+  cosmos.base.query.v1beta1.PageResponse:
+    type: object
+    properties:
+      next_key:
+        type: string
+        format: byte
+        title: |-
+          next_key is the key to be passed to PageRequest.key to
+          query the next page most efficiently
+      total:
+        type: string
+        format: uint64
+        title: |-
+          total is total number of results available if PageRequest.count_total
+          was set, its value is undefined otherwise
+    description: |-
+      PageResponse is to be embedded in gRPC response messages where the
+      corresponding request message has used PageRequest.
+
+       message SomeResponse {
+               repeated Bar results = 1;
+               PageResponse page = 2;
+       }
   cosmos.authz.v1beta1.Grant:
     type: object
     properties:
