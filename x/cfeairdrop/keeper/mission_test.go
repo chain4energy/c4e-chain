@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/testutil/module/cfeairdrop"
 	"strconv"
 	"testing"
@@ -460,7 +461,7 @@ func TestCompleteDelegationMission(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[1], sdk.NewCoins(), 12312, 1555565657676576)
 	delagationAmount := sdk.NewInt(1000000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(delagationAmount, acountsAddresses[1])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eAirdropUtils.CompleteDelegationMission(0, acountsAddresses[1], delagationAmount)
 }
@@ -473,7 +474,7 @@ func TestCompleteVoteMission(t *testing.T) {
 	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[1], sdk.NewCoins(), 12312, 1555565657676576)
 
 	delagationAmount := sdk.NewInt(1000000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(delagationAmount, acountsAddresses[1])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	validators := testHelper.StakingUtils.GetValidators()
 	valAddr, err := sdk.ValAddressFromBech32(validators[0].OperatorAddress)
@@ -506,7 +507,7 @@ func TestFullCampaign(t *testing.T) {
 	testHelper.C4eAirdropUtils.ClaimInitial(0, acountsAddresses[1], 500000000)
 
 	delagationAmount := sdk.NewInt(1000000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(delagationAmount, acountsAddresses[1])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eAirdropUtils.CompleteDelegationMission(0, acountsAddresses[1], delagationAmount)
 
@@ -595,7 +596,7 @@ func prepareUserAirdropEntries(testHelper *testapp.TestHelper, srcAddress sdk.Ac
 func prepareAidropEntries(address string) []*types.AirdropEntry {
 	airdropEntries := []*types.AirdropEntry{
 		{
-			AirdropCoins: sdk.NewCoins(sdk.NewCoin(testcosmos.DefaultTestDenom, sdk.NewInt(1000000000))),
+			AirdropCoins: sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1000000000))),
 			Address:      address,
 		},
 	}
@@ -605,7 +606,7 @@ func prepareAidropEntries(address string) []*types.AirdropEntry {
 
 func addCampaignsAndMissions(utils *cfeairdrop.ContextC4eAirdropUtils, ownerAddress string, campaigns []types.Campaign, missions []types.Mission) {
 	for _, campaign := range campaigns {
-		utils.CreateAirdropCampaign(ownerAddress, campaign.Name, campaign.Description, campaign.AllowFeegrant, campaign.InitialClaimFreeAmount, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+		utils.CreateAirdropCampaign(ownerAddress, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 		if campaign.Enabled == true {
 			utils.StartAirdropCampaign(ownerAddress, campaign.Id)
 		}

@@ -40,7 +40,7 @@ func TestOneYearLinear(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	consToAdd := totalSupply.Sub(testHelper.InitialValidatorsCoin.Amount)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(consToAdd, acountsAddresses[0])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
 	testHelper.C4eMinterUtils.VerifyInflation(sdk.NewDec(1))
 	testHelper.C4eMinterUtils.VerifyMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
@@ -100,7 +100,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	consToAdd := totalSupply.Sub(testHelper.InitialValidatorsCoin.Amount)
 
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(consToAdd, acountsAddresses[0])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
 	testHelper.C4eMinterUtils.VerifyInflation(sdk.MustNewDecFromStr("0.1"))
 	testHelper.C4eMinterUtils.VerifyMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
@@ -165,7 +165,7 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	consToAdd := totalSupply.Sub(testHelper.InitialValidatorsCoin.Amount)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(consToAdd, acountsAddresses[0])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
 	testHelper.C4eMinterUtils.VerifyInflation(sdk.MustNewDecFromStr("0.1"))
 	testHelper.C4eMinterUtils.VerifyMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
@@ -230,7 +230,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	consToAdd := totalSupply.Sub(testHelper.InitialValidatorsCoin.Amount)
 
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(consToAdd, acountsAddresses[0])
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
 	testHelper.C4eMinterUtils.VerifyInflation(sdk.MustNewDecFromStr("0.05"))
 	testHelper.C4eMinterUtils.VerifyMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())

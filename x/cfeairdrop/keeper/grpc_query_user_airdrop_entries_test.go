@@ -21,7 +21,7 @@ var _ = strconv.IntSize
 func TestClaimRecordQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClaimRecord(keeper, ctx, 2, 10, true, true)
+	msgs := createNUserAirdropEntries(keeper, ctx, 2, 10, true, true)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryUserAirdropEntriesRequest
@@ -72,7 +72,7 @@ func TestClaimRecordQuerySingle(t *testing.T) {
 func TestClaimRecordQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNClaimRecord(keeper, ctx, 5, 0, false, false)
+	msgs := createNUserAirdropEntries(keeper, ctx, 5, 0, false, false)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryUsersAirdropEntriesRequest {
 		return &types.QueryUsersAirdropEntriesRequest{

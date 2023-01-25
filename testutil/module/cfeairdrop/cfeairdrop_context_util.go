@@ -1,16 +1,15 @@
 package cfeairdrop
 
 import (
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	"testing"
-	"time"
-
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfeairdropmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	cfeairdroptypes "github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	"testing"
+	"time"
 )
 
 type ContextC4eAirdropUtils struct {
@@ -25,18 +24,9 @@ func NewContextC4eAirdropUtils(t *testing.T, testContext testenv.TestContext, he
 	return &ContextC4eAirdropUtils{C4eAirdropUtils: c4eAirdropUtils, testContext: testContext}
 }
 
-func (h *ContextC4eAirdropUtils) SendToAirdropAccount(toAddress sdk.AccAddress,
-	amount sdk.Int, startTime int64, endTime int64, createAccount bool) {
-	h.C4eAirdropUtils.SendToAirdropAccount(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount)
-}
-
-func (h *ContextC4eAirdropUtils) CreateAirdropCampaign(owner string, name string, description string, allowFeegrant bool, initialClaimFreeAmount sdk.Int, startTime time.Time,
+func (h *ContextC4eAirdropUtils) CreateAirdropCampaign(owner string, name string, description string, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
-	h.C4eAirdropUtils.CreateAirdropCampaign(h.testContext.GetContext(), owner, name, description, allowFeegrant, initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
-}
-
-func (h *ContextC4eAirdropUtils) StartAirdropCampaign(owner string, campaignId uint64) {
-	h.C4eAirdropUtils.StartAirdropCampaign(h.testContext.GetContext(), owner, campaignId)
+	h.C4eAirdropUtils.CreateAirdropCampaign(h.testContext.GetContext(), owner, name, description, feegrantAmount, initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
 }
 
 func (h *ContextC4eAirdropUtils) AddMissionToAirdropCampaign(owner string, campaignId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
@@ -44,14 +34,23 @@ func (h *ContextC4eAirdropUtils) AddMissionToAirdropCampaign(owner string, campa
 	h.C4eAirdropUtils.AddMissionToAirdropCampaign(h.testContext.GetContext(), owner, campaignId, name, description, missionType, weight)
 }
 
+func (h *ContextC4eAirdropUtils) StartAirdropCampaign(owner string, campaignId uint64) {
+	h.C4eAirdropUtils.StartAirdropCampaign(h.testContext.GetContext(), owner, campaignId)
+}
+
+func (h *ContextC4eAirdropUtils) SendToAirdropAccount(toAddress sdk.AccAddress,
+	amount sdk.Int, startTime int64, endTime int64, missionType cfeairdroptypes.MissionType) {
+	h.C4eAirdropUtils.SendToAirdropAccount(h.testContext.GetContext(), toAddress, amount, startTime, endTime, missionType)
+}
+
 func (h *ContextC4eAirdropUtils) SendToAirdropAccountError(toAddress sdk.AccAddress,
-	amount sdk.Int, startTime int64, endTime int64, createAccount bool, errorMessage string, expectNewAccount bool) {
-	h.C4eAirdropUtils.SendToAirdropAccountError(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount, errorMessage, expectNewAccount)
+	amount sdk.Int, startTime int64, endTime int64, createAccount bool, errorMessage string, missionType cfeairdroptypes.MissionType) {
+	h.C4eAirdropUtils.SendToAirdropAccountError(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount, errorMessage, missionType)
 }
 
 func (h *ContextC4eAirdropUtils) VerifyAirdropAccount(address sdk.AccAddress,
-	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod, initialClaim bool) {
-	h.C4eAirdropUtils.VerifyAirdropAccount(h.testContext.GetContext(), address, expectedOriginalVesting, expectedStartTime, expectedEndTime, expectedPeriods, initialClaim)
+	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod, missionType cfeairdroptypes.MissionType) {
+	h.C4eAirdropUtils.VerifyAirdropAccount(h.testContext.GetContext(), address, expectedOriginalVesting, expectedStartTime, expectedEndTime, expectedPeriods, missionType)
 }
 
 func (h *ContextC4eAirdropUtils) InitGenesis(genState cfeairdroptypes.GenesisState) {

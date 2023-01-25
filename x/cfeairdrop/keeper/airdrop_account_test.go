@@ -33,12 +33,12 @@ func TestCreateAirdropAccount(t *testing.T) {
 	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
 		amount,
 		startTimeUnix,
-		endTimeUnix, true,
+		endTimeUnix, cfeairdropmoduletypes.MissionVote,
 	)
 
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.Sub(types.OneToken))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.Sub(types.OneForthC4e.Amount))
 	testHelper.SetContextBlockTime(testenv.TestEnvTime)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.Sub(types.OneToken).QuoRaw(2))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.Sub(types.OneForthC4e.Amount).QuoRaw(2))
 	testHelper.SetContextBlockTime(endTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
 
@@ -46,11 +46,11 @@ func TestCreateAirdropAccount(t *testing.T) {
 	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
 		amount,
 		startTimeUnix,
-		endTimeUnix, false,
+		endTimeUnix, cfeairdropmoduletypes.MissionVote,
 	)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(2).Sub(types.OneToken))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(2).Sub(types.OneForthC4e.Amount))
 	testHelper.SetContextBlockTime(testenv.TestEnvTime)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.Sub(types.OneToken).Add(types.OneToken.QuoRaw(2)))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.Sub(types.OneForthC4e.Amount).Add(types.OneForthC4e.Amount.QuoRaw(2)))
 	testHelper.SetContextBlockTime(endTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
 
@@ -58,11 +58,11 @@ func TestCreateAirdropAccount(t *testing.T) {
 	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
 		amount,
 		startTimeUnix,
-		endTimeUnix, false,
+		endTimeUnix, cfeairdropmoduletypes.MissionVote,
 	)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(3).Sub(types.OneToken))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(3).Sub(types.OneForthC4e.Amount))
 	testHelper.SetContextBlockTime(testenv.TestEnvTime)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.QuoRaw(2).MulRaw(3).Sub(types.OneToken).Add(types.OneToken.QuoRaw(2)))
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.QuoRaw(2).MulRaw(3).Sub(types.OneForthC4e.Amount).Add(types.OneForthC4e.Amount.QuoRaw(2)))
 	testHelper.SetContextBlockTime(endTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
 }
@@ -85,7 +85,7 @@ func TestCreateAirdropAccountSendDisabled(t *testing.T) {
 		amount,
 		startTimeUnix,
 		endTimeUnix, true, "send to airdrop account - send coins disabled: uc4e transfers are currently disabled: send transactions are disabled",
-		false,
+		cfeairdropmoduletypes.MissionVote,
 	)
 }
 
@@ -121,7 +121,7 @@ func TestCreateAirdropAccountBlockedAddress(t *testing.T) {
 		startTimeUnix,
 		endTimeUnix, true,
 		fmt.Sprintf("send to airdrop account - account address: %s is not allowed to receive funds error: unauthorized", acountsAddresses[0]),
-		false,
+		cfeairdropmoduletypes.MissionVote,
 	)
 }
 
@@ -142,7 +142,7 @@ func TestCreateAirdropAccountNotExist(t *testing.T) {
 		amount,
 		startTimeUnix,
 		endTimeUnix, false, fmt.Sprintf("create airdrop account - account does not exist: %s: entity does not exist", acountsAddresses[0]),
-		false,
+		cfeairdropmoduletypes.MissionVote,
 	)
 }
 
@@ -165,7 +165,7 @@ func TestCreateAirdropAccountWrongAccountType(t *testing.T) {
 		amount,
 		startTimeUnix,
 		endTimeUnix, false, "send to airdrop account - expected RepeatedContinuousVestingAccount, got: *types.BaseAccount: invalid account type",
-		false,
+		cfeairdropmoduletypes.MissionVote,
 	)
 }
 
@@ -185,6 +185,6 @@ func TestCreateAirdropAccountSendError(t *testing.T) {
 		amount.AddRaw(1),
 		startTimeUnix,
 		endTimeUnix, true, "send to airdrop account - send coins to airdrop account insufficient funds error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 10000000001uc4e): insufficient funds",
-		true,
+		cfeairdropmoduletypes.MissionInitialClaim,
 	)
 }

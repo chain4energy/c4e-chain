@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"strconv"
 	"testing"
 	"time"
@@ -18,7 +19,7 @@ import (
 // Prevent strconv unused error
 // var _ = strconv.IntSize
 
-func createNClaimRecord(keeper *keeper.Keeper, ctx sdk.Context, numOfClaimRecords int, numOfCampaignRecords int, addClaimAddr bool, addCompletedMissions bool) []types.UserAirdropEntries {
+func createNUserAirdropEntries(keeper *keeper.Keeper, ctx sdk.Context, numOfClaimRecords int, numOfCampaignRecords int, addClaimAddr bool, addCompletedMissions bool) []types.UserAirdropEntries {
 	userAirdropEntries := make([]types.UserAirdropEntries, numOfClaimRecords)
 	for i := range userAirdropEntries {
 		userAirdropEntries[i].Address = strconv.Itoa(i)
@@ -28,7 +29,7 @@ func createNClaimRecord(keeper *keeper.Keeper, ctx sdk.Context, numOfClaimRecord
 		airdropEntryStates := make([]types.AirdropEntry, numOfCampaignRecords)
 		for j := range airdropEntryStates {
 			airdropEntryStates[j].CampaignId = uint64(2000000 + i)
-			airdropEntryStates[j].Amount = sdk.NewInt(int64(3000000 + i))
+			airdropEntryStates[j].AirdropCoins = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(int64(3000000+i))))
 			if addCompletedMissions {
 				airdropEntryStates[j].CompletedMissions = []uint64{uint64(4000000 + i), uint64(5000000 + i), uint64(6000000 + i)}
 			}
@@ -39,9 +40,9 @@ func createNClaimRecord(keeper *keeper.Keeper, ctx sdk.Context, numOfClaimRecord
 	return userAirdropEntries
 }
 
-func TestClaimRecordGet(t *testing.T) {
+func TestUserAirdropEntriesGet(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)
-	items := createNClaimRecord(keeper, ctx, 10, 0, false, false)
+	items := createNUserAirdropEntries(keeper, ctx, 10, 0, false, false)
 	for _, item := range items {
 		rst, found := keeper.GetUserAirdropEntries(ctx,
 			item.Address,
@@ -53,7 +54,7 @@ func TestClaimRecordGet(t *testing.T) {
 		)
 	}
 
-	items = createNClaimRecord(keeper, ctx, 10, 10, false, false)
+	items = createNUserAirdropEntries(keeper, ctx, 10, 10, false, false)
 	for _, item := range items {
 		rst, found := keeper.GetUserAirdropEntries(ctx,
 			item.Address,
@@ -65,7 +66,7 @@ func TestClaimRecordGet(t *testing.T) {
 		)
 	}
 
-	items = createNClaimRecord(keeper, ctx, 10, 10, true, false)
+	items = createNUserAirdropEntries(keeper, ctx, 10, 10, true, false)
 	for _, item := range items {
 		rst, found := keeper.GetUserAirdropEntries(ctx,
 			item.Address,
@@ -77,7 +78,7 @@ func TestClaimRecordGet(t *testing.T) {
 		)
 	}
 
-	items = createNClaimRecord(keeper, ctx, 10, 10, false, true)
+	items = createNUserAirdropEntries(keeper, ctx, 10, 10, false, true)
 	for _, item := range items {
 		rst, found := keeper.GetUserAirdropEntries(ctx,
 			item.Address,
@@ -90,22 +91,22 @@ func TestClaimRecordGet(t *testing.T) {
 	}
 }
 
-func TestClaimRecordGetAll(t *testing.T) {
+func TestUserAirdropEntriesGetAll(t *testing.T) {
 	keeper, ctx := keepertest.CfeairdropKeeper(t)
-	items := createNClaimRecord(keeper, ctx, 10, 0, false, false)
+	items := createNUserAirdropEntries(keeper, ctx, 10, 0, false, false)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
 		nullify.Fill(keeper.GetUsersAirdropEntries(ctx)),
 	)
 
-	items = createNClaimRecord(keeper, ctx, 10, 10, true, true)
+	items = createNUserAirdropEntries(keeper, ctx, 10, 10, true, true)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
 		nullify.Fill(keeper.GetUsersAirdropEntries(ctx)),
 	)
 }
 
-func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
+func TestNewUserAirdropEntriesWithNewCampaignRecords(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	srcAddr := testcosmos.CreateIncrementalAccounts(1, 100)[0]
@@ -118,7 +119,6 @@ func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
 	vestingPeriod := 3 * time.Hour
 	campaign := types.Campaign{
 		Owner:         srcAddr.String(),
-		Denom:         testcosmos.DefaultTestDenom,
 		Enabled:       true,
 		Name:          "NewCampaign",
 		StartTime:     &start,
@@ -127,12 +127,12 @@ func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
 		VestingPeriod: vestingPeriod,
 		Description:   "test-campaign",
 	}
-	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 	testUtil.AddAirdropEntries(ctx, srcAddr, 0, airdropEntries)
 
 }
 
-func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
+func TestAddNewCampaignRecordsToExistingUserAirdropEntriess(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	srcAddr := testcosmos.CreateIncrementalAccounts(1, 100)[0]
@@ -144,7 +144,6 @@ func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	vestingPeriod := 3 * time.Hour
 	campaign := types.Campaign{
 		Owner:         srcAddr.String(),
-		Denom:         testcosmos.DefaultTestDenom,
 		Enabled:       true,
 		Name:          "NewCampaign",
 		StartTime:     &start,
@@ -153,16 +152,16 @@ func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 		VestingPeriod: vestingPeriod,
 		Description:   "test-campaign",
 	}
-	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 
 	testUtil.AddAirdropEntries(ctx, srcAddr, 0, airdropEntries)
-	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 
 	airdropEntries = generateAirdropEntries(acountsAddresses, 500000000)
 	testUtil.AddAirdropEntries(ctx, srcAddr, 1, airdropEntries)
 }
 
-func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
+func TestAddExistingCampaignRecordsToExistingUserAirdropEntriess(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	srcAddr := testcosmos.CreateIncrementalAccounts(1, 100)[0]
@@ -173,7 +172,6 @@ func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	vestingPeriod := 3 * time.Hour
 	campaign := types.Campaign{
 		Owner:         srcAddr.String(),
-		Denom:         testcosmos.DefaultTestDenom,
 		Enabled:       true,
 		Name:          "NewCampaign",
 		StartTime:     &start,
@@ -182,14 +180,14 @@ func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
 		VestingPeriod: vestingPeriod,
 		Description:   "test-campaign",
 	}
-	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 
 	testUtil.AddAirdropEntries(ctx, srcAddr, 0, airdropEntries)
 
 	testUtil.AddCampaignRecordsError(ctx, srcAddr, 0, []*types.AirdropEntry{
 		{
-			Address: airdropEntries[5].Address,
-			Amount:  airdropEntries[5].Amount,
+			Address:      airdropEntries[5].Address,
+			AirdropCoins: airdropEntries[5].AirdropCoins,
 		},
 	},
 		fmt.Sprintf("campaignId 0 already exists for address: %s: entity already exists", acountsAddresses[5]), true)
@@ -206,7 +204,6 @@ func TestAddCampaignRecordsSendError(t *testing.T) {
 	vestingPeriod := 3 * time.Hour
 	campaign := types.Campaign{
 		Owner:         srcAddr.String(),
-		Denom:         testcosmos.DefaultTestDenom,
 		Enabled:       true,
 		Name:          "NewCampaign",
 		StartTime:     &start,
@@ -215,12 +212,12 @@ func TestAddCampaignRecordsSendError(t *testing.T) {
 		VestingPeriod: vestingPeriod,
 		Description:   "test-campaign",
 	}
-	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.Denom, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	testUtil.CreateAirdropCampaign(ctx, campaign.Owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, *campaign.StartTime, *campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 
 	testUtil.AddCampaignRecordsError(ctx, srcAddr, 0, []*types.AirdropEntry{
 		{
-			Address: airdropEntries[5].Address,
-			Amount:  airdropEntries[5].Amount,
+			Address:      airdropEntries[5].Address,
+			AirdropCoins: airdropEntries[5].AirdropCoins,
 		},
 	},
 		"0uc4e is smaller than 100000005uc4e: insufficient funds", false)
@@ -230,8 +227,8 @@ func generateAirdropEntries(addresses []sdk.AccAddress, startAmount int) []*type
 	var airdropEntries []*types.AirdropEntry
 	for i, addr := range addresses {
 		newAirdropEntry := types.AirdropEntry{
-			Address: addr.String(),
-			Amount:  sdk.NewInt(int64(startAmount + i)),
+			Address:      addr.String(),
+			AirdropCoins: sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(int64(startAmount+i)))),
 		}
 		airdropEntries = append(airdropEntries, &newAirdropEntry)
 	}
