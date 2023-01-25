@@ -6,10 +6,9 @@ import (
 	"time"
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
-	testcommon "github.com/chain4energy/c4e-chain/testutil/common"
-	testcfeairdrop "github.com/chain4energy/c4e-chain/testutil/module/cfeairdrop"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testcfeairdrop "github.com/chain4energy/c4e-chain/testutil/module/cfeairdrop"
 	testcfedistributor "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	testcfeminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	testcfevesting "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"

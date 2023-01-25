@@ -37,7 +37,7 @@ func (su *StakingUtils) SetupValidators(ctx sdk.Context, validators []sdk.ValAdd
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 	delCoin := sdk.NewCoin(testenv.DefaultTestDenom, delegatePerValidator)
 	for i, valAddr := range validators {
-		su.bankUtils.AddCoinToAccount(ctx, delCoin, valAddr.Bytes())
+		su.bankUtils.AddCoinsToAccount(ctx, delCoin, valAddr.Bytes())
 		su.CreateValidator(ctx, valAddr, PKs[i], delCoin, commission)
 	}
 	require.EqualValues(su.t, len(validators)+1, len(su.StakingKeeper.GetAllValidators(ctx)))
