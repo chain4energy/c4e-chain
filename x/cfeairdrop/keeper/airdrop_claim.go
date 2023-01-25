@@ -110,9 +110,7 @@ func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId
 	allMissionsAmountSum := sdk.NewCoins()
 	for _, mission := range allCampaignMissions {
 		for _, amount := range airdropEntry.AirdropCoins {
-			if mission.Weight != nil {
-				allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
-			}
+			allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
 		}
 	}
 	return airdropEntry.AirdropCoins.Sub(allMissionsAmountSum)

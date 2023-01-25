@@ -454,9 +454,27 @@ func (h *C4eAirdropUtils) CreateAirdropAccout(ctx sdk.Context, address sdk.AccAd
 func (h *C4eAirdropUtils) CreateAirdropCampaign(ctx sdk.Context, owner string, name string, description string, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
 
-	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, feegrantAmount, initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
+	countBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	require.NoError(h.t, err)
+	countAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+	require.Equal(h.t, countBefore+1, countAfter)
+
+	h.VerifyAirdropCampaign(ctx, countBefore, true, owner, name, description, false, &feegrantAmount, &initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
+	h.VerifyAirdropMission(ctx, true, countBefore, 0, "Initial mission", "Initial mission - basic mission that must be claimed first", cfeairdroptypes.MissionInitialClaim, sdk.ZeroDec(), nil)
 }
+
+func (h *C4eAirdropUtils) CreateAirdropCampaignError(ctx sdk.Context, owner string, name string, description string, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
+	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, errorMessage string) {
+	countBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	require.EqualError(h.t, err, errorMessage)
+	countAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+	require.Equal(h.t, countBefore, countAfter)
+	_, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, countBefore)
+	require.False(h.t, ok)
+}
+
 func (h *C4eAirdropUtils) StartAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64) {
 	err := h.helpeCfeairdropkeeper.StartAirdropCampaign(ctx, owner, campaignId)
 	require.NoError(h.t, err)
@@ -467,4 +485,56 @@ func (h *C4eAirdropUtils) AddMissionToAirdropCampaign(ctx sdk.Context, owner str
 
 	err := h.helpeCfeairdropkeeper.AddMissionToAirdropCampaign(ctx, owner, campaignId, name, description, missionType, weight, nil)
 	require.NoError(h.t, err)
+}
+
+func (h *C4eAirdropUtils) VerifyAirdropCampaign(ctx sdk.Context, campaignId uint64, mustExist bool, owner string, name string, description string, enabled bool, feegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime time.Time,
+	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
+
+	airdropCampaign, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+
+	if mustExist {
+		require.True(h.t, ok)
+	} else {
+		require.False(h.t, ok)
+	}
+	require.EqualValues(h.t, airdropCampaign.Id, campaignId)
+	require.EqualValues(h.t, airdropCampaign.Owner, owner)
+	require.EqualValues(h.t, airdropCampaign.Name, name)
+	require.EqualValues(h.t, airdropCampaign.Description, description)
+
+	if feegrantAmount.IsNil() {
+		require.EqualValues(h.t, airdropCampaign.FeegrantAmount, sdk.ZeroInt())
+	} else {
+		require.EqualValues(h.t, airdropCampaign.FeegrantAmount, feegrantAmount)
+	}
+
+	if initialClaimFreeAmount.IsNil() {
+		require.EqualValues(h.t, airdropCampaign.InitialClaimFreeAmount, sdk.ZeroInt())
+	} else {
+		require.EqualValues(h.t, airdropCampaign.InitialClaimFreeAmount, &initialClaimFreeAmount)
+	}
+
+	require.EqualValues(h.t, airdropCampaign.Enabled, enabled)
+	require.EqualValues(h.t, airdropCampaign.StartTime, startTime)
+	require.EqualValues(h.t, airdropCampaign.EndTime, endTime)
+	require.EqualValues(h.t, airdropCampaign.VestingPeriod, vestingPeriod)
+	require.EqualValues(h.t, airdropCampaign.LockupPeriod, lockupPeriod)
+}
+
+func (h *C4eAirdropUtils) VerifyAirdropMission(ctx sdk.Context, mustExist bool, campaignId uint64, missionId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
+	weight sdk.Dec, claimStartDate *time.Time) {
+
+	mission, ok := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, 0)
+	if mustExist {
+		require.True(h.t, ok)
+	} else {
+		require.False(h.t, ok)
+	}
+	require.EqualValues(h.t, mission.MissionType, missionType)
+	require.EqualValues(h.t, mission.CampaignId, campaignId)
+	require.EqualValues(h.t, mission.Weight, weight)
+	require.EqualValues(h.t, mission.Name, name)
+	require.EqualValues(h.t, mission.Description, description)
+	require.EqualValues(h.t, mission.Id, missionId)
+	require.EqualValues(h.t, mission.ClaimStartDate, claimStartDate)
 }

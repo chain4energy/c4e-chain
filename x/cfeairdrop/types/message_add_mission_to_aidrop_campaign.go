@@ -10,7 +10,7 @@ const TypeMsgAddMissionToAidropCampaign = "add_mission_to_aidrop_campaign"
 
 var _ sdk.Msg = &MsgAddMissionToAidropCampaign{}
 
-func NewMsgAddMissionToAidropCampaign(owner string, campaignId uint64, name string, description string, missionType MissionType, weight sdk.Dec, claimStartDate *time.Time) *MsgAddMissionToAidropCampaign {
+func NewMsgAddMissionToAidropCampaign(owner string, campaignId uint64, name string, description string, missionType MissionType, weight *sdk.Dec, claimStartDate *time.Time) *MsgAddMissionToAidropCampaign {
 	return &MsgAddMissionToAidropCampaign{
 		Owner:          owner,
 		Name:           name,
@@ -28,6 +28,7 @@ func NewInitialMission(campaignId uint64) *Mission {
 		Name:        "Initial mission",
 		Description: "Initial mission - basic mission that must be claimed first",
 		MissionType: MissionInitialClaim,
+		Weight:      sdk.ZeroDec(),
 	}
 }
 

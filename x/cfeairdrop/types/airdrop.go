@@ -26,10 +26,10 @@ func (c *Campaign) IsEnabled(blockTime time.Time) error {
 	if !c.Enabled {
 		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaignId %d", c.Id)
 	}
-	if blockTime.Before(*c.StartTime) {
+	if blockTime.Before(c.StartTime) {
 		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaignId %d not started: time %s < startTime %s", c.Id, blockTime, c.StartTime)
 	}
-	if c.EndTime != nil && blockTime.After(*c.EndTime) {
+	if blockTime.After(c.EndTime) {
 		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaignId %d ended: time %s > endTime %s", c.Id, blockTime, c.EndTime)
 	}
 	return nil

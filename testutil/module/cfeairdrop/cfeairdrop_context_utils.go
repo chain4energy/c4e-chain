@@ -9,7 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"testing"
-	"time"
 )
 
 type ContextC4eAirdropUtils struct {
@@ -24,9 +23,12 @@ func NewContextC4eAirdropUtils(t *testing.T, testContext testenv.TestContext, he
 	return &ContextC4eAirdropUtils{C4eAirdropUtils: c4eAirdropUtils, testContext: testContext}
 }
 
-func (h *ContextC4eAirdropUtils) CreateAirdropCampaign(owner string, name string, description string, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
-	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
-	h.C4eAirdropUtils.CreateAirdropCampaign(h.testContext.GetContext(), owner, name, description, feegrantAmount, initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
+func (h *ContextC4eAirdropUtils) CreateAirdropCampaign(owner string, campaign cfeairdroptypes.Campaign) {
+	h.C4eAirdropUtils.CreateAirdropCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+}
+
+func (h *ContextC4eAirdropUtils) CreateAirdropCampaignError(owner string, campaign cfeairdroptypes.Campaign, errorMessage string) {
+	h.C4eAirdropUtils.CreateAirdropCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, errorMessage)
 }
 
 func (h *ContextC4eAirdropUtils) AddMissionToAirdropCampaign(owner string, campaignId uint64, name string, description string, missionType cfeairdroptypes.MissionType,

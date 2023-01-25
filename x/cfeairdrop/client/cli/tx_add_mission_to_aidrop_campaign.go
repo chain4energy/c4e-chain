@@ -58,7 +58,7 @@ func CmdAddMissionToAidropCampaign() *cobra.Command {
 				argName,
 				argDescription,
 				argMissionType,
-				argWeight,
+				&argWeight,
 				argClaimStartDate,
 			)
 			if err := msg.ValidateBasic(); err != nil {

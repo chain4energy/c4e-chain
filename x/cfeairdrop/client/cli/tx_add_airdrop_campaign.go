@@ -63,12 +63,12 @@ func CmdCreateAirdropCampaign() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argName,
 				argDescription,
-				argFeegrantAmount,
-				argInitialClaimFreeAmount,
-				argStartTime,
-				argEndTime,
-				argLockupPeriod,
-				argVestingPeriod,
+				&argFeegrantAmount,
+				&argInitialClaimFreeAmount,
+				&argStartTime,
+				&argEndTime,
+				&argLockupPeriod,
+				&argVestingPeriod,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

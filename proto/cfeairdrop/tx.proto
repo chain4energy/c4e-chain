@@ -43,27 +43,27 @@ message MsgCreateAirdropCampaign {
   string name = 2;
   string description = 3;
   string feegrant_amount = 4 [
-    (gogoproto.nullable) = false,
+    (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
   string initial_claim_free_amount = 5 [
-    (gogoproto.nullable) = false,
+    (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
   google.protobuf.Timestamp start_time = 6 [
-    (gogoproto.nullable) = false,
+    (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
   google.protobuf.Timestamp end_time = 7 [
-    (gogoproto.nullable) = false,
+    (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
   google.protobuf.Duration lockup_period = 8 [
-    (gogoproto.nullable) = false,
+    (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
   google.protobuf.Duration vesting_period = 9 [
-    (gogoproto.nullable) = false,
+    (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
 }
@@ -78,7 +78,7 @@ message MsgAddMissionToAidropCampaign {
   MissionType missionType = 5;
   string weight = 6 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable) = false
+    (gogoproto.nullable) = true
   ];
   google.protobuf.Timestamp claim_start_date = 7 [
     (gogoproto.nullable) = true,

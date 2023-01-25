@@ -13,7 +13,7 @@ func (k msgServer) AddMissionToAidropCampaign(goCtx context.Context, msg *types.
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
-	if err := keeper.AddMissionToAirdropCampaign(ctx, msg.Owner, msg.CampaignId, msg.Name, msg.Description, msg.MissionType, msg.Weight, msg.ClaimStartDate); err != nil {
+	if err := keeper.AddMissionToAirdropCampaign(ctx, msg.Owner, msg.CampaignId, msg.Name, msg.Description, msg.MissionType, *msg.Weight, msg.ClaimStartDate); err != nil {
 		return nil, err
 	}
 	return &types.MsgAddMissionToAidropCampaignResponse{}, nil

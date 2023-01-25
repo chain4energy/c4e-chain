@@ -60,11 +60,11 @@ message Campaign {
   ];
   bool enabled = 7;
   google.protobuf.Timestamp start_time = 8 [
-    (gogoproto.nullable) = true,
+    (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
   google.protobuf.Timestamp end_time = 9 [
-    (gogoproto.nullable) = true,
+    (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
   // period of locked coins from claim
@@ -86,7 +86,7 @@ message Mission {
   string description = 4;
   MissionType missionType = 5;
   string weight = 6 [
-    (gogoproto.nullable) = true,
+    (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
   ];
   google.protobuf.Timestamp claim_start_date = 7 [

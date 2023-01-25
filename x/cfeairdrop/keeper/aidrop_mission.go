@@ -81,9 +81,14 @@ func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campa
 	k.Logger(ctx).Debug("add mission to airdrop campaign", "owner", owner, "campaignId", campaignId, "name", name,
 		"description", description, "missionType", missionType, "weight", weight)
 
-	if weight.GT(sdk.NewDec(1)) {
-		k.Logger(ctx).Error("add mission to airdrop campaign weight is >= 1", "weight", weight)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add mission to airdrop campaign weight is >= 1 (%s > 1)", weight.String())
+	if weight.IsNil() {
+		k.Logger(ctx).Error("add mission to airdrop campaign weight is nil")
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add mission to airdrop campaign weight isnil")
+	}
+
+	if weight.GT(sdk.NewDec(1)) || weight.LT(sdk.ZeroDec()) {
+		k.Logger(ctx).Error("add mission to airdrop campaign weight is not between 0 and 1", "weight", weight)
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add mission to airdrop campaign weight (%s) is not between 0 and 1", weight.String())
 	}
 
 	if name == "" {
@@ -128,7 +133,7 @@ func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campa
 		Name:           name,
 		Description:    description,
 		MissionType:    missionType,
-		Weight:         &weight,
+		Weight:         weight,
 		ClaimStartDate: claimStartDate,
 	}
 
@@ -189,7 +194,7 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, log string, campaignId uint64,
 func (k Keeper) missionsWeightGreaterThan1(missions []types.Mission, newMissionWeight sdk.Dec) (bool, sdk.Dec) {
 	weightSum := newMissionWeight
 	for _, mission := range missions {
-		weightSum = weightSum.Add(*mission.Weight)
+		weightSum = weightSum.Add(mission.Weight)
 	}
 	if weightSum.GT(sdk.NewDec(1)) {
 		return true, weightSum

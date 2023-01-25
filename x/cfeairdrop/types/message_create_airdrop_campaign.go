@@ -11,8 +11,8 @@ const TypeMsgCreateAirdropCampaign = "create_airdrop_campaign"
 
 var _ sdk.Msg = &MsgCreateAirdropCampaign{}
 
-func NewMsgCreateAirdropCampaign(owner string, name string, description string, argFeegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
-	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) *MsgCreateAirdropCampaign {
+func NewMsgCreateAirdropCampaign(owner string, name string, description string, argFeegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
+	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) *MsgCreateAirdropCampaign {
 	return &MsgCreateAirdropCampaign{
 		Owner:                  owner,
 		Name:                   name,
@@ -61,7 +61,7 @@ func (msg *MsgCreateAirdropCampaign) ValidateBasic() error {
 	if msg.StartTime.Before(time.Now()) {
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time in the past error  (%s < %s)", msg.StartTime, time.Now())
 	}
-	if msg.StartTime.After(msg.EndTime) {
+	if msg.StartTime.After(*msg.EndTime) {
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", msg.StartTime, msg.EndTime)
 	}
 	return nil
