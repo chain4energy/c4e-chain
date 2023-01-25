@@ -59,7 +59,7 @@ func (msg *MsgCreateAirdropCampaign) ValidateBasic() error {
 		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to airdrop campaign empty description")
 	}
 	if msg.StartTime.Before(time.Now()) {
-		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time in the past error  (%s < %s)", msg.StartTime)
+		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time in the past error  (%s < %s)", msg.StartTime, time.Now())
 	}
 	if msg.StartTime.After(msg.EndTime) {
 		return sdkerrors.Wrapf(errortypes.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", msg.StartTime, msg.EndTime)

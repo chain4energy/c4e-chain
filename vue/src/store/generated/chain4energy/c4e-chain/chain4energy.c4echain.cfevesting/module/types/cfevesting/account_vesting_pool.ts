@@ -5,6 +5,7 @@ import { Writer, Reader } from "protobufjs/minimal";
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
 export interface AccountVestingPools {
+  /** TODO: rename to owner */
   address: string;
   vesting_pools: VestingPool[];
 }

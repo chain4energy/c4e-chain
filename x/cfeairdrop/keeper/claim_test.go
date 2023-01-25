@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"fmt"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strconv"
@@ -17,7 +17,7 @@ var _ = strconv.IntSize
 func TestClaimInitial(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	start := testHelper.Context.BlockTime()
 
@@ -29,7 +29,6 @@ func TestClaimInitial(t *testing.T) {
 		{
 			Id:            0,
 			Owner:         acountsAddresses[0].String(),
-			Denom:         commontestutils.DefaultTestDenom,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -68,7 +67,7 @@ func TestClaimInitial(t *testing.T) {
 func TestClaimInitialCampaignNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	lockupPeriod := time.Hour
 	vestingPeriod := 3 * time.Hour
 	start := testHelper.Context.BlockTime()
@@ -77,7 +76,6 @@ func TestClaimInitialCampaignNotFound(t *testing.T) {
 		{
 			Id:            0,
 			Owner:         acountsAddresses[0].String(),
-			Denom:         commontestutils.DefaultTestDenom,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -116,7 +114,7 @@ func TestClaimInitialCampaignNotFound(t *testing.T) {
 func TestClaimInitialCampaignClaimError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	lockupPeriod := time.Hour
 	vestingPeriod := 3 * time.Hour
 	start := testHelper.Context.BlockTime()
@@ -125,7 +123,6 @@ func TestClaimInitialCampaignClaimError(t *testing.T) {
 		{
 			Id:            0,
 			Owner:         acountsAddresses[0].String(),
-			Denom:         commontestutils.DefaultTestDenom,
 			Enabled:       true,
 			StartTime:     &start,
 			EndTime:       &end,
@@ -166,7 +163,7 @@ func TestClaimInitialCampaignClaimError(t *testing.T) {
 func TestClaimInitialTwoCampaigns(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	start := testHelper.Context.BlockTime()
 	end := testHelper.Context.BlockTime().Add(1000)
@@ -179,7 +176,6 @@ func TestClaimInitialTwoCampaigns(t *testing.T) {
 			StartTime:     &start,
 			EndTime:       &end,
 			Owner:         acountsAddresses[0].String(),
-			Denom:         commontestutils.DefaultTestDenom,
 			LockupPeriod:  lockupPeriod,
 			VestingPeriod: vestingPeriod,
 			Description:   "test-campaign",
@@ -189,7 +185,6 @@ func TestClaimInitialTwoCampaigns(t *testing.T) {
 			Enabled:       true,
 			StartTime:     &start,
 			Owner:         acountsAddresses[0].String(),
-			Denom:         commontestutils.DefaultTestDenom,
 			EndTime:       &end,
 			LockupPeriod:  lockupPeriod,
 			VestingPeriod: vestingPeriod,

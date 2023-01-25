@@ -150,7 +150,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	accAddr := acountsAddresses[0]
 
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(vested, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(vested, accAddr)
 
 	modifyVestingType := func(vt *types.VestingType) {
 		vt.LockupPeriod = testutils.CreateDurationFromNumOfHours(9000)

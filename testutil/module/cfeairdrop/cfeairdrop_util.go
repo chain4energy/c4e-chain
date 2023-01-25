@@ -1,11 +1,12 @@
 package cfeairdrop
 
 import (
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
 	"time"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	cfeairdropmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	cfeairdroptypes "github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,21 +19,21 @@ import (
 type C4eAirdropUtils struct {
 	C4eAirdropKeeperUtils
 	helperAccountKeeper *authkeeper.AccountKeeper
-	BankUtils           *commontestutils.BankUtils
-	StakingUtils        *commontestutils.StakingUtils
-	GovUtils            *commontestutils.GovUtils
+	BankUtils           *testcosmos.BankUtils
+	StakingUtils        *testcosmos.StakingUtils
+	GovUtils            *testcosmos.GovUtils
 }
 
 func NewC4eAirdropUtils(t *testing.T, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils, stakingUtils *commontestutils.StakingUtils, govUtils *commontestutils.GovUtils) C4eAirdropUtils {
+	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils) C4eAirdropUtils {
 	return C4eAirdropUtils{C4eAirdropKeeperUtils: NewC4eAirdropKeeperUtils(t, helpeCfeairdropmodulekeeper),
 		helperAccountKeeper: helperAccountKeeper, BankUtils: bankUtils, StakingUtils: stakingUtils, GovUtils: govUtils}
 }
 
 func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	amount sdk.Int, startTime int64, endTime int64, initialClaim bool) {
-	coins := sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, amount))
+	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	accBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, toAddress)
 
@@ -69,7 +70,7 @@ func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.Ac
 
 func (h *C4eAirdropUtils) SendToAirdropAccountError(ctx sdk.Context, toAddress sdk.AccAddress,
 	amount sdk.Int, startTime int64, endTime int64, createAccount bool, errorMessage string, initialClaim bool) {
-	coins := sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, amount))
+	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	accBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, toAddress)
 
@@ -131,9 +132,9 @@ func (h *C4eAirdropUtils) VerifyAirdropAccount(ctx sdk.Context, address sdk.AccA
 }
 
 func (h *C4eAirdropUtils) AddAirdropEntries(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry) {
-	sum := sdk.ZeroInt()
+	sum := sdk.NewCoins()
 	for _, airdropEntry := range airdropEntries {
-		sum = sum.Add(airdropEntry.Amount)
+		sum = sum.Add(airdropEntry.AirdropCoins...)
 	}
 	usersAirdropEntriesBefore := h.helpeCfeairdropkeeper.GetUsersAirdropEntries(ctx)
 	h.BankUtils.AddDefaultDenomCoinToAccount(ctx, sum, srcAddress)
@@ -162,10 +163,10 @@ func (h *C4eAirdropUtils) AddAirdropEntries(ctx sdk.Context, srcAddress sdk.AccA
 		require.EqualValues(h.t, "", userAirdropEntries.ClaimAddress)
 		if recordBefore == nil {
 			require.EqualValues(h.t, campaignId, userAirdropEntries.AirdropEntries[0].CampaignId)
-			require.True(h.t, airdropEntry.Amount.Equal(userAirdropEntries.AirdropEntries[0].Amount))
+			require.True(h.t, airdropEntry.AirdropCoins.IsEqual(userAirdropEntries.AirdropEntries[0].AirdropCoins))
 			require.EqualValues(h.t, 0, len(userAirdropEntries.AirdropEntries[0].CompletedMissions))
 		} else {
-			expectedCaipaignRecords := append(recordBefore.AirdropEntries, &cfeairdroptypes.AirdropEntry{CampaignId: campaignId, Amount: airdropEntry.Amount, CompletedMissions: nil})
+			expectedCaipaignRecords := append(recordBefore.AirdropEntries, &cfeairdroptypes.AirdropEntry{CampaignId: campaignId, AirdropCoins: airdropEntry.AirdropCoins, CompletedMissions: nil})
 
 			require.ElementsMatch(h.t, expectedCaipaignRecords, userAirdropEntries.AirdropEntries)
 		}
@@ -180,7 +181,7 @@ func (h *C4eAirdropUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sd
 	if addRequiredCoinsToSrc {
 		sum := sdk.ZeroInt()
 		for _, airdropEntry := range airdropEntries {
-			sum = sum.Add(airdropEntry.Amount)
+			sum = sum.Add(airdropEntry.AirdropCoins)
 		}
 		h.BankUtils.AddDefaultDenomCoinToAccount(ctx, sum, srcAddress)
 	}
@@ -386,7 +387,7 @@ func (h *C4eAirdropUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint
 	require.EqualValues(h.t, claimRecordBefore, userAirdropEntries)
 
 	mission, _ := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, missionId)
-	expectedAmount := mission.Weight.MulInt(userAirdropEntries.GetAidropEntry(campaignId).Amount).TruncateInt()
+	expectedAmount := mission.Weight.MulInt(userAirdropEntries.GetAidropEntry(campaignId).AirdropCoins).TruncateInt()
 
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimerDstAddress, claimerBefore.Add(expectedAmount))
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore.Sub(expectedAmount))
@@ -405,7 +406,7 @@ func (h *C4eAirdropUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId u
 	campaign, _ := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
 	expectedStartTime := ctx.BlockTime().Add(campaign.LockupPeriod)
 	expectedEndTime := expectedStartTime.Add(campaign.VestingPeriod)
-	expectedOriginalVesting := sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, expectedAmount))
+	expectedOriginalVesting := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedAmount))
 	if len(claimerAccountBefore.VestingPeriods) == 0 {
 		claimerAccountBefore.StartTime = expectedStartTime.Unix()
 		claimerAccountBefore.EndTime = expectedEndTime.Unix()

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/testutil/nullify"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
@@ -67,7 +67,7 @@ func TestMissionGetAll(t *testing.T) {
 func TestCompleteMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
 	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
@@ -79,7 +79,7 @@ func TestCompleteMission(t *testing.T) {
 func TestCompleteMissionCamapignNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -92,7 +92,7 @@ func TestCompleteMissionCamapignNotFound(t *testing.T) {
 func TestCompleteMissionCamapignDisabled(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	campaigns[0].Enabled = false
@@ -107,7 +107,7 @@ func TestCompleteMissionCamapignDisabled(t *testing.T) {
 func TestCompleteMissionCamapignNotStarted(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	startTime := testHelper.Context.BlockTime().Add(10)
@@ -124,7 +124,7 @@ func TestCompleteMissionCamapignNotStarted(t *testing.T) {
 func TestCompleteMissionCamapignEnded(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	campaigns[0].Owner = acountsAddresses[0].String()
@@ -145,7 +145,7 @@ func TestCompleteMissionCamapignEnded(t *testing.T) {
 func TestCompleteMissionMissionNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -159,7 +159,7 @@ func TestCompleteMissionMissionNotFound(t *testing.T) {
 func TestCompleteMissionClaimRecordNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(3, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -174,7 +174,7 @@ func TestCompleteMissionClaimRecordNotFound(t *testing.T) {
 func TestCompleteMissionCampaignRecordNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -191,7 +191,7 @@ func TestCompleteMissionCampaignRecordNotFound(t *testing.T) {
 func TestCompleteMissionAlreadeCompleted(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -206,7 +206,7 @@ func TestCompleteMissionAlreadeCompleted(t *testing.T) {
 func TestCompleteMissionNoInitialClaim(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -221,7 +221,7 @@ func TestCompleteMissionNoInitialClaim(t *testing.T) {
 func TestCompleteMissionInitialMissionNotClaimed(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -236,7 +236,7 @@ func TestCompleteMissionInitialMissionNotClaimed(t *testing.T) {
 func TestClaimMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -253,7 +253,7 @@ func TestClaimMission(t *testing.T) {
 func TestClaimMissionCamapignNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -266,7 +266,7 @@ func TestClaimMissionCamapignNotFound(t *testing.T) {
 func TestClaimMissionCamapignDisabled(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	campaigns[0].Enabled = false
@@ -281,7 +281,7 @@ func TestClaimMissionCamapignDisabled(t *testing.T) {
 func TestClaimMissionCamapignNotStarted(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	startTime := testHelper.Context.BlockTime().Add(10)
@@ -298,7 +298,7 @@ func TestClaimMissionCamapignNotStarted(t *testing.T) {
 func TestClaimMissionCamapignEnded(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	campaigns[0].Owner = acountsAddresses[0].String()
@@ -319,7 +319,7 @@ func TestClaimMissionCamapignEnded(t *testing.T) {
 func TestClaimMissionMissionNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -333,7 +333,7 @@ func TestClaimMissionMissionNotFound(t *testing.T) {
 func TestClaimMissionClaimRecordNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(3, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -348,7 +348,7 @@ func TestClaimMissionClaimRecordNotFound(t *testing.T) {
 func TestClaimMissionCampaignRecordNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -365,7 +365,7 @@ func TestClaimMissionCampaignRecordNotFound(t *testing.T) {
 func TestClaimMissionNotCompleted(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -380,7 +380,7 @@ func TestClaimMissionNotCompleted(t *testing.T) {
 func TestClaimMissionAlreadyClaimed(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -395,7 +395,7 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 func TestClaimMissionAccountNotExists(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -410,7 +410,7 @@ func TestClaimMissionAccountNotExists(t *testing.T) {
 func TestClaimMissionToAnotherAddress(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(3, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -430,7 +430,7 @@ func TestClaimMissionToAnotherAddress(t *testing.T) {
 func TestClaimMissionToWrongAddress(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(3, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -450,7 +450,7 @@ func TestClaimMissionToWrongAddress(t *testing.T) {
 func TestCompleteDelegationMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	campaigns := prepareTestCampaign(testHelper.Context)
 	missions := prepareMissions()
@@ -468,7 +468,7 @@ func TestCompleteDelegationMission(t *testing.T) {
 func TestCompleteVoteMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[1], sdk.NewCoins(), 12312, 1555565657676576)
 
@@ -493,7 +493,7 @@ func TestCompleteVoteMission(t *testing.T) {
 func TestFullCampaign(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	acountsAddresses, _ := commontestutils.CreateAccounts(2, 0)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
 	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[1], sdk.NewCoins(), 12312, 1555565657676576)
 
@@ -595,7 +595,7 @@ func prepareUserAirdropEntries(testHelper *testapp.TestHelper, srcAddress sdk.Ac
 func prepareAidropEntries(address string) []*types.AirdropEntry {
 	airdropEntries := []*types.AirdropEntry{
 		{
-			AirdropCoins: sdk.NewCoins(sdk.NewCoin(commontestutils.DefaultTestDenom, sdk.NewInt(1000000000))),
+			AirdropCoins: sdk.NewCoins(sdk.NewCoin(testcosmos.DefaultTestDenom, sdk.NewInt(1000000000))),
 			Address:      address,
 		},
 	}

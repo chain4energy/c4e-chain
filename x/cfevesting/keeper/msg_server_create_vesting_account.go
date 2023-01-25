@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	metrics "github.com/armon/go-metrics"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,7 +13,7 @@ import (
 func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCreateVestingAccount) (*types.MsgCreateVestingAccountResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "create vesting account message")
 	if msg.Amount.IsAnyNil() {
-		return nil, sdkerrors.Wrap(types.ErrParam, "create vesting account - amount is nil")
+		return nil, sdkerrors.Wrap(c4eerrors.ErrParam, "create vesting account - amount is nil")
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

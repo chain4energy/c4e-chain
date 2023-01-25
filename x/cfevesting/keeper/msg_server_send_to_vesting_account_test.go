@@ -22,7 +22,7 @@ func TestSendVestingAccount(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -43,7 +43,7 @@ func TestSendVestingAccountJustBeforeLockEnd(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -65,7 +65,7 @@ func TestSendVestingAccountNoRestartVesting(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -102,7 +102,7 @@ func sendVestingAccountPoolLockEndedTest(t *testing.T, afterEnd time.Duration, r
 	accAddr2 := acountsAddresses[1]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -128,7 +128,7 @@ func TestSendVestingAccountMultiple(t *testing.T) {
 	vestAccAddr3 := acountsAddresses[3]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -151,7 +151,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, "pool", sdk.NewInt(100), true,
@@ -169,7 +169,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -190,7 +190,7 @@ func TestSendVestingAccounNotEnoughToSend(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -212,7 +212,7 @@ func TestSendVestingAccountNotEnoughToSendAferSuccesfulSend(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]
@@ -234,7 +234,7 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 
 	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinToAccount(accInitBalance, accAddr)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
 
 	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
 	usedVestingType := vestingTypes.VestingTypes[0]

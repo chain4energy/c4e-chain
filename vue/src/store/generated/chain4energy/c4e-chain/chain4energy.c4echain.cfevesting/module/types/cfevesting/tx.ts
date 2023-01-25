@@ -7,6 +7,7 @@ import { Coin } from "../cosmos/base/v1beta1/coin";
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
 export interface MsgCreateVestingPool {
+  /** TODO: rename to owner */
   creator: string;
   name: string;
   amount: string;
@@ -17,6 +18,7 @@ export interface MsgCreateVestingPool {
 export interface MsgCreateVestingPoolResponse {}
 
 export interface MsgWithdrawAllAvailable {
+  /** TODO: rename to owner */
   creator: string;
 }
 
@@ -35,6 +37,7 @@ export interface MsgCreateVestingAccount {
 export interface MsgCreateVestingAccountResponse {}
 
 export interface MsgSendToVestingAccount {
+  /** TODO: rename to owner */
   from_address: string;
   to_address: string;
   vesting_pool_name: string;

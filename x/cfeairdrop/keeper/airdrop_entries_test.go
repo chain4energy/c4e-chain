@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/testutil/nullify"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
@@ -107,8 +107,8 @@ func TestClaimRecordGetAll(t *testing.T) {
 
 func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
-	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
-	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+	srcAddr := testcosmos.CreateIncrementalAccounts(1, 100)[0]
 
 	airdropEntries := generateAirdropEntries(acountsAddresses, 100000000)
 
@@ -118,7 +118,7 @@ func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
 	vestingPeriod := 3 * time.Hour
 	campaign := types.Campaign{
 		Owner:         srcAddr.String(),
-		Denom:         commontestutils.DefaultTestDenom,
+		Denom:         testcosmos.DefaultTestDenom,
 		Enabled:       true,
 		Name:          "NewCampaign",
 		StartTime:     &start,
@@ -134,8 +134,8 @@ func TestNewClaimRecordWithNewCampaignRecords(t *testing.T) {
 
 func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
-	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
-	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+	srcAddr := testcosmos.CreateIncrementalAccounts(1, 100)[0]
 	airdropEntries := generateAirdropEntries(acountsAddresses, 100000000)
 
 	start := ctx.BlockTime()
@@ -144,7 +144,7 @@ func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	vestingPeriod := 3 * time.Hour
 	campaign := types.Campaign{
 		Owner:         srcAddr.String(),
-		Denom:         commontestutils.DefaultTestDenom,
+		Denom:         testcosmos.DefaultTestDenom,
 		Enabled:       true,
 		Name:          "NewCampaign",
 		StartTime:     &start,
@@ -164,8 +164,8 @@ func TestAddNewCampaignRecordsToExistingClaimRecords(t *testing.T) {
 
 func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
-	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
-	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+	srcAddr := testcosmos.CreateIncrementalAccounts(1, 100)[0]
 	airdropEntries := generateAirdropEntries(acountsAddresses, 100000000)
 	start := ctx.BlockTime()
 	end := ctx.BlockTime().Add(1000)
@@ -173,7 +173,7 @@ func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
 	vestingPeriod := 3 * time.Hour
 	campaign := types.Campaign{
 		Owner:         srcAddr.String(),
-		Denom:         commontestutils.DefaultTestDenom,
+		Denom:         testcosmos.DefaultTestDenom,
 		Enabled:       true,
 		Name:          "NewCampaign",
 		StartTime:     &start,
@@ -197,8 +197,8 @@ func TestAddExistingCampaignRecordsToExistingClaimRecords(t *testing.T) {
 
 func TestAddCampaignRecordsSendError(t *testing.T) {
 	testUtil, _, ctx := keepertest.CfeairdropKeeperTestUtilWithCdc(t)
-	acountsAddresses, _ := commontestutils.CreateAccounts(10, 0)
-	srcAddr := commontestutils.CreateIncrementalAccounts(1, 100)[0]
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+	srcAddr := testcosmos.CreateIncrementalAccounts(1, 100)[0]
 	airdropEntries := generateAirdropEntries(acountsAddresses, 100000000)
 	start := ctx.BlockTime()
 	end := ctx.BlockTime().Add(1000)
@@ -206,7 +206,7 @@ func TestAddCampaignRecordsSendError(t *testing.T) {
 	vestingPeriod := 3 * time.Hour
 	campaign := types.Campaign{
 		Owner:         srcAddr.String(),
-		Denom:         commontestutils.DefaultTestDenom,
+		Denom:         testcosmos.DefaultTestDenom,
 		Enabled:       true,
 		Name:          "NewCampaign",
 		StartTime:     &start,

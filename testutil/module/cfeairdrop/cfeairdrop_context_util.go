@@ -1,11 +1,12 @@
 package cfeairdrop
 
 import (
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
 	"time"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/common"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	cfeairdropmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	cfeairdroptypes "github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,12 +15,12 @@ import (
 
 type ContextC4eAirdropUtils struct {
 	C4eAirdropUtils
-	testContext commontestutils.TestContext
+	testContext testenv.TestContext
 }
 
-func NewContextC4eAirdropUtils(t *testing.T, testContext commontestutils.TestContext, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
+func NewContextC4eAirdropUtils(t *testing.T, testContext testenv.TestContext, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *commontestutils.BankUtils, stakingUtils *commontestutils.StakingUtils, govUtils *commontestutils.GovUtils) *ContextC4eAirdropUtils {
+	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils) *ContextC4eAirdropUtils {
 	c4eAirdropUtils := NewC4eAirdropUtils(t, helpeCfeairdropmodulekeeper, helperAccountKeeper, bankUtils, stakingUtils, govUtils)
 	return &ContextC4eAirdropUtils{C4eAirdropUtils: c4eAirdropUtils, testContext: testContext}
 }
