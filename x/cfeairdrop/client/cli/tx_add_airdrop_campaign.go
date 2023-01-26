@@ -17,7 +17,7 @@ var _ = strconv.Itoa(0)
 
 func CmdCreateAirdropCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-airdrop-campaign [name] [description] [allow-feegrant] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period]",
+		Use:   "create-airdrop-campaign [name] [description] [feegrant-amount] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period]",
 		Short: "Broadcast message CreateAirdropCampaign",
 		Args:  cobra.ExactArgs(8),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {

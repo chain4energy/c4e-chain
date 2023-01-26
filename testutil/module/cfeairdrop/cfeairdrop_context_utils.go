@@ -40,6 +40,18 @@ func (h *ContextC4eAirdropUtils) StartAirdropCampaign(owner string, campaignId u
 	h.C4eAirdropUtils.StartAirdropCampaign(h.testContext.GetContext(), owner, campaignId)
 }
 
+func (h *ContextC4eAirdropUtils) StartAirdropCampaignError(owner string, campaignId uint64, errorString string) {
+	h.C4eAirdropUtils.StartAirdropCampaignError(h.testContext.GetContext(), owner, campaignId, errorString)
+}
+
+func (h *ContextC4eAirdropUtils) CloseAirdropCampaign(owner string, campaignId uint64, airdropCloseAction cfeairdroptypes.AirdropCloseAction) {
+	h.C4eAirdropUtils.CloseAirdropCampaign(h.testContext.GetContext(), owner, campaignId, airdropCloseAction)
+}
+
+func (h *ContextC4eAirdropUtils) CloseAirdropCampaignError(owner string, campaignId uint64, airdropCloseAction cfeairdroptypes.AirdropCloseAction, errorString string) {
+	h.C4eAirdropUtils.CloseAirdropCampaignError(h.testContext.GetContext(), owner, campaignId, airdropCloseAction, errorString)
+}
+
 func (h *ContextC4eAirdropUtils) SendToAirdropAccount(toAddress sdk.AccAddress,
 	amount sdk.Int, startTime int64, endTime int64, missionType cfeairdroptypes.MissionType) {
 	h.C4eAirdropUtils.SendToAirdropAccount(h.testContext.GetContext(), toAddress, amount, startTime, endTime, missionType)

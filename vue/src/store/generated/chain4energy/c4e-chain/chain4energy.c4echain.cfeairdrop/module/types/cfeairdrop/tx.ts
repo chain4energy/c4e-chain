@@ -100,9 +100,8 @@ export interface MsgEditAirdropCampaign {
   campaignId: number;
   name: string;
   description: string;
-  allow_feegrant: boolean;
+  feegrant_amount: string;
   initial_claim_free_amount: string;
-  denom: string;
   start_time: Date | undefined;
   end_time: Date | undefined;
   lockup_period: Duration | undefined;
@@ -1691,9 +1690,8 @@ const baseMsgEditAirdropCampaign: object = {
   campaignId: 0,
   name: "",
   description: "",
-  allow_feegrant: false,
+  feegrant_amount: "",
   initial_claim_free_amount: "",
-  denom: "",
 };
 
 export const MsgEditAirdropCampaign = {
@@ -1713,34 +1711,31 @@ export const MsgEditAirdropCampaign = {
     if (message.description !== "") {
       writer.uint32(34).string(message.description);
     }
-    if (message.allow_feegrant === true) {
-      writer.uint32(40).bool(message.allow_feegrant);
+    if (message.feegrant_amount !== "") {
+      writer.uint32(42).string(message.feegrant_amount);
     }
     if (message.initial_claim_free_amount !== "") {
       writer.uint32(50).string(message.initial_claim_free_amount);
     }
-    if (message.denom !== "") {
-      writer.uint32(58).string(message.denom);
-    }
     if (message.start_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.start_time),
-        writer.uint32(66).fork()
+        writer.uint32(58).fork()
       ).ldelim();
     }
     if (message.end_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.end_time),
-        writer.uint32(74).fork()
+        writer.uint32(66).fork()
       ).ldelim();
     }
     if (message.lockup_period !== undefined) {
-      Duration.encode(message.lockup_period, writer.uint32(82).fork()).ldelim();
+      Duration.encode(message.lockup_period, writer.uint32(74).fork()).ldelim();
     }
     if (message.vesting_period !== undefined) {
       Duration.encode(
         message.vesting_period,
-        writer.uint32(90).fork()
+        writer.uint32(82).fork()
       ).ldelim();
     }
     return writer;
@@ -1766,28 +1761,25 @@ export const MsgEditAirdropCampaign = {
           message.description = reader.string();
           break;
         case 5:
-          message.allow_feegrant = reader.bool();
+          message.feegrant_amount = reader.string();
           break;
         case 6:
           message.initial_claim_free_amount = reader.string();
           break;
         case 7:
-          message.denom = reader.string();
-          break;
-        case 8:
           message.start_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 9:
+        case 8:
           message.end_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 10:
+        case 9:
           message.lockup_period = Duration.decode(reader, reader.uint32());
           break;
-        case 11:
+        case 10:
           message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         default:
@@ -1820,10 +1812,13 @@ export const MsgEditAirdropCampaign = {
     } else {
       message.description = "";
     }
-    if (object.allow_feegrant !== undefined && object.allow_feegrant !== null) {
-      message.allow_feegrant = Boolean(object.allow_feegrant);
+    if (
+      object.feegrant_amount !== undefined &&
+      object.feegrant_amount !== null
+    ) {
+      message.feegrant_amount = String(object.feegrant_amount);
     } else {
-      message.allow_feegrant = false;
+      message.feegrant_amount = "";
     }
     if (
       object.initial_claim_free_amount !== undefined &&
@@ -1834,11 +1829,6 @@ export const MsgEditAirdropCampaign = {
       );
     } else {
       message.initial_claim_free_amount = "";
-    }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = String(object.denom);
-    } else {
-      message.denom = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = fromJsonTimestamp(object.start_time);
@@ -1870,11 +1860,10 @@ export const MsgEditAirdropCampaign = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.allow_feegrant !== undefined &&
-      (obj.allow_feegrant = message.allow_feegrant);
+    message.feegrant_amount !== undefined &&
+      (obj.feegrant_amount = message.feegrant_amount);
     message.initial_claim_free_amount !== undefined &&
       (obj.initial_claim_free_amount = message.initial_claim_free_amount);
-    message.denom !== undefined && (obj.denom = message.denom);
     message.start_time !== undefined &&
       (obj.start_time =
         message.start_time !== undefined
@@ -1918,10 +1907,13 @@ export const MsgEditAirdropCampaign = {
     } else {
       message.description = "";
     }
-    if (object.allow_feegrant !== undefined && object.allow_feegrant !== null) {
-      message.allow_feegrant = object.allow_feegrant;
+    if (
+      object.feegrant_amount !== undefined &&
+      object.feegrant_amount !== null
+    ) {
+      message.feegrant_amount = object.feegrant_amount;
     } else {
-      message.allow_feegrant = false;
+      message.feegrant_amount = "";
     }
     if (
       object.initial_claim_free_amount !== undefined &&
@@ -1930,11 +1922,6 @@ export const MsgEditAirdropCampaign = {
       message.initial_claim_free_amount = object.initial_claim_free_amount;
     } else {
       message.initial_claim_free_amount = "";
-    }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = object.denom;
-    } else {
-      message.denom = "";
     }
     if (object.start_time !== undefined && object.start_time !== null) {
       message.start_time = object.start_time;

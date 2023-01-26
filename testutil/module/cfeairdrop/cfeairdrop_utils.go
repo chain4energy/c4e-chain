@@ -475,7 +475,7 @@ func (h *C4eAirdropUtils) CreateAirdropCampaignError(ctx sdk.Context, owner stri
 	campaignCountAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
 	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx, campaignCountBefore)
 	require.Equal(h.t, campaignCountBefore, campaignCountAfter)
-	require.Equal(h.t, 0, missionCountAfter)
+	require.Equal(h.t, uint64(0), missionCountAfter)
 	_, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignCountBefore)
 	require.False(h.t, ok)
 }
@@ -483,6 +483,41 @@ func (h *C4eAirdropUtils) CreateAirdropCampaignError(ctx sdk.Context, owner stri
 func (h *C4eAirdropUtils) StartAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64) {
 	err := h.helpeCfeairdropkeeper.StartAirdropCampaign(ctx, owner, campaignId)
 	require.NoError(h.t, err)
+	campaign, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+	require.True(h.t, ok)
+	h.VerifyAirdropCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, true, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+}
+
+func (h *C4eAirdropUtils) StartAirdropCampaignError(ctx sdk.Context, owner string, campaignId uint64, errorString string) {
+	campaignBefore, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+
+	err := h.helpeCfeairdropkeeper.StartAirdropCampaign(ctx, owner, campaignId)
+	require.EqualError(h.t, err, errorString)
+	if !ok {
+		return
+	}
+	enabled := campaignBefore.Enabled
+	h.VerifyAirdropCampaign(ctx, campaignBefore.Id, true, campaignBefore.Owner, campaignBefore.Name, campaignBefore.Description, enabled, &campaignBefore.FeegrantAmount, &campaignBefore.InitialClaimFreeAmount, campaignBefore.StartTime, campaignBefore.EndTime, campaignBefore.LockupPeriod, campaignBefore.VestingPeriod)
+}
+
+func (h *C4eAirdropUtils) CloseAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, airdropCloseAction cfeairdroptypes.AirdropCloseAction) {
+	err := h.helpeCfeairdropkeeper.CloseAirdropCampaign(ctx, owner, campaignId, airdropCloseAction)
+	require.NoError(h.t, err)
+	campaign, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+	require.True(h.t, ok)
+	h.VerifyAirdropCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, false, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+}
+
+func (h *C4eAirdropUtils) CloseAirdropCampaignError(ctx sdk.Context, owner string, campaignId uint64, airdropCloseAction cfeairdroptypes.AirdropCloseAction, errorString string) {
+	campaignBefore, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+
+	err := h.helpeCfeairdropkeeper.CloseAirdropCampaign(ctx, owner, campaignId, airdropCloseAction)
+	require.EqualError(h.t, err, errorString)
+	if !ok {
+		return
+	}
+	enabled := campaignBefore.Enabled
+	h.VerifyAirdropCampaign(ctx, campaignBefore.Id, true, campaignBefore.Owner, campaignBefore.Name, campaignBefore.Description, enabled, &campaignBefore.FeegrantAmount, &campaignBefore.InitialClaimFreeAmount, campaignBefore.StartTime, campaignBefore.EndTime, campaignBefore.LockupPeriod, campaignBefore.VestingPeriod)
 }
 
 func (h *C4eAirdropUtils) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
@@ -510,13 +545,13 @@ func (h *C4eAirdropUtils) VerifyAirdropCampaign(ctx sdk.Context, campaignId uint
 	if feegrantAmount.IsNil() {
 		require.EqualValues(h.t, airdropCampaign.FeegrantAmount, sdk.ZeroInt())
 	} else {
-		require.EqualValues(h.t, airdropCampaign.FeegrantAmount, feegrantAmount)
+		require.True(h.t, airdropCampaign.FeegrantAmount.Equal(*feegrantAmount))
 	}
 
 	if initialClaimFreeAmount.IsNil() {
 		require.EqualValues(h.t, airdropCampaign.InitialClaimFreeAmount, sdk.ZeroInt())
 	} else {
-		require.EqualValues(h.t, airdropCampaign.InitialClaimFreeAmount, &initialClaimFreeAmount)
+		require.True(h.t, airdropCampaign.InitialClaimFreeAmount.Equal(*initialClaimFreeAmount))
 	}
 
 	require.EqualValues(h.t, airdropCampaign.Enabled, enabled)

@@ -17,7 +17,7 @@ var _ = strconv.Itoa(0)
 
 func CmdEditAirdropCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-airdrop-campaign [campaignId] [name] [description] [allow-feegrant] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period]",
+		Use:   "edit-airdrop-campaign [campaignId] [name] [description] [feegrant-amount] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period]",
 		Short: "Broadcast message CreateAirdropCampaign",
 		Args:  cobra.ExactArgs(9),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -27,17 +27,17 @@ func CmdEditAirdropCampaign() *cobra.Command {
 			}
 			argName := args[1]
 			argDescription := args[2]
-			var argAllowFeegrant *bool
+			var argAllowFeegrant *sdk.Int
 			if args[3] != "" {
-				parsedBool, err := strconv.ParseBool(args[3])
-				if err != nil {
-					return err
+				parsed, ok := sdk.NewIntFromString(args[3])
+				if !ok {
+					return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [feegrant-amount] value")
 				}
-				argAllowFeegrant = &parsedBool
-
+				argAllowFeegrant = &parsed
 			} else {
 				argAllowFeegrant = nil
 			}
+
 			var argInitialClaimFreeAmount *sdk.Int
 			if args[4] != "" {
 				parsed, ok := sdk.NewIntFromString(args[4])

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -132,16 +133,20 @@ func (k Keeper) CloseAirdropCampaign(ctx sdk.Context, owner string, campaignId u
 	k.Logger(ctx).Debug("close airdrop campaign", "owner", owner, "campaignId", campaignId, "airdropCloseAction", airdropCloseAction)
 	campaign, found := k.GetCampaign(ctx, campaignId)
 	if !found {
-		k.Logger(ctx).Error("close airdrop campaign campaign: campaign not found", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "close airdrop campaign campaign with id %d not found", campaignId)
+		k.Logger(ctx).Error("close airdrop campaign campaign campaign not found", "campaignId", campaignId)
+		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "close airdrop campaign - campaign with id %d not found error", campaignId)
+	}
+	if campaign.EndTime.Before(ctx.BlockTime()) {
+		k.Logger(ctx).Debug("close airdrop campaign campaign is not over yet", "startTime", campaign.StartTime)
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close airdrop campaign - campaign with id %d campaign is not over yet (endtime - %s < %s)", campaignId, campaign.EndTime, ctx.BlockTime())
 	}
 	if campaign.Owner != owner {
-		k.Logger(ctx).Error("close airdrop campaign you are not the owner")
-		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "close airdrop campaign you are not the owner")
+		k.Logger(ctx).Error("close airdrop campaign you are not the owner of this campaign")
+		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "close airdrop campaign - you are not the owner error")
 	}
 	if campaign.Enabled == false {
 		k.Logger(ctx).Error("close airdrop campaign campaign is already closed")
-		return sdkerrors.Wrap(types.ErrCampaignDisabled, "close airdrop campaign campaign is already closed")
+		return sdkerrors.Wrap(types.ErrCampaignDisabled, fmt.Sprintf("close airdrop campaign - campaign with id %d is already closed or have not started yet error", campaignId))
 	}
 	campaign.Enabled = false
 	k.SetCampaign(ctx, campaign)
@@ -152,20 +157,20 @@ func (k Keeper) StartAirdropCampaign(ctx sdk.Context, owner string, campaignId u
 	k.Logger(ctx).Debug("start airdrop campaign", "owner", owner, "campaignId", campaignId)
 	campaign, found := k.GetCampaign(ctx, campaignId)
 	if !found {
-		k.Logger(ctx).Error("start airdrop campaign: campaign not found", "campaignId", campaignId)
+		k.Logger(ctx).Debug("start airdrop campaign campaign not found", "campaignId", campaignId)
 		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "start airdrop campaign campaign with id %d not found", campaignId)
 	}
 	if campaign.Owner != owner {
-		k.Logger(ctx).Error("start airdrop campaign you are not the owner")
-		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "start airdrop campaign you are not the owner")
+		k.Logger(ctx).Debug("start airdrop campaign you are not the owner of this campaign", "campaignId", campaignId)
+		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "start airdrop campaign you are not the owner of this campaign")
 	}
 	if campaign.Enabled == true {
-		k.Logger(ctx).Error("start airdrop campaign campaign has already started")
-		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "start airdrop campaign campaign has already started")
+		k.Logger(ctx).Debug("start airdrop campaign campaign has already started", "campaignId", campaignId)
+		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, fmt.Sprintf("start airdrop campaign campaign with id %d has already started", campaignId))
 	}
 	if campaign.StartTime.Before(ctx.BlockTime()) {
-		k.Logger(ctx).Error("start airdrop campaign start time in the past", "startTime", campaign.StartTime)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "start airdrop campaign - start time in the past error  (%s < %s)", campaign.StartTime, ctx.BlockTime())
+		k.Logger(ctx).Debug("start airdrop campaign campaign start time in the past", "startTime", campaign.StartTime)
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "start airdrop campaign - campaign with id %d start time in the past error (%s < %s)", campaignId, campaign.StartTime, ctx.BlockTime())
 	}
 	campaign.Enabled = true
 	k.SetCampaign(ctx, campaign)
