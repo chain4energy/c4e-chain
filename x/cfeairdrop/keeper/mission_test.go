@@ -13,7 +13,7 @@ const VoteMissionId = 2
 
 //func TestMissionGet(t *testing.T) {
 //	keeper, ctx := keepertest.CfeairdropKeeper(t)
-//	items := createNMission(keeper, ctx, 10)
+//	items := createAndSaveNTestMissions(keeper, ctx, 10)
 //	for _, item := range items {
 //		rst, found := keeper.GetMission(ctx,
 //			item.CampaignId,
@@ -28,7 +28,7 @@ const VoteMissionId = 2
 //}
 //func TestMissionRemove(t *testing.T) {
 //	keeper, ctx := keepertest.CfeairdropKeeper(t)
-//	items := createNMission(keeper, ctx, 10)
+//	items := createAndSaveNTestMissions(keeper, ctx, 10)
 //	for _, item := range items {
 //		keeper.RemoveMission(ctx,
 //			item.CampaignId,
@@ -44,7 +44,7 @@ const VoteMissionId = 2
 //
 //func TestMissionGetAll(t *testing.T) {
 //	keeper, ctx := keepertest.CfeairdropKeeper(t)
-//	items := createNMission(keeper, ctx, 10)
+//	items := createAndSaveNTestMissions(keeper, ctx, 10)
 //	require.ElementsMatch(t,
 //		nullify.Fill(items),
 //		nullify.Fill(keeper.GetAllMission(ctx)),
@@ -55,7 +55,7 @@ const VoteMissionId = 2
 //	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
@@ -68,7 +68,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -81,7 +81,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	campaigns[0].Enabled = false
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
@@ -96,7 +96,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	startTime := testHelper.Context.BlockTime().Add(10)
 //	campaigns[0].StartTime = &startTime
 //	missions := prepareMissions()
@@ -113,7 +113,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	campaigns[0].Owner = acountsAddresses[0].String()
 //	startTime := testHelper.Context.BlockTime().Add(-10000)
 //	campaigns[0].StartTime = &startTime
@@ -134,7 +134,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -148,7 +148,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -163,7 +163,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -180,7 +180,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -195,7 +195,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -210,7 +210,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -225,7 +225,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -242,7 +242,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -255,7 +255,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	campaigns[0].Enabled = false
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
@@ -270,7 +270,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	startTime := testHelper.Context.BlockTime().Add(10)
 //	campaigns[0].StartTime = &startTime
 //	missions := prepareMissions()
@@ -287,7 +287,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	campaigns[0].Owner = acountsAddresses[0].String()
 //	startTime := testHelper.Context.BlockTime().Add(-10000)
 //	campaigns[0].StartTime = &startTime
@@ -308,7 +308,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -322,7 +322,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -337,7 +337,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -354,7 +354,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -369,7 +369,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -384,7 +384,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -399,7 +399,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -419,7 +419,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -439,7 +439,7 @@ const VoteMissionId = 2
 //
 //	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -467,7 +467,7 @@ const VoteMissionId = 2
 //	require.NoError(t, err)
 //	testHelper.StakingUtils.MessageDelegate(1, 0, valAddr, acountsAddresses[1], delagationAmount)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -484,7 +484,7 @@ const VoteMissionId = 2
 //
 //	testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[1], sdk.NewCoins(), 12312, 1555565657676576)
 //
-//	campaigns := prepareTestCampaigns(testHelper.Context)
+//	campaigns := prepareNTestCampaigns(testHelper.Context)
 //	missions := prepareMissions()
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //

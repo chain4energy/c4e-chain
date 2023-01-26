@@ -11,7 +11,7 @@ var _ = strconv.IntSize
 //func TestMissionQuerySingle(t *testing.T) {
 //	keeper, ctx := keepertest.CfeairdropKeeper(t)
 //	wctx := sdk.WrapSDKContext(ctx)
-//	msgs := createNMission(keeper, ctx, 2)
+//	msgs := createAndSaveNTestMissions(keeper, ctx, 2)
 //	for _, tc := range []struct {
 //		desc     string
 //		request  *types.QueryMissionRequest
@@ -65,7 +65,7 @@ var _ = strconv.IntSize
 //func TestMissionQueryPaginated(t *testing.T) {
 //	keeper, ctx := keepertest.CfeairdropKeeper(t)
 //	wctx := sdk.WrapSDKContext(ctx)
-//	msgs := createNMission(keeper, ctx, 5)
+//	msgs := createAndSaveNTestMissions(keeper, ctx, 5)
 //
 //	request := func(next []byte, offset, limit uint64, total bool) *types.QueryMissionsRequest {
 //		return &types.QueryMissionsRequest{

@@ -102,7 +102,7 @@ func (k Keeper) AppendNewMission(
 	mission types.Mission,
 ) uint64 {
 	// Create the vestingAccount
-	count := k.GetMissionCount(ctx)
+	count := k.GetMissionCount(ctx, campaignId)
 
 	// Set the ID of the appended value
 	mission.Id = count
@@ -115,15 +115,14 @@ func (k Keeper) AppendNewMission(
 	), appendedValue)
 
 	// Update vestingAccount count
-	k.SetMissionCount(ctx, count+1)
+	k.SetMissionCount(ctx, campaignId, count+1)
 
 	return count
 }
 
-func (k Keeper) GetMissionCount(ctx sdk.Context) uint64 {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.MissionCountKey)
-	bz := store.Get(byteKey)
+func (k Keeper) GetMissionCount(ctx sdk.Context, campaignId uint64) uint64 {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionCountKeyPrefix))
+	bz := store.Get(types.MissionCountKey(campaignId))
 
 	// Count doesn't exist: no element
 	if bz == nil {
@@ -134,10 +133,9 @@ func (k Keeper) GetMissionCount(ctx sdk.Context) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
 
-func (k Keeper) SetMissionCount(ctx sdk.Context, count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.MissionCountKey)
+func (k Keeper) SetMissionCount(ctx sdk.Context, campaignId uint64, count uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionCountKeyPrefix))
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
-	store.Set(byteKey, bz)
+	store.Set(types.MissionCountKey(campaignId), bz)
 }

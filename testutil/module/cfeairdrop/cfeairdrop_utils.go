@@ -455,13 +455,12 @@ func (h *C4eAirdropUtils) CreateAirdropCampaign(ctx sdk.Context, owner string, n
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
 
 	campaignCountBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
-	missionCountBefore := h.helpeCfeairdropkeeper.GetMissionCount(ctx)
 	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
-	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx)
+	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx, campaignCountBefore)
 	require.NoError(h.t, err)
 	campaignCountAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
 	require.Equal(h.t, campaignCountBefore+1, campaignCountAfter)
-	require.Equal(h.t, missionCountBefore+1, missionCountAfter)
+	require.Equal(h.t, uint64(1), missionCountAfter)
 
 	h.VerifyAirdropCampaign(ctx, campaignCountBefore, true, owner, name, description, false, &feegrantAmount, &initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
 	h.VerifyAirdropMission(ctx, true, campaignCountBefore, 0, "Initial mission", "Initial mission - basic mission that must be claimed first", cfeairdroptypes.MissionInitialClaim, sdk.ZeroDec(), nil)
@@ -471,13 +470,12 @@ func (h *C4eAirdropUtils) CreateAirdropCampaignError(ctx sdk.Context, owner stri
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, errorMessage string) {
 
 	campaignCountBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
-	missionCountBefore := h.helpeCfeairdropkeeper.GetMissionCount(ctx)
 	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	require.EqualError(h.t, err, errorMessage)
 	campaignCountAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
-	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx)
+	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx, campaignCountBefore)
 	require.Equal(h.t, campaignCountBefore, campaignCountAfter)
-	require.Equal(h.t, missionCountBefore, missionCountAfter)
+	require.Equal(h.t, 0, missionCountAfter)
 	_, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignCountBefore)
 	require.False(h.t, ok)
 }

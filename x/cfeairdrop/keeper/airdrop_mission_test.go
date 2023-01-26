@@ -13,7 +13,7 @@ import (
 
 func TestMissionGet(t *testing.T) {
 	k, ctx := keepertest.CfeairdropKeeper(t)
-	items := createNMission(k, ctx, 10)
+	items := createAndSaveNTestMissions(k, ctx, 10)
 	for _, item := range items {
 		rst, found := k.GetMission(ctx,
 			item.CampaignId,
@@ -27,15 +27,14 @@ func TestMissionGet(t *testing.T) {
 	}
 }
 
-func TestMissionRemove(t *testing.T) {
-	keeper, ctx := keepertest.CfeairdropKeeper(t)
-	items := createNMission(keeper, ctx, 10)
+func TestAllCampaignMissionsRemove(t *testing.T) {
+	k, ctx := keepertest.CfeairdropKeeper(t)
+	items := createAndSaveNTestMissions(k, ctx, 10)
 	for _, item := range items {
-		keeper.RemoveMission(ctx,
+		k.RemoveAllMissionForCampaign(ctx,
 			item.CampaignId,
-			item.Id,
 		)
-		_, found := keeper.GetMission(ctx,
+		_, found := k.GetMission(ctx,
 			item.CampaignId,
 			item.Id,
 		)
@@ -45,7 +44,7 @@ func TestMissionRemove(t *testing.T) {
 
 //	func TestMissionGetAll(t *testing.T) {
 //		keeper, ctx := keepertest.CfeairdropKeeper(t)
-//		items := createNMission(keeper, ctx, 10)
+//		items := createAndSaveNTestMissions(keeper, ctx, 10)
 //		require.ElementsMatch(t,
 //			nullify.Fill(items),
 //			nullify.Fill(keeper.GetAllMission(ctx)),
@@ -56,7 +55,7 @@ func TestMissionRemove(t *testing.T) {
 //		testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //		prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
@@ -69,7 +68,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -82,7 +81,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		campaigns[0].Enabled = false
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
@@ -97,7 +96,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		startTime := testHelper.Context.BlockTime().Add(10)
 //		campaigns[0].StartTime = &startTime
 //		missions := prepareMissions()
@@ -114,7 +113,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		campaigns[0].Owner = acountsAddresses[0].String()
 //		startTime := testHelper.Context.BlockTime().Add(-10000)
 //		campaigns[0].StartTime = &startTime
@@ -135,7 +134,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -149,7 +148,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -164,7 +163,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -181,7 +180,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -196,7 +195,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -211,7 +210,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -226,7 +225,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -243,7 +242,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -256,7 +255,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		campaigns[0].Enabled = false
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
@@ -271,7 +270,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		startTime := testHelper.Context.BlockTime().Add(10)
 //		campaigns[0].StartTime = &startTime
 //		missions := prepareMissions()
@@ -288,7 +287,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		campaigns[0].Owner = acountsAddresses[0].String()
 //		startTime := testHelper.Context.BlockTime().Add(-10000)
 //		campaigns[0].StartTime = &startTime
@@ -309,7 +308,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -323,7 +322,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -338,7 +337,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -355,7 +354,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -370,7 +369,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -385,7 +384,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -400,7 +399,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -420,7 +419,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -440,7 +439,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -468,7 +467,7 @@ func TestMissionRemove(t *testing.T) {
 //		require.NoError(t, err)
 //		testHelper.StakingUtils.MessageDelegate(1, 0, valAddr, acountsAddresses[1], delagationAmount)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -485,7 +484,7 @@ func TestMissionRemove(t *testing.T) {
 //
 //		testHelper.C4eAirdropUtils.CreateAirdropAccout(acountsAddresses[1], sdk.NewCoins(), 12312, 1555565657676576)
 //
-//		campaigns := prepareTestCampaigns(testHelper.Context)
+//		campaigns := prepareNTestCampaigns(testHelper.Context)
 //		missions := prepareMissions()
 //		addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
@@ -505,7 +504,7 @@ func TestMissionRemove(t *testing.T) {
 //		testHelper.C4eAirdropUtils.ClaimMission(0, 2, acountsAddresses[1])
 //
 // }
-func createNMission(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Mission {
+func createAndSaveNTestMissions(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Mission {
 	items := make([]types.Mission, n)
 	for i := range items {
 		weight := sdk.NewDec(int64(i))

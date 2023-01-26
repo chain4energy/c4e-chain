@@ -18,6 +18,17 @@ func TestCreateCampaign(t *testing.T) {
 	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
 }
 
+func TestCreateManyAirdropCampaigns(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaigns := prepareNTestCampaigns(testHelper.Context, 10)
+	for _, campaign := range campaigns {
+		testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
+	}
+
+}
+
 func TestCreateCampaignEmptyName(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
@@ -74,23 +85,12 @@ func TestCreateCampaignNegativeFeegrantAmount(t *testing.T) {
 	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - feegrant amount (%s) cannot be negative: wrong param value", campaign.FeegrantAmount))
 }
 
-func prepareTestCampaigns(ctx sdk.Context) []types.Campaign {
-	start := ctx.BlockTime()
-	end := ctx.BlockTime().Add(time.Second * 10)
-	lockupPeriod := time.Hour
-	vestingPeriod := 3 * time.Hour
-	return []types.Campaign{
-		{
-			Id:            0,
-			Name:          "Name",
-			Description:   "test-campaign",
-			Enabled:       true,
-			StartTime:     start,
-			EndTime:       end,
-			LockupPeriod:  lockupPeriod,
-			VestingPeriod: vestingPeriod,
-		},
+func prepareNTestCampaigns(ctx sdk.Context, n int) []types.Campaign {
+	campaigns := make([]types.Campaign, n)
+	for i := range campaigns {
+		campaigns[i] = prepareTestCampaign(ctx)
 	}
+	return campaigns
 }
 
 func prepareTestCampaign(ctx sdk.Context) types.Campaign {
