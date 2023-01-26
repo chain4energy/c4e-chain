@@ -505,13 +505,13 @@ const VoteMissionId = 2
 //
 //}
 //
-//func createNMission(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Mission {
+//func createNMissions(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Mission {
 //	items := make([]types.Mission, n)
 //	for i := range items {
 //		weight := sdk.NewDec(int64(i))
 //		items[i].CampaignId = uint64(i)
 //		items[i].Id = uint64(i)
-//		items[i].Weight = &weight
+//		items[i].Weight = weight
 //		items[i].Description = fmt.Sprintf("desc %d", i)
 //
 //		keeper.SetMission(ctx, items[i])

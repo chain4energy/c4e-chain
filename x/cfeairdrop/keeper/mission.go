@@ -41,20 +41,6 @@ func (k Keeper) GetMission(
 	return val, true
 }
 
-// RemoveMission removes a mission from the store
-func (k Keeper) RemoveMission(
-	ctx sdk.Context,
-	campaignId uint64,
-	missionId uint64,
-
-) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
-	store.Delete(types.MissionKey(
-		campaignId,
-		missionId,
-	))
-}
-
 // GetAllMission returns all mission
 func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
@@ -84,6 +70,26 @@ func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list 
 		if val.CampaignId == campaignId {
 			list = append(list, val)
 			weightSum = weightSum.Add(val.Weight)
+		}
+	}
+
+	return
+}
+
+// GetAllMissionForCampaign returns all mission
+func (k Keeper) RemoveAllMissionForCampaign(ctx sdk.Context, campaignId uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Mission
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		if val.CampaignId == campaignId {
+			store.Delete(types.MissionKey(
+				campaignId,
+				val.Id,
+			))
 		}
 	}
 

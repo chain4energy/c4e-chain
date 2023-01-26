@@ -56,6 +56,24 @@ func TestCreateCampaignStartTimeInThePast(t *testing.T) {
 	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - start time in the past error (%s < %s): wrong param value", campaign.StartTime, testHelper.Context.BlockTime()))
 }
 
+func TestCreateCampaignNegativeInitialClaimAmount(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.InitialClaimFreeAmount = sdk.NewInt(-100)
+	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - initial claim free amount (%s) cannot be negative: wrong param value", campaign.InitialClaimFreeAmount))
+}
+
+func TestCreateCampaignNegativeFeegrantAmount(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.FeegrantAmount = sdk.NewInt(-100)
+	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - feegrant amount (%s) cannot be negative: wrong param value", campaign.FeegrantAmount))
+}
+
 func prepareTestCampaigns(ctx sdk.Context) []types.Campaign {
 	start := ctx.BlockTime()
 	end := ctx.BlockTime().Add(time.Second * 10)

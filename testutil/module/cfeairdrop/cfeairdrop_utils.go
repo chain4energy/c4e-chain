@@ -454,24 +454,31 @@ func (h *C4eAirdropUtils) CreateAirdropAccout(ctx sdk.Context, address sdk.AccAd
 func (h *C4eAirdropUtils) CreateAirdropCampaign(ctx sdk.Context, owner string, name string, description string, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
 
-	countBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+	campaignCountBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+	missionCountBefore := h.helpeCfeairdropkeeper.GetMissionCount(ctx)
 	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx)
 	require.NoError(h.t, err)
-	countAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
-	require.Equal(h.t, countBefore+1, countAfter)
+	campaignCountAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+	require.Equal(h.t, campaignCountBefore+1, campaignCountAfter)
+	require.Equal(h.t, missionCountBefore+1, missionCountAfter)
 
-	h.VerifyAirdropCampaign(ctx, countBefore, true, owner, name, description, false, &feegrantAmount, &initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
-	h.VerifyAirdropMission(ctx, true, countBefore, 0, "Initial mission", "Initial mission - basic mission that must be claimed first", cfeairdroptypes.MissionInitialClaim, sdk.ZeroDec(), nil)
+	h.VerifyAirdropCampaign(ctx, campaignCountBefore, true, owner, name, description, false, &feegrantAmount, &initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
+	h.VerifyAirdropMission(ctx, true, campaignCountBefore, 0, "Initial mission", "Initial mission - basic mission that must be claimed first", cfeairdroptypes.MissionInitialClaim, sdk.ZeroDec(), nil)
 }
 
 func (h *C4eAirdropUtils) CreateAirdropCampaignError(ctx sdk.Context, owner string, name string, description string, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, errorMessage string) {
-	countBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+
+	campaignCountBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+	missionCountBefore := h.helpeCfeairdropkeeper.GetMissionCount(ctx)
 	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	require.EqualError(h.t, err, errorMessage)
-	countAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
-	require.Equal(h.t, countBefore, countAfter)
-	_, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, countBefore)
+	campaignCountAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
+	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx)
+	require.Equal(h.t, campaignCountBefore, campaignCountAfter)
+	require.Equal(h.t, missionCountBefore, missionCountAfter)
+	_, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignCountBefore)
 	require.False(h.t, ok)
 }
 

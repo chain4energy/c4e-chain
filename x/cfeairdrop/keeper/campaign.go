@@ -62,7 +62,6 @@ func (k Keeper) GetCampaign(
 func (k Keeper) RemoveCampaign(
 	ctx sdk.Context,
 	campaignId uint64,
-
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
 	store.Delete(types.CampaignKey(

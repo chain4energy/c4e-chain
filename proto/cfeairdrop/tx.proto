@@ -19,6 +19,7 @@ service Msg {
   rpc DeleteAirdropEntry(MsgDeleteAirdropEntry) returns (MsgDeleteAirdropEntryResponse);
   rpc CloseAirdropCampaign(MsgCloseAirdropCampaign) returns (MsgCloseAirdropCampaignResponse);
   rpc StartAirdropCampaign(MsgStartAirdropCampaign) returns (MsgStartAirdropCampaignResponse);
+  rpc RemoveAirdropCampaign(MsgRemoveAirdropCampaign) returns (MsgRemoveAirdropCampaignResponse);
   // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -118,6 +119,13 @@ message MsgStartAirdropCampaign {
 }
 
 message MsgStartAirdropCampaignResponse {}
+
+message MsgRemoveAirdropCampaign {
+  string owner = 1;
+  uint64 campaignId = 2;
+}
+
+message MsgRemoveAirdropCampaignResponse {}
 
 message MsgEditAirdropCampaign {
   string owner = 1;

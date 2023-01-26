@@ -27,7 +27,7 @@ func networkWithMissionObjects(t *testing.T, n int) (*network.Network, []types.M
 			CampaignId:  uint64(i),
 			Id:          uint64(i),
 			Description: fmt.Sprintf("Desc %d", i),
-			Weight:      &weight,
+			Weight:      weight,
 		}
 		nullify.Fill(&mission)
 		state.Missions = append(state.Missions, mission)

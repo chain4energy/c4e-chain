@@ -45,8 +45,8 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	gleamCampaign := cfeairdroptypes.Campaign{
 		Id:            gleamCamapaignId,
 		Enabled:       true,
-		StartTime:     &gleamStart,
-		EndTime:       &gleamEnd,
+		StartTime:     gleamStart,
+		EndTime:       gleamEnd,
 		LockupPeriod:  lockupPeriod,
 		VestingPeriod: vestingPeriod,
 		Description:   "Gleam contest airdrop ??????", // TODO description + add name to campaign
@@ -55,8 +55,8 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	stakeCampaign := cfeairdroptypes.Campaign{
 		Id:            stakeCamapaignId,
 		Enabled:       true,
-		StartTime:     &stakeStart,
-		EndTime:       &stakeEnd,
+		StartTime:     stakeStart,
+		EndTime:       stakeEnd,
 		LockupPeriod:  lockupPeriod,
 		VestingPeriod: vestingPeriod,
 		Description:   "ATOM stake airdrop ??????", // TODO description + add name to campaign
@@ -71,7 +71,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		cfeairdroptypes.Mission{
 			Id:          0,
 			CampaignId:  gleamCamapaignId,
-			Weight:      &weight,
+			Weight:      weight,
 			Description: "Claim gleam contest airdrop", // TODO description ??
 		},
 	)
@@ -84,7 +84,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
 			Id:          0,
-			Weight:      &weight,
+			Weight:      weight,
 			Description: "Claim initial stakers airdrop", // TODO description ??
 		},
 	)
@@ -95,7 +95,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
 			Id:          1,
-			Weight:      &weight,
+			Weight:      weight,
 			Description: "Claim delegtion stakers airdrop", // TODO description ??
 		},
 	)
@@ -105,7 +105,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		cfeairdroptypes.Mission{
 			CampaignId:  stakeCamapaignId,
 			Id:          2,
-			Weight:      &weight,
+			Weight:      weight,
 			Description: "Claim voting stakers airdrop", // TODO description ??
 		},
 	)

@@ -171,3 +171,24 @@ func (k Keeper) StartAirdropCampaign(ctx sdk.Context, owner string, campaignId u
 	k.SetCampaign(ctx, campaign)
 	return nil
 }
+
+func (k Keeper) RemoveAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
+	k.Logger(ctx).Debug("start airdrop campaign", "owner", owner, "campaignId", campaignId)
+	campaign, found := k.GetCampaign(ctx, campaignId)
+	if !found {
+		k.Logger(ctx).Error("start airdrop campaign: campaign not found", "campaignId", campaignId)
+		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "start airdrop campaign campaign with id %d not found", campaignId)
+	}
+	if campaign.Owner != owner {
+		k.Logger(ctx).Error("start airdrop campaign you are not the owner")
+		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "start airdrop campaign you are not the owner")
+	}
+	if campaign.Enabled == true {
+		k.Logger(ctx).Error("start airdrop campaign campaign has already started")
+		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "start airdrop campaign campaign has already started")
+	}
+
+	k.RemoveCampaign(ctx, campaignId)
+	k.RemoveAllMissionForCampaign(ctx, campaignId)
+	return nil
+}
