@@ -23,7 +23,7 @@ func (h MissionVoteHooks) AfterProposalVote(ctx sdk.Context, _ uint64, voterAddr
 	for _, mission := range missions {
 		// TODO error handling
 		if mission.MissionType == types.MissionVote {
-			_ = h.k.CompleteMission(ctx, mission.CampaignId, mission.Id, voterAddr.String(), true)
+			_ = h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, voterAddr.String())
 		}
 	}
 }

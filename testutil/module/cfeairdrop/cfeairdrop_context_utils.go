@@ -31,9 +31,12 @@ func (h *ContextC4eAirdropUtils) CreateAirdropCampaignError(owner string, campai
 	h.C4eAirdropUtils.CreateAirdropCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, errorMessage)
 }
 
-func (h *ContextC4eAirdropUtils) AddMissionToAirdropCampaign(owner string, campaignId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
-	weight sdk.Dec) {
-	h.C4eAirdropUtils.AddMissionToAirdropCampaign(h.testContext.GetContext(), owner, campaignId, name, description, missionType, weight)
+func (h *ContextC4eAirdropUtils) AddMissionToAirdropCampaign(owner string, campaignId uint64, mission cfeairdroptypes.Mission) {
+	h.C4eAirdropUtils.AddMissionToAirdropCampaign(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate)
+}
+
+func (h *ContextC4eAirdropUtils) AddMissionToAirdropCampaignError(owner string, campaignId uint64, mission cfeairdroptypes.Mission, errorString string) {
+	h.C4eAirdropUtils.AddMissionToAirdropCampaignError(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate, errorString)
 }
 
 func (h *ContextC4eAirdropUtils) StartAirdropCampaign(owner string, campaignId uint64) {
@@ -91,13 +94,13 @@ func (h *ContextC4eAirdropUtils) SetUserAirdropEntries(userAirdropEntries *cfeai
 	h.C4eAirdropUtils.SetUserAirdropEntries(h.testContext.GetContext(), userAirdropEntries)
 }
 
-func (h *ContextC4eAirdropUtils) CompleteMission(campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
-	h.C4eAirdropUtils.CompleteMission(h.testContext.GetContext(), campaignId, missionId, claimer)
+func (h *ContextC4eAirdropUtils) CompleteMissionFromHook(campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
+	h.C4eAirdropUtils.CompleteMissionFromHook(h.testContext.GetContext(), campaignId, missionId, claimer)
 
 }
 
-func (h *ContextC4eAirdropUtils) CompleteMissionError(campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
-	h.C4eAirdropUtils.CompleteMissionError(h.testContext.GetContext(), campaignId, missionId, claimer, errorMessage)
+func (h *ContextC4eAirdropUtils) CompleteMissionFromHookError(campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
+	h.C4eAirdropUtils.CompleteMissionFromHookError(h.testContext.GetContext(), campaignId, missionId, claimer, errorMessage)
 
 }
 

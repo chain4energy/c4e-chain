@@ -11,7 +11,7 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
-func (k Keeper) SendToAirdropAccount(ctx sdk.Context, userAirdropEntries *types.UserAirdropEntries,
+func (k Keeper) SendToNewRepeatedContinuousVestingAccount(ctx sdk.Context, userAirdropEntries *types.UserAirdropEntries,
 	amount sdk.Coins, startTime int64, endTime int64, missionType types.MissionType) error {
 	k.Logger(ctx).Debug("send to airdrop account", "userAirdropEntries", userAirdropEntries,
 		"amount", amount, "startTime", startTime, "endTime", endTime, "missionType", missionType)

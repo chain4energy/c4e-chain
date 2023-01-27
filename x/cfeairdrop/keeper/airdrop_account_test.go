@@ -15,7 +15,7 @@ package keeper_test
 //	endTimeUnix := endTime.Unix()
 //	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, types.ModuleName)
 //
-//	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
+//	testHelper.C4eAirdropUtils.SendToNewRepeatedContinuousVestingAccount(acountsAddresses[0],
 //		amount,
 //		startTimeUnix,
 //		endTimeUnix, cfeairdropmoduletypes.MissionVote,
@@ -28,7 +28,7 @@ package keeper_test
 //	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
 //
 //	testHelper.SetContextBlockTime(startTime)
-//	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
+//	testHelper.C4eAirdropUtils.SendToNewRepeatedContinuousVestingAccount(acountsAddresses[0],
 //		amount,
 //		startTimeUnix,
 //		endTimeUnix, cfeairdropmoduletypes.MissionVote,
@@ -40,7 +40,7 @@ package keeper_test
 //	testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
 //
 //	testHelper.SetContextBlockTime(startTime)
-//	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
+//	testHelper.C4eAirdropUtils.SendToNewRepeatedContinuousVestingAccount(acountsAddresses[0],
 //		amount,
 //		startTimeUnix,
 //		endTimeUnix, cfeairdropmoduletypes.MissionVote,

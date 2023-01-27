@@ -150,6 +150,8 @@ func TestCreateCampaignCloseCampaign(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eAirdropUtils.CloseAirdropCampaign(acountsAddresses[0].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED)
 }
 
@@ -158,9 +160,13 @@ func TestCreateManyCampaignsAndClose(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaigns := prepareNTestCampaigns(testHelper.Context, 10)
+	contextNow := testHelper.Context.BlockTime()
 	for i, campaign := range campaigns {
+		testHelper.SetContextBlockTime(contextNow)
 		testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
 		testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), uint64(i))
+		blockTime := campaign.EndTime.Add(time.Minute)
+		testHelper.SetContextBlockTime(blockTime)
 		testHelper.C4eAirdropUtils.CloseAirdropCampaign(acountsAddresses[0].String(), uint64(i), types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED)
 	}
 }
@@ -171,6 +177,8 @@ func TestCreateCampaignCloseCampaignCampaignNotStartedError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eAirdropUtils.CloseAirdropCampaignError(acountsAddresses[0].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, fmt.Sprintf("close airdrop campaign - campaign with id %d is already closed or have not started yet error: campaign is disabled", 0))
 }
 
@@ -181,9 +189,7 @@ func TestCreateCampaignCloseCampaignCampaignNotOverYetError(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
-	blockTime := campaign.EndTime.Add(time.Minute)
-	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eAirdropUtils.CloseAirdropCampaignError(acountsAddresses[0].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, fmt.Sprintf("close airdrop campaign - campaign with id %d campaign is not over yet (endtime - %s < %s): wrong param value", 0, campaign.EndTime, blockTime))
+	testHelper.C4eAirdropUtils.CloseAirdropCampaignError(acountsAddresses[0].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, fmt.Sprintf("close airdrop campaign - campaign with id %d campaign is not over yet (endtime - %s < %s): wrong param value", 0, campaign.EndTime, testHelper.Context.BlockTime()))
 }
 
 func TestCreateCampaignCloseCampaignCampaigDoesntExistError(t *testing.T) {
@@ -192,6 +198,8 @@ func TestCreateCampaignCloseCampaignCampaigDoesntExistError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eAirdropUtils.CloseAirdropCampaignError(acountsAddresses[0].String(), 1, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, "close airdrop campaign - campaign with id 1 not found error: entity does not exist")
 }
 
@@ -202,6 +210,8 @@ func TestCreateCampaignCloseCampaignYouAreNotTheOwnerErrror(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eAirdropUtils.CloseAirdropCampaignError(acountsAddresses[1].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, "close airdrop campaign - you are not the owner error: tx intended signer does not match the given signer")
 }
 

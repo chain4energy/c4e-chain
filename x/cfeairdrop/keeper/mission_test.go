@@ -60,7 +60,7 @@ const VoteMissionId = 2
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
 //
-//	testHelper.C4eAirdropUtils.CompleteMission(0, 1, acountsAddresses[1])
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHook(0, 1, acountsAddresses[1])
 //}
 //
 //func TestCompleteMissionCamapignNotFound(t *testing.T) {
@@ -73,7 +73,7 @@ const VoteMissionId = 2
 //	addCampaignsAndMissions(testHelper.C4eAirdropUtils, acountsAddresses[0].String(), campaigns, missions)
 //
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
-//	testHelper.C4eAirdropUtils.CompleteMissionError(3, 2, acountsAddresses[1], "camapign not found: campaignId 3: not found")
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(3, 2, acountsAddresses[1], "camapign not found: campaignId 3: not found")
 //}
 //
 //func TestCompleteMissionCamapignDisabled(t *testing.T) {
@@ -88,7 +88,7 @@ const VoteMissionId = 2
 //
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
 //
-//	testHelper.C4eAirdropUtils.CompleteMissionError(0, 2, acountsAddresses[1], "campaign disabled - campaignId 0: campaignId 0: campaign is disabled")
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(0, 2, acountsAddresses[1], "campaign disabled - campaignId 0: campaignId 0: campaign is disabled")
 //}
 //
 //func TestCompleteMissionCamapignNotStarted(t *testing.T) {
@@ -104,7 +104,7 @@ const VoteMissionId = 2
 //
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
 //
-//	testHelper.C4eAirdropUtils.CompleteMissionError(0, 2, acountsAddresses[1],
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(0, 2, acountsAddresses[1],
 //		fmt.Sprintf("campaign disabled - campaignId 0: campaignId 0 not started: time %s < startTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].StartTime))
 //}
 //
@@ -125,7 +125,7 @@ const VoteMissionId = 2
 //
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
 //
-//	testHelper.C4eAirdropUtils.CompleteMissionError(0, 2, acountsAddresses[1],
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(0, 2, acountsAddresses[1],
 //		fmt.Sprintf("campaign disabled - campaignId 0: campaignId 0 ended: time %s > endTime %s: campaign is disabled", testHelper.Context.BlockTime(), campaigns[0].EndTime))
 //}
 //
@@ -140,7 +140,7 @@ const VoteMissionId = 2
 //
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
 //
-//	testHelper.C4eAirdropUtils.CompleteMissionError(0, 4, acountsAddresses[1], "mission not found - campaignId 0, missionId 4: not found")
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(0, 4, acountsAddresses[1], "mission not found - campaignId 0, missionId 4: not found")
 //}
 //
 //func TestCompleteMissionClaimRecordNotFound(t *testing.T) {
@@ -154,7 +154,7 @@ const VoteMissionId = 2
 //
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{0})
 //
-//	testHelper.C4eAirdropUtils.CompleteMissionError(0, uint64(types.MissionDelegation), acountsAddresses[2],
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(0, uint64(types.MissionDelegation), acountsAddresses[2],
 //		fmt.Sprintf("claim record not found for address %s: not found", acountsAddresses[2]))
 //}
 //
@@ -171,7 +171,7 @@ const VoteMissionId = 2
 //	userAirdropEntries.GetAirdropEntries()[0].CampaignId = 2
 //	testHelper.C4eAirdropUtils.SetUserAirdropEntries(userAirdropEntries)
 //
-//	testHelper.C4eAirdropUtils.CompleteMissionError(0, 1, acountsAddresses[1],
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(0, 1, acountsAddresses[1],
 //		fmt.Sprintf("campaign record with id: 0 not found for address %s: not found", acountsAddresses[1]))
 //}
 //
@@ -186,7 +186,7 @@ const VoteMissionId = 2
 //
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0, 1}, []uint64{0})
 //
-//	testHelper.C4eAirdropUtils.CompleteMissionError(0, 1, acountsAddresses[1],
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(0, 1, acountsAddresses[1],
 //		fmt.Sprintf("mission already completed: address %s, campaignId: 0, missionId: 1: mission already completed", acountsAddresses[1]))
 //}
 //
@@ -201,7 +201,7 @@ const VoteMissionId = 2
 //
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{uint64(types.MissionInitialClaim)}, []uint64{uint64(types.MissionInitialClaim)})
 //
-//	testHelper.C4eAirdropUtils.CompleteMissionError(0, uint64(types.MissionDelegation), acountsAddresses[1],
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(0, uint64(types.MissionDelegation), acountsAddresses[1],
 //		fmt.Sprintf("initial mission not completed: address %s, campaignId: 0, missionId: 0: mission not completed yet", acountsAddresses[1]))
 //}
 //
@@ -216,7 +216,7 @@ const VoteMissionId = 2
 //
 //	prepareUserAirdropEntries(testHelper, acountsAddresses[0], acountsAddresses[1], []uint64{0}, []uint64{})
 //
-//	testHelper.C4eAirdropUtils.CompleteMissionError(0, 1, acountsAddresses[1],
+//	testHelper.C4eAirdropUtils.CompleteMissionFromHookError(0, 1, acountsAddresses[1],
 //		fmt.Sprintf("initial mission not completed: address %s, campaignId: 0, missionId: 0: mission not completed yet", acountsAddresses[1]))
 //}
 //

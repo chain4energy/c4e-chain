@@ -52,7 +52,7 @@ func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.Ac
 		ClaimAddress: toAddress.String(),
 	}
 
-	require.NoError(h.t, h.helpeCfeairdropkeeper.SendToAirdropAccount(ctx,
+	require.NoError(h.t, h.helpeCfeairdropkeeper.SendToNewRepeatedContinuousVestingAccount(ctx,
 		userAirdropEntries,
 		coins,
 		startTime,
@@ -85,7 +85,7 @@ func (h *C4eAirdropUtils) SendToAirdropAccountError(ctx sdk.Context, toAddress s
 		Address:      toAddress.String(),
 		ClaimAddress: toAddress.String(),
 	}
-	require.EqualError(h.t, h.helpeCfeairdropkeeper.SendToAirdropAccount(ctx,
+	require.EqualError(h.t, h.helpeCfeairdropkeeper.SendToNewRepeatedContinuousVestingAccount(ctx,
 		userAirdropEntries,
 		coins,
 		startTime,
@@ -175,9 +175,9 @@ func (h *C4eAirdropUtils) AddAirdropEntries(ctx sdk.Context, srcAddress sdk.AccA
 		}
 
 	}
+
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBalance.Add(sum.AmountOf(testenv.DefaultTestDenom)))
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(sum.AmountOf(testenv.DefaultTestDenom)))
-
 }
 
 func (h *C4eAirdropUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry, errorMessage string, addRequiredCoinsToSrc bool) {
@@ -324,9 +324,9 @@ func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64
 	h.completeAnyMission(ctx, campaignId, 2, claimer, action, nil)
 }
 
-func (h *C4eAirdropUtils) CompleteMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
+func (h *C4eAirdropUtils) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
 	action := func() error {
-		return h.helpeCfeairdropkeeper.CompleteMission(ctx, campaignId, missionId, claimer.String(), false)
+		return h.helpeCfeairdropkeeper.CompleteMissionFromHook(ctx, campaignId, missionId, claimer.String())
 	}
 	h.completeAnyMission(ctx, campaignId, missionId, claimer, action, nil)
 }
@@ -354,13 +354,13 @@ func (h *C4eAirdropUtils) completeAnyMission(ctx sdk.Context, campaignId uint64,
 	require.EqualValues(h.t, claimRecordBefore, userAirdropEntries)
 }
 
-func (h *C4eAirdropUtils) CompleteMissionError(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
+func (h *C4eAirdropUtils) CompleteMissionFromHookError(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
 	claimRecordBefore, foundCrBefore := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 
-	require.EqualError(h.t, h.helpeCfeairdropkeeper.CompleteMission(ctx, campaignId, missionId, claimer.String(), false), errorMessage)
+	require.EqualError(h.t, h.helpeCfeairdropkeeper.CompleteMissionFromHook(ctx, campaignId, missionId, claimer.String()), errorMessage)
 
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
@@ -521,10 +521,22 @@ func (h *C4eAirdropUtils) CloseAirdropCampaignError(ctx sdk.Context, owner strin
 }
 
 func (h *C4eAirdropUtils) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
-	weight sdk.Dec) {
-
+	weight sdk.Dec, missionClaimDate *time.Time) {
+	missionCountBefore := h.helpeCfeairdropkeeper.GetMissionCount(ctx, campaignId)
 	err := h.helpeCfeairdropkeeper.AddMissionToAirdropCampaign(ctx, owner, campaignId, name, description, missionType, weight, nil)
+	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx, campaignId)
 	require.NoError(h.t, err)
+	require.Equal(h.t, missionCountBefore+1, missionCountAfter)
+	h.VerifyAirdropMission(ctx, true, campaignId, missionCountBefore, name, description, missionType, weight, missionClaimDate)
+}
+
+func (h *C4eAirdropUtils) AddMissionToAirdropCampaignError(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
+	weight sdk.Dec, missionClaimDate *time.Time, errorString string) {
+	missionCountBefore := h.helpeCfeairdropkeeper.GetMissionCount(ctx, campaignId)
+	err := h.helpeCfeairdropkeeper.AddMissionToAirdropCampaign(ctx, owner, campaignId, name, description, missionType, weight, missionClaimDate)
+	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx, campaignId)
+	require.EqualError(h.t, err, errorString)
+	require.Equal(h.t, missionCountBefore, missionCountAfter)
 }
 
 func (h *C4eAirdropUtils) VerifyAirdropCampaign(ctx sdk.Context, campaignId uint64, mustExist bool, owner string, name string, description string, enabled bool, feegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime time.Time,
@@ -564,7 +576,7 @@ func (h *C4eAirdropUtils) VerifyAirdropCampaign(ctx sdk.Context, campaignId uint
 func (h *C4eAirdropUtils) VerifyAirdropMission(ctx sdk.Context, mustExist bool, campaignId uint64, missionId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
 	weight sdk.Dec, claimStartDate *time.Time) {
 
-	mission, ok := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, 0)
+	mission, ok := h.helpeCfeairdropkeeper.GetMission(ctx, campaignId, missionId)
 	if mustExist {
 		require.True(h.t, ok)
 	} else {

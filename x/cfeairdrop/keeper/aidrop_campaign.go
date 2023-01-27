@@ -94,6 +94,10 @@ func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId ui
 		k.Logger(ctx).Error("edit airdrop campaign campaign doesn't exist", "campaignId", campaignId)
 		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "edit airdrop campaign -  campaign with id %d doesn't exist", campaignId)
 	}
+	if campaign.EndTime.Before(ctx.BlockTime()) {
+		k.Logger(ctx).Error("edit airdrop campaign campaign doesn't exist", "campaignId", campaignId)
+		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "edit airdrop campaign -  campaign with id %d doesn't exist", campaignId)
+	}
 	if campaign.Owner != owner {
 		k.Logger(ctx).Error("edit airdrop campaign you are not the owner of this campaign", "campaignId", campaignId)
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "edit airdrop campaign - you are not the owner of campaign with id %d", campaignId)
@@ -136,7 +140,7 @@ func (k Keeper) CloseAirdropCampaign(ctx sdk.Context, owner string, campaignId u
 		k.Logger(ctx).Error("close airdrop campaign campaign campaign not found", "campaignId", campaignId)
 		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "close airdrop campaign - campaign with id %d not found error", campaignId)
 	}
-	if campaign.EndTime.Before(ctx.BlockTime()) {
+	if campaign.EndTime.After(ctx.BlockTime()) {
 		k.Logger(ctx).Debug("close airdrop campaign campaign is not over yet", "startTime", campaign.StartTime)
 		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close airdrop campaign - campaign with id %d campaign is not over yet (endtime - %s < %s)", campaignId, campaign.EndTime, ctx.BlockTime())
 	}
