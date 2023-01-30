@@ -9,8 +9,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var OneForthC4e = sdk.NewCoin("uc4e", sdk.NewInt(250000))
-
 type MessageId uint64
 
 func (cr *UserAirdropEntries) GetAidropEntry(camapaignId uint64) *AirdropEntry {

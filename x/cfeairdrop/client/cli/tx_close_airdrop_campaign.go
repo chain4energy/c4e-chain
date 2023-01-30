@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 
 func CmdCloseAirdropCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "close-airdrop-campaign [campaign-id] [argAirdropCloseAction]",
+		Use:   "close-airdrop-campaign [campaign-id] [airdrop-close-action]",
 		Short: "Broadcast message CloseAirdropCampaign",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {

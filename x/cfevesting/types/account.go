@@ -1,7 +1,7 @@
 package types
 
 import (
-	"fmt"
+	fmt "fmt"
 	"time"
 
 	"math"
@@ -10,7 +10,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
-	"github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -22,17 +22,17 @@ var (
 
 type ContinuousVestingPeriods []ContinuousVestingPeriod
 
-// NewRepeatedContinuousVestingAccountRaw creates a new RepeatedContinuousVestingAccount object from BaseVestingAccount
-func NewRepeatedContinuousVestingAccountRaw(bva *types.BaseVestingAccount, startTime int64) *RepeatedContinuousVestingAccount {
+// NewRepeatedContinuousVestingAccountRaw creates a new AirdropVestingAccount object from BaseVestingAccount
+func NewRepeatedContinuousVestingAccountRaw(bva *vestingtypes.BaseVestingAccount, startTime int64) *RepeatedContinuousVestingAccount {
 	return &RepeatedContinuousVestingAccount{
 		BaseVestingAccount: bva,
 		StartTime:          startTime,
 	}
 }
 
-// NewRepeatedContinuousVestingAccount returns a new RepeatedContinuousVestingAccount
+// NewRepeatedContinuousVestingAccount returns a new AirdropVestingAccount
 func NewRepeatedContinuousVestingAccount(baseAcc *authtypes.BaseAccount, originalVesting sdk.Coins, startTime int64, endTime int64, periods ContinuousVestingPeriods) *RepeatedContinuousVestingAccount {
-	baseVestingAcc := &types.BaseVestingAccount{
+	baseVestingAcc := &vestingtypes.BaseVestingAccount{
 		BaseAccount:     baseAcc,
 		OriginalVesting: originalVesting,
 		EndTime:         endTime,

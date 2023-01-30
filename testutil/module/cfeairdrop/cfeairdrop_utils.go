@@ -1,7 +1,6 @@
 package cfeairdrop
 
 import (
-	"fmt"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
@@ -114,9 +113,7 @@ func (h *C4eAirdropUtils) SendToAirdropAccountError(ctx sdk.Context, toAddress s
 
 func (h *C4eAirdropUtils) VerifyAirdropAccount(ctx sdk.Context, address sdk.AccAddress,
 	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod, missionType cfeairdroptypes.MissionType) {
-	if missionType == cfeairdroptypes.MissionInitialClaim && len(expectedOriginalVesting) > 0 {
-		expectedOriginalVesting = expectedOriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(expectedOriginalVesting[0].Denom, cfeairdroptypes.OneForthC4e.Amount)))
-	}
+
 	airdropAccount, ok := h.helperAccountKeeper.GetAccount(ctx, address).(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	require.True(h.t, ok)
 
@@ -127,9 +124,6 @@ func (h *C4eAirdropUtils) VerifyAirdropAccount(ctx sdk.Context, address sdk.AccA
 	for i := 0; i < len(expectedPeriods); i++ {
 		require.EqualValues(h.t, expectedPeriods[i].StartTime, airdropAccount.VestingPeriods[i].StartTime)
 		require.EqualValues(h.t, expectedPeriods[i].EndTime, airdropAccount.VestingPeriods[i].EndTime)
-		if missionType == cfeairdroptypes.MissionInitialClaim {
-			expectedPeriods[i].Amount = expectedPeriods[i].Amount.Sub(sdk.NewCoins(sdk.NewCoin(expectedOriginalVesting[0].Denom, cfeairdroptypes.OneForthC4e.Amount)))
-		}
 		require.EqualValues(h.t, expectedPeriods[i].Amount, airdropAccount.VestingPeriods[i].Amount)
 	}
 	require.NoError(h.t, airdropAccount.Validate())
@@ -452,8 +446,6 @@ func (h *C4eAirdropUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint
 	userAirdropEntries, foundCr := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.True(h.t, foundCr)
 
-	fmt.Println(userAirdropEntriesBefore)
-	fmt.Println(userAirdropEntries)
 	require.EqualValues(h.t, userAirdropEntriesBefore, userAirdropEntries)
 
 	expectedAmount := mission.Weight.MulInt(userAirdropEntries.GetAidropEntry(campaignId).AirdropCoins.AmountOf(testenv.DefaultTestDenom)).TruncateInt()

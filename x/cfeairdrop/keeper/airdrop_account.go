@@ -52,7 +52,7 @@ func (k Keeper) SendToNewRepeatedContinuousVestingAccount(ctx sdk.Context, userA
 
 	if claimerAccount == nil {
 		k.Logger(ctx).Error("send to airdrop account - account not exists error", "claimerAddress", claimerAddress)
-		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "create airdrop account - account does not exist: %s", claimerAddress)
+		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "send to airdrop account - account does not exist: %s", claimerAddress)
 	}
 	airdropAccount, ok := claimerAccount.(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	if !ok {
@@ -65,11 +65,12 @@ func (k Keeper) SendToNewRepeatedContinuousVestingAccount(ctx sdk.Context, userA
 		return sdkerrors.Wrap(sdkerrors.ErrInsufficientFunds, fmt.Sprintf(
 			"send to airdrop account - send coins to airdrop account insufficient funds error (to: %s, amount: %s)", claimerAddress, amount))
 	}
-
 	ak.SetAccount(ctx, airdropAccount)
 	hadPariods := len(airdropAccount.VestingPeriods) > 0
+
 	airdropAccount.VestingPeriods = append(airdropAccount.VestingPeriods,
 		cfevestingtypes.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
+
 	airdropAccount.BaseVestingAccount.OriginalVesting = airdropAccount.BaseVestingAccount.OriginalVesting.Add(amount...)
 	if !hadPariods || endTime > airdropAccount.BaseVestingAccount.EndTime {
 		airdropAccount.BaseVestingAccount.EndTime = endTime
@@ -84,6 +85,7 @@ func (k Keeper) SendToNewRepeatedContinuousVestingAccount(ctx sdk.Context, userA
 		return sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err,
 			"send to airdrop account - send coins to airdrop account error (to: %s, amount: %s)", claimerAddress, amount).Error())
 	}
+
 	ak.SetAccount(ctx, airdropAccount)
 	return nil
 }
