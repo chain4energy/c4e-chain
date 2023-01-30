@@ -14,4 +14,5 @@ var (
 	ErrMissionNotCompleted = sdkerrors.Register(ModuleName, 5, "mission not completed yet")
 	ErrMissionCompletion   = sdkerrors.Register(ModuleName, 6, "mission completion error")
 	ErrMissionClaiming     = sdkerrors.Register(ModuleName, 7, "mission claiming error")
+	ErrMissionDisabled     = sdkerrors.Register(ModuleName, 8, "mission is disabled")
 )

@@ -24,13 +24,13 @@ func (cr *UserAirdropEntries) GetAidropEntry(camapaignId uint64) *AirdropEntry {
 
 func (c *Campaign) IsEnabled(blockTime time.Time) error {
 	if !c.Enabled {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaignId %d", c.Id)
+		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d error", c.Id)
 	}
 	if blockTime.Before(c.StartTime) {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaignId %d not started: time %s < startTime %s", c.Id, blockTime, c.StartTime)
+		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.StartTime)
 	}
 	if blockTime.After(c.EndTime) {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaignId %d ended: time %s > endTime %s", c.Id, blockTime, c.EndTime)
+		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d has already ended (%s > endTime %s) error", c.Id, blockTime, c.EndTime)
 	}
 	return nil
 }
@@ -40,7 +40,7 @@ func (c *Mission) IsEnabled(blockTime time.Time) error {
 		return nil
 	}
 	if c.ClaimStartDate.Before(blockTime) {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "missionId %d not started: time %s < startTime %s", c.Id, blockTime, c.ClaimStartDate)
+		return sdkerrors.Wrapf(ErrMissionDisabled, "mission %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.ClaimStartDate)
 	}
 	return nil
 }

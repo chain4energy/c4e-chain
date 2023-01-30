@@ -69,6 +69,7 @@ type TestHelper struct {
 	AuthUtils             *testcosmos.ContextAuthUtils
 	StakingUtils          *testcosmos.ContextStakingUtils
 	GovUtils              *testcosmos.ContextGovUtils
+	FeegrantUtils         *testcosmos.ContextFeegrantUtils
 	C4eVestingUtils       *testcfevesting.ContextC4eVestingUtils
 	C4eMinterUtils        *testcfeminter.ContextC4eMinterUtils
 	C4eDistributorUtils   *testcfedistributor.ContextC4eDistributorUtils
@@ -107,7 +108,8 @@ func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time
 	testHelper.C4eMinterUtils = testcfeminter.NewContextC4eMinterUtils(t, testHelperP, &app.CfeminterKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
 	testHelper.C4eDistributorUtils = testcfedistributor.NewContextC4eDistributorUtils(t, testHelperP, &app.CfedistributorKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
 	testHelper.GovUtils = testcosmos.NewContextGovUtils(t, &testHelper, &app.GovKeeper)
-	testHelper.C4eAirdropUtils = testcfeairdrop.NewContextC4eAirdropUtils(t, &testHelper, &app.CfeairdropKeeper, &app.AccountKeeper, &bankUtils.BankUtils, &testHelper.StakingUtils.StakingUtils, &testHelper.GovUtils.GovUtils)
+	testHelper.FeegrantUtils = testcosmos.NewContextFeegrantUtils(t, &testHelper, &app.FeeGrantKeeper)
+	testHelper.C4eAirdropUtils = testcfeairdrop.NewContextC4eAirdropUtils(t, &testHelper, &app.CfeairdropKeeper, &app.AccountKeeper, &bankUtils.BankUtils, &testHelper.StakingUtils.StakingUtils, &testHelper.GovUtils.GovUtils, &testHelper.FeegrantUtils.FeegrantUtils)
 
 	return &testHelper
 }

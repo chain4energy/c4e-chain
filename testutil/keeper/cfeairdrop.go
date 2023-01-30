@@ -54,7 +54,7 @@ import (
 func CfeairdropKeeperTestUtilWithCdc(t *testing.T) (*cfeairdroptestutils.C4eAirdropUtils, *keeper.Keeper, sdk.Context) {
 	k, ak, bk, ctx, _, _ := cfeairdropKeeperWithBlockHeightAndTime(t, 0, testenv.TestEnvTime)
 	bankUtils := commontestutils.NewBankUtils(t, ctx, ak, bk)
-	utils := cfeairdroptestutils.NewC4eAirdropUtils(t, k, ak, &bankUtils, nil, nil)
+	utils := cfeairdroptestutils.NewC4eAirdropUtils(t, k, ak, &bankUtils, nil, nil, nil)
 	return &utils, k, ctx
 }
 

@@ -17,7 +17,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		addressToClaim = additionalAddress
 	}
 
-	campaign, mission, userAirdropEntries, err := k.missionFirstStep(ctx, "claim initial mission", campaignId, types.InitialMissionId, addressToClaim)
+	campaign, mission, userAirdropEntries, err := k.missionFirstStep(ctx, campaignId, types.InitialMissionId, addressToClaim)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 }
 
 func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, claimer string) error {
-	campaign, mission, userAirdropEntries, err := k.missionFirstStep(ctx, "claim mission", campaignId, missionId, claimer)
+	campaign, mission, userAirdropEntries, err := k.missionFirstStep(ctx, campaignId, missionId, claimer)
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 }
 
 func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {
-	_, mission, userAirdropEntries, err := k.missionFirstStep(ctx, "complete mission", campaignId, missionId, address)
+	_, mission, userAirdropEntries, err := k.missionFirstStep(ctx, campaignId, missionId, address)
 	if err != nil {
 		return err
 	}
@@ -106,12 +106,12 @@ func (k Keeper) completeMission(ctx sdk.Context, mission *types.Mission, userAir
 	address := userAirdropEntries.Address
 
 	if userAirdropEntries.IsMissionCompleted(campaignId, missionId) {
-		k.Logger(ctx).Error("complete mission - mission already completed", "address", address, "campaignId", campaignId, "missionId", missionId)
+		k.Logger(ctx).Debug("complete mission - mission already completed", "address", address, "campaignId", campaignId, "missionId", missionId)
 		return nil, sdkerrors.Wrapf(types.ErrMissionCompleted, "mission already completed: address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
 	}
 
 	if err := userAirdropEntries.CompleteMission(campaignId, missionId); err != nil {
-		k.Logger(ctx).Error("complete mission - cannot complete", "address", address, "campaignId", campaignId, "missionId", missionId)
+		k.Logger(ctx).Debug("complete mission - cannot complete", "address", address, "campaignId", campaignId, "missionId", missionId)
 		return nil, sdkerrors.Wrapf(types.ErrMissionCompletion, err.Error())
 	}
 

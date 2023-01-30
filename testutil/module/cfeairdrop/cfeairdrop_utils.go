@@ -1,6 +1,7 @@
 package cfeairdrop
 
 import (
+	"fmt"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
@@ -20,15 +21,16 @@ type C4eAirdropUtils struct {
 	C4eAirdropKeeperUtils
 	helperAccountKeeper *authkeeper.AccountKeeper
 	BankUtils           *testcosmos.BankUtils
+	FeegrantUtils       *testcosmos.FeegrantUtils
 	StakingUtils        *testcosmos.StakingUtils
 	GovUtils            *testcosmos.GovUtils
 }
 
 func NewC4eAirdropUtils(t *testing.T, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils) C4eAirdropUtils {
+	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils, feegrantUtils *testcosmos.FeegrantUtils) C4eAirdropUtils {
 	return C4eAirdropUtils{C4eAirdropKeeperUtils: NewC4eAirdropKeeperUtils(t, helpeCfeairdropmodulekeeper),
-		helperAccountKeeper: helperAccountKeeper, BankUtils: bankUtils, StakingUtils: stakingUtils, GovUtils: govUtils}
+		helperAccountKeeper: helperAccountKeeper, BankUtils: bankUtils, StakingUtils: stakingUtils, GovUtils: govUtils, FeegrantUtils: feegrantUtils}
 }
 
 func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.AccAddress,
@@ -40,7 +42,7 @@ func (h *C4eAirdropUtils) SendToAirdropAccount(ctx sdk.Context, toAddress sdk.Ac
 	accountBefore := h.helperAccountKeeper.GetAccount(ctx, toAddress)
 
 	previousOriginalVesting := sdk.NewCoins()
-	previousPeriods := []cfevestingtypes.ContinuousVestingPeriod{}
+	var previousPeriods []cfevestingtypes.ContinuousVestingPeriod
 	if accountBefore != nil {
 		if airdropAccount, ok := accountBefore.(*cfevestingtypes.RepeatedContinuousVestingAccount); ok {
 			previousOriginalVesting = previousOriginalVesting.Add(airdropAccount.OriginalVesting...)
@@ -131,7 +133,6 @@ func (h *C4eAirdropUtils) VerifyAirdropAccount(ctx sdk.Context, address sdk.AccA
 		require.EqualValues(h.t, expectedPeriods[i].Amount, airdropAccount.VestingPeriods[i].Amount)
 	}
 	require.NoError(h.t, airdropAccount.Validate())
-
 }
 
 func (h *C4eAirdropUtils) AddAirdropEntries(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry) {
@@ -159,7 +160,6 @@ func (h *C4eAirdropUtils) AddAirdropEntries(ctx sdk.Context, srcAddress sdk.AccA
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 
 	require.NoError(h.t, h.helpeCfeairdropkeeper.AddUserAirdropEntries(ctx, srcAddress.String(), campaignId, airdropEntries))
-	usersAirdropEntriesAfter := h.helpeCfeairdropkeeper.GetUsersAirdropEntries(ctx)
 	airdropClaimsLeftAfter, _ := h.helpeCfeairdropkeeper.GetAirdropClaimsLeft(ctx, campaignId)
 	airdropDistrubitionsAfter, _ := h.helpeCfeairdropkeeper.GetAirdropDistrubitions(ctx, campaignId)
 	airdropClaimsLeftBefore.AirdropCoins = airdropClaimsLeftBefore.AirdropCoins.Add(airdropCoinsSum...)
@@ -167,7 +167,6 @@ func (h *C4eAirdropUtils) AddAirdropEntries(ctx sdk.Context, srcAddress sdk.AccA
 	require.EqualValues(h.t, airdropClaimsLeftBefore, airdropClaimsLeftAfter)
 	require.EqualValues(h.t, airdropDistrubitionsBefore, airdropDistrubitionsAfter)
 
-	require.EqualValues(h.t, len(usersAirdropEntriesBefore)+len(airdropEntries), len(usersAirdropEntriesAfter))
 	// TODO: add check if len(beforeAllAirdropEntry) + len(airdropEntries) == len(afterAllAirdropEntry)
 	for _, airdropEntry := range airdropEntries {
 		userAirdropEntries, found := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, airdropEntry.Address)
@@ -253,13 +252,27 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 	}
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	campaign, _ := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+	airdropClaimsLeftBefore, ok := h.helpeCfeairdropkeeper.GetAirdropClaimsLeft(ctx, campaignId)
 
 	userAirdropEntries, _ := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
+	_, granterAddr := cfeairdropmodulekeeper.FeegrantAccountAddress(campaignId)
+	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+		allowance, err := h.FeegrantUtils.FeegrantKeeper.GetAllowance(ctx, granterAddr, claimer)
+		require.NoError(h.t, err)
+		require.NotNil(h.t, allowance)
+	}
 	err := h.helpeCfeairdropkeeper.InitialClaim(ctx, claimer.String(), campaignId, claimer.String())
 	require.NoError(h.t, err)
+	allowance, err := h.FeegrantUtils.FeegrantKeeper.GetAllowance(ctx, granterAddr, claimer)
+	require.Error(h.t, err)
+	require.Nil(h.t, allowance)
+	airdropClaimsLeftAfter, ok := h.helpeCfeairdropkeeper.GetAirdropClaimsLeft(ctx, campaignId)
+	airdropClaimsLeftBefore.AirdropCoins = airdropClaimsLeftBefore.AirdropCoins.Sub(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(expectedAmount))))
+
+	require.EqualValues(h.t, airdropClaimsLeftBefore, airdropClaimsLeftAfter)
 
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore.AddRaw(expectedAmount))
-
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore.SubRaw(expectedAmount))
 
 	if claimerAccountBefore == nil {
@@ -267,15 +280,22 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 		claimerAccountBefore = cfevestingtypes.NewRepeatedContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), 100000000, 100000000, nil)
 	}
 
-	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, sdk.NewInt(expectedAmount).Sub(cfeairdroptypes.OneForthC4e.Amount))
+	vestingAmount := sdk.NewInt(expectedAmount)
+	if campaign.InitialClaimFreeAmount.GT(sdk.ZeroInt()) {
+		vestingAmount = sdk.NewInt(expectedAmount).Sub(campaign.InitialClaimFreeAmount)
+	}
+	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, vestingAmount)
 
 	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimer).(*cfevestingtypes.RepeatedContinuousVestingAccount)
 	if !accExisted {
 		claimerAccountBefore.AccountNumber = claimerAccount.AccountNumber
 	}
+	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+		claimerAccount.AccountNumber++
+	}
 	require.True(h.t, ok)
 	require.NoError(h.t, claimerAccount.Validate())
-
+	fmt.Println(claimerAccountBefore, claimerAccount)
 	require.EqualValues(h.t, claimerAccountBefore, claimerAccount)
 
 	userAirdropEntries, found := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
@@ -286,13 +306,14 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 
 func (h *C4eAirdropUtils) ClaimInitialError(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, errorMessage string) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
-	claimRecordBefore, foundBefore := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
+	balanceBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	userAirdropEntriesBefore, foundBefore := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 
-	//require.EqualError(h.t, h.helpeCfeairdropkeeper.ClaimInitial(ctx, campaignId, claimer.String()), errorMessage)
-	// TODO: fix
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, sdk.ZeroInt())
+	require.EqualError(h.t, h.helpeCfeairdropkeeper.InitialClaim(ctx, claimer.String(), campaignId, claimer.String()), errorMessage)
+
+	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, balanceBefore)
 
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBefore)
 
@@ -301,7 +322,7 @@ func (h *C4eAirdropUtils) ClaimInitialError(ctx sdk.Context, campaignId uint64, 
 	userAirdropEntries, found := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, claimer.String())
 	require.Equal(h.t, foundBefore, found)
 	if found {
-		require.EqualValues(h.t, claimRecordBefore, userAirdropEntries)
+		require.EqualValues(h.t, userAirdropEntriesBefore, userAirdropEntries)
 
 	}
 }

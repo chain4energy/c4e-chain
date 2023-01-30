@@ -18,8 +18,8 @@ type ContextC4eAirdropUtils struct {
 
 func NewContextC4eAirdropUtils(t *testing.T, testContext testenv.TestContext, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils) *ContextC4eAirdropUtils {
-	c4eAirdropUtils := NewC4eAirdropUtils(t, helpeCfeairdropmodulekeeper, helperAccountKeeper, bankUtils, stakingUtils, govUtils)
+	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils, feegrantUtils *testcosmos.FeegrantUtils) *ContextC4eAirdropUtils {
+	c4eAirdropUtils := NewC4eAirdropUtils(t, helpeCfeairdropmodulekeeper, helperAccountKeeper, bankUtils, stakingUtils, govUtils, feegrantUtils)
 	return &ContextC4eAirdropUtils{C4eAirdropUtils: c4eAirdropUtils, testContext: testContext}
 }
 
@@ -90,7 +90,7 @@ func (h *ContextC4eAirdropUtils) ClaimInitial(claimer sdk.AccAddress, campaignId
 	h.C4eAirdropUtils.ClaimInitial(h.testContext.GetContext(), campaignId, claimer, expectedAmount)
 }
 
-func (h *ContextC4eAirdropUtils) ClaimInitialError(campaignId uint64, claimer sdk.AccAddress, errorMessage string) {
+func (h *ContextC4eAirdropUtils) ClaimInitialError(claimer sdk.AccAddress, campaignId uint64, errorMessage string) {
 	h.C4eAirdropUtils.ClaimInitialError(h.testContext.GetContext(), campaignId, claimer, errorMessage)
 }
 

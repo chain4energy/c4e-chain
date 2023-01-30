@@ -77,39 +77,39 @@ func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campa
 	return nil
 }
 
-func (k Keeper) missionFirstStep(ctx sdk.Context, log string, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserAirdropEntries, error) {
+func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserAirdropEntries, error) {
 	campaignConfig, campaignFound := k.GetCampaign(ctx, campaignId)
 	if !campaignFound {
-		k.Logger(ctx).Error(log+" - camapign not found", "campaignId", campaignId)
+		k.Logger(ctx).Error("mission first step - camapign not found", "campaignId", campaignId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
 	}
-	k.Logger(ctx).Debug(log, "campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaignConfig.StartTime, "campaigh end", campaignConfig.EndTime)
+	k.Logger(ctx).Debug("campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaignConfig.StartTime, "campaigh end", campaignConfig.EndTime)
 
 	userAirdropEntries, found := k.GetUserAirdropEntries(ctx, claimerAddress)
 	if !found {
-		k.Logger(ctx).Debug(log+" - claim record not found", "claimerAddress", claimerAddress)
-		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "claim record not found for address %s", claimerAddress)
+		k.Logger(ctx).Debug("mission first step - claim record not found", "claimerAddress", claimerAddress)
+		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "user airdrop entries not found for address %s", claimerAddress)
 	}
 
 	if err := campaignConfig.IsEnabled(ctx.BlockTime()); err != nil {
-		k.Logger(ctx).Error(log+" - camapign disabled", "campaignId", campaignId, "err", err)
-		return nil, nil, nil, sdkerrors.Wrapf(err, "campaign disabled - campaignId %d", campaignId)
+		k.Logger(ctx).Error("mission first step - camapign disabled", "campaignId", campaignId, "err", err)
+		return nil, nil, nil, err
 	}
 
 	mission, missionFound := k.GetMission(ctx, campaignId, missionId)
 	if !missionFound {
-		k.Logger(ctx).Error(log+" - mission not found", "campaignId", campaignId, "missionId", missionId)
+		k.Logger(ctx).Error("mission first step - mission not found", "campaignId", campaignId, "missionId", missionId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "mission not found - campaignId %d, missionId %d", campaignId, missionId)
 	}
-	k.Logger(ctx).Debug(log, "mission", mission)
+	k.Logger(ctx).Debug("mission", mission)
 	if err := mission.IsEnabled(ctx.BlockTime()); err != nil {
 		k.Logger(ctx).Error("claim mission - mission disabled", "campaignId", campaignId, "missionId", missionId, "err", err)
 		return nil, nil, nil, sdkerrors.Wrapf(err, "mission disabled - campaignId %d, missionId %d", campaignId, missionId)
 	}
 
 	if !userAirdropEntries.HasCampaign(campaignId) {
-		k.Logger(ctx).Error(log+" - campaign record not found", "address", claimerAddress, "campaignId", campaignId)
-		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id: %d not found for address %s", campaignId, claimerAddress)
+		k.Logger(ctx).Error("mission first step - campaign record not found", "address", claimerAddress, "campaignId", campaignId)
+		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id %d not found for address %s", campaignId, claimerAddress)
 	}
 
 	return &campaignConfig, &mission, &userAirdropEntries, nil
