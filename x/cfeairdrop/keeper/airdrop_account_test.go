@@ -15,57 +15,57 @@ import (
 )
 
 func TestCreateAirdropAccount(t *testing.T) {
-	//startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
-	//endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
-	//testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
-	//fmt.Println(startTime)
-	//fmt.Println(endTime)
-	//acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
-	//
-	//moduleAmount := sdk.NewInt(10000)
-	//amount := sdk.NewInt(1000)
-	//
-	//startTimeUnix := startTime.Unix()
-	//endTimeUnix := endTime.Unix()
-	//testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfeairdroptypes.ModuleName)
-	//
-	//testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
-	//	amount,
-	//	startTimeUnix,
-	//	endTimeUnix, cfeairdroptypes.MissionInitialClaim,
-	//)
-	//
-	//fmt.Println(testHelper.Context.BlockTime())
-	//testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount)
-	//testHelper.SetContextBlockTime(testenv.TestEnvTime)
-	//fmt.Println(testHelper.Context.BlockTime())
-	//testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.QuoRaw(2))
-	//testHelper.SetContextBlockTime(endTime)
-	//testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
-	//
-	//testHelper.SetContextBlockTime(startTime)
-	//testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
-	//	amount,
-	//	startTimeUnix,
-	//	endTimeUnix, cfeairdroptypes.MissionVote,
-	//)
-	//testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(2))
-	//testHelper.SetContextBlockTime(testenv.TestEnvTime)
-	//testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount)
-	//testHelper.SetContextBlockTime(endTime)
-	//testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
-	//
-	//testHelper.SetContextBlockTime(startTime)
-	//testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
-	//	amount,
-	//	startTimeUnix,
-	//	endTimeUnix, cfeairdroptypes.MissionVote,
-	//)
-	//testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.MulRaw(3))
-	//testHelper.SetContextBlockTime(testenv.TestEnvTime)
-	//testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], amount.QuoRaw(2).MulRaw(3))
-	//testHelper.SetContextBlockTime(endTime)
-	//testHelper.BankUtils.VerifyAccountDefultDenomLocked(acountsAddresses[0], sdk.ZeroInt())
+	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
+	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
+	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
+	fmt.Println(startTime)
+	fmt.Println(endTime)
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
+
+	moduleAmount := sdk.NewInt(10000)
+	amount := sdk.NewInt(1000)
+
+	startTimeUnix := startTime.Unix()
+	endTimeUnix := endTime.Unix()
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfeairdroptypes.ModuleName)
+
+	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
+		amount,
+		startTimeUnix,
+		endTimeUnix, cfeairdroptypes.MissionInitialClaim,
+	)
+
+	fmt.Println(testHelper.GetContext().BlockTime())
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount)
+	testHelper.SetContextBlockTime(testenv.TestEnvTime)
+	fmt.Println(testHelper.GetContext().BlockTime())
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount.QuoRaw(2))
+	testHelper.SetContextBlockTime(endTime)
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
+
+	testHelper.SetContextBlockTime(startTime)
+	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
+		amount,
+		startTimeUnix,
+		endTimeUnix, cfeairdroptypes.MissionVote,
+	)
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount.MulRaw(2))
+	testHelper.SetContextBlockTime(testenv.TestEnvTime)
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount)
+	testHelper.SetContextBlockTime(endTime)
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
+
+	testHelper.SetContextBlockTime(startTime)
+	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
+		amount,
+		startTimeUnix,
+		endTimeUnix, cfeairdroptypes.MissionVote,
+	)
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount.MulRaw(3))
+	testHelper.SetContextBlockTime(testenv.TestEnvTime)
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount.QuoRaw(2).MulRaw(3))
+	testHelper.SetContextBlockTime(endTime)
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
 }
 
 func TestCreateAirdropAccountSendDisabled(t *testing.T) {
