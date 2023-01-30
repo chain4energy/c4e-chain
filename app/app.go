@@ -1,7 +1,6 @@
 package app
 
 import (
-	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
 	"io"
 	"net/http"
 	"os"
@@ -116,7 +115,10 @@ import (
 	cfeairdropmodule "github.com/chain4energy/c4e-chain/x/cfeairdrop"
 	cfeairdropmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	cfeairdropmoduletypes "github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+
+	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
 )
 
 const (
