@@ -135,49 +135,90 @@ func (h *C4eAirdropUtils) VerifyAirdropAccount(ctx sdk.Context, address sdk.AccA
 }
 
 func (h *C4eAirdropUtils) AddAirdropEntries(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry) {
-	sum := sdk.NewCoins()
+	airdropCoinsSum := sdk.NewCoins()
 	for _, airdropEntry := range airdropEntries {
-		sum = sum.Add(airdropEntry.AirdropCoins...)
+		airdropCoinsSum = airdropCoinsSum.Add(airdropEntry.AirdropCoins...)
 	}
 	usersAirdropEntriesBefore := h.helpeCfeairdropkeeper.GetUsersAirdropEntries(ctx)
-	h.BankUtils.AddDefaultDenomCoinsToAccount(ctx, sum.AmountOf(testenv.DefaultTestDenom), srcAddress)
+	airdropClaimsLeftBefore, ok := h.helpeCfeairdropkeeper.GetAirdropClaimsLeft(ctx, campaignId)
+	if !ok {
+		airdropClaimsLeftBefore = cfeairdroptypes.AirdropClaimsLeft{
+			AirdropCoins: sdk.NewCoins(),
+			CampaignId:   campaignId,
+		}
+	}
+	airdropDistrubitionsBefore, ok := h.helpeCfeairdropkeeper.GetAirdropDistrubitions(ctx, campaignId)
+	if !ok {
+		airdropDistrubitionsBefore = cfeairdroptypes.AirdropDistrubitions{
+			AirdropCoins: sdk.NewCoins(),
+			CampaignId:   campaignId,
+		}
+	}
 	srcBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, srcAddress)
 
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 
 	require.NoError(h.t, h.helpeCfeairdropkeeper.AddUserAirdropEntries(ctx, srcAddress.String(), campaignId, airdropEntries))
+	usersAirdropEntriesAfter := h.helpeCfeairdropkeeper.GetUsersAirdropEntries(ctx)
+	airdropClaimsLeftAfter, _ := h.helpeCfeairdropkeeper.GetAirdropClaimsLeft(ctx, campaignId)
+	airdropDistrubitionsAfter, _ := h.helpeCfeairdropkeeper.GetAirdropDistrubitions(ctx, campaignId)
+	airdropClaimsLeftBefore.AirdropCoins = airdropClaimsLeftBefore.AirdropCoins.Add(airdropCoinsSum...)
+	airdropDistrubitionsBefore.AirdropCoins = airdropDistrubitionsBefore.AirdropCoins.Add(airdropCoinsSum...)
+	require.EqualValues(h.t, airdropClaimsLeftBefore, airdropClaimsLeftAfter)
+	require.EqualValues(h.t, airdropDistrubitionsBefore, airdropDistrubitionsAfter)
+
+	require.EqualValues(h.t, len(usersAirdropEntriesBefore)+len(airdropEntries), len(usersAirdropEntriesAfter))
 	// TODO: add check if len(beforeAllAirdropEntry) + len(airdropEntries) == len(afterAllAirdropEntry)
 	for _, airdropEntry := range airdropEntries {
 		userAirdropEntries, found := h.helpeCfeairdropkeeper.GetUserAirdropEntries(ctx, airdropEntry.Address)
 		require.True(h.t, found)
-		var recordBefore *cfeairdroptypes.UserAirdropEntries = nil
+		var userAirdropEntryBefore *cfeairdroptypes.UserAirdropEntries = nil
 		for _, before := range usersAirdropEntriesBefore {
 			if before.Address == airdropEntry.Address {
-				recordBefore = &before
+				userAirdropEntryBefore = &before
 				break
 			}
 		}
-		if recordBefore == nil {
+		if userAirdropEntryBefore == nil {
 			require.EqualValues(h.t, 1, len(userAirdropEntries.AirdropEntries))
 		} else {
-			require.EqualValues(h.t, len(recordBefore.AirdropEntries)+1, len(userAirdropEntries.AirdropEntries))
+			require.EqualValues(h.t, len(userAirdropEntryBefore.AirdropEntries)+1, len(userAirdropEntries.AirdropEntries))
 		}
 		require.EqualValues(h.t, airdropEntry.Address, userAirdropEntries.Address)
 		require.EqualValues(h.t, "", userAirdropEntries.ClaimAddress)
-		if recordBefore == nil {
+		if userAirdropEntryBefore == nil {
 			require.EqualValues(h.t, campaignId, userAirdropEntries.AirdropEntries[0].CampaignId)
 			require.True(h.t, airdropEntry.AirdropCoins.IsEqual(userAirdropEntries.AirdropEntries[0].AirdropCoins))
 			require.EqualValues(h.t, 0, len(userAirdropEntries.AirdropEntries[0].CompletedMissions))
 		} else {
-			expectedCaipaignRecords := append(recordBefore.AirdropEntries, &cfeairdroptypes.AirdropEntry{CampaignId: campaignId, AirdropCoins: airdropEntry.AirdropCoins, CompletedMissions: nil})
+			expectedCaipaignRecords := append(userAirdropEntryBefore.AirdropEntries, &cfeairdroptypes.AirdropEntry{CampaignId: campaignId, AirdropCoins: airdropEntry.AirdropCoins, CompletedMissions: nil})
 
 			require.ElementsMatch(h.t, expectedCaipaignRecords, userAirdropEntries.AirdropEntries)
 		}
 
 	}
+	campaign, _ := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
 
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBalance.Add(sum.AmountOf(testenv.DefaultTestDenom)))
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(sum.AmountOf(testenv.DefaultTestDenom)))
+	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+		_, feegrandModuleAddress := cfeairdropmodulekeeper.FeegrantAccountAddress(campaignId)
+		feegrantSum := campaign.FeegrantAmount.MulRaw(int64(len(airdropEntries)))
+		h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBalance.Add(airdropCoinsSum.AmountOf(testenv.DefaultTestDenom)))
+		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, feegrandModuleAddress, feegrantSum)
+		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(feegrantSum).Sub(airdropCoinsSum.AmountOf(testenv.DefaultTestDenom)))
+	} else {
+		h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBalance.Add(airdropCoinsSum.AmountOf(testenv.DefaultTestDenom)))
+		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(airdropCoinsSum.AmountOf(testenv.DefaultTestDenom)))
+	}
+}
+
+func (h *C4eAirdropUtils) AddAirdropEntriesError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry, errorMessage string) {
+	ownerBalanceBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, srcAddress)
+	moduleBalanceBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
+	err := h.helpeCfeairdropkeeper.AddUserAirdropEntries(ctx, srcAddress.String(), campaignId, airdropEntries)
+	require.EqualError(h.t, err, errorMessage)
+
+	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, moduleBalanceBefore)
+	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, ownerBalanceBefore)
 }
 
 func (h *C4eAirdropUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry, errorMessage string, addRequiredCoinsToSrc bool) {

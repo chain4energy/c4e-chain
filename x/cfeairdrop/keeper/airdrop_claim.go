@@ -46,7 +46,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		if err != nil {
 			return err
 		}
-		_, accountAddr := feegrantAccountAddress(campaignId)
+		_, accountAddr := FeegrantAccountAddress(campaignId)
 		if err = k.revokeFeeAllowance(ctx, accountAddr, granteeAddr); err != nil {
 			return err
 		}

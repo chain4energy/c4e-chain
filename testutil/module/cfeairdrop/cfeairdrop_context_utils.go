@@ -78,6 +78,14 @@ func (h *ContextC4eAirdropUtils) AddAirdropEntries(srcAddress sdk.AccAddress, ca
 	h.C4eAirdropUtils.AddAirdropEntries(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries)
 }
 
+func (h *ContextC4eAirdropUtils) AddCoinsToAirdropEntrisCreator(srcAddress sdk.AccAddress, amountOfCoins sdk.Int) {
+	h.BankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), amountOfCoins, srcAddress)
+}
+
+func (h *ContextC4eAirdropUtils) AddAirdropEntriesError(srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry, errorMessage string) {
+	h.C4eAirdropUtils.AddAirdropEntriesError(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries, errorMessage)
+}
+
 func (h *ContextC4eAirdropUtils) ClaimInitial(campaignId uint64, claimer sdk.AccAddress, expectedAmount int64) {
 	h.C4eAirdropUtils.ClaimInitial(h.testContext.GetContext(), campaignId, claimer, expectedAmount)
 }
