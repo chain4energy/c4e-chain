@@ -31,7 +31,8 @@ func NewKeeper(
 	memKey sdk.StoreKey,
 	ps paramtypes.Subspace,
 
-	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper,
+	accountKeeper types.AccountKeeper,
+	bankKeeper types.BankKeeper,
 	feeGrantKeeper types.FeeGrantKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -41,11 +42,12 @@ func NewKeeper(
 
 	return &Keeper{
 
-		cdc:           cdc,
-		storeKey:      storeKey,
-		memKey:        memKey,
-		paramstore:    ps,
-		accountKeeper: accountKeeper, bankKeeper: bankKeeper,
+		cdc:            cdc,
+		storeKey:       storeKey,
+		memKey:         memKey,
+		paramstore:     ps,
+		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
 		feeGrantKeeper: feeGrantKeeper,
 	}
 }

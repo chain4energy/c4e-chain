@@ -39,3 +39,8 @@ type FeeGrantKeeper interface {
 type StakingKeeper interface {
 	BondDenom(ctx sdk.Context) (res string)
 }
+
+// FeeGrantKeeper defines the expected feegrant keeper interface
+type CfevestingKeeper interface {
+	BondDenom(ctx sdk.Context) (res string)
+}

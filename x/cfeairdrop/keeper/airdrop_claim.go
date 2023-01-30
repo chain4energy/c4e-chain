@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -62,8 +63,8 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 	}
 
 	if !userAirdropEntries.IsInitialMissionClaimed(campaignId) {
-		k.Logger(ctx).Error("complete mission - initial mission not completed", "claimerAddress", userAirdropEntries.ClaimAddress, "campaignId", campaignId, "missionId", missionId)
-		return sdkerrors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d, missionId: %d", userAirdropEntries.ClaimAddress, campaignId, 0)
+		k.Logger(ctx).Error("complete mission - initial mission not completed", "claimerAddress", userAirdropEntries.Address, "campaignId", campaignId, "missionId", missionId)
+		return sdkerrors.Wrapf(types.ErrMissionNotCompleted, fmt.Sprintf("initial mission not completed: address %s, campaignId: %d", userAirdropEntries.Address, campaignId))
 	}
 
 	if mission.MissionType == types.MissionClaim {

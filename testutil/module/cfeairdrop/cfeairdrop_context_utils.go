@@ -129,12 +129,12 @@ func (h *ContextC4eAirdropUtils) CreateAirdropAccout(address sdk.AccAddress, ori
 	return h.C4eAirdropUtils.CreateAirdropAccout(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
 }
 
-func (h *ContextC4eAirdropUtils) CompleteDelegationMission(campaignId uint64,
+func (h *ContextC4eAirdropUtils) CompleteDelegationMission(campaignId uint64, missionId uint64,
 	claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
-	h.C4eAirdropUtils.CompleteDelegationMission(h.testContext.GetContext(), campaignId, claimer, deleagtionAmount)
+	h.C4eAirdropUtils.CompleteDelegationMission(h.testContext.GetContext(), campaignId, missionId, claimer, deleagtionAmount)
 }
 
-func (h *ContextC4eAirdropUtils) CompleteVoteMission(campaignId uint64, claimer sdk.AccAddress) {
-	h.C4eAirdropUtils.CompleteVoteMission(h.testContext.GetContext(), campaignId, claimer)
+func (h *ContextC4eAirdropUtils) CompleteVoteMission(campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
+	h.C4eAirdropUtils.CompleteVoteMission(h.testContext.GetContext(), campaignId, missionId, claimer)
 
 }
