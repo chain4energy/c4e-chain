@@ -86,7 +86,7 @@ func (h *ContextC4eAirdropUtils) AddAirdropEntriesError(srcAddress sdk.AccAddres
 	h.C4eAirdropUtils.AddAirdropEntriesError(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries, errorMessage)
 }
 
-func (h *ContextC4eAirdropUtils) ClaimInitial(campaignId uint64, claimer sdk.AccAddress, expectedAmount int64) {
+func (h *ContextC4eAirdropUtils) ClaimInitial(claimer sdk.AccAddress, campaignId uint64, expectedAmount int64) {
 	h.C4eAirdropUtils.ClaimInitial(h.testContext.GetContext(), campaignId, claimer, expectedAmount)
 }
 
