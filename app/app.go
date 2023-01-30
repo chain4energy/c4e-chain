@@ -118,7 +118,7 @@ import (
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
-	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
+	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
 )
 
 const (
@@ -204,7 +204,7 @@ var (
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v110.Upgrade}
+	Upgrades = []upgrades.Upgrade{v200.Upgrade}
 )
 
 func init() {
