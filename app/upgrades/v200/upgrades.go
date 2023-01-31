@@ -16,6 +16,7 @@ func CreateUpgradeHandler(
 	appKeepers cfeupgradetypes.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+
 		if err := airdrop.CreateAirdrops(ctx, appKeepers.GetAirdropKeeper(), appKeepers.GetAccountKeeper(), appKeepers.GetBankKeeper()); err != nil {
 			return nil, err
 		}

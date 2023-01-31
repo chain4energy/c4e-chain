@@ -1,6 +1,7 @@
 package airdrop
 
 import (
+	"fmt"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 )
 
 const monthAvgHours = 365 * 24 / 12 * time.Hour
-const airdropSource = "fairdrop"
+const airdropSource = "cfeminter"
 
 func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, accountKeeper *authkeeper.AccountKeeper, bankKeeper *bankkeeper.Keeper) error {
 	lockupPeriod := 3 * monthAvgHours
@@ -19,24 +20,29 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	startTime := time.Now().Add(time.Hour * 100)
 	endTime := startTime.Add(time.Hour * 100)
 	acc := accountKeeper.GetModuleAccount(ctx, airdropSource)
+	if acc == nil {
+		airdropKeeper.Logger(ctx).Error("source module account not found", "name", airdropSource)
+		return fmt.Errorf("source module account not found: %s", airdropSource)
+	}
 	ownerAcc := acc.GetAddress().String()
-	err := bankkeeper.Keeper.MintCoins(*bankKeeper, ctx, "cfeairdrop", sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(100000000000))))
+	err := bankkeeper.Keeper.MintCoins(*bankKeeper, ctx, airdropSource, sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(100000000000000))))
 	if err != nil {
 		return err
 	}
-	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", nil, nil, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	zeroInt := sdk.ZeroInt()
+	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	if err != nil {
 		return err
 	}
-	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", nil, nil, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	if err != nil {
 		return err
 	}
-	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop", nil, nil, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop", &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	if err != nil {
 		return err
 	}
-	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", nil, nil, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	if err != nil {
 		return err
 	}
@@ -57,13 +63,13 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 0, teamdropAirdropEntries); err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 1, teamdropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 1, stakedropAirdropEntries); err != nil {
 		return err
 	}
 	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 2, santadropAirdropEntries); err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 1, teamdropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 3, gleamAirdropEntries); err != nil {
 		return err
 	}
 

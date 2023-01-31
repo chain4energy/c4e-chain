@@ -310,6 +310,16 @@ paths:
           in: query
           required: false
           type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
       tags:
         - Query
   /c4e/airdrop/v1beta1/mission:
@@ -440,6 +450,16 @@ paths:
             when key
 
             is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -574,6 +594,8 @@ paths:
                         campaign_id:
                           type: string
                           format: uint64
+                        address:
+                          type: string
                         airdrop_coins:
                           type: array
                           items:
@@ -654,6 +676,8 @@ paths:
                           campaign_id:
                             type: string
                             format: uint64
+                          address:
+                            type: string
                           airdrop_coins:
                             type: array
                             items:
@@ -771,6 +795,16 @@ paths:
             when key
 
             is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -32630,6 +32664,8 @@ definitions:
       campaign_id:
         type: string
         format: uint64
+      address:
+        type: string
       airdrop_coins:
         type: array
         items:
@@ -32982,6 +33018,8 @@ definitions:
                 campaign_id:
                   type: string
                   format: uint64
+                address:
+                  type: string
                 airdrop_coins:
                   type: array
                   items:
@@ -33029,6 +33067,8 @@ definitions:
                   campaign_id:
                     type: string
                     format: uint64
+                  address:
+                    type: string
                   airdrop_coins:
                     type: array
                     items:
@@ -33096,6 +33136,8 @@ definitions:
             campaign_id:
               type: string
               format: uint64
+            address:
+              type: string
             airdrop_coins:
               type: array
               items:
