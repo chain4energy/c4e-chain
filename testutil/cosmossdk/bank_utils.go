@@ -200,7 +200,6 @@ func (bu *ContextBankUtils) VerifyAccountLockedByDenom(addr sdk.AccAddress, deno
 
 func (bu *ContextBankUtils) VerifyAccountDefultDenomLocked(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {
 	fmt.Printf("VerifyAccountDefultDenomLocked: %s\r\n", bu.testContext.GetContext().BlockTime())
-	fmt.Println(bu.testContext.GetContext().BlockTime())
 	bu.BankUtils.VerifyAccountDefultDenomLocked(ctx, addr, expectedAmount)
 }
 

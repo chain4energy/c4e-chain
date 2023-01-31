@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -20,6 +21,7 @@ type BaseAppParamManager interface {
 type AppKeepers interface {
 	GetAirdropKeeper() *cfeairdropkeeper.Keeper
 	GetAccountKeeper() *authkeeper.AccountKeeper
+	GetBankKeeper() *bankkeeper.Keeper
 }
 
 // Upgrade defines a struct containing necessary fields that a SoftwareUpgradeProposal

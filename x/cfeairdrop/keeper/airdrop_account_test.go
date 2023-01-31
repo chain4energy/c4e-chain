@@ -35,7 +35,6 @@ func TestCreateAirdropAccount(t *testing.T) {
 		endTimeUnix, cfeairdroptypes.MissionInitialClaim,
 	)
 
-	fmt.Println(testHelper.GetContext().BlockTime())
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount)
 	testHelper.SetContextBlockTime(testenv.TestEnvTime)
 	fmt.Println(testHelper.GetContext().BlockTime())
