@@ -1,11 +1,11 @@
 package airdrop
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	"io/ioutil"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,6 +13,9 @@ import (
 	cfeairdropkeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 )
+
+//go:embed stakedrop.json santadrop.json gleamdrop.json teamdrop.json
+var f embed.FS
 
 const monthAvgHours = 365 * 24 / 12 * time.Hour
 const airdropSource = "cfeminter"
@@ -99,12 +102,14 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 }
 
 func readAirdropEntriesFromJson(fileName string) ([]*types.AirdropEntry, error) {
-	contents, err := ioutil.ReadFile("./app/upgrades/v200/airdrop/" + fileName)
+	data, err := f.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
-
 	var airdropEntires []*types.AirdropEntry
-	err = json.Unmarshal(contents, &airdropEntires)
+	err = json.Unmarshal(data, &airdropEntires)
+	if err != nil {
+		return nil, err
+	}
 	return airdropEntires, nil
 }

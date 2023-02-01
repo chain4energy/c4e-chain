@@ -209,3 +209,21 @@ func (k Keeper) ValidateRemoveAirdrop(ctx sdk.Context, owner string, campaignId 
 	}
 	return nil
 }
+
+//func (k Keeper) createAirdropCampaignFromWhitelistedVestingAccount(ctx sdk.Context, fromAddress sdk.AccAddress, amount sdk.Coins) error {
+//	ak := k.accountKeeper
+//	bk := k.bankKeeper
+//	fromAcc := ak.GetAccount(ctx, fromAddress)
+//	if fromAcc == nil {
+//		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", fromAddress)
+//	}
+//
+//	vestingAcc := fromAcc.(*vestingtypes.ContinuousVestingAccount)
+//
+//	spendableCoins := bk.SpendableCoins(ctx, fromAddress)
+//	if spendableCoins.
+//	fromLocked := bk.LockedCoins(ctx, fromAddress)
+//	spendable := fromBalance.Sub(sdk.NewCoin(denom, fromLocked.AmountOf(denom)))
+//	vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(spendable)).Sub(coinsToSend)
+//	ak.SetAccount(ctx, vestingAcc)
+//}
