@@ -25,8 +25,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams())
-	cmd.AddCommand(CmdListUserAirdropEntries())
-	cmd.AddCommand(CmdShowUserAirdropEntries())
+	cmd.AddCommand(CmdListUsersEntries())
+	cmd.AddCommand(CmdShowUsersEntries())
 	cmd.AddCommand(CmdListMission())
 	cmd.AddCommand(CmdShowMission())
 	cmd.AddCommand(CmdListCampaign())

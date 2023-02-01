@@ -23,7 +23,7 @@ func TestCompleteDelegationMission(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
@@ -45,7 +45,7 @@ func TestCompleteVoteMission(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
@@ -66,7 +66,7 @@ func TestClaimMissionDoesntExist(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
@@ -86,7 +86,7 @@ func TestClaimCampaignDoesntExist(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
@@ -106,7 +106,7 @@ func TestClaimNoInitialClaimError(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
@@ -126,7 +126,7 @@ func TestClaimMissionCampaignHasEnded(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
@@ -150,7 +150,7 @@ func TestClaimMissionWithTypeClaim(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
@@ -171,7 +171,7 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
@@ -195,7 +195,7 @@ func TestFullCampaign(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 60000001)
 
 	delagationAmount := sdk.NewInt(1000000)
@@ -222,7 +222,7 @@ func TestClaimMissionWithTypeClaimRecordNotFound(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 
 	testHelper.C4eAirdropUtils.ClaimMissionError(0, 1, acountsAddresses[10], fmt.Sprintf("user airdrop entries not found for address %s: not found", acountsAddresses[10].String()))
 }

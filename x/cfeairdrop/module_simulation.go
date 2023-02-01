@@ -44,9 +44,9 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdateAirdropEntry int = 100
 
-	opWeightMsgDeleteAirdropEntry = "op_weight_msg_airdrop_entry"
+	opWeightMsgDeleteClaimRecord = "op_weight_msg_airdrop_entry"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgDeleteAirdropEntry int = 100
+	defaultWeightMsgDeleteClaimRecord int = 100
 
 	opWeightMsgCloseAirdropCampaign = "op_weight_msg_close_airdrop_campaign"
 	// TODO: Determine the simulation weight value
@@ -141,10 +141,10 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		},
 	)
 
-	var weightMsgDeleteAirdropEntry int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteAirdropEntry, &weightMsgDeleteAirdropEntry, nil,
+	var weightMsgDeleteClaimRecord int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteClaimRecord, &weightMsgDeleteClaimRecord, nil,
 		func(_ *rand.Rand) {
-			weightMsgDeleteAirdropEntry = defaultWeightMsgDeleteAirdropEntry
+			weightMsgDeleteClaimRecord = defaultWeightMsgDeleteClaimRecord
 		},
 	)
 

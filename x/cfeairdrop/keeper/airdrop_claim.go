@@ -18,32 +18,32 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		addressToClaim = additionalAddress
 	}
 
-	campaign, mission, userAirdropEntries, err := k.missionFirstStep(ctx, campaignId, types.InitialMissionId, addressToClaim)
+	campaign, mission, userEntry, err := k.missionFirstStep(ctx, campaignId, types.InitialMissionId, addressToClaim)
 	if err != nil {
 		return err
 	}
-	userAirdropEntries.ClaimAddress = addressToClaim
+	userEntry.ClaimAddress = addressToClaim
 
-	userAirdropEntries, err = k.completeMission(ctx, mission, userAirdropEntries)
-	if err != nil {
-		return err
-	}
-
-	claimableAmount := k.calculateInitialClaimClaimableAmount(ctx, campaignId, userAirdropEntries)
-
-	claimableAmount, err = k.calculateAndSendInitialClaimFreeAmount(ctx, campaignId, userAirdropEntries, claimableAmount, campaign.InitialClaimFreeAmount)
+	userEntry, err = k.completeMission(ctx, mission, userEntry)
 	if err != nil {
 		return err
 	}
 
-	userAirdropEntries, err = k.claimMission(ctx, campaign, mission, userAirdropEntries, claimableAmount)
+	claimableAmount := k.calculateInitialClaimClaimableAmount(ctx, campaignId, userEntry)
+
+	claimableAmount, err = k.calculateAndSendInitialClaimFreeAmount(ctx, campaignId, userEntry, claimableAmount, campaign.InitialClaimFreeAmount)
 	if err != nil {
 		return err
 	}
 
-	k.SetUserAirdropEntries(ctx, *userAirdropEntries)
+	userEntry, err = k.claimMission(ctx, campaign, mission, userEntry, claimableAmount)
+	if err != nil {
+		return err
+	}
+
+	k.SetUserEntry(ctx, *userEntry)
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
-		granteeAddr, err := sdk.AccAddressFromBech32(userAirdropEntries.Address)
+		granteeAddr, err := sdk.AccAddressFromBech32(userEntry.Address)
 		if err != nil {
 			return err
 		}
@@ -57,84 +57,84 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 }
 
 func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, claimer string) error {
-	campaign, mission, userAirdropEntries, err := k.missionFirstStep(ctx, campaignId, missionId, claimer)
+	campaign, mission, userEntry, err := k.missionFirstStep(ctx, campaignId, missionId, claimer)
 	if err != nil {
 		return err
 	}
 
-	if !userAirdropEntries.IsInitialMissionClaimed(campaignId) {
-		k.Logger(ctx).Error("complete mission - initial mission not completed", "claimerAddress", userAirdropEntries.Address, "campaignId", campaignId, "missionId", missionId)
-		return sdkerrors.Wrapf(types.ErrMissionNotCompleted, fmt.Sprintf("initial mission not completed: address %s, campaignId: %d", userAirdropEntries.Address, campaignId))
+	if !userEntry.IsInitialMissionClaimed(campaignId) {
+		k.Logger(ctx).Error("complete mission - initial mission not completed", "claimerAddress", userEntry.Address, "campaignId", campaignId, "missionId", missionId)
+		return sdkerrors.Wrapf(types.ErrMissionNotCompleted, fmt.Sprintf("initial mission not completed: address %s, campaignId: %d", userEntry.Address, campaignId))
 	}
 
 	if mission.MissionType == types.MissionClaim {
-		userAirdropEntries, err = k.completeMission(ctx, mission, userAirdropEntries)
+		userEntry, err = k.completeMission(ctx, mission, userEntry)
 		if err != nil {
 			return err
 		}
 	}
 
-	claimableAmount := userAirdropEntries.ClaimableFromMission(mission)
-	userAirdropEntries, err = k.claimMission(ctx, campaign, mission, userAirdropEntries, claimableAmount)
+	claimableAmount := userEntry.ClaimableFromMission(mission)
+	userEntry, err = k.claimMission(ctx, campaign, mission, userEntry, claimableAmount)
 	if err != nil {
 		return err
 	}
 
-	k.SetUserAirdropEntries(ctx, *userAirdropEntries)
+	k.SetUserEntry(ctx, *userEntry)
 	return nil
 }
 
 func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {
-	_, mission, userAirdropEntries, err := k.missionFirstStep(ctx, campaignId, missionId, address)
+	_, mission, userEntry, err := k.missionFirstStep(ctx, campaignId, missionId, address)
 	if err != nil {
 		return err
 	}
-	if !userAirdropEntries.IsInitialMissionClaimed(campaignId) {
+	if !userEntry.IsInitialMissionClaimed(campaignId) {
 		k.Logger(ctx).Error("complete mission - initial mission not completed", "claimerAddress", address, "campaignId", campaignId, "missionId", missionId)
 		return sdkerrors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d, missionId: %d", address, campaignId, 0)
 	}
-	userAirdropEntries, err = k.completeMission(ctx, mission, userAirdropEntries)
+	userEntry, err = k.completeMission(ctx, mission, userEntry)
 	if err != nil {
 		return err
 	}
-	k.SetUserAirdropEntries(ctx, *userAirdropEntries)
+	k.SetUserEntry(ctx, *userEntry)
 	return nil
 }
 
-func (k Keeper) completeMission(ctx sdk.Context, mission *types.Mission, userAirdropEntries *types.UserAirdropEntries) (*types.UserAirdropEntries, error) {
+func (k Keeper) completeMission(ctx sdk.Context, mission *types.Mission, userEntry *types.UserEntry) (*types.UserEntry, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
-	address := userAirdropEntries.Address
+	address := userEntry.Address
 
-	if userAirdropEntries.IsMissionCompleted(campaignId, missionId) {
+	if userEntry.IsMissionCompleted(campaignId, missionId) {
 		k.Logger(ctx).Debug("complete mission - mission already completed", "address", address, "campaignId", campaignId, "missionId", missionId)
 		return nil, sdkerrors.Wrapf(types.ErrMissionCompleted, "mission already completed: address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
 	}
 
-	if err := userAirdropEntries.CompleteMission(campaignId, missionId); err != nil {
+	if err := userEntry.CompleteMission(campaignId, missionId); err != nil {
 		k.Logger(ctx).Debug("complete mission - cannot complete", "address", address, "campaignId", campaignId, "missionId", missionId)
 		return nil, sdkerrors.Wrapf(types.ErrMissionCompletion, err.Error())
 	}
 
-	return userAirdropEntries, nil
+	return userEntry, nil
 }
 
-func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission *types.Mission, userAirdropEntries *types.UserAirdropEntries, claimableAmount sdk.Coins) (*types.UserAirdropEntries, error) {
+func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission *types.Mission, userEntry *types.UserEntry, claimableAmount sdk.Coins) (*types.UserEntry, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
-	address := userAirdropEntries.ClaimAddress
+	address := userEntry.ClaimAddress
 
-	if !userAirdropEntries.IsMissionCompleted(campaignId, missionId) {
+	if !userEntry.IsMissionCompleted(campaignId, missionId) {
 		k.Logger(ctx).Error("claim mission - mission not completed", "address", address, "campaignId", campaignId, "missionId", missionId)
 		return nil, sdkerrors.Wrapf(types.ErrMissionNotCompleted, "mission not completed: address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
 	}
 
-	if userAirdropEntries.IsMissionClaimed(campaignId, missionId) {
+	if userEntry.IsMissionClaimed(campaignId, missionId) {
 		k.Logger(ctx).Error("claim mission - mission already claimed", "address", address, "campaignId", campaignId, "missionId", missionId)
 		return nil, sdkerrors.Wrapf(types.ErrMissionClaimed, "mission already claimed: address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
 	}
 
-	if err := userAirdropEntries.ClaimMission(campaignId, missionId); err != nil {
+	if err := userEntry.ClaimMission(campaignId, missionId); err != nil {
 		k.Logger(ctx).Error("claim mission - cannot claime", "address", address, "campaignId", campaignId, "missionId", missionId)
 		return nil, sdkerrors.Wrapf(types.ErrMissionClaiming, err.Error())
 	}
@@ -142,12 +142,12 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 	start := ctx.BlockTime().Add(campaign.LockupPeriod)
 	end := start.Add(campaign.VestingPeriod)
 
-	if err := k.SendToNewRepeatedContinuousVestingAccount(ctx, userAirdropEntries, claimableAmount, start.Unix(), end.Unix(), mission.MissionType); err != nil {
-		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userAirdropEntries.ClaimAddress)
+	if err := k.SendToNewRepeatedContinuousVestingAccount(ctx, userEntry, claimableAmount, start.Unix(), end.Unix(), mission.MissionType); err != nil {
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userEntry.ClaimAddress)
 	}
 
 	k.DecrementAirdropClaimsLeft(ctx, campaignId, claimableAmount)
-	return userAirdropEntries, nil
+	return userEntry, nil
 }
 
 func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddress string) error {
@@ -171,9 +171,9 @@ func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddr
 	return nil
 }
 
-func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId uint64, userAirdropEntries *types.UserAirdropEntries) sdk.Coins {
+func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId uint64, userEntry *types.UserEntry) sdk.Coins {
 	allCampaignMissions, _ := k.AllMissionForCampaign(ctx, campaignId)
-	airdropEntry := userAirdropEntries.GetAidropEntry(campaignId)
+	airdropEntry := userEntry.GetAidropEntry(campaignId)
 	allMissionsAmountSum := sdk.NewCoins()
 	for _, mission := range allCampaignMissions {
 		for _, amount := range airdropEntry.AirdropCoins {
@@ -183,10 +183,10 @@ func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId
 	return airdropEntry.AirdropCoins.Sub(allMissionsAmountSum)
 }
 
-func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaignId uint64, userAirdropEntries *types.UserAirdropEntries, claimableAmount sdk.Coins, initialClaimFreeAmount sdk.Int) (sdk.Coins, error) {
-	userMainAddress, err := sdk.AccAddressFromBech32(userAirdropEntries.Address)
+func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaignId uint64, userEntry *types.UserEntry, claimableAmount sdk.Coins, initialClaimFreeAmount sdk.Int) (sdk.Coins, error) {
+	userMainAddress, err := sdk.AccAddressFromBech32(userEntry.Address)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userAirdropEntries.Address)
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userEntry.Address)
 	}
 	if k.bankKeeper.BlockedAddr(userMainAddress) {
 		k.Logger(ctx).Error("send to airdrop account account is not allowed to receive funds error", "userMainAddress", userMainAddress)

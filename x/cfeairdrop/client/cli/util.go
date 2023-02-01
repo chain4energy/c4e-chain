@@ -1,16 +1,17 @@
 package cli
 
 import (
+	"encoding/json"
 	airdroptypes "github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"io/ioutil"
 )
 
-func parseAirdropEntries(clientCtx client.Context, campaignId uint64, airdropEntriesFile string) ([]*airdroptypes.AirdropEntry, error) {
-	var airdropEntries airdroptypes.AirdropEntries
+func parseAirdropEntries(clientCtx client.Context, campaignId uint64, airdropEntriesFile string) ([]*airdroptypes.ClaimRecord, error) {
+	var airdropEntries []*airdroptypes.ClaimRecord
 
 	if airdropEntriesFile == "" {
-		return airdropEntries.AirdropEntries, nil
+		return airdropEntries, nil
 	}
 
 	contents, err := ioutil.ReadFile(airdropEntriesFile)
@@ -18,12 +19,12 @@ func parseAirdropEntries(clientCtx client.Context, campaignId uint64, airdropEnt
 		return nil, err
 	}
 
-	err = clientCtx.Codec.UnmarshalJSON(contents, &airdropEntries)
+	err = json.Unmarshal(contents, airdropEntries)
 	if err != nil {
 		return nil, err
 	}
-	for _, airdropEntry := range airdropEntries.AirdropEntries {
+	for _, airdropEntry := range airdropEntries {
 		airdropEntry.CampaignId = campaignId
 	}
-	return airdropEntries.AirdropEntries, nil
+	return airdropEntries, nil
 }

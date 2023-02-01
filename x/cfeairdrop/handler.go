@@ -32,11 +32,11 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgAddMissionToAidropCampaign:
 			res, err := msgServer.AddMissionToAidropCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddAirdropEntries:
-			res, err := msgServer.AddAirdropEntries(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgAddClaimRecords:
+			res, err := msgServer.AddClaimRecords(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgDeleteAirdropEntry:
-			res, err := msgServer.DeleteAirdropEntry(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgDeleteClaimRecord:
+			res, err := msgServer.DeleteClaimRecord(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCloseAirdropCampaign:
 			res, err := msgServer.CloseAirdropCampaign(sdk.WrapSDKContext(ctx), msg)

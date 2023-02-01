@@ -31,7 +31,7 @@ func TestGenesis(t *testing.T) {
 				Id:         1,
 			},
 		},
-		UserAirdropEntries: []types.UserAirdropEntries{
+		UsersEntries: []types.UserEntry{
 			{
 				Address: "0",
 			},
@@ -51,7 +51,7 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
-	require.ElementsMatch(t, genesisState.UserAirdropEntries, got.UserAirdropEntries)
+	require.ElementsMatch(t, genesisState.UsersEntries, got.UsersEntries)
 	require.ElementsMatch(t, genesisState.Missions, got.Missions)
 	require.ElementsMatch(t, genesisState.Campaigns, got.Campaigns)
 	require.ElementsMatch(t, genesisState.AirdropDistrubitions, got.AirdropDistrubitions)

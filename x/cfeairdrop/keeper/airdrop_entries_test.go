@@ -16,11 +16,11 @@ import (
 	"time"
 )
 
-func TestUserAirdropEntriesGet(t *testing.T) {
+func TestUsersEntriesGet(t *testing.T) {
 	k, ctx := keepertest.CfeairdropKeeper(t)
-	items := createNUserAirdropEntries(k, ctx, 10, 0, false, false)
+	items := createNUsersEntries(k, ctx, 10, 0, false, false)
 	for _, item := range items {
-		rst, found := k.GetUserAirdropEntries(ctx,
+		rst, found := k.GetUserEntry(ctx,
 			item.Address,
 		)
 		require.True(t, found)
@@ -30,9 +30,9 @@ func TestUserAirdropEntriesGet(t *testing.T) {
 		)
 	}
 
-	items = createNUserAirdropEntries(k, ctx, 10, 10, false, false)
+	items = createNUsersEntries(k, ctx, 10, 10, false, false)
 	for _, item := range items {
-		rst, found := k.GetUserAirdropEntries(ctx,
+		rst, found := k.GetUserEntry(ctx,
 			item.Address,
 		)
 		require.True(t, found)
@@ -42,9 +42,9 @@ func TestUserAirdropEntriesGet(t *testing.T) {
 		)
 	}
 
-	items = createNUserAirdropEntries(k, ctx, 10, 10, true, false)
+	items = createNUsersEntries(k, ctx, 10, 10, true, false)
 	for _, item := range items {
-		rst, found := k.GetUserAirdropEntries(ctx,
+		rst, found := k.GetUserEntry(ctx,
 			item.Address,
 		)
 		require.True(t, found)
@@ -54,9 +54,9 @@ func TestUserAirdropEntriesGet(t *testing.T) {
 		)
 	}
 
-	items = createNUserAirdropEntries(k, ctx, 10, 10, false, true)
+	items = createNUsersEntries(k, ctx, 10, 10, false, true)
 	for _, item := range items {
-		rst, found := k.GetUserAirdropEntries(ctx,
+		rst, found := k.GetUserEntry(ctx,
 			item.Address,
 		)
 		require.True(t, found)
@@ -67,32 +67,32 @@ func TestUserAirdropEntriesGet(t *testing.T) {
 	}
 }
 
-func TestUserAirdropEntriesGetAll(t *testing.T) {
+func TestUsersEntriesGetAll(t *testing.T) {
 	k, ctx := keepertest.CfeairdropKeeper(t)
-	items := createNUserAirdropEntries(k, ctx, 10, 0, false, false)
+	items := createNUsersEntries(k, ctx, 10, 0, false, false)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(k.GetUsersAirdropEntries(ctx)),
+		nullify.Fill(k.GetUsersEntries(ctx)),
 	)
 
-	items = createNUserAirdropEntries(k, ctx, 10, 10, true, true)
+	items = createNUsersEntries(k, ctx, 10, 10, true, true)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(k.GetUsersAirdropEntries(ctx)),
+		nullify.Fill(k.GetUsersEntries(ctx)),
 	)
 }
 
-func TestAddUserAirdropEntries(t *testing.T) {
+func TestAddUsersEntries(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 }
 
-func TestAddManyUserAirdropEntries(t *testing.T) {
+func TestAddManyUsersEntries(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -101,21 +101,21 @@ func TestAddManyUserAirdropEntries(t *testing.T) {
 	airdropEntries2, airdropCoinsSum := createTestAirdropEntries(acountsAddresses[5:10], 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries1)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries2)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries1)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries2)
 }
 
-func TestAddUserAirdropEntriesBalanceToSmall(t *testing.T) {
+func TestAddUsersEntriesBalanceToSmall(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum.Sub(sdk.NewInt(2)))
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 0, airdropEntries, fmt.Sprintf("%suc4e is smaller than %suc4e: insufficient funds", airdropCoinsSum.Sub(sdk.NewInt(2)), airdropCoinsSum))
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, fmt.Sprintf("add campaign entries - owner balance is too small (1000000043uc4e < 1000000045uc4e): insufficient funds"))
 }
 
-func TestAddUserAirdropEntriesEmptyAirdropCoins(t *testing.T) {
+func TestAddUsersEntriesEmptyAirdropCoins(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -123,10 +123,10 @@ func TestAddUserAirdropEntriesEmptyAirdropCoins(t *testing.T) {
 	airdropEntries[0].AirdropCoins = sdk.NewCoins()
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - airdrop entry at index 0 airdrop entry must has at least one coin: wrong param value")
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - airdrop entry at index 0 airdrop entry must has at least one coin: wrong param value")
 }
 
-func TestAddUserAirdropEntriesZeroAmount(t *testing.T) {
+func TestAddUsersEntriesZeroAmount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -134,10 +134,10 @@ func TestAddUserAirdropEntriesZeroAmount(t *testing.T) {
 	airdropEntries[0].AirdropCoins[0].Amount = sdk.ZeroInt()
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - airdrop entry at index 0 amount is 0: wrong param value")
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - airdrop entry at index 0 amount is 0: wrong param value")
 }
 
-func TestAddUserAirdropEntriesEmptyAddress(t *testing.T) {
+func TestAddUsersEntriesEmptyAddress(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -145,30 +145,30 @@ func TestAddUserAirdropEntriesEmptyAddress(t *testing.T) {
 	airdropEntries[0].Address = ""
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - airdrop entry empty address on index 0: wrong param value")
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - airdrop entry empty address on index 0: wrong param value")
 }
 
-func TestAddUserAirdropEntriesWrongOwner(t *testing.T) {
+func TestAddUsersEntriesWrongOwner(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[1], 0, airdropEntries, "add campaign entries - you are not the owner of campaign with id 0: tx intended signer does not match the given signer")
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[1], 0, airdropEntries, "add campaign entries - you are not the owner of campaign with id 0: tx intended signer does not match the given signer")
 }
 
-func TestAddUserAirdropEntriesCampaignDoesntExist(t *testing.T) {
+func TestAddUsersEntriesCampaignDoesntExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 1, airdropEntries, "add campaign entries -  campaign with id 1 doesn't exist: entity does not exist")
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 1, airdropEntries, "add campaign entries -  campaign with id 1 doesn't exist: entity does not exist")
 }
 
-func TestAddUserAirdropEntriesCampaignNotEnabled(t *testing.T) {
+func TestAddUsersEntriesCampaignNotEnabled(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -178,10 +178,10 @@ func TestAddUserAirdropEntriesCampaignNotEnabled(t *testing.T) {
 	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - campaign 0 is disabled: campaign is disabled")
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - campaign 0 is disabled: campaign is disabled")
 }
 
-func TestAddUserAirdropEntriesCampaignIsOver(t *testing.T) {
+func TestAddUsersEntriesCampaignIsOver(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -194,21 +194,21 @@ func TestAddUserAirdropEntriesCampaignIsOver(t *testing.T) {
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 0, airdropEntries, fmt.Sprintf("add campaign entries - campaign 0 is disabled (end time %s < %s): campaign is disabled", campaign.EndTime, blockTime))
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, fmt.Sprintf("add campaign entries - campaign 0 is disabled (end time %s < %s): campaign is disabled", campaign.EndTime, blockTime))
 }
 
-func TestAddUserAirdropEntriesAirdropEntryExist(t *testing.T) {
+func TestAddUsersEntriesAirdropEntryExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 0, airdropEntries, fmt.Sprintf("campaignId 0 already exists for address: %s: entity already exists", airdropEntries[0].Address))
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, fmt.Sprintf("campaignId 0 already exists for address: %s: entity already exists", airdropEntries[0].Address))
 }
 
-func TestAddUserAirdropEntriesInitialClaimAmountError(t *testing.T) {
+func TestAddUsersEntriesInitialClaimAmountError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
@@ -221,10 +221,10 @@ func TestAddUserAirdropEntriesInitialClaimAmountError(t *testing.T) {
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - airdrop entry at index 0 initial claim amount 80000000 < campaign initial claim free amount (100000000000000000): wrong param value")
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - airdrop entry at index 0 initial claim amount 80000000 < campaign initial claim free amount (100000000000000000): wrong param value")
 }
 
-func TestAddUserAirdropEntriesInitialClaimAmount(t *testing.T) {
+func TestAddUsersEntriesInitialClaimAmount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
@@ -237,10 +237,10 @@ func TestAddUserAirdropEntriesInitialClaimAmount(t *testing.T) {
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 }
 
-func TestAddUserAirdropEntriesCorrectFeegrant(t *testing.T) {
+func TestAddUsersEntriesCorrectFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	feegrantAmount := sdk.NewInt(2500000)
@@ -254,10 +254,10 @@ func TestAddUserAirdropEntriesCorrectFeegrant(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], feegrantAmount.MulRaw(int64(len(acountsAddresses))))
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 }
 
-func TestAddUserAirdropEntriesWrongSrcAccountBalanceFeegrant(t *testing.T) {
+func TestAddUsersEntriesWrongSrcAccountBalanceFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	feegrantAmount := sdk.NewInt(2500000)
@@ -270,14 +270,121 @@ func TestAddUserAirdropEntriesWrongSrcAccountBalanceFeegrant(t *testing.T) {
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntriesError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - owner balance is too small (1000000045uc4e < 1025000045uc4e): insufficient funds")
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, "add campaign entries - owner balance is too small (1000000045uc4e < 1025000045uc4e): insufficient funds")
 }
 
-func createTestAirdropEntries(addresses []sdk.AccAddress, startAmount int) (airdropEntries []*types.AirdropEntry, airdropCoinsSum sdk.Int) {
+func TestAddClaimRecordsFromWhitelistedAccount(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+	accAddr1 := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accBalance := sdk.NewInt(100000000000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
+	sendAmount := sdk.NewInt(999990045)
+	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
+	startTime := time.Now()
+	endTime := startTime.Add(time.Hour * 10)
+
+	testHelper.C4eVestingUtils.MessageCreateVestingAccount(
+		accAddr1,
+		accAddr2,
+		coins,
+		startTime,
+		endTime,
+		accBalance,
+	)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+	testHelper.C4eAirdropUtils.CreateAirdropCampaign(accAddr2.String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(accAddr2.String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartAirdropCampaign(accAddr2.String(), 0)
+	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	fmt.Println(airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(accAddr2, sdk.NewInt(10000))
+	testHelper.C4eAirdropUtils.AddClaimRecords(accAddr2, 0, airdropEntries)
+
+	fmt.Println(accAddr2.String())
+}
+
+func TestAddClaimRecordsFromWhitelistedAccountTimeInFuture(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+	accAddr1 := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accBalance := sdk.NewInt(100000000000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
+	sendAmount := sdk.NewInt(999990045)
+	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
+	startTime := testHelper.Context.BlockTime()
+	endTime := startTime.Add(time.Hour * 10)
+
+	testHelper.C4eVestingUtils.MessageCreateVestingAccount(
+		accAddr1,
+		accAddr2,
+		coins,
+		startTime,
+		endTime,
+		accBalance,
+	)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.EndTime = endTime
+	mission := prepareTestMission()
+	testHelper.C4eAirdropUtils.CreateAirdropCampaign(accAddr2.String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(accAddr2.String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartAirdropCampaign(accAddr2.String(), 0)
+	airdropEntries, _ := createTestAirdropEntries(acountsAddresses, 100000000)
+	blockTime := startTime.Add(time.Hour * 5)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(accAddr2, sdk.NewInt(10000))
+	testHelper.C4eAirdropUtils.AddClaimRecords(accAddr2, 0, airdropEntries)
+
+	fmt.Println(accAddr2.String())
+}
+
+func TestAddClaimRecordsFromWhitelistedAccountTimeInFutureBiggerAmount(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+	accAddr1 := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accBalance := sdk.NewInt(100000000000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
+	sendAmount := sdk.NewInt(1599990045)
+	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
+	startTime := testHelper.Context.BlockTime()
+	endTime := startTime.Add(time.Hour * 10)
+
+	testHelper.C4eVestingUtils.MessageCreateVestingAccount(
+		accAddr1,
+		accAddr2,
+		coins,
+		startTime,
+		endTime,
+		accBalance,
+	)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.EndTime = endTime
+	mission := prepareTestMission()
+	testHelper.C4eAirdropUtils.CreateAirdropCampaign(accAddr2.String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(accAddr2.String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartAirdropCampaign(accAddr2.String(), 0)
+	airdropEntries, airdropCoinSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	fmt.Println(airdropCoinSum)
+	blockTime := startTime.Add(time.Hour * 5)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(accAddr2, sdk.NewInt(10000))
+	testHelper.C4eAirdropUtils.AddClaimRecords(accAddr2, 0, airdropEntries)
+
+	fmt.Println(accAddr2.String())
+}
+
+func createTestAirdropEntries(addresses []sdk.AccAddress, startAmount int) (airdropEntries []*types.ClaimRecord, airdropCoinsSum sdk.Int) {
 	airdropCoinsSum = sdk.ZeroInt()
 	for i, addr := range addresses {
 		coinsAmount := sdk.NewInt(int64(startAmount + i))
-		newAirdropEntry := types.AirdropEntry{
+		newAirdropEntry := types.ClaimRecord{
 			Address:      addr.String(),
 			AirdropCoins: sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, coinsAmount)),
 		}
@@ -295,14 +402,14 @@ func createCampaignMissionAndStart(testHelper *testapp.TestHelper, ownerAddress 
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(ownerAddress, 0)
 }
 
-func createNUserAirdropEntries(keeper *keeper.Keeper, ctx sdk.Context, numberOfUserAirdropEntries int, numberOfAirdropEntreis int, addClaimAddress bool, addCompletedMissions bool) []types.UserAirdropEntries {
-	userAirdropEntries := make([]types.UserAirdropEntries, numberOfUserAirdropEntries)
-	for i := range userAirdropEntries {
-		userAirdropEntries[i].Address = strconv.Itoa(i)
+func createNUsersEntries(keeper *keeper.Keeper, ctx sdk.Context, numberOfUsersEntries int, numberOfAirdropEntreis int, addClaimAddress bool, addCompletedMissions bool) []types.UserEntry {
+	userEntry := make([]types.UserEntry, numberOfUsersEntries)
+	for i := range userEntry {
+		userEntry[i].Address = strconv.Itoa(i)
 		if addClaimAddress {
-			userAirdropEntries[i].ClaimAddress = strconv.Itoa(1000000 + i)
+			userEntry[i].ClaimAddress = strconv.Itoa(1000000 + i)
 		}
-		airdropEntryStates := make([]types.AirdropEntry, numberOfAirdropEntreis)
+		airdropEntryStates := make([]types.ClaimRecord, numberOfAirdropEntreis)
 		for j := range airdropEntryStates {
 			airdropEntryStates[j].CampaignId = uint64(2000000 + i)
 			airdropEntryStates[j].AirdropCoins = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(int64(3000000+i))))
@@ -311,7 +418,7 @@ func createNUserAirdropEntries(keeper *keeper.Keeper, ctx sdk.Context, numberOfU
 			}
 
 		}
-		keeper.SetUserAirdropEntries(ctx, userAirdropEntries[i])
+		keeper.SetUserEntry(ctx, userEntry[i])
 	}
-	return userAirdropEntries
+	return userEntry
 }

@@ -8,28 +8,28 @@ import (
 const (
 	TypeMsgCreateAirdropEntry = "create_airdrop_entry"
 	TypeMsgUpdateAirdropEntry = "update_airdrop_entry"
-	TypeMsgDeleteAirdropEntry = "delete_airdrop_entry"
+	TypeMsgDeleteClaimRecord  = "delete_airdrop_entry"
 )
 
-var _ sdk.Msg = &MsgAddAirdropEntries{}
+var _ sdk.Msg = &MsgAddClaimRecords{}
 
-func NewMsgCreateAirdropEntry(onwer string, campaignId uint64, airdropEntries []*AirdropEntry) *MsgAddAirdropEntries {
-	return &MsgAddAirdropEntries{
-		Owner:          onwer,
-		CampaignId:     campaignId,
-		AirdropEntries: airdropEntries,
+func NewMsgCreateAirdropEntry(onwer string, campaignId uint64, airdropEntries []*ClaimRecord) *MsgAddClaimRecords {
+	return &MsgAddClaimRecords{
+		Owner:        onwer,
+		CampaignId:   campaignId,
+		ClaimRecords: airdropEntries,
 	}
 }
 
-func (msg *MsgAddAirdropEntries) Route() string {
+func (msg *MsgAddClaimRecords) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgAddAirdropEntries) Type() string {
+func (msg *MsgAddClaimRecords) Type() string {
 	return TypeMsgCreateAirdropEntry
 }
 
-func (msg *MsgAddAirdropEntries) GetSigners() []sdk.AccAddress {
+func (msg *MsgAddClaimRecords) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
@@ -37,12 +37,12 @@ func (msg *MsgAddAirdropEntries) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgAddAirdropEntries) GetSignBytes() []byte {
+func (msg *MsgAddClaimRecords) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgAddAirdropEntries) ValidateBasic() error {
+func (msg *MsgAddClaimRecords) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
@@ -50,24 +50,24 @@ func (msg *MsgAddAirdropEntries) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.Msg = &MsgDeleteAirdropEntry{}
+var _ sdk.Msg = &MsgDeleteClaimRecord{}
 
-func NewMsgDeleteAirdropEntry(onwer string, campaignId uint64, userAddress string) *MsgDeleteAirdropEntry {
-	return &MsgDeleteAirdropEntry{
+func NewMsgDeleteClaimRecord(onwer string, campaignId uint64, userAddress string) *MsgDeleteClaimRecord {
+	return &MsgDeleteClaimRecord{
 		CampaignId:  campaignId,
 		Owner:       onwer,
 		UserAddress: userAddress,
 	}
 }
-func (msg *MsgDeleteAirdropEntry) Route() string {
+func (msg *MsgDeleteClaimRecord) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgDeleteAirdropEntry) Type() string {
-	return TypeMsgDeleteAirdropEntry
+func (msg *MsgDeleteClaimRecord) Type() string {
+	return TypeMsgDeleteClaimRecord
 }
 
-func (msg *MsgDeleteAirdropEntry) GetSigners() []sdk.AccAddress {
+func (msg *MsgDeleteClaimRecord) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
@@ -75,12 +75,12 @@ func (msg *MsgDeleteAirdropEntry) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgDeleteAirdropEntry) GetSignBytes() []byte {
+func (msg *MsgDeleteClaimRecord) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgDeleteAirdropEntry) ValidateBasic() error {
+func (msg *MsgDeleteClaimRecord) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

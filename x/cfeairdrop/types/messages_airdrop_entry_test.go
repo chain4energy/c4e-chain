@@ -11,18 +11,18 @@ import (
 func TestMsgCreateAirdropEntry_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgAddAirdropEntries
+		msg  MsgAddClaimRecords
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgAddAirdropEntries{
+			msg: MsgAddClaimRecords{
 				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgAddAirdropEntries{
+			msg: MsgAddClaimRecords{
 				Owner: sample.AccAddress(),
 			},
 		},
@@ -39,21 +39,21 @@ func TestMsgCreateAirdropEntry_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgDeleteAirdropEntry_ValidateBasic(t *testing.T) {
+func TestMsgDeleteClaimRecord_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgDeleteAirdropEntry
+		msg  MsgDeleteClaimRecord
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgDeleteAirdropEntry{
+			msg: MsgDeleteClaimRecord{
 				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgDeleteAirdropEntry{
+			msg: MsgDeleteClaimRecord{
 				Owner: sample.AccAddress(),
 			},
 		},

@@ -12,13 +12,13 @@ import { MsgAddMissionToAidropCampaign } from "./types/cfeairdrop/tx";
 import { MsgCreateAirdropCampaign } from "./types/cfeairdrop/tx";
 import { MsgInitialClaim } from "./types/cfeairdrop/tx";
 import { MsgEditAirdropCampaign } from "./types/cfeairdrop/tx";
-import { MsgAddAirdropEntries } from "./types/cfeairdrop/tx";
-import { MsgDeleteAirdropEntry } from "./types/cfeairdrop/tx";
+import { MsgAddClaimRecords } from "./types/cfeairdrop/tx";
+import { MsgDeleteClaimRecord } from "./types/cfeairdrop/tx";
 import { MsgCloseAirdropCampaign } from "./types/cfeairdrop/tx";
 import { MsgClaim } from "./types/cfeairdrop/tx";
 
 
-export { MsgStartAirdropCampaign, MsgAddMissionToAidropCampaign, MsgCreateAirdropCampaign, MsgInitialClaim, MsgEditAirdropCampaign, MsgAddAirdropEntries, MsgDeleteAirdropEntry, MsgCloseAirdropCampaign, MsgClaim };
+export { MsgStartAirdropCampaign, MsgAddMissionToAidropCampaign, MsgCreateAirdropCampaign, MsgInitialClaim, MsgEditAirdropCampaign, MsgAddClaimRecords, MsgDeleteClaimRecord, MsgCloseAirdropCampaign, MsgClaim };
 
 type sendMsgStartAirdropCampaignParams = {
   value: MsgStartAirdropCampaign,
@@ -50,14 +50,14 @@ type sendMsgEditAirdropCampaignParams = {
   memo?: string
 };
 
-type sendMsgAddAirdropEntriesParams = {
-  value: MsgAddAirdropEntries,
+type sendMsgAddClaimRecordsParams = {
+  value: MsgAddClaimRecords,
   fee?: StdFee,
   memo?: string
 };
 
-type sendMsgDeleteAirdropEntryParams = {
-  value: MsgDeleteAirdropEntry,
+type sendMsgDeleteClaimRecordParams = {
+  value: MsgDeleteClaimRecord,
   fee?: StdFee,
   memo?: string
 };
@@ -95,12 +95,12 @@ type msgEditAirdropCampaignParams = {
   value: MsgEditAirdropCampaign,
 };
 
-type msgAddAirdropEntriesParams = {
-  value: MsgAddAirdropEntries,
+type msgAddClaimRecordsParams = {
+  value: MsgAddClaimRecords,
 };
 
-type msgDeleteAirdropEntryParams = {
-  value: MsgDeleteAirdropEntry,
+type msgDeleteClaimRecordParams = {
+  value: MsgDeleteClaimRecord,
 };
 
 type msgCloseAirdropCampaignParams = {
@@ -199,31 +199,31 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgAddAirdropEntries({ value, fee, memo }: sendMsgAddAirdropEntriesParams): Promise<DeliverTxResponse> {
+		async sendMsgAddClaimRecords({ value, fee, memo }: sendMsgAddClaimRecordsParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgAddAirdropEntries: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgAddClaimRecords: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgAddAirdropEntries({ value: MsgAddAirdropEntries.fromPartial(value) })
+				let msg = this.msgAddClaimRecords({ value: MsgAddClaimRecords.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgAddAirdropEntries: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgAddClaimRecords: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
-		async sendMsgDeleteAirdropEntry({ value, fee, memo }: sendMsgDeleteAirdropEntryParams): Promise<DeliverTxResponse> {
+		async sendMsgDeleteClaimRecord({ value, fee, memo }: sendMsgDeleteClaimRecordParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgDeleteAirdropEntry: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgDeleteClaimRecord: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgDeleteAirdropEntry({ value: MsgDeleteAirdropEntry.fromPartial(value) })
+				let msg = this.msgDeleteClaimRecord({ value: MsgDeleteClaimRecord.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgDeleteAirdropEntry: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgDeleteClaimRecord: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -296,19 +296,19 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgAddAirdropEntries({ value }: msgAddAirdropEntriesParams): EncodeObject {
+		msgAddClaimRecords({ value }: msgAddClaimRecordsParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntries", value: MsgAddAirdropEntries.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddClaimRecords", value: MsgAddClaimRecords.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgAddAirdropEntries: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgAddClaimRecords: Could not create message: ' + e.message)
 			}
 		},
 		
-		msgDeleteAirdropEntry({ value }: msgDeleteAirdropEntryParams): EncodeObject {
+		msgDeleteClaimRecord({ value }: msgDeleteClaimRecordParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntry", value: MsgDeleteAirdropEntry.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgDeleteClaimRecord", value: MsgDeleteClaimRecord.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgDeleteAirdropEntry: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgDeleteClaimRecord: Could not create message: ' + e.message)
 			}
 		},
 		

@@ -12,8 +12,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgInitialClaim{}, "cfeairdrop/InitialClaim", nil)
 	cdc.RegisterConcrete(&MsgCreateAirdropCampaign{}, "cfeairdrop/CreateAirdropCampaign", nil)
 	cdc.RegisterConcrete(&MsgAddMissionToAidropCampaign{}, "cfeairdrop/AddMissionToAidropCampaign", nil)
-	cdc.RegisterConcrete(&MsgAddAirdropEntries{}, "cfeairdrop/AddUserAirdropEntries", nil)
-	cdc.RegisterConcrete(&MsgDeleteAirdropEntry{}, "cfeairdrop/DeleteAirdropEntry", nil)
+	cdc.RegisterConcrete(&MsgAddClaimRecords{}, "cfeairdrop/AddUsersEntries", nil)
+	cdc.RegisterConcrete(&MsgDeleteClaimRecord{}, "cfeairdrop/DeleteClaimRecord", nil)
 	cdc.RegisterConcrete(&MsgCloseAirdropCampaign{}, "cfeairdrop/CloseAirdropCampaign", nil)
 	cdc.RegisterConcrete(&MsgStartAirdropCampaign{}, "cfeairdrop/StartAirdropCampaign", nil)
 	cdc.RegisterConcrete(&MsgEditAirdropCampaign{}, "cfeairdrop/EditAirdropCampaign", nil)
@@ -26,8 +26,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgInitialClaim{},
 		&MsgCreateAirdropCampaign{},
 		&MsgAddMissionToAidropCampaign{},
-		&MsgAddAirdropEntries{},
-		&MsgDeleteAirdropEntry{},
+		&MsgAddClaimRecords{},
+		&MsgDeleteClaimRecord{},
 		&MsgCloseAirdropCampaign{},
 		&MsgStartAirdropCampaign{},
 		&MsgEditAirdropCampaign{},

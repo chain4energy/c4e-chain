@@ -17,7 +17,7 @@ func TestCorrectInitialClaim(t *testing.T) {
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 }
 
@@ -28,7 +28,7 @@ func TestCorrectmanyInitialClaims(t *testing.T) {
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[2], 0, 80000002)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[3], 0, 80000003)
@@ -42,7 +42,7 @@ func TestInitialClaimAlreadyClaimed(t *testing.T) {
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	testHelper.C4eAirdropUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("mission already completed: address %s, campaignId: 0, missionId: 0: mission already completed", acountsAddresses[1].String()))
 }
@@ -54,7 +54,7 @@ func TestInitialClaimRecordDosentExist(t *testing.T) {
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses[:9], 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	testHelper.C4eAirdropUtils.ClaimInitialError(acountsAddresses[10], 0, fmt.Sprintf("user airdrop entries not found for address %s: not found", acountsAddresses[10].String()))
 }
@@ -66,7 +66,7 @@ func TestInitialClaimWrongCampaign(t *testing.T) {
 	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses[:9], 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitialError(acountsAddresses[1], 1, "camapign not found: campaignId 1: not found")
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
@@ -85,7 +85,7 @@ func TestInitialClaimCampaignDidntStartYey(t *testing.T) {
 	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 
 	testHelper.C4eAirdropUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("campaign 0 not started yet (%s < startTime %s) error: campaign is disabled", testHelper.Context.BlockTime(), campaign.StartTime))
 }
@@ -100,7 +100,7 @@ func TestInitialClaimCampaignNotEnabled(t *testing.T) {
 	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eAirdropUtils.CloseAirdropCampaign(acountsAddresses[0].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED)
@@ -117,7 +117,7 @@ func TestInitialClaimCampaignIsOver(t *testing.T) {
 	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eAirdropUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("campaign 0 has already ended (%s > endTime %s) error: campaign is disabled", testHelper.Context.BlockTime(), campaign.EndTime))
@@ -134,7 +134,7 @@ func TestInitialClaimFreeInitialAmount(t *testing.T) {
 	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
 	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 }
 
@@ -155,8 +155,8 @@ func TestInitialClaim2Campaigns(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 1, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 1, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 1, 80000001)
 }
@@ -175,6 +175,6 @@ func TestInitialClaimFeegrant(t *testing.T) {
 
 	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
 
-	testHelper.C4eAirdropUtils.AddAirdropEntries(acountsAddresses[0], 0, airdropEntries)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 }

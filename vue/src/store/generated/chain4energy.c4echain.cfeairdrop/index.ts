@@ -1,8 +1,8 @@
 import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-client-ts'
 
-import { UserAirdropEntries } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { AirdropEntry } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { AirdropEntries } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
+import { UserEntry } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
+import { ClaimRecord } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
+import { ClaimRecords } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 import { AirdropDistrubitions } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 import { AirdropClaimsLeft } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 import { Campaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
@@ -10,7 +10,7 @@ import { Mission } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.
 import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 
 
-export { UserAirdropEntries, AirdropEntry, AirdropEntries, AirdropDistrubitions, AirdropClaimsLeft, Campaign, Mission, Params };
+export { UserEntry, ClaimRecord, ClaimRecords, AirdropDistrubitions, AirdropClaimsLeft, Campaign, Mission, Params };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -42,8 +42,8 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
-				UserAirdropEntries: {},
-				UsersAirdropEntries: {},
+				UserEntry: {},
+				UsersEntries: {},
 				Mission: {},
 				MissionAll: {},
 				Campaigns: {},
@@ -52,9 +52,9 @@ const getDefaultState = () => {
 				AirdropClaimsLeft: {},
 				
 				_Structure: {
-						UserAirdropEntries: getStructure(UserAirdropEntries.fromPartial({})),
-						AirdropEntry: getStructure(AirdropEntry.fromPartial({})),
-						AirdropEntries: getStructure(AirdropEntries.fromPartial({})),
+						UserEntry: getStructure(UserEntry.fromPartial({})),
+						ClaimRecord: getStructure(ClaimRecord.fromPartial({})),
+						ClaimRecords: getStructure(ClaimRecords.fromPartial({})),
 						AirdropDistrubitions: getStructure(AirdropDistrubitions.fromPartial({})),
 						AirdropClaimsLeft: getStructure(AirdropClaimsLeft.fromPartial({})),
 						Campaign: getStructure(Campaign.fromPartial({})),
@@ -94,17 +94,17 @@ export default {
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
 		},
-				getUserAirdropEntries: (state) => (params = { params: {}}) => {
+				getUsersEntries: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.UserAirdropEntries[JSON.stringify(params)] ?? {}
+			return state.UserEntry[JSON.stringify(params)] ?? {}
 		},
-				getUsersAirdropEntries: (state) => (params = { params: {}}) => {
+				getUsersEntries: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.UsersAirdropEntries[JSON.stringify(params)] ?? {}
+			return state.UsersEntries[JSON.stringify(params)] ?? {}
 		},
 				getMission: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
@@ -203,18 +203,18 @@ export default {
 		 		
 		
 		
-		async QueryUserAirdropEntries({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryUsersEntries({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryUserAirdropEntries( key.address)).data
+				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryUsersEntries( key.address)).data
 				
 					
-				commit('QUERY', { query: 'UserAirdropEntries', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryUserAirdropEntries', payload: { options: { all }, params: {...key},query }})
-				return getters['getUserAirdropEntries']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'UserEntry', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryUsersEntries', payload: { options: { all }, params: {...key},query }})
+				return getters['getUsersEntries']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryUserAirdropEntries API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryUsersEntries API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
@@ -225,22 +225,22 @@ export default {
 		 		
 		
 		
-		async QueryUsersAirdropEntries({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryUsersEntries({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryUsersAirdropEntries(query ?? undefined)).data
+				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryUsersEntries(query ?? undefined)).data
 				
 					
 				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await client.Chain4EnergyC4EchainCfeairdrop.query.queryUsersAirdropEntries({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					let next_values=(await client.Chain4EnergyC4EchainCfeairdrop.query.queryUsersEntries({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
 					value = mergeResults(value, next_values);
 				}
-				commit('QUERY', { query: 'UsersAirdropEntries', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryUsersAirdropEntries', payload: { options: { all }, params: {...key},query }})
-				return getters['getUsersAirdropEntries']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'UsersEntries', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryUsersEntries', payload: { options: { all }, params: {...key},query }})
+				return getters['getUsersEntries']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryUsersAirdropEntries API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryUsersEntries API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
@@ -451,29 +451,29 @@ export default {
 				}
 			}
 		},
-		async sendMsgAddAirdropEntries({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgAddClaimRecords({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgAddAirdropEntries({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgAddClaimRecords({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddAirdropEntries:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgAddClaimRecords:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgAddAirdropEntries:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgAddClaimRecords:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
-		async sendMsgDeleteAirdropEntry({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgDeleteClaimRecord({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgDeleteAirdropEntry({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgDeleteClaimRecord({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgDeleteAirdropEntry:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgDeleteClaimRecord:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgDeleteAirdropEntry:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgDeleteClaimRecord:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -569,29 +569,29 @@ export default {
 				}
 			}
 		},
-		async MsgAddAirdropEntries({ rootGetters }, { value }) {
+		async MsgAddClaimRecords({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgAddAirdropEntries({value})
+				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgAddClaimRecords({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddAirdropEntries:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgAddClaimRecords:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgAddAirdropEntries:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgAddClaimRecords:Create Could not create message: ' + e.message)
 				}
 			}
 		},
-		async MsgDeleteAirdropEntry({ rootGetters }, { value }) {
+		async MsgDeleteClaimRecord({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgDeleteAirdropEntry({value})
+				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgDeleteClaimRecord({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgDeleteAirdropEntry:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgDeleteClaimRecord:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgDeleteAirdropEntry:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgDeleteClaimRecord:Create Could not create message: ' + e.message)
 				}
 			}
 		},

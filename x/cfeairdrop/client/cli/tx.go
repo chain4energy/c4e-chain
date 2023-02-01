@@ -35,7 +35,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdCreateAirdropCampaign())
 	cmd.AddCommand(CmdAddMissionToAidropCampaign())
 	cmd.AddCommand(CmdCreateAirdropEntry())
-	cmd.AddCommand(CmdDeleteAirdropEntry())
+	cmd.AddCommand(CmdDeleteClaimRecord())
 	cmd.AddCommand(CmdCloseAirdropCampaign())
 	cmd.AddCommand(CmdStartAirdropCampaign())
 	cmd.AddCommand(CmdEditAirdropCampaign())

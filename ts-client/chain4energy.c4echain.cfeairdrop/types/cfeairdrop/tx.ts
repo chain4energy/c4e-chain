@@ -7,7 +7,7 @@ import {
   AirdropCloseAction,
   airdropCloseActionFromJSON,
   airdropCloseActionToJSON,
-  AirdropEntry,
+  ClaimRecord,
   MissionType,
   missionTypeFromJSON,
   missionTypeToJSON,
@@ -61,22 +61,22 @@ export interface MsgAddMissionToAidropCampaign {
 export interface MsgAddMissionToAidropCampaignResponse {
 }
 
-export interface MsgAddAirdropEntries {
+export interface MsgAddClaimRecords {
   owner: string;
   campaignId: number;
-  airdropEntries: AirdropEntry[];
+  airdropEntries: ClaimRecord[];
 }
 
-export interface MsgAddAirdropEntriesResponse {
+export interface MsgAddClaimRecordsResponse {
 }
 
-export interface MsgDeleteAirdropEntry {
+export interface MsgDeleteClaimRecord {
   owner: string;
   campaignId: number;
   userAddress: string;
 }
 
-export interface MsgDeleteAirdropEntryResponse {
+export interface MsgDeleteClaimRecordResponse {
 }
 
 export interface MsgCloseAirdropCampaign {
@@ -649,12 +649,12 @@ export const MsgAddMissionToAidropCampaignResponse = {
   },
 };
 
-function createBaseMsgAddAirdropEntries(): MsgAddAirdropEntries {
+function createBaseMsgAddClaimRecords(): MsgAddClaimRecords {
   return { owner: "", campaignId: 0, airdropEntries: [] };
 }
 
-export const MsgAddAirdropEntries = {
-  encode(message: MsgAddAirdropEntries, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgAddClaimRecords = {
+  encode(message: MsgAddClaimRecords, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -662,15 +662,15 @@ export const MsgAddAirdropEntries = {
       writer.uint32(16).uint64(message.campaignId);
     }
     for (const v of message.airdropEntries) {
-      AirdropEntry.encode(v!, writer.uint32(26).fork()).ldelim();
+      ClaimRecord.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAddAirdropEntries {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAddClaimRecords {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgAddAirdropEntries();
+    const message = createBaseMsgAddClaimRecords();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -681,7 +681,7 @@ export const MsgAddAirdropEntries = {
           message.campaignId = longToNumber(reader.uint64() as Long);
           break;
         case 3:
-          message.airdropEntries.push(AirdropEntry.decode(reader, reader.uint32()));
+          message.airdropEntries.push(ClaimRecord.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -691,50 +691,50 @@ export const MsgAddAirdropEntries = {
     return message;
   },
 
-  fromJSON(object: any): MsgAddAirdropEntries {
+  fromJSON(object: any): MsgAddClaimRecords {
     return {
       owner: isSet(object.owner) ? String(object.owner) : "",
       campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
       airdropEntries: Array.isArray(object?.airdropEntries)
-        ? object.airdropEntries.map((e: any) => AirdropEntry.fromJSON(e))
+        ? object.airdropEntries.map((e: any) => ClaimRecord.fromJSON(e))
         : [],
     };
   },
 
-  toJSON(message: MsgAddAirdropEntries): unknown {
+  toJSON(message: MsgAddClaimRecords): unknown {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
     if (message.airdropEntries) {
-      obj.airdropEntries = message.airdropEntries.map((e) => e ? AirdropEntry.toJSON(e) : undefined);
+      obj.airdropEntries = message.airdropEntries.map((e) => e ? ClaimRecord.toJSON(e) : undefined);
     } else {
       obj.airdropEntries = [];
     }
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgAddAirdropEntries>, I>>(object: I): MsgAddAirdropEntries {
-    const message = createBaseMsgAddAirdropEntries();
+  fromPartial<I extends Exact<DeepPartial<MsgAddClaimRecords>, I>>(object: I): MsgAddClaimRecords {
+    const message = createBaseMsgAddClaimRecords();
     message.owner = object.owner ?? "";
     message.campaignId = object.campaignId ?? 0;
-    message.airdropEntries = object.airdropEntries?.map((e) => AirdropEntry.fromPartial(e)) || [];
+    message.airdropEntries = object.airdropEntries?.map((e) => ClaimRecord.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBaseMsgAddAirdropEntriesResponse(): MsgAddAirdropEntriesResponse {
+function createBaseMsgAddClaimRecordsResponse(): MsgAddClaimRecordsResponse {
   return {};
 }
 
-export const MsgAddAirdropEntriesResponse = {
-  encode(_: MsgAddAirdropEntriesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgAddClaimRecordsResponse = {
+  encode(_: MsgAddClaimRecordsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAddAirdropEntriesResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAddClaimRecordsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgAddAirdropEntriesResponse();
+    const message = createBaseMsgAddClaimRecordsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -746,27 +746,27 @@ export const MsgAddAirdropEntriesResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgAddAirdropEntriesResponse {
+  fromJSON(_: any): MsgAddClaimRecordsResponse {
     return {};
   },
 
-  toJSON(_: MsgAddAirdropEntriesResponse): unknown {
+  toJSON(_: MsgAddClaimRecordsResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgAddAirdropEntriesResponse>, I>>(_: I): MsgAddAirdropEntriesResponse {
-    const message = createBaseMsgAddAirdropEntriesResponse();
+  fromPartial<I extends Exact<DeepPartial<MsgAddClaimRecordsResponse>, I>>(_: I): MsgAddClaimRecordsResponse {
+    const message = createBaseMsgAddClaimRecordsResponse();
     return message;
   },
 };
 
-function createBaseMsgDeleteAirdropEntry(): MsgDeleteAirdropEntry {
+function createBaseMsgDeleteClaimRecord(): MsgDeleteClaimRecord {
   return { owner: "", campaignId: 0, userAddress: "" };
 }
 
-export const MsgDeleteAirdropEntry = {
-  encode(message: MsgDeleteAirdropEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgDeleteClaimRecord = {
+  encode(message: MsgDeleteClaimRecord, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -779,10 +779,10 @@ export const MsgDeleteAirdropEntry = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteAirdropEntry {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteClaimRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgDeleteAirdropEntry();
+    const message = createBaseMsgDeleteClaimRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -803,7 +803,7 @@ export const MsgDeleteAirdropEntry = {
     return message;
   },
 
-  fromJSON(object: any): MsgDeleteAirdropEntry {
+  fromJSON(object: any): MsgDeleteClaimRecord {
     return {
       owner: isSet(object.owner) ? String(object.owner) : "",
       campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
@@ -811,7 +811,7 @@ export const MsgDeleteAirdropEntry = {
     };
   },
 
-  toJSON(message: MsgDeleteAirdropEntry): unknown {
+  toJSON(message: MsgDeleteClaimRecord): unknown {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
@@ -819,8 +819,8 @@ export const MsgDeleteAirdropEntry = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgDeleteAirdropEntry>, I>>(object: I): MsgDeleteAirdropEntry {
-    const message = createBaseMsgDeleteAirdropEntry();
+  fromPartial<I extends Exact<DeepPartial<MsgDeleteClaimRecord>, I>>(object: I): MsgDeleteClaimRecord {
+    const message = createBaseMsgDeleteClaimRecord();
     message.owner = object.owner ?? "";
     message.campaignId = object.campaignId ?? 0;
     message.userAddress = object.userAddress ?? "";
@@ -828,19 +828,19 @@ export const MsgDeleteAirdropEntry = {
   },
 };
 
-function createBaseMsgDeleteAirdropEntryResponse(): MsgDeleteAirdropEntryResponse {
+function createBaseMsgDeleteClaimRecordResponse(): MsgDeleteClaimRecordResponse {
   return {};
 }
 
-export const MsgDeleteAirdropEntryResponse = {
-  encode(_: MsgDeleteAirdropEntryResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgDeleteClaimRecordResponse = {
+  encode(_: MsgDeleteClaimRecordResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteAirdropEntryResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteClaimRecordResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgDeleteAirdropEntryResponse();
+    const message = createBaseMsgDeleteClaimRecordResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -852,17 +852,17 @@ export const MsgDeleteAirdropEntryResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgDeleteAirdropEntryResponse {
+  fromJSON(_: any): MsgDeleteClaimRecordResponse {
     return {};
   },
 
-  toJSON(_: MsgDeleteAirdropEntryResponse): unknown {
+  toJSON(_: MsgDeleteClaimRecordResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgDeleteAirdropEntryResponse>, I>>(_: I): MsgDeleteAirdropEntryResponse {
-    const message = createBaseMsgDeleteAirdropEntryResponse();
+  fromPartial<I extends Exact<DeepPartial<MsgDeleteClaimRecordResponse>, I>>(_: I): MsgDeleteClaimRecordResponse {
+    const message = createBaseMsgDeleteClaimRecordResponse();
     return message;
   },
 };
@@ -1274,8 +1274,8 @@ export interface Msg {
   CreateAirdropCampaign(request: MsgCreateAirdropCampaign): Promise<MsgCreateAirdropCampaignResponse>;
   EditAirdropCampaign(request: MsgEditAirdropCampaign): Promise<MsgEditAirdropCampaignResponse>;
   AddMissionToAidropCampaign(request: MsgAddMissionToAidropCampaign): Promise<MsgAddMissionToAidropCampaignResponse>;
-  AddAirdropEntries(request: MsgAddAirdropEntries): Promise<MsgAddAirdropEntriesResponse>;
-  DeleteAirdropEntry(request: MsgDeleteAirdropEntry): Promise<MsgDeleteAirdropEntryResponse>;
+  AddClaimRecords(request: MsgAddClaimRecords): Promise<MsgAddClaimRecordsResponse>;
+  DeleteClaimRecord(request: MsgDeleteClaimRecord): Promise<MsgDeleteClaimRecordResponse>;
   CloseAirdropCampaign(request: MsgCloseAirdropCampaign): Promise<MsgCloseAirdropCampaignResponse>;
   /** this line is used by starport scaffolding # proto/tx/rpc */
   StartAirdropCampaign(request: MsgStartAirdropCampaign): Promise<MsgStartAirdropCampaignResponse>;
@@ -1290,8 +1290,8 @@ export class MsgClientImpl implements Msg {
     this.CreateAirdropCampaign = this.CreateAirdropCampaign.bind(this);
     this.EditAirdropCampaign = this.EditAirdropCampaign.bind(this);
     this.AddMissionToAidropCampaign = this.AddMissionToAidropCampaign.bind(this);
-    this.AddAirdropEntries = this.AddAirdropEntries.bind(this);
-    this.DeleteAirdropEntry = this.DeleteAirdropEntry.bind(this);
+    this.AddClaimRecords = this.AddClaimRecords.bind(this);
+    this.DeleteClaimRecord = this.DeleteClaimRecord.bind(this);
     this.CloseAirdropCampaign = this.CloseAirdropCampaign.bind(this);
     this.StartAirdropCampaign = this.StartAirdropCampaign.bind(this);
   }
@@ -1325,16 +1325,16 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgAddMissionToAidropCampaignResponse.decode(new _m0.Reader(data)));
   }
 
-  AddAirdropEntries(request: MsgAddAirdropEntries): Promise<MsgAddAirdropEntriesResponse> {
-    const data = MsgAddAirdropEntries.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "AddAirdropEntries", data);
-    return promise.then((data) => MsgAddAirdropEntriesResponse.decode(new _m0.Reader(data)));
+  AddClaimRecords(request: MsgAddClaimRecords): Promise<MsgAddClaimRecordsResponse> {
+    const data = MsgAddClaimRecords.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "AddClaimRecords", data);
+    return promise.then((data) => MsgAddClaimRecordsResponse.decode(new _m0.Reader(data)));
   }
 
-  DeleteAirdropEntry(request: MsgDeleteAirdropEntry): Promise<MsgDeleteAirdropEntryResponse> {
-    const data = MsgDeleteAirdropEntry.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "DeleteAirdropEntry", data);
-    return promise.then((data) => MsgDeleteAirdropEntryResponse.decode(new _m0.Reader(data)));
+  DeleteClaimRecord(request: MsgDeleteClaimRecord): Promise<MsgDeleteClaimRecordResponse> {
+    const data = MsgDeleteClaimRecord.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "DeleteClaimRecord", data);
+    return promise.then((data) => MsgDeleteClaimRecordResponse.decode(new _m0.Reader(data)));
   }
 
   CloseAirdropCampaign(request: MsgCloseAirdropCampaign): Promise<MsgCloseAirdropCampaignResponse> {

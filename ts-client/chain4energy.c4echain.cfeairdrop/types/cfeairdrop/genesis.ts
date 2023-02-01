@@ -1,6 +1,6 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { AirdropClaimsLeft, AirdropDistrubitions, Campaign, Mission, UserAirdropEntries } from "./airdrop";
+import { AirdropClaimsLeft, AirdropDistrubitions, Campaign, Mission, UserEntry } from "./airdrop";
 import { Params } from "./params";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -9,7 +9,7 @@ export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 export interface GenesisState {
   params: Params | undefined;
   campaigns: Campaign[];
-  userAirdropEntries: UserAirdropEntries[];
+  userEntry: UserEntry[];
   missions: Mission[];
   airdropClaimsLeft: AirdropClaimsLeft[];
   /** this line is used by starport scaffolding # genesis/proto/state */
@@ -20,7 +20,7 @@ function createBaseGenesisState(): GenesisState {
   return {
     params: undefined,
     campaigns: [],
-    userAirdropEntries: [],
+    userEntry: [],
     missions: [],
     airdropClaimsLeft: [],
     airdropDistrubitions: [],
@@ -35,8 +35,8 @@ export const GenesisState = {
     for (const v of message.campaigns) {
       Campaign.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    for (const v of message.userAirdropEntries) {
-      UserAirdropEntries.encode(v!, writer.uint32(26).fork()).ldelim();
+    for (const v of message.userEntry) {
+      UserEntry.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     for (const v of message.missions) {
       Mission.encode(v!, writer.uint32(42).fork()).ldelim();
@@ -64,7 +64,7 @@ export const GenesisState = {
           message.campaigns.push(Campaign.decode(reader, reader.uint32()));
           break;
         case 3:
-          message.userAirdropEntries.push(UserAirdropEntries.decode(reader, reader.uint32()));
+          message.userEntry.push(UserEntry.decode(reader, reader.uint32()));
           break;
         case 5:
           message.missions.push(Mission.decode(reader, reader.uint32()));
@@ -87,8 +87,8 @@ export const GenesisState = {
     return {
       params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
       campaigns: Array.isArray(object?.campaigns) ? object.campaigns.map((e: any) => Campaign.fromJSON(e)) : [],
-      userAirdropEntries: Array.isArray(object?.userAirdropEntries)
-        ? object.userAirdropEntries.map((e: any) => UserAirdropEntries.fromJSON(e))
+      userEntry: Array.isArray(object?.userEntry)
+        ? object.userEntry.map((e: any) => UserEntry.fromJSON(e))
         : [],
       missions: Array.isArray(object?.missions) ? object.missions.map((e: any) => Mission.fromJSON(e)) : [],
       airdropClaimsLeft: Array.isArray(object?.airdropClaimsLeft)
@@ -108,10 +108,10 @@ export const GenesisState = {
     } else {
       obj.campaigns = [];
     }
-    if (message.userAirdropEntries) {
-      obj.userAirdropEntries = message.userAirdropEntries.map((e) => e ? UserAirdropEntries.toJSON(e) : undefined);
+    if (message.userEntry) {
+      obj.userEntry = message.userEntry.map((e) => e ? UserEntry.toJSON(e) : undefined);
     } else {
-      obj.userAirdropEntries = [];
+      obj.userEntry = [];
     }
     if (message.missions) {
       obj.missions = message.missions.map((e) => e ? Mission.toJSON(e) : undefined);
@@ -139,7 +139,7 @@ export const GenesisState = {
       ? Params.fromPartial(object.params)
       : undefined;
     message.campaigns = object.campaigns?.map((e) => Campaign.fromPartial(e)) || [];
-    message.userAirdropEntries = object.userAirdropEntries?.map((e) => UserAirdropEntries.fromPartial(e)) || [];
+    message.userEntry = object.userEntry?.map((e) => UserEntry.fromPartial(e)) || [];
     message.missions = object.missions?.map((e) => Mission.fromPartial(e)) || [];
     message.airdropClaimsLeft = object.airdropClaimsLeft?.map((e) => AirdropClaimsLeft.fromPartial(e)) || [];
     message.airdropDistrubitions = object.airdropDistrubitions?.map((e) => AirdropDistrubitions.fromPartial(e)) || [];

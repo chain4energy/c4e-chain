@@ -8,12 +8,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	"golang.org/x/exp/slices"
 	"strconv"
 )
 
-func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId uint64, airdropEntries []*types.AirdropEntry) error {
+func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64, airdropEntries []*types.ClaimRecord) error {
 	ownerAddress, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		k.Logger(ctx).Debug("add campaign entries owner parsing error", "owner", owner, "error", err.Error())
@@ -39,7 +41,7 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 		k.Logger(ctx).Debug("add campaign entries campaign is disabled", "campaignId", campaignId)
 		return sdkerrors.Wrapf(types.ErrCampaignDisabled, fmt.Sprintf("add campaign entries - campaign %d is disabled (end time %s < %s)", campaignId, campaign.EndTime, ctx.BlockTime()))
 	}
-	var usersAirdropEntries []*types.UserAirdropEntries
+	var usersEntries []*types.UserEntry
 	entriesAmountSum := sdk.NewCoins()
 	allCampaignMissions, _ := k.AllMissionForCampaign(ctx, campaignId)
 	for i, airdropEntry := range airdropEntries {
@@ -71,26 +73,34 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 			entriesAmountSum = entriesAmountSum.Add(coin)
 		}
 
-		userAirdropEntries, err := k.addUserAirdropEntry(ctx, campaignId, airdropEntry.Address, airdropEntry.AirdropCoins)
+		userEntry, err := k.addUserAirdropEntry(ctx, campaignId, airdropEntry.Address, airdropEntry.AirdropCoins)
 		if err != nil {
 			return err
 		}
-		usersAirdropEntries = append(usersAirdropEntries, userAirdropEntries)
+		usersEntries = append(usersEntries, userEntry)
 	}
 
-	feesAndEntriesSum := sdk.NewCoins()
+	feesAndEntriesSum := entriesAmountSum
 	feesSum := sdk.NewCoins()
 
 	bondedDenom := "uc4e"
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
 		feesSum = sdk.NewCoins(sdk.NewCoin(bondedDenom, campaign.FeegrantAmount.MulRaw(int64(len(airdropEntries)))))
-		feesAndEntriesSum = feesAndEntriesSum.Add(entriesAmountSum...).Add(feesSum...)
+		feesAndEntriesSum = feesAndEntriesSum.Add(feesSum...)
 	}
 
 	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
 	if !allBalances.IsAllGTE(feesAndEntriesSum) {
 		k.Logger(ctx).Error("add campaign entries airdrop entry owner balance is too small")
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, fmt.Sprintf("add campaign entries - owner balance is too small (%s < %s)", allBalances, feesAndEntriesSum))
+	}
+
+	if slices.Contains(k.GetWhitelistedVestingAccounts(), owner) {
+		err := k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, owner, feesAndEntriesSum)
+		if err != nil {
+			return err
+		}
+		fmt.Println("CONTAINS")
 	}
 
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
@@ -115,22 +125,22 @@ func (k Keeper) AddUserAirdropEntries(ctx sdk.Context, owner string, campaignId 
 		CampaignId:   campaignId,
 		AirdropCoins: entriesAmountSum,
 	})
-	for _, userAirdropEntries := range usersAirdropEntries {
-		k.SetUserAirdropEntries(ctx, *userAirdropEntries)
+	for _, userEntry := range usersEntries {
+		k.SetUserEntry(ctx, *userEntry)
 	}
 	return nil
 }
 
-func (k Keeper) addUserAirdropEntry(ctx sdk.Context, campaignId uint64, address string, allCoins sdk.Coins) (*types.UserAirdropEntries, error) {
-	userAirdropEntries, found := k.GetUserAirdropEntries(ctx, address)
+func (k Keeper) addUserAirdropEntry(ctx sdk.Context, campaignId uint64, address string, allCoins sdk.Coins) (*types.UserEntry, error) {
+	userEntry, found := k.GetUserEntry(ctx, address)
 	if !found {
-		userAirdropEntries = types.UserAirdropEntries{Address: address}
+		userEntry = types.UserEntry{Address: address}
 	}
-	if userAirdropEntries.HasCampaign(campaignId) {
+	if userEntry.HasCampaign(campaignId) {
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrAlreadyExists, "campaignId %d already exists for address: %s", campaignId, address)
 	}
-	userAirdropEntries.AirdropEntries = append(userAirdropEntries.AirdropEntries, &types.AirdropEntry{CampaignId: campaignId, AirdropCoins: allCoins})
-	return &userAirdropEntries, nil
+	userEntry.ClaimRecords = append(userEntry.ClaimRecords, &types.ClaimRecord{CampaignId: campaignId, AirdropCoins: allCoins})
+	return &userEntry, nil
 }
 
 func (k Keeper) DeleteUserAirdropEntry(ctx sdk.Context, owner string, campaignId uint64, userAddress string) error {
@@ -151,21 +161,21 @@ func (k Keeper) DeleteUserAirdropEntry(ctx sdk.Context, owner string, campaignId
 		k.Logger(ctx).Error("delete user airdrop entry you are not the owner of this campaign", "campaignId", campaignId)
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "delete user airdrop entry - you are not the owner of campaign with id %d", campaignId)
 	}
-	userAirdropEntries, found := k.GetUserAirdropEntries(
+	userEntry, found := k.GetUserEntry(
 		ctx,
 		userAddress,
 	)
 	if !found {
-		k.Logger(ctx).Error("delete user airdrop entry userAirdropEntries doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "delete user airdrop entry -  campaign id %d userAirdropEntries doesn't exist", campaignId)
+		k.Logger(ctx).Error("delete user airdrop entry userEntry doesn't exist", "campaignId", campaignId)
+		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "delete user airdrop entry -  campaign id %d userEntry doesn't exist", campaignId)
 	}
 	airdropEntryAmount := sdk.NewCoins()
 	airdropEntryFound := false
-	for i, airdropEntry := range userAirdropEntries.AirdropEntries {
+	for i, airdropEntry := range userEntry.ClaimRecords {
 		if airdropEntry.CampaignId == campaignId {
 			airdropEntryFound = true
 			airdropEntryAmount = airdropEntry.AirdropCoins
-			userAirdropEntries.AirdropEntries = append(userAirdropEntries.AirdropEntries[:i], userAirdropEntries.AirdropEntries[i+1:]...)
+			userEntry.ClaimRecords = append(userEntry.ClaimRecords[:i], userEntry.ClaimRecords[i+1:]...)
 			break
 		}
 	}
@@ -174,13 +184,13 @@ func (k Keeper) DeleteUserAirdropEntry(ctx sdk.Context, owner string, campaignId
 		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "delete user airdrop entry -  campaign id %d airdrop entry doesn't exist", campaignId)
 	}
 
-	k.SetUserAirdropEntries(ctx, userAirdropEntries)
+	k.SetUserEntry(ctx, userEntry)
 	k.DecrementAirdropDistrubitions(ctx, campaignId, airdropEntryAmount)
 
 	return nil
 }
 
-func (k Keeper) grantAllFeeAllowance(ctx sdk.Context, moduleAddress sdk.AccAddress, airdropEntries []*types.AirdropEntry, grantAmount sdk.Coins) error {
+func (k Keeper) grantAllFeeAllowance(ctx sdk.Context, moduleAddress sdk.AccAddress, airdropEntries []*types.ClaimRecord, grantAmount sdk.Coins) error {
 	basicAllowance, err := codectypes.NewAnyWithValue(&feegranttypes.BasicAllowance{
 		SpendLimit: grantAmount,
 	})
@@ -238,4 +248,39 @@ func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) *authtyp
 func FeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
 	moduleAddressName := "fee-grant-" + strconv.FormatUint(campaignId, 10)
 	return moduleAddressName, authtypes.NewModuleAddress(moduleAddressName)
+}
+
+func (k Keeper) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, from string, amount sdk.Coins) error {
+	fromAddress, err := sdk.AccAddressFromBech32(from)
+	if err != nil {
+		k.Logger(ctx).Error("delete user airdrop entry owner parsing error", "from", from, "error", err.Error())
+		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "delete user airdrop entry - owner parsing error: %s", from).Error())
+	}
+	ak := k.accountKeeper
+	bk := k.bankKeeper
+	fromAcc := ak.GetAccount(ctx, fromAddress)
+	if fromAcc == nil {
+		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", fromAddress)
+	}
+
+	spendableCoins := bk.SpendableCoins(ctx, fromAddress)
+	if spendableCoins.IsAllGTE(amount) {
+		return nil
+	}
+
+	vestingAcc := fromAcc.(*vestingtypes.ContinuousVestingAccount)
+
+	balance := bk.GetAllBalances(ctx, fromAddress)
+	balanceWithoutOriginalVesting := balance.Sub(vestingAcc.OriginalVesting)
+	amount = amount.Sub(balanceWithoutOriginalVesting)
+	lockedCoins := vestingAcc.LockedCoins(ctx.BlockTime())
+	spendableFromVesting := vestingAcc.OriginalVesting.Sub(lockedCoins)
+	amountDiffFree := amount.Sub(spendableFromVesting)
+	lockedPercentage := vestingAcc.OriginalVesting.AmountOf("uc4e").ToDec().Quo(lockedCoins.AmountOf("uc4e").ToDec())
+	originalVestingDiff := amountDiffFree.AmountOf("uc4e").ToDec().Mul(lockedPercentage).TruncateInt()
+	vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin("uc4e", originalVestingDiff)))
+
+	ak.SetAccount(ctx, vestingAcc)
+	spendableCoins = bk.SpendableCoins(ctx, fromAddress)
+	return nil
 }

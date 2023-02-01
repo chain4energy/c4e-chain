@@ -98,7 +98,7 @@ func TestUpdateAirdropEntry(t *testing.T) {
 	//}
 }
 
-func TestDeleteAirdropEntry(t *testing.T) {
+func TestDeleteClaimRecord(t *testing.T) {
 	//net := network.New(t)
 	//
 	//val := net.Validators[0]
@@ -137,7 +137,7 @@ func TestDeleteAirdropEntry(t *testing.T) {
 	//	},
 	//} {
 	//	t.Run(tc.desc, func(t *testing.T) {
-	//		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdDeleteAirdropEntry(), append([]string{tc.id}, tc.args...))
+	//		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdDeleteClaimRecord(), append([]string{tc.id}, tc.args...))
 	//		if tc.err != nil {
 	//			require.ErrorIs(t, err, tc.err)
 	//		} else {

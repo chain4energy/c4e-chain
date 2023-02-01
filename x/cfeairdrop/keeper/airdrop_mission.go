@@ -77,7 +77,7 @@ func (k Keeper) AddMissionToAirdropCampaign(ctx sdk.Context, owner string, campa
 	return nil
 }
 
-func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserAirdropEntries, error) {
+func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, error) {
 	campaignConfig, campaignFound := k.GetCampaign(ctx, campaignId)
 	if !campaignFound {
 		k.Logger(ctx).Error("mission first step - camapign not found", "campaignId", campaignId)
@@ -85,7 +85,7 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId u
 	}
 	k.Logger(ctx).Debug("campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaignConfig.StartTime, "campaigh end", campaignConfig.EndTime)
 
-	userAirdropEntries, found := k.GetUserAirdropEntries(ctx, claimerAddress)
+	userEntry, found := k.GetUserEntry(ctx, claimerAddress)
 	if !found {
 		k.Logger(ctx).Debug("mission first step - claim record not found", "claimerAddress", claimerAddress)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "user airdrop entries not found for address %s", claimerAddress)
@@ -107,12 +107,12 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId u
 		return nil, nil, nil, sdkerrors.Wrapf(err, "mission disabled - campaignId %d, missionId %d", campaignId, missionId)
 	}
 
-	if !userAirdropEntries.HasCampaign(campaignId) {
+	if !userEntry.HasCampaign(campaignId) {
 		k.Logger(ctx).Error("mission first step - campaign record not found", "address", claimerAddress, "campaignId", campaignId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id %d not found for address %s", campaignId, claimerAddress)
 	}
 
-	return &campaignConfig, &mission, &userAirdropEntries, nil
+	return &campaignConfig, &mission, &userEntry, nil
 }
 
 func (k Keeper) missionsWeightGreaterThan1(missions []types.Mission, newMissionWeight sdk.Dec) (bool, sdk.Dec) {

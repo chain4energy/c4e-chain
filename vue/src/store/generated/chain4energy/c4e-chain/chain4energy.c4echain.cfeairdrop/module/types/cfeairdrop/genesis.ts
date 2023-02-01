@@ -2,7 +2,7 @@
 import { Params } from "../cfeairdrop/params";
 import {
   Campaign,
-  UserAirdropEntries,
+  UserEntry,
   Mission,
   AirdropClaimsLeft,
   AirdropDistrubitions,
@@ -15,7 +15,7 @@ export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 export interface GenesisState {
   params: Params | undefined;
   campaigns: Campaign[];
-  user_airdrop_entries: UserAirdropEntries[];
+  users_entries: UserEntry[];
   missions: Mission[];
   airdrop_claims_left: AirdropClaimsLeft[];
   /** this line is used by starport scaffolding # genesis/proto/state */
@@ -32,8 +32,8 @@ export const GenesisState = {
     for (const v of message.campaigns) {
       Campaign.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    for (const v of message.user_airdrop_entries) {
-      UserAirdropEntries.encode(v!, writer.uint32(26).fork()).ldelim();
+    for (const v of message.users_entries) {
+      UserEntry.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     for (const v of message.missions) {
       Mission.encode(v!, writer.uint32(42).fork()).ldelim();
@@ -52,7 +52,7 @@ export const GenesisState = {
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
     message.campaigns = [];
-    message.user_airdrop_entries = [];
+    message.users_entries = [];
     message.missions = [];
     message.airdrop_claims_left = [];
     message.airdrop_distrubitions = [];
@@ -66,9 +66,7 @@ export const GenesisState = {
           message.campaigns.push(Campaign.decode(reader, reader.uint32()));
           break;
         case 3:
-          message.user_airdrop_entries.push(
-            UserAirdropEntries.decode(reader, reader.uint32())
-          );
+          message.users_entries.push(UserEntry.decode(reader, reader.uint32()));
           break;
         case 5:
           message.missions.push(Mission.decode(reader, reader.uint32()));
@@ -94,7 +92,7 @@ export const GenesisState = {
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
     message.campaigns = [];
-    message.user_airdrop_entries = [];
+    message.users_entries = [];
     message.missions = [];
     message.airdrop_claims_left = [];
     message.airdrop_distrubitions = [];
@@ -108,12 +106,9 @@ export const GenesisState = {
         message.campaigns.push(Campaign.fromJSON(e));
       }
     }
-    if (
-      object.user_airdrop_entries !== undefined &&
-      object.user_airdrop_entries !== null
-    ) {
-      for (const e of object.user_airdrop_entries) {
-        message.user_airdrop_entries.push(UserAirdropEntries.fromJSON(e));
+    if (object.users_entries !== undefined && object.users_entries !== null) {
+      for (const e of object.users_entries) {
+        message.users_entries.push(UserEntry.fromJSON(e));
       }
     }
     if (object.missions !== undefined && object.missions !== null) {
@@ -151,12 +146,12 @@ export const GenesisState = {
     } else {
       obj.campaigns = [];
     }
-    if (message.user_airdrop_entries) {
-      obj.user_airdrop_entries = message.user_airdrop_entries.map((e) =>
-        e ? UserAirdropEntries.toJSON(e) : undefined
+    if (message.users_entries) {
+      obj.users_entries = message.users_entries.map((e) =>
+        e ? UserEntry.toJSON(e) : undefined
       );
     } else {
-      obj.user_airdrop_entries = [];
+      obj.users_entries = [];
     }
     if (message.missions) {
       obj.missions = message.missions.map((e) =>
@@ -185,7 +180,7 @@ export const GenesisState = {
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
     message.campaigns = [];
-    message.user_airdrop_entries = [];
+    message.users_entries = [];
     message.missions = [];
     message.airdrop_claims_left = [];
     message.airdrop_distrubitions = [];
@@ -199,12 +194,9 @@ export const GenesisState = {
         message.campaigns.push(Campaign.fromPartial(e));
       }
     }
-    if (
-      object.user_airdrop_entries !== undefined &&
-      object.user_airdrop_entries !== null
-    ) {
-      for (const e of object.user_airdrop_entries) {
-        message.user_airdrop_entries.push(UserAirdropEntries.fromPartial(e));
+    if (object.users_entries !== undefined && object.users_entries !== null) {
+      for (const e of object.users_entries) {
+        message.users_entries.push(UserEntry.fromPartial(e));
       }
     }
     if (object.missions !== undefined && object.missions !== null) {

@@ -74,16 +74,16 @@ func (h *ContextC4eAirdropUtils) InitGenesis(genState cfeairdroptypes.GenesisSta
 	h.C4eAirdropKeeperUtils.InitGenesis(h.testContext.GetContext(), genState)
 }
 
-func (h *ContextC4eAirdropUtils) AddAirdropEntries(srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry) {
-	h.C4eAirdropUtils.AddAirdropEntries(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries)
+func (h *ContextC4eAirdropUtils) AddClaimRecords(srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.ClaimRecord) {
+	h.C4eAirdropUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries)
 }
 
 func (h *ContextC4eAirdropUtils) AddCoinsToAirdropEntrisCreator(srcAddress sdk.AccAddress, amountOfCoins sdk.Int) {
 	h.BankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), amountOfCoins, srcAddress)
 }
 
-func (h *ContextC4eAirdropUtils) AddAirdropEntriesError(srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.AirdropEntry, errorMessage string) {
-	h.C4eAirdropUtils.AddAirdropEntriesError(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries, errorMessage)
+func (h *ContextC4eAirdropUtils) AddClaimRecordsError(srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.ClaimRecord, errorMessage string) {
+	h.C4eAirdropUtils.AddClaimRecordsError(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries, errorMessage)
 }
 
 func (h *ContextC4eAirdropUtils) ClaimInitial(claimer sdk.AccAddress, campaignId uint64, expectedAmount int64) {
@@ -94,12 +94,12 @@ func (h *ContextC4eAirdropUtils) ClaimInitialError(claimer sdk.AccAddress, campa
 	h.C4eAirdropUtils.ClaimInitialError(h.testContext.GetContext(), campaignId, claimer, errorMessage)
 }
 
-func (h *ContextC4eAirdropUtils) GetUserAirdropEntries(address string) *cfeairdroptypes.UserAirdropEntries {
-	return h.C4eAirdropUtils.GetUserAirdropEntries(h.testContext.GetContext(), address)
+func (h *ContextC4eAirdropUtils) GetUsersEntries(address string) *cfeairdroptypes.UserEntry {
+	return h.C4eAirdropUtils.GetUsersEntries(h.testContext.GetContext(), address)
 }
 
-func (h *ContextC4eAirdropUtils) SetUserAirdropEntries(userAirdropEntries *cfeairdroptypes.UserAirdropEntries) {
-	h.C4eAirdropUtils.SetUserAirdropEntries(h.testContext.GetContext(), userAirdropEntries)
+func (h *ContextC4eAirdropUtils) SetUsersEntries(userEntry *cfeairdroptypes.UserEntry) {
+	h.C4eAirdropUtils.SetUsersEntries(h.testContext.GetContext(), userEntry)
 }
 
 func (h *ContextC4eAirdropUtils) CompleteMissionFromHook(campaignId uint64, missionId uint64, claimer sdk.AccAddress) {

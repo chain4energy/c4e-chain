@@ -17,14 +17,14 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/c4e/airdrop/v1beta1/params";
   }
-  // Queries a UserAirdropEntries by index.
-	rpc UserAirdropEntries(QueryUserAirdropEntriesRequest) returns (QueryUserAirdropEntriesResponse) {
-		option (google.api.http).get = "/c4e/airdrop/v1beta1/user_airdrop_entries/{address}";
+  // Queries a UserEntry by index.
+	rpc UserEntry(QueryUserEntryRequest) returns (QueryUserEntryResponse) {
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/user_entry/{address}";
 	}
 
-	// Queries a list of UserAirdropEntries items.
-	rpc UsersAirdropEntries(QueryUsersAirdropEntriesRequest) returns (QueryUsersAirdropEntriesResponse) {
-		option (google.api.http).get = "/c4e/airdrop/v1beta1/users_airdrop_entries";
+	// Queries a list of UserEntry items.
+	rpc UsersEntries(QueryUsersEntriesRequest) returns (QueryUsersEntriesResponse) {
+		option (google.api.http).get = "/c4e/airdrop/v1beta1/users_entries";
 	}
 
 	// Queries a Mission by index.
@@ -68,12 +68,12 @@ message QueryParamsResponse {
 	];
 }
 
-message QueryUserAirdropEntriesRequest {
+message QueryUserEntryRequest {
 	  string address = 1;
 }
 
-message QueryUserAirdropEntriesResponse {
-	UserAirdropEntries userAirdropEntries = 1 [
+message QueryUserEntryResponse {
+	UserEntry user_entry = 1 [
 		(gogoproto.nullable) = false
 	];
 }
@@ -100,12 +100,12 @@ message QueryAirdropClaimsLeftResponse {
 	];
 }
 
-message QueryUsersAirdropEntriesRequest {
+message QueryUsersEntriesRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryUsersAirdropEntriesResponse {
-	repeated UserAirdropEntries usersAirdropEntries = 1 [
+message QueryUsersEntriesResponse {
+	repeated UserEntry users_entries = 1 [
 		(gogoproto.nullable) = false
 	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;

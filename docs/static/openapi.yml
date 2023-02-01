@@ -569,24 +569,24 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  '/c4e/airdrop/v1beta1/user_airdrop_entries/{address}':
+  '/c4e/airdrop/v1beta1/user_entry/{address}':
     get:
-      summary: Queries a UserAirdropEntries by index.
-      operationId: Chain4EnergyC4EchainCfeairdropUserAirdropEntries
+      summary: Queries a UserEntry by index.
+      operationId: Chain4EnergyC4EchainCfeairdropUserEntry
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              userAirdropEntries:
+              user_entry:
                 type: object
                 properties:
                   address:
                     type: string
                   claim_address:
                     type: string
-                  airdrop_entries:
+                  claim_records:
                     type: array
                     items:
                       type: object
@@ -624,6 +624,8 @@ paths:
                           items:
                             type: string
                             format: uint64
+                      title: Claim record
+                    title: claim_records
         default:
           description: An unexpected error response.
           schema:
@@ -649,17 +651,17 @@ paths:
           type: string
       tags:
         - Query
-  /c4e/airdrop/v1beta1/users_airdrop_entries:
+  /c4e/airdrop/v1beta1/users_entries:
     get:
-      summary: Queries a list of UserAirdropEntries items.
-      operationId: Chain4EnergyC4EchainCfeairdropUsersAirdropEntries
+      summary: Queries a list of UserEntry items.
+      operationId: Chain4EnergyC4EchainCfeairdropUsersEntries
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              usersAirdropEntries:
+              users_entries:
                 type: array
                 items:
                   type: object
@@ -668,7 +670,7 @@ paths:
                       type: string
                     claim_address:
                       type: string
-                    airdrop_entries:
+                    claim_records:
                       type: array
                       items:
                         type: object
@@ -706,6 +708,8 @@ paths:
                             items:
                               type: string
                               format: uint64
+                        title: Claim record
+                      title: claim_records
               pagination:
                 type: object
                 properties:
@@ -32658,7 +32662,37 @@ definitions:
       - BURN
       - SEND_TO_OWNER
     default: AIRDROP_CLOSE_ACTION_UNSPECIFIED
-  chain4energy.c4echain.cfeairdrop.AirdropEntry:
+  chain4energy.c4echain.cfeairdrop.Campaign:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      owner:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      feegrant_amount:
+        type: string
+      initial_claim_free_amount:
+        type: string
+      enabled:
+        type: boolean
+      start_time:
+        type: string
+        format: date-time
+      end_time:
+        type: string
+        format: date-time
+      lockup_period:
+        type: string
+        title: period of locked coins from claim
+      vesting_period:
+        type: string
+        title: period of vesting coins after lockup period
+  chain4energy.c4echain.cfeairdrop.ClaimRecord:
     type: object
     properties:
       campaign_id:
@@ -32690,36 +32724,7 @@ definitions:
         items:
           type: string
           format: uint64
-  chain4energy.c4echain.cfeairdrop.Campaign:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uint64
-      owner:
-        type: string
-      name:
-        type: string
-      description:
-        type: string
-      feegrant_amount:
-        type: string
-      initial_claim_free_amount:
-        type: string
-      enabled:
-        type: boolean
-      start_time:
-        type: string
-        format: date-time
-      end_time:
-        type: string
-        format: date-time
-      lockup_period:
-        type: string
-        title: period of locked coins from claim
-      vesting_period:
-        type: string
-        title: period of vesting coins after lockup period
+    title: Claim record
   chain4energy.c4echain.cfeairdrop.Mission:
     type: object
     properties:
@@ -32756,7 +32761,7 @@ definitions:
       - VOTE
       - CLAIM
     default: MISSION_TYPE_UNSPECIFIED
-  chain4energy.c4echain.cfeairdrop.MsgAddAirdropEntriesResponse:
+  chain4energy.c4echain.cfeairdrop.MsgAddClaimRecordsResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaignResponse:
     type: object
@@ -32766,7 +32771,7 @@ definitions:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgDeleteAirdropEntryResponse:
+  chain4energy.c4echain.cfeairdrop.MsgDeleteClaimRecordResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgEditAirdropCampaignResponse:
     type: object
@@ -33000,17 +33005,17 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfeairdrop.QueryUserAirdropEntriesResponse:
+  chain4energy.c4echain.cfeairdrop.QueryUserEntryResponse:
     type: object
     properties:
-      userAirdropEntries:
+      user_entry:
         type: object
         properties:
           address:
             type: string
           claim_address:
             type: string
-          airdrop_entries:
+          claim_records:
             type: array
             items:
               type: object
@@ -33047,10 +33052,12 @@ definitions:
                   items:
                     type: string
                     format: uint64
-  chain4energy.c4echain.cfeairdrop.QueryUsersAirdropEntriesResponse:
+              title: Claim record
+            title: claim_records
+  chain4energy.c4echain.cfeairdrop.QueryUsersEntriesResponse:
     type: object
     properties:
-      usersAirdropEntries:
+      users_entries:
         type: array
         items:
           type: object
@@ -33059,7 +33066,7 @@ definitions:
               type: string
             claim_address:
               type: string
-            airdrop_entries:
+            claim_records:
               type: array
               items:
                 type: object
@@ -33096,6 +33103,8 @@ definitions:
                     items:
                       type: string
                       format: uint64
+                title: Claim record
+              title: claim_records
       pagination:
         type: object
         properties:
@@ -33121,14 +33130,14 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  chain4energy.c4echain.cfeairdrop.UserAirdropEntries:
+  chain4energy.c4echain.cfeairdrop.UserEntry:
     type: object
     properties:
       address:
         type: string
       claim_address:
         type: string
-      airdrop_entries:
+      claim_records:
         type: array
         items:
           type: object
@@ -33165,6 +33174,8 @@ definitions:
               items:
                 type: string
                 format: uint64
+          title: Claim record
+        title: claim_records
   cosmos.base.query.v1beta1.PageRequest:
     type: object
     properties:

@@ -23,7 +23,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.DefaultParams(),
 
-				UserAirdropEntries: []types.UserAirdropEntries{
+				UsersEntries: []types.UserEntry{
 					{
 						Address: "0",
 					},
@@ -46,9 +46,9 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
-			desc: "duplicated userAirdropEntries",
+			desc: "duplicated userEntry",
 			genState: &types.GenesisState{
-				UserAirdropEntries: []types.UserAirdropEntries{
+				UsersEntries: []types.UserEntry{
 					{
 						Address: "0",
 					},

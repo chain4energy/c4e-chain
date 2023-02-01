@@ -14,7 +14,7 @@ import (
 func CmdCreateAirdropEntry() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-airdrop-entry [campaignId] [airdrop-entries-json-file]",
-		Short: "Create a new AirdropEntry",
+		Short: "Create a new ClaimRecord",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := cast.ToUint64E(args[0])
@@ -43,10 +43,10 @@ func CmdCreateAirdropEntry() *cobra.Command {
 	return cmd
 }
 
-func CmdDeleteAirdropEntry() *cobra.Command {
+func CmdDeleteClaimRecord() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete-airdrop-entry [campaign-id] [user-address]",
-		Short: "Delete a AirdropEntry by id",
+		Short: "Delete a ClaimRecord by id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			campaignId, err := strconv.ParseUint(args[0], 10, 64)
@@ -59,7 +59,7 @@ func CmdDeleteAirdropEntry() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDeleteAirdropEntry(clientCtx.GetFromAddress().String(), campaignId, userAddress)
+			msg := types.NewMsgDeleteClaimRecord(clientCtx.GetFromAddress().String(), campaignId, userAddress)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

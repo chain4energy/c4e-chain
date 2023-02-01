@@ -71,7 +71,7 @@ export enum CfeairdropMissionType {
   CLAIM = "CLAIM",
 }
 
-export type CfeairdropMsgAddAirdropEntriesResponse = object;
+export type CfeairdropMsgAddClaimRecordsResponse = object;
 
 export type CfeairdropMsgAddMissionToAidropCampaignResponse = object;
 
@@ -81,7 +81,7 @@ export type CfeairdropMsgCloseAirdropCampaignResponse = object;
 
 export type CfeairdropMsgCreateAirdropCampaignResponse = object;
 
-export type CfeairdropMsgDeleteAirdropEntryResponse = object;
+export type CfeairdropMsgDeleteClaimRecordResponse = object;
 
 export type CfeairdropMsgEditAirdropCampaignResponse = object;
 
@@ -148,12 +148,12 @@ export interface CfeairdropQueryParamsResponse {
   params?: CfeairdropParams;
 }
 
-export interface CfeairdropQueryUserAirdropEntriesResponse {
-  userAirdropEntries?: CfeairdropUserAirdropEntries;
+export interface CfeairdropQueryUsersEntriesResponse {
+  userEntry?: CfeairdropUsersEntries;
 }
 
-export interface CfeairdropQueryUsersAirdropEntriesResponse {
-  usersAirdropEntries?: CfeairdropUserAirdropEntries[];
+export interface CfeairdropQueryUsersEntriesResponse {
+  usersEntries?: CfeairdropUsersEntries[];
 
   /**
    * PageResponse is to be embedded in gRPC response messages where the
@@ -167,7 +167,7 @@ export interface CfeairdropQueryUsersAirdropEntriesResponse {
   pagination?: V1Beta1PageResponse;
 }
 
-export interface CfeairdropUserAirdropEntries {
+export interface CfeairdropUsersEntries {
   address?: string;
   claim_address?: string;
   airdrop_entries?: CfeairdropAirdropEntry[];
@@ -527,12 +527,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryUserAirdropEntries
-   * @summary Queries a UserAirdropEntries by index.
+   * @name QueryUsersEntries
+   * @summary Queries a UserEntry by index.
    * @request GET:/c4e/airdrop/v1beta1/user_airdrop_entries/{address}
    */
-  queryUserAirdropEntries = (address: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryUserAirdropEntriesResponse, RpcStatus>({
+  queryUsersEntries = (address: string, params: RequestParams = {}) =>
+    this.request<CfeairdropQueryUsersEntriesResponse, RpcStatus>({
       path: `/c4e/airdrop/v1beta1/user_airdrop_entries/${address}`,
       method: "GET",
       format: "json",
@@ -543,11 +543,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryUsersAirdropEntries
-   * @summary Queries a list of UserAirdropEntries items.
+   * @name QueryUsersEntries
+   * @summary Queries a list of UserEntry items.
    * @request GET:/c4e/airdrop/v1beta1/users_airdrop_entries
    */
-  queryUsersAirdropEntries = (
+  queryUsersEntries = (
     query?: {
       "pagination.key"?: string;
       "pagination.offset"?: string;
@@ -557,7 +557,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     },
     params: RequestParams = {},
   ) =>
-    this.request<CfeairdropQueryUsersAirdropEntriesResponse, RpcStatus>({
+    this.request<CfeairdropQueryUsersEntriesResponse, RpcStatus>({
       path: `/c4e/airdrop/v1beta1/users_airdrop_entries`,
       method: "GET",
       query: query,

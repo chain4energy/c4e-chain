@@ -15,8 +15,8 @@ service Msg {
   rpc CreateAirdropCampaign(MsgCreateAirdropCampaign) returns (MsgCreateAirdropCampaignResponse);
   rpc EditAirdropCampaign(MsgEditAirdropCampaign) returns (MsgEditAirdropCampaignResponse);
   rpc AddMissionToAidropCampaign(MsgAddMissionToAidropCampaign) returns (MsgAddMissionToAidropCampaignResponse);
-  rpc AddAirdropEntries(MsgAddAirdropEntries) returns (MsgAddAirdropEntriesResponse);
-  rpc DeleteAirdropEntry(MsgDeleteAirdropEntry) returns (MsgDeleteAirdropEntryResponse);
+  rpc AddClaimRecords(MsgAddClaimRecords) returns (MsgAddClaimRecordsResponse);
+  rpc DeleteClaimRecord(MsgDeleteClaimRecord) returns (MsgDeleteClaimRecordResponse);
   rpc CloseAirdropCampaign(MsgCloseAirdropCampaign) returns (MsgCloseAirdropCampaignResponse);
   rpc StartAirdropCampaign(MsgStartAirdropCampaign) returns (MsgStartAirdropCampaignResponse);
   rpc RemoveAirdropCampaign(MsgRemoveAirdropCampaign) returns (MsgRemoveAirdropCampaignResponse);
@@ -89,21 +89,21 @@ message MsgAddMissionToAidropCampaign {
 
 message MsgAddMissionToAidropCampaignResponse {}
 
-message MsgAddAirdropEntries {
+message MsgAddClaimRecords {
   string owner = 1;
   uint64 campaign_id = 2;
-  repeated AirdropEntry airdrop_entries = 3 ;
+  repeated ClaimRecord claim_records = 3;
 }
 
-message MsgAddAirdropEntriesResponse {}
+message MsgAddClaimRecordsResponse {}
 
-message MsgDeleteAirdropEntry {
+message MsgDeleteClaimRecord {
   string owner = 1;
   uint64 campaignId = 2;
   string userAddress = 3;
 }
 
-message MsgDeleteAirdropEntryResponse {}
+message MsgDeleteClaimRecordResponse {}
 
 message MsgCloseAirdropCampaign {
   string owner = 1;

@@ -21,7 +21,7 @@ func SimulateMsgCreateAirdropEntry(
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 
-		msg := &types.MsgAddAirdropEntries{
+		msg := &types.MsgAddClaimRecords{
 			Owner: simAccount.Address.String(),
 		}
 

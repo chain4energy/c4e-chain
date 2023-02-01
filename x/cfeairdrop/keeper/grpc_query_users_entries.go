@@ -11,24 +11,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) UsersAirdropEntries(c context.Context, req *types.QueryUsersAirdropEntriesRequest) (*types.QueryUsersAirdropEntriesResponse, error) {
+func (k Keeper) UsersEntries(c context.Context, req *types.QueryUsersEntriesRequest) (*types.QueryUsersEntriesResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var userAirdropEntries []types.UserAirdropEntries
+	var userEntry []types.UserEntry
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	claimRecordStore := prefix.NewStore(store, types.KeyPrefix(types.UserAirdropEntriesKeyPrefix))
+	claimRecordStore := prefix.NewStore(store, types.KeyPrefix(types.UsersEntriesKeyPrefix))
 
 	pageRes, err := query.Paginate(claimRecordStore, req.Pagination, func(key []byte, value []byte) error {
-		var userAirdropEntry types.UserAirdropEntries
+		var userAirdropEntry types.UserEntry
 		if err := k.cdc.Unmarshal(value, &userAirdropEntry); err != nil {
 			return err
 		}
 
-		userAirdropEntries = append(userAirdropEntries, userAirdropEntry)
+		userEntry = append(userEntry, userAirdropEntry)
 		return nil
 	})
 
@@ -36,16 +36,16 @@ func (k Keeper) UsersAirdropEntries(c context.Context, req *types.QueryUsersAird
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryUsersAirdropEntriesResponse{UsersAirdropEntries: userAirdropEntries, Pagination: pageRes}, nil
+	return &types.QueryUsersEntriesResponse{UsersEntries: userEntry, Pagination: pageRes}, nil
 }
 
-func (k Keeper) UserAirdropEntries(c context.Context, req *types.QueryUserAirdropEntriesRequest) (*types.QueryUserAirdropEntriesResponse, error) {
+func (k Keeper) UserEntry(c context.Context, req *types.QueryUserEntryRequest) (*types.QueryUserEntryResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetUserAirdropEntries(
+	val, found := k.GetUserEntry(
 		ctx,
 		req.Address,
 	)
@@ -53,7 +53,7 @@ func (k Keeper) UserAirdropEntries(c context.Context, req *types.QueryUserAirdro
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryUserAirdropEntriesResponse{UserAirdropEntries: val}, nil
+	return &types.QueryUserEntryResponse{UserEntry: val}, nil
 }
 
 func (k Keeper) AirdropDistrubitions(c context.Context, req *types.QueryAirdropDistrubitionsRequest) (*types.QueryAirdropDistrubitionsResponse, error) {

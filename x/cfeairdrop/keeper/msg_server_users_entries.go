@@ -7,23 +7,23 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) AddAirdropEntries(goCtx context.Context, msg *types.MsgAddAirdropEntries) (*types.MsgAddAirdropEntriesResponse, error) {
+func (k msgServer) AddClaimRecords(goCtx context.Context, msg *types.MsgAddClaimRecords) (*types.MsgAddClaimRecordsResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "add airdrop entries message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
-	if err := keeper.AddUserAirdropEntries(
+	if err := keeper.AddUsersEntries(
 		ctx,
 		msg.Owner,
 		msg.CampaignId,
-		msg.AirdropEntries,
+		msg.ClaimRecords,
 	); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgAddAirdropEntriesResponse{}, nil
+	return &types.MsgAddClaimRecordsResponse{}, nil
 }
 
-func (k msgServer) DeleteAirdropEntry(goCtx context.Context, msg *types.MsgDeleteAirdropEntry) (*types.MsgDeleteAirdropEntryResponse, error) {
+func (k msgServer) DeleteClaimRecord(goCtx context.Context, msg *types.MsgDeleteClaimRecord) (*types.MsgDeleteClaimRecordResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "delete airdrop entry message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
@@ -36,5 +36,5 @@ func (k msgServer) DeleteAirdropEntry(goCtx context.Context, msg *types.MsgDelet
 		return nil, err
 	}
 
-	return &types.MsgDeleteAirdropEntryResponse{}, nil
+	return &types.MsgDeleteClaimRecordResponse{}, nil
 }

@@ -101,22 +101,20 @@ export function airdropCloseActionToJSON(object: AirdropCloseAction): string {
   }
 }
 
-export interface UserAirdropEntries {
+export interface UserEntry {
   address: string;
   claim_address: string;
-  airdrop_entries: AirdropEntry[];
+  /** claim_records */
+  claim_records: ClaimRecord[];
 }
 
-export interface AirdropEntry {
+/** Claim record */
+export interface ClaimRecord {
   campaign_id: number;
   address: string;
   airdrop_coins: Coin[];
   completedMissions: number[];
   claimedMissions: number[];
-}
-
-export interface AirdropEntries {
-  airdrop_entries: AirdropEntry[];
 }
 
 export interface AirdropDistrubitions {
@@ -155,30 +153,27 @@ export interface Mission {
   claim_start_date: Date | undefined;
 }
 
-const baseUserAirdropEntries: object = { address: "", claim_address: "" };
+const baseUserEntry: object = { address: "", claim_address: "" };
 
-export const UserAirdropEntries = {
-  encode(
-    message: UserAirdropEntries,
-    writer: Writer = Writer.create()
-  ): Writer {
+export const UserEntry = {
+  encode(message: UserEntry, writer: Writer = Writer.create()): Writer {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
     if (message.claim_address !== "") {
       writer.uint32(18).string(message.claim_address);
     }
-    for (const v of message.airdrop_entries) {
-      AirdropEntry.encode(v!, writer.uint32(26).fork()).ldelim();
+    for (const v of message.claim_records) {
+      ClaimRecord.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): UserAirdropEntries {
+  decode(input: Reader | Uint8Array, length?: number): UserEntry {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseUserAirdropEntries } as UserAirdropEntries;
-    message.airdrop_entries = [];
+    const message = { ...baseUserEntry } as UserEntry;
+    message.claim_records = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -189,8 +184,8 @@ export const UserAirdropEntries = {
           message.claim_address = reader.string();
           break;
         case 3:
-          message.airdrop_entries.push(
-            AirdropEntry.decode(reader, reader.uint32())
+          message.claim_records.push(
+            ClaimRecord.decode(reader, reader.uint32())
           );
           break;
         default:
@@ -201,9 +196,9 @@ export const UserAirdropEntries = {
     return message;
   },
 
-  fromJSON(object: any): UserAirdropEntries {
-    const message = { ...baseUserAirdropEntries } as UserAirdropEntries;
-    message.airdrop_entries = [];
+  fromJSON(object: any): UserEntry {
+    const message = { ...baseUserEntry } as UserEntry;
+    message.claim_records = [];
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
     } else {
@@ -214,35 +209,32 @@ export const UserAirdropEntries = {
     } else {
       message.claim_address = "";
     }
-    if (
-      object.airdrop_entries !== undefined &&
-      object.airdrop_entries !== null
-    ) {
-      for (const e of object.airdrop_entries) {
-        message.airdrop_entries.push(AirdropEntry.fromJSON(e));
+    if (object.claim_records !== undefined && object.claim_records !== null) {
+      for (const e of object.claim_records) {
+        message.claim_records.push(ClaimRecord.fromJSON(e));
       }
     }
     return message;
   },
 
-  toJSON(message: UserAirdropEntries): unknown {
+  toJSON(message: UserEntry): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
     message.claim_address !== undefined &&
       (obj.claim_address = message.claim_address);
-    if (message.airdrop_entries) {
-      obj.airdrop_entries = message.airdrop_entries.map((e) =>
-        e ? AirdropEntry.toJSON(e) : undefined
+    if (message.claim_records) {
+      obj.claim_records = message.claim_records.map((e) =>
+        e ? ClaimRecord.toJSON(e) : undefined
       );
     } else {
-      obj.airdrop_entries = [];
+      obj.claim_records = [];
     }
     return obj;
   },
 
-  fromPartial(object: DeepPartial<UserAirdropEntries>): UserAirdropEntries {
-    const message = { ...baseUserAirdropEntries } as UserAirdropEntries;
-    message.airdrop_entries = [];
+  fromPartial(object: DeepPartial<UserEntry>): UserEntry {
+    const message = { ...baseUserEntry } as UserEntry;
+    message.claim_records = [];
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     } else {
@@ -253,27 +245,24 @@ export const UserAirdropEntries = {
     } else {
       message.claim_address = "";
     }
-    if (
-      object.airdrop_entries !== undefined &&
-      object.airdrop_entries !== null
-    ) {
-      for (const e of object.airdrop_entries) {
-        message.airdrop_entries.push(AirdropEntry.fromPartial(e));
+    if (object.claim_records !== undefined && object.claim_records !== null) {
+      for (const e of object.claim_records) {
+        message.claim_records.push(ClaimRecord.fromPartial(e));
       }
     }
     return message;
   },
 };
 
-const baseAirdropEntry: object = {
+const baseClaimRecord: object = {
   campaign_id: 0,
   address: "",
   completedMissions: 0,
   claimedMissions: 0,
 };
 
-export const AirdropEntry = {
-  encode(message: AirdropEntry, writer: Writer = Writer.create()): Writer {
+export const ClaimRecord = {
+  encode(message: ClaimRecord, writer: Writer = Writer.create()): Writer {
     if (message.campaign_id !== 0) {
       writer.uint32(8).uint64(message.campaign_id);
     }
@@ -296,10 +285,10 @@ export const AirdropEntry = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): AirdropEntry {
+  decode(input: Reader | Uint8Array, length?: number): ClaimRecord {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAirdropEntry } as AirdropEntry;
+    const message = { ...baseClaimRecord } as ClaimRecord;
     message.airdrop_coins = [];
     message.completedMissions = [];
     message.claimedMissions = [];
@@ -349,8 +338,8 @@ export const AirdropEntry = {
     return message;
   },
 
-  fromJSON(object: any): AirdropEntry {
-    const message = { ...baseAirdropEntry } as AirdropEntry;
+  fromJSON(object: any): ClaimRecord {
+    const message = { ...baseClaimRecord } as ClaimRecord;
     message.airdrop_coins = [];
     message.completedMissions = [];
     message.claimedMissions = [];
@@ -388,7 +377,7 @@ export const AirdropEntry = {
     return message;
   },
 
-  toJSON(message: AirdropEntry): unknown {
+  toJSON(message: ClaimRecord): unknown {
     const obj: any = {};
     message.campaign_id !== undefined &&
       (obj.campaign_id = message.campaign_id);
@@ -413,8 +402,8 @@ export const AirdropEntry = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<AirdropEntry>): AirdropEntry {
-    const message = { ...baseAirdropEntry } as AirdropEntry;
+  fromPartial(object: DeepPartial<ClaimRecord>): ClaimRecord {
+    const message = { ...baseClaimRecord } as ClaimRecord;
     message.airdrop_coins = [];
     message.completedMissions = [];
     message.claimedMissions = [];
@@ -447,78 +436,6 @@ export const AirdropEntry = {
     ) {
       for (const e of object.claimedMissions) {
         message.claimedMissions.push(e);
-      }
-    }
-    return message;
-  },
-};
-
-const baseAirdropEntries: object = {};
-
-export const AirdropEntries = {
-  encode(message: AirdropEntries, writer: Writer = Writer.create()): Writer {
-    for (const v of message.airdrop_entries) {
-      AirdropEntry.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): AirdropEntries {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAirdropEntries } as AirdropEntries;
-    message.airdrop_entries = [];
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.airdrop_entries.push(
-            AirdropEntry.decode(reader, reader.uint32())
-          );
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): AirdropEntries {
-    const message = { ...baseAirdropEntries } as AirdropEntries;
-    message.airdrop_entries = [];
-    if (
-      object.airdrop_entries !== undefined &&
-      object.airdrop_entries !== null
-    ) {
-      for (const e of object.airdrop_entries) {
-        message.airdrop_entries.push(AirdropEntry.fromJSON(e));
-      }
-    }
-    return message;
-  },
-
-  toJSON(message: AirdropEntries): unknown {
-    const obj: any = {};
-    if (message.airdrop_entries) {
-      obj.airdrop_entries = message.airdrop_entries.map((e) =>
-        e ? AirdropEntry.toJSON(e) : undefined
-      );
-    } else {
-      obj.airdrop_entries = [];
-    }
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<AirdropEntries>): AirdropEntries {
-    const message = { ...baseAirdropEntries } as AirdropEntries;
-    message.airdrop_entries = [];
-    if (
-      object.airdrop_entries !== undefined &&
-      object.airdrop_entries !== null
-    ) {
-      for (const e of object.airdrop_entries) {
-        message.airdrop_entries.push(AirdropEntry.fromPartial(e));
       }
     }
     return message;

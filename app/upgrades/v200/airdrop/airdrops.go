@@ -70,7 +70,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	if err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 0, stakedropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 0, stakedropAirdropEntries); err != nil {
 		return err
 	}
 
@@ -78,7 +78,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	if err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 1, teamdropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 1, teamdropAirdropEntries); err != nil {
 		return err
 	}
 
@@ -86,7 +86,7 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	if err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 2, santadropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 2, santadropAirdropEntries); err != nil {
 		return err
 	}
 
@@ -94,19 +94,19 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 	if err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 3, gleamdropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 3, gleamdropAirdropEntries); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func readAirdropEntriesFromJson(fileName string) ([]*types.AirdropEntry, error) {
+func readAirdropEntriesFromJson(fileName string) ([]*types.ClaimRecord, error) {
 	data, err := f.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
-	var airdropEntires []*types.AirdropEntry
+	var airdropEntires []*types.ClaimRecord
 	err = json.Unmarshal(data, &airdropEntires)
 	if err != nil {
 		return nil, err

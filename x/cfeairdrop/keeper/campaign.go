@@ -108,7 +108,7 @@ func (k Keeper) SetCampaignCount(ctx sdk.Context, count uint64) {
 }
 
 func (k Keeper) GetWhitelistedVestingAccounts() []string {
-	return []string{"c4e1asgp8qrlznsjs7ww5f60lf64gx04s6nsrte4dv"}
+	return []string{"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj"}
 }
 
 // GetCampaign returns a campaignO from its index

@@ -115,22 +115,22 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-type QueryUserAirdropEntriesRequest struct {
+type QueryUserEntryRequest struct {
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 }
 
-func (m *QueryUserAirdropEntriesRequest) Reset()         { *m = QueryUserAirdropEntriesRequest{} }
-func (m *QueryUserAirdropEntriesRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryUserAirdropEntriesRequest) ProtoMessage()    {}
-func (*QueryUserAirdropEntriesRequest) Descriptor() ([]byte, []int) {
+func (m *QueryUserEntryRequest) Reset()         { *m = QueryUserEntryRequest{} }
+func (m *QueryUserEntryRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryUserEntryRequest) ProtoMessage()    {}
+func (*QueryUserEntryRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_d8d331bacc5e86de, []int{2}
 }
-func (m *QueryUserAirdropEntriesRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryUserEntryRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryUserAirdropEntriesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryUserEntryRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryUserAirdropEntriesRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryUserEntryRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -140,41 +140,41 @@ func (m *QueryUserAirdropEntriesRequest) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *QueryUserAirdropEntriesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryUserAirdropEntriesRequest.Merge(m, src)
+func (m *QueryUserEntryRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUserEntryRequest.Merge(m, src)
 }
-func (m *QueryUserAirdropEntriesRequest) XXX_Size() int {
+func (m *QueryUserEntryRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryUserAirdropEntriesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryUserAirdropEntriesRequest.DiscardUnknown(m)
+func (m *QueryUserEntryRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUserEntryRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryUserAirdropEntriesRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryUserEntryRequest proto.InternalMessageInfo
 
-func (m *QueryUserAirdropEntriesRequest) GetAddress() string {
+func (m *QueryUserEntryRequest) GetAddress() string {
 	if m != nil {
 		return m.Address
 	}
 	return ""
 }
 
-type QueryUserAirdropEntriesResponse struct {
-	UserAirdropEntries UserAirdropEntries `protobuf:"bytes,1,opt,name=userAirdropEntries,proto3" json:"userAirdropEntries"`
+type QueryUserEntryResponse struct {
+	UserEntry UserEntry `protobuf:"bytes,1,opt,name=user_entry,json=userEntry,proto3" json:"user_entry"`
 }
 
-func (m *QueryUserAirdropEntriesResponse) Reset()         { *m = QueryUserAirdropEntriesResponse{} }
-func (m *QueryUserAirdropEntriesResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryUserAirdropEntriesResponse) ProtoMessage()    {}
-func (*QueryUserAirdropEntriesResponse) Descriptor() ([]byte, []int) {
+func (m *QueryUserEntryResponse) Reset()         { *m = QueryUserEntryResponse{} }
+func (m *QueryUserEntryResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryUserEntryResponse) ProtoMessage()    {}
+func (*QueryUserEntryResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_d8d331bacc5e86de, []int{3}
 }
-func (m *QueryUserAirdropEntriesResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryUserEntryResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryUserAirdropEntriesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryUserEntryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryUserAirdropEntriesResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryUserEntryResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -184,23 +184,23 @@ func (m *QueryUserAirdropEntriesResponse) XXX_Marshal(b []byte, deterministic bo
 		return b[:n], nil
 	}
 }
-func (m *QueryUserAirdropEntriesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryUserAirdropEntriesResponse.Merge(m, src)
+func (m *QueryUserEntryResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUserEntryResponse.Merge(m, src)
 }
-func (m *QueryUserAirdropEntriesResponse) XXX_Size() int {
+func (m *QueryUserEntryResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryUserAirdropEntriesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryUserAirdropEntriesResponse.DiscardUnknown(m)
+func (m *QueryUserEntryResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUserEntryResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryUserAirdropEntriesResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryUserEntryResponse proto.InternalMessageInfo
 
-func (m *QueryUserAirdropEntriesResponse) GetUserAirdropEntries() UserAirdropEntries {
+func (m *QueryUserEntryResponse) GetUserEntry() UserEntry {
 	if m != nil {
-		return m.UserAirdropEntries
+		return m.UserEntry
 	}
-	return UserAirdropEntries{}
+	return UserEntry{}
 }
 
 type QueryAirdropDistrubitionsRequest struct {
@@ -379,22 +379,22 @@ func (m *QueryAirdropClaimsLeftResponse) GetAirdropCoins() github_com_cosmos_cos
 	return nil
 }
 
-type QueryUsersAirdropEntriesRequest struct {
+type QueryUsersEntriesRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryUsersAirdropEntriesRequest) Reset()         { *m = QueryUsersAirdropEntriesRequest{} }
-func (m *QueryUsersAirdropEntriesRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryUsersAirdropEntriesRequest) ProtoMessage()    {}
-func (*QueryUsersAirdropEntriesRequest) Descriptor() ([]byte, []int) {
+func (m *QueryUsersEntriesRequest) Reset()         { *m = QueryUsersEntriesRequest{} }
+func (m *QueryUsersEntriesRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryUsersEntriesRequest) ProtoMessage()    {}
+func (*QueryUsersEntriesRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_d8d331bacc5e86de, []int{8}
 }
-func (m *QueryUsersAirdropEntriesRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryUsersEntriesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryUsersAirdropEntriesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryUsersEntriesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryUsersAirdropEntriesRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryUsersEntriesRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -404,42 +404,42 @@ func (m *QueryUsersAirdropEntriesRequest) XXX_Marshal(b []byte, deterministic bo
 		return b[:n], nil
 	}
 }
-func (m *QueryUsersAirdropEntriesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryUsersAirdropEntriesRequest.Merge(m, src)
+func (m *QueryUsersEntriesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUsersEntriesRequest.Merge(m, src)
 }
-func (m *QueryUsersAirdropEntriesRequest) XXX_Size() int {
+func (m *QueryUsersEntriesRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryUsersAirdropEntriesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryUsersAirdropEntriesRequest.DiscardUnknown(m)
+func (m *QueryUsersEntriesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUsersEntriesRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryUsersAirdropEntriesRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryUsersEntriesRequest proto.InternalMessageInfo
 
-func (m *QueryUsersAirdropEntriesRequest) GetPagination() *query.PageRequest {
+func (m *QueryUsersEntriesRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryUsersAirdropEntriesResponse struct {
-	UsersAirdropEntries []UserAirdropEntries `protobuf:"bytes,1,rep,name=usersAirdropEntries,proto3" json:"usersAirdropEntries"`
-	Pagination          *query.PageResponse  `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+type QueryUsersEntriesResponse struct {
+	UsersEntries []UserEntry         `protobuf:"bytes,1,rep,name=users_entries,json=usersEntries,proto3" json:"users_entries"`
+	Pagination   *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryUsersAirdropEntriesResponse) Reset()         { *m = QueryUsersAirdropEntriesResponse{} }
-func (m *QueryUsersAirdropEntriesResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryUsersAirdropEntriesResponse) ProtoMessage()    {}
-func (*QueryUsersAirdropEntriesResponse) Descriptor() ([]byte, []int) {
+func (m *QueryUsersEntriesResponse) Reset()         { *m = QueryUsersEntriesResponse{} }
+func (m *QueryUsersEntriesResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryUsersEntriesResponse) ProtoMessage()    {}
+func (*QueryUsersEntriesResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_d8d331bacc5e86de, []int{9}
 }
-func (m *QueryUsersAirdropEntriesResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryUsersEntriesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryUsersAirdropEntriesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryUsersEntriesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryUsersAirdropEntriesResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryUsersEntriesResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -449,26 +449,26 @@ func (m *QueryUsersAirdropEntriesResponse) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *QueryUsersAirdropEntriesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryUsersAirdropEntriesResponse.Merge(m, src)
+func (m *QueryUsersEntriesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUsersEntriesResponse.Merge(m, src)
 }
-func (m *QueryUsersAirdropEntriesResponse) XXX_Size() int {
+func (m *QueryUsersEntriesResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryUsersAirdropEntriesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryUsersAirdropEntriesResponse.DiscardUnknown(m)
+func (m *QueryUsersEntriesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUsersEntriesResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryUsersAirdropEntriesResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryUsersEntriesResponse proto.InternalMessageInfo
 
-func (m *QueryUsersAirdropEntriesResponse) GetUsersAirdropEntries() []UserAirdropEntries {
+func (m *QueryUsersEntriesResponse) GetUsersEntries() []UserEntry {
 	if m != nil {
-		return m.UsersAirdropEntries
+		return m.UsersEntries
 	}
 	return nil
 }
 
-func (m *QueryUsersAirdropEntriesResponse) GetPagination() *query.PageResponse {
+func (m *QueryUsersEntriesResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -854,14 +854,14 @@ func (m *QueryCampaignResponse) GetCampaign() Campaign {
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryParamsResponse")
-	proto.RegisterType((*QueryUserAirdropEntriesRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryUserAirdropEntriesRequest")
-	proto.RegisterType((*QueryUserAirdropEntriesResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryUserAirdropEntriesResponse")
+	proto.RegisterType((*QueryUserEntryRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryUserEntryRequest")
+	proto.RegisterType((*QueryUserEntryResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryUserEntryResponse")
 	proto.RegisterType((*QueryAirdropDistrubitionsRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryAirdropDistrubitionsRequest")
 	proto.RegisterType((*QueryAirdropDistrubitionsResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryAirdropDistrubitionsResponse")
 	proto.RegisterType((*QueryAirdropClaimsLeftRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryAirdropClaimsLeftRequest")
 	proto.RegisterType((*QueryAirdropClaimsLeftResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryAirdropClaimsLeftResponse")
-	proto.RegisterType((*QueryUsersAirdropEntriesRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryUsersAirdropEntriesRequest")
-	proto.RegisterType((*QueryUsersAirdropEntriesResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryUsersAirdropEntriesResponse")
+	proto.RegisterType((*QueryUsersEntriesRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryUsersEntriesRequest")
+	proto.RegisterType((*QueryUsersEntriesResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryUsersEntriesResponse")
 	proto.RegisterType((*QueryMissionRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryMissionRequest")
 	proto.RegisterType((*QueryMissionResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryMissionResponse")
 	proto.RegisterType((*QueryMissionsRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryMissionsRequest")
@@ -875,70 +875,71 @@ func init() {
 func init() { proto.RegisterFile("cfeairdrop/query.proto", fileDescriptor_d8d331bacc5e86de) }
 
 var fileDescriptor_d8d331bacc5e86de = []byte{
-	// 1006 bytes of a gzipped FileDescriptorProto
+	// 1016 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x57, 0xcf, 0x6f, 0xdc, 0x44,
-	0x14, 0xce, 0xa4, 0x25, 0x69, 0x5e, 0xe8, 0x81, 0x49, 0x28, 0xc1, 0x34, 0x4e, 0x30, 0xa8, 0x84,
-	0x40, 0x6c, 0x9a, 0x6c, 0x9b, 0x50, 0x24, 0x9a, 0x64, 0xa1, 0x28, 0x52, 0x41, 0x65, 0xa5, 0x5e,
-	0x90, 0x60, 0xe5, 0xf5, 0x4e, 0xdc, 0x81, 0x5d, 0x8f, 0xeb, 0xf1, 0x22, 0xa2, 0x28, 0x17, 0xee,
-	0x48, 0x08, 0xc4, 0x85, 0x2b, 0x12, 0x07, 0x38, 0xc0, 0x95, 0xff, 0xa0, 0x12, 0x97, 0x48, 0x48,
-	0x11, 0x5c, 0xf8, 0x91, 0xf0, 0x87, 0x20, 0x8f, 0x9f, 0x13, 0x7b, 0xd7, 0xd9, 0xb5, 0xd9, 0x95,
-	0x7a, 0xda, 0xf5, 0xcc, 0xbc, 0xef, 0x7d, 0xdf, 0x7b, 0xcf, 0x6f, 0x9e, 0xe1, 0x8a, 0xb3, 0xcb,
-	0x6c, 0x1e, 0x34, 0x03, 0xe1, 0x5b, 0x0f, 0x3b, 0x2c, 0xd8, 0x33, 0xfd, 0x40, 0x84, 0x82, 0x2e,
-	0x3a, 0x0f, 0x6c, 0xee, 0x55, 0x98, 0xc7, 0x02, 0x77, 0xcf, 0x74, 0x2a, 0x4c, 0x3d, 0x9b, 0x67,
-	0xa7, 0xb5, 0x59, 0x57, 0xb8, 0x42, 0x1d, 0xb6, 0xa2, 0x7f, 0xb1, 0x9d, 0x76, 0xd5, 0x15, 0xc2,
-	0x6d, 0x31, 0xcb, 0xf6, 0xb9, 0x65, 0x7b, 0x9e, 0x08, 0xed, 0x90, 0x0b, 0x4f, 0xe2, 0xee, 0xb2,
-	0x23, 0x64, 0x5b, 0x48, 0xab, 0x61, 0x4b, 0x16, 0xbb, 0xb3, 0x3e, 0xbd, 0xde, 0x60, 0xa1, 0x7d,
-	0xdd, 0xf2, 0x6d, 0x97, 0x7b, 0xea, 0x30, 0x9e, 0x7d, 0x26, 0xc5, 0xcc, 0xb7, 0x03, 0xbb, 0x9d,
-	0x80, 0xcc, 0xa5, 0x36, 0xf0, 0x17, 0x77, 0xf4, 0x34, 0x7c, 0x02, 0xec, 0x08, 0x8e, 0x90, 0xc6,
-	0x2c, 0xd0, 0xf7, 0x23, 0xa7, 0xf7, 0x14, 0x5c, 0x8d, 0x3d, 0xec, 0x30, 0x19, 0x1a, 0x1f, 0xc2,
-	0x4c, 0x66, 0x55, 0xfa, 0xc2, 0x93, 0x8c, 0xde, 0x81, 0x89, 0xd8, 0xed, 0x1c, 0x59, 0x24, 0x4b,
-	0xd3, 0xab, 0x4b, 0xe6, 0xa0, 0x90, 0x98, 0x31, 0xc2, 0xf6, 0xc5, 0x47, 0x7f, 0x2e, 0x8c, 0xd5,
-	0xd0, 0xda, 0xb8, 0x05, 0xba, 0x82, 0xbf, 0x2f, 0x59, 0xb0, 0x15, 0x1f, 0x7c, 0xdb, 0x0b, 0x03,
-	0xce, 0x12, 0x02, 0x74, 0x0e, 0x26, 0xed, 0x66, 0x33, 0x60, 0x32, 0x76, 0x35, 0x55, 0x4b, 0x1e,
-	0x8d, 0x2f, 0x08, 0x2c, 0x9c, 0x6b, 0x8c, 0x3c, 0x3f, 0x06, 0xda, 0xe9, 0xd9, 0x45, 0xce, 0x95,
-	0xc1, 0x9c, 0x7b, 0x91, 0x91, 0x7f, 0x0e, 0xaa, 0x51, 0x85, 0x45, 0x45, 0x07, 0x97, 0xdf, 0xe2,
-	0x32, 0x0c, 0x3a, 0x0d, 0xae, 0x52, 0x9c, 0xa8, 0x59, 0x80, 0x69, 0xc7, 0x6e, 0xfb, 0x36, 0x77,
-	0xbd, 0x3a, 0x6f, 0x2a, 0x22, 0x17, 0x6b, 0x90, 0x2c, 0xed, 0x34, 0x8d, 0x6f, 0x08, 0x3c, 0xdf,
-	0x07, 0x05, 0x65, 0xf9, 0x70, 0x19, 0x29, 0xd6, 0xa3, 0x0c, 0x46, 0x8a, 0x2e, 0x2c, 0x4d, 0xaf,
-	0x3e, 0x6b, 0xc6, 0x39, 0x36, 0xa3, 0x1c, 0x9b, 0x98, 0x63, 0xb3, 0x2a, 0xb8, 0xb7, 0xfd, 0x5a,
-	0x44, 0xfb, 0x87, 0xbf, 0x16, 0x96, 0x5c, 0x1e, 0x3e, 0xe8, 0x34, 0x4c, 0x47, 0xb4, 0x2d, 0x2c,
-	0x88, 0xf8, 0x67, 0x45, 0x36, 0x3f, 0xb1, 0xc2, 0x3d, 0x9f, 0x49, 0x65, 0x20, 0x6b, 0x4f, 0xa2,
-	0x07, 0xf5, 0x64, 0x6c, 0xc2, 0x7c, 0x9a, 0x56, 0xb5, 0x65, 0xf3, 0xb6, 0xbc, 0xcb, 0x76, 0xc3,
-	0xc2, 0xca, 0xbe, 0x22, 0x98, 0xeb, 0x1c, 0x88, 0xc7, 0x26, 0x8b, 0xa7, 0x4a, 0x48, 0xe6, 0x17,
-	0xe0, 0x1d, 0x80, 0xb3, 0xd7, 0x0f, 0x4b, 0xe7, 0x5a, 0x86, 0x51, 0xdc, 0x1a, 0x12, 0x5e, 0xf7,
-	0x6c, 0x97, 0xa1, 0x6d, 0x2d, 0x65, 0x69, 0xfc, 0x41, 0xb0, 0x3e, 0x72, 0x7d, 0x61, 0x04, 0x5a,
-	0x30, 0xd3, 0xe9, 0xdd, 0xc6, 0x38, 0x0c, 0x53, 0xb0, 0x79, 0xb0, 0xf4, 0x9d, 0x8c, 0xb4, 0x71,
-	0x25, 0xed, 0xa5, 0x81, 0xd2, 0x62, 0xaa, 0x19, 0x6d, 0xf7, 0xb1, 0x4b, 0xbc, 0xcb, 0xa5, 0xe4,
-	0xc2, 0x2b, 0x5a, 0x13, 0x74, 0x1e, 0xa0, 0x1d, 0x9b, 0x44, 0xfb, 0xe3, 0x6a, 0x7f, 0x0a, 0x57,
-	0x76, 0x9a, 0x86, 0x0d, 0xb3, 0x59, 0x58, 0x8c, 0xd2, 0x0e, 0x4c, 0xe2, 0x21, 0xcc, 0xc7, 0xcb,
-	0x83, 0x23, 0x83, 0x18, 0x18, 0x8e, 0xc4, 0xde, 0xf8, 0x28, 0xeb, 0x62, 0xe4, 0x59, 0xff, 0x91,
-	0xc0, 0xd3, 0x5d, 0x0e, 0xf2, 0x44, 0x5c, 0x18, 0x46, 0xc4, 0xe8, 0xf2, 0x58, 0x47, 0xb2, 0x55,
-	0x4c, 0xd1, 0xc8, 0xc3, 0xf1, 0x13, 0x81, 0x2b, 0xdd, 0x1e, 0x30, 0x1e, 0x77, 0xe1, 0x52, 0x52,
-	0x19, 0x18, 0x90, 0xe5, 0xc1, 0x01, 0x49, 0x60, 0x30, 0x22, 0xa7, 0x08, 0xa3, 0x0b, 0xc9, 0x3a,
-	0x16, 0x48, 0xe2, 0xa9, 0x70, 0xbf, 0x63, 0x5d, 0xb1, 0x3c, 0x47, 0x28, 0x19, 0x4e, 0xe8, 0xea,
-	0xaf, 0x97, 0xe1, 0x09, 0xe5, 0x87, 0x7e, 0x4b, 0x60, 0x22, 0xbe, 0x64, 0x69, 0x81, 0x4e, 0xd1,
-	0x7b, 0xd7, 0x6b, 0x37, 0x4a, 0x5a, 0xc5, 0x7a, 0x8c, 0x17, 0x3e, 0xff, 0xed, 0xdf, 0xaf, 0xc7,
-	0xe7, 0xe9, 0x73, 0x96, 0x53, 0x61, 0xc9, 0xd0, 0x91, 0x1a, 0x5d, 0x14, 0xa3, 0x23, 0x02, 0xb4,
-	0xb7, 0x39, 0xd1, 0xcd, 0x82, 0x2e, 0xcf, 0x9d, 0x0f, 0xb4, 0xad, 0x21, 0x10, 0x50, 0xc0, 0x1b,
-	0x4a, 0xc0, 0x0d, 0xba, 0x96, 0x2b, 0x20, 0x6a, 0x9c, 0xf5, 0xe4, 0x5a, 0x62, 0xb1, 0xa9, 0xb5,
-	0x8f, 0x43, 0xc8, 0x01, 0x3d, 0x24, 0x30, 0x93, 0xd3, 0xd1, 0x69, 0x19, 0x5e, 0xf9, 0x37, 0x8f,
-	0xb6, 0x3d, 0x0c, 0x04, 0x6a, 0x5b, 0x55, 0xda, 0x5e, 0xa5, 0xcb, 0xe7, 0x6a, 0x93, 0xdd, 0xe2,
-	0xe8, 0x2f, 0x04, 0x26, 0xb1, 0xd3, 0xd0, 0xa2, 0x35, 0x91, 0xed, 0xfc, 0xda, 0xcd, 0xb2, 0x66,
-	0x48, 0xf7, 0xb6, 0xa2, 0xfb, 0x3a, 0x5d, 0xcf, 0xa5, 0x8b, 0xfd, 0xce, 0xda, 0x4f, 0xbd, 0x79,
-	0x07, 0xd6, 0xfe, 0xd9, 0x15, 0x72, 0x40, 0xbf, 0x23, 0x00, 0x08, 0xba, 0xd5, 0x6a, 0xd1, 0x92,
-	0x3c, 0x4e, 0x43, 0xbf, 0x5e, 0xda, 0x0e, 0x05, 0xbc, 0xa8, 0x04, 0xe8, 0xf4, 0x6a, 0x3f, 0x01,
-	0xf4, 0x7b, 0x02, 0x53, 0xa7, 0x1d, 0x90, 0x16, 0x75, 0xd6, 0xdd, 0x95, 0xb5, 0x8d, 0xf2, 0x86,
-	0x48, 0xf3, 0x9a, 0xa2, 0xb9, 0x48, 0xf5, 0x5c, 0x9a, 0xce, 0x29, 0xb5, 0x9f, 0x09, 0x5c, 0x4a,
-	0xac, 0x0b, 0x07, 0xb3, 0xab, 0x55, 0x6a, 0xeb, 0xa5, 0xed, 0x90, 0xe5, 0x9a, 0x62, 0xb9, 0x42,
-	0x5f, 0xe9, 0xcb, 0x32, 0x5b, 0x0e, 0xf4, 0x1f, 0x02, 0xb3, 0x79, 0xc3, 0x33, 0x2d, 0xfa, 0x3a,
-	0xf5, 0x99, 0xdf, 0xb5, 0xea, 0x50, 0x18, 0x28, 0x6b, 0x53, 0xc9, 0xba, 0x45, 0x37, 0x72, 0x65,
-	0x25, 0x6f, 0x63, 0x33, 0xb2, 0xe5, 0x8d, 0x8e, 0xb2, 0xed, 0xd2, 0x78, 0x44, 0xe0, 0xa9, 0x9e,
-	0x31, 0x9a, 0xde, 0x2e, 0x47, 0xae, 0x67, 0x86, 0xd7, 0x36, 0xff, 0x3f, 0x00, 0x4a, 0x7b, 0x53,
-	0x49, 0xdb, 0xa0, 0x37, 0xfb, 0x4a, 0x73, 0x94, 0x61, 0xbd, 0xc5, 0x76, 0xc3, 0xac, 0xb0, 0xed,
-	0xf7, 0x1e, 0x1d, 0xeb, 0xe4, 0xf0, 0x58, 0x27, 0x7f, 0x1f, 0xeb, 0xe4, 0xcb, 0x13, 0x7d, 0xec,
-	0xf0, 0x44, 0x1f, 0xfb, 0xfd, 0x44, 0x1f, 0xfb, 0xa0, 0x92, 0x9e, 0xf0, 0x53, 0x2c, 0x23, 0x47,
-	0x2b, 0x6a, 0xc1, 0xfa, 0xcc, 0x4a, 0x7d, 0xfc, 0xaa, 0x99, 0xbf, 0x31, 0xa1, 0xbe, 0x6d, 0xd7,
-	0xfe, 0x0b, 0x00, 0x00, 0xff, 0xff, 0x37, 0xae, 0xab, 0x35, 0xca, 0x0f, 0x00, 0x00,
+	0x14, 0xce, 0xa4, 0x25, 0xe9, 0xbe, 0x24, 0x07, 0x86, 0x50, 0x52, 0xd3, 0x38, 0xc1, 0x54, 0x25,
+	0x4d, 0x14, 0x9b, 0xa4, 0x4b, 0x37, 0x14, 0x89, 0xa6, 0x59, 0x28, 0x8a, 0x54, 0x50, 0x58, 0xa9,
+	0x1c, 0x90, 0x60, 0xe5, 0xf5, 0x4e, 0xdc, 0x81, 0x5d, 0xdb, 0xf5, 0x78, 0x11, 0x51, 0x94, 0x0b,
+	0x37, 0x6e, 0x08, 0xc4, 0x85, 0x2b, 0x12, 0x07, 0x38, 0x00, 0xe2, 0x84, 0xc4, 0x1f, 0xd0, 0x63,
+	0x24, 0x24, 0xc4, 0x89, 0x1f, 0x09, 0x7f, 0x08, 0xf2, 0xf8, 0xd9, 0x6b, 0x6f, 0x36, 0xbb, 0x76,
+	0xb2, 0x52, 0x4f, 0xbb, 0x9e, 0x99, 0xf7, 0xbd, 0xef, 0x7b, 0xef, 0xf9, 0xcd, 0x33, 0x5c, 0xb6,
+	0x76, 0x99, 0xc9, 0xfd, 0xa6, 0xef, 0x7a, 0xc6, 0xa3, 0x0e, 0xf3, 0xf7, 0x74, 0xcf, 0x77, 0x03,
+	0x97, 0x2e, 0x5a, 0x0f, 0x4d, 0xee, 0x94, 0x99, 0xc3, 0x7c, 0x7b, 0x4f, 0xb7, 0xca, 0x4c, 0x3e,
+	0xeb, 0xdd, 0xd3, 0xca, 0xac, 0xed, 0xda, 0xae, 0x3c, 0x6c, 0x84, 0xff, 0x22, 0x3b, 0xe5, 0xaa,
+	0xed, 0xba, 0x76, 0x8b, 0x19, 0xa6, 0xc7, 0x0d, 0xd3, 0x71, 0xdc, 0xc0, 0x0c, 0xb8, 0xeb, 0x08,
+	0xdc, 0x5d, 0xb6, 0x5c, 0xd1, 0x76, 0x85, 0xd1, 0x30, 0x05, 0x8b, 0xdc, 0x19, 0x9f, 0xac, 0x35,
+	0x58, 0x60, 0xae, 0x19, 0x9e, 0x69, 0x73, 0x47, 0x1e, 0xc6, 0xb3, 0xcf, 0xa5, 0x98, 0x79, 0xa6,
+	0x6f, 0xb6, 0x63, 0x90, 0xb9, 0xd4, 0x06, 0xfe, 0xe2, 0x8e, 0x9a, 0x86, 0x8f, 0x81, 0x2d, 0x97,
+	0x23, 0xa4, 0x36, 0x0b, 0xf4, 0xdd, 0xd0, 0xe9, 0x8e, 0x84, 0xab, 0xb1, 0x47, 0x1d, 0x26, 0x02,
+	0xed, 0x03, 0x78, 0x26, 0xb3, 0x2a, 0x3c, 0xd7, 0x11, 0x8c, 0xde, 0x83, 0x89, 0xc8, 0xed, 0x1c,
+	0x59, 0x24, 0x4b, 0x53, 0xeb, 0x4b, 0xfa, 0xb0, 0x90, 0xe8, 0x11, 0xc2, 0xd6, 0xc5, 0xc7, 0x7f,
+	0x2d, 0x8c, 0xd5, 0xd0, 0x5a, 0x5b, 0x83, 0x67, 0x25, 0xfc, 0x03, 0xc1, 0xfc, 0x37, 0x9d, 0xc0,
+	0xdf, 0x43, 0xbf, 0x74, 0x0e, 0x26, 0xcd, 0x66, 0xd3, 0x67, 0x22, 0xf2, 0x50, 0xaa, 0xc5, 0x8f,
+	0xda, 0x47, 0x70, 0xb9, 0xd7, 0x04, 0x49, 0xed, 0x00, 0x74, 0x04, 0xf3, 0xeb, 0x2c, 0x5c, 0x45,
+	0x62, 0x2b, 0xc3, 0x89, 0x25, 0x40, 0xc8, 0xad, 0xd4, 0x89, 0x17, 0xb4, 0x2a, 0x2c, 0x4a, 0x5f,
+	0x77, 0xa3, 0xa3, 0x6f, 0x70, 0x11, 0xf8, 0x9d, 0x06, 0x97, 0x59, 0x8b, 0x99, 0x2e, 0xc0, 0x94,
+	0x65, 0xb6, 0x3d, 0x93, 0xdb, 0x4e, 0x9d, 0x37, 0xa5, 0xdb, 0x8b, 0x35, 0x88, 0x97, 0xb6, 0x9b,
+	0xda, 0xd7, 0x04, 0x5e, 0x18, 0x80, 0x82, 0xe4, 0x3d, 0x98, 0x41, 0x42, 0xf5, 0x30, 0x29, 0xa1,
+	0xec, 0x0b, 0x4b, 0x53, 0xeb, 0x57, 0xf4, 0x28, 0x6d, 0x7a, 0x98, 0x36, 0x1d, 0xd3, 0xa6, 0x57,
+	0x5d, 0xee, 0x6c, 0xbd, 0x1c, 0xb2, 0xfd, 0xfe, 0xef, 0x85, 0x25, 0x9b, 0x07, 0x0f, 0x3b, 0x0d,
+	0xdd, 0x72, 0xdb, 0x06, 0xe6, 0x38, 0xfa, 0x59, 0x15, 0xcd, 0x8f, 0x8d, 0x60, 0xcf, 0x63, 0x42,
+	0x1a, 0x88, 0xda, 0x34, 0x7a, 0x90, 0x4f, 0xda, 0x26, 0xcc, 0xa7, 0x69, 0x55, 0x5b, 0x26, 0x6f,
+	0x8b, 0xfb, 0x6c, 0x37, 0xc8, 0xad, 0xec, 0x4b, 0x02, 0xea, 0x69, 0x10, 0x4f, 0x4c, 0x56, 0x03,
+	0xe6, 0x92, 0xfa, 0x10, 0x61, 0x1a, 0x39, 0x4b, 0x72, 0x75, 0x0f, 0xa0, 0xfb, 0x2a, 0x61, 0x85,
+	0x5c, 0xcf, 0x50, 0x89, 0x5e, 0xf3, 0x98, 0xd0, 0x8e, 0x69, 0x33, 0xb4, 0xad, 0xa5, 0x2c, 0xb5,
+	0xdf, 0x08, 0x5c, 0xe9, 0xe3, 0x04, 0x35, 0xbf, 0x07, 0x33, 0x61, 0x09, 0x09, 0x59, 0x88, 0x9c,
+	0xc5, 0x9a, 0xcf, 0x50, 0x8a, 0xd3, 0x9d, 0x14, 0x3e, 0x7d, 0x2b, 0xc3, 0x7e, 0x5c, 0xb2, 0x7f,
+	0x69, 0x28, 0xfb, 0x88, 0x54, 0x86, 0xfe, 0x03, 0x7c, 0xa9, 0xdf, 0xe6, 0x42, 0x70, 0xd7, 0xc9,
+	0x9b, 0x6f, 0x3a, 0x0f, 0xd0, 0x8e, 0x4c, 0xc2, 0xfd, 0x71, 0xb9, 0x5f, 0xc2, 0x95, 0xed, 0xa6,
+	0x66, 0xc2, 0x6c, 0x16, 0x16, 0xe3, 0xb1, 0x0d, 0x93, 0x78, 0x08, 0x43, 0x7e, 0x63, 0x78, 0x24,
+	0x10, 0x03, 0xe3, 0x10, 0xdb, 0x6b, 0x1f, 0x66, 0x5d, 0x8c, 0x3c, 0xb1, 0x3f, 0x10, 0x6c, 0x48,
+	0x5d, 0x07, 0xfd, 0x44, 0x5c, 0x38, 0x8f, 0x88, 0xd1, 0xe5, 0xb1, 0x8e, 0x64, 0xab, 0x98, 0xa2,
+	0x91, 0x87, 0xe3, 0x47, 0x82, 0xcd, 0x36, 0xe5, 0x01, 0xe3, 0x71, 0x1f, 0x2e, 0xc5, 0x95, 0x81,
+	0x01, 0x59, 0x1e, 0x1e, 0x90, 0x18, 0x06, 0x23, 0x92, 0x20, 0x8c, 0x2e, 0x24, 0x15, 0x2c, 0x90,
+	0xd8, 0x53, 0xee, 0x5e, 0xc6, 0x7a, 0x62, 0x79, 0x8a, 0x50, 0x72, 0x3e, 0xa1, 0xeb, 0x9f, 0xcf,
+	0xc0, 0x53, 0xd2, 0x0f, 0xfd, 0x86, 0xc0, 0x44, 0x74, 0x27, 0xd2, 0xf2, 0x70, 0xc0, 0x93, 0x57,
+	0xb3, 0xf2, 0x4a, 0x41, 0xab, 0x48, 0x8f, 0xf6, 0xe2, 0x67, 0xbf, 0xff, 0xf7, 0xd5, 0xf8, 0x3c,
+	0x7d, 0xde, 0xb0, 0xca, 0x2c, 0x9e, 0x11, 0x52, 0x93, 0x86, 0x64, 0xf4, 0x33, 0x81, 0x52, 0xd2,
+	0x8c, 0x68, 0x25, 0xa7, 0xa7, 0xde, 0x5b, 0x5c, 0xd9, 0x28, 0x6e, 0x88, 0x2c, 0xd7, 0x24, 0xcb,
+	0x15, 0x7a, 0xa3, 0x2f, 0xcb, 0xee, 0x35, 0x6f, 0xec, 0xe3, 0x5c, 0x70, 0x40, 0x7f, 0x21, 0x30,
+	0x9d, 0xee, 0xc7, 0xf4, 0x76, 0x01, 0xef, 0x3d, 0x37, 0x85, 0xf2, 0xda, 0x99, 0x6c, 0x91, 0xfc,
+	0xb2, 0x24, 0x7f, 0x8d, 0x6a, 0xa7, 0x92, 0x4f, 0xee, 0x06, 0xfa, 0x2b, 0x81, 0x49, 0xec, 0x13,
+	0x34, 0x6f, 0x46, 0xb3, 0x7d, 0x5b, 0xb9, 0x55, 0xd4, 0x0c, 0x69, 0xde, 0x91, 0x34, 0x5f, 0xa5,
+	0x95, 0xbe, 0x34, 0xb1, 0x5b, 0x19, 0xfb, 0xa9, 0xf7, 0xe6, 0xc0, 0xd8, 0xef, 0x5e, 0x00, 0x07,
+	0xf4, 0x5b, 0x02, 0x80, 0xa0, 0x77, 0x5b, 0x2d, 0x5a, 0x90, 0x47, 0x12, 0xeb, 0x4a, 0x61, 0x3b,
+	0x14, 0x70, 0x4d, 0x0a, 0x50, 0xe9, 0xd5, 0x41, 0x02, 0xe8, 0x77, 0x04, 0x4a, 0x49, 0xff, 0xca,
+	0x5d, 0xcb, 0xbd, 0x3d, 0x35, 0x77, 0x2d, 0x9f, 0x68, 0x95, 0xda, 0x75, 0x49, 0x73, 0x91, 0xaa,
+	0x7d, 0x69, 0x5a, 0x09, 0xb5, 0x9f, 0x08, 0x5c, 0x8a, 0xad, 0x73, 0x07, 0xb3, 0xa7, 0xd1, 0x29,
+	0x95, 0xc2, 0x76, 0xc8, 0xf2, 0xa6, 0x64, 0xb9, 0x4a, 0x57, 0x06, 0xb2, 0xcc, 0x96, 0x03, 0xfd,
+	0x97, 0xc0, 0x6c, 0xbf, 0xb1, 0x96, 0x6e, 0xe5, 0xa4, 0x31, 0x60, 0xb2, 0x56, 0xaa, 0xe7, 0xc2,
+	0x40, 0x59, 0x9b, 0x52, 0xd6, 0x6d, 0xba, 0xd1, 0x57, 0x56, 0x3c, 0x9b, 0x36, 0x43, 0x5b, 0xde,
+	0xe8, 0x48, 0xdb, 0x1e, 0x8d, 0x7f, 0x10, 0x78, 0xfa, 0xc4, 0x80, 0x4b, 0xef, 0x14, 0x23, 0x77,
+	0x62, 0xba, 0x56, 0x36, 0xcf, 0x0e, 0x80, 0xd2, 0x5e, 0x97, 0xd2, 0x36, 0xe8, 0xad, 0x81, 0xd2,
+	0x2c, 0x69, 0x58, 0x6f, 0xb1, 0xdd, 0x20, 0x2b, 0x6c, 0xeb, 0x9d, 0xc7, 0x47, 0x2a, 0x39, 0x3c,
+	0x52, 0xc9, 0x3f, 0x47, 0x2a, 0xf9, 0xe2, 0x58, 0x1d, 0x3b, 0x3c, 0x56, 0xc7, 0xfe, 0x3c, 0x56,
+	0xc7, 0xde, 0x2f, 0xa7, 0x67, 0xef, 0x14, 0xcb, 0xd0, 0xd1, 0xaa, 0x5c, 0x30, 0x3e, 0x35, 0x52,
+	0x5f, 0x9a, 0x72, 0x1a, 0x6f, 0x4c, 0xc8, 0x0f, 0xc9, 0x9b, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff,
+	0x7e, 0x03, 0xfb, 0x83, 0x37, 0x0f, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -955,10 +956,10 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// Queries a UserAirdropEntries by index.
-	UserAirdropEntries(ctx context.Context, in *QueryUserAirdropEntriesRequest, opts ...grpc.CallOption) (*QueryUserAirdropEntriesResponse, error)
-	// Queries a list of UserAirdropEntries items.
-	UsersAirdropEntries(ctx context.Context, in *QueryUsersAirdropEntriesRequest, opts ...grpc.CallOption) (*QueryUsersAirdropEntriesResponse, error)
+	// Queries a UserEntry by index.
+	UserEntry(ctx context.Context, in *QueryUserEntryRequest, opts ...grpc.CallOption) (*QueryUserEntryResponse, error)
+	// Queries a list of UserEntry items.
+	UsersEntries(ctx context.Context, in *QueryUsersEntriesRequest, opts ...grpc.CallOption) (*QueryUsersEntriesResponse, error)
 	// Queries a Mission by index.
 	Mission(ctx context.Context, in *QueryMissionRequest, opts ...grpc.CallOption) (*QueryMissionResponse, error)
 	// Queries a list of Mission items.
@@ -990,18 +991,18 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
-func (c *queryClient) UserAirdropEntries(ctx context.Context, in *QueryUserAirdropEntriesRequest, opts ...grpc.CallOption) (*QueryUserAirdropEntriesResponse, error) {
-	out := new(QueryUserAirdropEntriesResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Query/UserAirdropEntries", in, out, opts...)
+func (c *queryClient) UserEntry(ctx context.Context, in *QueryUserEntryRequest, opts ...grpc.CallOption) (*QueryUserEntryResponse, error) {
+	out := new(QueryUserEntryResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Query/UserEntry", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) UsersAirdropEntries(ctx context.Context, in *QueryUsersAirdropEntriesRequest, opts ...grpc.CallOption) (*QueryUsersAirdropEntriesResponse, error) {
-	out := new(QueryUsersAirdropEntriesResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Query/UsersAirdropEntries", in, out, opts...)
+func (c *queryClient) UsersEntries(ctx context.Context, in *QueryUsersEntriesRequest, opts ...grpc.CallOption) (*QueryUsersEntriesResponse, error) {
+	out := new(QueryUsersEntriesResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Query/UsersEntries", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1066,10 +1067,10 @@ func (c *queryClient) AirdropClaimsLeft(ctx context.Context, in *QueryAirdropCla
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// Queries a UserAirdropEntries by index.
-	UserAirdropEntries(context.Context, *QueryUserAirdropEntriesRequest) (*QueryUserAirdropEntriesResponse, error)
-	// Queries a list of UserAirdropEntries items.
-	UsersAirdropEntries(context.Context, *QueryUsersAirdropEntriesRequest) (*QueryUsersAirdropEntriesResponse, error)
+	// Queries a UserEntry by index.
+	UserEntry(context.Context, *QueryUserEntryRequest) (*QueryUserEntryResponse, error)
+	// Queries a list of UserEntry items.
+	UsersEntries(context.Context, *QueryUsersEntriesRequest) (*QueryUsersEntriesResponse, error)
 	// Queries a Mission by index.
 	Mission(context.Context, *QueryMissionRequest) (*QueryMissionResponse, error)
 	// Queries a list of Mission items.
@@ -1091,11 +1092,11 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-func (*UnimplementedQueryServer) UserAirdropEntries(ctx context.Context, req *QueryUserAirdropEntriesRequest) (*QueryUserAirdropEntriesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UserAirdropEntries not implemented")
+func (*UnimplementedQueryServer) UserEntry(ctx context.Context, req *QueryUserEntryRequest) (*QueryUserEntryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserEntry not implemented")
 }
-func (*UnimplementedQueryServer) UsersAirdropEntries(ctx context.Context, req *QueryUsersAirdropEntriesRequest) (*QueryUsersAirdropEntriesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UsersAirdropEntries not implemented")
+func (*UnimplementedQueryServer) UsersEntries(ctx context.Context, req *QueryUsersEntriesRequest) (*QueryUsersEntriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UsersEntries not implemented")
 }
 func (*UnimplementedQueryServer) Mission(ctx context.Context, req *QueryMissionRequest) (*QueryMissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Mission not implemented")
@@ -1138,38 +1139,38 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_UserAirdropEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryUserAirdropEntriesRequest)
+func _Query_UserEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUserEntryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).UserAirdropEntries(ctx, in)
+		return srv.(QueryServer).UserEntry(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeairdrop.Query/UserAirdropEntries",
+		FullMethod: "/chain4energy.c4echain.cfeairdrop.Query/UserEntry",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).UserAirdropEntries(ctx, req.(*QueryUserAirdropEntriesRequest))
+		return srv.(QueryServer).UserEntry(ctx, req.(*QueryUserEntryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_UsersAirdropEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryUsersAirdropEntriesRequest)
+func _Query_UsersEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUsersEntriesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).UsersAirdropEntries(ctx, in)
+		return srv.(QueryServer).UsersEntries(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeairdrop.Query/UsersAirdropEntries",
+		FullMethod: "/chain4energy.c4echain.cfeairdrop.Query/UsersEntries",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).UsersAirdropEntries(ctx, req.(*QueryUsersAirdropEntriesRequest))
+		return srv.(QueryServer).UsersEntries(ctx, req.(*QueryUsersEntriesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1291,12 +1292,12 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Params_Handler,
 		},
 		{
-			MethodName: "UserAirdropEntries",
-			Handler:    _Query_UserAirdropEntries_Handler,
+			MethodName: "UserEntry",
+			Handler:    _Query_UserEntry_Handler,
 		},
 		{
-			MethodName: "UsersAirdropEntries",
-			Handler:    _Query_UsersAirdropEntries_Handler,
+			MethodName: "UsersEntries",
+			Handler:    _Query_UsersEntries_Handler,
 		},
 		{
 			MethodName: "Mission",
@@ -1383,7 +1384,7 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryUserAirdropEntriesRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryUserEntryRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1393,12 +1394,12 @@ func (m *QueryUserAirdropEntriesRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryUserAirdropEntriesRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryUserEntryRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryUserAirdropEntriesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryUserEntryRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1413,7 +1414,7 @@ func (m *QueryUserAirdropEntriesRequest) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryUserAirdropEntriesResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryUserEntryResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1423,18 +1424,18 @@ func (m *QueryUserAirdropEntriesResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryUserAirdropEntriesResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryUserEntryResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryUserAirdropEntriesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryUserEntryResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.UserAirdropEntries.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.UserEntry.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -1576,7 +1577,7 @@ func (m *QueryAirdropClaimsLeftResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryUsersAirdropEntriesRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryUsersEntriesRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1586,12 +1587,12 @@ func (m *QueryUsersAirdropEntriesRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryUsersAirdropEntriesRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryUsersEntriesRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryUsersAirdropEntriesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryUsersEntriesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1611,7 +1612,7 @@ func (m *QueryUsersAirdropEntriesRequest) MarshalToSizedBuffer(dAtA []byte) (int
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryUsersAirdropEntriesResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryUsersEntriesResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1621,12 +1622,12 @@ func (m *QueryUsersAirdropEntriesResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryUsersAirdropEntriesResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryUsersEntriesResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryUsersAirdropEntriesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryUsersEntriesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1643,10 +1644,10 @@ func (m *QueryUsersAirdropEntriesResponse) MarshalToSizedBuffer(dAtA []byte) (in
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.UsersAirdropEntries) > 0 {
-		for iNdEx := len(m.UsersAirdropEntries) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.UsersEntries) > 0 {
+		for iNdEx := len(m.UsersEntries) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.UsersAirdropEntries[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.UsersEntries[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1986,7 +1987,7 @@ func (m *QueryParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryUserAirdropEntriesRequest) Size() (n int) {
+func (m *QueryUserEntryRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1999,13 +2000,13 @@ func (m *QueryUserAirdropEntriesRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryUserAirdropEntriesResponse) Size() (n int) {
+func (m *QueryUserEntryResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.UserAirdropEntries.Size()
+	l = m.UserEntry.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -2064,7 +2065,7 @@ func (m *QueryAirdropClaimsLeftResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryUsersAirdropEntriesRequest) Size() (n int) {
+func (m *QueryUsersEntriesRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2077,14 +2078,14 @@ func (m *QueryUsersAirdropEntriesRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryUsersAirdropEntriesResponse) Size() (n int) {
+func (m *QueryUsersEntriesResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.UsersAirdropEntries) > 0 {
-		for _, e := range m.UsersAirdropEntries {
+	if len(m.UsersEntries) > 0 {
+		for _, e := range m.UsersEntries {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -2348,7 +2349,7 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryUserAirdropEntriesRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryUserEntryRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2371,10 +2372,10 @@ func (m *QueryUserAirdropEntriesRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryUserAirdropEntriesRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryUserEntryRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryUserAirdropEntriesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryUserEntryRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2430,7 +2431,7 @@ func (m *QueryUserAirdropEntriesRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryUserAirdropEntriesResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryUserEntryResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2453,15 +2454,15 @@ func (m *QueryUserAirdropEntriesResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryUserAirdropEntriesResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryUserEntryResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryUserAirdropEntriesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryUserEntryResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UserAirdropEntries", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field UserEntry", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2488,7 +2489,7 @@ func (m *QueryUserAirdropEntriesResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.UserAirdropEntries.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.UserEntry.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2819,7 +2820,7 @@ func (m *QueryAirdropClaimsLeftResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryUsersAirdropEntriesRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryUsersEntriesRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2842,10 +2843,10 @@ func (m *QueryUsersAirdropEntriesRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryUsersAirdropEntriesRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryUsersEntriesRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryUsersAirdropEntriesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryUsersEntriesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2905,7 +2906,7 @@ func (m *QueryUsersAirdropEntriesRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryUsersAirdropEntriesResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryUsersEntriesResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2928,15 +2929,15 @@ func (m *QueryUsersAirdropEntriesResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryUsersAirdropEntriesResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryUsersEntriesResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryUsersAirdropEntriesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryUsersEntriesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UsersAirdropEntries", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field UsersEntries", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2963,8 +2964,8 @@ func (m *QueryUsersAirdropEntriesResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.UsersAirdropEntries = append(m.UsersAirdropEntries, UserAirdropEntries{})
-			if err := m.UsersAirdropEntries[len(m.UsersAirdropEntries)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.UsersEntries = append(m.UsersEntries, UserEntry{})
+			if err := m.UsersEntries[len(m.UsersEntries)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

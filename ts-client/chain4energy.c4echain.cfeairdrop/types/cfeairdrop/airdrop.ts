@@ -103,13 +103,13 @@ export function airdropCloseActionToJSON(object: AirdropCloseAction): string {
   }
 }
 
-export interface UserAirdropEntries {
+export interface UserEntry {
   address: string;
   claimAddress: string;
-  airdropEntries: AirdropEntry[];
+  airdropEntries: ClaimRecord[];
 }
 
-export interface AirdropEntry {
+export interface ClaimRecord {
   campaignId: number;
   address: string;
   airdropCoins: Coin[];
@@ -117,8 +117,8 @@ export interface AirdropEntry {
   claimedMissions: number[];
 }
 
-export interface AirdropEntries {
-  airdropEntries: AirdropEntry[];
+export interface ClaimRecords {
+  airdropEntries: ClaimRecord[];
 }
 
 export interface AirdropDistrubitions {
@@ -161,12 +161,12 @@ export interface Mission {
   claimStartDate: Date | undefined;
 }
 
-function createBaseUserAirdropEntries(): UserAirdropEntries {
+function createBaseUsersEntries(): UserEntry {
   return { address: "", claimAddress: "", airdropEntries: [] };
 }
 
-export const UserAirdropEntries = {
-  encode(message: UserAirdropEntries, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const UserEntry = {
+  encode(message: UserEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
@@ -174,15 +174,15 @@ export const UserAirdropEntries = {
       writer.uint32(18).string(message.claimAddress);
     }
     for (const v of message.airdropEntries) {
-      AirdropEntry.encode(v!, writer.uint32(26).fork()).ldelim();
+      ClaimRecord.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UserAirdropEntries {
+  decode(input: _m0.Reader | Uint8Array, length?: number): UserEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserAirdropEntries();
+    const message = createBaseUsersEntries();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -193,7 +193,7 @@ export const UserAirdropEntries = {
           message.claimAddress = reader.string();
           break;
         case 3:
-          message.airdropEntries.push(AirdropEntry.decode(reader, reader.uint32()));
+          message.airdropEntries.push(ClaimRecord.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -203,43 +203,43 @@ export const UserAirdropEntries = {
     return message;
   },
 
-  fromJSON(object: any): UserAirdropEntries {
+  fromJSON(object: any): UserEntry {
     return {
       address: isSet(object.address) ? String(object.address) : "",
       claimAddress: isSet(object.claimAddress) ? String(object.claimAddress) : "",
       airdropEntries: Array.isArray(object?.airdropEntries)
-        ? object.airdropEntries.map((e: any) => AirdropEntry.fromJSON(e))
+        ? object.airdropEntries.map((e: any) => ClaimRecord.fromJSON(e))
         : [],
     };
   },
 
-  toJSON(message: UserAirdropEntries): unknown {
+  toJSON(message: UserEntry): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
     message.claimAddress !== undefined && (obj.claimAddress = message.claimAddress);
     if (message.airdropEntries) {
-      obj.airdropEntries = message.airdropEntries.map((e) => e ? AirdropEntry.toJSON(e) : undefined);
+      obj.airdropEntries = message.airdropEntries.map((e) => e ? ClaimRecord.toJSON(e) : undefined);
     } else {
       obj.airdropEntries = [];
     }
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<UserAirdropEntries>, I>>(object: I): UserAirdropEntries {
-    const message = createBaseUserAirdropEntries();
+  fromPartial<I extends Exact<DeepPartial<UserEntry>, I>>(object: I): UserEntry {
+    const message = createBaseUsersEntries();
     message.address = object.address ?? "";
     message.claimAddress = object.claimAddress ?? "";
-    message.airdropEntries = object.airdropEntries?.map((e) => AirdropEntry.fromPartial(e)) || [];
+    message.airdropEntries = object.airdropEntries?.map((e) => ClaimRecord.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBaseAirdropEntry(): AirdropEntry {
+function createBaseAirdropEntry(): ClaimRecord {
   return { campaignId: 0, address: "", airdropCoins: [], completedMissions: [], claimedMissions: [] };
 }
 
-export const AirdropEntry = {
-  encode(message: AirdropEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const ClaimRecord = {
+  encode(message: ClaimRecord, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
     }
@@ -262,7 +262,7 @@ export const AirdropEntry = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): AirdropEntry {
+  decode(input: _m0.Reader | Uint8Array, length?: number): ClaimRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAirdropEntry();
@@ -306,7 +306,7 @@ export const AirdropEntry = {
     return message;
   },
 
-  fromJSON(object: any): AirdropEntry {
+  fromJSON(object: any): ClaimRecord {
     return {
       campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
       address: isSet(object.address) ? String(object.address) : "",
@@ -318,7 +318,7 @@ export const AirdropEntry = {
     };
   },
 
-  toJSON(message: AirdropEntry): unknown {
+  toJSON(message: ClaimRecord): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
     message.address !== undefined && (obj.address = message.address);
@@ -340,7 +340,7 @@ export const AirdropEntry = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<AirdropEntry>, I>>(object: I): AirdropEntry {
+  fromPartial<I extends Exact<DeepPartial<ClaimRecord>, I>>(object: I): ClaimRecord {
     const message = createBaseAirdropEntry();
     message.campaignId = object.campaignId ?? 0;
     message.address = object.address ?? "";
@@ -351,19 +351,19 @@ export const AirdropEntry = {
   },
 };
 
-function createBaseAirdropEntries(): AirdropEntries {
+function createBaseAirdropEntries(): ClaimRecords {
   return { airdropEntries: [] };
 }
 
-export const AirdropEntries = {
-  encode(message: AirdropEntries, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const ClaimRecords = {
+  encode(message: ClaimRecords, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.airdropEntries) {
-      AirdropEntry.encode(v!, writer.uint32(10).fork()).ldelim();
+      ClaimRecord.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): AirdropEntries {
+  decode(input: _m0.Reader | Uint8Array, length?: number): ClaimRecords {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAirdropEntries();
@@ -371,7 +371,7 @@ export const AirdropEntries = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.airdropEntries.push(AirdropEntry.decode(reader, reader.uint32()));
+          message.airdropEntries.push(ClaimRecord.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -381,27 +381,27 @@ export const AirdropEntries = {
     return message;
   },
 
-  fromJSON(object: any): AirdropEntries {
+  fromJSON(object: any): ClaimRecords {
     return {
       airdropEntries: Array.isArray(object?.airdropEntries)
-        ? object.airdropEntries.map((e: any) => AirdropEntry.fromJSON(e))
+        ? object.airdropEntries.map((e: any) => ClaimRecord.fromJSON(e))
         : [],
     };
   },
 
-  toJSON(message: AirdropEntries): unknown {
+  toJSON(message: ClaimRecords): unknown {
     const obj: any = {};
     if (message.airdropEntries) {
-      obj.airdropEntries = message.airdropEntries.map((e) => e ? AirdropEntry.toJSON(e) : undefined);
+      obj.airdropEntries = message.airdropEntries.map((e) => e ? ClaimRecord.toJSON(e) : undefined);
     } else {
       obj.airdropEntries = [];
     }
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<AirdropEntries>, I>>(object: I): AirdropEntries {
+  fromPartial<I extends Exact<DeepPartial<ClaimRecords>, I>>(object: I): ClaimRecords {
     const message = createBaseAirdropEntries();
-    message.airdropEntries = object.airdropEntries?.map((e) => AirdropEntry.fromPartial(e)) || [];
+    message.airdropEntries = object.airdropEntries?.map((e) => ClaimRecord.fromPartial(e)) || [];
     return message;
   },
 };

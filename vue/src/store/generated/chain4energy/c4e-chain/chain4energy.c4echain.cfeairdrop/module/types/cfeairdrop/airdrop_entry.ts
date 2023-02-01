@@ -4,15 +4,15 @@ import { util, configure, Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
-export interface AirdropEntry {
+export interface ClaimRecord {
   address: string;
   amount: number;
 }
 
 const baseAirdropEntry: object = { address: "", amount: 0 };
 
-export const AirdropEntry = {
-  encode(message: AirdropEntry, writer: Writer = Writer.create()): Writer {
+export const ClaimRecord = {
+  encode(message: ClaimRecord, writer: Writer = Writer.create()): Writer {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
@@ -22,10 +22,10 @@ export const AirdropEntry = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): AirdropEntry {
+  decode(input: Reader | Uint8Array, length?: number): ClaimRecord {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAirdropEntry } as AirdropEntry;
+    const message = { ...baseAirdropEntry } as ClaimRecord;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -43,8 +43,8 @@ export const AirdropEntry = {
     return message;
   },
 
-  fromJSON(object: any): AirdropEntry {
-    const message = { ...baseAirdropEntry } as AirdropEntry;
+  fromJSON(object: any): ClaimRecord {
+    const message = { ...baseAirdropEntry } as ClaimRecord;
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
     } else {
@@ -58,15 +58,15 @@ export const AirdropEntry = {
     return message;
   },
 
-  toJSON(message: AirdropEntry): unknown {
+  toJSON(message: ClaimRecord): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
     message.amount !== undefined && (obj.amount = message.amount);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<AirdropEntry>): AirdropEntry {
-    const message = { ...baseAirdropEntry } as AirdropEntry;
+  fromPartial(object: DeepPartial<ClaimRecord>): ClaimRecord {
+    const message = { ...baseAirdropEntry } as ClaimRecord;
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     } else {

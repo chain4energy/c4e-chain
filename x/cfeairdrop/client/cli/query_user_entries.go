@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdListUserAirdropEntries() *cobra.Command {
+func CmdListUsersEntries() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list-claim-record",
-		Short: "list all userAirdropEntries",
+		Short: "list all userEntry",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -23,11 +23,11 @@ func CmdListUserAirdropEntries() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryUsersAirdropEntriesRequest{
+			params := &types.QueryUsersEntriesRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.UsersAirdropEntries(context.Background(), params)
+			res, err := queryClient.UsersEntries(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -42,10 +42,10 @@ func CmdListUserAirdropEntries() *cobra.Command {
 	return cmd
 }
 
-func CmdShowUserAirdropEntries() *cobra.Command {
+func CmdShowUsersEntries() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "show-claim-record [address]",
-		Short: "shows a userAirdropEntries",
+		Short: "shows a userEntry",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -54,11 +54,11 @@ func CmdShowUserAirdropEntries() *cobra.Command {
 
 			argIndex := args[0]
 
-			params := &types.QueryUserAirdropEntriesRequest{
+			params := &types.QueryUserEntryRequest{
 				Address: argIndex,
 			}
 
-			res, err := queryClient.UserAirdropEntries(context.Background(), params)
+			res, err := queryClient.UserEntry(context.Background(), params)
 			if err != nil {
 				return err
 			}

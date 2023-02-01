@@ -11,15 +11,15 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
-func (k Keeper) SendToNewRepeatedContinuousVestingAccount(ctx sdk.Context, userAirdropEntries *types.UserAirdropEntries,
+func (k Keeper) SendToNewRepeatedContinuousVestingAccount(ctx sdk.Context, userEntry *types.UserEntry,
 	amount sdk.Coins, startTime int64, endTime int64, missionType types.MissionType) error {
-	k.Logger(ctx).Debug("send to airdrop account", "userAirdropEntries", userAirdropEntries,
+	k.Logger(ctx).Debug("send to airdrop account", "userEntry", userEntry,
 		"amount", amount, "startTime", startTime, "endTime", endTime, "missionType", missionType)
 	ak := k.accountKeeper
 	bk := k.bankKeeper
-	claimerAddress, err := sdk.AccAddressFromBech32(userAirdropEntries.ClaimAddress)
+	claimerAddress, err := sdk.AccAddressFromBech32(userEntry.ClaimAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userAirdropEntries.ClaimAddress)
+		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userEntry.ClaimAddress)
 	}
 	if err := bk.IsSendEnabledCoins(ctx, amount...); err != nil {
 		k.Logger(ctx).Error("send to airdrop account send coins disabled", "error", err.Error())

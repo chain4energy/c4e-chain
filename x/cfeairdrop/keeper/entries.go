@@ -7,22 +7,22 @@ import (
 )
 
 // SetClaimRecordXX set a specific claimRecordXX in the store from its index
-func (k Keeper) SetUserAirdropEntries(ctx sdk.Context, userAirdropEntries types.UserAirdropEntries) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserAirdropEntriesKeyPrefix))
-	b := k.cdc.MustMarshal(&userAirdropEntries)
-	store.Set(types.UserAirdropEntriesKey(
-		userAirdropEntries.Address,
+func (k Keeper) SetUserEntry(ctx sdk.Context, userEntry types.UserEntry) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UsersEntriesKeyPrefix))
+	b := k.cdc.MustMarshal(&userEntry)
+	store.Set(types.UsersEntriesKey(
+		userEntry.Address,
 	), b)
 }
 
 // GetClaimRecordXX returns a claimRecordXX from its index
-func (k Keeper) GetUserAirdropEntries(
+func (k Keeper) GetUserEntry(
 	ctx sdk.Context,
 	address string,
-) (val types.UserAirdropEntries, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserAirdropEntriesKeyPrefix))
+) (val types.UserEntry, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UsersEntriesKeyPrefix))
 
-	b := store.Get(types.UserAirdropEntriesKey(
+	b := store.Get(types.UsersEntriesKey(
 		address,
 	))
 	if b == nil {
@@ -34,14 +34,14 @@ func (k Keeper) GetUserAirdropEntries(
 }
 
 // GetAllClaimRecordXX returns all claimRecordXX
-func (k Keeper) GetUsersAirdropEntries(ctx sdk.Context) (list []types.UserAirdropEntries) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserAirdropEntriesKeyPrefix))
+func (k Keeper) GetUsersEntries(ctx sdk.Context) (list []types.UserEntry) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UsersEntriesKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.UserAirdropEntries
+		var val types.UserEntry
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}
