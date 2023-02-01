@@ -5,12 +5,12 @@ import "encoding/binary"
 var _ binary.ByteOrder
 
 const (
-	// UsersEntriesKeyPrefix is the prefix to retrieve all UserEntry
-	UsersEntriesKeyPrefix = "UserEntry/value/"
+	// UserEntryKeyPrefix is the prefix to retrieve all UserEntry
+	UserEntryKeyPrefix = "UserEntry/value/"
 )
 
-// UsersEntriesKey returns the store key to retrieve a UserEntry from the index fields
-func UsersEntriesKey(
+// UserEntryKey returns the store key to retrieve a UserEntry from the index fields
+func UserEntryKey(
 	address string,
 ) []byte {
 	var key []byte

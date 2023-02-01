@@ -23,8 +23,8 @@ func parseAirdropEntries(clientCtx client.Context, campaignId uint64, airdropEnt
 	if err != nil {
 		return nil, err
 	}
-	for _, airdropEntry := range airdropEntries {
-		airdropEntry.CampaignId = campaignId
+	for _, claimRecord := range airdropEntries {
+		claimRecord.CampaignId = campaignId
 	}
 	return airdropEntries, nil
 }

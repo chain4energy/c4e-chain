@@ -8,9 +8,9 @@ import (
 
 // SetClaimRecordXX set a specific claimRecordXX in the store from its index
 func (k Keeper) SetUserEntry(ctx sdk.Context, userEntry types.UserEntry) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UsersEntriesKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserEntryKeyPrefix))
 	b := k.cdc.MustMarshal(&userEntry)
-	store.Set(types.UsersEntriesKey(
+	store.Set(types.UserEntryKey(
 		userEntry.Address,
 	), b)
 }
@@ -20,9 +20,9 @@ func (k Keeper) GetUserEntry(
 	ctx sdk.Context,
 	address string,
 ) (val types.UserEntry, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UsersEntriesKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserEntryKeyPrefix))
 
-	b := store.Get(types.UsersEntriesKey(
+	b := store.Get(types.UserEntryKey(
 		address,
 	))
 	if b == nil {
@@ -35,7 +35,7 @@ func (k Keeper) GetUserEntry(
 
 // GetAllClaimRecordXX returns all claimRecordXX
 func (k Keeper) GetUsersEntries(ctx sdk.Context) (list []types.UserEntry) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UsersEntriesKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserEntryKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()

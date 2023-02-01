@@ -4,29 +4,29 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgInitialClaim } from "./types/cfeairdrop/tx";
-import { MsgAddClaimRecords } from "./types/cfeairdrop/tx";
-import { MsgRemoveAirdropCampaign } from "./types/cfeairdrop/tx";
-import { MsgAddMissionToAidropCampaign } from "./types/cfeairdrop/tx";
-import { MsgCloseAirdropCampaign } from "./types/cfeairdrop/tx";
-import { MsgEditAirdropCampaign } from "./types/cfeairdrop/tx";
 import { MsgClaim } from "./types/cfeairdrop/tx";
-import { MsgStartAirdropCampaign } from "./types/cfeairdrop/tx";
-import { MsgCreateAirdropCampaign } from "./types/cfeairdrop/tx";
+import { MsgAddMissionToAidropCampaign } from "./types/cfeairdrop/tx";
+import { MsgStartCampaign } from "./types/cfeairdrop/tx";
+import { MsgCloseCampaign } from "./types/cfeairdrop/tx";
+import { MsgInitialClaim } from "./types/cfeairdrop/tx";
+import { MsgRemoveCampaign } from "./types/cfeairdrop/tx";
+import { MsgEditCampaign } from "./types/cfeairdrop/tx";
 import { MsgDeleteClaimRecord } from "./types/cfeairdrop/tx";
+import { MsgCreateCampaign } from "./types/cfeairdrop/tx";
+import { MsgAddClaimRecords } from "./types/cfeairdrop/tx";
 
 
 const types = [
-  ["/chain4energy.c4echain.cfeairdrop.MsgInitialClaim", MsgInitialClaim],
-  ["/chain4energy.c4echain.cfeairdrop.MsgAddClaimRecords", MsgAddClaimRecords],
-  ["/chain4energy.c4echain.cfeairdrop.MsgRemoveAirdropCampaign", MsgRemoveAirdropCampaign],
-  ["/chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign", MsgAddMissionToAidropCampaign],
-  ["/chain4energy.c4echain.cfeairdrop.MsgCloseAirdropCampaign", MsgCloseAirdropCampaign],
-  ["/chain4energy.c4echain.cfeairdrop.MsgEditAirdropCampaign", MsgEditAirdropCampaign],
   ["/chain4energy.c4echain.cfeairdrop.MsgClaim", MsgClaim],
-  ["/chain4energy.c4echain.cfeairdrop.MsgStartAirdropCampaign", MsgStartAirdropCampaign],
-  ["/chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaign", MsgCreateAirdropCampaign],
+  ["/chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign", MsgAddMissionToAidropCampaign],
+  ["/chain4energy.c4echain.cfeairdrop.MsgStartCampaign", MsgStartCampaign],
+  ["/chain4energy.c4echain.cfeairdrop.MsgCloseCampaign", MsgCloseCampaign],
+  ["/chain4energy.c4echain.cfeairdrop.MsgInitialClaim", MsgInitialClaim],
+  ["/chain4energy.c4echain.cfeairdrop.MsgRemoveCampaign", MsgRemoveCampaign],
+  ["/chain4energy.c4echain.cfeairdrop.MsgEditCampaign", MsgEditCampaign],
   ["/chain4energy.c4echain.cfeairdrop.MsgDeleteClaimRecord", MsgDeleteClaimRecord],
+  ["/chain4energy.c4echain.cfeairdrop.MsgCreateCampaign", MsgCreateCampaign],
+  ["/chain4energy.c4echain.cfeairdrop.MsgAddClaimRecords", MsgAddClaimRecords],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -59,16 +59,16 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
-    msgInitialClaim: (data: MsgInitialClaim): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgInitialClaim", value: MsgInitialClaim.fromPartial( data ) }),
-    msgAddClaimRecords: (data: MsgAddClaimRecords): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddClaimRecords", value: MsgAddClaimRecords.fromPartial( data ) }),
-    msgRemoveAirdropCampaign: (data: MsgRemoveAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgRemoveAirdropCampaign", value: MsgRemoveAirdropCampaign.fromPartial( data ) }),
-    msgAddMissionToAidropCampaign: (data: MsgAddMissionToAidropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign", value: MsgAddMissionToAidropCampaign.fromPartial( data ) }),
-    msgCloseAirdropCampaign: (data: MsgCloseAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCloseAirdropCampaign", value: MsgCloseAirdropCampaign.fromPartial( data ) }),
-    msgEditAirdropCampaign: (data: MsgEditAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgEditAirdropCampaign", value: MsgEditAirdropCampaign.fromPartial( data ) }),
     msgClaim: (data: MsgClaim): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgClaim", value: MsgClaim.fromPartial( data ) }),
-    msgStartAirdropCampaign: (data: MsgStartAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgStartAirdropCampaign", value: MsgStartAirdropCampaign.fromPartial( data ) }),
-    msgCreateAirdropCampaign: (data: MsgCreateAirdropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaign", value: MsgCreateAirdropCampaign.fromPartial( data ) }),
+    msgAddMissionToAidropCampaign: (data: MsgAddMissionToAidropCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign", value: MsgAddMissionToAidropCampaign.fromPartial( data ) }),
+    msgStartCampaign: (data: MsgStartCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgStartCampaign", value: MsgStartCampaign.fromPartial( data ) }),
+    msgCloseCampaign: (data: MsgCloseCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCloseCampaign", value: MsgCloseCampaign.fromPartial( data ) }),
+    msgInitialClaim: (data: MsgInitialClaim): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgInitialClaim", value: MsgInitialClaim.fromPartial( data ) }),
+    msgRemoveCampaign: (data: MsgRemoveCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgRemoveCampaign", value: MsgRemoveCampaign.fromPartial( data ) }),
+    msgEditCampaign: (data: MsgEditCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgEditCampaign", value: MsgEditCampaign.fromPartial( data ) }),
     msgDeleteClaimRecord: (data: MsgDeleteClaimRecord): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgDeleteClaimRecord", value: MsgDeleteClaimRecord.fromPartial( data ) }),
+    msgCreateCampaign: (data: MsgCreateCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCreateCampaign", value: MsgCreateCampaign.fromPartial( data ) }),
+    msgAddClaimRecords: (data: MsgAddClaimRecords): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddClaimRecords", value: MsgAddClaimRecords.fromPartial( data ) }),
     
   };
 };

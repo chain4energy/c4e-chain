@@ -9,7 +9,7 @@ export interface ClaimRecord {
   amount: number;
 }
 
-const baseAirdropEntry: object = { address: "", amount: 0 };
+const baseclaimRecord: object = { address: "", amount: 0 };
 
 export const ClaimRecord = {
   encode(message: ClaimRecord, writer: Writer = Writer.create()): Writer {
@@ -25,7 +25,7 @@ export const ClaimRecord = {
   decode(input: Reader | Uint8Array, length?: number): ClaimRecord {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAirdropEntry } as ClaimRecord;
+    const message = { ...baseclaimRecord } as ClaimRecord;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -44,7 +44,7 @@ export const ClaimRecord = {
   },
 
   fromJSON(object: any): ClaimRecord {
-    const message = { ...baseAirdropEntry } as ClaimRecord;
+    const message = { ...baseclaimRecord } as ClaimRecord;
     if (object.address !== undefined && object.address !== null) {
       message.address = String(object.address);
     } else {
@@ -66,7 +66,7 @@ export const ClaimRecord = {
   },
 
   fromPartial(object: DeepPartial<ClaimRecord>): ClaimRecord {
-    const message = { ...baseAirdropEntry } as ClaimRecord;
+    const message = { ...baseclaimRecord } as ClaimRecord;
     if (object.address !== undefined && object.address !== null) {
       message.address = object.address;
     } else {

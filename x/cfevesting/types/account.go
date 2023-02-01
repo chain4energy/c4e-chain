@@ -22,7 +22,7 @@ var (
 
 type ContinuousVestingPeriods []ContinuousVestingPeriod
 
-// NewRepeatedContinuousVestingAccountRaw creates a new AirdropVestingAccount object from BaseVestingAccount
+// NewRepeatedContinuousVestingAccountRaw creates a new VestingAccount object from BaseVestingAccount
 func NewRepeatedContinuousVestingAccountRaw(bva *vestingtypes.BaseVestingAccount, startTime int64) *RepeatedContinuousVestingAccount {
 	return &RepeatedContinuousVestingAccount{
 		BaseVestingAccount: bva,
@@ -30,7 +30,7 @@ func NewRepeatedContinuousVestingAccountRaw(bva *vestingtypes.BaseVestingAccount
 	}
 }
 
-// NewRepeatedContinuousVestingAccount returns a new AirdropVestingAccount
+// NewRepeatedContinuousVestingAccount returns a new VestingAccount
 func NewRepeatedContinuousVestingAccount(baseAcc *authtypes.BaseAccount, originalVesting sdk.Coins, startTime int64, endTime int64, periods ContinuousVestingPeriods) *RepeatedContinuousVestingAccount {
 	baseVestingAcc := &vestingtypes.BaseVestingAccount{
 		BaseAccount:     baseAcc,

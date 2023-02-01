@@ -22,6 +22,6 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	AirdropEntryKey      = "ClaimRecord-value-"
-	AirdropEntryCountKey = "ClaimRecord-count-"
+	EntryKey      = "ClaimRecord-value-"
+	EntryCountKey = "ClaimRecord-count-"
 )

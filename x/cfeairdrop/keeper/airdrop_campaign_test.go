@@ -15,7 +15,7 @@ func TestCreateCampaign(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 }
 
 func TestCreateManyAirdropCampaigns(t *testing.T) {
@@ -24,7 +24,7 @@ func TestCreateManyAirdropCampaigns(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaigns := prepareNTestCampaigns(testHelper.Context, 10)
 	for _, campaign := range campaigns {
-		testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
+		testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	}
 }
 
@@ -34,7 +34,7 @@ func TestCreateCampaignEmptyName(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.Name = ""
-	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, "create airdrop campaign - empty campaign name error: wrong param value")
+	testHelper.C4eAirdropUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, "create airdrop campaign - empty campaign name error: wrong param value")
 }
 
 func TestCreateCampaignEmptyDescription(t *testing.T) {
@@ -43,7 +43,7 @@ func TestCreateCampaignEmptyDescription(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.Description = ""
-	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, "create airdrop campaign - empty campaign description error: wrong param value")
+	testHelper.C4eAirdropUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, "create airdrop campaign - empty campaign description error: wrong param value")
 }
 
 func TestCreateCampaignStartTimeAfterEndTime(t *testing.T) {
@@ -53,7 +53,7 @@ func TestCreateCampaignStartTimeAfterEndTime(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	startTimeAfterEndTime := campaign.EndTime.Add(time.Hour)
 	campaign.StartTime = startTimeAfterEndTime
-	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - start time is after end time error (%s > %s): wrong param value", campaign.StartTime, campaign.EndTime))
+	testHelper.C4eAirdropUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - start time is after end time error (%s > %s): wrong param value", campaign.StartTime, campaign.EndTime))
 }
 
 func TestCreateCampaignStartTimeInThePast(t *testing.T) {
@@ -63,7 +63,7 @@ func TestCreateCampaignStartTimeInThePast(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	startTimeInThePast := campaign.StartTime.Add(-time.Hour)
 	campaign.StartTime = startTimeInThePast
-	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - start time in the past error (%s < %s): wrong param value", campaign.StartTime, testHelper.Context.BlockTime()))
+	testHelper.C4eAirdropUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - start time in the past error (%s < %s): wrong param value", campaign.StartTime, testHelper.Context.BlockTime()))
 }
 
 func TestCreateCampaignNegativeInitialClaimAmount(t *testing.T) {
@@ -72,7 +72,7 @@ func TestCreateCampaignNegativeInitialClaimAmount(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.InitialClaimFreeAmount = sdk.NewInt(-100)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - initial claim free amount (%s) cannot be negative: wrong param value", campaign.InitialClaimFreeAmount))
+	testHelper.C4eAirdropUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - initial claim free amount (%s) cannot be negative: wrong param value", campaign.InitialClaimFreeAmount))
 }
 
 func TestCreateCampaignNegativeFeegrantAmount(t *testing.T) {
@@ -81,7 +81,7 @@ func TestCreateCampaignNegativeFeegrantAmount(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.FeegrantAmount = sdk.NewInt(-100)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - feegrant amount (%s) cannot be negative: wrong param value", campaign.FeegrantAmount))
+	testHelper.C4eAirdropUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("create airdrop campaign - feegrant amount (%s) cannot be negative: wrong param value", campaign.FeegrantAmount))
 }
 
 func TestCreateCampaignAndStart(t *testing.T) {
@@ -89,8 +89,8 @@ func TestCreateCampaignAndStart(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 }
 
 func TestCreateManyCampaignsAndStart(t *testing.T) {
@@ -99,8 +99,8 @@ func TestCreateManyCampaignsAndStart(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaigns := prepareNTestCampaigns(testHelper.Context, 10)
 	for i, campaign := range campaigns {
-		testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-		testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), uint64(i))
+		testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+		testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), uint64(i))
 	}
 }
 
@@ -109,10 +109,10 @@ func TestCreateCampaignAndStartTimeAfterTimeNowError(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	blockTime := campaign.StartTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eAirdropUtils.StartAirdropCampaignError(acountsAddresses[0].String(), 0, fmt.Sprintf("start airdrop campaign - campaign with id 0 start time in the past error (%s < %s): wrong param value", campaign.StartTime, blockTime))
+	testHelper.C4eAirdropUtils.StartCampaignError(acountsAddresses[0].String(), 0, fmt.Sprintf("start airdrop campaign - campaign with id 0 start time in the past error (%s < %s): wrong param value", campaign.StartTime, blockTime))
 }
 
 func TestCreateCampaignAndStartOwnerNotValidError(t *testing.T) {
@@ -120,8 +120,8 @@ func TestCreateCampaignAndStartOwnerNotValidError(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.StartAirdropCampaignError(acountsAddresses[1].String(), 0, "start airdrop campaign you are not the owner of this campaign: tx intended signer does not match the given signer")
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaignError(acountsAddresses[1].String(), 0, "start airdrop campaign you are not the owner of this campaign: tx intended signer does not match the given signer")
 }
 
 func TestCreateCampaignCampaignDoesntExistError(t *testing.T) {
@@ -129,8 +129,8 @@ func TestCreateCampaignCampaignDoesntExistError(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.StartAirdropCampaignError(acountsAddresses[0].String(), 1, "start airdrop campaign campaign with id 1 not found: entity does not exist")
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaignError(acountsAddresses[0].String(), 1, "start airdrop campaign campaign with id 1 not found: entity does not exist")
 }
 
 func TestCreateCampaignCampaignEnabledError(t *testing.T) {
@@ -138,9 +138,9 @@ func TestCreateCampaignCampaignEnabledError(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
-	testHelper.C4eAirdropUtils.StartAirdropCampaignError(acountsAddresses[0].String(), 0, "start airdrop campaign campaign with id 0 has already started: entity already exists")
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.StartCampaignError(acountsAddresses[0].String(), 0, "start airdrop campaign campaign with id 0 has already started: entity already exists")
 }
 
 func TestCreateCampaignCloseCampaign(t *testing.T) {
@@ -148,11 +148,11 @@ func TestCreateCampaignCloseCampaign(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eAirdropUtils.CloseAirdropCampaign(acountsAddresses[0].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED)
+	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED)
 }
 
 func TestCreateManyCampaignsAndClose(t *testing.T) {
@@ -163,11 +163,11 @@ func TestCreateManyCampaignsAndClose(t *testing.T) {
 	contextNow := testHelper.Context.BlockTime()
 	for i, campaign := range campaigns {
 		testHelper.SetContextBlockTime(contextNow)
-		testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-		testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), uint64(i))
+		testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+		testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), uint64(i))
 		blockTime := campaign.EndTime.Add(time.Minute)
 		testHelper.SetContextBlockTime(blockTime)
-		testHelper.C4eAirdropUtils.CloseAirdropCampaign(acountsAddresses[0].String(), uint64(i), types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED)
+		testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), uint64(i), types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED)
 	}
 }
 
@@ -176,10 +176,10 @@ func TestCreateCampaignCloseCampaignCampaignNotStartedError(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eAirdropUtils.CloseAirdropCampaignError(acountsAddresses[0].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, fmt.Sprintf("close airdrop campaign - campaign with id %d is already closed or have not started yet error: campaign is disabled", 0))
+	testHelper.C4eAirdropUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, fmt.Sprintf("close airdrop campaign - campaign with id %d is already closed or have not started yet error: campaign is disabled", 0))
 }
 
 func TestCreateCampaignCloseCampaignCampaignNotOverYetError(t *testing.T) {
@@ -187,9 +187,9 @@ func TestCreateCampaignCloseCampaignCampaignNotOverYetError(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
-	testHelper.C4eAirdropUtils.CloseAirdropCampaignError(acountsAddresses[0].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, fmt.Sprintf("close airdrop campaign - campaign with id %d campaign is not over yet (endtime - %s < %s): wrong param value", 0, campaign.EndTime, testHelper.Context.BlockTime()))
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, fmt.Sprintf("close airdrop campaign - campaign with id %d campaign is not over yet (endtime - %s < %s): wrong param value", 0, campaign.EndTime, testHelper.Context.BlockTime()))
 }
 
 func TestCreateCampaignCloseCampaignCampaigDoesntExistError(t *testing.T) {
@@ -197,10 +197,10 @@ func TestCreateCampaignCloseCampaignCampaigDoesntExistError(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eAirdropUtils.CloseAirdropCampaignError(acountsAddresses[0].String(), 1, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, "close airdrop campaign - campaign with id 1 not found error: entity does not exist")
+	testHelper.C4eAirdropUtils.CloseCampaignError(acountsAddresses[0].String(), 1, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, "close airdrop campaign - campaign with id 1 not found error: entity does not exist")
 }
 
 func TestCreateCampaignCloseCampaignYouAreNotTheOwnerErrror(t *testing.T) {
@@ -208,11 +208,11 @@ func TestCreateCampaignCloseCampaignYouAreNotTheOwnerErrror(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eAirdropUtils.CloseAirdropCampaignError(acountsAddresses[1].String(), 0, types.AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, "close airdrop campaign - you are not the owner error: tx intended signer does not match the given signer")
+	testHelper.C4eAirdropUtils.CloseCampaignError(acountsAddresses[1].String(), 0, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, "close airdrop campaign - you are not the owner error: tx intended signer does not match the given signer")
 }
 
 func prepareNTestCampaigns(ctx sdk.Context, n int) []types.Campaign {

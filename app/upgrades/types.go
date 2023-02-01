@@ -19,7 +19,7 @@ type BaseAppParamManager interface {
 }
 
 type AppKeepers interface {
-	GetAirdropKeeper() *cfeairdropkeeper.Keeper
+	GetKeeper() *cfeairdropkeeper.Keeper
 	GetAccountKeeper() *authkeeper.AccountKeeper
 	GetBankKeeper() *bankkeeper.Keeper
 }

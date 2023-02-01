@@ -11,9 +11,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdCreateAirdropEntry() *cobra.Command {
+func CmdAddClaimRecords() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-airdrop-entry [campaignId] [airdrop-entries-json-file]",
+		Use:   "add-claim-records [campaignId] [airdrop-entries-json-file]",
 		Short: "Create a new ClaimRecord",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -30,7 +30,7 @@ func CmdCreateAirdropEntry() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCreateAirdropEntry(clientCtx.GetFromAddress().String(), argCampaignId, argAirdropEntries)
+			msg := types.NewMsgAddClaimRecords(clientCtx.GetFromAddress().String(), argCampaignId, argAirdropEntries)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -45,7 +45,7 @@ func CmdCreateAirdropEntry() *cobra.Command {
 
 func CmdDeleteClaimRecord() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "delete-airdrop-entry [campaign-id] [user-address]",
+		Use:   "delete-claim-record [campaign-id] [user-address]",
 		Short: "Delete a ClaimRecord by id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {

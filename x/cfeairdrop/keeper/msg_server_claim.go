@@ -21,6 +21,7 @@ func (k msgServer) Claim(goCtx context.Context, msg *types.MsgClaim) (*types.Msg
 	); err != nil {
 		return nil, err
 	}
+
 	return &types.MsgClaimResponse{}, nil
 }
 

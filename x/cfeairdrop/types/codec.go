@@ -10,13 +10,13 @@ import (
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgClaim{}, "cfeairdrop/Claim", nil)
 	cdc.RegisterConcrete(&MsgInitialClaim{}, "cfeairdrop/InitialClaim", nil)
-	cdc.RegisterConcrete(&MsgCreateAirdropCampaign{}, "cfeairdrop/CreateAirdropCampaign", nil)
-	cdc.RegisterConcrete(&MsgAddMissionToAidropCampaign{}, "cfeairdrop/AddMissionToAidropCampaign", nil)
+	cdc.RegisterConcrete(&MsgCreateCampaign{}, "cfeairdrop/CreateCampaign", nil)
+	cdc.RegisterConcrete(&MsgAddMissionToCampaign{}, "cfeairdrop/AddMissionToCampaign", nil)
 	cdc.RegisterConcrete(&MsgAddClaimRecords{}, "cfeairdrop/AddUsersEntries", nil)
 	cdc.RegisterConcrete(&MsgDeleteClaimRecord{}, "cfeairdrop/DeleteClaimRecord", nil)
-	cdc.RegisterConcrete(&MsgCloseAirdropCampaign{}, "cfeairdrop/CloseAirdropCampaign", nil)
-	cdc.RegisterConcrete(&MsgStartAirdropCampaign{}, "cfeairdrop/StartAirdropCampaign", nil)
-	cdc.RegisterConcrete(&MsgEditAirdropCampaign{}, "cfeairdrop/EditAirdropCampaign", nil)
+	cdc.RegisterConcrete(&MsgCloseCampaign{}, "cfeairdrop/CloseCampaign", nil)
+	cdc.RegisterConcrete(&MsgStartCampaign{}, "cfeairdrop/StartCampaign", nil)
+	cdc.RegisterConcrete(&MsgEditCampaign{}, "cfeairdrop/EditCampaign", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -24,13 +24,13 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgClaim{},
 		&MsgInitialClaim{},
-		&MsgCreateAirdropCampaign{},
-		&MsgAddMissionToAidropCampaign{},
+		&MsgCreateCampaign{},
+		&MsgAddMissionToCampaign{},
 		&MsgAddClaimRecords{},
 		&MsgDeleteClaimRecord{},
-		&MsgCloseAirdropCampaign{},
-		&MsgStartAirdropCampaign{},
-		&MsgEditAirdropCampaign{},
+		&MsgCloseCampaign{},
+		&MsgStartCampaign{},
+		&MsgEditCampaign{},
 	)
 	// this line is used by starport scaffolding # 3
 

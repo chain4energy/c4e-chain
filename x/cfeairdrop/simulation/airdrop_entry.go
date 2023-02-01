@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 )
 
-func SimulateMsgCreateAirdropEntry(
+func SimulateMsgAddClaimRecords(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,

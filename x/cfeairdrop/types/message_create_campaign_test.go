@@ -7,15 +7,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgCreateAirdropCampaign_ValidateBasic(t *testing.T) {
+func TestMsgCreateCampaign_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgCreateAirdropCampaign
+		msg  MsgCreateCampaign
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgCreateAirdropCampaign{
+			msg: MsgCreateCampaign{
 				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,

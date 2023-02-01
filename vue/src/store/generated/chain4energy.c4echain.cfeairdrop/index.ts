@@ -3,14 +3,14 @@ import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-cli
 import { UserEntry } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 import { ClaimRecord } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 import { ClaimRecords } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { AirdropDistrubitions } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { AirdropClaimsLeft } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
+import { CampaignTotalAmount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
+import { CampaignAmountLeft } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 import { Campaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 import { Mission } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
 
 
-export { UserEntry, ClaimRecord, ClaimRecords, AirdropDistrubitions, AirdropClaimsLeft, Campaign, Mission, Params };
+export { UserEntry, ClaimRecord, ClaimRecords, CampaignTotalAmount, CampaignAmountLeft, Campaign, Mission, Params };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -48,15 +48,15 @@ const getDefaultState = () => {
 				MissionAll: {},
 				Campaigns: {},
 				Campaign: {},
-				AirdropDistrubitions: {},
-				AirdropClaimsLeft: {},
+				CampaignTotalAmount: {},
+				CampaignAmountLeft: {},
 				
 				_Structure: {
 						UserEntry: getStructure(UserEntry.fromPartial({})),
 						ClaimRecord: getStructure(ClaimRecord.fromPartial({})),
 						ClaimRecords: getStructure(ClaimRecords.fromPartial({})),
-						AirdropDistrubitions: getStructure(AirdropDistrubitions.fromPartial({})),
-						AirdropClaimsLeft: getStructure(AirdropClaimsLeft.fromPartial({})),
+						CampaignTotalAmount: getStructure(CampaignTotalAmount.fromPartial({})),
+						CampaignAmountLeft: getStructure(CampaignAmountLeft.fromPartial({})),
 						Campaign: getStructure(Campaign.fromPartial({})),
 						Mission: getStructure(Mission.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
@@ -130,17 +130,17 @@ export default {
 					}
 			return state.Campaign[JSON.stringify(params)] ?? {}
 		},
-				getAirdropDistrubitions: (state) => (params = { params: {}}) => {
+				getCampaignTotalAmount: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.AirdropDistrubitions[JSON.stringify(params)] ?? {}
+			return state.CampaignTotalAmount[JSON.stringify(params)] ?? {}
 		},
-				getAirdropClaimsLeft: (state) => (params = { params: {}}) => {
+				getCampaignAmountLeft: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.AirdropClaimsLeft[JSON.stringify(params)] ?? {}
+			return state.CampaignAmountLeft[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -347,18 +347,18 @@ export default {
 		 		
 		
 		
-		async QueryAirdropDistrubitions({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryCampaignTotalAmount({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryAirdropDistrubitions( key.campaign_id)).data
+				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryCampaignTotalAmount( key.campaign_id)).data
 				
 					
-				commit('QUERY', { query: 'AirdropDistrubitions', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAirdropDistrubitions', payload: { options: { all }, params: {...key},query }})
-				return getters['getAirdropDistrubitions']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'CampaignTotalAmount', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryCampaignTotalAmount', payload: { options: { all }, params: {...key},query }})
+				return getters['getCampaignTotalAmount']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryAirdropDistrubitions API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryCampaignTotalAmount API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
@@ -369,33 +369,33 @@ export default {
 		 		
 		
 		
-		async QueryAirdropClaimsLeft({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryCampaignAmountLeft({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryAirdropClaimsLeft( key.campaign_id)).data
+				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryCampaignAmountLeft( key.campaign_id)).data
 				
 					
-				commit('QUERY', { query: 'AirdropClaimsLeft', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAirdropClaimsLeft', payload: { options: { all }, params: {...key},query }})
-				return getters['getAirdropClaimsLeft']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'CampaignAmountLeft', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryCampaignAmountLeft', payload: { options: { all }, params: {...key},query }})
+				return getters['getCampaignAmountLeft']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryAirdropClaimsLeft API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryCampaignAmountLeft API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
 		
 		
-		async sendMsgStartAirdropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgStartCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgStartAirdropCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgStartCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStartAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgStartCampaign:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgStartAirdropCampaign:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgStartCampaign:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -412,16 +412,16 @@ export default {
 				}
 			}
 		},
-		async sendMsgCreateAirdropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgCreateCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgCreateAirdropCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgCreateCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgCreateCampaign:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgCreateAirdropCampaign:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgCreateCampaign:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -438,16 +438,16 @@ export default {
 				}
 			}
 		},
-		async sendMsgEditAirdropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgEditCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgEditAirdropCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgEditCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgEditAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgEditCampaign:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgEditAirdropCampaign:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgEditCampaign:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -477,16 +477,16 @@ export default {
 				}
 			}
 		},
-		async sendMsgCloseAirdropCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgCloseCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgCloseAirdropCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgCloseCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCloseAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgCloseCampaign:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgCloseAirdropCampaign:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgCloseCampaign:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -504,16 +504,16 @@ export default {
 			}
 		},
 		
-		async MsgStartAirdropCampaign({ rootGetters }, { value }) {
+		async MsgStartCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgStartAirdropCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgStartCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStartAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgStartCampaign:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgStartAirdropCampaign:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgStartCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -530,16 +530,16 @@ export default {
 				}
 			}
 		},
-		async MsgCreateAirdropCampaign({ rootGetters }, { value }) {
+		async MsgCreateCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgCreateAirdropCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgCreateCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgCreateCampaign:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgCreateAirdropCampaign:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgCreateCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -556,16 +556,16 @@ export default {
 				}
 			}
 		},
-		async MsgEditAirdropCampaign({ rootGetters }, { value }) {
+		async MsgEditCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgEditAirdropCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgEditCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgEditAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgEditCampaign:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgEditAirdropCampaign:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgEditCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -595,16 +595,16 @@ export default {
 				}
 			}
 		},
-		async MsgCloseAirdropCampaign({ rootGetters }, { value }) {
+		async MsgCloseCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgCloseAirdropCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgCloseCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCloseAirdropCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgCloseCampaign:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgCloseAirdropCampaign:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgCloseCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},

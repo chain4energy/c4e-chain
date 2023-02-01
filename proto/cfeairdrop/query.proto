@@ -45,12 +45,12 @@ service Query {
 	rpc Campaign(QueryCampaignRequest) returns (QueryCampaignResponse) {
 		option (google.api.http).get = "/c4e/airdrop/v1beta1/campaign/{campaign_id}";
 	}
-	// Queries a AirdropDistrubitions by campaignId.
-	rpc AirdropDistrubitions(QueryAirdropDistrubitionsRequest) returns (QueryAirdropDistrubitionsResponse) {
+	// Queries a CampaignTotalAmount by campaignId.
+	rpc CampaignTotalAmount(QueryCampaignTotalAmountRequest) returns (QueryCampaignTotalAmountResponse) {
 		option (google.api.http).get = "/c4e/airdrop/v1beta1/airdrop_distributions/{campaign_id}";
 	}
-	// Queries a AirdropDistrubitions by campaignId.
-	rpc AirdropClaimsLeft(QueryAirdropClaimsLeftRequest) returns (QueryAirdropClaimsLeftResponse) {
+	// Queries a CampaignTotalAmount by campaignId.
+	rpc CampaignAmountLeft(QueryCampaignAmountLeftRequest) returns (QueryCampaignAmountLeftResponse) {
 		option (google.api.http).get = "/c4e/airdrop/v1beta1/airdrop_claims_left/{campaign_id}";
 	}
 
@@ -78,23 +78,23 @@ message QueryUserEntryResponse {
 	];
 }
 
-message QueryAirdropDistrubitionsRequest {
+message QueryCampaignTotalAmountRequest {
 	uint64 campaign_id = 1;
 }
 
-message QueryAirdropDistrubitionsResponse {
-	repeated cosmos.base.v1beta1.Coin airdrop_coins = 1 [
+message QueryCampaignTotalAmountResponse {
+	repeated cosmos.base.v1beta1.Coin amount = 1 [
 		(gogoproto.nullable) = false,
 		(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
 	];
 }
 
-message QueryAirdropClaimsLeftRequest {
+message QueryCampaignAmountLeftRequest {
 	uint64 campaign_id = 1;
 }
 
-message QueryAirdropClaimsLeftResponse {
-	repeated cosmos.base.v1beta1.Coin airdrop_coins = 1 [
+message QueryCampaignAmountLeftResponse {
+	repeated cosmos.base.v1beta1.Coin amount = 1 [
 		(gogoproto.nullable) = false,
 		(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
 	];

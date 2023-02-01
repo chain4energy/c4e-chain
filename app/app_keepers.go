@@ -9,7 +9,7 @@ import (
 
 var _ cfeupgradetypes.AppKeepers = (*App)(nil)
 
-func (app *App) GetAirdropKeeper() *cfeairdropkeeper.Keeper {
+func (app *App) GetKeeper() *cfeairdropkeeper.Keeper {
 	return &app.CfeairdropKeeper
 }
 

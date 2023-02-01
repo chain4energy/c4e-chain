@@ -28,33 +28,33 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgClaim int = 100
 
-	opWeightMsgCreateAirdropCampaign = "op_weight_msg_create_airdrop_campaign"
+	opWeightMsgCreateCampaign = "op_weight_msg_create_airdrop_campaign"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateAirdropCampaign int = 100
+	defaultWeightMsgCreateCampaign int = 100
 
 	opWeightMsgAddMissionToAidropCampaign = "op_weight_msg_add_mission_to_aidrop_campaign"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgAddMissionToAidropCampaign int = 100
 
-	opWeightMsgCreateAirdropEntry = "op_weight_msg_airdrop_entry"
+	opWeightMsgCreateEntry = "op_weight_msg_airdrop_entry"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateAirdropEntry int = 100
+	defaultWeightMsgCreateEntry int = 100
 
-	opWeightMsgUpdateAirdropEntry = "op_weight_msg_airdrop_entry"
+	opWeightMsgUpdateEntry = "op_weight_msg_airdrop_entry"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgUpdateAirdropEntry int = 100
+	defaultWeightMsgUpdateEntry int = 100
 
 	opWeightMsgDeleteClaimRecord = "op_weight_msg_airdrop_entry"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteClaimRecord int = 100
 
-	opWeightMsgCloseAirdropCampaign = "op_weight_msg_close_airdrop_campaign"
+	opWeightMsgCloseCampaign = "op_weight_msg_close_airdrop_campaign"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgCloseAirdropCampaign int = 100
+	defaultWeightMsgCloseCampaign int = 100
 
-	opWeightMsgStartAirdropCampaign = "op_weight_msg_start_airdrop_campaign"
+	opWeightMsgStartCampaign = "op_weight_msg_start_airdrop_campaign"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgStartAirdropCampaign int = 100
+	defaultWeightMsgStartCampaign int = 100
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
@@ -101,15 +101,15 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		cfeairdropsimulation.SimulateMsgClaim(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgCreateAirdropCampaign int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateAirdropCampaign, &weightMsgCreateAirdropCampaign, nil,
+	var weightMsgCreateCampaign int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateCampaign, &weightMsgCreateCampaign, nil,
 		func(_ *rand.Rand) {
-			weightMsgCreateAirdropCampaign = defaultWeightMsgCreateAirdropCampaign
+			weightMsgCreateCampaign = defaultWeightMsgCreateCampaign
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateAirdropCampaign,
-		cfeairdropsimulation.SimulateMsgCreateAirdropCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgCreateCampaign,
+		cfeairdropsimulation.SimulateMsgCreateCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgAddMissionToAidropCampaign int
@@ -123,21 +123,21 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		cfeairdropsimulation.SimulateMsgAddMissionToAidropCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgCreateAirdropEntry int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateAirdropEntry, &weightMsgCreateAirdropEntry, nil,
+	var weightMsgCreateEntry int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateEntry, &weightMsgCreateEntry, nil,
 		func(_ *rand.Rand) {
-			weightMsgCreateAirdropEntry = defaultWeightMsgCreateAirdropEntry
+			weightMsgCreateEntry = defaultWeightMsgCreateEntry
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateAirdropEntry,
-		cfeairdropsimulation.SimulateMsgCreateAirdropEntry(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgCreateEntry,
+		cfeairdropsimulation.SimulateMsgAddClaimRecords(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgUpdateAirdropEntry int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateAirdropEntry, &weightMsgUpdateAirdropEntry, nil,
+	var weightMsgUpdateEntry int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateEntry, &weightMsgUpdateEntry, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateAirdropEntry = defaultWeightMsgUpdateAirdropEntry
+			weightMsgUpdateEntry = defaultWeightMsgUpdateEntry
 		},
 	)
 
@@ -148,26 +148,26 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		},
 	)
 
-	var weightMsgCloseAirdropCampaign int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCloseAirdropCampaign, &weightMsgCloseAirdropCampaign, nil,
+	var weightMsgCloseCampaign int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCloseCampaign, &weightMsgCloseCampaign, nil,
 		func(_ *rand.Rand) {
-			weightMsgCloseAirdropCampaign = defaultWeightMsgCloseAirdropCampaign
+			weightMsgCloseCampaign = defaultWeightMsgCloseCampaign
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCloseAirdropCampaign,
-		cfeairdropsimulation.SimulateMsgCloseAirdropCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgCloseCampaign,
+		cfeairdropsimulation.SimulateMsgCloseCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgStartAirdropCampaign int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgStartAirdropCampaign, &weightMsgStartAirdropCampaign, nil,
+	var weightMsgStartCampaign int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgStartCampaign, &weightMsgStartCampaign, nil,
 		func(_ *rand.Rand) {
-			weightMsgStartAirdropCampaign = defaultWeightMsgStartAirdropCampaign
+			weightMsgStartCampaign = defaultWeightMsgStartCampaign
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgStartAirdropCampaign,
-		cfeairdropsimulation.SimulateMsgStartAirdropCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgStartCampaign,
+		cfeairdropsimulation.SimulateMsgStartCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

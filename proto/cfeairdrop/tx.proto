@@ -12,14 +12,14 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 service Msg {
   rpc Claim(MsgClaim) returns (MsgClaimResponse);
   rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
-  rpc CreateAirdropCampaign(MsgCreateAirdropCampaign) returns (MsgCreateAirdropCampaignResponse);
-  rpc EditAirdropCampaign(MsgEditAirdropCampaign) returns (MsgEditAirdropCampaignResponse);
+  rpc CreateCampaign(MsgCreateCampaign) returns (MsgCreateCampaignResponse);
+  rpc EditCampaign(MsgEditCampaign) returns (MsgEditCampaignResponse);
   rpc AddMissionToAidropCampaign(MsgAddMissionToAidropCampaign) returns (MsgAddMissionToAidropCampaignResponse);
   rpc AddClaimRecords(MsgAddClaimRecords) returns (MsgAddClaimRecordsResponse);
   rpc DeleteClaimRecord(MsgDeleteClaimRecord) returns (MsgDeleteClaimRecordResponse);
-  rpc CloseAirdropCampaign(MsgCloseAirdropCampaign) returns (MsgCloseAirdropCampaignResponse);
-  rpc StartAirdropCampaign(MsgStartAirdropCampaign) returns (MsgStartAirdropCampaignResponse);
-  rpc RemoveAirdropCampaign(MsgRemoveAirdropCampaign) returns (MsgRemoveAirdropCampaignResponse);
+  rpc CloseCampaign(MsgCloseCampaign) returns (MsgCloseCampaignResponse);
+  rpc StartCampaign(MsgStartCampaign) returns (MsgStartCampaignResponse);
+  rpc RemoveCampaign(MsgRemoveCampaign) returns (MsgRemoveCampaignResponse);
   // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -39,7 +39,7 @@ message MsgInitialClaim {
 
 message MsgInitialClaimResponse {}
 
-message MsgCreateAirdropCampaign {
+message MsgCreateCampaign {
   string owner = 1;
   string name = 2;
   string description = 3;
@@ -69,7 +69,7 @@ message MsgCreateAirdropCampaign {
   ];
 }
 
-message MsgCreateAirdropCampaignResponse {}
+message MsgCreateCampaignResponse {}
 
 message MsgAddMissionToAidropCampaign {
   string owner = 1;
@@ -105,29 +105,29 @@ message MsgDeleteClaimRecord {
 
 message MsgDeleteClaimRecordResponse {}
 
-message MsgCloseAirdropCampaign {
+message MsgCloseCampaign {
   string owner = 1;
   uint64 campaign_id = 2;
-  AirdropCloseAction airdrop_close_action = 3;
+  CampaignCloseAction campaign_close_action = 3;
 }
 
-message MsgCloseAirdropCampaignResponse {}
+message MsgCloseCampaignResponse {}
 
-message MsgStartAirdropCampaign {
+message MsgStartCampaign {
   string owner = 1;
   uint64 campaignId = 2;
 }
 
-message MsgStartAirdropCampaignResponse {}
+message MsgStartCampaignResponse {}
 
-message MsgRemoveAirdropCampaign {
+message MsgRemoveCampaign {
   string owner = 1;
   uint64 campaignId = 2;
 }
 
-message MsgRemoveAirdropCampaignResponse {}
+message MsgRemoveCampaignResponse {}
 
-message MsgEditAirdropCampaign {
+message MsgEditCampaign {
   string owner = 1;
   uint64 campaignId = 2;
   string name = 3;
@@ -158,5 +158,5 @@ message MsgEditAirdropCampaign {
   ];
 }
 
-message MsgEditAirdropCampaignResponse {}
+message MsgEditCampaignResponse {}
 // this line is used by starport scaffolding # proto/tx/message

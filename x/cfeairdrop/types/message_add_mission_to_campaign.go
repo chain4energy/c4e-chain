@@ -8,10 +8,10 @@ import (
 
 const TypeMsgAddMissionToAidropCampaign = "add_mission_to_aidrop_campaign"
 
-var _ sdk.Msg = &MsgAddMissionToAidropCampaign{}
+var _ sdk.Msg = &MsgAddMissionToCampaign{}
 
-func NewMsgAddMissionToAidropCampaign(owner string, campaignId uint64, name string, description string, missionType MissionType, weight *sdk.Dec, claimStartDate *time.Time) *MsgAddMissionToAidropCampaign {
-	return &MsgAddMissionToAidropCampaign{
+func NewMsgAddMissionToAidropCampaign(owner string, campaignId uint64, name string, description string, missionType MissionType, weight *sdk.Dec, claimStartDate *time.Time) *MsgAddMissionToCampaign {
+	return &MsgAddMissionToCampaign{
 		Owner:          owner,
 		Name:           name,
 		Description:    description,
@@ -32,15 +32,15 @@ func NewInitialMission(campaignId uint64) *Mission {
 	}
 }
 
-func (msg *MsgAddMissionToAidropCampaign) Route() string {
+func (msg *MsgAddMissionToCampaign) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgAddMissionToAidropCampaign) Type() string {
+func (msg *MsgAddMissionToCampaign) Type() string {
 	return TypeMsgAddMissionToAidropCampaign
 }
 
-func (msg *MsgAddMissionToAidropCampaign) GetSigners() []sdk.AccAddress {
+func (msg *MsgAddMissionToCampaign) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
@@ -48,12 +48,12 @@ func (msg *MsgAddMissionToAidropCampaign) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgAddMissionToAidropCampaign) GetSignBytes() []byte {
+func (msg *MsgAddMissionToCampaign) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgAddMissionToAidropCampaign) ValidateBasic() error {
+func (msg *MsgAddMissionToCampaign) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

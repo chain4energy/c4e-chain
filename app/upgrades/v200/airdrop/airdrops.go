@@ -20,7 +20,7 @@ var f embed.FS
 const monthAvgHours = 365 * 24 / 12 * time.Hour
 const airdropSource = "cfeminter"
 
-func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, accountKeeper *authkeeper.AccountKeeper, bankKeeper *bankkeeper.Keeper) error {
+func Creates(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, accountKeeper *authkeeper.AccountKeeper, bankKeeper *bankkeeper.Keeper) error {
 	lockupPeriod := 3 * monthAvgHours
 	vestingPeriod := 6 * monthAvgHours
 	startTime := time.Now().Add(time.Hour * 2)
@@ -53,55 +53,55 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		return err
 	}
 
-	if err = airdropKeeper.StartAirdropCampaign(ctx, ownerAcc, 0); err != nil {
+	if err = airdropKeeper.StartCampaign(ctx, ownerAcc, 0); err != nil {
 		return err
 	}
-	if err = airdropKeeper.StartAirdropCampaign(ctx, ownerAcc, 1); err != nil {
+	if err = airdropKeeper.StartCampaign(ctx, ownerAcc, 1); err != nil {
 		return err
 	}
-	if err = airdropKeeper.StartAirdropCampaign(ctx, ownerAcc, 2); err != nil {
+	if err = airdropKeeper.StartCampaign(ctx, ownerAcc, 2); err != nil {
 		return err
 	}
-	if err = airdropKeeper.StartAirdropCampaign(ctx, ownerAcc, 3); err != nil {
-		return err
-	}
-
-	stakedropAirdropEntries, err := readAirdropEntriesFromJson("stakedrop.json")
-	if err != nil {
-		return err
-	}
-	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 0, stakedropAirdropEntries); err != nil {
+	if err = airdropKeeper.StartCampaign(ctx, ownerAcc, 3); err != nil {
 		return err
 	}
 
-	teamdropAirdropEntries, err := readAirdropEntriesFromJson("teamdrop.json")
+	stakedropEntries, err := readEntriesFromJson("stakedrop.json")
 	if err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 1, teamdropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 0, stakedropEntries); err != nil {
 		return err
 	}
 
-	santadropAirdropEntries, err := readAirdropEntriesFromJson("santadrop.json")
+	teamdropEntries, err := readEntriesFromJson("teamdrop.json")
 	if err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 2, santadropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 1, teamdropEntries); err != nil {
 		return err
 	}
 
-	gleamdropAirdropEntries, err := readAirdropEntriesFromJson("gleamdrop.json")
+	santadropEntries, err := readEntriesFromJson("santadrop.json")
 	if err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 3, gleamdropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 2, santadropEntries); err != nil {
+		return err
+	}
+
+	gleamdropEntries, err := readEntriesFromJson("gleamdrop.json")
+	if err != nil {
+		return err
+	}
+	if err = airdropKeeper.AddUsersEntries(ctx, ownerAcc, 3, gleamdropEntries); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func readAirdropEntriesFromJson(fileName string) ([]*types.ClaimRecord, error) {
+func readEntriesFromJson(fileName string) ([]*types.ClaimRecord, error) {
 	data, err := f.ReadFile(fileName)
 	if err != nil {
 		return nil, err

@@ -13,10 +13,10 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdStartAirdropCampaign() *cobra.Command {
+func CmdStartCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "start-airdrop-campaign [campaign-id]",
-		Short: "Broadcast message StartAirdropCampaign",
+		Use:   "start-campaign [campaign-id]",
+		Short: "Broadcast message StartCampaign",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := cast.ToUint64E(args[0])
@@ -29,7 +29,7 @@ func CmdStartAirdropCampaign() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgStartAirdropCampaign(
+			msg := types.NewMsgStartCampaign(
 				clientCtx.GetFromAddress().String(),
 				argCampaignId,
 			)

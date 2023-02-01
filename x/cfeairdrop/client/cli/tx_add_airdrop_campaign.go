@@ -15,10 +15,10 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdCreateAirdropCampaign() *cobra.Command {
+func CmdCreateCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-airdrop-campaign [name] [description] [feegrant-amount] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period]",
-		Short: "Broadcast message CreateAirdropCampaign",
+		Use:   "create-campaign [name] [description] [feegrant-amount] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period]",
+		Short: "Broadcast message CreateCampaign",
 		Args:  cobra.ExactArgs(8),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
@@ -59,7 +59,7 @@ func CmdCreateAirdropCampaign() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCreateAirdropCampaign(
+			msg := types.NewMsgCreateCampaign(
 				clientCtx.GetFromAddress().String(),
 				argName,
 				argDescription,

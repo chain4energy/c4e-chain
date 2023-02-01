@@ -27,7 +27,8 @@ func (k msgServer) DeleteClaimRecord(goCtx context.Context, msg *types.MsgDelete
 	defer telemetry.IncrCounter(1, types.ModuleName, "delete airdrop entry message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
-	if err := keeper.DeleteUserAirdropEntry(
+
+	if err := keeper.DeleteClaimRecord(
 		ctx,
 		msg.Owner,
 		msg.CampaignId,

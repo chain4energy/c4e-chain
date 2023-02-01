@@ -42,9 +42,9 @@ func (k Keeper) SendToNewRepeatedContinuousVestingAccount(ctx sdk.Context, userE
 
 		baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), endTime)
 
-		newAirdropAcc := cfevestingtypes.NewRepeatedContinuousVestingAccountRaw(baseVestingAccount, startTime)
-		newAirdropAcc.EndTime = endTime
-		claimerAccount = newAirdropAcc
+		newAcc := cfevestingtypes.NewRepeatedContinuousVestingAccountRaw(baseVestingAccount, startTime)
+		newAcc.EndTime = endTime
+		claimerAccount = newAcc
 		k.Logger(ctx).Debug("send to airdrop account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
 			baseVestingAccount.OriginalVesting, "delegatedFree", baseVestingAccount.DelegatedFree, "delegatedVesting",
 			baseVestingAccount.DelegatedVesting, "endTime", baseVestingAccount.EndTime, "startTime", startTime)

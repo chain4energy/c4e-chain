@@ -18,8 +18,6 @@ func TestCreateAirdropAccount(t *testing.T) {
 	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
 	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
-	fmt.Println(startTime)
-	fmt.Println(endTime)
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
 	moduleAmount := sdk.NewInt(10000)
@@ -29,7 +27,7 @@ func TestCreateAirdropAccount(t *testing.T) {
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfeairdroptypes.ModuleName)
 
-	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
+	testHelper.C4eAirdropUtils.SendToRepeatedContinuousVestingAccount(acountsAddresses[0],
 		amount,
 		startTimeUnix,
 		endTimeUnix, cfeairdroptypes.MissionInitialClaim,
@@ -37,13 +35,12 @@ func TestCreateAirdropAccount(t *testing.T) {
 
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount)
 	testHelper.SetContextBlockTime(testenv.TestEnvTime)
-	fmt.Println(testHelper.GetContext().BlockTime())
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount.QuoRaw(2))
 	testHelper.SetContextBlockTime(endTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
 
 	testHelper.SetContextBlockTime(startTime)
-	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
+	testHelper.C4eAirdropUtils.SendToRepeatedContinuousVestingAccount(acountsAddresses[0],
 		amount,
 		startTimeUnix,
 		endTimeUnix, cfeairdroptypes.MissionVote,
@@ -55,7 +52,7 @@ func TestCreateAirdropAccount(t *testing.T) {
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
 
 	testHelper.SetContextBlockTime(startTime)
-	testHelper.C4eAirdropUtils.SendToAirdropAccount(acountsAddresses[0],
+	testHelper.C4eAirdropUtils.SendToRepeatedContinuousVestingAccount(acountsAddresses[0],
 		amount,
 		startTimeUnix,
 		endTimeUnix, cfeairdroptypes.MissionVote,
@@ -81,7 +78,7 @@ func TestCreateAirdropAccountSendDisabled(t *testing.T) {
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfeairdroptypes.ModuleName)
 	testHelper.BankUtils.DisableDefaultSend()
-	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
+	testHelper.C4eAirdropUtils.SendToRepeatedContinuousVestingAccountError(acountsAddresses[0],
 		amount,
 		startTimeUnix,
 		endTimeUnix, true, "send to airdrop account - send coins disabled: uc4e transfers are currently disabled: send transactions are disabled",
@@ -116,7 +113,7 @@ func TestCreateAirdropAccountBlockedAddress(t *testing.T) {
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfeairdroptypes.ModuleName)
-	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
+	testHelper.C4eAirdropUtils.SendToRepeatedContinuousVestingAccountError(acountsAddresses[0],
 		amount,
 		startTimeUnix,
 		endTimeUnix, true,
@@ -138,7 +135,7 @@ func TestCreateAirdropAccountNotExist(t *testing.T) {
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfeairdroptypes.ModuleName)
-	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
+	testHelper.C4eAirdropUtils.SendToRepeatedContinuousVestingAccountError(acountsAddresses[0],
 		amount,
 		startTimeUnix,
 		endTimeUnix, false, fmt.Sprintf("send to airdrop account - account does not exist: %s: entity does not exist", acountsAddresses[0]),
@@ -161,7 +158,7 @@ func TestCreateAirdropAccountWrongAccountType(t *testing.T) {
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfeairdroptypes.ModuleName)
-	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
+	testHelper.C4eAirdropUtils.SendToRepeatedContinuousVestingAccountError(acountsAddresses[0],
 		amount,
 		startTimeUnix,
 		endTimeUnix, false, "send to airdrop account - expected RepeatedContinuousVestingAccount, got: *types.BaseAccount: invalid account type",
@@ -181,7 +178,7 @@ func TestCreateAirdropAccountSendError(t *testing.T) {
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(amount, cfeairdroptypes.ModuleName)
 
-	testHelper.C4eAirdropUtils.SendToAirdropAccountError(acountsAddresses[0],
+	testHelper.C4eAirdropUtils.SendToRepeatedContinuousVestingAccountError(acountsAddresses[0],
 		amount.AddRaw(1),
 		startTimeUnix,
 		endTimeUnix, true, "send to airdrop account - send coins to airdrop account insufficient funds error (to: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq, amount: 10000000001uc4e): insufficient funds",

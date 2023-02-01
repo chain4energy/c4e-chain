@@ -23,13 +23,13 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgInitialClaim:
 			res, err := msgServer.InitialClaim(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgCreateAirdropCampaign:
-			res, err := msgServer.CreateAirdropCampaign(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgCreateCampaign:
+			res, err := msgServer.CreateCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgEditAirdropCampaign:
-			res, err := msgServer.EditAirdropCampaign(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgEditCampaign:
+			res, err := msgServer.EditCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddMissionToAidropCampaign:
+		case *types.MsgAddMissionToCampaign:
 			res, err := msgServer.AddMissionToAidropCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgAddClaimRecords:
@@ -38,15 +38,15 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgDeleteClaimRecord:
 			res, err := msgServer.DeleteClaimRecord(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgCloseAirdropCampaign:
-			res, err := msgServer.CloseAirdropCampaign(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgCloseCampaign:
+			res, err := msgServer.CloseCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgStartAirdropCampaign:
-			res, err := msgServer.StartAirdropCampaign(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgStartCampaign:
+			res, err := msgServer.StartCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 			// this line is used by starport scaffolding # 1
-		case *types.MsgRemoveAirdropCampaign:
-			res, err := msgServer.RemoveAirdropCampaign(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgRemoveCampaign:
+			res, err := msgServer.RemoveCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 			// this line is used by starport scaffolding # 1
 		default:

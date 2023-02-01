@@ -6,10 +6,10 @@ var _ binary.ByteOrder
 
 const (
 	// CampaignKeyPrefix is the prefix to retrieve all CampaignO
-	CampaignKeyPrefix          = "Campaign/value/"
-	AirdropDistributionsPrefix = "AirdropDistrubitions/value/"
-	AirdropClaimsLeftPrefix    = "AirdropClaimsLeft/value/"
-	CampaignCountKey           = "AidropCampaignCountKey-count-"
+	CampaignKeyPrefix            = "Campaign/value/"
+	CampaignTotalAmountKeyPrefix = "CampaignTotalAmount/value/"
+	CampaignAmountLeftPrefix     = "CampaignAmountLeft/value/"
+	CampaignCountKey             = "AidropCampaignCountKey-count-"
 )
 
 // CampaignKey returns the store key to retrieve a CampaignO from the index fields
@@ -24,8 +24,8 @@ func CampaignKey(
 	return key
 }
 
-// AirdropDistributionsKey returns the store key to retrieve a CampaignO from the index fields
-func AirdropDistributionsKey(
+// CampaignTotalAmountKey returns the store key to retrieve a CampaignO from the index fields
+func CampaignTotalAmountKey(
 	campaignId uint64,
 ) []byte {
 	key := make([]byte, 8)
@@ -36,8 +36,8 @@ func AirdropDistributionsKey(
 	return key
 }
 
-// AirdropClaimsLeftKey returns the store key to retrieve a CampaignO from the index fields
-func AirdropClaimsLeftKey(
+// CampaignAmountLeftKey returns the store key to retrieve a CampaignO from the index fields
+func CampaignAmountLeftKey(
 	campaignId uint64,
 ) []byte {
 	key := make([]byte, 8)

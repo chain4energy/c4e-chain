@@ -78,7 +78,7 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 	return nil
 }
 
-func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, startTime *time.Time,
+func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
 	k.Logger(ctx).Debug("edit airdrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
@@ -133,8 +133,8 @@ func (k Keeper) EditAirdropCampaign(ctx sdk.Context, owner string, campaignId ui
 	return nil
 }
 
-func (k Keeper) CloseAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64, airdropCloseAction types.AirdropCloseAction) error {
-	k.Logger(ctx).Debug("close airdrop campaign", "owner", owner, "campaignId", campaignId, "airdropCloseAction", airdropCloseAction)
+func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, campaignCloseAction types.CampaignCloseAction) error {
+	k.Logger(ctx).Debug("close airdrop campaign", "owner", owner, "campaignId", campaignId, "campaignCloseAction", campaignCloseAction)
 	campaign, found := k.GetCampaign(ctx, campaignId)
 	if !found {
 		k.Logger(ctx).Error("close airdrop campaign campaign campaign not found", "campaignId", campaignId)
@@ -157,7 +157,7 @@ func (k Keeper) CloseAirdropCampaign(ctx sdk.Context, owner string, campaignId u
 	return nil
 }
 
-func (k Keeper) StartAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
+func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
 	k.Logger(ctx).Debug("start airdrop campaign", "owner", owner, "campaignId", campaignId)
 	campaign, found := k.GetCampaign(ctx, campaignId)
 	if !found {
@@ -181,19 +181,19 @@ func (k Keeper) StartAirdropCampaign(ctx sdk.Context, owner string, campaignId u
 	return nil
 }
 
-func (k Keeper) RemoveAirdropCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
+func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
 	k.Logger(ctx).Debug("Remove airdrop campaign", "owner", owner, "campaignId", campaignId)
-	validationResult := k.ValidateRemoveAirdrop(ctx, owner, campaignId)
+	validationResult := k.ValidateRemove(ctx, owner, campaignId)
 	if validationResult != nil {
 		return validationResult
 	}
 
-	k.RemoveCampaign(ctx, campaignId)
+	k.removeCampaign(ctx, campaignId)
 	k.RemoveAllMissionForCampaign(ctx, campaignId)
 	return nil
 }
 
-func (k Keeper) ValidateRemoveAirdrop(ctx sdk.Context, owner string, campaignId uint64) error {
+func (k Keeper) ValidateRemove(ctx sdk.Context, owner string, campaignId uint64) error {
 	campaign, found := k.GetCampaign(ctx, campaignId)
 	if !found {
 		k.Logger(ctx).Error("start airdrop campaign: campaign not found", "campaignId", campaignId)

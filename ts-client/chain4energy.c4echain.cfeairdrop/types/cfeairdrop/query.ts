@@ -26,20 +26,20 @@ export interface QueryUsersEntriesResponse {
   userEntry: UserEntry | undefined;
 }
 
-export interface QueryAirdropDistrubitionsRequest {
+export interface QueryCampaignTotalAmountRequest {
   campaignId: number;
 }
 
-export interface QueryAirdropDistrubitionsResponse {
-  airdropCoins: Coin[];
+export interface QueryCampaignTotalAmountResponse {
+  amount: Coin[];
 }
 
-export interface QueryAirdropClaimsLeftRequest {
+export interface QueryCampaignAmountLeftRequest {
   campaignId: number;
 }
 
-export interface QueryAirdropClaimsLeftResponse {
-  airdropCoins: Coin[];
+export interface QueryCampaignAmountLeftResponse {
+  amount: Coin[];
 }
 
 export interface QueryUsersEntriesRequest {
@@ -280,22 +280,22 @@ export const QueryUsersEntriesResponse = {
   },
 };
 
-function createBaseQueryAirdropDistrubitionsRequest(): QueryAirdropDistrubitionsRequest {
+function createBaseQueryCampaignTotalAmountRequest(): QueryCampaignTotalAmountRequest {
   return { campaignId: 0 };
 }
 
-export const QueryAirdropDistrubitionsRequest = {
-  encode(message: QueryAirdropDistrubitionsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryCampaignTotalAmountRequest = {
+  encode(message: QueryCampaignTotalAmountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryAirdropDistrubitionsRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCampaignTotalAmountRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryAirdropDistrubitionsRequest();
+    const message = createBaseQueryCampaignTotalAmountRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -310,46 +310,46 @@ export const QueryAirdropDistrubitionsRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryAirdropDistrubitionsRequest {
+  fromJSON(object: any): QueryCampaignTotalAmountRequest {
     return { campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0 };
   },
 
-  toJSON(message: QueryAirdropDistrubitionsRequest): unknown {
+  toJSON(message: QueryCampaignTotalAmountRequest): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryAirdropDistrubitionsRequest>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryCampaignTotalAmountRequest>, I>>(
     object: I,
-  ): QueryAirdropDistrubitionsRequest {
-    const message = createBaseQueryAirdropDistrubitionsRequest();
+  ): QueryCampaignTotalAmountRequest {
+    const message = createBaseQueryCampaignTotalAmountRequest();
     message.campaignId = object.campaignId ?? 0;
     return message;
   },
 };
 
-function createBaseQueryAirdropDistrubitionsResponse(): QueryAirdropDistrubitionsResponse {
-  return { airdropCoins: [] };
+function createBaseQueryCampaignTotalAmountResponse(): QueryCampaignTotalAmountResponse {
+  return { amount: [] };
 }
 
-export const QueryAirdropDistrubitionsResponse = {
-  encode(message: QueryAirdropDistrubitionsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.airdropCoins) {
+export const QueryCampaignTotalAmountResponse = {
+  encode(message: QueryCampaignTotalAmountResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.amount) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryAirdropDistrubitionsResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCampaignTotalAmountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryAirdropDistrubitionsResponse();
+    const message = createBaseQueryCampaignTotalAmountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.airdropCoins.push(Coin.decode(reader, reader.uint32()));
+          message.amount.push(Coin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -359,47 +359,47 @@ export const QueryAirdropDistrubitionsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryAirdropDistrubitionsResponse {
+  fromJSON(object: any): QueryCampaignTotalAmountResponse {
     return {
-      airdropCoins: Array.isArray(object?.airdropCoins) ? object.airdropCoins.map((e: any) => Coin.fromJSON(e)) : [],
+      amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [],
     };
   },
 
-  toJSON(message: QueryAirdropDistrubitionsResponse): unknown {
+  toJSON(message: QueryCampaignTotalAmountResponse): unknown {
     const obj: any = {};
-    if (message.airdropCoins) {
-      obj.airdropCoins = message.airdropCoins.map((e) => e ? Coin.toJSON(e) : undefined);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => e ? Coin.toJSON(e) : undefined);
     } else {
-      obj.airdropCoins = [];
+      obj.amount = [];
     }
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryAirdropDistrubitionsResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryCampaignTotalAmountResponse>, I>>(
     object: I,
-  ): QueryAirdropDistrubitionsResponse {
-    const message = createBaseQueryAirdropDistrubitionsResponse();
-    message.airdropCoins = object.airdropCoins?.map((e) => Coin.fromPartial(e)) || [];
+  ): QueryCampaignTotalAmountResponse {
+    const message = createBaseQueryCampaignTotalAmountResponse();
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBaseQueryAirdropClaimsLeftRequest(): QueryAirdropClaimsLeftRequest {
+function createBaseQueryCampaignAmountLeftRequest(): QueryCampaignAmountLeftRequest {
   return { campaignId: 0 };
 }
 
-export const QueryAirdropClaimsLeftRequest = {
-  encode(message: QueryAirdropClaimsLeftRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryCampaignAmountLeftRequest = {
+  encode(message: QueryCampaignAmountLeftRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryAirdropClaimsLeftRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCampaignAmountLeftRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryAirdropClaimsLeftRequest();
+    const message = createBaseQueryCampaignAmountLeftRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -414,46 +414,46 @@ export const QueryAirdropClaimsLeftRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryAirdropClaimsLeftRequest {
+  fromJSON(object: any): QueryCampaignAmountLeftRequest {
     return { campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0 };
   },
 
-  toJSON(message: QueryAirdropClaimsLeftRequest): unknown {
+  toJSON(message: QueryCampaignAmountLeftRequest): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryAirdropClaimsLeftRequest>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryCampaignAmountLeftRequest>, I>>(
     object: I,
-  ): QueryAirdropClaimsLeftRequest {
-    const message = createBaseQueryAirdropClaimsLeftRequest();
+  ): QueryCampaignAmountLeftRequest {
+    const message = createBaseQueryCampaignAmountLeftRequest();
     message.campaignId = object.campaignId ?? 0;
     return message;
   },
 };
 
-function createBaseQueryAirdropClaimsLeftResponse(): QueryAirdropClaimsLeftResponse {
-  return { airdropCoins: [] };
+function createBaseQueryCampaignAmountLeftResponse(): QueryCampaignAmountLeftResponse {
+  return { amount: [] };
 }
 
-export const QueryAirdropClaimsLeftResponse = {
-  encode(message: QueryAirdropClaimsLeftResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.airdropCoins) {
+export const QueryCampaignAmountLeftResponse = {
+  encode(message: QueryCampaignAmountLeftResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.amount) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryAirdropClaimsLeftResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCampaignAmountLeftResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryAirdropClaimsLeftResponse();
+    const message = createBaseQueryCampaignAmountLeftResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.airdropCoins.push(Coin.decode(reader, reader.uint32()));
+          message.amount.push(Coin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -463,27 +463,27 @@ export const QueryAirdropClaimsLeftResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryAirdropClaimsLeftResponse {
+  fromJSON(object: any): QueryCampaignAmountLeftResponse {
     return {
-      airdropCoins: Array.isArray(object?.airdropCoins) ? object.airdropCoins.map((e: any) => Coin.fromJSON(e)) : [],
+      amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [],
     };
   },
 
-  toJSON(message: QueryAirdropClaimsLeftResponse): unknown {
+  toJSON(message: QueryCampaignAmountLeftResponse): unknown {
     const obj: any = {};
-    if (message.airdropCoins) {
-      obj.airdropCoins = message.airdropCoins.map((e) => e ? Coin.toJSON(e) : undefined);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => e ? Coin.toJSON(e) : undefined);
     } else {
-      obj.airdropCoins = [];
+      obj.amount = [];
     }
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryAirdropClaimsLeftResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryCampaignAmountLeftResponse>, I>>(
     object: I,
-  ): QueryAirdropClaimsLeftResponse {
-    const message = createBaseQueryAirdropClaimsLeftResponse();
-    message.airdropCoins = object.airdropCoins?.map((e) => Coin.fromPartial(e)) || [];
+  ): QueryCampaignAmountLeftResponse {
+    const message = createBaseQueryCampaignAmountLeftResponse();
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1058,10 +1058,10 @@ export interface Query {
   Campaigns(request: QueryCampaignsRequest): Promise<QueryCampaignsResponse>;
   /** Queries a list of Campaigns items. */
   Campaign(request: QueryCampaignRequest): Promise<QueryCampaignResponse>;
-  /** Queries a AirdropDistrubitions by campaignId. */
-  AirdropDistrubitions(request: QueryAirdropDistrubitionsRequest): Promise<QueryAirdropDistrubitionsResponse>;
-  /** Queries a AirdropDistrubitions by campaignId. */
-  AirdropClaimsLeft(request: QueryAirdropClaimsLeftRequest): Promise<QueryAirdropClaimsLeftResponse>;
+  /** Queries a CampaignTotalAmount by campaignId. */
+  CampaignTotalAmount(request: QueryCampaignTotalAmountRequest): Promise<QueryCampaignTotalAmountResponse>;
+  /** Queries a CampaignTotalAmount by campaignId. */
+  CampaignAmountLeft(request: QueryCampaignAmountLeftRequest): Promise<QueryCampaignAmountLeftResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1075,8 +1075,8 @@ export class QueryClientImpl implements Query {
     this.MissionAll = this.MissionAll.bind(this);
     this.Campaigns = this.Campaigns.bind(this);
     this.Campaign = this.Campaign.bind(this);
-    this.AirdropDistrubitions = this.AirdropDistrubitions.bind(this);
-    this.AirdropClaimsLeft = this.AirdropClaimsLeft.bind(this);
+    this.CampaignTotalAmount = this.CampaignTotalAmount.bind(this);
+    this.CampaignAmountLeft = this.CampaignAmountLeft.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -1120,16 +1120,16 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryCampaignResponse.decode(new _m0.Reader(data)));
   }
 
-  AirdropDistrubitions(request: QueryAirdropDistrubitionsRequest): Promise<QueryAirdropDistrubitionsResponse> {
-    const data = QueryAirdropDistrubitionsRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "AirdropDistrubitions", data);
-    return promise.then((data) => QueryAirdropDistrubitionsResponse.decode(new _m0.Reader(data)));
+  CampaignTotalAmount(request: QueryCampaignTotalAmountRequest): Promise<QueryCampaignTotalAmountResponse> {
+    const data = QueryCampaignTotalAmountRequest.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "CampaignTotalAmount", data);
+    return promise.then((data) => QueryCampaignTotalAmountResponse.decode(new _m0.Reader(data)));
   }
 
-  AirdropClaimsLeft(request: QueryAirdropClaimsLeftRequest): Promise<QueryAirdropClaimsLeftResponse> {
-    const data = QueryAirdropClaimsLeftRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "AirdropClaimsLeft", data);
-    return promise.then((data) => QueryAirdropClaimsLeftResponse.decode(new _m0.Reader(data)));
+  CampaignAmountLeft(request: QueryCampaignAmountLeftRequest): Promise<QueryCampaignAmountLeftResponse> {
+    const data = QueryCampaignAmountLeftRequest.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "CampaignAmountLeft", data);
+    return promise.then((data) => QueryCampaignAmountLeftResponse.decode(new _m0.Reader(data)));
   }
 }
 

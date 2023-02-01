@@ -11,10 +11,10 @@ import (
 
 type MessageId uint64
 
-func (cr *UserEntry) GetAidropEntry(camapaignId uint64) *ClaimRecord {
-	for _, airdropEntryState := range cr.ClaimRecords {
-		if airdropEntryState.CampaignId == camapaignId {
-			return airdropEntryState
+func (cr *UserEntry) GetClaimRecord(camapaignId uint64) *ClaimRecord {
+	for _, claimRecordState := range cr.ClaimRecords {
+		if claimRecordState.CampaignId == camapaignId {
+			return claimRecordState
 		}
 	}
 	return nil
@@ -61,13 +61,13 @@ func (m *UserEntry) Validate() error {
 		campaignIDMap[elem.CampaignId] = struct{}{}
 	}
 
-	for _, airdropEntry := range m.ClaimRecords {
-		if !airdropEntry.AirdropCoins.IsAllPositive() {
+	for _, claimRecord := range m.ClaimRecords {
+		if !claimRecord.Amount.IsAllPositive() {
 			return errors.New("claimable amount must be positive")
 		}
 
 		missionIDMap := make(map[uint64]struct{})
-		for _, elem := range airdropEntry.CompletedMissions {
+		for _, elem := range claimRecord.CompletedMissions {
 			if _, ok := missionIDMap[elem]; ok {
 				return fmt.Errorf("duplicated mission id for completed mission")
 			}
@@ -80,9 +80,9 @@ func (m *UserEntry) Validate() error {
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
 func (m *UserEntry) IsMissionCompleted(campaignId uint64, missionID uint64) bool {
-	for _, airdropEntry := range m.ClaimRecords {
-		if airdropEntry.CampaignId == campaignId {
-			for _, completed := range airdropEntry.CompletedMissions {
+	for _, claimRecord := range m.ClaimRecords {
+		if claimRecord.CampaignId == campaignId {
+			for _, completed := range claimRecord.CompletedMissions {
 				if completed == missionID {
 					return true
 				}
@@ -93,9 +93,9 @@ func (m *UserEntry) IsMissionCompleted(campaignId uint64, missionID uint64) bool
 }
 
 func (m *UserEntry) IsMissionClaimed(campaignId uint64, missionID uint64) bool {
-	for _, airdropEntry := range m.ClaimRecords {
-		if airdropEntry.CampaignId == campaignId {
-			for _, claimed := range airdropEntry.ClaimedMissions {
+	for _, claimRecord := range m.ClaimRecords {
+		if claimRecord.CampaignId == campaignId {
+			for _, claimed := range claimRecord.ClaimedMissions {
 				if claimed == missionID {
 					return true
 				}
@@ -106,9 +106,9 @@ func (m *UserEntry) IsMissionClaimed(campaignId uint64, missionID uint64) bool {
 }
 
 func (m *UserEntry) IsInitialMissionClaimed(campaignId uint64) bool {
-	for _, airdropEntry := range m.ClaimRecords {
-		if airdropEntry.CampaignId == campaignId {
-			for _, claimed := range airdropEntry.ClaimedMissions {
+	for _, claimRecord := range m.ClaimRecords {
+		if claimRecord.CampaignId == campaignId {
+			for _, claimed := range claimRecord.ClaimedMissions {
 				if claimed == InitialMissionId {
 					return true
 				}
@@ -119,9 +119,9 @@ func (m *UserEntry) IsInitialMissionClaimed(campaignId uint64) bool {
 }
 
 // HasCampaign checks if the specified reccord for campignId ID exists
-func (m UserEntry) HasCampaign(campaignId uint64) bool {
-	for _, airdropEntry := range m.ClaimRecords {
-		if airdropEntry.CampaignId == campaignId {
+func (m *UserEntry) HasCampaign(campaignId uint64) bool {
+	for _, claimRecord := range m.ClaimRecords {
+		if claimRecord.CampaignId == campaignId {
 			return true
 		}
 	}
@@ -130,40 +130,40 @@ func (m UserEntry) HasCampaign(campaignId uint64) bool {
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
 func (m *UserEntry) CompleteMission(campaignId uint64, missionID uint64) error {
-	airdropEntry := m.GetAidropEntry(campaignId)
-	if airdropEntry == nil {
+	claimRecord := m.GetClaimRecord(campaignId)
+	if claimRecord == nil {
 		return fmt.Errorf("no campaign record with id %d for address %s", campaignId, m.Address)
 	}
-	airdropEntry.CompletedMissions = append(airdropEntry.CompletedMissions, missionID)
+	claimRecord.CompletedMissions = append(claimRecord.CompletedMissions, missionID)
 	return nil
 }
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
 func (m *UserEntry) ClaimMission(campaignId uint64, missionID uint64) error {
-	airdropEntry := m.GetAidropEntry(campaignId)
-	if airdropEntry == nil {
+	claimRecord := m.GetClaimRecord(campaignId)
+	if claimRecord == nil {
 		return fmt.Errorf("no campaign record with id %d for address %s", campaignId, m.Address)
 	}
-	airdropEntry.ClaimedMissions = append(airdropEntry.ClaimedMissions, missionID)
+	claimRecord.ClaimedMissions = append(claimRecord.ClaimedMissions, missionID)
 	return nil
 }
 
 // ClaimableFromMission returns the amount claimable for this claim record from the provided mission completion
 func (m UserEntry) ClaimableFromMission(mission *Mission) (coinSum sdk.Coins) {
-	airdropEntry := m.GetAidropEntry(mission.CampaignId)
-	if airdropEntry == nil {
+	claimRecord := m.GetClaimRecord(mission.CampaignId)
+	if claimRecord == nil {
 		return sdk.NewCoins() // TODO error ??
 	}
-	for _, coin := range airdropEntry.AirdropCoins {
+	for _, coin := range claimRecord.Amount {
 		coinSum = coinSum.Add(sdk.NewCoin(coin.Denom, mission.Weight.Mul(sdk.NewDecFromInt(coin.Amount)).TruncateInt()))
 	}
 	return
 }
 
-func AirdropCloseActionFromString(str string) (AirdropCloseAction, error) {
-	option, ok := AirdropCloseAction_value[str]
+func CampaignCloseActionFromString(str string) (CampaignCloseAction, error) {
+	option, ok := CampaignCloseAction_value[str]
 	if !ok {
-		return AirdropCloseAction_AIRDROP_CLOSE_ACTION_UNSPECIFIED, fmt.Errorf("'%s' is not a valid mission type, available options: initial_claim/vote/delegation", str)
+		return CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, fmt.Errorf("'%s' is not a valid mission type, available options: initial_claim/vote/delegation", str)
 	}
-	return AirdropCloseAction(option), nil
+	return CampaignCloseAction(option), nil
 }

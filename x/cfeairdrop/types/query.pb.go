@@ -203,22 +203,22 @@ func (m *QueryUserEntryResponse) GetUserEntry() UserEntry {
 	return UserEntry{}
 }
 
-type QueryAirdropDistrubitionsRequest struct {
+type QueryCampaignTotalAmountRequest struct {
 	CampaignId uint64 `protobuf:"varint,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
 }
 
-func (m *QueryAirdropDistrubitionsRequest) Reset()         { *m = QueryAirdropDistrubitionsRequest{} }
-func (m *QueryAirdropDistrubitionsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAirdropDistrubitionsRequest) ProtoMessage()    {}
-func (*QueryAirdropDistrubitionsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryCampaignTotalAmountRequest) Reset()         { *m = QueryCampaignTotalAmountRequest{} }
+func (m *QueryCampaignTotalAmountRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCampaignTotalAmountRequest) ProtoMessage()    {}
+func (*QueryCampaignTotalAmountRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_d8d331bacc5e86de, []int{4}
 }
-func (m *QueryAirdropDistrubitionsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryCampaignTotalAmountRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAirdropDistrubitionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCampaignTotalAmountRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAirdropDistrubitionsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCampaignTotalAmountRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -228,41 +228,41 @@ func (m *QueryAirdropDistrubitionsRequest) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *QueryAirdropDistrubitionsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAirdropDistrubitionsRequest.Merge(m, src)
+func (m *QueryCampaignTotalAmountRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCampaignTotalAmountRequest.Merge(m, src)
 }
-func (m *QueryAirdropDistrubitionsRequest) XXX_Size() int {
+func (m *QueryCampaignTotalAmountRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAirdropDistrubitionsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAirdropDistrubitionsRequest.DiscardUnknown(m)
+func (m *QueryCampaignTotalAmountRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCampaignTotalAmountRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAirdropDistrubitionsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryCampaignTotalAmountRequest proto.InternalMessageInfo
 
-func (m *QueryAirdropDistrubitionsRequest) GetCampaignId() uint64 {
+func (m *QueryCampaignTotalAmountRequest) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
 	return 0
 }
 
-type QueryAirdropDistrubitionsResponse struct {
-	AirdropCoins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=airdrop_coins,json=airdropCoins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"airdrop_coins"`
+type QueryCampaignTotalAmountResponse struct {
+	Amount github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=amount,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"amount"`
 }
 
-func (m *QueryAirdropDistrubitionsResponse) Reset()         { *m = QueryAirdropDistrubitionsResponse{} }
-func (m *QueryAirdropDistrubitionsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAirdropDistrubitionsResponse) ProtoMessage()    {}
-func (*QueryAirdropDistrubitionsResponse) Descriptor() ([]byte, []int) {
+func (m *QueryCampaignTotalAmountResponse) Reset()         { *m = QueryCampaignTotalAmountResponse{} }
+func (m *QueryCampaignTotalAmountResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCampaignTotalAmountResponse) ProtoMessage()    {}
+func (*QueryCampaignTotalAmountResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_d8d331bacc5e86de, []int{5}
 }
-func (m *QueryAirdropDistrubitionsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryCampaignTotalAmountResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAirdropDistrubitionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCampaignTotalAmountResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAirdropDistrubitionsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCampaignTotalAmountResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -272,41 +272,41 @@ func (m *QueryAirdropDistrubitionsResponse) XXX_Marshal(b []byte, deterministic 
 		return b[:n], nil
 	}
 }
-func (m *QueryAirdropDistrubitionsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAirdropDistrubitionsResponse.Merge(m, src)
+func (m *QueryCampaignTotalAmountResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCampaignTotalAmountResponse.Merge(m, src)
 }
-func (m *QueryAirdropDistrubitionsResponse) XXX_Size() int {
+func (m *QueryCampaignTotalAmountResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAirdropDistrubitionsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAirdropDistrubitionsResponse.DiscardUnknown(m)
+func (m *QueryCampaignTotalAmountResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCampaignTotalAmountResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAirdropDistrubitionsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryCampaignTotalAmountResponse proto.InternalMessageInfo
 
-func (m *QueryAirdropDistrubitionsResponse) GetAirdropCoins() github_com_cosmos_cosmos_sdk_types.Coins {
+func (m *QueryCampaignTotalAmountResponse) GetAmount() github_com_cosmos_cosmos_sdk_types.Coins {
 	if m != nil {
-		return m.AirdropCoins
+		return m.Amount
 	}
 	return nil
 }
 
-type QueryAirdropClaimsLeftRequest struct {
+type QueryCampaignAmountLeftRequest struct {
 	CampaignId uint64 `protobuf:"varint,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
 }
 
-func (m *QueryAirdropClaimsLeftRequest) Reset()         { *m = QueryAirdropClaimsLeftRequest{} }
-func (m *QueryAirdropClaimsLeftRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAirdropClaimsLeftRequest) ProtoMessage()    {}
-func (*QueryAirdropClaimsLeftRequest) Descriptor() ([]byte, []int) {
+func (m *QueryCampaignAmountLeftRequest) Reset()         { *m = QueryCampaignAmountLeftRequest{} }
+func (m *QueryCampaignAmountLeftRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCampaignAmountLeftRequest) ProtoMessage()    {}
+func (*QueryCampaignAmountLeftRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_d8d331bacc5e86de, []int{6}
 }
-func (m *QueryAirdropClaimsLeftRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryCampaignAmountLeftRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAirdropClaimsLeftRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCampaignAmountLeftRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAirdropClaimsLeftRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCampaignAmountLeftRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -316,41 +316,41 @@ func (m *QueryAirdropClaimsLeftRequest) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryAirdropClaimsLeftRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAirdropClaimsLeftRequest.Merge(m, src)
+func (m *QueryCampaignAmountLeftRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCampaignAmountLeftRequest.Merge(m, src)
 }
-func (m *QueryAirdropClaimsLeftRequest) XXX_Size() int {
+func (m *QueryCampaignAmountLeftRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAirdropClaimsLeftRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAirdropClaimsLeftRequest.DiscardUnknown(m)
+func (m *QueryCampaignAmountLeftRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCampaignAmountLeftRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAirdropClaimsLeftRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryCampaignAmountLeftRequest proto.InternalMessageInfo
 
-func (m *QueryAirdropClaimsLeftRequest) GetCampaignId() uint64 {
+func (m *QueryCampaignAmountLeftRequest) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
 	return 0
 }
 
-type QueryAirdropClaimsLeftResponse struct {
-	AirdropCoins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=airdrop_coins,json=airdropCoins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"airdrop_coins"`
+type QueryCampaignAmountLeftResponse struct {
+	Amount github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=amount,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"amount"`
 }
 
-func (m *QueryAirdropClaimsLeftResponse) Reset()         { *m = QueryAirdropClaimsLeftResponse{} }
-func (m *QueryAirdropClaimsLeftResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAirdropClaimsLeftResponse) ProtoMessage()    {}
-func (*QueryAirdropClaimsLeftResponse) Descriptor() ([]byte, []int) {
+func (m *QueryCampaignAmountLeftResponse) Reset()         { *m = QueryCampaignAmountLeftResponse{} }
+func (m *QueryCampaignAmountLeftResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCampaignAmountLeftResponse) ProtoMessage()    {}
+func (*QueryCampaignAmountLeftResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_d8d331bacc5e86de, []int{7}
 }
-func (m *QueryAirdropClaimsLeftResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryCampaignAmountLeftResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAirdropClaimsLeftResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCampaignAmountLeftResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAirdropClaimsLeftResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCampaignAmountLeftResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -360,21 +360,21 @@ func (m *QueryAirdropClaimsLeftResponse) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *QueryAirdropClaimsLeftResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAirdropClaimsLeftResponse.Merge(m, src)
+func (m *QueryCampaignAmountLeftResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCampaignAmountLeftResponse.Merge(m, src)
 }
-func (m *QueryAirdropClaimsLeftResponse) XXX_Size() int {
+func (m *QueryCampaignAmountLeftResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAirdropClaimsLeftResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAirdropClaimsLeftResponse.DiscardUnknown(m)
+func (m *QueryCampaignAmountLeftResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCampaignAmountLeftResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAirdropClaimsLeftResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryCampaignAmountLeftResponse proto.InternalMessageInfo
 
-func (m *QueryAirdropClaimsLeftResponse) GetAirdropCoins() github_com_cosmos_cosmos_sdk_types.Coins {
+func (m *QueryCampaignAmountLeftResponse) GetAmount() github_com_cosmos_cosmos_sdk_types.Coins {
 	if m != nil {
-		return m.AirdropCoins
+		return m.Amount
 	}
 	return nil
 }
@@ -856,10 +856,10 @@ func init() {
 	proto.RegisterType((*QueryParamsResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryParamsResponse")
 	proto.RegisterType((*QueryUserEntryRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryUserEntryRequest")
 	proto.RegisterType((*QueryUserEntryResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryUserEntryResponse")
-	proto.RegisterType((*QueryAirdropDistrubitionsRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryAirdropDistrubitionsRequest")
-	proto.RegisterType((*QueryAirdropDistrubitionsResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryAirdropDistrubitionsResponse")
-	proto.RegisterType((*QueryAirdropClaimsLeftRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryAirdropClaimsLeftRequest")
-	proto.RegisterType((*QueryAirdropClaimsLeftResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryAirdropClaimsLeftResponse")
+	proto.RegisterType((*QueryCampaignTotalAmountRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryCampaignTotalAmountRequest")
+	proto.RegisterType((*QueryCampaignTotalAmountResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryCampaignTotalAmountResponse")
+	proto.RegisterType((*QueryCampaignAmountLeftRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryCampaignAmountLeftRequest")
+	proto.RegisterType((*QueryCampaignAmountLeftResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryCampaignAmountLeftResponse")
 	proto.RegisterType((*QueryUsersEntriesRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryUsersEntriesRequest")
 	proto.RegisterType((*QueryUsersEntriesResponse)(nil), "chain4energy.c4echain.cfeairdrop.QueryUsersEntriesResponse")
 	proto.RegisterType((*QueryMissionRequest)(nil), "chain4energy.c4echain.cfeairdrop.QueryMissionRequest")
@@ -875,71 +875,71 @@ func init() {
 func init() { proto.RegisterFile("cfeairdrop/query.proto", fileDescriptor_d8d331bacc5e86de) }
 
 var fileDescriptor_d8d331bacc5e86de = []byte{
-	// 1016 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x57, 0xcf, 0x6f, 0xdc, 0x44,
-	0x14, 0xce, 0xa4, 0x25, 0xe9, 0xbe, 0x24, 0x07, 0x86, 0x50, 0x52, 0xd3, 0x38, 0xc1, 0x54, 0x25,
-	0x4d, 0x14, 0x9b, 0xa4, 0x4b, 0x37, 0x14, 0x89, 0xa6, 0x59, 0x28, 0x8a, 0x54, 0x50, 0x58, 0xa9,
-	0x1c, 0x90, 0x60, 0xe5, 0xf5, 0x4e, 0xdc, 0x81, 0x5d, 0xdb, 0xf5, 0x78, 0x11, 0x51, 0x94, 0x0b,
-	0x37, 0x6e, 0x08, 0xc4, 0x85, 0x2b, 0x12, 0x07, 0x38, 0x00, 0xe2, 0x84, 0xc4, 0x1f, 0xd0, 0x63,
-	0x24, 0x24, 0xc4, 0x89, 0x1f, 0x09, 0x7f, 0x08, 0xf2, 0xf8, 0xd9, 0x6b, 0x6f, 0x36, 0xbb, 0x76,
-	0xb2, 0x52, 0x4f, 0xbb, 0x9e, 0x99, 0xf7, 0xbd, 0xef, 0x7b, 0xef, 0xf9, 0xcd, 0x33, 0x5c, 0xb6,
-	0x76, 0x99, 0xc9, 0xfd, 0xa6, 0xef, 0x7a, 0xc6, 0xa3, 0x0e, 0xf3, 0xf7, 0x74, 0xcf, 0x77, 0x03,
-	0x97, 0x2e, 0x5a, 0x0f, 0x4d, 0xee, 0x94, 0x99, 0xc3, 0x7c, 0x7b, 0x4f, 0xb7, 0xca, 0x4c, 0x3e,
-	0xeb, 0xdd, 0xd3, 0xca, 0xac, 0xed, 0xda, 0xae, 0x3c, 0x6c, 0x84, 0xff, 0x22, 0x3b, 0xe5, 0xaa,
-	0xed, 0xba, 0x76, 0x8b, 0x19, 0xa6, 0xc7, 0x0d, 0xd3, 0x71, 0xdc, 0xc0, 0x0c, 0xb8, 0xeb, 0x08,
-	0xdc, 0x5d, 0xb6, 0x5c, 0xd1, 0x76, 0x85, 0xd1, 0x30, 0x05, 0x8b, 0xdc, 0x19, 0x9f, 0xac, 0x35,
-	0x58, 0x60, 0xae, 0x19, 0x9e, 0x69, 0x73, 0x47, 0x1e, 0xc6, 0xb3, 0xcf, 0xa5, 0x98, 0x79, 0xa6,
-	0x6f, 0xb6, 0x63, 0x90, 0xb9, 0xd4, 0x06, 0xfe, 0xe2, 0x8e, 0x9a, 0x86, 0x8f, 0x81, 0x2d, 0x97,
-	0x23, 0xa4, 0x36, 0x0b, 0xf4, 0xdd, 0xd0, 0xe9, 0x8e, 0x84, 0xab, 0xb1, 0x47, 0x1d, 0x26, 0x02,
-	0xed, 0x03, 0x78, 0x26, 0xb3, 0x2a, 0x3c, 0xd7, 0x11, 0x8c, 0xde, 0x83, 0x89, 0xc8, 0xed, 0x1c,
-	0x59, 0x24, 0x4b, 0x53, 0xeb, 0x4b, 0xfa, 0xb0, 0x90, 0xe8, 0x11, 0xc2, 0xd6, 0xc5, 0xc7, 0x7f,
-	0x2d, 0x8c, 0xd5, 0xd0, 0x5a, 0x5b, 0x83, 0x67, 0x25, 0xfc, 0x03, 0xc1, 0xfc, 0x37, 0x9d, 0xc0,
-	0xdf, 0x43, 0xbf, 0x74, 0x0e, 0x26, 0xcd, 0x66, 0xd3, 0x67, 0x22, 0xf2, 0x50, 0xaa, 0xc5, 0x8f,
-	0xda, 0x47, 0x70, 0xb9, 0xd7, 0x04, 0x49, 0xed, 0x00, 0x74, 0x04, 0xf3, 0xeb, 0x2c, 0x5c, 0x45,
-	0x62, 0x2b, 0xc3, 0x89, 0x25, 0x40, 0xc8, 0xad, 0xd4, 0x89, 0x17, 0xb4, 0x2a, 0x2c, 0x4a, 0x5f,
-	0x77, 0xa3, 0xa3, 0x6f, 0x70, 0x11, 0xf8, 0x9d, 0x06, 0x97, 0x59, 0x8b, 0x99, 0x2e, 0xc0, 0x94,
-	0x65, 0xb6, 0x3d, 0x93, 0xdb, 0x4e, 0x9d, 0x37, 0xa5, 0xdb, 0x8b, 0x35, 0x88, 0x97, 0xb6, 0x9b,
-	0xda, 0xd7, 0x04, 0x5e, 0x18, 0x80, 0x82, 0xe4, 0x3d, 0x98, 0x41, 0x42, 0xf5, 0x30, 0x29, 0xa1,
-	0xec, 0x0b, 0x4b, 0x53, 0xeb, 0x57, 0xf4, 0x28, 0x6d, 0x7a, 0x98, 0x36, 0x1d, 0xd3, 0xa6, 0x57,
-	0x5d, 0xee, 0x6c, 0xbd, 0x1c, 0xb2, 0xfd, 0xfe, 0xef, 0x85, 0x25, 0x9b, 0x07, 0x0f, 0x3b, 0x0d,
-	0xdd, 0x72, 0xdb, 0x06, 0xe6, 0x38, 0xfa, 0x59, 0x15, 0xcd, 0x8f, 0x8d, 0x60, 0xcf, 0x63, 0x42,
-	0x1a, 0x88, 0xda, 0x34, 0x7a, 0x90, 0x4f, 0xda, 0x26, 0xcc, 0xa7, 0x69, 0x55, 0x5b, 0x26, 0x6f,
-	0x8b, 0xfb, 0x6c, 0x37, 0xc8, 0xad, 0xec, 0x4b, 0x02, 0xea, 0x69, 0x10, 0x4f, 0x4c, 0x56, 0x03,
-	0xe6, 0x92, 0xfa, 0x10, 0x61, 0x1a, 0x39, 0x4b, 0x72, 0x75, 0x0f, 0xa0, 0xfb, 0x2a, 0x61, 0x85,
-	0x5c, 0xcf, 0x50, 0x89, 0x5e, 0xf3, 0x98, 0xd0, 0x8e, 0x69, 0x33, 0xb4, 0xad, 0xa5, 0x2c, 0xb5,
-	0xdf, 0x08, 0x5c, 0xe9, 0xe3, 0x04, 0x35, 0xbf, 0x07, 0x33, 0x61, 0x09, 0x09, 0x59, 0x88, 0x9c,
-	0xc5, 0x9a, 0xcf, 0x50, 0x8a, 0xd3, 0x9d, 0x14, 0x3e, 0x7d, 0x2b, 0xc3, 0x7e, 0x5c, 0xb2, 0x7f,
-	0x69, 0x28, 0xfb, 0x88, 0x54, 0x86, 0xfe, 0x03, 0x7c, 0xa9, 0xdf, 0xe6, 0x42, 0x70, 0xd7, 0xc9,
-	0x9b, 0x6f, 0x3a, 0x0f, 0xd0, 0x8e, 0x4c, 0xc2, 0xfd, 0x71, 0xb9, 0x5f, 0xc2, 0x95, 0xed, 0xa6,
-	0x66, 0xc2, 0x6c, 0x16, 0x16, 0xe3, 0xb1, 0x0d, 0x93, 0x78, 0x08, 0x43, 0x7e, 0x63, 0x78, 0x24,
-	0x10, 0x03, 0xe3, 0x10, 0xdb, 0x6b, 0x1f, 0x66, 0x5d, 0x8c, 0x3c, 0xb1, 0x3f, 0x10, 0x6c, 0x48,
-	0x5d, 0x07, 0xfd, 0x44, 0x5c, 0x38, 0x8f, 0x88, 0xd1, 0xe5, 0xb1, 0x8e, 0x64, 0xab, 0x98, 0xa2,
-	0x91, 0x87, 0xe3, 0x47, 0x82, 0xcd, 0x36, 0xe5, 0x01, 0xe3, 0x71, 0x1f, 0x2e, 0xc5, 0x95, 0x81,
-	0x01, 0x59, 0x1e, 0x1e, 0x90, 0x18, 0x06, 0x23, 0x92, 0x20, 0x8c, 0x2e, 0x24, 0x15, 0x2c, 0x90,
-	0xd8, 0x53, 0xee, 0x5e, 0xc6, 0x7a, 0x62, 0x79, 0x8a, 0x50, 0x72, 0x3e, 0xa1, 0xeb, 0x9f, 0xcf,
-	0xc0, 0x53, 0xd2, 0x0f, 0xfd, 0x86, 0xc0, 0x44, 0x74, 0x27, 0xd2, 0xf2, 0x70, 0xc0, 0x93, 0x57,
-	0xb3, 0xf2, 0x4a, 0x41, 0xab, 0x48, 0x8f, 0xf6, 0xe2, 0x67, 0xbf, 0xff, 0xf7, 0xd5, 0xf8, 0x3c,
-	0x7d, 0xde, 0xb0, 0xca, 0x2c, 0x9e, 0x11, 0x52, 0x93, 0x86, 0x64, 0xf4, 0x33, 0x81, 0x52, 0xd2,
-	0x8c, 0x68, 0x25, 0xa7, 0xa7, 0xde, 0x5b, 0x5c, 0xd9, 0x28, 0x6e, 0x88, 0x2c, 0xd7, 0x24, 0xcb,
-	0x15, 0x7a, 0xa3, 0x2f, 0xcb, 0xee, 0x35, 0x6f, 0xec, 0xe3, 0x5c, 0x70, 0x40, 0x7f, 0x21, 0x30,
-	0x9d, 0xee, 0xc7, 0xf4, 0x76, 0x01, 0xef, 0x3d, 0x37, 0x85, 0xf2, 0xda, 0x99, 0x6c, 0x91, 0xfc,
-	0xb2, 0x24, 0x7f, 0x8d, 0x6a, 0xa7, 0x92, 0x4f, 0xee, 0x06, 0xfa, 0x2b, 0x81, 0x49, 0xec, 0x13,
-	0x34, 0x6f, 0x46, 0xb3, 0x7d, 0x5b, 0xb9, 0x55, 0xd4, 0x0c, 0x69, 0xde, 0x91, 0x34, 0x5f, 0xa5,
-	0x95, 0xbe, 0x34, 0xb1, 0x5b, 0x19, 0xfb, 0xa9, 0xf7, 0xe6, 0xc0, 0xd8, 0xef, 0x5e, 0x00, 0x07,
-	0xf4, 0x5b, 0x02, 0x80, 0xa0, 0x77, 0x5b, 0x2d, 0x5a, 0x90, 0x47, 0x12, 0xeb, 0x4a, 0x61, 0x3b,
-	0x14, 0x70, 0x4d, 0x0a, 0x50, 0xe9, 0xd5, 0x41, 0x02, 0xe8, 0x77, 0x04, 0x4a, 0x49, 0xff, 0xca,
-	0x5d, 0xcb, 0xbd, 0x3d, 0x35, 0x77, 0x2d, 0x9f, 0x68, 0x95, 0xda, 0x75, 0x49, 0x73, 0x91, 0xaa,
-	0x7d, 0x69, 0x5a, 0x09, 0xb5, 0x9f, 0x08, 0x5c, 0x8a, 0xad, 0x73, 0x07, 0xb3, 0xa7, 0xd1, 0x29,
-	0x95, 0xc2, 0x76, 0xc8, 0xf2, 0xa6, 0x64, 0xb9, 0x4a, 0x57, 0x06, 0xb2, 0xcc, 0x96, 0x03, 0xfd,
-	0x97, 0xc0, 0x6c, 0xbf, 0xb1, 0x96, 0x6e, 0xe5, 0xa4, 0x31, 0x60, 0xb2, 0x56, 0xaa, 0xe7, 0xc2,
-	0x40, 0x59, 0x9b, 0x52, 0xd6, 0x6d, 0xba, 0xd1, 0x57, 0x56, 0x3c, 0x9b, 0x36, 0x43, 0x5b, 0xde,
-	0xe8, 0x48, 0xdb, 0x1e, 0x8d, 0x7f, 0x10, 0x78, 0xfa, 0xc4, 0x80, 0x4b, 0xef, 0x14, 0x23, 0x77,
-	0x62, 0xba, 0x56, 0x36, 0xcf, 0x0e, 0x80, 0xd2, 0x5e, 0x97, 0xd2, 0x36, 0xe8, 0xad, 0x81, 0xd2,
-	0x2c, 0x69, 0x58, 0x6f, 0xb1, 0xdd, 0x20, 0x2b, 0x6c, 0xeb, 0x9d, 0xc7, 0x47, 0x2a, 0x39, 0x3c,
-	0x52, 0xc9, 0x3f, 0x47, 0x2a, 0xf9, 0xe2, 0x58, 0x1d, 0x3b, 0x3c, 0x56, 0xc7, 0xfe, 0x3c, 0x56,
-	0xc7, 0xde, 0x2f, 0xa7, 0x67, 0xef, 0x14, 0xcb, 0xd0, 0xd1, 0xaa, 0x5c, 0x30, 0x3e, 0x35, 0x52,
-	0x5f, 0x9a, 0x72, 0x1a, 0x6f, 0x4c, 0xc8, 0x0f, 0xc9, 0x9b, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff,
-	0x7e, 0x03, 0xfb, 0x83, 0x37, 0x0f, 0x00, 0x00,
+	// 1013 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x97, 0xc1, 0x6f, 0x1b, 0xc5,
+	0x17, 0xc7, 0x33, 0x69, 0x7f, 0x49, 0xfd, 0xd2, 0x5e, 0xa6, 0xf9, 0x15, 0x77, 0x69, 0x37, 0xd6,
+	0x52, 0x95, 0x34, 0x51, 0x76, 0x49, 0x6a, 0xea, 0x50, 0x24, 0xa8, 0x5d, 0x51, 0x14, 0xa9, 0xa0,
+	0x60, 0x51, 0x0e, 0x48, 0x60, 0x8d, 0xd7, 0x93, 0xed, 0x80, 0xbd, 0xe3, 0xee, 0xac, 0x11, 0x51,
+	0x94, 0x0b, 0x07, 0x10, 0x37, 0x24, 0x6e, 0x5c, 0x91, 0x38, 0xc0, 0x01, 0x10, 0x27, 0x24, 0xfe,
+	0x80, 0x1e, 0x2b, 0x71, 0x81, 0x4b, 0x41, 0x09, 0x7f, 0x08, 0xda, 0xd9, 0xb7, 0xf6, 0xae, 0xed,
+	0xc4, 0xde, 0x26, 0xe2, 0x64, 0xef, 0xcc, 0xbe, 0xf7, 0x3e, 0xdf, 0x37, 0x6f, 0xde, 0xcc, 0xc2,
+	0x25, 0x77, 0x87, 0x33, 0x11, 0xb4, 0x02, 0xd9, 0x75, 0x1e, 0xf5, 0x78, 0xb0, 0x6b, 0x77, 0x03,
+	0x19, 0x4a, 0x5a, 0x72, 0x1f, 0x32, 0xe1, 0x97, 0xb9, 0xcf, 0x03, 0x6f, 0xd7, 0x76, 0xcb, 0x5c,
+	0x3f, 0xdb, 0x83, 0xb7, 0x8d, 0x45, 0x4f, 0x7a, 0x52, 0xbf, 0xec, 0x44, 0xff, 0x62, 0x3b, 0xe3,
+	0x8a, 0x27, 0xa5, 0xd7, 0xe6, 0x0e, 0xeb, 0x0a, 0x87, 0xf9, 0xbe, 0x0c, 0x59, 0x28, 0xa4, 0xaf,
+	0x70, 0x76, 0xc5, 0x95, 0xaa, 0x23, 0x95, 0xd3, 0x64, 0x8a, 0xc7, 0xe1, 0x9c, 0x4f, 0xd6, 0x9b,
+	0x3c, 0x64, 0xeb, 0x4e, 0x97, 0x79, 0xc2, 0xd7, 0x2f, 0xe3, 0xbb, 0xcf, 0xa5, 0xc8, 0xba, 0x2c,
+	0x60, 0x9d, 0xc4, 0x49, 0x31, 0x35, 0x81, 0xbf, 0x38, 0x63, 0xa6, 0xdd, 0x27, 0x8e, 0x5d, 0x29,
+	0xd0, 0xa5, 0xb5, 0x08, 0xf4, 0x9d, 0x28, 0xe8, 0xb6, 0x76, 0x57, 0xe7, 0x8f, 0x7a, 0x5c, 0x85,
+	0xd6, 0x07, 0x70, 0x31, 0x33, 0xaa, 0xba, 0xd2, 0x57, 0x9c, 0xde, 0x83, 0xb9, 0x38, 0x6c, 0x91,
+	0x94, 0xc8, 0xf2, 0xc2, 0xc6, 0xb2, 0x3d, 0x29, 0x25, 0x76, 0xec, 0xa1, 0x76, 0xf6, 0xf1, 0xd3,
+	0xa5, 0x99, 0x3a, 0x5a, 0x5b, 0xeb, 0xf0, 0x7f, 0xed, 0xfe, 0x81, 0xe2, 0xc1, 0x1b, 0x7e, 0x18,
+	0xec, 0x62, 0x5c, 0x5a, 0x84, 0x79, 0xd6, 0x6a, 0x05, 0x5c, 0xc5, 0x11, 0x0a, 0xf5, 0xe4, 0xd1,
+	0xfa, 0x08, 0x2e, 0x0d, 0x9b, 0x20, 0xd4, 0x36, 0x40, 0x4f, 0xf1, 0xa0, 0xc1, 0xa3, 0x51, 0x04,
+	0x5b, 0x9d, 0x0c, 0xd6, 0x77, 0x84, 0x6c, 0x85, 0x5e, 0x32, 0x60, 0xd5, 0x60, 0x49, 0xc7, 0xba,
+	0xcb, 0x3a, 0x5d, 0x26, 0x3c, 0xff, 0x5d, 0x19, 0xb2, 0x76, 0xb5, 0x23, 0x7b, 0x7e, 0x98, 0x80,
+	0x2e, 0xc1, 0x82, 0x8b, 0xb3, 0x0d, 0xd1, 0xd2, 0x51, 0xcf, 0xd6, 0x21, 0x19, 0xda, 0x6a, 0x59,
+	0x5f, 0x10, 0x28, 0x1d, 0xed, 0x04, 0xd1, 0x5d, 0x98, 0x63, 0x7a, 0xa4, 0x48, 0x4a, 0x67, 0x96,
+	0x17, 0x36, 0x2e, 0xdb, 0xf1, 0x6a, 0xd9, 0xd1, 0x6a, 0xd9, 0xb8, 0x5a, 0xf6, 0x5d, 0x29, 0xfc,
+	0xda, 0x4b, 0x11, 0xe4, 0xf7, 0x7f, 0x2d, 0x2d, 0x7b, 0x22, 0x7c, 0xd8, 0x6b, 0xda, 0xae, 0xec,
+	0x38, 0xb8, 0xb4, 0xf1, 0xcf, 0x9a, 0x6a, 0x7d, 0xec, 0x84, 0xbb, 0x5d, 0xae, 0xb4, 0x81, 0xaa,
+	0xa3, 0x6b, 0xab, 0x0a, 0x66, 0x06, 0x24, 0x66, 0xb8, 0xcf, 0x77, 0xa6, 0x17, 0xf3, 0x39, 0x19,
+	0xca, 0x48, 0xda, 0xc7, 0x7f, 0xa9, 0xa5, 0x09, 0xc5, 0x7e, 0x15, 0xa8, 0x68, 0xb1, 0x04, 0x4f,
+	0x6a, 0x96, 0xde, 0x03, 0x18, 0x6c, 0x18, 0xac, 0x83, 0xeb, 0x19, 0x88, 0x78, 0x33, 0x27, 0x28,
+	0xdb, 0xcc, 0xe3, 0x68, 0x5b, 0x4f, 0x59, 0x5a, 0xbf, 0x11, 0xb8, 0x3c, 0x26, 0x08, 0xca, 0x7c,
+	0x0f, 0x2e, 0x44, 0x85, 0xa2, 0x74, 0xb9, 0x09, 0xae, 0x50, 0xed, 0x33, 0x14, 0xdc, 0xf9, 0x5e,
+	0xca, 0x3f, 0x7d, 0x33, 0x43, 0x3f, 0xab, 0xe9, 0x5f, 0x9c, 0x48, 0x1f, 0x43, 0x65, 0xf0, 0x1f,
+	0xe0, 0xd6, 0x7d, 0x4b, 0x28, 0x25, 0xa4, 0x3f, 0xed, 0x1a, 0xd3, 0xab, 0x00, 0x9d, 0xd8, 0x24,
+	0x9a, 0x9f, 0xd5, 0xf3, 0x05, 0x1c, 0xd9, 0x6a, 0x59, 0x0c, 0x16, 0xb3, 0x6e, 0x31, 0x1f, 0x5b,
+	0x30, 0x8f, 0x2f, 0x61, 0xca, 0x6f, 0x4c, 0xce, 0x04, 0xfa, 0xc0, 0x3c, 0x24, 0xf6, 0xd6, 0x87,
+	0xd9, 0x10, 0xa7, 0xbe, 0xb0, 0x3f, 0x10, 0x6c, 0x3b, 0x83, 0x00, 0xe3, 0x44, 0x9c, 0x39, 0x89,
+	0x88, 0xd3, 0x5b, 0xc7, 0x06, 0xc2, 0x26, 0x5b, 0xee, 0xd4, 0xd3, 0xf1, 0x23, 0xc1, 0x96, 0x9a,
+	0x8a, 0x80, 0xf9, 0xb8, 0x0f, 0xe7, 0x92, 0xca, 0xc0, 0x84, 0xac, 0x4c, 0x4e, 0x48, 0xe2, 0x06,
+	0x33, 0xd2, 0xf7, 0x70, 0x7a, 0x29, 0xa9, 0x60, 0x81, 0x24, 0x91, 0xa6, 0xee, 0x5f, 0x7c, 0x28,
+	0x97, 0x47, 0x08, 0x25, 0x27, 0x13, 0xba, 0xf1, 0xe5, 0x05, 0xf8, 0x9f, 0x8e, 0x43, 0xbf, 0x21,
+	0x30, 0x17, 0x9f, 0x7c, 0xb4, 0x3c, 0xd9, 0xe1, 0xe8, 0x01, 0x6c, 0xbc, 0x9c, 0xd3, 0x2a, 0xd6,
+	0x63, 0xbd, 0xf0, 0xd9, 0xef, 0xff, 0x7c, 0x3d, 0x7b, 0x95, 0x3e, 0xef, 0xb8, 0x65, 0x9e, 0xdc,
+	0x04, 0x52, 0xf7, 0x09, 0x4d, 0xf4, 0x33, 0x81, 0x42, 0xbf, 0x19, 0xd1, 0xca, 0x94, 0x91, 0x86,
+	0xcf, 0x6a, 0x63, 0x33, 0xbf, 0x21, 0x52, 0xae, 0x6b, 0xca, 0x55, 0x7a, 0x63, 0x2c, 0xe5, 0xe0,
+	0x30, 0x77, 0xf6, 0xf0, 0xf4, 0xdf, 0xa7, 0xbf, 0x10, 0x38, 0x9f, 0xee, 0xc7, 0xf4, 0x76, 0x8e,
+	0xe8, 0x43, 0x27, 0x85, 0xf1, 0xea, 0x33, 0xd9, 0x22, 0xfc, 0x8a, 0x86, 0xbf, 0x46, 0xad, 0x23,
+	0xe1, 0xfb, 0x67, 0x03, 0xfd, 0x95, 0xc0, 0x3c, 0xf6, 0x09, 0x3a, 0xed, 0x8a, 0x66, 0xfb, 0xb6,
+	0x71, 0x2b, 0xaf, 0x19, 0x62, 0xbe, 0xae, 0x31, 0x5f, 0xa1, 0x95, 0xb1, 0x98, 0xd8, 0xad, 0x9c,
+	0xbd, 0xd4, 0xbe, 0xd9, 0x77, 0xf6, 0x06, 0x07, 0xc0, 0x3e, 0xfd, 0x96, 0x00, 0xa0, 0xd3, 0x6a,
+	0xbb, 0x4d, 0x73, 0x72, 0xf4, 0x73, 0x5d, 0xc9, 0x6d, 0x87, 0x02, 0xae, 0x69, 0x01, 0x26, 0xbd,
+	0x72, 0x9c, 0x00, 0xfa, 0x1d, 0x81, 0x42, 0xbf, 0x7f, 0x4d, 0x5d, 0xcb, 0xc3, 0x3d, 0x75, 0xea,
+	0x5a, 0x1e, 0x69, 0x95, 0xd6, 0x75, 0x8d, 0x59, 0xa2, 0xe6, 0x58, 0x4c, 0xb7, 0x8f, 0xf6, 0x13,
+	0x81, 0x73, 0x89, 0xf5, 0xd4, 0xc9, 0x1c, 0x6a, 0x74, 0x46, 0x25, 0xb7, 0x1d, 0x52, 0xde, 0xd4,
+	0x94, 0x6b, 0x74, 0xf5, 0x58, 0xca, 0x6c, 0x39, 0xd0, 0xa7, 0x04, 0x2e, 0x8e, 0xb9, 0xbd, 0xd2,
+	0x6a, 0x4e, 0x8a, 0xd1, 0xeb, 0xb3, 0x51, 0x3b, 0x89, 0x0b, 0xd4, 0x74, 0x47, 0x6b, 0xba, 0x4d,
+	0x37, 0xc7, 0x6a, 0xc2, 0xe7, 0x46, 0x4b, 0xa8, 0x30, 0x10, 0xcd, 0x9e, 0xfe, 0xe4, 0x1a, 0x12,
+	0xf8, 0x27, 0x01, 0x3a, 0x7a, 0xa3, 0xa5, 0x77, 0x72, 0xc2, 0x8d, 0x5c, 0xa8, 0x8d, 0xea, 0x09,
+	0x3c, 0xa0, 0xba, 0xd7, 0xb4, 0xba, 0x4d, 0x7a, 0xeb, 0x58, 0x75, 0x6e, 0x9b, 0x89, 0x8e, 0x6a,
+	0xb4, 0xf9, 0x4e, 0x98, 0xd5, 0x56, 0x7b, 0xfb, 0xf1, 0x81, 0x49, 0x9e, 0x1c, 0x98, 0xe4, 0xef,
+	0x03, 0x93, 0x7c, 0x75, 0x68, 0xce, 0x3c, 0x39, 0x34, 0x67, 0xfe, 0x38, 0x34, 0x67, 0xde, 0x2f,
+	0xa7, 0x6f, 0xdd, 0x29, 0xcc, 0x28, 0xd0, 0x9a, 0x1e, 0x70, 0x3e, 0x75, 0x52, 0xdf, 0x93, 0xfa,
+	0x1e, 0xde, 0x9c, 0xd3, 0x9f, 0x8b, 0x37, 0xff, 0x0d, 0x00, 0x00, 0xff, 0xff, 0x59, 0xca, 0x9f,
+	0x93, 0x1d, 0x0f, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -968,10 +968,10 @@ type QueryClient interface {
 	Campaigns(ctx context.Context, in *QueryCampaignsRequest, opts ...grpc.CallOption) (*QueryCampaignsResponse, error)
 	// Queries a list of Campaigns items.
 	Campaign(ctx context.Context, in *QueryCampaignRequest, opts ...grpc.CallOption) (*QueryCampaignResponse, error)
-	// Queries a AirdropDistrubitions by campaignId.
-	AirdropDistrubitions(ctx context.Context, in *QueryAirdropDistrubitionsRequest, opts ...grpc.CallOption) (*QueryAirdropDistrubitionsResponse, error)
-	// Queries a AirdropDistrubitions by campaignId.
-	AirdropClaimsLeft(ctx context.Context, in *QueryAirdropClaimsLeftRequest, opts ...grpc.CallOption) (*QueryAirdropClaimsLeftResponse, error)
+	// Queries a CampaignTotalAmount by campaignId.
+	CampaignTotalAmount(ctx context.Context, in *QueryCampaignTotalAmountRequest, opts ...grpc.CallOption) (*QueryCampaignTotalAmountResponse, error)
+	// Queries a CampaignTotalAmount by campaignId.
+	CampaignAmountLeft(ctx context.Context, in *QueryCampaignAmountLeftRequest, opts ...grpc.CallOption) (*QueryCampaignAmountLeftResponse, error)
 }
 
 type queryClient struct {
@@ -1045,18 +1045,18 @@ func (c *queryClient) Campaign(ctx context.Context, in *QueryCampaignRequest, op
 	return out, nil
 }
 
-func (c *queryClient) AirdropDistrubitions(ctx context.Context, in *QueryAirdropDistrubitionsRequest, opts ...grpc.CallOption) (*QueryAirdropDistrubitionsResponse, error) {
-	out := new(QueryAirdropDistrubitionsResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Query/AirdropDistrubitions", in, out, opts...)
+func (c *queryClient) CampaignTotalAmount(ctx context.Context, in *QueryCampaignTotalAmountRequest, opts ...grpc.CallOption) (*QueryCampaignTotalAmountResponse, error) {
+	out := new(QueryCampaignTotalAmountResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Query/CampaignTotalAmount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) AirdropClaimsLeft(ctx context.Context, in *QueryAirdropClaimsLeftRequest, opts ...grpc.CallOption) (*QueryAirdropClaimsLeftResponse, error) {
-	out := new(QueryAirdropClaimsLeftResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Query/AirdropClaimsLeft", in, out, opts...)
+func (c *queryClient) CampaignAmountLeft(ctx context.Context, in *QueryCampaignAmountLeftRequest, opts ...grpc.CallOption) (*QueryCampaignAmountLeftResponse, error) {
+	out := new(QueryCampaignAmountLeftResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeairdrop.Query/CampaignAmountLeft", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1079,10 +1079,10 @@ type QueryServer interface {
 	Campaigns(context.Context, *QueryCampaignsRequest) (*QueryCampaignsResponse, error)
 	// Queries a list of Campaigns items.
 	Campaign(context.Context, *QueryCampaignRequest) (*QueryCampaignResponse, error)
-	// Queries a AirdropDistrubitions by campaignId.
-	AirdropDistrubitions(context.Context, *QueryAirdropDistrubitionsRequest) (*QueryAirdropDistrubitionsResponse, error)
-	// Queries a AirdropDistrubitions by campaignId.
-	AirdropClaimsLeft(context.Context, *QueryAirdropClaimsLeftRequest) (*QueryAirdropClaimsLeftResponse, error)
+	// Queries a CampaignTotalAmount by campaignId.
+	CampaignTotalAmount(context.Context, *QueryCampaignTotalAmountRequest) (*QueryCampaignTotalAmountResponse, error)
+	// Queries a CampaignTotalAmount by campaignId.
+	CampaignAmountLeft(context.Context, *QueryCampaignAmountLeftRequest) (*QueryCampaignAmountLeftResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -1110,11 +1110,11 @@ func (*UnimplementedQueryServer) Campaigns(ctx context.Context, req *QueryCampai
 func (*UnimplementedQueryServer) Campaign(ctx context.Context, req *QueryCampaignRequest) (*QueryCampaignResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Campaign not implemented")
 }
-func (*UnimplementedQueryServer) AirdropDistrubitions(ctx context.Context, req *QueryAirdropDistrubitionsRequest) (*QueryAirdropDistrubitionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AirdropDistrubitions not implemented")
+func (*UnimplementedQueryServer) CampaignTotalAmount(ctx context.Context, req *QueryCampaignTotalAmountRequest) (*QueryCampaignTotalAmountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CampaignTotalAmount not implemented")
 }
-func (*UnimplementedQueryServer) AirdropClaimsLeft(ctx context.Context, req *QueryAirdropClaimsLeftRequest) (*QueryAirdropClaimsLeftResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AirdropClaimsLeft not implemented")
+func (*UnimplementedQueryServer) CampaignAmountLeft(ctx context.Context, req *QueryCampaignAmountLeftRequest) (*QueryCampaignAmountLeftResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CampaignAmountLeft not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -1247,38 +1247,38 @@ func _Query_Campaign_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_AirdropDistrubitions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAirdropDistrubitionsRequest)
+func _Query_CampaignTotalAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCampaignTotalAmountRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).AirdropDistrubitions(ctx, in)
+		return srv.(QueryServer).CampaignTotalAmount(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeairdrop.Query/AirdropDistrubitions",
+		FullMethod: "/chain4energy.c4echain.cfeairdrop.Query/CampaignTotalAmount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AirdropDistrubitions(ctx, req.(*QueryAirdropDistrubitionsRequest))
+		return srv.(QueryServer).CampaignTotalAmount(ctx, req.(*QueryCampaignTotalAmountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_AirdropClaimsLeft_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAirdropClaimsLeftRequest)
+func _Query_CampaignAmountLeft_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCampaignAmountLeftRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).AirdropClaimsLeft(ctx, in)
+		return srv.(QueryServer).CampaignAmountLeft(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeairdrop.Query/AirdropClaimsLeft",
+		FullMethod: "/chain4energy.c4echain.cfeairdrop.Query/CampaignAmountLeft",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AirdropClaimsLeft(ctx, req.(*QueryAirdropClaimsLeftRequest))
+		return srv.(QueryServer).CampaignAmountLeft(ctx, req.(*QueryCampaignAmountLeftRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1316,12 +1316,12 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Campaign_Handler,
 		},
 		{
-			MethodName: "AirdropDistrubitions",
-			Handler:    _Query_AirdropDistrubitions_Handler,
+			MethodName: "CampaignTotalAmount",
+			Handler:    _Query_CampaignTotalAmount_Handler,
 		},
 		{
-			MethodName: "AirdropClaimsLeft",
-			Handler:    _Query_AirdropClaimsLeft_Handler,
+			MethodName: "CampaignAmountLeft",
+			Handler:    _Query_CampaignAmountLeft_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1447,7 +1447,7 @@ func (m *QueryUserEntryResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAirdropDistrubitionsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryCampaignTotalAmountRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1457,12 +1457,12 @@ func (m *QueryAirdropDistrubitionsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAirdropDistrubitionsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCampaignTotalAmountRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAirdropDistrubitionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCampaignTotalAmountRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1475,7 +1475,7 @@ func (m *QueryAirdropDistrubitionsRequest) MarshalToSizedBuffer(dAtA []byte) (in
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAirdropDistrubitionsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryCampaignTotalAmountResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1485,20 +1485,20 @@ func (m *QueryAirdropDistrubitionsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAirdropDistrubitionsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCampaignTotalAmountResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAirdropDistrubitionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCampaignTotalAmountResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.AirdropCoins) > 0 {
-		for iNdEx := len(m.AirdropCoins) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Amount) > 0 {
+		for iNdEx := len(m.Amount) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.AirdropCoins[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Amount[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1512,7 +1512,7 @@ func (m *QueryAirdropDistrubitionsResponse) MarshalToSizedBuffer(dAtA []byte) (i
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAirdropClaimsLeftRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryCampaignAmountLeftRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1522,12 +1522,12 @@ func (m *QueryAirdropClaimsLeftRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAirdropClaimsLeftRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCampaignAmountLeftRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAirdropClaimsLeftRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCampaignAmountLeftRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1540,7 +1540,7 @@ func (m *QueryAirdropClaimsLeftRequest) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAirdropClaimsLeftResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryCampaignAmountLeftResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1550,20 +1550,20 @@ func (m *QueryAirdropClaimsLeftResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAirdropClaimsLeftResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCampaignAmountLeftResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAirdropClaimsLeftResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCampaignAmountLeftResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.AirdropCoins) > 0 {
-		for iNdEx := len(m.AirdropCoins) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Amount) > 0 {
+		for iNdEx := len(m.Amount) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.AirdropCoins[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Amount[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -2011,7 +2011,7 @@ func (m *QueryUserEntryResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryAirdropDistrubitionsRequest) Size() (n int) {
+func (m *QueryCampaignTotalAmountRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2023,14 +2023,14 @@ func (m *QueryAirdropDistrubitionsRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryAirdropDistrubitionsResponse) Size() (n int) {
+func (m *QueryCampaignTotalAmountResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.AirdropCoins) > 0 {
-		for _, e := range m.AirdropCoins {
+	if len(m.Amount) > 0 {
+		for _, e := range m.Amount {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -2038,7 +2038,7 @@ func (m *QueryAirdropDistrubitionsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryAirdropClaimsLeftRequest) Size() (n int) {
+func (m *QueryCampaignAmountLeftRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2050,14 +2050,14 @@ func (m *QueryAirdropClaimsLeftRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryAirdropClaimsLeftResponse) Size() (n int) {
+func (m *QueryCampaignAmountLeftResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.AirdropCoins) > 0 {
-		for _, e := range m.AirdropCoins {
+	if len(m.Amount) > 0 {
+		for _, e := range m.Amount {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -2514,7 +2514,7 @@ func (m *QueryUserEntryResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAirdropDistrubitionsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryCampaignTotalAmountRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2537,10 +2537,10 @@ func (m *QueryAirdropDistrubitionsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAirdropDistrubitionsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCampaignTotalAmountRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAirdropDistrubitionsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCampaignTotalAmountRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2583,7 +2583,7 @@ func (m *QueryAirdropDistrubitionsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAirdropDistrubitionsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryCampaignTotalAmountResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2606,15 +2606,15 @@ func (m *QueryAirdropDistrubitionsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAirdropDistrubitionsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCampaignTotalAmountResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAirdropDistrubitionsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCampaignTotalAmountResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AirdropCoins", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2641,8 +2641,8 @@ func (m *QueryAirdropDistrubitionsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.AirdropCoins = append(m.AirdropCoins, types.Coin{})
-			if err := m.AirdropCoins[len(m.AirdropCoins)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Amount = append(m.Amount, types.Coin{})
+			if err := m.Amount[len(m.Amount)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2667,7 +2667,7 @@ func (m *QueryAirdropDistrubitionsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAirdropClaimsLeftRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryCampaignAmountLeftRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2690,10 +2690,10 @@ func (m *QueryAirdropClaimsLeftRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAirdropClaimsLeftRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCampaignAmountLeftRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAirdropClaimsLeftRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCampaignAmountLeftRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2736,7 +2736,7 @@ func (m *QueryAirdropClaimsLeftRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAirdropClaimsLeftResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryCampaignAmountLeftResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2759,15 +2759,15 @@ func (m *QueryAirdropClaimsLeftResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAirdropClaimsLeftResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCampaignAmountLeftResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAirdropClaimsLeftResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCampaignAmountLeftResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AirdropCoins", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2794,8 +2794,8 @@ func (m *QueryAirdropClaimsLeftResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.AirdropCoins = append(m.AirdropCoins, types.Coin{})
-			if err := m.AirdropCoins[len(m.AirdropCoins)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Amount = append(m.Amount, types.Coin{})
+			if err := m.Amount[len(m.Amount)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

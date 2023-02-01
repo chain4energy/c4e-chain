@@ -9,14 +9,14 @@
  * ---------------------------------------------------------------
  */
 
-export enum CfeairdropAirdropCloseAction {
-  AIRDROP_CLOSE_ACTION_UNSPECIFIED = "AIRDROP_CLOSE_ACTION_UNSPECIFIED",
+export enum CfeairdropCampaignCloseAction {
+  CLOSE_ACTION_UNSPECIFIED = "CLOSE_ACTION_UNSPECIFIED",
   SEND_TO_COMMUNITY_POOL = "SEND_TO_COMMUNITY_POOL",
   BURN = "BURN",
   SEND_TO_OWNER = "SEND_TO_OWNER",
 }
 
-export interface CfeairdropAirdropEntry {
+export interface CfeairdropclaimRecord {
   /** @format uint64 */
   campaign_id?: string;
   address?: string;
@@ -77,28 +77,28 @@ export type CfeairdropMsgAddMissionToAidropCampaignResponse = object;
 
 export type CfeairdropMsgClaimResponse = object;
 
-export type CfeairdropMsgCloseAirdropCampaignResponse = object;
+export type CfeairdropMsgCloseCampaignResponse = object;
 
-export type CfeairdropMsgCreateAirdropCampaignResponse = object;
+export type CfeairdropMsgCreateCampaignResponse = object;
 
 export type CfeairdropMsgDeleteClaimRecordResponse = object;
 
-export type CfeairdropMsgEditAirdropCampaignResponse = object;
+export type CfeairdropMsgEditCampaignResponse = object;
 
 export type CfeairdropMsgInitialClaimResponse = object;
 
-export type CfeairdropMsgStartAirdropCampaignResponse = object;
+export type CfeairdropMsgStartCampaignResponse = object;
 
 /**
  * Params defines the parameters for the module.
  */
 export type CfeairdropParams = object;
 
-export interface CfeairdropQueryAirdropClaimsLeftResponse {
+export interface CfeairdropQueryCampaignAmountLeftResponse {
   airdrop_coins?: V1Beta1Coin[];
 }
 
-export interface CfeairdropQueryAirdropDistrubitionsResponse {
+export interface CfeairdropQueryCampaignTotalAmountResponse {
   airdrop_coins?: V1Beta1Coin[];
 }
 
@@ -170,7 +170,7 @@ export interface CfeairdropQueryUsersEntriesResponse {
 export interface CfeairdropUsersEntries {
   address?: string;
   claim_address?: string;
-  airdrop_entries?: CfeairdropAirdropEntry[];
+  airdrop_entries?: CfeairdropclaimRecord[];
 }
 
 export interface ProtobufAny {
@@ -395,12 +395,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryAirdropClaimsLeft
-   * @summary Queries a AirdropDistrubitions by campaignId.
+   * @name QueryCampaignAmountLeft
+   * @summary Queries a CampaignTotalAmount by campaignId.
    * @request GET:/c4e/airdrop/v1beta1/airdrop_claims_left/{campaign_id}
    */
-  queryAirdropClaimsLeft = (campaignId: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryAirdropClaimsLeftResponse, RpcStatus>({
+  queryCampaignAmountLeft = (campaignId: string, params: RequestParams = {}) =>
+    this.request<CfeairdropQueryCampaignAmountLeftResponse, RpcStatus>({
       path: `/c4e/airdrop/v1beta1/airdrop_claims_left/${campaignId}`,
       method: "GET",
       format: "json",
@@ -411,12 +411,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryAirdropDistrubitions
-   * @summary Queries a AirdropDistrubitions by campaignId.
+   * @name QueryCampaignTotalAmount
+   * @summary Queries a CampaignTotalAmount by campaignId.
    * @request GET:/c4e/airdrop/v1beta1/airdrop_distributions/{campaign_id}
    */
-  queryAirdropDistrubitions = (campaignId: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryAirdropDistrubitionsResponse, RpcStatus>({
+  queryCampaignTotalAmount = (campaignId: string, params: RequestParams = {}) =>
+    this.request<CfeairdropQueryCampaignTotalAmountResponse, RpcStatus>({
       path: `/c4e/airdrop/v1beta1/airdrop_distributions/${campaignId}`,
       method: "GET",
       format: "json",

@@ -5,26 +5,26 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgStartAirdropCampaign = "start_airdrop_campaign"
+const TypeMsgStartCampaign = "start_airdrop_campaign"
 
-var _ sdk.Msg = &MsgStartAirdropCampaign{}
+var _ sdk.Msg = &MsgStartCampaign{}
 
-func NewMsgStartAirdropCampaign(owner string, campaignId uint64) *MsgStartAirdropCampaign {
-	return &MsgStartAirdropCampaign{
+func NewMsgStartCampaign(owner string, campaignId uint64) *MsgStartCampaign {
+	return &MsgStartCampaign{
 		Owner:      owner,
 		CampaignId: campaignId,
 	}
 }
 
-func (msg *MsgStartAirdropCampaign) Route() string {
+func (msg *MsgStartCampaign) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgStartAirdropCampaign) Type() string {
-	return TypeMsgStartAirdropCampaign
+func (msg *MsgStartCampaign) Type() string {
+	return TypeMsgStartCampaign
 }
 
-func (msg *MsgStartAirdropCampaign) GetSigners() []sdk.AccAddress {
+func (msg *MsgStartCampaign) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
@@ -32,12 +32,12 @@ func (msg *MsgStartAirdropCampaign) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgStartAirdropCampaign) GetSignBytes() []byte {
+func (msg *MsgStartCampaign) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgStartAirdropCampaign) ValidateBasic() error {
+func (msg *MsgStartCampaign) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

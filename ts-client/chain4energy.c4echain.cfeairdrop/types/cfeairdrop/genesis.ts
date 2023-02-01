@@ -1,6 +1,6 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { AirdropClaimsLeft, AirdropDistrubitions, Campaign, Mission, UserEntry } from "./airdrop";
+import { CampaignAmountLeft, CampaignTotalAmount, Campaign, Mission, UserEntry } from "./airdrop";
 import { Params } from "./params";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -11,9 +11,9 @@ export interface GenesisState {
   campaigns: Campaign[];
   userEntry: UserEntry[];
   missions: Mission[];
-  airdropClaimsLeft: AirdropClaimsLeft[];
+  airdropClaimsLeft: CampaignAmountLeft[];
   /** this line is used by starport scaffolding # genesis/proto/state */
-  airdropDistrubitions: AirdropDistrubitions[];
+  airdropDistrubitions: CampaignTotalAmount[];
 }
 
 function createBaseGenesisState(): GenesisState {
@@ -42,10 +42,10 @@ export const GenesisState = {
       Mission.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     for (const v of message.airdropClaimsLeft) {
-      AirdropClaimsLeft.encode(v!, writer.uint32(50).fork()).ldelim();
+      CampaignAmountLeft.encode(v!, writer.uint32(50).fork()).ldelim();
     }
     for (const v of message.airdropDistrubitions) {
-      AirdropDistrubitions.encode(v!, writer.uint32(58).fork()).ldelim();
+      CampaignTotalAmount.encode(v!, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -70,10 +70,10 @@ export const GenesisState = {
           message.missions.push(Mission.decode(reader, reader.uint32()));
           break;
         case 6:
-          message.airdropClaimsLeft.push(AirdropClaimsLeft.decode(reader, reader.uint32()));
+          message.airdropClaimsLeft.push(CampaignAmountLeft.decode(reader, reader.uint32()));
           break;
         case 7:
-          message.airdropDistrubitions.push(AirdropDistrubitions.decode(reader, reader.uint32()));
+          message.airdropDistrubitions.push(CampaignTotalAmount.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -92,10 +92,10 @@ export const GenesisState = {
         : [],
       missions: Array.isArray(object?.missions) ? object.missions.map((e: any) => Mission.fromJSON(e)) : [],
       airdropClaimsLeft: Array.isArray(object?.airdropClaimsLeft)
-        ? object.airdropClaimsLeft.map((e: any) => AirdropClaimsLeft.fromJSON(e))
+        ? object.airdropClaimsLeft.map((e: any) => CampaignAmountLeft.fromJSON(e))
         : [],
       airdropDistrubitions: Array.isArray(object?.airdropDistrubitions)
-        ? object.airdropDistrubitions.map((e: any) => AirdropDistrubitions.fromJSON(e))
+        ? object.airdropDistrubitions.map((e: any) => CampaignTotalAmount.fromJSON(e))
         : [],
     };
   },
@@ -119,13 +119,13 @@ export const GenesisState = {
       obj.missions = [];
     }
     if (message.airdropClaimsLeft) {
-      obj.airdropClaimsLeft = message.airdropClaimsLeft.map((e) => e ? AirdropClaimsLeft.toJSON(e) : undefined);
+      obj.airdropClaimsLeft = message.airdropClaimsLeft.map((e) => e ? CampaignAmountLeft.toJSON(e) : undefined);
     } else {
       obj.airdropClaimsLeft = [];
     }
     if (message.airdropDistrubitions) {
       obj.airdropDistrubitions = message.airdropDistrubitions.map((e) =>
-        e ? AirdropDistrubitions.toJSON(e) : undefined
+        e ? CampaignTotalAmount.toJSON(e) : undefined
       );
     } else {
       obj.airdropDistrubitions = [];
@@ -141,8 +141,8 @@ export const GenesisState = {
     message.campaigns = object.campaigns?.map((e) => Campaign.fromPartial(e)) || [];
     message.userEntry = object.userEntry?.map((e) => UserEntry.fromPartial(e)) || [];
     message.missions = object.missions?.map((e) => Mission.fromPartial(e)) || [];
-    message.airdropClaimsLeft = object.airdropClaimsLeft?.map((e) => AirdropClaimsLeft.fromPartial(e)) || [];
-    message.airdropDistrubitions = object.airdropDistrubitions?.map((e) => AirdropDistrubitions.fromPartial(e)) || [];
+    message.airdropClaimsLeft = object.airdropClaimsLeft?.map((e) => CampaignAmountLeft.fromPartial(e)) || [];
+    message.airdropDistrubitions = object.airdropDistrubitions?.map((e) => CampaignTotalAmount.fromPartial(e)) || [];
     return message;
   },
 };

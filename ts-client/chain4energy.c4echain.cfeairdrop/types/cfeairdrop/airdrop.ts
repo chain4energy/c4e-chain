@@ -58,46 +58,46 @@ export function missionTypeToJSON(object: MissionType): string {
   }
 }
 
-export enum AirdropCloseAction {
-  AIRDROP_CLOSE_ACTION_UNSPECIFIED = 0,
+export enum CampaignCloseAction {
+  CLOSE_ACTION_UNSPECIFIED = 0,
   SEND_TO_COMMUNITY_POOL = 1,
   BURN = 2,
   SEND_TO_OWNER = 3,
   UNRECOGNIZED = -1,
 }
 
-export function airdropCloseActionFromJSON(object: any): AirdropCloseAction {
+export function campaignCloseActionFromJSON(object: any): CampaignCloseAction {
   switch (object) {
     case 0:
-    case "AIRDROP_CLOSE_ACTION_UNSPECIFIED":
-      return AirdropCloseAction.AIRDROP_CLOSE_ACTION_UNSPECIFIED;
+    case "CLOSE_ACTION_UNSPECIFIED":
+      return CampaignCloseAction.CLOSE_ACTION_UNSPECIFIED;
     case 1:
     case "SEND_TO_COMMUNITY_POOL":
-      return AirdropCloseAction.SEND_TO_COMMUNITY_POOL;
+      return CampaignCloseAction.SEND_TO_COMMUNITY_POOL;
     case 2:
     case "BURN":
-      return AirdropCloseAction.BURN;
+      return CampaignCloseAction.BURN;
     case 3:
     case "SEND_TO_OWNER":
-      return AirdropCloseAction.SEND_TO_OWNER;
+      return CampaignCloseAction.SEND_TO_OWNER;
     case -1:
     case "UNRECOGNIZED":
     default:
-      return AirdropCloseAction.UNRECOGNIZED;
+      return CampaignCloseAction.UNRECOGNIZED;
   }
 }
 
-export function airdropCloseActionToJSON(object: AirdropCloseAction): string {
+export function campaignCloseActionToJSON(object: CampaignCloseAction): string {
   switch (object) {
-    case AirdropCloseAction.AIRDROP_CLOSE_ACTION_UNSPECIFIED:
-      return "AIRDROP_CLOSE_ACTION_UNSPECIFIED";
-    case AirdropCloseAction.SEND_TO_COMMUNITY_POOL:
+    case CampaignCloseAction.CLOSE_ACTION_UNSPECIFIED:
+      return "CLOSE_ACTION_UNSPECIFIED";
+    case CampaignCloseAction.SEND_TO_COMMUNITY_POOL:
       return "SEND_TO_COMMUNITY_POOL";
-    case AirdropCloseAction.BURN:
+    case CampaignCloseAction.BURN:
       return "BURN";
-    case AirdropCloseAction.SEND_TO_OWNER:
+    case CampaignCloseAction.SEND_TO_OWNER:
       return "SEND_TO_OWNER";
-    case AirdropCloseAction.UNRECOGNIZED:
+    case CampaignCloseAction.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
   }
@@ -112,7 +112,7 @@ export interface UserEntry {
 export interface ClaimRecord {
   campaignId: number;
   address: string;
-  airdropCoins: Coin[];
+  amount: Coin[];
   completedMissions: number[];
   claimedMissions: number[];
 }
@@ -121,14 +121,14 @@ export interface ClaimRecords {
   airdropEntries: ClaimRecord[];
 }
 
-export interface AirdropDistrubitions {
+export interface CampaignTotalAmount {
   campaignId: number;
-  airdropCoins: Coin[];
+  amount: Coin[];
 }
 
-export interface AirdropClaimsLeft {
+export interface CampaignAmountLeft {
   campaignId: number;
-  airdropCoins: Coin[];
+  amount: Coin[];
 }
 
 export interface Campaign {
@@ -234,8 +234,8 @@ export const UserEntry = {
   },
 };
 
-function createBaseAirdropEntry(): ClaimRecord {
-  return { campaignId: 0, address: "", airdropCoins: [], completedMissions: [], claimedMissions: [] };
+function createBaseclaimRecord(): ClaimRecord {
+  return { campaignId: 0, address: "", amount: [], completedMissions: [], claimedMissions: [] };
 }
 
 export const ClaimRecord = {
@@ -246,7 +246,7 @@ export const ClaimRecord = {
     if (message.address !== "") {
       writer.uint32(18).string(message.address);
     }
-    for (const v of message.airdropCoins) {
+    for (const v of message.amount) {
       Coin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     writer.uint32(34).fork();
@@ -265,7 +265,7 @@ export const ClaimRecord = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ClaimRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAirdropEntry();
+    const message = createBaseclaimRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -276,7 +276,7 @@ export const ClaimRecord = {
           message.address = reader.string();
           break;
         case 3:
-          message.airdropCoins.push(Coin.decode(reader, reader.uint32()));
+          message.amount.push(Coin.decode(reader, reader.uint32()));
           break;
         case 4:
           if ((tag & 7) === 2) {
@@ -310,7 +310,7 @@ export const ClaimRecord = {
     return {
       campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
       address: isSet(object.address) ? String(object.address) : "",
-      airdropCoins: Array.isArray(object?.airdropCoins) ? object.airdropCoins.map((e: any) => Coin.fromJSON(e)) : [],
+      amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [],
       completedMissions: Array.isArray(object?.completedMissions)
         ? object.completedMissions.map((e: any) => Number(e))
         : [],
@@ -322,10 +322,10 @@ export const ClaimRecord = {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
     message.address !== undefined && (obj.address = message.address);
-    if (message.airdropCoins) {
-      obj.airdropCoins = message.airdropCoins.map((e) => e ? Coin.toJSON(e) : undefined);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => e ? Coin.toJSON(e) : undefined);
     } else {
-      obj.airdropCoins = [];
+      obj.amount = [];
     }
     if (message.completedMissions) {
       obj.completedMissions = message.completedMissions.map((e) => Math.round(e));
@@ -341,10 +341,10 @@ export const ClaimRecord = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ClaimRecord>, I>>(object: I): ClaimRecord {
-    const message = createBaseAirdropEntry();
+    const message = createBaseclaimRecord();
     message.campaignId = object.campaignId ?? 0;
     message.address = object.address ?? "";
-    message.airdropCoins = object.airdropCoins?.map((e) => Coin.fromPartial(e)) || [];
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     message.completedMissions = object.completedMissions?.map((e) => e) || [];
     message.claimedMissions = object.claimedMissions?.map((e) => e) || [];
     return message;
@@ -406,25 +406,25 @@ export const ClaimRecords = {
   },
 };
 
-function createBaseAirdropDistrubitions(): AirdropDistrubitions {
-  return { campaignId: 0, airdropCoins: [] };
+function createBaseCampaignTotalAmount(): CampaignTotalAmount {
+  return { campaignId: 0, amount: [] };
 }
 
-export const AirdropDistrubitions = {
-  encode(message: AirdropDistrubitions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const CampaignTotalAmount = {
+  encode(message: CampaignTotalAmount, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
     }
-    for (const v of message.airdropCoins) {
+    for (const v of message.amount) {
       Coin.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): AirdropDistrubitions {
+  decode(input: _m0.Reader | Uint8Array, length?: number): CampaignTotalAmount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAirdropDistrubitions();
+    const message = createBaseCampaignTotalAmount();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -432,7 +432,7 @@ export const AirdropDistrubitions = {
           message.campaignId = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.airdropCoins.push(Coin.decode(reader, reader.uint32()));
+          message.amount.push(Coin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -442,51 +442,51 @@ export const AirdropDistrubitions = {
     return message;
   },
 
-  fromJSON(object: any): AirdropDistrubitions {
+  fromJSON(object: any): CampaignTotalAmount {
     return {
       campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
-      airdropCoins: Array.isArray(object?.airdropCoins) ? object.airdropCoins.map((e: any) => Coin.fromJSON(e)) : [],
+      amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [],
     };
   },
 
-  toJSON(message: AirdropDistrubitions): unknown {
+  toJSON(message: CampaignTotalAmount): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
-    if (message.airdropCoins) {
-      obj.airdropCoins = message.airdropCoins.map((e) => e ? Coin.toJSON(e) : undefined);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => e ? Coin.toJSON(e) : undefined);
     } else {
-      obj.airdropCoins = [];
+      obj.amount = [];
     }
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<AirdropDistrubitions>, I>>(object: I): AirdropDistrubitions {
-    const message = createBaseAirdropDistrubitions();
+  fromPartial<I extends Exact<DeepPartial<CampaignTotalAmount>, I>>(object: I): CampaignTotalAmount {
+    const message = createBaseCampaignTotalAmount();
     message.campaignId = object.campaignId ?? 0;
-    message.airdropCoins = object.airdropCoins?.map((e) => Coin.fromPartial(e)) || [];
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBaseAirdropClaimsLeft(): AirdropClaimsLeft {
-  return { campaignId: 0, airdropCoins: [] };
+function createBaseCampaignAmountLeft(): CampaignAmountLeft {
+  return { campaignId: 0, amount: [] };
 }
 
-export const AirdropClaimsLeft = {
-  encode(message: AirdropClaimsLeft, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const CampaignAmountLeft = {
+  encode(message: CampaignAmountLeft, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
     }
-    for (const v of message.airdropCoins) {
+    for (const v of message.amount) {
       Coin.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): AirdropClaimsLeft {
+  decode(input: _m0.Reader | Uint8Array, length?: number): CampaignAmountLeft {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAirdropClaimsLeft();
+    const message = createBaseCampaignAmountLeft();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -494,7 +494,7 @@ export const AirdropClaimsLeft = {
           message.campaignId = longToNumber(reader.uint64() as Long);
           break;
         case 2:
-          message.airdropCoins.push(Coin.decode(reader, reader.uint32()));
+          message.amount.push(Coin.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -504,28 +504,28 @@ export const AirdropClaimsLeft = {
     return message;
   },
 
-  fromJSON(object: any): AirdropClaimsLeft {
+  fromJSON(object: any): CampaignAmountLeft {
     return {
       campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
-      airdropCoins: Array.isArray(object?.airdropCoins) ? object.airdropCoins.map((e: any) => Coin.fromJSON(e)) : [],
+      amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [],
     };
   },
 
-  toJSON(message: AirdropClaimsLeft): unknown {
+  toJSON(message: CampaignAmountLeft): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
-    if (message.airdropCoins) {
-      obj.airdropCoins = message.airdropCoins.map((e) => e ? Coin.toJSON(e) : undefined);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => e ? Coin.toJSON(e) : undefined);
     } else {
-      obj.airdropCoins = [];
+      obj.amount = [];
     }
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<AirdropClaimsLeft>, I>>(object: I): AirdropClaimsLeft {
-    const message = createBaseAirdropClaimsLeft();
+  fromPartial<I extends Exact<DeepPartial<CampaignAmountLeft>, I>>(object: I): CampaignAmountLeft {
+    const message = createBaseCampaignAmountLeft();
     message.campaignId = object.campaignId ?? 0;
-    message.airdropCoins = object.airdropCoins?.map((e) => Coin.fromPartial(e)) || [];
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
 };

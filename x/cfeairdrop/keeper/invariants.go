@@ -9,16 +9,16 @@ import (
 // RegisterInvariants register cfedistribution invariants
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 	ir.RegisterRoute(types.ModuleName, "airdrop-claims-left-sum-check",
-		AirdropClaimsLeftSumCheckInvariant(k))
+		CampaignAmountLeftSumCheckInvariant(k))
 }
 
-// AirdropClaimsLeftSumCheckInvariant checks that sum of airdrop claims left is equal to cfeaidrop module account balance
-func AirdropClaimsLeftSumCheckInvariant(k Keeper) sdk.Invariant {
+// CampaignAmountLeftSumCheckInvariant checks that sum of airdrop claims left is equal to cfeaidrop module account balance
+func CampaignAmountLeftSumCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		airdropClaimsLeftList := k.GetAllAirdropClaimsLeft(ctx)
+		airdropClaimsLeftList := k.GetAllCampaignAmountLeft(ctx)
 		airdropClaimsLeftSum := sdk.NewCoins()
 		for _, airdropClaimsLeft := range airdropClaimsLeftList {
-			airdropClaimsLeftSum.Add(airdropClaimsLeft.AirdropCoins...)
+			airdropClaimsLeftSum.Add(airdropClaimsLeft.Amount...)
 		}
 		cfeaidropAccountCoins := k.GetAccountCoinsForModuleAccount(ctx, types.ModuleName)
 		if !cfeaidropAccountCoins.IsEqual(airdropClaimsLeftSum) {

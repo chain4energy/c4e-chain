@@ -20,15 +20,15 @@ func (k Keeper) UsersEntries(c context.Context, req *types.QueryUsersEntriesRequ
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	claimRecordStore := prefix.NewStore(store, types.KeyPrefix(types.UsersEntriesKeyPrefix))
+	claimRecordStore := prefix.NewStore(store, types.KeyPrefix(types.UserEntryKeyPrefix))
 
 	pageRes, err := query.Paginate(claimRecordStore, req.Pagination, func(key []byte, value []byte) error {
-		var userAirdropEntry types.UserEntry
-		if err := k.cdc.Unmarshal(value, &userAirdropEntry); err != nil {
+		var userclaimRecord types.UserEntry
+		if err := k.cdc.Unmarshal(value, &userclaimRecord); err != nil {
 			return err
 		}
 
-		userEntry = append(userEntry, userAirdropEntry)
+		userEntry = append(userEntry, userclaimRecord)
 		return nil
 	})
 
@@ -56,13 +56,13 @@ func (k Keeper) UserEntry(c context.Context, req *types.QueryUserEntryRequest) (
 	return &types.QueryUserEntryResponse{UserEntry: val}, nil
 }
 
-func (k Keeper) AirdropDistrubitions(c context.Context, req *types.QueryAirdropDistrubitionsRequest) (*types.QueryAirdropDistrubitionsResponse, error) {
+func (k Keeper) CampaignTotalAmount(c context.Context, req *types.QueryCampaignTotalAmountRequest) (*types.QueryCampaignTotalAmountResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetAirdropDistrubitions(
+	val, found := k.GetCampaignTotalAmount(
 		ctx,
 		req.CampaignId,
 	)
@@ -70,16 +70,16 @@ func (k Keeper) AirdropDistrubitions(c context.Context, req *types.QueryAirdropD
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryAirdropDistrubitionsResponse{AirdropCoins: val.AirdropCoins}, nil
+	return &types.QueryCampaignTotalAmountResponse{Amount: val.Amount}, nil
 }
 
-func (k Keeper) AirdropClaimsLeft(c context.Context, req *types.QueryAirdropClaimsLeftRequest) (*types.QueryAirdropClaimsLeftResponse, error) {
+func (k Keeper) CampaignAmountLeft(c context.Context, req *types.QueryCampaignAmountLeftRequest) (*types.QueryCampaignAmountLeftResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetAirdropClaimsLeft(
+	val, found := k.GetCampaignAmountLeft(
 		ctx,
 		req.CampaignId,
 	)
@@ -87,5 +87,5 @@ func (k Keeper) AirdropClaimsLeft(c context.Context, req *types.QueryAirdropClai
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryAirdropClaimsLeftResponse{AirdropCoins: val.AirdropCoins}, nil
+	return &types.QueryCampaignAmountLeftResponse{Amount: val.Amount}, nil
 }

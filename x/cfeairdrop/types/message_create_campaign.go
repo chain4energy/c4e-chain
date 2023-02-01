@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-const TypeMsgCreateAirdropCampaign = "create_airdrop_campaign"
+const TypeMsgCreateCampaign = "create_airdrop_campaign"
 
-var _ sdk.Msg = &MsgCreateAirdropCampaign{}
+var _ sdk.Msg = &MsgCreateCampaign{}
 
-func NewMsgCreateAirdropCampaign(owner string, name string, description string, argFeegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) *MsgCreateAirdropCampaign {
-	return &MsgCreateAirdropCampaign{
+func NewMsgCreateCampaign(owner string, name string, description string, argFeegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
+	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) *MsgCreateCampaign {
+	return &MsgCreateCampaign{
 		Owner:                  owner,
 		Name:                   name,
 		Description:            description,
@@ -26,15 +26,15 @@ func NewMsgCreateAirdropCampaign(owner string, name string, description string, 
 	}
 }
 
-func (msg *MsgCreateAirdropCampaign) Route() string {
+func (msg *MsgCreateCampaign) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgCreateAirdropCampaign) Type() string {
-	return TypeMsgCreateAirdropCampaign
+func (msg *MsgCreateCampaign) Type() string {
+	return TypeMsgCreateCampaign
 }
 
-func (msg *MsgCreateAirdropCampaign) GetSigners() []sdk.AccAddress {
+func (msg *MsgCreateCampaign) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
@@ -42,12 +42,12 @@ func (msg *MsgCreateAirdropCampaign) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgCreateAirdropCampaign) GetSignBytes() []byte {
+func (msg *MsgCreateCampaign) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgCreateAirdropCampaign) ValidateBasic() error {
+func (msg *MsgCreateCampaign) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

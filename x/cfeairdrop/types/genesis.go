@@ -25,7 +25,7 @@ func (gs GenesisState) Validate() error {
 	claimRecordIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.UsersEntries {
-		index := string(UsersEntriesKey(elem.Address))
+		index := string(UserEntryKey(elem.Address))
 		if _, ok := claimRecordIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for claimRecordXX")
 		}

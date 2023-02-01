@@ -17,7 +17,7 @@ message UserEntry {
 message ClaimRecord {
   uint64 campaign_id = 1;
   string address = 2;
-  repeated cosmos.base.v1beta1.Coin airdrop_coins = 3[
+  repeated cosmos.base.v1beta1.Coin amount = 3 [ // amount
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
@@ -25,17 +25,17 @@ message ClaimRecord {
   repeated uint64 claimedMissions = 5;
 }
 
-message AirdropDistrubitions {
+message CampaignTotalAmount {
   uint64 campaign_id = 1;
-  repeated cosmos.base.v1beta1.Coin airdrop_coins = 2 [
+  repeated cosmos.base.v1beta1.Coin amount = 2 [ // amount
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }
 
-message AirdropClaimsLeft {
+message CampaignAmountLeft {
   uint64 campaign_id = 1;
-  repeated cosmos.base.v1beta1.Coin airdrop_coins = 2 [
+  repeated cosmos.base.v1beta1.Coin amount = 2 [ // amount
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
@@ -99,8 +99,8 @@ enum MissionType {
   CLAIM = 4;
 }
 
-enum AirdropCloseAction {
-  AIRDROP_CLOSE_ACTION_UNSPECIFIED = 0;
+enum CampaignCloseAction { //Campaign close action
+  CLOSE_ACTION_UNSPECIFIED = 0; //Campaign close action
   SEND_TO_COMMUNITY_POOL = 1;
   BURN = 2;
   SEND_TO_OWNER = 3;

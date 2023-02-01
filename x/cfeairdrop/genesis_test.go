@@ -54,7 +54,7 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.UsersEntries, got.UsersEntries)
 	require.ElementsMatch(t, genesisState.Missions, got.Missions)
 	require.ElementsMatch(t, genesisState.Campaigns, got.Campaigns)
-	require.ElementsMatch(t, genesisState.AirdropDistrubitions, got.AirdropDistrubitions)
-	require.ElementsMatch(t, genesisState.AirdropClaimsLeft, got.AirdropClaimsLeft)
+	require.ElementsMatch(t, genesisState.CampaignsTotalAmount, got.CampaignsTotalAmount)
+	require.ElementsMatch(t, genesisState.CampaignsAmountLeft, got.CampaignsAmountLeft)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

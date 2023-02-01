@@ -4,8 +4,8 @@ import {
   Campaign,
   UserEntry,
   Mission,
-  AirdropClaimsLeft,
-  AirdropDistrubitions,
+  CampaignAmountLeft,
+  CampaignTotalAmount,
 } from "../cfeairdrop/airdrop";
 import { Writer, Reader } from "protobufjs/minimal";
 
@@ -17,9 +17,9 @@ export interface GenesisState {
   campaigns: Campaign[];
   users_entries: UserEntry[];
   missions: Mission[];
-  airdrop_claims_left: AirdropClaimsLeft[];
+  campaigns_amount_left: CampaignAmountLeft[];
   /** this line is used by starport scaffolding # genesis/proto/state */
-  airdrop_distrubitions: AirdropDistrubitions[];
+  campaigns_total_amount: CampaignTotalAmount[];
 }
 
 const baseGenesisState: object = {};
@@ -38,11 +38,11 @@ export const GenesisState = {
     for (const v of message.missions) {
       Mission.encode(v!, writer.uint32(42).fork()).ldelim();
     }
-    for (const v of message.airdrop_claims_left) {
-      AirdropClaimsLeft.encode(v!, writer.uint32(50).fork()).ldelim();
+    for (const v of message.campaigns_amount_left) {
+      CampaignAmountLeft.encode(v!, writer.uint32(50).fork()).ldelim();
     }
-    for (const v of message.airdrop_distrubitions) {
-      AirdropDistrubitions.encode(v!, writer.uint32(58).fork()).ldelim();
+    for (const v of message.campaigns_total_amount) {
+      CampaignTotalAmount.encode(v!, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -54,8 +54,8 @@ export const GenesisState = {
     message.campaigns = [];
     message.users_entries = [];
     message.missions = [];
-    message.airdrop_claims_left = [];
-    message.airdrop_distrubitions = [];
+    message.campaigns_amount_left = [];
+    message.campaigns_total_amount = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -72,13 +72,13 @@ export const GenesisState = {
           message.missions.push(Mission.decode(reader, reader.uint32()));
           break;
         case 6:
-          message.airdrop_claims_left.push(
-            AirdropClaimsLeft.decode(reader, reader.uint32())
+          message.campaigns_amount_left.push(
+            CampaignAmountLeft.decode(reader, reader.uint32())
           );
           break;
         case 7:
-          message.airdrop_distrubitions.push(
-            AirdropDistrubitions.decode(reader, reader.uint32())
+          message.campaigns_total_amount.push(
+            CampaignTotalAmount.decode(reader, reader.uint32())
           );
           break;
         default:
@@ -94,8 +94,8 @@ export const GenesisState = {
     message.campaigns = [];
     message.users_entries = [];
     message.missions = [];
-    message.airdrop_claims_left = [];
-    message.airdrop_distrubitions = [];
+    message.campaigns_amount_left = [];
+    message.campaigns_total_amount = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
@@ -117,19 +117,19 @@ export const GenesisState = {
       }
     }
     if (
-      object.airdrop_claims_left !== undefined &&
-      object.airdrop_claims_left !== null
+      object.campaigns_amount_left !== undefined &&
+      object.campaigns_amount_left !== null
     ) {
-      for (const e of object.airdrop_claims_left) {
-        message.airdrop_claims_left.push(AirdropClaimsLeft.fromJSON(e));
+      for (const e of object.campaigns_amount_left) {
+        message.campaigns_amount_left.push(CampaignAmountLeft.fromJSON(e));
       }
     }
     if (
-      object.airdrop_distrubitions !== undefined &&
-      object.airdrop_distrubitions !== null
+      object.campaigns_total_amount !== undefined &&
+      object.campaigns_total_amount !== null
     ) {
-      for (const e of object.airdrop_distrubitions) {
-        message.airdrop_distrubitions.push(AirdropDistrubitions.fromJSON(e));
+      for (const e of object.campaigns_total_amount) {
+        message.campaigns_total_amount.push(CampaignTotalAmount.fromJSON(e));
       }
     }
     return message;
@@ -160,19 +160,19 @@ export const GenesisState = {
     } else {
       obj.missions = [];
     }
-    if (message.airdrop_claims_left) {
-      obj.airdrop_claims_left = message.airdrop_claims_left.map((e) =>
-        e ? AirdropClaimsLeft.toJSON(e) : undefined
+    if (message.campaigns_amount_left) {
+      obj.campaigns_amount_left = message.campaigns_amount_left.map((e) =>
+        e ? CampaignAmountLeft.toJSON(e) : undefined
       );
     } else {
-      obj.airdrop_claims_left = [];
+      obj.campaigns_amount_left = [];
     }
-    if (message.airdrop_distrubitions) {
-      obj.airdrop_distrubitions = message.airdrop_distrubitions.map((e) =>
-        e ? AirdropDistrubitions.toJSON(e) : undefined
+    if (message.campaigns_total_amount) {
+      obj.campaigns_total_amount = message.campaigns_total_amount.map((e) =>
+        e ? CampaignTotalAmount.toJSON(e) : undefined
       );
     } else {
-      obj.airdrop_distrubitions = [];
+      obj.campaigns_total_amount = [];
     }
     return obj;
   },
@@ -182,8 +182,8 @@ export const GenesisState = {
     message.campaigns = [];
     message.users_entries = [];
     message.missions = [];
-    message.airdrop_claims_left = [];
-    message.airdrop_distrubitions = [];
+    message.campaigns_amount_left = [];
+    message.campaigns_total_amount = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
@@ -205,19 +205,19 @@ export const GenesisState = {
       }
     }
     if (
-      object.airdrop_claims_left !== undefined &&
-      object.airdrop_claims_left !== null
+      object.campaigns_amount_left !== undefined &&
+      object.campaigns_amount_left !== null
     ) {
-      for (const e of object.airdrop_claims_left) {
-        message.airdrop_claims_left.push(AirdropClaimsLeft.fromPartial(e));
+      for (const e of object.campaigns_amount_left) {
+        message.campaigns_amount_left.push(CampaignAmountLeft.fromPartial(e));
       }
     }
     if (
-      object.airdrop_distrubitions !== undefined &&
-      object.airdrop_distrubitions !== null
+      object.campaigns_total_amount !== undefined &&
+      object.campaigns_total_amount !== null
     ) {
-      for (const e of object.airdrop_distrubitions) {
-        message.airdrop_distrubitions.push(AirdropDistrubitions.fromPartial(e));
+      for (const e of object.campaigns_total_amount) {
+        message.campaigns_total_amount.push(CampaignTotalAmount.fromPartial(e));
       }
     }
     return message;

@@ -6,15 +6,15 @@ info:
 paths:
   '/c4e/airdrop/v1beta1/airdrop_claims_left/{campaign_id}':
     get:
-      summary: Queries a AirdropDistrubitions by campaignId.
-      operationId: Chain4EnergyC4EchainCfeairdropAirdropClaimsLeft
+      summary: Queries a CampaignTotalAmount by campaignId.
+      operationId: Chain4EnergyC4EchainCfeairdropCampaignAmountLeft
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              airdrop_coins:
+              amount:
                 type: array
                 items:
                   type: object
@@ -59,15 +59,15 @@ paths:
         - Query
   '/c4e/airdrop/v1beta1/airdrop_distributions/{campaign_id}':
     get:
-      summary: Queries a AirdropDistrubitions by campaignId.
-      operationId: Chain4EnergyC4EchainCfeairdropAirdropDistrubitions
+      summary: Queries a CampaignTotalAmount by campaignId.
+      operationId: Chain4EnergyC4EchainCfeairdropCampaignTotalAmount
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              airdrop_coins:
+              amount:
                 type: array
                 items:
                   type: object
@@ -310,16 +310,6 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /c4e/airdrop/v1beta1/mission:
@@ -450,16 +440,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -596,7 +576,7 @@ paths:
                           format: uint64
                         address:
                           type: string
-                        airdrop_coins:
+                        amount:
                           type: array
                           items:
                             type: object
@@ -624,8 +604,6 @@ paths:
                           items:
                             type: string
                             format: uint64
-                      title: Claim record
-                    title: claim_records
         default:
           description: An unexpected error response.
           schema:
@@ -680,7 +658,7 @@ paths:
                             format: uint64
                           address:
                             type: string
-                          airdrop_coins:
+                          amount:
                             type: array
                             items:
                               type: object
@@ -708,8 +686,6 @@ paths:
                             items:
                               type: string
                               format: uint64
-                        title: Claim record
-                      title: claim_records
               pagination:
                 type: object
                 properties:
@@ -799,16 +775,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -32654,14 +32620,6 @@ paths:
       tags:
         - Query
 definitions:
-  chain4energy.c4echain.cfeairdrop.AirdropCloseAction:
-    type: string
-    enum:
-      - AIRDROP_CLOSE_ACTION_UNSPECIFIED
-      - SEND_TO_COMMUNITY_POOL
-      - BURN
-      - SEND_TO_OWNER
-    default: AIRDROP_CLOSE_ACTION_UNSPECIFIED
   chain4energy.c4echain.cfeairdrop.Campaign:
     type: object
     properties:
@@ -32692,6 +32650,16 @@ definitions:
       vesting_period:
         type: string
         title: period of vesting coins after lockup period
+  chain4energy.c4echain.cfeairdrop.CampaignCloseAction:
+    type: string
+    enum:
+      - CLOSE_ACTION_UNSPECIFIED
+      - SEND_TO_COMMUNITY_POOL
+      - BURN
+      - SEND_TO_OWNER
+    default: CLOSE_ACTION_UNSPECIFIED
+    description: '- CLOSE_ACTION_UNSPECIFIED: Campaign close action'
+    title: Campaign close action
   chain4energy.c4echain.cfeairdrop.ClaimRecord:
     type: object
     properties:
@@ -32700,7 +32668,7 @@ definitions:
         format: uint64
       address:
         type: string
-      airdrop_coins:
+      amount:
         type: array
         items:
           type: object
@@ -32724,7 +32692,6 @@ definitions:
         items:
           type: string
           format: uint64
-    title: Claim record
   chain4energy.c4echain.cfeairdrop.Mission:
     type: object
     properties:
@@ -32767,44 +32734,27 @@ definitions:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgClaimResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgCloseAirdropCampaignResponse:
+  chain4energy.c4echain.cfeairdrop.MsgCloseCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgCreateAirdropCampaignResponse:
+  chain4energy.c4echain.cfeairdrop.MsgCreateCampaignResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgDeleteClaimRecordResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgEditAirdropCampaignResponse:
+  chain4energy.c4echain.cfeairdrop.MsgEditCampaignResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgInitialClaimResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgRemoveAirdropCampaignResponse:
+  chain4energy.c4echain.cfeairdrop.MsgRemoveCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgStartAirdropCampaignResponse:
+  chain4energy.c4echain.cfeairdrop.MsgStartCampaignResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.Params:
     type: object
     description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeairdrop.QueryAirdropClaimsLeftResponse:
+  chain4energy.c4echain.cfeairdrop.QueryCampaignAmountLeftResponse:
     type: object
     properties:
-      airdrop_coins:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cfeairdrop.QueryAirdropDistrubitionsResponse:
-    type: object
-    properties:
-      airdrop_coins:
+      amount:
         type: array
         items:
           type: object
@@ -32851,6 +32801,23 @@ definitions:
           vesting_period:
             type: string
             title: period of vesting coins after lockup period
+  chain4energy.c4echain.cfeairdrop.QueryCampaignTotalAmountResponse:
+    type: object
+    properties:
+      amount:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cfeairdrop.QueryCampaignsResponse:
     type: object
     properties:
@@ -33025,7 +32992,7 @@ definitions:
                   format: uint64
                 address:
                   type: string
-                airdrop_coins:
+                amount:
                   type: array
                   items:
                     type: object
@@ -33052,8 +33019,6 @@ definitions:
                   items:
                     type: string
                     format: uint64
-              title: Claim record
-            title: claim_records
   chain4energy.c4echain.cfeairdrop.QueryUsersEntriesResponse:
     type: object
     properties:
@@ -33076,7 +33041,7 @@ definitions:
                     format: uint64
                   address:
                     type: string
-                  airdrop_coins:
+                  amount:
                     type: array
                     items:
                       type: object
@@ -33103,8 +33068,6 @@ definitions:
                     items:
                       type: string
                       format: uint64
-                title: Claim record
-              title: claim_records
       pagination:
         type: object
         properties:
@@ -33147,7 +33110,7 @@ definitions:
               format: uint64
             address:
               type: string
-            airdrop_coins:
+            amount:
               type: array
               items:
                 type: object
@@ -33174,8 +33137,6 @@ definitions:
               items:
                 type: string
                 format: uint64
-          title: Claim record
-        title: claim_records
   cosmos.base.query.v1beta1.PageRequest:
     type: object
     properties:

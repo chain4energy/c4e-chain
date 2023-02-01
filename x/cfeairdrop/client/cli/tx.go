@@ -32,14 +32,14 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdClaim())
 	cmd.AddCommand(CmdInitialClaim())
-	cmd.AddCommand(CmdCreateAirdropCampaign())
-	cmd.AddCommand(CmdAddMissionToAidropCampaign())
-	cmd.AddCommand(CmdCreateAirdropEntry())
+	cmd.AddCommand(CmdCreateCampaign())
+	cmd.AddCommand(CmdAddMissionToCampaign())
+	cmd.AddCommand(CmdAddClaimRecords())
 	cmd.AddCommand(CmdDeleteClaimRecord())
-	cmd.AddCommand(CmdCloseAirdropCampaign())
-	cmd.AddCommand(CmdStartAirdropCampaign())
-	cmd.AddCommand(CmdEditAirdropCampaign())
-	cmd.AddCommand(CmdRemoveAirdropCampaign())
+	cmd.AddCommand(CmdCloseCampaign())
+	cmd.AddCommand(CmdStartCampaign())
+	cmd.AddCommand(CmdEditCampaign())
+	cmd.AddCommand(CmdRemoveCampaign())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

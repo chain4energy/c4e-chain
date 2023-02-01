@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestCreateAirdropEntry(t *testing.T) {
+func TestCreateclaimRecord(t *testing.T) {
 	//net := network.New(t)
 	//val := net.Validators[0]
 	//ctx := val.ClientCtx
@@ -30,7 +30,7 @@ func TestCreateAirdropEntry(t *testing.T) {
 	//		args := []string{}
 	//		args = append(args, fields...)
 	//		args = append(args, tc.args...)
-	//		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateAirdropEntry(), args)
+	//		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateclaimRecord(), args)
 	//		if tc.err != nil {
 	//			require.ErrorIs(t, err, tc.err)
 	//		} else {
@@ -43,7 +43,7 @@ func TestCreateAirdropEntry(t *testing.T) {
 	//}
 }
 
-func TestUpdateAirdropEntry(t *testing.T) {
+func TestUpdateclaimRecord(t *testing.T) {
 	//net := network.New(t)
 	//
 	//val := net.Validators[0]
@@ -59,7 +59,7 @@ func TestUpdateAirdropEntry(t *testing.T) {
 	//args := []string{}
 	//args = append(args, fields...)
 	//args = append(args, common...)
-	//_, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateAirdropEntry(), args)
+	//_, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateclaimRecord(), args)
 	//require.NoError(t, err)
 	//
 	//for _, tc := range []struct {
@@ -85,7 +85,7 @@ func TestUpdateAirdropEntry(t *testing.T) {
 	//		args := []string{tc.id}
 	//		args = append(args, fields...)
 	//		args = append(args, tc.args...)
-	//		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdUpdateAirdropEntry(), args)
+	//		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdUpdateclaimRecord(), args)
 	//		if tc.err != nil {
 	//			require.ErrorIs(t, err, tc.err)
 	//		} else {
@@ -114,7 +114,7 @@ func TestDeleteClaimRecord(t *testing.T) {
 	//args := []string{}
 	//args = append(args, fields...)
 	//args = append(args, common...)
-	//_, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateAirdropEntry(), args)
+	//_, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateclaimRecord(), args)
 	//require.NoError(t, err)
 	//
 	//for _, tc := range []struct {

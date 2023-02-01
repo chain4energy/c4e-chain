@@ -8,13 +8,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) AddMissionToAidropCampaign(goCtx context.Context, msg *types.MsgAddMissionToAidropCampaign) (*types.MsgAddMissionToAidropCampaignResponse, error) {
+func (k msgServer) AddMissionToAidropCampaign(goCtx context.Context, msg *types.MsgAddMissionToCampaign) (*types.MsgAddMissionToAidropCampaignResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "add mission to aidrop campaign message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
-	if err := keeper.AddMissionToAirdropCampaign(ctx, msg.Owner, msg.CampaignId, msg.Name, msg.Description, msg.MissionType, *msg.Weight, msg.ClaimStartDate); err != nil {
+	if err := keeper.AddMissionToCampaign(ctx, msg.Owner, msg.CampaignId, msg.Name, msg.Description, msg.MissionType, *msg.Weight, msg.ClaimStartDate); err != nil {
 		return nil, err
 	}
+
 	return &types.MsgAddMissionToAidropCampaignResponse{}, nil
 }

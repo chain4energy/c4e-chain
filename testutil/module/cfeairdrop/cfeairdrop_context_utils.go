@@ -23,51 +23,51 @@ func NewContextC4eAirdropUtils(t *testing.T, testContext testenv.TestContext, he
 	return &ContextC4eAirdropUtils{C4eAirdropUtils: c4eAirdropUtils, testContext: testContext}
 }
 
-func (h *ContextC4eAirdropUtils) CreateAirdropCampaign(owner string, campaign cfeairdroptypes.Campaign) {
-	h.C4eAirdropUtils.CreateAirdropCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+func (h *ContextC4eAirdropUtils) CreateCampaign(owner string, campaign cfeairdroptypes.Campaign) {
+	h.C4eAirdropUtils.CreateCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 }
 
-func (h *ContextC4eAirdropUtils) CreateAirdropCampaignError(owner string, campaign cfeairdroptypes.Campaign, errorMessage string) {
-	h.C4eAirdropUtils.CreateAirdropCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, errorMessage)
+func (h *ContextC4eAirdropUtils) CreateCampaignError(owner string, campaign cfeairdroptypes.Campaign, errorMessage string) {
+	h.C4eAirdropUtils.CreateCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, errorMessage)
 }
 
-func (h *ContextC4eAirdropUtils) AddMissionToAirdropCampaign(owner string, campaignId uint64, mission cfeairdroptypes.Mission) {
-	h.C4eAirdropUtils.AddMissionToAirdropCampaign(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate)
+func (h *ContextC4eAirdropUtils) AddMissionToCampaign(owner string, campaignId uint64, mission cfeairdroptypes.Mission) {
+	h.C4eAirdropUtils.AddMissionToCampaign(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate)
 }
 
-func (h *ContextC4eAirdropUtils) AddMissionToAirdropCampaignError(owner string, campaignId uint64, mission cfeairdroptypes.Mission, errorString string) {
-	h.C4eAirdropUtils.AddMissionToAirdropCampaignError(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate, errorString)
+func (h *ContextC4eAirdropUtils) AddMissionToCampaignError(owner string, campaignId uint64, mission cfeairdroptypes.Mission, errorString string) {
+	h.C4eAirdropUtils.AddMissionToCampaignError(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate, errorString)
 }
 
-func (h *ContextC4eAirdropUtils) StartAirdropCampaign(owner string, campaignId uint64) {
-	h.C4eAirdropUtils.StartAirdropCampaign(h.testContext.GetContext(), owner, campaignId)
+func (h *ContextC4eAirdropUtils) StartCampaign(owner string, campaignId uint64) {
+	h.C4eAirdropUtils.StartCampaign(h.testContext.GetContext(), owner, campaignId)
 }
 
-func (h *ContextC4eAirdropUtils) StartAirdropCampaignError(owner string, campaignId uint64, errorString string) {
-	h.C4eAirdropUtils.StartAirdropCampaignError(h.testContext.GetContext(), owner, campaignId, errorString)
+func (h *ContextC4eAirdropUtils) StartCampaignError(owner string, campaignId uint64, errorString string) {
+	h.C4eAirdropUtils.StartCampaignError(h.testContext.GetContext(), owner, campaignId, errorString)
 }
 
-func (h *ContextC4eAirdropUtils) CloseAirdropCampaign(owner string, campaignId uint64, airdropCloseAction cfeairdroptypes.AirdropCloseAction) {
-	h.C4eAirdropUtils.CloseAirdropCampaign(h.testContext.GetContext(), owner, campaignId, airdropCloseAction)
+func (h *ContextC4eAirdropUtils) CloseCampaign(owner string, campaignId uint64, campaignCloseAction cfeairdroptypes.CampaignCloseAction) {
+	h.C4eAirdropUtils.CloseCampaign(h.testContext.GetContext(), owner, campaignId, campaignCloseAction)
 }
 
-func (h *ContextC4eAirdropUtils) CloseAirdropCampaignError(owner string, campaignId uint64, airdropCloseAction cfeairdroptypes.AirdropCloseAction, errorString string) {
-	h.C4eAirdropUtils.CloseAirdropCampaignError(h.testContext.GetContext(), owner, campaignId, airdropCloseAction, errorString)
+func (h *ContextC4eAirdropUtils) CloseCampaignError(owner string, campaignId uint64, campaignCloseAction cfeairdroptypes.CampaignCloseAction, errorString string) {
+	h.C4eAirdropUtils.CloseCampaignError(h.testContext.GetContext(), owner, campaignId, campaignCloseAction, errorString)
 }
 
-func (h *ContextC4eAirdropUtils) SendToAirdropAccount(toAddress sdk.AccAddress,
+func (h *ContextC4eAirdropUtils) SendToRepeatedContinuousVestingAccount(toAddress sdk.AccAddress,
 	amount sdk.Int, startTime int64, endTime int64, missionType cfeairdroptypes.MissionType) {
-	h.C4eAirdropUtils.SendToAirdropAccount(h.testContext.GetContext(), toAddress, amount, startTime, endTime, missionType)
+	h.C4eAirdropUtils.SendToRepeatedContinuousVestingAccount(h.testContext.GetContext(), toAddress, amount, startTime, endTime, missionType)
 }
 
-func (h *ContextC4eAirdropUtils) SendToAirdropAccountError(toAddress sdk.AccAddress,
+func (h *ContextC4eAirdropUtils) SendToRepeatedContinuousVestingAccountError(toAddress sdk.AccAddress,
 	amount sdk.Int, startTime int64, endTime int64, createAccount bool, errorMessage string, missionType cfeairdroptypes.MissionType) {
-	h.C4eAirdropUtils.SendToAirdropAccountError(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount, errorMessage, missionType)
+	h.C4eAirdropUtils.SendToRepeatedContinuousVestingAccountError(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount, errorMessage, missionType)
 }
 
-func (h *ContextC4eAirdropUtils) VerifyAirdropAccount(address sdk.AccAddress,
+func (h *ContextC4eAirdropUtils) VerifyRepeatedContinuousVestingAccount(address sdk.AccAddress,
 	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod, missionType cfeairdroptypes.MissionType) {
-	h.C4eAirdropUtils.VerifyAirdropAccount(h.testContext.GetContext(), address, expectedOriginalVesting, expectedStartTime, expectedEndTime, expectedPeriods, missionType)
+	h.C4eAirdropUtils.VerifyRepeatedContinuousVestingAccount(h.testContext.GetContext(), address, expectedOriginalVesting, expectedStartTime, expectedEndTime, expectedPeriods, missionType)
 }
 
 func (h *ContextC4eAirdropUtils) InitGenesis(genState cfeairdroptypes.GenesisState) {
@@ -78,7 +78,7 @@ func (h *ContextC4eAirdropUtils) AddClaimRecords(srcAddress sdk.AccAddress, camp
 	h.C4eAirdropUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries)
 }
 
-func (h *ContextC4eAirdropUtils) AddCoinsToAirdropEntrisCreator(srcAddress sdk.AccAddress, amountOfCoins sdk.Int) {
+func (h *ContextC4eAirdropUtils) AddCoinsToCampaignOwnerAcc(srcAddress sdk.AccAddress, amountOfCoins sdk.Int) {
 	h.BankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), amountOfCoins, srcAddress)
 }
 
@@ -124,9 +124,9 @@ func (h *ContextC4eAirdropUtils) ClaimMissionError(campaignId uint64, missionId 
 	h.C4eAirdropUtils.ClaimMissionError(h.testContext.GetContext(), campaignId, missionId, claimer, errorMessage)
 }
 
-func (h *ContextC4eAirdropUtils) CreateAirdropAccout(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64,
+func (h *ContextC4eAirdropUtils) CreateRepeatedContinuousVestingAccount(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64,
 	endTime int64, periods ...cfevestingtypes.ContinuousVestingPeriod) *cfevestingtypes.RepeatedContinuousVestingAccount {
-	return h.C4eAirdropUtils.CreateAirdropAccout(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
+	return h.C4eAirdropUtils.CreateRepeatedContinuousVestingAccount(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
 }
 
 func (h *ContextC4eAirdropUtils) CompleteDelegationMission(campaignId uint64, missionId uint64,

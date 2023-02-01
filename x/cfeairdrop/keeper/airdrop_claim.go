@@ -146,7 +146,7 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userEntry.ClaimAddress)
 	}
 
-	k.DecrementAirdropClaimsLeft(ctx, campaignId, claimableAmount)
+	k.DecrementCampaignAmountLeft(ctx, campaignId, claimableAmount)
 	return userEntry, nil
 }
 
@@ -173,14 +173,14 @@ func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddr
 
 func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId uint64, userEntry *types.UserEntry) sdk.Coins {
 	allCampaignMissions, _ := k.AllMissionForCampaign(ctx, campaignId)
-	airdropEntry := userEntry.GetAidropEntry(campaignId)
+	claimRecord := userEntry.GetClaimRecord(campaignId)
 	allMissionsAmountSum := sdk.NewCoins()
 	for _, mission := range allCampaignMissions {
-		for _, amount := range airdropEntry.AirdropCoins {
+		for _, amount := range claimRecord.Amount {
 			allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
 		}
 	}
-	return airdropEntry.AirdropCoins.Sub(allMissionsAmountSum)
+	return claimRecord.Amount.Sub(allMissionsAmountSum)
 }
 
 func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaignId uint64, userEntry *types.UserEntry, claimableAmount sdk.Coins, initialClaimFreeAmount sdk.Int) (sdk.Coins, error) {
@@ -211,6 +211,6 @@ func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaign
 		return nil, sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err,
 			"send to airdrop account - send coins to airdrop account error (to: %s, amount: %s)", userMainAddress, freeVestingAmount.String()).Error())
 	}
-	k.DecrementAirdropClaimsLeft(ctx, campaignId, freeVestingAmount)
+	k.DecrementCampaignAmountLeft(ctx, campaignId, freeVestingAmount)
 	return claimableAmount, nil
 }

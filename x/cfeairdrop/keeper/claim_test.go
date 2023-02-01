@@ -13,15 +13,15 @@ import (
 func TestCompleteDelegationMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
@@ -35,15 +35,15 @@ func TestCompleteDelegationMission(t *testing.T) {
 func TestCompleteVoteMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	mission.MissionType = cfeairdroptypes.MissionVote
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
@@ -57,14 +57,14 @@ func TestCompleteVoteMission(t *testing.T) {
 func TestClaimMissionDoesntExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
@@ -77,14 +77,14 @@ func TestClaimMissionDoesntExist(t *testing.T) {
 func TestClaimCampaignDoesntExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
@@ -97,14 +97,14 @@ func TestClaimCampaignDoesntExist(t *testing.T) {
 func TestClaimNoInitialClaimError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	delagationAmount := sdk.NewInt(1000)
@@ -116,15 +116,15 @@ func TestClaimNoInitialClaimError(t *testing.T) {
 func TestClaimMissionCampaignHasEnded(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
@@ -140,15 +140,15 @@ func TestClaimMissionCampaignHasEnded(t *testing.T) {
 func TestClaimMissionWithTypeClaim(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	mission.MissionType = cfeairdroptypes.MissionClaim
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
@@ -161,15 +161,15 @@ func TestClaimMissionWithTypeClaim(t *testing.T) {
 func TestClaimMissionAlreadyClaimed(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	mission.MissionType = cfeairdroptypes.MissionClaim
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
@@ -183,17 +183,17 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 func TestFullCampaign(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses, 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
 	mission.MissionType = cfeairdroptypes.MissionVote
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 60000001)
@@ -213,14 +213,14 @@ func TestFullCampaign(t *testing.T) {
 func TestClaimMissionWithTypeClaimRecordNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	airdropEntries, airdropCoinsSum := createTestAirdropEntries(acountsAddresses[:10], 100000000)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses[:10], 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
-	testHelper.C4eAirdropUtils.CreateAirdropCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eAirdropUtils.AddMissionToAirdropCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eAirdropUtils.StartAirdropCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
-	testHelper.C4eAirdropUtils.AddCoinsToAirdropEntrisCreator(acountsAddresses[0], airdropCoinsSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgCreateAirdropEntry_ValidateBasic(t *testing.T) {
+func TestMsgCreateEntry_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  MsgAddClaimRecords

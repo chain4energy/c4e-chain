@@ -6,14 +6,13 @@ import (
 )
 
 const (
-	TypeMsgCreateAirdropEntry = "create_airdrop_entry"
-	TypeMsgUpdateAirdropEntry = "update_airdrop_entry"
-	TypeMsgDeleteClaimRecord  = "delete_airdrop_entry"
+	TypeMsgAddClaimRecords   = "add_claim_records"
+	TypeMsgDeleteClaimRecord = "delete_claim_record"
 )
 
 var _ sdk.Msg = &MsgAddClaimRecords{}
 
-func NewMsgCreateAirdropEntry(onwer string, campaignId uint64, airdropEntries []*ClaimRecord) *MsgAddClaimRecords {
+func NewMsgAddClaimRecords(onwer string, campaignId uint64, airdropEntries []*ClaimRecord) *MsgAddClaimRecords {
 	return &MsgAddClaimRecords{
 		Owner:        onwer,
 		CampaignId:   campaignId,
@@ -26,7 +25,7 @@ func (msg *MsgAddClaimRecords) Route() string {
 }
 
 func (msg *MsgAddClaimRecords) Type() string {
-	return TypeMsgCreateAirdropEntry
+	return TypeMsgAddClaimRecords
 }
 
 func (msg *MsgAddClaimRecords) GetSigners() []sdk.AccAddress {
