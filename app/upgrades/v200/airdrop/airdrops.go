@@ -1,8 +1,11 @@
 package airdrop
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	"io/ioutil"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,7 +20,7 @@ const airdropSource = "cfeminter"
 func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, accountKeeper *authkeeper.AccountKeeper, bankKeeper *bankkeeper.Keeper) error {
 	lockupPeriod := 3 * monthAvgHours
 	vestingPeriod := 6 * monthAvgHours
-	startTime := time.Now().Add(time.Hour * 100)
+	startTime := time.Now().Add(time.Hour * 2)
 	endTime := startTime.Add(time.Hour * 100)
 	acc := accountKeeper.GetModuleAccount(ctx, airdropSource)
 	if acc == nil {
@@ -60,18 +63,48 @@ func CreateAirdrops(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, acc
 		return err
 	}
 
-	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 0, teamdropAirdropEntries); err != nil {
+	stakedropAirdropEntries, err := readAirdropEntriesFromJson("stakedrop.json")
+	if err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 1, stakedropAirdropEntries); err != nil {
+	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 0, stakedropAirdropEntries); err != nil {
+		return err
+	}
+
+	teamdropAirdropEntries, err := readAirdropEntriesFromJson("teamdrop.json")
+	if err != nil {
+		return err
+	}
+	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 1, teamdropAirdropEntries); err != nil {
+		return err
+	}
+
+	santadropAirdropEntries, err := readAirdropEntriesFromJson("santadrop.json")
+	if err != nil {
 		return err
 	}
 	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 2, santadropAirdropEntries); err != nil {
 		return err
 	}
-	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 3, gleamAirdropEntries); err != nil {
+
+	gleamdropAirdropEntries, err := readAirdropEntriesFromJson("gleamdrop.json")
+	if err != nil {
+		return err
+	}
+	if err = airdropKeeper.AddUserAirdropEntries(ctx, ownerAcc, 3, gleamdropAirdropEntries); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func readAirdropEntriesFromJson(fileName string) ([]*types.AirdropEntry, error) {
+	contents, err := ioutil.ReadFile("./app/upgrades/v200/airdrop/" + fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	var airdropEntires []*types.AirdropEntry
+	err = json.Unmarshal(contents, &airdropEntires)
+	return airdropEntires, nil
 }
