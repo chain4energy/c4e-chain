@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -135,26 +134,44 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 }
 
 func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, campaignCloseAction types.CampaignCloseAction) error {
-	k.Logger(ctx).Debug("close airdrop campaign", "owner", owner, "campaignId", campaignId, "campaignCloseAction", campaignCloseAction)
-	campaign, found := k.GetCampaign(ctx, campaignId)
-	if !found {
-		k.Logger(ctx).Error("close airdrop campaign campaign campaign not found", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "close airdrop campaign - campaign with id %d not found error", campaignId)
+	logger := ctx.Logger().With("close airdrop campaign", "owner", owner, "campaignId", campaignId, "campaignCloseAction", campaignCloseAction)
+
+	campaign, validationResult := k.ValidateCloseCampaign(logger, campaignId, ctx, owner)
+	if validationResult != nil {
+		return validationResult
 	}
-	if campaign.EndTime.After(ctx.BlockTime()) {
-		k.Logger(ctx).Debug("close airdrop campaign campaign is not over yet", "startTime", campaign.StartTime)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close airdrop campaign - campaign with id %d campaign is not over yet (endtime - %s < %s)", campaignId, campaign.EndTime, ctx.BlockTime())
-	}
-	if campaign.Owner != owner {
-		k.Logger(ctx).Error("close airdrop campaign you are not the owner of this campaign")
-		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "close airdrop campaign - you are not the owner error")
-	}
-	if campaign.Enabled == false {
-		k.Logger(ctx).Error("close airdrop campaign campaign is already closed")
-		return sdkerrors.Wrap(types.ErrCampaignDisabled, fmt.Sprintf("close airdrop campaign - campaign with id %d is already closed or have not started yet error", campaignId))
-	}
+
 	campaign.Enabled = false
 	k.SetCampaign(ctx, campaign)
+	return nil
+}
+
+func (k Keeper) ValidateCloseCampaign(logger log.Logger, campaignId uint64, ctx sdk.Context, owner string) (types.Campaign, error) {
+	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
+	if err != nil {
+		return types.Campaign{}, err
+	}
+
+	if err = ValidateOwner(logger, campaign, owner); err != nil {
+		return types.Campaign{}, err
+	}
+
+	if err = ValidateCampaignEnabled(logger, campaign); err != nil {
+		return types.Campaign{}, err
+	}
+
+	if err = ValidateCampaignEnd(ctx, campaign, logger); err != nil {
+		return types.Campaign{}, err
+	}
+
+	return campaign, nil
+}
+
+func ValidateCampaignEnd(ctx sdk.Context, campaign types.Campaign, logger log.Logger) error {
+	if campaign.EndTime.After(ctx.BlockTime()) {
+		logger.Debug("close airdrop campaign campaign is not over yet", "startTime", campaign.StartTime)
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close airdrop campaign - campaign with id %d campaign is not over yet (endtime - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
+	}
 	return nil
 }
 
