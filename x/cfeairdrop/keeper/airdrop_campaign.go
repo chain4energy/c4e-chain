@@ -159,24 +159,13 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 }
 
 func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
-	k.Logger(ctx).Debug("start airdrop campaign", "owner", owner, "campaignId", campaignId)
-	campaign, found := k.GetCampaign(ctx, campaignId)
-	if !found {
-		k.Logger(ctx).Debug("start airdrop campaign campaign not found", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "start airdrop campaign campaign with id %d not found", campaignId)
+	logger := ctx.Logger().With("start airdrop campaign", "owner", owner, "campaignId", campaignId)
+
+	campaign, validationResult := k.ValidateStartCampaign(logger, campaignId, ctx, owner)
+	if validationResult != nil {
+		return validationResult
 	}
-	if campaign.Owner != owner {
-		k.Logger(ctx).Debug("start airdrop campaign you are not the owner of this campaign", "campaignId", campaignId)
-		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "start airdrop campaign you are not the owner of this campaign")
-	}
-	if campaign.Enabled == true {
-		k.Logger(ctx).Debug("start airdrop campaign campaign has already started", "campaignId", campaignId)
-		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, fmt.Sprintf("start airdrop campaign campaign with id %d has already started", campaignId))
-	}
-	if campaign.StartTime.Before(ctx.BlockTime()) {
-		k.Logger(ctx).Debug("start airdrop campaign campaign start time in the past", "startTime", campaign.StartTime)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "start airdrop campaign - campaign with id %d start time in the past error (%s < %s)", campaignId, campaign.StartTime, ctx.BlockTime())
-	}
+
 	campaign.Enabled = true
 	k.SetCampaign(ctx, campaign)
 	return nil
@@ -194,6 +183,27 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 	return nil
 }
 
+func (k Keeper) ValidateStartCampaign(logger log.Logger, campaignId uint64, ctx sdk.Context, owner string) (types.Campaign, error) {
+	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
+	if err != nil {
+		return types.Campaign{}, err
+	}
+
+	if err = ValidateOwner(logger, campaign, owner); err != nil {
+		return types.Campaign{}, err
+	}
+
+	if err = ValidateCampaignEnabled(logger, campaign); err != nil {
+		return types.Campaign{}, err
+	}
+
+	if err = ValidateCampaignStart(ctx, campaign, logger); err != nil {
+		return types.Campaign{}, err
+	}
+
+	return campaign, nil
+}
+
 func (k Keeper) ValidateRemove(ctx sdk.Context, owner string, campaignId uint64) error {
 	logger := ctx.Logger().With("Remove campaign validation")
 
@@ -202,11 +212,11 @@ func (k Keeper) ValidateRemove(ctx sdk.Context, owner string, campaignId uint64)
 		return err
 	}
 
-	if err = k.ValidateOwner(logger, campaign, owner); err != nil {
+	if err = ValidateOwner(logger, campaign, owner); err != nil {
 		return err
 	}
 
-	if err = k.ValidateCampaignEnabled(logger, campaign); err != nil {
+	if err = ValidateCampaignEnabled(logger, campaign); err != nil {
 		return err
 	}
 
@@ -222,7 +232,7 @@ func (k Keeper) ValidateCampaignExists(log log.Logger, campaignId uint64, ctx sd
 	return campaign, nil
 }
 
-func (k Keeper) ValidateOwner(log log.Logger, campaign types.Campaign, owner string) error {
+func ValidateOwner(log log.Logger, campaign types.Campaign, owner string) error {
 	if campaign.Owner != owner {
 		log.Debug("you are not campaign owner")
 		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "you are not the campaign owner")
@@ -230,10 +240,18 @@ func (k Keeper) ValidateOwner(log log.Logger, campaign types.Campaign, owner str
 	return nil
 }
 
-func (k Keeper) ValidateCampaignEnabled(log log.Logger, campaign types.Campaign) error {
+func ValidateCampaignEnabled(log log.Logger, campaign types.Campaign) error {
 	if campaign.Enabled == true {
 		log.Error("Campaign has already started")
 		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "Campaign has already started")
+	}
+	return nil
+}
+
+func ValidateCampaignStart(ctx sdk.Context, campaign types.Campaign, logger log.Logger) error {
+	if campaign.StartTime.Before(ctx.BlockTime()) {
+		logger.Debug("Campaign start time in the past", "startTime", campaign.StartTime)
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "Campaign with id %d start time in the past error (%s < %s)", campaign.Id, campaign.StartTime, ctx.BlockTime())
 	}
 	return nil
 }
