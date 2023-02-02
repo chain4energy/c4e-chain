@@ -95,7 +95,7 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, fmt.Sprintf("add campaign entries - owner balance is too small (%s < %s)", allBalances, feesAndEntriesSum))
 	}
 
-	if slices.Contains(k.GetWhitelistedVestingAccounts(), owner) {
+	if slices.Contains(types.GetWhitelistedVestingAccounts(), owner) {
 		if err = k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, owner, feesAndEntriesSum); err != nil {
 			return err
 		}

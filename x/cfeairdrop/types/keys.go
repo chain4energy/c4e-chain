@@ -20,8 +20,3 @@ const (
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
-
-const (
-	EntryKey      = "ClaimRecord-value-"
-	EntryCountKey = "ClaimRecord-count-"
-)

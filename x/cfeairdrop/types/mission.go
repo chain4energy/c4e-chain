@@ -1,6 +1,10 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
+)
 
 const (
 	MissionEmpty        = MissionType_MISSION_TYPE_UNSPECIFIED
@@ -33,4 +37,14 @@ func NormalizeMissionType(option string) string {
 	default:
 		return option
 	}
+}
+
+func (c *Mission) IsEnabled(blockTime time.Time) error {
+	if c.ClaimStartDate == nil {
+		return nil
+	}
+	if c.ClaimStartDate.Before(blockTime) {
+		return sdkerrors.Wrapf(ErrMissionDisabled, "mission %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.ClaimStartDate)
+	}
+	return nil
 }

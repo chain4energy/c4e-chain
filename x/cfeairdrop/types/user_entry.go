@@ -4,44 +4,7 @@ import (
 	"errors"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
-
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
-
-type MessageId uint64
-
-func (cr *UserEntry) GetClaimRecord(camapaignId uint64) *ClaimRecord {
-	for _, claimRecordState := range cr.ClaimRecords {
-		if claimRecordState.CampaignId == camapaignId {
-			return claimRecordState
-		}
-	}
-	return nil
-}
-
-func (c *Campaign) IsEnabled(blockTime time.Time) error {
-	if !c.Enabled {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d error", c.Id)
-	}
-	if blockTime.Before(c.StartTime) {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.StartTime)
-	}
-	if blockTime.After(c.EndTime) {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d has already ended (%s > endTime %s) error", c.Id, blockTime, c.EndTime)
-	}
-	return nil
-}
-
-func (c *Mission) IsEnabled(blockTime time.Time) error {
-	if c.ClaimStartDate == nil {
-		return nil
-	}
-	if c.ClaimStartDate.Before(blockTime) {
-		return sdkerrors.Wrapf(ErrMissionDisabled, "mission %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.ClaimStartDate)
-	}
-	return nil
-}
 
 // Validate checks the userEntry is valid
 func (m *UserEntry) Validate() error {
@@ -160,10 +123,11 @@ func (m UserEntry) ClaimableFromMission(mission *Mission) (coinSum sdk.Coins) {
 	return
 }
 
-func CampaignCloseActionFromString(str string) (CampaignCloseAction, error) {
-	option, ok := CampaignCloseAction_value[str]
-	if !ok {
-		return CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, fmt.Errorf("'%s' is not a valid mission type, available options: initial_claim/vote/delegation", str)
+func (cr *UserEntry) GetClaimRecord(camapaignId uint64) *ClaimRecord {
+	for _, claimRecordState := range cr.ClaimRecords {
+		if claimRecordState.CampaignId == camapaignId {
+			return claimRecordState
+		}
 	}
-	return CampaignCloseAction(option), nil
+	return nil
 }
