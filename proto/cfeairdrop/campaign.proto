@@ -8,39 +8,6 @@ import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 
-message UserEntry {
-  string address = 1;
-  string claim_address = 2;
-  repeated ClaimRecord claim_records = 3;
-}
-
-message ClaimRecord {
-  uint64 campaign_id = 1;
-  string address = 2;
-  repeated cosmos.base.v1beta1.Coin amount = 3 [ // amount
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  repeated uint64 completedMissions = 4;
-  repeated uint64 claimedMissions = 5;
-}
-
-message CampaignTotalAmount {
-  uint64 campaign_id = 1;
-  repeated cosmos.base.v1beta1.Coin amount = 2 [ // amount
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-}
-
-message CampaignAmountLeft {
-  uint64 campaign_id = 1;
-  repeated cosmos.base.v1beta1.Coin amount = 2 [ // amount
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-}
-
 message Campaign {
   uint64 id = 1;
   string owner = 2;
@@ -76,35 +43,20 @@ message Campaign {
   ];
 }
 
-message Mission {
-  uint64 id = 1;
-  uint64 campaign_id = 2;
-  string name = 3;
-  string description = 4;
-  MissionType missionType = 5;
-  string weight = 6 [
+message CampaignTotalAmount {
+  uint64 campaign_id = 1;
+  repeated cosmos.base.v1beta1.Coin amount = 2 [ // amount
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
-  ];
-  google.protobuf.Timestamp claim_start_date = 7 [
-    (gogoproto.nullable) = true,
-    (gogoproto.stdtime) = true
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }
 
-enum MissionType {
-  MISSION_TYPE_UNSPECIFIED = 0;
-  INITIAL_CLAIM = 1;
-  DELEGATION = 2;
-  VOTE = 3;
-  CLAIM = 4;
-}
-
-enum CampaignCloseAction { //Campaign close action
-  CLOSE_ACTION_UNSPECIFIED = 0; //Campaign close action
-  SEND_TO_COMMUNITY_POOL = 1;
-  BURN = 2;
-  SEND_TO_OWNER = 3;
+message CampaignAmountLeft {
+  uint64 campaign_id = 1;
+  repeated cosmos.base.v1beta1.Coin amount = 2 [ // amount
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
 enum CampaignType {
@@ -112,4 +64,11 @@ enum CampaignType {
   TEAMDROP = 1;
   DEFAULT = 2;
   SALE = 3;
+}
+
+enum CampaignCloseAction { //Campaign close action
+  CLOSE_ACTION_UNSPECIFIED = 0; //Campaign close action
+  SEND_TO_COMMUNITY_POOL = 1;
+  BURN = 2;
+  SEND_TO_OWNER = 3;
 }

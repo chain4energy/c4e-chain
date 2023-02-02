@@ -2,11 +2,11 @@
 import { Params } from "../cfeairdrop/params";
 import {
   Campaign,
-  UserEntry,
-  Mission,
   CampaignAmountLeft,
   CampaignTotalAmount,
-} from "../cfeairdrop/airdrop";
+} from "../cfeairdrop/campaign";
+import { UserEntry } from "../cfeairdrop/claim_record";
+import { Mission } from "../cfeairdrop/mission";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
@@ -18,7 +18,6 @@ export interface GenesisState {
   users_entries: UserEntry[];
   missions: Mission[];
   campaigns_amount_left: CampaignAmountLeft[];
-  /** this line is used by starport scaffolding # genesis/proto/state */
   campaigns_total_amount: CampaignTotalAmount[];
 }
 

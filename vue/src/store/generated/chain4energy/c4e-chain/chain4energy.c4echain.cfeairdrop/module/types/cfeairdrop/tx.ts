@@ -1,20 +1,22 @@
 /* eslint-disable */
 import {
   CampaignType,
-  MissionType,
   CampaignCloseAction,
-  ClaimRecord,
   campaignTypeFromJSON,
   campaignTypeToJSON,
-  missionTypeFromJSON,
-  missionTypeToJSON,
   campaignCloseActionFromJSON,
   campaignCloseActionToJSON,
-} from "../cfeairdrop/airdrop";
+} from "../cfeairdrop/campaign";
+import {
+  MissionType,
+  missionTypeFromJSON,
+  missionTypeToJSON,
+} from "../cfeairdrop/mission";
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import { Timestamp } from "../google/protobuf/timestamp";
 import * as Long from "long";
 import { Duration } from "../google/protobuf/duration";
+import { ClaimRecord } from "../cfeairdrop/claim_record";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 

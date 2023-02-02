@@ -3,8 +3,9 @@ package chain4energy.c4echain.cfeairdrop;
 
 import "gogoproto/gogo.proto";
 import "cfeairdrop/params.proto";
-import "cfeairdrop/airdrop.proto";
-// this line is used by starport scaffolding # genesis/proto/import
+import "cfeairdrop/campaign.proto";
+import "cfeairdrop/mission.proto";
+import "cfeairdrop/claim_record.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 
@@ -28,5 +29,4 @@ message GenesisState {
   repeated CampaignTotalAmount campaigns_total_amount = 7 [
     (gogoproto.nullable) = false
   ];
-  // this line is used by starport scaffolding # genesis/proto/state
 }

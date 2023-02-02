@@ -459,7 +459,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title cfeairdrop/airdrop.proto
+ * @title cfeairdrop/campaign.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {

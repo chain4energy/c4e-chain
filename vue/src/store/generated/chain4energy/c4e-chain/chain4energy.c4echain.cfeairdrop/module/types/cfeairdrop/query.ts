@@ -2,12 +2,14 @@
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
 import { Params } from "../cfeairdrop/params";
-import { UserEntry, Mission, Campaign } from "../cfeairdrop/airdrop";
+import { UserEntry } from "../cfeairdrop/claim_record";
 import { Coin } from "../cosmos/base/v1beta1/coin";
 import {
   PageRequest,
   PageResponse,
 } from "../cosmos/base/query/v1beta1/pagination";
+import { Mission } from "../cfeairdrop/mission";
+import { Campaign } from "../cfeairdrop/campaign";
 
 export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
 
