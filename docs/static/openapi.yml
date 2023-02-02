@@ -132,6 +132,14 @@ paths:
                     type: string
                   description:
                     type: string
+                  campaignType:
+                    type: string
+                    enum:
+                      - CAMPAIGN_TYPE_UNSPECIFIED
+                      - TEAMDROP
+                      - DEFAULT
+                      - SALE
+                    default: CAMPAIGN_TYPE_UNSPECIFIED
                   feegrant_amount:
                     type: string
                   initial_claim_free_amount:
@@ -200,6 +208,14 @@ paths:
                       type: string
                     description:
                       type: string
+                    campaignType:
+                      type: string
+                      enum:
+                        - CAMPAIGN_TYPE_UNSPECIFIED
+                        - TEAMDROP
+                        - DEFAULT
+                        - SALE
+                      default: CAMPAIGN_TYPE_UNSPECIFIED
                     feegrant_amount:
                       type: string
                     initial_claim_free_amount:
@@ -307,16 +323,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -450,16 +456,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -795,16 +791,6 @@ paths:
             when key
 
             is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -32662,6 +32648,14 @@ definitions:
         type: string
       description:
         type: string
+      campaignType:
+        type: string
+        enum:
+          - CAMPAIGN_TYPE_UNSPECIFIED
+          - TEAMDROP
+          - DEFAULT
+          - SALE
+        default: CAMPAIGN_TYPE_UNSPECIFIED
       feegrant_amount:
         type: string
       initial_claim_free_amount:
@@ -32690,6 +32684,14 @@ definitions:
     default: CLOSE_ACTION_UNSPECIFIED
     description: '- CLOSE_ACTION_UNSPECIFIED: Campaign close action'
     title: Campaign close action
+  chain4energy.c4echain.cfeairdrop.CampaignType:
+    type: string
+    enum:
+      - CAMPAIGN_TYPE_UNSPECIFIED
+      - TEAMDROP
+      - DEFAULT
+      - SALE
+    default: CAMPAIGN_TYPE_UNSPECIFIED
   chain4energy.c4echain.cfeairdrop.ClaimRecord:
     type: object
     properties:
@@ -32813,6 +32815,14 @@ definitions:
             type: string
           description:
             type: string
+          campaignType:
+            type: string
+            enum:
+              - CAMPAIGN_TYPE_UNSPECIFIED
+              - TEAMDROP
+              - DEFAULT
+              - SALE
+            default: CAMPAIGN_TYPE_UNSPECIFIED
           feegrant_amount:
             type: string
           initial_claim_free_amount:
@@ -32865,6 +32875,14 @@ definitions:
               type: string
             description:
               type: string
+            campaignType:
+              type: string
+              enum:
+                - CAMPAIGN_TYPE_UNSPECIFIED
+                - TEAMDROP
+                - DEFAULT
+                - SALE
+              default: CAMPAIGN_TYPE_UNSPECIFIED
             feegrant_amount:
               type: string
             initial_claim_free_amount:

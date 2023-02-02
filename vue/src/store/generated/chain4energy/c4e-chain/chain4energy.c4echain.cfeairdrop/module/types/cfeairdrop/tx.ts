@@ -1,8 +1,11 @@
 /* eslint-disable */
 import {
+  CampaignType,
   MissionType,
   CampaignCloseAction,
   ClaimRecord,
+  campaignTypeFromJSON,
+  campaignTypeToJSON,
   missionTypeFromJSON,
   missionTypeToJSON,
   campaignCloseActionFromJSON,
@@ -35,6 +38,7 @@ export interface MsgCreateCampaign {
   owner: string;
   name: string;
   description: string;
+  campaignType: CampaignType;
   feegrant_amount: string;
   initial_claim_free_amount: string;
   start_time: Date | undefined;
@@ -383,6 +387,7 @@ const baseMsgCreateCampaign: object = {
   owner: "",
   name: "",
   description: "",
+  campaignType: 0,
   feegrant_amount: "",
   initial_claim_free_amount: "",
 };
@@ -398,31 +403,34 @@ export const MsgCreateCampaign = {
     if (message.description !== "") {
       writer.uint32(26).string(message.description);
     }
+    if (message.campaignType !== 0) {
+      writer.uint32(32).int32(message.campaignType);
+    }
     if (message.feegrant_amount !== "") {
-      writer.uint32(34).string(message.feegrant_amount);
+      writer.uint32(42).string(message.feegrant_amount);
     }
     if (message.initial_claim_free_amount !== "") {
-      writer.uint32(42).string(message.initial_claim_free_amount);
+      writer.uint32(50).string(message.initial_claim_free_amount);
     }
     if (message.start_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.start_time),
-        writer.uint32(50).fork()
+        writer.uint32(58).fork()
       ).ldelim();
     }
     if (message.end_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.end_time),
-        writer.uint32(58).fork()
+        writer.uint32(66).fork()
       ).ldelim();
     }
     if (message.lockup_period !== undefined) {
-      Duration.encode(message.lockup_period, writer.uint32(66).fork()).ldelim();
+      Duration.encode(message.lockup_period, writer.uint32(74).fork()).ldelim();
     }
     if (message.vesting_period !== undefined) {
       Duration.encode(
         message.vesting_period,
-        writer.uint32(74).fork()
+        writer.uint32(82).fork()
       ).ldelim();
     }
     return writer;
@@ -445,25 +453,28 @@ export const MsgCreateCampaign = {
           message.description = reader.string();
           break;
         case 4:
-          message.feegrant_amount = reader.string();
+          message.campaignType = reader.int32() as any;
           break;
         case 5:
-          message.initial_claim_free_amount = reader.string();
+          message.feegrant_amount = reader.string();
           break;
         case 6:
+          message.initial_claim_free_amount = reader.string();
+          break;
+        case 7:
           message.start_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 7:
+        case 8:
           message.end_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 8:
+        case 9:
           message.lockup_period = Duration.decode(reader, reader.uint32());
           break;
-        case 9:
+        case 10:
           message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         default:
@@ -490,6 +501,11 @@ export const MsgCreateCampaign = {
       message.description = String(object.description);
     } else {
       message.description = "";
+    }
+    if (object.campaignType !== undefined && object.campaignType !== null) {
+      message.campaignType = campaignTypeFromJSON(object.campaignType);
+    } else {
+      message.campaignType = 0;
     }
     if (
       object.feegrant_amount !== undefined &&
@@ -538,6 +554,8 @@ export const MsgCreateCampaign = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
+    message.campaignType !== undefined &&
+      (obj.campaignType = campaignTypeToJSON(message.campaignType));
     message.feegrant_amount !== undefined &&
       (obj.feegrant_amount = message.feegrant_amount);
     message.initial_claim_free_amount !== undefined &&
@@ -577,6 +595,11 @@ export const MsgCreateCampaign = {
       message.description = object.description;
     } else {
       message.description = "";
+    }
+    if (object.campaignType !== undefined && object.campaignType !== null) {
+      message.campaignType = object.campaignType;
+    } else {
+      message.campaignType = 0;
     }
     if (
       object.feegrant_amount !== undefined &&

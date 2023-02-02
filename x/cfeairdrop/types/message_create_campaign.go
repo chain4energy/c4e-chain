@@ -11,12 +11,13 @@ const TypeMsgCreateCampaign = "create_airdrop_campaign"
 
 var _ sdk.Msg = &MsgCreateCampaign{}
 
-func NewMsgCreateCampaign(owner string, name string, description string, argFeegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
+func NewMsgCreateCampaign(owner string, name string, description string, campaignType CampaignType, argFeegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) *MsgCreateCampaign {
 	return &MsgCreateCampaign{
 		Owner:                  owner,
 		Name:                   name,
 		Description:            description,
+		CampaignType:           campaignType,
 		FeegrantAmount:         argFeegrantAmount,
 		InitialClaimFreeAmount: initialClaimFreeAmount,
 		StartTime:              startTime,

@@ -15,6 +15,7 @@ export interface CfeairdropCampaign {
   owner?: string;
   name?: string;
   description?: string;
+  campaignType?: CfeairdropCampaignType;
   feegrant_amount?: string;
   initial_claim_free_amount?: string;
   enabled?: boolean;
@@ -36,6 +37,13 @@ export enum CfeairdropCampaignCloseAction {
   SEND_TO_COMMUNITY_POOL = "SEND_TO_COMMUNITY_POOL",
   BURN = "BURN",
   SEND_TO_OWNER = "SEND_TO_OWNER",
+}
+
+export enum CfeairdropCampaignType {
+  CAMPAIGN_TYPE_UNSPECIFIED = "CAMPAIGN_TYPE_UNSPECIFIED",
+  TEAMDROP = "TEAMDROP",
+  DEFAULT = "DEFAULT",
+  SALE = "SALE",
 }
 
 export interface CfeairdropClaimRecord {

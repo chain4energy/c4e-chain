@@ -17,6 +17,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		msg.Owner,
 		msg.Name,
 		msg.Description,
+		msg.CampaignType,
 		msg.FeegrantAmount,
 		msg.InitialClaimFreeAmount,
 		msg.StartTime,

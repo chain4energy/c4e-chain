@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, feegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
+func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
 	k.Logger(ctx).Debug("create aidrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
@@ -64,6 +64,7 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 		Owner:                  owner,
 		Name:                   name,
 		Description:            description,
+		CampaignType:           campaignType,
 		FeegrantAmount:         *feegrantAmount,
 		InitialClaimFreeAmount: *initialClaimFreeAmount,
 		Enabled:                false,

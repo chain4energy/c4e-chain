@@ -46,30 +46,31 @@ message Campaign {
   string owner = 2;
   string name = 3;
   string description = 4;
-  string feegrant_amount = 5 [
+  CampaignType campaignType = 5;
+  string feegrant_amount = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  string initial_claim_free_amount = 6 [
+  string initial_claim_free_amount = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  bool enabled = 7;
-  google.protobuf.Timestamp start_time = 8 [
+  bool enabled = 8;
+  google.protobuf.Timestamp start_time = 9 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Timestamp end_time = 9 [
+  google.protobuf.Timestamp end_time = 10 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
   // period of locked coins from claim
-  google.protobuf.Duration lockup_period = 10 [
+  google.protobuf.Duration lockup_period = 11 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
   // period of vesting coins after lockup period
-  google.protobuf.Duration vesting_period = 11 [
+  google.protobuf.Duration vesting_period = 12 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
@@ -104,4 +105,11 @@ enum CampaignCloseAction { //Campaign close action
   SEND_TO_COMMUNITY_POOL = 1;
   BURN = 2;
   SEND_TO_OWNER = 3;
+}
+
+enum CampaignType {
+  CAMPAIGN_TYPE_UNSPECIFIED = 0;
+  TEAMDROP = 1;
+  DEFAULT = 2;
+  SALE = 3;
 }

@@ -103,6 +103,50 @@ export function campaignCloseActionToJSON(object: CampaignCloseAction): string {
   }
 }
 
+export enum CampaignType {
+  CAMPAIGN_TYPE_UNSPECIFIED = 0,
+  TEAMDROP = 1,
+  DEFAULT = 2,
+  SALE = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function campaignTypeFromJSON(object: any): CampaignType {
+  switch (object) {
+    case 0:
+    case "CAMPAIGN_TYPE_UNSPECIFIED":
+      return CampaignType.CAMPAIGN_TYPE_UNSPECIFIED;
+    case 1:
+    case "TEAMDROP":
+      return CampaignType.TEAMDROP;
+    case 2:
+    case "DEFAULT":
+      return CampaignType.DEFAULT;
+    case 3:
+    case "SALE":
+      return CampaignType.SALE;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return CampaignType.UNRECOGNIZED;
+  }
+}
+
+export function campaignTypeToJSON(object: CampaignType): string {
+  switch (object) {
+    case CampaignType.CAMPAIGN_TYPE_UNSPECIFIED:
+      return "CAMPAIGN_TYPE_UNSPECIFIED";
+    case CampaignType.TEAMDROP:
+      return "TEAMDROP";
+    case CampaignType.DEFAULT:
+      return "DEFAULT";
+    case CampaignType.SALE:
+      return "SALE";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 export interface UserEntry {
   address: string;
   claim_address: string;
@@ -132,6 +176,7 @@ export interface Campaign {
   owner: string;
   name: string;
   description: string;
+  campaignType: CampaignType;
   feegrant_amount: string;
   initial_claim_free_amount: string;
   enabled: boolean;
@@ -611,6 +656,7 @@ const baseCampaign: object = {
   owner: "",
   name: "",
   description: "",
+  campaignType: 0,
   feegrant_amount: "",
   initial_claim_free_amount: "",
   enabled: false,
@@ -630,34 +676,37 @@ export const Campaign = {
     if (message.description !== "") {
       writer.uint32(34).string(message.description);
     }
+    if (message.campaignType !== 0) {
+      writer.uint32(40).int32(message.campaignType);
+    }
     if (message.feegrant_amount !== "") {
-      writer.uint32(42).string(message.feegrant_amount);
+      writer.uint32(50).string(message.feegrant_amount);
     }
     if (message.initial_claim_free_amount !== "") {
-      writer.uint32(50).string(message.initial_claim_free_amount);
+      writer.uint32(58).string(message.initial_claim_free_amount);
     }
     if (message.enabled === true) {
-      writer.uint32(56).bool(message.enabled);
+      writer.uint32(64).bool(message.enabled);
     }
     if (message.start_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.start_time),
-        writer.uint32(66).fork()
+        writer.uint32(74).fork()
       ).ldelim();
     }
     if (message.end_time !== undefined) {
       Timestamp.encode(
         toTimestamp(message.end_time),
-        writer.uint32(74).fork()
+        writer.uint32(82).fork()
       ).ldelim();
     }
     if (message.lockup_period !== undefined) {
-      Duration.encode(message.lockup_period, writer.uint32(82).fork()).ldelim();
+      Duration.encode(message.lockup_period, writer.uint32(90).fork()).ldelim();
     }
     if (message.vesting_period !== undefined) {
       Duration.encode(
         message.vesting_period,
-        writer.uint32(90).fork()
+        writer.uint32(98).fork()
       ).ldelim();
     }
     return writer;
@@ -683,28 +732,31 @@ export const Campaign = {
           message.description = reader.string();
           break;
         case 5:
-          message.feegrant_amount = reader.string();
+          message.campaignType = reader.int32() as any;
           break;
         case 6:
-          message.initial_claim_free_amount = reader.string();
+          message.feegrant_amount = reader.string();
           break;
         case 7:
-          message.enabled = reader.bool();
+          message.initial_claim_free_amount = reader.string();
           break;
         case 8:
+          message.enabled = reader.bool();
+          break;
+        case 9:
           message.start_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 9:
+        case 10:
           message.end_time = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 10:
+        case 11:
           message.lockup_period = Duration.decode(reader, reader.uint32());
           break;
-        case 11:
+        case 12:
           message.vesting_period = Duration.decode(reader, reader.uint32());
           break;
         default:
@@ -736,6 +788,11 @@ export const Campaign = {
       message.description = String(object.description);
     } else {
       message.description = "";
+    }
+    if (object.campaignType !== undefined && object.campaignType !== null) {
+      message.campaignType = campaignTypeFromJSON(object.campaignType);
+    } else {
+      message.campaignType = 0;
     }
     if (
       object.feegrant_amount !== undefined &&
@@ -790,6 +847,8 @@ export const Campaign = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
+    message.campaignType !== undefined &&
+      (obj.campaignType = campaignTypeToJSON(message.campaignType));
     message.feegrant_amount !== undefined &&
       (obj.feegrant_amount = message.feegrant_amount);
     message.initial_claim_free_amount !== undefined &&
@@ -835,6 +894,11 @@ export const Campaign = {
       message.description = object.description;
     } else {
       message.description = "";
+    }
+    if (object.campaignType !== undefined && object.campaignType !== null) {
+      message.campaignType = object.campaignType;
+    } else {
+      message.campaignType = 0;
     }
     if (
       object.feegrant_amount !== undefined &&
