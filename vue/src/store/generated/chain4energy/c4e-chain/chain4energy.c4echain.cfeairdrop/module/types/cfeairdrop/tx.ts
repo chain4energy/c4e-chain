@@ -1,13 +1,5 @@
 /* eslint-disable */
-import {
-  MissionType,
-  CampaignCloseAction,
-  ClaimRecord,
-  missionTypeFromJSON,
-  missionTypeToJSON,
-  campaignCloseActionFromJSON,
-  campaignCloseActionToJSON,
-} from "../cfeairdrop/airdrop";
+
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import { Timestamp } from "../google/protobuf/timestamp";
 import * as Long from "long";

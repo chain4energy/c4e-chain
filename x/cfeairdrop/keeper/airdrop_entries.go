@@ -276,9 +276,12 @@ func (k Keeper) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, fr
 	lockedCoins := vestingAcc.LockedCoins(ctx.BlockTime())
 	spendableFromVesting := vestingAcc.OriginalVesting.Sub(lockedCoins)
 	amountDiffFree := amount.Sub(spendableFromVesting)
-	lockedPercentage := vestingAcc.OriginalVesting.AmountOf("uc4e").ToDec().Quo(lockedCoins.AmountOf("uc4e").ToDec())
-	originalVestingDiff := amountDiffFree.AmountOf("uc4e").ToDec().Mul(lockedPercentage).TruncateInt()
-	vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin("uc4e", originalVestingDiff)))
+
+	for _, coin := range amount {
+		lockedPercentage := vestingAcc.OriginalVesting.AmountOf(coin.Denom).ToDec().Quo(lockedCoins.AmountOf(coin.Denom).ToDec())
+		originalVestingDiff := amountDiffFree.AmountOf(coin.Denom).ToDec().Mul(lockedPercentage).TruncateInt()
+		vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(coin.Denom, originalVestingDiff)))
+	}
 
 	ak.SetAccount(ctx, vestingAcc)
 	spendableCoins = bk.SpendableCoins(ctx, fromAddress)
