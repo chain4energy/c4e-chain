@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/tendermint/tendermint/libs/log"
+	"golang.org/x/exp/slices"
 	"time"
 )
 
@@ -37,6 +38,7 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 		k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
 		return sdkerrors.Wrapf(c4eerrors.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
 	}
+
 	if initialClaimFreeAmount.IsNil() {
 		zeroInt := sdk.ZeroInt()
 		initialClaimFreeAmount = &zeroInt
@@ -55,10 +57,15 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 	}
 	_, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
-		k.Logger(ctx).Error("create vesting account owner parsing error", "owner", owner, "error", err.Error())
-		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "create vesting account - owner parsing error: %s", owner).Error())
+		k.Logger(ctx).Error("create airdrop campaign owner parsing error", "owner", owner, "error", err.Error())
+		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "create airdrop campaign - owner parsing error: %s", owner).Error())
 	}
-
+	if campaignType == types.CampaignTeamdrop {
+		if !slices.Contains(types.GetTeamdropAccounts(), owner) {
+			k.Logger(ctx).Error("create airdrop campaign teamdrop campaigns can be created only by specyfic accounts", "owner", owner, "error", err.Error())
+			return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "create airdrop campaign - teamdrop campaigns can be created only by specyfic accounts")
+		}
+	}
 	campaign := types.Campaign{
 		Owner:                  owner,
 		Name:                   name,
@@ -207,6 +214,10 @@ func (k Keeper) ValidateStartCampaign(logger log.Logger, campaignId uint64, ctx 
 		return types.Campaign{}, err
 	}
 
+	if err = ValidateCampaignType(logger, campaign); err != nil {
+		return types.Campaign{}, err
+	}
+
 	if err = ValidateOwner(logger, campaign, owner); err != nil {
 		return types.Campaign{}, err
 	}
@@ -254,6 +265,14 @@ func ValidateOwner(log log.Logger, campaign types.Campaign, owner string) error 
 	if campaign.Owner != owner {
 		log.Debug("you are not campaign owner")
 		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "you are not the campaign owner")
+	}
+	return nil
+}
+
+func ValidateCampaignType(log log.Logger, campaign types.Campaign) error {
+	if campaign.CampaignType != types.CampaignTeamdrop {
+		log.Debug("campaign must be of TEAMDROP type to be able to delete its entries")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidType, "ampaign must be of TEAMDROP type to be able to delete its entries")
 	}
 	return nil
 }
