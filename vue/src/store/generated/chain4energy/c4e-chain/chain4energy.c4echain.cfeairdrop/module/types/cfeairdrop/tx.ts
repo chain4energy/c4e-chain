@@ -1,5 +1,13 @@
 /* eslint-disable */
-
+import {
+  MissionType,
+  CampaignCloseAction,
+  ClaimRecord,
+  missionTypeFromJSON,
+  missionTypeToJSON,
+  campaignCloseActionFromJSON,
+  campaignCloseActionToJSON,
+} from "../cfeairdrop/airdrop";
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import { Timestamp } from "../google/protobuf/timestamp";
 import * as Long from "long";
@@ -37,7 +45,7 @@ export interface MsgCreateCampaign {
 
 export interface MsgCreateCampaignResponse {}
 
-export interface MsgAddMissionToAidropCampaign {
+export interface MsgAddMissionToCampaign {
   owner: string;
   campaignId: number;
   name: string;
@@ -47,7 +55,7 @@ export interface MsgAddMissionToAidropCampaign {
   claim_start_date: Date | undefined;
 }
 
-export interface MsgAddMissionToAidropCampaignResponse {}
+export interface MsgAddMissionToCampaignResponse {}
 
 export interface MsgAddClaimRecords {
   owner: string;
@@ -662,7 +670,7 @@ export const MsgCreateCampaignResponse = {
   },
 };
 
-const baseMsgAddMissionToAidropCampaign: object = {
+const baseMsgAddMissionToCampaign: object = {
   owner: "",
   campaignId: 0,
   name: "",
@@ -671,9 +679,9 @@ const baseMsgAddMissionToAidropCampaign: object = {
   weight: "",
 };
 
-export const MsgAddMissionToAidropCampaign = {
+export const MsgAddMissionToCampaign = {
   encode(
-    message: MsgAddMissionToAidropCampaign,
+    message: MsgAddMissionToCampaign,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.owner !== "") {
@@ -703,15 +711,12 @@ export const MsgAddMissionToAidropCampaign = {
     return writer;
   },
 
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): MsgAddMissionToAidropCampaign {
+  decode(input: Reader | Uint8Array, length?: number): MsgAddMissionToCampaign {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseMsgAddMissionToAidropCampaign,
-    } as MsgAddMissionToAidropCampaign;
+      ...baseMsgAddMissionToCampaign,
+    } as MsgAddMissionToCampaign;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -746,10 +751,10 @@ export const MsgAddMissionToAidropCampaign = {
     return message;
   },
 
-  fromJSON(object: any): MsgAddMissionToAidropCampaign {
+  fromJSON(object: any): MsgAddMissionToCampaign {
     const message = {
-      ...baseMsgAddMissionToAidropCampaign,
-    } as MsgAddMissionToAidropCampaign;
+      ...baseMsgAddMissionToCampaign,
+    } as MsgAddMissionToCampaign;
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = String(object.owner);
     } else {
@@ -791,7 +796,7 @@ export const MsgAddMissionToAidropCampaign = {
     return message;
   },
 
-  toJSON(message: MsgAddMissionToAidropCampaign): unknown {
+  toJSON(message: MsgAddMissionToCampaign): unknown {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.campaignId !== undefined && (obj.campaignId = message.campaignId);
@@ -810,11 +815,11 @@ export const MsgAddMissionToAidropCampaign = {
   },
 
   fromPartial(
-    object: DeepPartial<MsgAddMissionToAidropCampaign>
-  ): MsgAddMissionToAidropCampaign {
+    object: DeepPartial<MsgAddMissionToCampaign>
+  ): MsgAddMissionToCampaign {
     const message = {
-      ...baseMsgAddMissionToAidropCampaign,
-    } as MsgAddMissionToAidropCampaign;
+      ...baseMsgAddMissionToCampaign,
+    } as MsgAddMissionToCampaign;
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = object.owner;
     } else {
@@ -857,11 +862,11 @@ export const MsgAddMissionToAidropCampaign = {
   },
 };
 
-const baseMsgAddMissionToAidropCampaignResponse: object = {};
+const baseMsgAddMissionToCampaignResponse: object = {};
 
-export const MsgAddMissionToAidropCampaignResponse = {
+export const MsgAddMissionToCampaignResponse = {
   encode(
-    _: MsgAddMissionToAidropCampaignResponse,
+    _: MsgAddMissionToCampaignResponse,
     writer: Writer = Writer.create()
   ): Writer {
     return writer;
@@ -870,12 +875,12 @@ export const MsgAddMissionToAidropCampaignResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): MsgAddMissionToAidropCampaignResponse {
+  ): MsgAddMissionToCampaignResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseMsgAddMissionToAidropCampaignResponse,
-    } as MsgAddMissionToAidropCampaignResponse;
+      ...baseMsgAddMissionToCampaignResponse,
+    } as MsgAddMissionToCampaignResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -887,24 +892,24 @@ export const MsgAddMissionToAidropCampaignResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgAddMissionToAidropCampaignResponse {
+  fromJSON(_: any): MsgAddMissionToCampaignResponse {
     const message = {
-      ...baseMsgAddMissionToAidropCampaignResponse,
-    } as MsgAddMissionToAidropCampaignResponse;
+      ...baseMsgAddMissionToCampaignResponse,
+    } as MsgAddMissionToCampaignResponse;
     return message;
   },
 
-  toJSON(_: MsgAddMissionToAidropCampaignResponse): unknown {
+  toJSON(_: MsgAddMissionToCampaignResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<MsgAddMissionToAidropCampaignResponse>
-  ): MsgAddMissionToAidropCampaignResponse {
+    _: DeepPartial<MsgAddMissionToCampaignResponse>
+  ): MsgAddMissionToCampaignResponse {
     const message = {
-      ...baseMsgAddMissionToAidropCampaignResponse,
-    } as MsgAddMissionToAidropCampaignResponse;
+      ...baseMsgAddMissionToCampaignResponse,
+    } as MsgAddMissionToCampaignResponse;
     return message;
   },
 };
@@ -1930,9 +1935,9 @@ export interface Msg {
     request: MsgCreateCampaign
   ): Promise<MsgCreateCampaignResponse>;
   EditCampaign(request: MsgEditCampaign): Promise<MsgEditCampaignResponse>;
-  AddMissionToAidropCampaign(
-    request: MsgAddMissionToAidropCampaign
-  ): Promise<MsgAddMissionToAidropCampaignResponse>;
+  AddMissionToCampaign(
+    request: MsgAddMissionToCampaign
+  ): Promise<MsgAddMissionToCampaignResponse>;
   AddClaimRecords(
     request: MsgAddClaimRecords
   ): Promise<MsgAddClaimRecordsResponse>;
@@ -2000,17 +2005,17 @@ export class MsgClientImpl implements Msg {
     );
   }
 
-  AddMissionToAidropCampaign(
-    request: MsgAddMissionToAidropCampaign
-  ): Promise<MsgAddMissionToAidropCampaignResponse> {
-    const data = MsgAddMissionToAidropCampaign.encode(request).finish();
+  AddMissionToCampaign(
+    request: MsgAddMissionToCampaign
+  ): Promise<MsgAddMissionToCampaignResponse> {
+    const data = MsgAddMissionToCampaign.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeairdrop.Msg",
-      "AddMissionToAidropCampaign",
+      "AddMissionToCampaign",
       data
     );
     return promise.then((data) =>
-      MsgAddMissionToAidropCampaignResponse.decode(new Reader(data))
+      MsgAddMissionToCampaignResponse.decode(new Reader(data))
     );
   }
 

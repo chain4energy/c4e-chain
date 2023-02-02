@@ -96,11 +96,9 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 	}
 
 	if slices.Contains(k.GetWhitelistedVestingAccounts(), owner) {
-		err := k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, owner, feesAndEntriesSum)
-		if err != nil {
+		if err = k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, owner, feesAndEntriesSum); err != nil {
 			return err
 		}
-		fmt.Println("CONTAINS")
 	}
 
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
@@ -271,9 +269,12 @@ func (k Keeper) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, fr
 	vestingAcc := fromAcc.(*vestingtypes.ContinuousVestingAccount)
 
 	balance := bk.GetAllBalances(ctx, fromAddress)
-	balanceWithoutOriginalVesting := balance.Sub(vestingAcc.OriginalVesting)
-	amount = amount.Sub(balanceWithoutOriginalVesting)
-	lockedCoins := vestingAcc.LockedCoins(ctx.BlockTime())
+	if balance.IsAllGT(vestingAcc.OriginalVesting) {
+		balanceWithoutOriginalVesting := balance.Sub(vestingAcc.OriginalVesting)
+		amount = amount.Sub(balanceWithoutOriginalVesting)
+	}
+
+	lockedCoins := vestingAcc.LockedCoins(ctx.BlockTime()).Add(vestingAcc.DelegatedVesting...)
 	spendableFromVesting := vestingAcc.OriginalVesting.Sub(lockedCoins)
 	amountDiffFree := amount.Sub(spendableFromVesting)
 

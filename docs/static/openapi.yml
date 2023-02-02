@@ -310,6 +310,16 @@ paths:
           in: query
           required: false
           type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
       tags:
         - Query
   /c4e/airdrop/v1beta1/mission:
@@ -440,6 +450,16 @@ paths:
             when key
 
             is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -775,6 +795,16 @@ paths:
             when key
 
             is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
           in: query
           required: false
           type: boolean
@@ -32730,7 +32760,7 @@ definitions:
     default: MISSION_TYPE_UNSPECIFIED
   chain4energy.c4echain.cfeairdrop.MsgAddClaimRecordsResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaignResponse:
+  chain4energy.c4echain.cfeairdrop.MsgAddMissionToCampaignResponse:
     type: object
   chain4energy.c4echain.cfeairdrop.MsgClaimResponse:
     type: object

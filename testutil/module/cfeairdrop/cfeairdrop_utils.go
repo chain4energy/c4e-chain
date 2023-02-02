@@ -214,6 +214,12 @@ func (h *C4eAirdropUtils) AddClaimRecordsError(ctx sdk.Context, srcAddress sdk.A
 	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, ownerBalanceBefore)
 }
 
+func (h *C4eAirdropUtils) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, from sdk.AccAddress, amountToSend sdk.Coins, unlockedAmount sdk.Coins) {
+	err := h.helpeCfeairdropkeeper.AddClaimRecordsFromWhitelistedVestingAccount(ctx, from.String(), amountToSend)
+	h.BankUtils.VerifyAccountDefultDenomSpendableCoins(ctx, from, unlockedAmount.AmountOf(testenv.DefaultTestDenom))
+	require.NoError(h.t, err)
+}
+
 func (h *C4eAirdropUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, airdropEntries []*cfeairdroptypes.ClaimRecord, errorMessage string, addRequiredCoinsToSrc bool) {
 	if addRequiredCoinsToSrc {
 		sum := sdk.NewCoins()

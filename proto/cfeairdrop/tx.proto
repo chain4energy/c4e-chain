@@ -14,7 +14,7 @@ service Msg {
   rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
   rpc CreateCampaign(MsgCreateCampaign) returns (MsgCreateCampaignResponse);
   rpc EditCampaign(MsgEditCampaign) returns (MsgEditCampaignResponse);
-  rpc AddMissionToAidropCampaign(MsgAddMissionToAidropCampaign) returns (MsgAddMissionToAidropCampaignResponse);
+  rpc AddMissionToCampaign(MsgAddMissionToCampaign) returns (MsgAddMissionToCampaignResponse);
   rpc AddClaimRecords(MsgAddClaimRecords) returns (MsgAddClaimRecordsResponse);
   rpc DeleteClaimRecord(MsgDeleteClaimRecord) returns (MsgDeleteClaimRecordResponse);
   rpc CloseCampaign(MsgCloseCampaign) returns (MsgCloseCampaignResponse);
@@ -71,7 +71,7 @@ message MsgCreateCampaign {
 
 message MsgCreateCampaignResponse {}
 
-message MsgAddMissionToAidropCampaign {
+message MsgAddMissionToCampaign {
   string owner = 1;
   uint64 campaignId = 2;
   string name = 3;
@@ -87,7 +87,7 @@ message MsgAddMissionToAidropCampaign {
   ];
 }
 
-message MsgAddMissionToAidropCampaignResponse {}
+message MsgAddMissionToCampaignResponse {}
 
 message MsgAddClaimRecords {
   string owner = 1;

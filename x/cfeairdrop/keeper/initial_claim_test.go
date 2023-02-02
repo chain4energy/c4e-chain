@@ -28,6 +28,33 @@ func TestCorrectmanyInitialClaims(t *testing.T) {
 	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
+
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.AddMissionToCampaign(acountsAddresses[0].String(), 1, mission)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 1)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 1, airdropEntries)
+
+	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
+	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[2], 0, 80000002)
+	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[3], 0, 80000003)
+	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[4], 0, 80000004)
+	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 1, 80000001)
+	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[2], 1, 80000002)
+	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[3], 1, 80000003)
+	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[4], 1, 80000004)
+}
+
+func TestCorrectmanyInitialClaimsForDifferentCampaigns(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 	testHelper.C4eAirdropUtils.ClaimInitial(acountsAddresses[2], 0, 80000002)

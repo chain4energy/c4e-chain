@@ -52,7 +52,7 @@ func CmdAddMissionToCampaign() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddMissionToAidropCampaign(
+			msg := types.NewMsgAddMissionToCampaign(
 				clientCtx.GetFromAddress().String(),
 				argCampaignId,
 				argName,

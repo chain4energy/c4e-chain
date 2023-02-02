@@ -30,7 +30,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := msgServer.EditCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgAddMissionToCampaign:
-			res, err := msgServer.AddMissionToAidropCampaign(sdk.WrapSDKContext(ctx), msg)
+			res, err := msgServer.AddMissionToCampaign(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgAddClaimRecords:
 			res, err := msgServer.AddClaimRecords(sdk.WrapSDKContext(ctx), msg)

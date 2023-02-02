@@ -78,6 +78,12 @@ func (h *ContextC4eAirdropUtils) AddClaimRecords(srcAddress sdk.AccAddress, camp
 	h.C4eAirdropUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, airdropEntries)
 }
 
+func (h *ContextC4eAirdropUtils) AddClaimRecordsFromWhitelistedVestingAccount(srcAddress sdk.AccAddress, amountToSend sdk.Int, unlockedAmount sdk.Int) {
+	coinsToSend := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amountToSend))
+	unlockedCoins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, unlockedAmount))
+	h.C4eAirdropUtils.AddClaimRecordsFromWhitelistedVestingAccount(h.testContext.GetContext(), srcAddress, coinsToSend, unlockedCoins)
+}
+
 func (h *ContextC4eAirdropUtils) AddCoinsToCampaignOwnerAcc(srcAddress sdk.AccAddress, amountOfCoins sdk.Int) {
 	h.BankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), amountOfCoins, srcAddress)
 }

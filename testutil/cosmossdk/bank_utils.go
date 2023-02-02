@@ -110,8 +110,17 @@ func (bu *BankUtils) VerifyAccountLockedByDenom(ctx sdk.Context, addr sdk.AccAdd
 	require.Truef(bu.t, expectedAmount.Equal(locked), "expectedAmount %s <> account locked %s", expectedAmount, locked)
 }
 
+func (bu *BankUtils) VerifyAccountSpendableByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string, expectedAmount sdk.Int) {
+	locked := bu.helperBankKeeper.SpendableCoins(ctx, addr).AmountOf(denom)
+	require.Truef(bu.t, expectedAmount.Equal(locked), "expectedAmount %s <> spendable amount %s", expectedAmount, locked)
+}
+
 func (bu *BankUtils) VerifyAccountDefultDenomLocked(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {
 	bu.VerifyAccountLockedByDenom(ctx, addr, testenv.DefaultTestDenom, expectedAmount)
+}
+
+func (bu *BankUtils) VerifyAccountDefultDenomSpendableCoins(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {
+	bu.VerifyAccountSpendableByDenom(ctx, addr, testenv.DefaultTestDenom, expectedAmount)
 }
 
 func (bu *BankUtils) VerifyTotalSupplyByDenom(ctx sdk.Context, denom string, expectedAmount sdk.Int) {
