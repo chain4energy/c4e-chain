@@ -6,6 +6,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/tendermint/tendermint/libs/log"
 	"time"
 )
 
@@ -194,18 +195,45 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 }
 
 func (k Keeper) ValidateRemove(ctx sdk.Context, owner string, campaignId uint64) error {
+	logger := ctx.Logger().With("Remove campaign validation")
+
+	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
+	if err != nil {
+		return err
+	}
+
+	if err = k.ValidateOwner(logger, campaign, owner); err != nil {
+		return err
+	}
+
+	if err = k.ValidateCampaignEnabled(logger, campaign); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) ValidateCampaignExists(log log.Logger, campaignId uint64, ctx sdk.Context) (types.Campaign, error) {
 	campaign, found := k.GetCampaign(ctx, campaignId)
 	if !found {
-		k.Logger(ctx).Error("start airdrop campaign: campaign not found", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "start airdrop campaign campaign with id %d not found", campaignId)
+		log.Debug("campaign not exist", "campaignId", campaignId)
+		return types.Campaign{}, sdkerrors.Wrapf(c4eerrors.ErrNotExists, "campaign with id %d not found", campaignId)
 	}
+	return campaign, nil
+}
+
+func (k Keeper) ValidateOwner(log log.Logger, campaign types.Campaign, owner string) error {
 	if campaign.Owner != owner {
-		k.Logger(ctx).Error("start airdrop campaign you are not the owner")
-		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "start airdrop campaign you are not the owner")
+		log.Debug("you are not campaign owner")
+		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "you are not the campaign owner")
 	}
+	return nil
+}
+
+func (k Keeper) ValidateCampaignEnabled(log log.Logger, campaign types.Campaign) error {
 	if campaign.Enabled == true {
-		k.Logger(ctx).Error("start airdrop campaign campaign has already started")
-		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "start airdrop campaign campaign has already started")
+		log.Error("Campaign has already started")
+		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "Campaign has already started")
 	}
 	return nil
 }
