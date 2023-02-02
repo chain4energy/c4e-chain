@@ -24,11 +24,11 @@ func NewContextC4eAirdropUtils(t *testing.T, testContext testenv.TestContext, he
 }
 
 func (h *ContextC4eAirdropUtils) CreateCampaign(owner string, campaign cfeairdroptypes.Campaign) {
-	h.C4eAirdropUtils.CreateCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	h.C4eAirdropUtils.CreateCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 }
 
 func (h *ContextC4eAirdropUtils) CreateCampaignError(owner string, campaign cfeairdroptypes.Campaign, errorMessage string) {
-	h.C4eAirdropUtils.CreateCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, errorMessage)
+	h.C4eAirdropUtils.CreateCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, errorMessage)
 }
 
 func (h *ContextC4eAirdropUtils) AddMissionToCampaign(owner string, campaignId uint64, mission cfeairdroptypes.Mission) {

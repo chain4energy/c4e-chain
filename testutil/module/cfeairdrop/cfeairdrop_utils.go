@@ -514,11 +514,11 @@ func (h *C4eAirdropUtils) CreateRepeatedContinuousVestingAccount(ctx sdk.Context
 	return airdropAcc
 }
 
-func (h *C4eAirdropUtils) CreateCampaign(ctx sdk.Context, owner string, name string, description string, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
+func (h *C4eAirdropUtils) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType cfeairdroptypes.CampaignType, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
 
 	campaignCountBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
-	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx, campaignCountBefore)
 	require.NoError(h.t, err)
 	campaignCountAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
@@ -529,11 +529,11 @@ func (h *C4eAirdropUtils) CreateCampaign(ctx sdk.Context, owner string, name str
 	h.VerifyMission(ctx, true, campaignCountBefore, 0, "Initial mission", "Initial mission - basic mission that must be claimed first", cfeairdroptypes.MissionInitialClaim, sdk.ZeroDec(), nil)
 }
 
-func (h *C4eAirdropUtils) CreateCampaignError(ctx sdk.Context, owner string, name string, description string, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
+func (h *C4eAirdropUtils) CreateCampaignError(ctx sdk.Context, owner string, name string, description string, campaignType cfeairdroptypes.CampaignType, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, errorMessage string) {
 
 	campaignCountBefore := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
-	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err := h.helpeCfeairdropkeeper.CreateAidropCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	require.EqualError(h.t, err, errorMessage)
 	campaignCountAfter := h.helpeCfeairdropkeeper.GetCampaignCount(ctx)
 	missionCountAfter := h.helpeCfeairdropkeeper.GetMissionCount(ctx, campaignCountBefore)

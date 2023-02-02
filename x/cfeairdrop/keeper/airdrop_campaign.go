@@ -164,10 +164,6 @@ func (k Keeper) ValidateCloseCampaign(logger log.Logger, campaignId uint64, ctx 
 		return types.Campaign{}, err
 	}
 
-	if err = ValidateCampaignEnabled(logger, campaign); err != nil {
-		return types.Campaign{}, err
-	}
-
 	if err = ValidateCampaignEnd(ctx, campaign, logger); err != nil {
 		return types.Campaign{}, err
 	}
@@ -211,10 +207,6 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 func (k Keeper) ValidateStartCampaign(logger log.Logger, campaignId uint64, ctx sdk.Context, owner string) (types.Campaign, error) {
 	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
 	if err != nil {
-		return types.Campaign{}, err
-	}
-
-	if err = ValidateCampaignType(logger, campaign); err != nil {
 		return types.Campaign{}, err
 	}
 
@@ -265,14 +257,6 @@ func ValidateOwner(log log.Logger, campaign types.Campaign, owner string) error 
 	if campaign.Owner != owner {
 		log.Debug("you are not campaign owner")
 		return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "you are not the campaign owner")
-	}
-	return nil
-}
-
-func ValidateCampaignType(log log.Logger, campaign types.Campaign) error {
-	if campaign.CampaignType != types.CampaignTeamdrop {
-		log.Debug("campaign must be of TEAMDROP type to be able to delete its entries")
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidType, "ampaign must be of TEAMDROP type to be able to delete its entries")
 	}
 	return nil
 }

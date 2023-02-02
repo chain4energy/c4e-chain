@@ -1,7 +1,6 @@
 package cosmossdk
 
 import (
-	"fmt"
 	"testing"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -208,7 +207,6 @@ func (bu *ContextBankUtils) VerifyAccountLockedByDenom(addr sdk.AccAddress, deno
 }
 
 func (bu *ContextBankUtils) VerifyAccountDefultDenomLocked(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {
-	fmt.Printf("VerifyAccountDefultDenomLocked: %s\r\n", bu.testContext.GetContext().BlockTime())
 	bu.BankUtils.VerifyAccountDefultDenomLocked(ctx, addr, expectedAmount)
 }
 

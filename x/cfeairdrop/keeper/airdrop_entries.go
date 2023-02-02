@@ -11,6 +11,7 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	"github.com/tendermint/tendermint/libs/log"
 	"golang.org/x/exp/slices"
 	"strconv"
 )
@@ -142,44 +143,11 @@ func (k Keeper) addUserEntry(ctx sdk.Context, campaignId uint64, address string,
 }
 
 func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint64, userAddress string) error {
-	_, err := sdk.AccAddressFromBech32(owner)
-	if err != nil {
-		k.Logger(ctx).Error("delete user airdrop entry owner parsing error", "owner", owner, "error", err.Error())
-		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "delete user airdrop entry - owner parsing error: %s", owner).Error())
-	}
-	campaign, found := k.GetCampaign(
-		ctx,
-		campaignId,
-	)
-	if !found {
-		k.Logger(ctx).Error("delete user airdrop entry campaign doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "delete user airdrop entry -  campaign with id %d doesn't exist", campaignId)
-	}
-	if campaign.Owner != owner {
-		k.Logger(ctx).Error("delete user airdrop entry you are not the owner of this campaign", "campaignId", campaignId)
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "delete user airdrop entry - you are not the owner of campaign with id %d", campaignId)
-	}
-	userEntry, found := k.GetUserEntry(
-		ctx,
-		userAddress,
-	)
-	if !found {
-		k.Logger(ctx).Error("delete user airdrop entry userEntry doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "delete user airdrop entry -  campaign id %d userEntry doesn't exist", campaignId)
-	}
-	claimRecordAmount := sdk.NewCoins()
-	claimRecordFound := false
-	for i, claimRecord := range userEntry.ClaimRecords {
-		if claimRecord.CampaignId == campaignId {
-			claimRecordFound = true
-			claimRecordAmount = claimRecord.Amount
-			userEntry.ClaimRecords = append(userEntry.ClaimRecords[:i], userEntry.ClaimRecords[i+1:]...)
-			break
-		}
-	}
-	if !claimRecordFound {
-		k.Logger(ctx).Error("delete user airdrop entry airdrop entry doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "delete user airdrop entry -  campaign id %d airdrop entry doesn't exist", campaignId)
+	logger := ctx.Logger().With("delete claim record", "owner", owner, "campaignId", campaignId, "userAddress", userAddress)
+
+	userEntry, claimRecordAmount, validationResult := k.ValidateRemoveClaimRecord(logger, ctx, owner, campaignId, userAddress)
+	if validationResult != nil {
+		return validationResult
 	}
 
 	k.SetUserEntry(ctx, userEntry)
@@ -286,5 +254,71 @@ func (k Keeper) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, fr
 
 	ak.SetAccount(ctx, vestingAcc)
 	spendableCoins = bk.SpendableCoins(ctx, fromAddress)
+	return nil
+}
+
+func (k Keeper) ValidateRemoveClaimRecord(logger log.Logger, ctx sdk.Context, owner string, campaignId uint64, userAddress string) (types.UserEntry, sdk.Coins, error) {
+	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
+	if err != nil {
+		return types.UserEntry{}, nil, err
+	}
+
+	if err = ValidateCampaignTypeIsTeamdrop(logger, campaign); err != nil {
+		return types.UserEntry{}, nil, err
+	}
+
+	if err = ValidateOwner(logger, campaign, owner); err != nil {
+		return types.UserEntry{}, nil, err
+	}
+
+	userEntry, err := k.ValidateUserEntry(logger, ctx, userAddress)
+	if err != nil {
+		return types.UserEntry{}, nil, err
+	}
+
+	claimRecordAmount, err := ValidateClaimRecordExists(logger, userEntry, campaignId)
+	if err != nil {
+		return types.UserEntry{}, nil, err
+	}
+
+	return userEntry, claimRecordAmount, nil
+}
+
+func (k Keeper) ValidateUserEntry(log log.Logger, ctx sdk.Context, userAddress string) (types.UserEntry, error) {
+	userEntry, found := k.GetUserEntry(
+		ctx,
+		userAddress,
+	)
+	if !found {
+		log.Debug("delete user airdrop entry userEntry doesn't exist")
+		return types.UserEntry{}, sdkerrors.Wrapf(c4eerrors.ErrParsing, "delete user airdrop entry - userEntry doesn't exist")
+	}
+
+	return userEntry, nil
+}
+
+func ValidateClaimRecordExists(log log.Logger, userEntry types.UserEntry, campaignId uint64) (claimRecordAmount sdk.Coins, err error) {
+	claimRecordFound := false
+	for i, claimRecord := range userEntry.ClaimRecords {
+		if claimRecord.CampaignId == campaignId {
+			claimRecordFound = true
+			claimRecordAmount = claimRecord.Amount
+			userEntry.ClaimRecords = append(userEntry.ClaimRecords[:i], userEntry.ClaimRecords[i+1:]...)
+			break
+		}
+	}
+	if !claimRecordFound {
+		log.Debug("delete user airdrop entry airdrop entry doesn't exist", "campaignId", campaignId)
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrParsing, "delete user airdrop entry -  campaign id %d airdrop entry doesn't exist", campaignId)
+	}
+
+	return claimRecordAmount, nil
+}
+
+func ValidateCampaignTypeIsTeamdrop(log log.Logger, campaign types.Campaign) error {
+	if campaign.CampaignType != types.CampaignTeamdrop {
+		log.Debug("campaign must be of TEAMDROP type to be able to delete its entries")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidType, "ampaign must be of TEAMDROP type to be able to delete its entries")
+	}
 	return nil
 }
