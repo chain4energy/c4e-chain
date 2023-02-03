@@ -11,10 +11,10 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdListCampaign() *cobra.Command {
+func CmdCampaigns() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "all-campaign",
-		Short: "Query all_campaign",
+		Use:   "campaigns",
+		Short: "Query all existing campaigns",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
@@ -47,10 +47,10 @@ func CmdListCampaign() *cobra.Command {
 	return cmd
 }
 
-func CmdShowCampaign() *cobra.Command {
+func CmdCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "all-campaign",
-		Short: "Query all_campaign",
+		Use:   "campaign [campaign-id]",
+		Short: "Query a specific campaign",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 

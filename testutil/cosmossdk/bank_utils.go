@@ -199,7 +199,6 @@ func (bu *ContextBankUtils) GetModuleAccountDefultDenomBalance(accName string) s
 
 func (bu *ContextBankUtils) GetAccountDefultDenomBalance(addr sdk.AccAddress) sdk.Int {
 	return bu.BankUtils.GetAccountDefultDenomBalance(bu.testContext.GetContext(), addr)
-
 }
 
 func (bu *ContextBankUtils) VerifyAccountLockedByDenom(addr sdk.AccAddress, denom string, expectedAmount sdk.Int) {

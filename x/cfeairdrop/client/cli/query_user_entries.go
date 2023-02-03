@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdListUsersEntries() *cobra.Command {
+func CmdUsersEntries() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-claim-record",
-		Short: "list all userEntry",
+		Use:   "users-entries",
+		Short: "Query all existing users entries",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -42,10 +42,10 @@ func CmdListUsersEntries() *cobra.Command {
 	return cmd
 }
 
-func CmdShowUsersEntries() *cobra.Command {
+func CmdUserEntry() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-claim-record [address]",
-		Short: "shows a userEntry",
+		Use:   "user-entry [address]",
+		Short: "Query a specific user entry",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)

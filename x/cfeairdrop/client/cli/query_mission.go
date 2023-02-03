@@ -10,10 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdListMission() *cobra.Command {
+func CmdMissions() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-mission",
-		Short: "list all mission",
+		Use:   "missions",
+		Short: "Query all existing missions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -43,10 +43,10 @@ func CmdListMission() *cobra.Command {
 	return cmd
 }
 
-func CmdShowMission() *cobra.Command {
+func CmdMission() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-mission [campaign-id] [mission-id]",
-		Short: "shows a mission",
+		Use:   "mission [campaign-id] [mission-id]",
+		Short: "Query a specific mission",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
