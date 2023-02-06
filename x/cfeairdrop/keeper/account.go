@@ -36,7 +36,7 @@ func (k Keeper) SendToNewRepeatedContinuousVestingAccount(ctx sdk.Context, userE
 	claimerAccount = setupNewContinousVestingPeriods(claimerAccount, startTime, endTime, amount)
 
 	if err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, claimerAddress, amount); err != nil {
-		logger.Debug(" send coins to vesting account error", "toAddress", claimerAddress,
+		logger.Debug("send coins to vesting account error", "toAddress", claimerAddress,
 			"amount", amount, "error", err.Error())
 		return sdkerrors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err,
 			"send to airdrop account - send coins to airdrop account error (to: %s, amount: %s)", claimerAddress, amount).Error())

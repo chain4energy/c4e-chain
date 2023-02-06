@@ -54,7 +54,7 @@ func GetTeamdropAccounts() []string {
 	return []string{"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj"}
 }
 
-func (c *Campaign) IsEnabled(blockTime time.Time) error {
+func (c *Campaign) IsActive(blockTime time.Time) error {
 	if !c.Enabled {
 		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d error", c.Id)
 	}

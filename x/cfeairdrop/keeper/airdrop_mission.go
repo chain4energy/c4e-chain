@@ -78,12 +78,12 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 }
 
 func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, error) {
-	campaignConfig, campaignFound := k.GetCampaign(ctx, campaignId)
+	campaign, campaignFound := k.GetCampaign(ctx, campaignId)
 	if !campaignFound {
 		k.Logger(ctx).Error("mission first step - camapign not found", "campaignId", campaignId)
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
 	}
-	k.Logger(ctx).Debug("campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaignConfig.StartTime, "campaigh end", campaignConfig.EndTime)
+	k.Logger(ctx).Debug("campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaign.StartTime, "campaigh end", campaign.EndTime)
 
 	userEntry, found := k.GetUserEntry(ctx, claimerAddress)
 	if !found {
@@ -91,7 +91,7 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId u
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "user airdrop entries not found for address %s", claimerAddress)
 	}
 
-	if err := campaignConfig.IsEnabled(ctx.BlockTime()); err != nil {
+	if err := campaign.IsActive(ctx.BlockTime()); err != nil {
 		k.Logger(ctx).Error("mission first step - camapign disabled", "campaignId", campaignId, "err", err)
 		return nil, nil, nil, err
 	}
@@ -112,7 +112,7 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId u
 		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id %d not found for address %s", campaignId, claimerAddress)
 	}
 
-	return &campaignConfig, &mission, &userEntry, nil
+	return &campaign, &mission, &userEntry, nil
 }
 
 func (k Keeper) missionsWeightGreaterThan1(missions []types.Mission, newMissionWeight sdk.Dec) (bool, sdk.Dec) {
