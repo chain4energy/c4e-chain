@@ -45,6 +45,7 @@ func CampaignCloseActionFromString(str string) (CampaignCloseAction, error) {
 	}
 	return CampaignCloseAction(option), nil
 }
+
 func GetWhitelistedVestingAccounts() []string {
 	return []string{"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj"}
 }
