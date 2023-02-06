@@ -21,9 +21,9 @@ const FeegrantDenom = "uc4e"
 func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) error {
 	logger := ctx.Logger().With("add user entries", "owner", owner, "campaignId", campaignId)
 
-	campaign, validationResult := k.ValidateAddUsersEntries(logger, ctx, owner, campaignId)
-	if validationResult != nil {
-		return validationResult
+	campaign, err := k.ValidateAddUsersEntries(logger, ctx, owner, campaignId)
+	if err != nil {
+		return err
 	}
 
 	usersEntries, claimRecordsAmountSum, err := k.validateClaimRecords(logger, ctx, campaign, claimRecords)
@@ -34,25 +34,28 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 	feegrantFeesSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecords)))
 	feesAndClaimRecordsAmountSum := claimRecordsAmountSum.Add(feegrantFeesSum...)
 
-	ownerAcc, _ := sdk.AccAddressFromBech32(owner)
-	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAcc)
+	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
+	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
 	if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
 		logger.Debug("airdrop entry owner balance is too small")
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, fmt.Sprintf("add campaign entries - owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum))
 	}
 
 	if slices.Contains(types.GetWhitelistedVestingAccounts(), owner) {
-		if err = k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, owner, feesAndClaimRecordsAmountSum); err != nil {
+		if err = k.ValidateCampaignWhenAddedFromVestingAccount(logger, ctx, ownerAddress, campaign); err != nil {
+			return err
+		}
+		if err = k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, ownerAddress, feesAndClaimRecordsAmountSum); err != nil {
 			return err
 		}
 	}
 
-	err = k.setupAndSendFeegrant(ctx, ownerAcc, campaign, feegrantFeesSum, claimRecords)
+	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords)
 	if err != nil {
 		return err
 	}
 
-	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAcc, types.ModuleName, claimRecordsAmountSum); err != nil {
+	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, claimRecordsAmountSum); err != nil {
 		return err
 	}
 
@@ -104,28 +107,27 @@ func validateClaimRecord(logger log.Logger, claimRecord *types.ClaimRecord) erro
 		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim record empty address")
 	}
 	if !claimRecord.Amount.IsAllPositive() {
-		logger.Debug("claim record must has at least one coin")
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim record must has at least one coin")
+		logger.Debug("claim record must has at least one coin and all amounts must be positive")
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim record must has at least one coin and all amounts must be positive")
 	}
 	return nil
 }
 
-func (k Keeper) validateInitialClaimClaimable(logger log.Logger, initialClaimFreeAmount sdk.Int, campaignMissions []types.Mission, claimRecord *types.ClaimRecord) error {
-	allMissionsAmountSum := sdk.NewCoins()
-	for _, mission := range campaignMissions {
-		for _, amount := range claimRecord.Amount {
-			allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
-		}
+func (k Keeper) ValidateCampaignWhenAddedFromVestingAccount(logger log.Logger, ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign) error {
+	ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAcc)
+	if ownerAccount == nil {
+		logger.Debug("account doesn't exist", "ownerAcc", ownerAcc)
+		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAcc)
 	}
-	initialClaimAmount := claimRecord.Amount.Sub(allMissionsAmountSum)
-
-	for _, coin := range claimRecord.Amount {
-		if initialClaimAmount.AmountOf(coin.Denom).LT(initialClaimFreeAmount) {
-			logger.Debug("airdrop entry amount < campaign initial claim free amount", "amount", coin.Amount, "initialClaimFreeAmount", initialClaimFreeAmount)
-			return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim amount %s < campaign initial claim free amount (%s)", initialClaimAmount.AmountOf(coin.Denom), initialClaimFreeAmount.String())
-		}
+	vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
+	vestingAccTimeDiff := vestingAcc.EndTime - vestingAcc.StartTime
+	campaignLockupAndVestingSum := int64(campaign.VestingPeriod.Seconds() + campaign.LockupPeriod.Seconds())
+	if campaignLockupAndVestingSum < vestingAccTimeDiff {
+		logger.Debug("the duration of vesting and lockup must be equal to or greater than the remaining vesting time of the vesting account",
+			"campaignLockupAndVestingSum", campaignLockupAndVestingSum, "vestingAccTimeDiff", vestingAccTimeDiff)
+		return sdkerrors.Wrapf(c4eerrors.ErrParam,
+			fmt.Sprintf("the duration of vesting and lockup must be equal to or greater than the remaining vesting time of the vesting account (%d < %d)", campaignLockupAndVestingSum, vestingAccTimeDiff))
 	}
-
 	return nil
 }
 
@@ -139,7 +141,7 @@ func (k Keeper) validateClaimRecords(logger log.Logger, ctx sdk.Context, campaig
 			return nil, nil, wrapClaimRecordIndex(err, i)
 		}
 
-		if err = k.validateInitialClaimClaimable(logger, campaign.InitialClaimFreeAmount, allCampaignMissions, claimRecord); err != nil {
+		if err = k.validateInitialClaimFreeAmount(logger, campaign.InitialClaimFreeAmount, allCampaignMissions, claimRecord); err != nil {
 			return nil, nil, wrapClaimRecordIndex(err, i)
 		}
 
@@ -156,6 +158,25 @@ func (k Keeper) validateClaimRecords(logger log.Logger, ctx sdk.Context, campaig
 
 func wrapClaimRecordIndex(err error, index int) error {
 	return sdkerrors.Wrap(err, fmt.Sprintf("claim records index %d", index))
+}
+
+func (k Keeper) validateInitialClaimFreeAmount(logger log.Logger, initialClaimFreeAmount sdk.Int, missions []types.Mission, claimRecord *types.ClaimRecord) error {
+	allMissionsAmountSum := sdk.NewCoins()
+	for _, mission := range missions {
+		for _, amount := range claimRecord.Amount {
+			allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
+		}
+	}
+	initialClaimAmount := claimRecord.Amount.Sub(allMissionsAmountSum)
+
+	for _, coin := range claimRecord.Amount {
+		if initialClaimAmount.AmountOf(coin.Denom).LT(initialClaimFreeAmount) {
+			logger.Debug("airdrop entry amount < campaign initial claim free amount", "amount", coin.Amount, "initialClaimFreeAmount", initialClaimFreeAmount)
+			return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim amount %s < campaign initial claim free amount (%s)", initialClaimAmount.AmountOf(coin.Denom), initialClaimFreeAmount.String())
+		}
+	}
+
+	return nil
 }
 
 func (k Keeper) addUserEntry(ctx sdk.Context, campaignId uint64, address string, allCoins sdk.Coins) (*types.UserEntry, error) {
@@ -255,27 +276,20 @@ func FeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
 	return moduleAddressName, authtypes.NewModuleAddress(moduleAddressName)
 }
 
-func (k Keeper) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, from string, amount sdk.Coins) error {
-	fromAddress, err := sdk.AccAddressFromBech32(from)
-	if err != nil {
-		k.Logger(ctx).Error("delete user airdrop entry owner parsing error", "from", from, "error", err.Error())
-		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "delete user airdrop entry - owner parsing error: %s", from).Error())
-	}
-	ak := k.accountKeeper
-	bk := k.bankKeeper
-	fromAcc := ak.GetAccount(ctx, fromAddress)
-	if fromAcc == nil {
-		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", fromAddress)
+func (k Keeper) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, ownerAddress sdk.AccAddress, amount sdk.Coins) error {
+	ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
+	if ownerAccount == nil {
+		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
 	}
 
-	spendableCoins := bk.SpendableCoins(ctx, fromAddress)
+	spendableCoins := k.bankKeeper.SpendableCoins(ctx, ownerAddress)
 	if spendableCoins.IsAllGTE(amount) {
 		return nil
 	}
 
-	vestingAcc := fromAcc.(*vestingtypes.ContinuousVestingAccount)
+	vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
 
-	balance := bk.GetAllBalances(ctx, fromAddress)
+	balance := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
 	if balance.IsAllGT(vestingAcc.OriginalVesting) {
 		balanceWithoutOriginalVesting := balance.Sub(vestingAcc.OriginalVesting)
 		amount = amount.Sub(balanceWithoutOriginalVesting)
@@ -291,8 +305,7 @@ func (k Keeper) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, fr
 		vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(coin.Denom, originalVestingDiff)))
 	}
 
-	ak.SetAccount(ctx, vestingAcc)
-	spendableCoins = bk.SpendableCoins(ctx, fromAddress)
+	k.accountKeeper.SetAccount(ctx, vestingAcc)
 	return nil
 }
 
