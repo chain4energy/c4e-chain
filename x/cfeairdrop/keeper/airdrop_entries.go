@@ -16,10 +16,9 @@ import (
 	"strconv"
 )
 
-const FeegrantDenom = "uc4e"
-
 func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) error {
-	logger := ctx.Logger().With("add user entries", "owner", owner, "campaignId", campaignId)
+	logger := ctx.Logger().With("function name", "owner", owner, "campaignId", campaignId)
+	feegrantDenom := k.stakingKeeper.BondDenom(ctx)
 
 	campaign, err := k.ValidateAddUsersEntries(logger, ctx, owner, campaignId)
 	if err != nil {
@@ -31,14 +30,16 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 		return err
 	}
 
-	feegrantFeesSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecords)))
+	feegrantFeesSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecords)), feegrantDenom)
 	feesAndClaimRecordsAmountSum := claimRecordsAmountSum.Add(feegrantFeesSum...)
 
 	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
 	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
+	logger.Debug("feegrantFeesSum", feegrantFeesSum, "allBalances", allBalances)
+
 	if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
 		logger.Debug("airdrop entry owner balance is too small")
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, fmt.Sprintf("add campaign entries - owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum))
+		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum)
 	}
 
 	if slices.Contains(types.GetWhitelistedVestingAccounts(), owner) {
@@ -50,7 +51,7 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 		}
 	}
 
-	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords)
+	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
 	if err != nil {
 		return err
 	}
@@ -74,9 +75,9 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 	return nil
 }
 
-func calculateFeegrantFeesSum(feegrantAmount sdk.Int, claimRecordsNumber int64) (feesSum sdk.Coins) {
+func calculateFeegrantFeesSum(feegrantAmount sdk.Int, claimRecordsNumber int64, feegrantDenom string) (feesSum sdk.Coins) {
 	if feegrantAmount.GT(sdk.ZeroInt()) {
-		feesSum = feesSum.Add(sdk.NewCoin(FeegrantDenom, feegrantAmount.MulRaw(claimRecordsNumber)))
+		feesSum = feesSum.Add(sdk.NewCoin(feegrantDenom, feegrantAmount.MulRaw(claimRecordsNumber)))
 	}
 	return
 }
@@ -205,13 +206,13 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	return nil
 }
 
-func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecords []*types.ClaimRecord) error {
+func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecords []*types.ClaimRecord, feegrantDenom string) error {
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
 		acc := k.NewModuleAccountSet(ctx, campaign.Id)
 		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc.GetAddress(), feegrantFeesSum); err != nil {
 			return err
 		}
-		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc.GetAddress(), claimRecords, sdk.NewCoins(sdk.NewCoin(FeegrantDenom, campaign.FeegrantAmount))); err != nil {
+		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc.GetAddress(), claimRecords, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {
 			return err
 		}
 	}

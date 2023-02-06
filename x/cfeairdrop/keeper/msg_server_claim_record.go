@@ -10,8 +10,8 @@ import (
 func (k msgServer) AddClaimRecords(goCtx context.Context, msg *types.MsgAddClaimRecords) (*types.MsgAddClaimRecordsResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "add airdrop entries message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	keeper := k.Keeper
-	if err := keeper.AddUsersEntries(
+
+	if err := k.Keeper.AddUsersEntries(
 		ctx,
 		msg.Owner,
 		msg.CampaignId,
@@ -26,9 +26,8 @@ func (k msgServer) AddClaimRecords(goCtx context.Context, msg *types.MsgAddClaim
 func (k msgServer) DeleteClaimRecord(goCtx context.Context, msg *types.MsgDeleteClaimRecord) (*types.MsgDeleteClaimRecordResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "delete airdrop entry message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	keeper := k.Keeper
 
-	if err := keeper.DeleteClaimRecord(
+	if err := k.Keeper.DeleteClaimRecord(
 		ctx,
 		msg.Owner,
 		msg.CampaignId,

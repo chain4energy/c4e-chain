@@ -142,8 +142,8 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 }
 
 func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, campaignCloseAction types.CampaignCloseAction) error {
-	logger := ctx.Logger().With("close airdrop campaign", "owner", owner, "campaignId", campaignId, "campaignCloseAction", campaignCloseAction)
-
+	logger := k.Logger(ctx).With("close airdrop campaign", "owner", owner, "campaignId", campaignId, "campaignCloseAction", campaignCloseAction)
+	ctx.Logger().Debug("close airdrop campaign", "owner", owner)
 	campaign, validationResult := k.ValidateCloseCampaign(logger, campaignId, ctx, owner)
 	if validationResult != nil {
 		return validationResult

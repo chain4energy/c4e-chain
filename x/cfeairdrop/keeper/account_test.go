@@ -105,6 +105,7 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 		testHelper.App.AccountKeeper,
 		testHelper.App.BankKeeper,
 		testHelper.App.FeeGrantKeeper,
+		testHelper.App.StakingKeeper,
 	)
 
 	moduleAmount := sdk.NewInt(10000)
