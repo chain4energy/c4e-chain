@@ -10,7 +10,7 @@ import (
 )
 
 func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64, additionalAddress string) error {
-	var addressToClaim = claimer
+	addressToClaim := claimer
 	if additionalAddress != "" {
 		if err := k.validateAdditionalAddressToClaim(ctx, additionalAddress); err != nil {
 			return err
@@ -42,6 +42,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 	}
 
 	k.SetUserEntry(ctx, *userEntry)
+
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
 		granteeAddr, err := sdk.AccAddressFromBech32(userEntry.Address)
 		if err != nil {
