@@ -18,10 +18,11 @@ type (
 		memKey     sdk.StoreKey
 		paramstore paramtypes.Subspace
 
-		accountKeeper  types.AccountKeeper
-		bankKeeper     types.BankKeeper
-		feeGrantKeeper types.FeeGrantKeeper
-		stakingKeeper  types.StakingKeeper
+		accountKeeper      types.AccountKeeper
+		bankKeeper         types.BankKeeper
+		feeGrantKeeper     types.FeeGrantKeeper
+		stakingKeeper      types.StakingKeeper
+		distributionKeeper types.DistributionKeeper
 	}
 )
 
@@ -35,6 +36,7 @@ func NewKeeper(
 	bankKeeper types.BankKeeper,
 	feeGrantKeeper types.FeeGrantKeeper,
 	stakingKeeper types.StakingKeeper,
+	distributionKeeper types.DistributionKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -43,14 +45,15 @@ func NewKeeper(
 
 	return &Keeper{
 
-		cdc:            cdc,
-		storeKey:       storeKey,
-		memKey:         memKey,
-		paramstore:     ps,
-		accountKeeper:  accountKeeper,
-		bankKeeper:     bankKeeper,
-		feeGrantKeeper: feeGrantKeeper,
-		stakingKeeper:  stakingKeeper,
+		cdc:                cdc,
+		storeKey:           storeKey,
+		memKey:             memKey,
+		paramstore:         ps,
+		accountKeeper:      accountKeeper,
+		bankKeeper:         bankKeeper,
+		feeGrantKeeper:     feeGrantKeeper,
+		stakingKeeper:      stakingKeeper,
+		distributionKeeper: distributionKeeper,
 	}
 }
 

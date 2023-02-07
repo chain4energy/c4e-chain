@@ -6,11 +6,20 @@ import (
 	"time"
 )
 
+// Campaign types
 const (
 	CampaignUnsecified = CampaignType_CAMPAIGN_TYPE_UNSPECIFIED
 	CampaignTeamdrop   = CampaignType_TEAMDROP
 	CampaignDefault    = CampaignType_DEFAULT
 	CampaignSale       = CampaignType_SALE
+)
+
+// Campaign close action types
+const (
+	CampaignCloseActionUnspecified   = CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED
+	CampaignCloseSendToCommunityPool = CampaignCloseAction_SEND_TO_COMMUNITY_POOL
+	CampaignCloseBurn                = CampaignCloseAction_BURN
+	CampaignCloseSendToOwner         = CampaignCloseAction_SEND_TO_OWNER
 )
 
 func CampaignTypeFromString(str string) (CampaignType, error) {
@@ -32,6 +41,23 @@ func NormalizeCampaignType(option string) string {
 
 	case "Default", "default":
 		return CampaignDefault.String()
+
+	default:
+		return option
+	}
+}
+
+// NormalizeCampaignCloseAction - normalize user specified vote option
+func NormalizeCampaignCloseAction(option string) string {
+	switch option {
+	case "SendToCommunityPool", "sendtocommunitypool":
+		return CampaignCloseSendToCommunityPool.String()
+
+	case "Burn", "burn":
+		return CampaignCloseBurn.String()
+
+	case "SendToOwner", "sendtoowner":
+		return CampaignCloseSendToOwner.String()
 
 	default:
 		return option

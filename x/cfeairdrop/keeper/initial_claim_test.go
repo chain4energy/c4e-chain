@@ -130,7 +130,7 @@ func TestInitialClaimCampaignNotEnabled(t *testing.T) {
 	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED)
+	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseAction_BURN)
 	testHelper.C4eAirdropUtils.ClaimInitialError(acountsAddresses[1], 0, "campaign 0 error: campaign is disabled")
 }
 

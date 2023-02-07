@@ -5,8 +5,10 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/tendermint/tendermint/libs/log"
 	"golang.org/x/exp/slices"
+	"strconv"
 	"time"
 )
 
@@ -157,6 +159,24 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 
 	campaign, err = SwapToNewParams(logger, name, description, startTime, endTime, lockupPeriod, vestingPeriod, campaign, ctx)
 	k.SetCampaign(ctx, campaign)
+
+	event := &types.EditCampaign{
+		Owner:                  campaign.Owner,
+		Name:                   campaign.Name,
+		Description:            campaign.Description,
+		CampaignType:           campaign.CampaignType.String(),
+		FeegrantAmount:         campaign.FeegrantAmount.String(),
+		InitialClaimFreeAmount: campaign.InitialClaimFreeAmount.String(),
+		Enabled:                strconv.FormatBool(campaign.Enabled),
+		StartTime:              campaign.StartTime.String(),
+		EndTime:                campaign.EndTime.String(),
+		LockupPeriod:           campaign.LockupPeriod.String(),
+		VestingPeriod:          campaign.VestingPeriod.String(),
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("edit campaign emit event error", "event", event, "error", err.Error())
+	}
 	return nil
 }
 
@@ -167,9 +187,49 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 	if validationResult != nil {
 		return validationResult
 	}
+	campaignAmountLeft, _ := k.GetCampaignAmountLeft(ctx, campaign.Id)
+	if err := k.campaignCloseActionSwitch(ctx, campaignCloseAction, campaign.Owner, campaignAmountLeft.Amount); err != nil {
+		return err
+	}
 
 	campaign.Enabled = false
 	k.SetCampaign(ctx, campaign)
+	k.DecrementCampaignAmountLeft(ctx, campaignId, campaignAmountLeft.Amount)
+	return nil
+}
+
+func (k Keeper) campaignCloseActionSwitch(ctx sdk.Context, campaignCloseAction types.CampaignCloseAction, owner string, campaignAmountLeft sdk.Coins) error {
+	switch campaignCloseAction {
+	case types.CampaignCloseSendToCommunityPool:
+		return k.campaignCloseSendToCommunityPool(ctx, campaignAmountLeft)
+	case types.CampaignCloseBurn:
+		return k.campaignCloseBurn(ctx, campaignAmountLeft)
+	case types.CampaignCloseSendToOwner:
+		return k.campaignCloseSendToOwner(ctx, owner, campaignAmountLeft)
+	default:
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
+	}
+}
+
+func (k Keeper) campaignCloseSendToCommunityPool(ctx sdk.Context, campaignAmountLeft sdk.Coins) error {
+	if err := k.distributionKeeper.FundCommunityPool(ctx, campaignAmountLeft, authtypes.NewModuleAddress(types.ModuleName)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (k Keeper) campaignCloseBurn(ctx sdk.Context, campaignAmountLeft sdk.Coins) error {
+	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, owner string, campaignAmountLeft sdk.Coins) error {
+	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
+	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft); err != nil {
+		return err
+	}
 	return nil
 }
 

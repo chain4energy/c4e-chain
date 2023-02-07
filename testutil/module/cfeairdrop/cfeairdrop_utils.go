@@ -20,16 +20,18 @@ type C4eAirdropUtils struct {
 	C4eAirdropKeeperUtils
 	helperAccountKeeper *authkeeper.AccountKeeper
 	BankUtils           *testcosmos.BankUtils
+	DistrUtils          *testcosmos.DistributionUtils
 	FeegrantUtils       *testcosmos.FeegrantUtils
 	StakingUtils        *testcosmos.StakingUtils
 	GovUtils            *testcosmos.GovUtils
+	DistributionUtils   *testcosmos.DistributionUtils
 }
 
 func NewC4eAirdropUtils(t *testing.T, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
-	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils, feegrantUtils *testcosmos.FeegrantUtils) C4eAirdropUtils {
+	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils, feegrantUtils *testcosmos.FeegrantUtils, distributionUtils *testcosmos.DistributionUtils) C4eAirdropUtils {
 	return C4eAirdropUtils{C4eAirdropKeeperUtils: NewC4eAirdropKeeperUtils(t, helpeCfeairdropmodulekeeper),
-		helperAccountKeeper: helperAccountKeeper, BankUtils: bankUtils, StakingUtils: stakingUtils, GovUtils: govUtils, FeegrantUtils: feegrantUtils}
+		helperAccountKeeper: helperAccountKeeper, BankUtils: bankUtils, StakingUtils: stakingUtils, GovUtils: govUtils, FeegrantUtils: feegrantUtils, DistributionUtils: distributionUtils}
 }
 
 func (h *C4eAirdropUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context, toAddress sdk.AccAddress,
@@ -564,10 +566,28 @@ func (h *C4eAirdropUtils) StartCampaignError(ctx sdk.Context, owner string, camp
 }
 
 func (h *C4eAirdropUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, campaignCloseAction cfeairdroptypes.CampaignCloseAction) {
+	campaignAmoutLeftBefore, _ := h.helpeCfeairdropkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	cfeairdropModuleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
+	campaign, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+	ownerAccAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
+	ownerBalanceBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, ownerAccAddress)
 	err := h.helpeCfeairdropkeeper.CloseCampaign(ctx, owner, campaignId, campaignCloseAction)
 	require.NoError(h.t, err)
-	campaign, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+	campaign, _ = h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+	campaignAmoutLeft, _ := h.helpeCfeairdropkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	require.True(h.t, campaignAmoutLeft.Amount.IsEqual(sdk.NewCoins()))
+
+	switch campaignCloseAction {
+	case cfeairdroptypes.CampaignCloseSendToCommunityPool:
+		feePool := h.DistributionUtils.DistrKeeper.GetFeePool(ctx)
+		require.True(h.t, feePool.CommunityPool.AmountOf(testenv.DefaultTestDenom).Equal(sdk.NewDecFromInt(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom))))
+	case cfeairdroptypes.CampaignCloseSendToOwner:
+		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)))
+	}
+
 	require.True(h.t, ok)
+	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName, cfeairdropModuleBalance.Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)))
+	h.VerifyCampaignCloseAction(ctx, campaignId, campaignCloseAction, campaignAmoutLeftBefore.Amount)
 	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, false, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 }
 
@@ -634,6 +654,10 @@ func (h *C4eAirdropUtils) VerifyCampaign(ctx sdk.Context, campaignId uint64, mus
 	require.EqualValues(h.t, airdropCampaign.EndTime, endTime)
 	require.EqualValues(h.t, airdropCampaign.VestingPeriod, vestingPeriod)
 	require.EqualValues(h.t, airdropCampaign.LockupPeriod, lockupPeriod)
+}
+
+func (h *C4eAirdropUtils) VerifyCampaignCloseAction(ctx sdk.Context, campaignId uint64, campaignCloseAction cfeairdroptypes.CampaignCloseAction, campaignAmountLeftBefore sdk.Coins) {
+
 }
 
 func (h *C4eAirdropUtils) VerifyMission(ctx sdk.Context, mustExist bool, campaignId uint64, missionId uint64, name string, description string, missionType cfeairdroptypes.MissionType,
