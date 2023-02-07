@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	"strconv"
 )
 
 func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64, additionalAddress string) error {
@@ -41,8 +42,6 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		return err
 	}
 
-	k.SetUserEntry(ctx, *userEntry)
-
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
 		granteeAddr, err := sdk.AccAddressFromBech32(userEntry.Address)
 		if err != nil {
@@ -52,6 +51,19 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		if err = k.revokeFeeAllowance(ctx, accountAddr, granteeAddr); err != nil {
 			return err
 		}
+	}
+
+	k.SetUserEntry(ctx, *userEntry)
+
+	event := &types.InitialClaim{
+		Claimer:        claimer,
+		CampaignId:     strconv.FormatUint(campaignId, 10),
+		AddressToClaim: addressToClaim,
+		Amount:         claimableAmount.String(),
+	}
+	err = ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("initial claim emit event error", "event", event, "error", err.Error())
 	}
 
 	return nil
@@ -82,6 +94,17 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 	}
 
 	k.SetUserEntry(ctx, *userEntry)
+
+	event := &types.Claim{
+		Claimer:    claimer,
+		CampaignId: strconv.FormatUint(campaignId, 10),
+		MissionId:  strconv.FormatUint(missionId, 10),
+		Amount:     claimableAmount.String(),
+	}
+	err = ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("claim emit event error", "event", event, "error", err.Error())
+	}
 	return nil
 }
 
@@ -98,7 +121,19 @@ func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, miss
 	if err != nil {
 		return err
 	}
+
 	k.SetUserEntry(ctx, *userEntry)
+
+	event := &types.CompleteMissionFromHook{
+		CampaignId:  strconv.FormatUint(campaignId, 10),
+		MissionId:   strconv.FormatUint(missionId, 10),
+		UserAddress: address,
+	}
+	err = ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("complete mission from hook event error", "event", event, "error", err.Error())
+	}
+
 	return nil
 }
 

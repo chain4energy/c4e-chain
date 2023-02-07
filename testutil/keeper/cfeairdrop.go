@@ -4,7 +4,6 @@ import (
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"testing"
 	"time"
@@ -104,13 +103,6 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 		"bankParams",
 	)
 
-	stakingParamsSubspace := typesparams.NewSubspace(cdc,
-		types.Amino,
-		stakingStoreKey,
-		stakingStoreKey,
-		"stakingParams",
-	)
-
 	accountKeeper := authkeeper.NewAccountKeeper(
 		cdc, authStoreKey, accParamsSubspace, authtypes.ProtoBaseAccount, commontestutils.AddHelperModuleAccountPermissions(map[string][]string{types.ModuleName: nil}),
 	)
@@ -122,10 +114,6 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 		cdc, feegrantStoreKey, accountKeeper,
 	)
 
-	stakingKeeper := stakingkeeper.NewKeeper(
-		cdc, stakingStoreKey, accountKeeper, bankKeeper, stakingParamsSubspace,
-	)
-
 	k := keeper.NewKeeper(
 		cdc,
 		storeKey,
@@ -134,7 +122,7 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 		accountKeeper,
 		bankKeeper,
 		feegrantKeeper,
-		stakingKeeper,
+		nil,
 	)
 
 	header := tmproto.Header{}

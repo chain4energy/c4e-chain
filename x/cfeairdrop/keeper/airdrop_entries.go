@@ -72,6 +72,17 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 		k.SetUserEntry(ctx, *userEntry)
 	}
 
+	event := &types.AddClaimRecords{
+		Owner:                   owner,
+		CampaignId:              strconv.FormatUint(campaignId, 10),
+		ClaimRecordsTotalAmount: claimRecordsAmountSum.String(),
+		ClaimRecordsNumber:      strconv.FormatInt(int64(len(claimRecords)), 10),
+	}
+	err = ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("add claim records emit event error", "event", event, "error", err.Error())
+	}
+
 	return nil
 }
 
@@ -202,6 +213,17 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 
 	k.SetUserEntry(ctx, userEntry)
 	k.DecrementCampaignTotalAmount(ctx, campaignId, claimRecordAmount)
+
+	event := &types.DeleteClaimRecord{
+		Owner:             owner,
+		CampaignId:        strconv.FormatUint(campaignId, 10),
+		UserAddress:       userAddress,
+		ClaimRecordAmount: claimRecordAmount.String(),
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("delete claim record emit event error", "event", event, "error", err.Error())
+	}
 
 	return nil
 }

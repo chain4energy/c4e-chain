@@ -259,7 +259,7 @@ export const MsgInitialClaim = {
       writer.uint32(16).uint64(message.campaign_id);
     }
     if (message.addressToClaim !== "") {
-      writer.uint32(34).string(message.addressToClaim);
+      writer.uint32(26).string(message.addressToClaim);
     }
     return writer;
   },
@@ -277,7 +277,7 @@ export const MsgInitialClaim = {
         case 2:
           message.campaign_id = longToNumber(reader.uint64() as Long);
           break;
-        case 4:
+        case 3:
           message.addressToClaim = reader.string();
           break;
         default:
