@@ -174,28 +174,6 @@ func createAndSaveNTestMissions(keeper *keeper.Keeper, ctx sdk.Context, n int) [
 	return items
 }
 
-func prepareTestMissions() []types.Mission {
-	delegationMissionWeight := sdk.MustNewDecFromStr("0.2")
-	voteMissionWeight := sdk.MustNewDecFromStr("0.3")
-	missions := []types.Mission{
-		{
-			CampaignId:  0,
-			Name:        "Name",
-			MissionType: types.MissionDelegation,
-			Description: "test-delegation-mission",
-			Weight:      delegationMissionWeight,
-		},
-		{
-			CampaignId:  0,
-			Name:        "Name",
-			MissionType: types.MissionVote,
-			Description: "test-vote-mission",
-			Weight:      voteMissionWeight,
-		},
-	}
-	return missions
-}
-
 func prepareTestMission() types.Mission {
 	delegationMissionWeight := sdk.MustNewDecFromStr("0.2")
 	return types.Mission{

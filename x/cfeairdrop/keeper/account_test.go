@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func TestCreateAirdropAccount(t *testing.T) {
+func TestCreateAccount(t *testing.T) {
 	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
 	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
@@ -64,7 +64,7 @@ func TestCreateAirdropAccount(t *testing.T) {
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
 }
 
-func TestCreateAirdropAccountSendDisabled(t *testing.T) {
+func TestCreateAccountSendDisabled(t *testing.T) {
 	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
 	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
@@ -86,7 +86,7 @@ func TestCreateAirdropAccountSendDisabled(t *testing.T) {
 	)
 }
 
-func TestCreateAirdropAccountBlockedAddress(t *testing.T) {
+func TestCreateAccountBlockedAddress(t *testing.T) {
 	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
 	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
@@ -122,7 +122,7 @@ func TestCreateAirdropAccountBlockedAddress(t *testing.T) {
 	)
 }
 
-func TestCreateAirdropAccountNotExist(t *testing.T) {
+func TestCreateAccountNotExist(t *testing.T) {
 	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
 	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
@@ -143,7 +143,7 @@ func TestCreateAirdropAccountNotExist(t *testing.T) {
 	)
 }
 
-func TestCreateAirdropAccountWrongAccountType(t *testing.T) {
+func TestCreateAccountWrongAccountType(t *testing.T) {
 	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
 	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
@@ -166,7 +166,7 @@ func TestCreateAirdropAccountWrongAccountType(t *testing.T) {
 	)
 }
 
-func TestCreateAirdropAccountSendError(t *testing.T) {
+func TestCreateAccountSendError(t *testing.T) {
 	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
 	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)

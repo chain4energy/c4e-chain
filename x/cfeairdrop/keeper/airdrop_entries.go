@@ -16,118 +16,146 @@ import (
 	"strconv"
 )
 
-func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64, airdropEntries []*types.ClaimRecord) error {
-	ownerAddress, err := sdk.AccAddressFromBech32(owner)
+const FeegrantDenom = "uc4e"
+
+func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) error {
+	logger := ctx.Logger().With("add user entries", "owner", owner, "campaignId", campaignId)
+
+	campaign, validationResult := k.ValidateAddUsersEntries(logger, ctx, owner, campaignId)
+	if validationResult != nil {
+		return validationResult
+	}
+
+	usersEntries, claimRecordsAmountSum, err := k.validateClaimRecords(logger, ctx, campaign, claimRecords)
 	if err != nil {
-		k.Logger(ctx).Debug("add campaign entries owner parsing error", "owner", owner, "error", err.Error())
-		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "add campaign entries  - owner parsing error: %s", owner).Error())
-	}
-	campaign, found := k.GetCampaign(
-		ctx,
-		campaignId,
-	)
-	if !found {
-		k.Logger(ctx).Debug("add campaign entries campaign doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "add campaign entries -  campaign with id %d doesn't exist", campaignId)
-	}
-	if campaign.Owner != owner {
-		k.Logger(ctx).Debug("add campaign entries you are not the owner of this campaign", "campaignId", campaignId)
-		return sdkerrors.Wrapf(sdkerrors.ErrorInvalidSigner, "add campaign entries - you are not the owner of campaign with id %d", campaignId)
-	}
-	if campaign.Enabled == false {
-		k.Logger(ctx).Debug("add campaign entries campaign is disabled", "campaignId", campaignId)
-		return sdkerrors.Wrapf(types.ErrCampaignDisabled, "add campaign entries - campaign %d is disabled", campaignId)
-	}
-	if campaign.EndTime.Before(ctx.BlockTime()) {
-		k.Logger(ctx).Debug("add campaign entries campaign is disabled", "campaignId", campaignId)
-		return sdkerrors.Wrapf(types.ErrCampaignDisabled, fmt.Sprintf("add campaign entries - campaign %d is disabled (end time %s < %s)", campaignId, campaign.EndTime, ctx.BlockTime()))
-	}
-	var usersEntries []*types.UserEntry
-	entriesAmountSum := sdk.NewCoins()
-	allCampaignMissions, _ := k.AllMissionForCampaign(ctx, campaignId)
-	for i, claimRecord := range airdropEntries {
-		if claimRecord.Address == "" {
-			k.Logger(ctx).Error("add campaign entries airdrop entry empty address", "claimRecordIndex", i)
-			return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - airdrop entry empty address on index %d", i)
-		}
-		if len(claimRecord.Amount) == 0 {
-			k.Logger(ctx).Error("add campaign entries airdrop entry must has at least one coin")
-			return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - airdrop entry at index %d airdrop entry must has at least one coin", i)
-		}
-
-		allMissionsAmountSum := sdk.NewCoins()
-		for _, mission := range allCampaignMissions {
-			for _, amount := range claimRecord.Amount {
-				allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
-			}
-		}
-		initialClaimClaimable := claimRecord.Amount.Sub(allMissionsAmountSum)
-		for _, coin := range claimRecord.Amount {
-			if initialClaimClaimable.AmountOf(coin.Denom).LT(campaign.InitialClaimFreeAmount) {
-				k.Logger(ctx).Error("add campaign entries airdrop entry amount < campaign initial claim free amount", "amount", coin.Amount, "initialClaimFreeAmount", campaign.InitialClaimFreeAmount, "claimRecordIndex", i)
-				return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - airdrop entry at index %d initial claim amount %s < campaign initial claim free amount (%s)", i, initialClaimClaimable.AmountOf(coin.Denom), campaign.InitialClaimFreeAmount.String())
-			}
-			if coin.Amount.Equal(sdk.ZeroInt()) {
-				k.Logger(ctx).Error("add campaign entries airdrop entry amount is 0", "amount", coin.Amount, "initialClaimFreeAmount", campaign.InitialClaimFreeAmount, "claimRecordIndex", i)
-				return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - airdrop entry at index %d amount is 0", i)
-			}
-			entriesAmountSum = entriesAmountSum.Add(coin)
-		}
-
-		userEntry, err := k.addUserEntry(ctx, campaignId, claimRecord.Address, claimRecord.Amount)
-		if err != nil {
-			return err
-		}
-		usersEntries = append(usersEntries, userEntry)
+		return err
 	}
 
-	feesAndEntriesSum := entriesAmountSum
-	feesSum := sdk.NewCoins()
+	feegrantFeesSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecords)))
+	feesAndClaimRecordsAmountSum := claimRecordsAmountSum.Add(feegrantFeesSum...)
 
-	bondedDenom := "uc4e"
-	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
-		feesSum = sdk.NewCoins(sdk.NewCoin(bondedDenom, campaign.FeegrantAmount.MulRaw(int64(len(airdropEntries)))))
-		feesAndEntriesSum = feesAndEntriesSum.Add(feesSum...)
-	}
-
-	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-	if !allBalances.IsAllGTE(feesAndEntriesSum) {
-		k.Logger(ctx).Error("add campaign entries airdrop entry owner balance is too small")
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, fmt.Sprintf("add campaign entries - owner balance is too small (%s < %s)", allBalances, feesAndEntriesSum))
+	ownerAcc, _ := sdk.AccAddressFromBech32(owner)
+	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAcc)
+	if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
+		logger.Debug("airdrop entry owner balance is too small")
+		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, fmt.Sprintf("add campaign entries - owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum))
 	}
 
 	if slices.Contains(types.GetWhitelistedVestingAccounts(), owner) {
-		if err = k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, owner, feesAndEntriesSum); err != nil {
+		if err = k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, owner, feesAndClaimRecordsAmountSum); err != nil {
 			return err
 		}
 	}
 
-	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
-		acc := k.NewModuleAccountSet(ctx, campaignId)
-		if err = k.bankKeeper.SendCoins(ctx, ownerAddress, acc.GetAddress(), feesSum); err != nil {
-			return err
-		}
-		if err = k.grantAllFeeAllowance(ctx, acc.GetAddress(), airdropEntries, sdk.NewCoins(sdk.NewCoin(bondedDenom, campaign.FeegrantAmount))); err != nil {
-			return err
-		}
+	err = k.setupAndSendFeegrant(ctx, ownerAcc, campaign, feegrantFeesSum, claimRecords)
+	if err != nil {
+		return err
 	}
 
-	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, entriesAmountSum); err != nil {
+	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAcc, types.ModuleName, claimRecordsAmountSum); err != nil {
 		return err
 	}
 
 	k.IncrementCampaignTotalAmount(ctx, types.CampaignTotalAmount{
 		CampaignId: campaignId,
-		Amount:     entriesAmountSum,
+		Amount:     claimRecordsAmountSum,
 	})
 	k.IncrementCampaignAmountLeft(ctx, types.CampaignAmountLeft{
 		CampaignId: campaignId,
-		Amount:     entriesAmountSum,
+		Amount:     claimRecordsAmountSum,
 	})
 	for _, userEntry := range usersEntries {
 		k.SetUserEntry(ctx, *userEntry)
 	}
+
 	return nil
+}
+
+func calculateFeegrantFeesSum(feegrantAmount sdk.Int, claimRecordsNumber int64) (feesSum sdk.Coins) {
+	if feegrantAmount.GT(sdk.ZeroInt()) {
+		feesSum = feesSum.Add(sdk.NewCoin(FeegrantDenom, feegrantAmount.MulRaw(claimRecordsNumber)))
+	}
+	return
+}
+
+func (k Keeper) ValidateAddUsersEntries(logger log.Logger, ctx sdk.Context, owner string, campaignId uint64) (*types.Campaign, error) {
+	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = ValidateOwner(logger, campaign, owner); err != nil {
+		return nil, err
+	}
+
+	if err = ValidateCampaignEnabled(logger, campaign); err != nil {
+		return nil, err
+	}
+
+	if err = ValidateCampaignEnded(logger, ctx, campaign); err != nil {
+		return nil, err
+	}
+	return &campaign, nil
+}
+
+func validateClaimRecord(logger log.Logger, claimRecord *types.ClaimRecord) error {
+	if claimRecord.Address == "" {
+		logger.Debug("claim record empty address")
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim record empty address")
+	}
+	if !claimRecord.Amount.IsAllPositive() {
+		logger.Debug("claim record must has at least one coin")
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim record must has at least one coin")
+	}
+	return nil
+}
+
+func (k Keeper) validateInitialClaimClaimable(logger log.Logger, initialClaimFreeAmount sdk.Int, campaignMissions []types.Mission, claimRecord *types.ClaimRecord) error {
+	allMissionsAmountSum := sdk.NewCoins()
+	for _, mission := range campaignMissions {
+		for _, amount := range claimRecord.Amount {
+			allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
+		}
+	}
+	initialClaimAmount := claimRecord.Amount.Sub(allMissionsAmountSum)
+
+	for _, coin := range claimRecord.Amount {
+		if initialClaimAmount.AmountOf(coin.Denom).LT(initialClaimFreeAmount) {
+			logger.Debug("airdrop entry amount < campaign initial claim free amount", "amount", coin.Amount, "initialClaimFreeAmount", initialClaimFreeAmount)
+			return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim amount %s < campaign initial claim free amount (%s)", initialClaimAmount.AmountOf(coin.Denom), initialClaimFreeAmount.String())
+		}
+	}
+
+	return nil
+}
+
+func (k Keeper) validateClaimRecords(logger log.Logger, ctx sdk.Context, campaign *types.Campaign, claimRecords []*types.ClaimRecord) (usersEntries []*types.UserEntry, entriesAmountSum sdk.Coins, err error) {
+	allCampaignMissions, _ := k.AllMissionForCampaign(ctx, campaign.Id)
+
+	for i, claimRecord := range claimRecords {
+		logger = logger.With("claimRecord index", i)
+
+		if err = validateClaimRecord(logger, claimRecord); err != nil {
+			return nil, nil, wrapClaimRecordIndex(err, i)
+		}
+
+		if err = k.validateInitialClaimClaimable(logger, campaign.InitialClaimFreeAmount, allCampaignMissions, claimRecord); err != nil {
+			return nil, nil, wrapClaimRecordIndex(err, i)
+		}
+
+		entriesAmountSum = entriesAmountSum.Add(claimRecord.Amount...)
+
+		userEntry, err := k.addUserEntry(ctx, campaign.Id, claimRecord.Address, claimRecord.Amount)
+		if err != nil {
+			return nil, nil, wrapClaimRecordIndex(err, i)
+		}
+		usersEntries = append(usersEntries, userEntry)
+	}
+	return
+}
+
+func wrapClaimRecordIndex(err error, index int) error {
+	return sdkerrors.Wrap(err, fmt.Sprintf("claim records index %d", index))
 }
 
 func (k Keeper) addUserEntry(ctx sdk.Context, campaignId uint64, address string, allCoins sdk.Coins) (*types.UserEntry, error) {
@@ -156,29 +184,40 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	return nil
 }
 
-func (k Keeper) grantAllFeeAllowance(ctx sdk.Context, moduleAddress sdk.AccAddress, airdropEntries []*types.ClaimRecord, grantAmount sdk.Coins) error {
+func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecords []*types.ClaimRecord) error {
+	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+		acc := k.NewModuleAccountSet(ctx, campaign.Id)
+		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc.GetAddress(), feegrantFeesSum); err != nil {
+			return err
+		}
+		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc.GetAddress(), claimRecords, sdk.NewCoins(sdk.NewCoin(FeegrantDenom, campaign.FeegrantAmount))); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddress sdk.AccAddress, airdropEntries []*types.ClaimRecord, grantAmount sdk.Coins) error {
 	basicAllowance, err := codectypes.NewAnyWithValue(&feegranttypes.BasicAllowance{
 		SpendLimit: grantAmount,
 	})
 	if err != nil {
-		return err // TODO
+		return err
 	}
+
 	allowedMsgAllowance := feegranttypes.AllowedMsgAllowance{
 		Allowance:       basicAllowance,
 		AllowedMessages: []string{"/chain4energy.c4echain.cfeairdrop.MsgInitialClaim"},
 	}
-	for _, claimRecord := range airdropEntries {
-		granteeAddress, err := sdk.AccAddressFromBech32(claimRecord.Address)
-		if err != nil {
-			return err // TODO
-		}
-		feeAllowance, _ := k.feeGrantKeeper.GetAllowance(ctx, moduleAddress, granteeAddress)
-		if feeAllowance != nil {
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "fee allowance already exists")
-		}
 
-		if err = k.feeGrantKeeper.GrantAllowance(ctx, moduleAddress, granteeAddress, &allowedMsgAllowance); err != nil {
-			return err
+	for _, claimRecord := range airdropEntries {
+		granteeAddress, _ := sdk.AccAddressFromBech32(claimRecord.Address)
+		existingFeeAllowance, _ := k.feeGrantKeeper.GetAllowance(ctx, moduleAddress, granteeAddress)
+		if existingFeeAllowance == nil {
+			if err = k.feeGrantKeeper.GrantAllowance(ctx, moduleAddress, granteeAddress, &allowedMsgAllowance); err != nil {
+				return err
+			}
 		}
 	}
 

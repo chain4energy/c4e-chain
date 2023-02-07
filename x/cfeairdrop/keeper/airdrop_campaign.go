@@ -176,6 +176,14 @@ func ValidateCampaignEnd(ctx sdk.Context, campaign types.Campaign, logger log.Lo
 	return nil
 }
 
+func ValidateCampaignEnded(logger log.Logger, ctx sdk.Context, campaign types.Campaign) error {
+	if !campaign.EndTime.After(ctx.BlockTime()) {
+		logger.Debug("campaign is over", "startTime", campaign.StartTime)
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close airdrop campaign - campaign with id %d campaign is not over yet (endtime - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
+	}
+	return nil
+}
+
 func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
 	logger := ctx.Logger().With("start airdrop campaign", "owner", owner, "campaignId", campaignId)
 
@@ -211,7 +219,7 @@ func (k Keeper) ValidateStartCampaignParams(logger log.Logger, campaignId uint64
 		return types.Campaign{}, err
 	}
 
-	if err = ValidateCampaignEnabled(logger, campaign); err != nil {
+	if err = ValidateCampaignDisabled(logger, campaign); err != nil {
 		return types.Campaign{}, err
 	}
 
@@ -234,7 +242,7 @@ func (k Keeper) ValidateRemove(ctx sdk.Context, owner string, campaignId uint64)
 		return err
 	}
 
-	if err = ValidateCampaignEnabled(logger, campaign); err != nil {
+	if err = ValidateCampaignDisabled(logger, campaign); err != nil {
 		return err
 	}
 
@@ -258,10 +266,18 @@ func ValidateOwner(log log.Logger, campaign types.Campaign, owner string) error 
 	return nil
 }
 
-func ValidateCampaignEnabled(log log.Logger, campaign types.Campaign) error {
+func ValidateCampaignDisabled(log log.Logger, campaign types.Campaign) error {
 	if campaign.Enabled == true {
-		log.Error("Campaign has already started")
-		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "Campaign has already started")
+		log.Debug("campaign is enabled")
+		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "campaign is enabled")
+	}
+	return nil
+}
+
+func ValidateCampaignEnabled(log log.Logger, campaign types.Campaign) error {
+	if campaign.Enabled != true {
+		log.Debug("campaign is disabled")
+		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "campaign is disabled")
 	}
 	return nil
 }
