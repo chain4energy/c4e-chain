@@ -4,6 +4,7 @@ import (
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"testing"
 	"time"
 
@@ -65,6 +66,7 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 	authStoreKey := sdk.NewKVStoreKey(authtypes.StoreKey)
 	bankStoreKey := sdk.NewKVStoreKey(banktypes.StoreKey)
 	feegrantStoreKey := sdk.NewKVStoreKey(feegrant.StoreKey)
+	stakingStoreKey := sdk.NewKVStoreKey(stakingtypes.StoreKey)
 
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
@@ -73,6 +75,7 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 	stateStore.MountStoreWithDB(authStoreKey, sdk.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(bankStoreKey, sdk.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(feegrantStoreKey, sdk.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(stakingStoreKey, sdk.StoreTypeIAVL, db)
 	require.NoError(t, stateStore.LoadLatestVersion())
 
 	registry := codectypes.NewInterfaceRegistry()
@@ -119,6 +122,7 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 		accountKeeper,
 		bankKeeper,
 		feegrantKeeper,
+		nil,
 	)
 
 	header := tmproto.Header{}

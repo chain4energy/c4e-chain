@@ -110,6 +110,7 @@ func NewAppModule(
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	feegrantKeeper types.FeeGrantKeeper,
+
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),

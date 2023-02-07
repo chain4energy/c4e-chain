@@ -1,0 +1,94 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfeairdrop;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
+
+message NewCampaign {
+    string owner = 2;
+    string name = 3;
+    string description = 4;
+    string campaignType = 5;
+    string feegrant_amount = 6;
+    string initial_claim_free_amount = 7;
+    string enabled = 8;
+    string start_time = 9;
+    string end_time = 10;
+    string lockup_period = 11;
+    string vesting_period = 12;
+}
+
+message EditCampaign {
+    string owner = 2;
+    string name = 3;
+    string description = 4;
+    string campaignType = 5;
+    string feegrant_amount = 6;
+    string initial_claim_free_amount = 7;
+    string enabled = 8;
+    string start_time = 9;
+    string end_time = 10;
+    string lockup_period = 11;
+    string vesting_period = 12;
+}
+
+message CloseCampaign {
+    string owner = 1;
+    string campaign_id = 2;
+    string campaign_close_action = 3;
+}
+
+message RemoveCampaign {
+    string owner = 1;
+    string campaignId = 2;
+}
+
+message StartCampaign {
+    string owner = 1;
+    string campaignId = 2;
+}
+
+message AddMissionToCampaign {
+    string owner = 1;
+    string campaignId = 2;
+    string name = 3;
+    string description = 4;
+    string missionType = 5;
+    string weight = 6;
+    string claim_start_date = 7;
+}
+
+message Claim {
+    string claimer = 1;
+    string campaign_id = 2;
+    string mission_id = 3;
+    string amount = 4;
+}
+
+message InitialClaim {
+    string claimer = 1;
+    string campaign_id = 2;
+    string addressToClaim = 3;
+    string amount = 4;
+}
+
+message AddClaimRecords {
+    string owner = 1;
+    string campaign_id = 2;
+    string claim_records_total_amount = 3;
+    string claim_records_number = 4;
+}
+
+message DeleteClaimRecord {
+    string owner = 1;
+    string campaignId = 2;
+    string userAddress = 3;
+    string claim_record_amount = 4;
+}
+
+message CompleteMissionFromHook {
+    string campaign_id = 1;
+    string mission_id = 2;
+    string user_address = 3;
+}

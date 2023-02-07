@@ -112,7 +112,7 @@ func TestAddUsersEntriesBalanceToSmall(t *testing.T) {
 	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Sub(sdk.NewInt(2)))
-	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, fmt.Sprintf("add campaign entries - owner balance is too small (1000000043uc4e < 1000000045uc4e): insufficient funds"))
+	testHelper.C4eAirdropUtils.AddClaimRecordsError(acountsAddresses[0], 0, airdropEntries, "owner balance is too small (1000000043uc4e < 1000000045uc4e): insufficient funds")
 }
 
 func TestAddUsersEntriesEmptyAmount(t *testing.T) {

@@ -365,7 +365,6 @@ func New(
 
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
-
 	app.CfeairdropKeeper = *cfeairdropmodulekeeper.NewKeeper(
 		appCodec,
 		keys[cfeairdropmoduletypes.StoreKey],
@@ -375,6 +374,7 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.FeeGrantKeeper,
+		stakingKeeper,
 	)
 	cfeairdropModule := cfeairdropmodule.NewAppModule(appCodec, app.CfeairdropKeeper, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper)
 
