@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feeGrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
+func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feeGrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
-	k.Logger(ctx).Debug("create aidrop campaign", "owner", owner, "name", name, "description", description,
+	k.Logger(ctx).Debug("create campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
 
-	log := k.Logger(ctx).With("Create airdrop campaign")
+	log := k.Logger(ctx).With("Create campaign")
 	if err := ValidateCampaignCreateParams(log, name, description, startTime, endTime, campaignType, owner, ctx); err != nil {
 		return err
 	}
@@ -69,6 +69,26 @@ func ValidateCampaignCreateParams(log log.Logger, name string, description strin
 	return nil
 }
 
+func ValidateCampaignEditParams(log log.Logger, name string, description string, startTime *time.Time, endTime *time.Time,
+	campaignType types.CampaignType, owner string, ctx sdk.Context) error {
+	if err := ValidateCampaignName(log, name); err != nil {
+		return err
+	}
+	if err := ValidateCampaignDescription(log, description); err != nil {
+		return err
+	}
+	if err := ValidateCampaignStartTime(log, startTime, ctx); err != nil {
+		return err
+	}
+	if err := ValidateCampaignEndTime(log, startTime, endTime); err != nil {
+		return err
+	}
+	if err := ValidateCampaignType(log, campaignType, owner); err != nil {
+		return err
+	}
+	return nil
+}
+
 func GetFeeGrantAmount(logger log.Logger, feeGrantAmount *sdk.Int) (*sdk.Int, error) {
 
 	if feeGrantAmount.IsNegative() {
@@ -83,57 +103,59 @@ func GetFeeGrantAmount(logger log.Logger, feeGrantAmount *sdk.Int) (*sdk.Int, er
 	return feeGrantAmount, nil
 }
 
+func SwapToNewParams(log log.Logger, name string, description string, startTime *time.Time,
+	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration,
+	campaign types.Campaign, ctx sdk.Context) (types.Campaign, error) {
+
+	if name != "" {
+		campaign.Name = name
+	}
+
+	if description != "" {
+		campaign.Description = description
+	}
+
+	if startTime != nil {
+		campaign.StartTime = *startTime
+	}
+
+	if endTime != nil {
+		campaign.EndTime = *endTime
+	}
+
+	if vestingPeriod != nil {
+		campaign.VestingPeriod = *vestingPeriod
+	}
+
+	if lockupPeriod != nil {
+		campaign.LockupPeriod = *lockupPeriod
+	}
+
+	if err := ValidateCampaignCreateParams(log, name, description, startTime, endTime,
+		campaign.CampaignType, campaign.Owner, ctx); err != nil {
+		return types.Campaign{}, err
+	}
+
+	return campaign, nil
+}
+
 func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
 	k.Logger(ctx).Debug("edit airdrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
-	campaign, found := k.GetCampaign(
-		ctx,
-		campaignId,
-	)
-	if !found {
-		k.Logger(ctx).Error("edit airdrop campaign campaign doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "edit airdrop campaign -  campaign with id %d doesn't exist", campaignId)
+
+	logger := ctx.Logger().With("Edit campaign")
+
+	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
+	if err != nil {
+		return err
 	}
-	if campaign.Enabled == true {
-		k.Logger(ctx).Error("edit airdrop campaign campaign doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "edit airdrop campaign -  campaign with id %d doesn't exist", campaignId)
+
+	if err = ValidateCampaignDisabled(logger, campaign); err != nil {
+		return err
 	}
-	if campaign.EndTime.Before(ctx.BlockTime()) {
-		k.Logger(ctx).Error("edit airdrop campaign campaign doesn't exist", "campaignId", campaignId)
-		return sdkerrors.Wrapf(c4eerrors.ErrParsing, "edit airdrop campaign -  campaign with id %d doesn't exist", campaignId)
-	}
-	if campaign.Owner != owner {
-		k.Logger(ctx).Error("edit airdrop campaign you are not the owner of this campaign", "campaignId", campaignId)
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "edit airdrop campaign - you are not the owner of campaign with id %d", campaignId)
-	}
-	if name != "" {
-		campaign.Name = name
-	}
-	if description != "" {
-		campaign.Description = description
-	}
-	if startTime != nil {
-		if endTime != nil {
-			if startTime.After(*endTime) {
-				k.Logger(ctx).Error("edit airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
-				return sdkerrors.Wrapf(c4eerrors.ErrParam, "edit airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
-			}
-			campaign.EndTime = *endTime
-		} else {
-			if startTime.After(campaign.EndTime) {
-				k.Logger(ctx).Error("edit airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
-				return sdkerrors.Wrapf(c4eerrors.ErrParam, "cedit airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
-			}
-		}
-		campaign.StartTime = *startTime
-	}
-	if vestingPeriod != nil {
-		campaign.VestingPeriod = *vestingPeriod
-	}
-	if lockupPeriod != nil {
-		campaign.LockupPeriod = *lockupPeriod
-	}
+
+	campaign, err = SwapToNewParams(logger, name, description, startTime, endTime, lockupPeriod, vestingPeriod, campaign, ctx)
 	k.SetCampaign(ctx, campaign)
 	return nil
 }
@@ -199,7 +221,7 @@ func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64) 
 
 func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
 	k.Logger(ctx).Debug("Remove airdrop campaign", "owner", owner, "campaignId", campaignId)
-	validationResult := k.ValidateRemove(ctx, owner, campaignId)
+	validationResult := k.ValidateRemoveCampaignParams(ctx, owner, campaignId)
 	if validationResult != nil {
 		return validationResult
 	}
@@ -230,7 +252,7 @@ func (k Keeper) ValidateStartCampaignParams(logger log.Logger, campaignId uint64
 	return campaign, nil
 }
 
-func (k Keeper) ValidateRemove(ctx sdk.Context, owner string, campaignId uint64) error {
+func (k Keeper) ValidateRemoveCampaignParams(ctx sdk.Context, owner string, campaignId uint64) error {
 	logger := ctx.Logger().With("Remove campaign validation")
 
 	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
@@ -275,7 +297,7 @@ func ValidateCampaignDisabled(log log.Logger, campaign types.Campaign) error {
 }
 
 func ValidateCampaignEnabled(log log.Logger, campaign types.Campaign) error {
-	if campaign.Enabled != true {
+	if campaign.Enabled != false {
 		log.Debug("campaign is disabled")
 		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "campaign is disabled")
 	}

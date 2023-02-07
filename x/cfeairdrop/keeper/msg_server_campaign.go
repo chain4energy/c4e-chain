@@ -12,7 +12,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
-	if err := keeper.CreateAidropCampaign(
+	if err := keeper.CreateCampaign(
 		ctx,
 		msg.Owner,
 		msg.Name,
