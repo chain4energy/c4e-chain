@@ -10,68 +10,31 @@ import (
 	"time"
 )
 
-func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
+func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feeGrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
 	k.Logger(ctx).Debug("create aidrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
-	if name == "" {
-		k.Logger(ctx).Debug("create airdrop campaign empty campaign name")
-		return sdkerrors.Wrap(c4eerrors.ErrParam, "create airdrop campaign - empty campaign name error")
-	}
-	if description == "" {
-		k.Logger(ctx).Error("create airdrop campaign empty campaign description")
-		return sdkerrors.Wrap(c4eerrors.ErrParam, "create airdrop campaign - empty campaign description error")
-	}
-	if startTime == nil {
-		k.Logger(ctx).Error("create airdrop campaign start time is nil")
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "create airdrop campaign - start time is nil error")
-	}
-	if startTime.Before(ctx.BlockTime()) {
-		k.Logger(ctx).Error("create airdrop campaign start time in the past", "startTime", startTime)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "create airdrop campaign - start time in the past error (%s < %s)", startTime, ctx.BlockTime())
-	}
-	if endTime == nil {
-		k.Logger(ctx).Error("create airdrop campaign end time is nil")
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "create airdrop campaign - end time is nil error")
-	}
-	if startTime.After(*endTime) {
-		k.Logger(ctx).Error("create airdrop campaign start time is after end time", "startTime", startTime, "endTime", endTime)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "create airdrop campaign - start time is after end time error (%s > %s)", startTime, endTime)
+
+	log := k.Logger(ctx).With("Create airdrop campaign")
+	if err := ValidateCampaignCreateParams(log, name, description, startTime, endTime, campaignType, owner, ctx); err != nil {
+		return err
 	}
 
-	if initialClaimFreeAmount.IsNil() {
-		zeroInt := sdk.ZeroInt()
-		initialClaimFreeAmount = &zeroInt
-	}
-	if initialClaimFreeAmount.IsNegative() {
-		k.Logger(ctx).Error("create airdrop campaign initial claim free amount cannot be negative", "initialClaimFreeAmount", initialClaimFreeAmount)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "create airdrop campaign - initial claim free amount (%s) cannot be negative", initialClaimFreeAmount.String())
-	}
-	if feegrantAmount.IsNil() {
-		zeroInt := sdk.ZeroInt()
-		feegrantAmount = &zeroInt
-	}
-	if feegrantAmount.IsNegative() {
-		k.Logger(ctx).Error("create airdrop campaign initial feegrant amount cannot be negative", "initialClaimFreeAmount", feegrantAmount)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "create airdrop campaign - feegrant amount (%s) cannot be negative", feegrantAmount.String())
-	}
-	_, err := sdk.AccAddressFromBech32(owner)
+	feeGrantAmount, err := GetFeeGrantAmount(log, feeGrantAmount)
 	if err != nil {
-		k.Logger(ctx).Error("create airdrop campaign owner parsing error", "owner", owner, "error", err.Error())
-		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "create airdrop campaign - owner parsing error: %s", owner).Error())
+		return err
 	}
-	if campaignType == types.CampaignTeamdrop {
-		if !slices.Contains(types.GetTeamdropAccounts(), owner) {
-			k.Logger(ctx).Error("create airdrop campaign teamdrop campaigns can be created only by specyfic accounts", "owner", owner, "error", err.Error())
-			return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "create airdrop campaign - teamdrop campaigns can be created only by specyfic accounts")
-		}
+	initialClaimFreeAmount, err = GetInitialClaimFreeAmount(log, initialClaimFreeAmount)
+	if err != nil {
+		return err
 	}
+
 	campaign := types.Campaign{
 		Owner:                  owner,
 		Name:                   name,
 		Description:            description,
 		CampaignType:           campaignType,
-		FeegrantAmount:         *feegrantAmount,
+		FeegrantAmount:         *feeGrantAmount,
 		InitialClaimFreeAmount: *initialClaimFreeAmount,
 		Enabled:                false,
 		StartTime:              *startTime,
@@ -84,6 +47,40 @@ func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string,
 	missionInitial := types.NewInitialMission(campaignId)
 	k.AppendNewMission(ctx, campaignId, *missionInitial)
 	return nil
+}
+
+func ValidateCampaignCreateParams(log log.Logger, name string, description string, startTime *time.Time, endTime *time.Time,
+	campaignType types.CampaignType, owner string, ctx sdk.Context) error {
+	if err := ValidateCampaignName(log, name); err != nil {
+		return err
+	}
+	if err := ValidateCampaignDescription(log, description); err != nil {
+		return err
+	}
+	if err := ValidateCampaignStartTime(log, startTime, ctx); err != nil {
+		return err
+	}
+	if err := ValidateCampaignEndTime(log, startTime, endTime); err != nil {
+		return err
+	}
+	if err := ValidateCampaignType(log, campaignType, owner); err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetFeeGrantAmount(logger log.Logger, feeGrantAmount *sdk.Int) (*sdk.Int, error) {
+
+	if feeGrantAmount.IsNegative() {
+		logger.Debug("initial feegrant amount cannot be negative", "initialClaimFreeAmount", feeGrantAmount)
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
+	}
+
+	if feeGrantAmount.IsNil() {
+		zeroInt := sdk.ZeroInt()
+		feeGrantAmount = &zeroInt
+	}
+	return feeGrantAmount, nil
 }
 
 func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, startTime *time.Time,
@@ -144,7 +141,7 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, campaignCloseAction types.CampaignCloseAction) error {
 	logger := ctx.Logger().With("close airdrop campaign", "owner", owner, "campaignId", campaignId, "campaignCloseAction", campaignCloseAction)
 
-	campaign, validationResult := k.ValidateCloseCampaign(logger, campaignId, ctx, owner)
+	campaign, validationResult := k.ValidateCloseCampaignParams(logger, campaignId, ctx, owner)
 	if validationResult != nil {
 		return validationResult
 	}
@@ -154,7 +151,7 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 	return nil
 }
 
-func (k Keeper) ValidateCloseCampaign(logger log.Logger, campaignId uint64, ctx sdk.Context, owner string) (types.Campaign, error) {
+func (k Keeper) ValidateCloseCampaignParams(logger log.Logger, campaignId uint64, ctx sdk.Context, owner string) (types.Campaign, error) {
 	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
 	if err != nil {
 		return types.Campaign{}, err
@@ -182,7 +179,7 @@ func ValidateCampaignEnd(ctx sdk.Context, campaign types.Campaign, logger log.Lo
 func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
 	logger := ctx.Logger().With("start airdrop campaign", "owner", owner, "campaignId", campaignId)
 
-	campaign, validationResult := k.ValidateStartCampaign(logger, campaignId, ctx, owner)
+	campaign, validationResult := k.ValidateStartCampaignParams(logger, campaignId, ctx, owner)
 	if validationResult != nil {
 		return validationResult
 	}
@@ -204,7 +201,7 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 	return nil
 }
 
-func (k Keeper) ValidateStartCampaign(logger log.Logger, campaignId uint64, ctx sdk.Context, owner string) (types.Campaign, error) {
+func (k Keeper) ValidateStartCampaignParams(logger log.Logger, campaignId uint64, ctx sdk.Context, owner string) (types.Campaign, error) {
 	campaign, err := k.ValidateCampaignExists(logger, campaignId, ctx)
 	if err != nil {
 		return types.Campaign{}, err
@@ -269,10 +266,76 @@ func ValidateCampaignEnabled(log log.Logger, campaign types.Campaign) error {
 	return nil
 }
 
+func ValidateCampaignName(log log.Logger, name string) error {
+	if name == "" {
+		log.Debug("param err, campaign name is empty")
+		return sdkerrors.Wrap(c4eerrors.ErrParam, "campaign name is empty")
+	}
+	return nil
+}
+
+func ValidateCampaignDescription(log log.Logger, description string) error {
+	if description == "" {
+		log.Debug("param err, description is empty")
+		return sdkerrors.Wrap(c4eerrors.ErrParam, "description is empty")
+	}
+	return nil
+}
+
+func ValidateCampaignStartTime(log log.Logger, startTime *time.Time, ctx sdk.Context) error {
+	if startTime == nil {
+		log.Debug("param err, start time is nil")
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "create airdrop campaign - start time is nil error")
+	}
+	if startTime.Before(ctx.BlockTime()) {
+		log.Debug("param err, start time in the past", "startTime", startTime)
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "start time in the past error (%s < %s)", startTime, ctx.BlockTime())
+	}
+	return nil
+}
+
+func ValidateCampaignEndTime(log log.Logger, startTime *time.Time, endTime *time.Time) error {
+	if endTime == nil {
+		log.Debug("param err,  end time is nil")
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "end time is nil error")
+	}
+	if startTime.After(*endTime) {
+		log.Debug("param err,  start time is after end time", "startTime", startTime, "endTime", endTime)
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "start time is after end time error (%s > %s)", startTime, endTime)
+	}
+
+	return nil
+}
+
+func ValidateCampaignType(log log.Logger, campaignType types.CampaignType, owner string) error {
+	if campaignType == types.CampaignTeamdrop {
+		if !slices.Contains(types.GetTeamdropAccounts(), owner) {
+			log.Debug("param err, this campaign type can be created only by specific accounts", "owner", owner)
+			return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "TeamDrop campaigns can be created only by specific accounts")
+		}
+	}
+
+	return nil
+}
+
 func ValidateCampaignStart(ctx sdk.Context, campaign types.Campaign, logger log.Logger) error {
 	if campaign.StartTime.Before(ctx.BlockTime()) {
 		logger.Debug("Campaign start time in the past", "startTime", campaign.StartTime)
 		return sdkerrors.Wrapf(c4eerrors.ErrParam, "Campaign with id %d start time in the past error (%s < %s)", campaign.Id, campaign.StartTime, ctx.BlockTime())
 	}
 	return nil
+}
+
+func GetInitialClaimFreeAmount(log log.Logger, initialClaimFreeAmount *sdk.Int) (*sdk.Int, error) {
+	if initialClaimFreeAmount.IsNegative() {
+		log.Debug("initial claim free amount cannot be negative", "initialClaimFreeAmount", initialClaimFreeAmount)
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrParam, "initial claim free amount (%s) cannot be negative", initialClaimFreeAmount.String())
+	}
+
+	if initialClaimFreeAmount.IsNil() {
+		zeroInt := sdk.ZeroInt()
+		initialClaimFreeAmount = &zeroInt
+	}
+
+	return initialClaimFreeAmount, nil
 }
