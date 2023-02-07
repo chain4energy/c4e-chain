@@ -36,19 +36,19 @@ func Creates(ctx sdk.Context, airdropKeeper *cfeairdropkeeper.Keeper, accountKee
 		return err
 	}
 	zeroInt := sdk.ZeroInt()
-	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err = airdropKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	if err != nil {
 		return err
 	}
-	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", types.CampaignTeamdrop, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err = airdropKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", types.CampaignTeamdrop, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	if err != nil {
 		return err
 	}
-	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err = airdropKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	if err != nil {
 		return err
 	}
-	err = airdropKeeper.CreateAidropCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err = airdropKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	if err != nil {
 		return err
 	}

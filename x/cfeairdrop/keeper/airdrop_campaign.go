@@ -7,10 +7,11 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/tendermint/tendermint/libs/log"
 	"golang.org/x/exp/slices"
+	"strconv"
 	"time"
 )
 
-func (k Keeper) CreateAidropCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
+func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
 	k.Logger(ctx).Debug("create aidrop campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
@@ -138,6 +139,24 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 		campaign.LockupPeriod = *lockupPeriod
 	}
 	k.SetCampaign(ctx, campaign)
+
+	event := &types.EditCampaign{
+		Owner:                  campaign.Owner,
+		Name:                   campaign.Name,
+		Description:            campaign.Description,
+		CampaignType:           campaign.CampaignType.String(),
+		FeegrantAmount:         campaign.FeegrantAmount.String(),
+		InitialClaimFreeAmount: campaign.InitialClaimFreeAmount.String(),
+		Enabled:                strconv.FormatBool(campaign.Enabled),
+		StartTime:              campaign.StartTime.String(),
+		EndTime:                campaign.EndTime.String(),
+		LockupPeriod:           campaign.LockupPeriod.String(),
+		VestingPeriod:          campaign.VestingPeriod.String(),
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("edit campaign emit event error", "event", event, "error", err.Error())
+	}
 	return nil
 }
 

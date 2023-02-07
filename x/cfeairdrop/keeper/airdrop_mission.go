@@ -5,6 +5,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"strconv"
 	"time"
 )
 
@@ -72,8 +73,27 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 		Weight:         weight,
 		ClaimStartDate: claimStartDate,
 	}
-
 	k.AppendNewMission(ctx, campaignId, mission)
+
+	eventClaimStartDate := ""
+	if claimStartDate != nil {
+		eventClaimStartDate = claimStartDate.String()
+	}
+
+	event := &types.AddMissionToCampaign{
+		Owner:          owner,
+		CampaignId:     strconv.FormatUint(campaignId, 10),
+		Name:           name,
+		Description:    description,
+		MissionType:    missionType.String(),
+		Weight:         weight.String(),
+		ClaimStartDate: eventClaimStartDate,
+	}
+	err = ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("add mission to campaign emit event error", "event", event, "error", err.Error())
+	}
+
 	return nil
 }
 

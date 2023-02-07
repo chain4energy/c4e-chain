@@ -5,6 +5,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strconv"
 )
 
 func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCampaign) (*types.MsgCreateCampaignResponse, error) {
@@ -12,7 +13,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
-	if err := keeper.CreateAidropCampaign(
+	if err := keeper.CreateCampaign(
 		ctx,
 		msg.Owner,
 		msg.Name,
@@ -26,6 +27,24 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		msg.VestingPeriod,
 	); err != nil {
 		return nil, err
+	}
+
+	event := &types.NewCampaign{
+		Owner:                  msg.Owner,
+		Name:                   msg.Name,
+		Description:            msg.Description,
+		CampaignType:           msg.CampaignType.String(),
+		FeegrantAmount:         msg.FeegrantAmount.String(),
+		InitialClaimFreeAmount: msg.InitialClaimFreeAmount.String(),
+		Enabled:                "false",
+		StartTime:              msg.StartTime.String(),
+		EndTime:                msg.EndTime.String(),
+		LockupPeriod:           msg.LockupPeriod.String(),
+		VestingPeriod:          msg.VestingPeriod.String(),
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("create campaign emit event error", "event", event, "error", err.Error())
 	}
 
 	return &types.MsgCreateCampaignResponse{}, nil
@@ -66,6 +85,15 @@ func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCam
 		return nil, err
 	}
 
+	event := &types.RemoveCampaign{
+		Owner:      msg.Owner,
+		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("remove campaign emit event error", "event", event, "error", err.Error())
+	}
+
 	return &types.MsgRemoveCampaignResponse{}, nil
 }
 
@@ -80,6 +108,15 @@ func (k msgServer) StartCampaign(goCtx context.Context, msg *types.MsgStartCampa
 		msg.CampaignId,
 	); err != nil {
 		return nil, err
+	}
+
+	event := &types.StartCampaign{
+		Owner:      msg.Owner,
+		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("start campaign emit event error", "event", event, "error", err.Error())
 	}
 
 	return &types.MsgStartCampaignResponse{}, nil
@@ -97,6 +134,16 @@ func (k msgServer) CloseCampaign(goCtx context.Context, msg *types.MsgCloseCampa
 		msg.CampaignCloseAction,
 	); err != nil {
 		return nil, err
+	}
+
+	event := &types.CloseCampaign{
+		Owner:               msg.Owner,
+		CampaignId:          strconv.FormatUint(msg.CampaignId, 10),
+		CampaignCloseAction: msg.CampaignCloseAction.String(),
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("close campaign emit event error", "event", event, "error", err.Error())
 	}
 
 	return &types.MsgCloseCampaignResponse{}, nil
