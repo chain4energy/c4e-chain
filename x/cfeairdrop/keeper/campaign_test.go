@@ -143,16 +143,63 @@ func TestCreateCampaignCampaignEnabledError(t *testing.T) {
 	testHelper.C4eAirdropUtils.StartCampaignError(acountsAddresses[0].String(), 0, "start airdrop campaign campaign with id 0 has already started: entity already exists")
 }
 
-func TestCreateCampaignCloseCampaign(t *testing.T) {
+func TestCreateCampaignCloseCampaignCloseActionBurn(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED)
+	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseBurn)
+}
+
+func TestCreateCampaignCloseCampaignCloseActionSendToOwner(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToOwner)
+}
+
+func TestCreateCampaignCloseCampaignCloseActionSendToCommunityPool(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToCommunityPool)
+}
+
+func TestCreateCampaignCloseCampaignWrongCloseAction(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eAirdropUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseActionUnspecified, "wrong campaign close action type: invalid type")
 }
 
 func TestCreateManyCampaignsAndClose(t *testing.T) {
@@ -167,7 +214,7 @@ func TestCreateManyCampaignsAndClose(t *testing.T) {
 		testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), uint64(i))
 		blockTime := campaign.EndTime.Add(time.Minute)
 		testHelper.SetContextBlockTime(blockTime)
-		testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), uint64(i), types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED)
+		testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), uint64(i), types.CampaignCloseBurn)
 	}
 }
 
@@ -179,7 +226,7 @@ func TestCreateCampaignCloseCampaignCampaignNotStartedError(t *testing.T) {
 	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eAirdropUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, fmt.Sprintf("close airdrop campaign - campaign with id %d is already closed or have not started yet error: campaign is disabled", 0))
+	testHelper.C4eAirdropUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseBurn, fmt.Sprintf("close airdrop campaign - campaign with id %d is already closed or have not started yet error: campaign is disabled", 0))
 }
 
 func TestCreateCampaignCloseCampaignCampaignNotOverYetError(t *testing.T) {

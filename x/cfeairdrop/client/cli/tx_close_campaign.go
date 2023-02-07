@@ -23,7 +23,7 @@ func CmdCloseCampaign() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argCampaignCloseAction, err := types.CampaignCloseActionFromString(args[1])
+			argCampaignCloseAction, err := types.CampaignCloseActionFromString(types.NormalizeCampaignCloseAction(args[1]))
 			if err != nil {
 				return err
 			}

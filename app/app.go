@@ -352,10 +352,11 @@ func New(
 		appCodec, keys[stakingtypes.StoreKey], app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName),
 	)
 
-	app.DistrKeeper = distrkeeper.NewKeeper(
+	distributionKeeper := distrkeeper.NewKeeper(
 		appCodec, keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, cfedistributormoduletypes.ValidatorsRewardsCollector, app.ModuleAccountAddrs(),
 	)
+	app.DistrKeeper = distributionKeeper
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec, keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
 	)
@@ -375,7 +376,9 @@ func New(
 		app.BankKeeper,
 		app.FeeGrantKeeper,
 		stakingKeeper,
+		distributionKeeper,
 	)
+
 	cfeairdropModule := cfeairdropmodule.NewAppModule(appCodec, app.CfeairdropKeeper, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper)
 
 	// register the staking hooks
