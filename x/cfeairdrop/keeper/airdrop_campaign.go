@@ -173,7 +173,7 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 		LockupPeriod:           campaign.LockupPeriod.String(),
 		VestingPeriod:          campaign.VestingPeriod.String(),
 	}
-	err := ctx.EventManager().EmitTypedEvent(event)
+	err = ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
 		k.Logger(ctx).Error("edit campaign emit event error", "event", event, "error", err.Error())
 	}
