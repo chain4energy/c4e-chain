@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/app/upgrades"
 	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
 	"io"
@@ -100,7 +101,6 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
 
 	monitoringp "github.com/tendermint/spn/x/monitoringp"
@@ -126,7 +126,6 @@ import (
 const (
 	AccountAddressPrefix = "c4e"
 	Name                 = "c4e"
-	HomeName             = "c4e-chain"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -203,7 +202,6 @@ var (
 )
 
 var (
-	_ cosmoscmd.App           = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 
@@ -216,7 +214,7 @@ func init() {
 		panic(err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, "."+HomeName)
+	DefaultNodeHome = filepath.Join(userHomeDir, "."+Name)
 	cfedistributormoduletypes.SetMaccPerms(maccPerms) // TODO: workaround, change the way maccPerms is passed when switching to the new way of storing parameters
 }
 
@@ -285,10 +283,10 @@ func New(
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
-	encodingConfig cosmoscmd.EncodingConfig,
+	encodingConfig appparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) cosmoscmd.App {
+) *App {
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -798,9 +796,6 @@ func New(
 
 // Name returns the name of the App
 func (app *App) Name() string { return app.BaseApp.Name() }
-
-// GetBaseApp returns the base app of the application
-func (app App) GetBaseApp() *baseapp.BaseApp { return app.BaseApp }
 
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
