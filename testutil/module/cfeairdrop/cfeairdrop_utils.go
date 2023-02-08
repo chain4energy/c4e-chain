@@ -569,20 +569,33 @@ func (h *C4eAirdropUtils) CloseCampaign(ctx sdk.Context, owner string, campaignI
 	campaignAmoutLeftBefore, _ := h.helpeCfeairdropkeeper.GetCampaignAmountLeft(ctx, campaignId)
 	cfeairdropModuleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeairdroptypes.ModuleName)
 	campaign, ok := h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
+	_, feegrantAccountAddress := cfeairdropmodulekeeper.FeegrantAccountAddress(campaign.Id)
+	var feegrantAmountLefBefore sdk.Int
+	if campaign.FeegrantAmount.IsPositive() {
+		feegrantAmountLefBefore = h.BankUtils.GetAccountDefultDenomBalance(ctx, feegrantAccountAddress)
+	}
 	ownerAccAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
 	ownerBalanceBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, ownerAccAddress)
+
 	err := h.helpeCfeairdropkeeper.CloseCampaign(ctx, owner, campaignId, campaignCloseAction)
 	require.NoError(h.t, err)
+
 	campaign, _ = h.helpeCfeairdropkeeper.GetCampaign(ctx, campaignId)
 	campaignAmoutLeft, _ := h.helpeCfeairdropkeeper.GetCampaignAmountLeft(ctx, campaignId)
 	require.True(h.t, campaignAmoutLeft.Amount.IsEqual(sdk.NewCoins()))
 
+	if campaign.FeegrantAmount.IsPositive() {
+		feegrantAmountLef := h.BankUtils.GetAccountDefultDenomBalance(ctx, feegrantAccountAddress)
+		require.True(h.t, feegrantAmountLef.IsZero())
+	}
 	switch campaignCloseAction {
 	case cfeairdroptypes.CampaignCloseSendToCommunityPool:
 		feePool := h.DistributionUtils.DistrKeeper.GetFeePool(ctx)
-		require.True(h.t, feePool.CommunityPool.AmountOf(testenv.DefaultTestDenom).Equal(sdk.NewDecFromInt(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom))))
+		feePoolAmount := feePool.CommunityPool.AmountOf(testenv.DefaultTestDenom)
+		expectedAmount := sdk.NewDecFromInt(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom).Add(feegrantAmountLefBefore))
+		require.True(h.t, feePoolAmount.Equal(expectedAmount))
 	case cfeairdroptypes.CampaignCloseSendToOwner:
-		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)))
+		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom).Add(feegrantAmountLefBefore)))
 	}
 
 	require.True(h.t, ok)

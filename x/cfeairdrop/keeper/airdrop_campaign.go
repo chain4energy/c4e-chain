@@ -192,8 +192,10 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 	if validationResult != nil {
 		return validationResult
 	}
+
 	campaignAmountLeft, _ := k.GetCampaignAmountLeft(ctx, campaign.Id)
-	if err := k.campaignCloseActionSwitch(ctx, campaignCloseAction, campaign.Owner, campaignAmountLeft.Amount); err != nil {
+
+	if err := k.campaignCloseActionSwitch(ctx, campaignCloseAction, &campaign, campaignAmountLeft.Amount); err != nil {
 		return err
 	}
 
@@ -203,37 +205,60 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 	return nil
 }
 
-func (k Keeper) campaignCloseActionSwitch(ctx sdk.Context, campaignCloseAction types.CampaignCloseAction, owner string, campaignAmountLeft sdk.Coins) error {
+func (k Keeper) campaignCloseActionSwitch(ctx sdk.Context, campaignCloseAction types.CampaignCloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
 	switch campaignCloseAction {
 	case types.CampaignCloseSendToCommunityPool:
-		return k.campaignCloseSendToCommunityPool(ctx, campaignAmountLeft)
+		return k.campaignCloseSendToCommunityPool(ctx, campaign, campaignAmountLeft)
 	case types.CampaignCloseBurn:
-		return k.campaignCloseBurn(ctx, campaignAmountLeft)
+		return k.campaignCloseBurn(ctx, campaign, campaignAmountLeft)
 	case types.CampaignCloseSendToOwner:
-		return k.campaignCloseSendToOwner(ctx, owner, campaignAmountLeft)
+		return k.campaignCloseSendToOwner(ctx, campaign, campaignAmountLeft)
 	default:
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
 	}
 }
 
-func (k Keeper) campaignCloseSendToCommunityPool(ctx sdk.Context, campaignAmountLeft sdk.Coins) error {
+func (k Keeper) campaignCloseSendToCommunityPool(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
 	if err := k.distributionKeeper.FundCommunityPool(ctx, campaignAmountLeft, authtypes.NewModuleAddress(types.ModuleName)); err != nil {
 		return err
 	}
-	return nil
-}
-
-func (k Keeper) campaignCloseBurn(ctx sdk.Context, campaignAmountLeft sdk.Coins) error {
-	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft); err != nil {
-		return err
+	if campaign.FeegrantAmount.IsPositive() {
+		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+		feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
+		if err := k.distributionKeeper.FundCommunityPool(ctx, feegrantTotalAmount, feegrantAccountAddress); err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, owner string, campaignAmountLeft sdk.Coins) error {
-	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
+func (k Keeper) campaignCloseBurn(ctx sdk.Context, campaign *types.Campaign, coinsToBurn sdk.Coins) error {
+	if campaign.FeegrantAmount.IsPositive() {
+		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+		feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
+		coinsToBurn = coinsToBurn.Add(feegrantTotalAmount...)
+		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, types.ModuleName, feegrantTotalAmount); err != nil {
+			return err
+		}
+	}
+	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, coinsToBurn); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+	ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
 	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft); err != nil {
 		return err
+	}
+	if campaign.FeegrantAmount.IsPositive() {
+		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+		feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
+		if err := k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, feegrantTotalAmount); err != nil {
+			return err
+		}
 	}
 	return nil
 }

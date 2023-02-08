@@ -187,6 +187,53 @@ func TestCreateCampaignCloseCampaignCloseActionSendToCommunityPool(t *testing.T)
 	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToCommunityPool)
 }
 
+func TestCreateCampaignCloseCampaignCloseActionBurnAndFeegrant(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.FeegrantAmount = sdk.NewInt(1000)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(airdropEntries)))))
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseBurn)
+}
+
+func TestCreateCampaignCloseCampaignCloseActionSendToOwnerAndFeegrant(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.FeegrantAmount = sdk.NewInt(1000)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(airdropEntries)))))
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToOwner)
+}
+
+func TestCreateCampaignCloseCampaignCloseActionSendToCommunityPoolAndFeegrant(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.FeegrantAmount = sdk.NewInt(1000)
+	testHelper.C4eAirdropUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eAirdropUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	airdropEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	testHelper.C4eAirdropUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(airdropEntries)))))
+	testHelper.C4eAirdropUtils.AddClaimRecords(acountsAddresses[0], 0, airdropEntries)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eAirdropUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToCommunityPool)
+}
+
 func TestCreateCampaignCloseCampaignWrongCloseAction(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
