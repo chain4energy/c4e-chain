@@ -3,9 +3,13 @@ import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-cli
 import { Validator } from "chain4energy-c4e-chain-client-ts/cosmos.base.tendermint.v1beta1/types"
 import { VersionInfo } from "chain4energy-c4e-chain-client-ts/cosmos.base.tendermint.v1beta1/types"
 import { Module } from "chain4energy-c4e-chain-client-ts/cosmos.base.tendermint.v1beta1/types"
+import { ProofOp } from "chain4energy-c4e-chain-client-ts/cosmos.base.tendermint.v1beta1/types"
+import { ProofOps } from "chain4energy-c4e-chain-client-ts/cosmos.base.tendermint.v1beta1/types"
+import { Block } from "chain4energy-c4e-chain-client-ts/cosmos.base.tendermint.v1beta1/types"
+import { Header } from "chain4energy-c4e-chain-client-ts/cosmos.base.tendermint.v1beta1/types"
 
 
-export { Validator, VersionInfo, Module };
+export { Validator, VersionInfo, Module, ProofOp, ProofOps, Block, Header };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -42,11 +46,16 @@ const getDefaultState = () => {
 				GetBlockByHeight: {},
 				GetLatestValidatorSet: {},
 				GetValidatorSetByHeight: {},
+				ABCIQuery: {},
 				
 				_Structure: {
 						Validator: getStructure(Validator.fromPartial({})),
 						VersionInfo: getStructure(VersionInfo.fromPartial({})),
 						Module: getStructure(Module.fromPartial({})),
+						ProofOp: getStructure(ProofOp.fromPartial({})),
+						ProofOps: getStructure(ProofOps.fromPartial({})),
+						Block: getStructure(Block.fromPartial({})),
+						Header: getStructure(Header.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -110,6 +119,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.GetValidatorSetByHeight[JSON.stringify(params)] ?? {}
+		},
+				getABCIQuery: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ABCIQuery[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -280,6 +295,32 @@ export default {
 				return getters['getGetValidatorSetByHeight']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:ServiceGetValidatorSetByHeight API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async ServiceABCIQuery({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosBaseTendermintV1Beta1.query.serviceABCIQuery(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.CosmosBaseTendermintV1Beta1.query.serviceABCIQuery({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'ABCIQuery', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'ServiceABCIQuery', payload: { options: { all }, params: {...key},query }})
+				return getters['getABCIQuery']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:ServiceABCIQuery API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

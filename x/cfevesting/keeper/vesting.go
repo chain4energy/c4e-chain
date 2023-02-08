@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/math"
 	"strconv"
 	"time"
 
@@ -15,7 +16,7 @@ import (
 
 const VESTING_ADDRESS = "vestingAddr: "
 
-func (k Keeper) CreateVestingPool(ctx sdk.Context, addr string, name string, amount sdk.Int, duration time.Duration, vestingType string) error {
+func (k Keeper) CreateVestingPool(ctx sdk.Context, addr string, name string, amount math.Int, duration time.Duration, vestingType string) error {
 	k.Logger(ctx).Debug("create vesting pool", "addr", addr, "amount: ", amount, "vestingType", vestingType)
 	_, err := k.GetVestingType(ctx, vestingType)
 	if err != nil {
@@ -34,7 +35,7 @@ func (k Keeper) addVestingPool(
 	vestingPoolName string,
 	vestingAddr string,
 	coinSrcAddr string,
-	amount sdk.Int,
+	amount math.Int,
 	vestingType string,
 	lockStart time.Time,
 	lockEnd time.Time) error {
@@ -186,7 +187,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, address string) (withdrawn
 	return result, nil
 }
 
-func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr string, vestingPoolName string, amount sdk.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
+func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, fromAddr string, toAddr string, vestingPoolName string, amount math.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
 	k.Logger(ctx).Debug("send to new vesting account", "fromAddr", fromAddr, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "restartVesting", restartVesting)
 
 	if amount.LTE(sdk.ZeroInt()) {
@@ -332,14 +333,14 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 	return nil
 }
 
-func CalculateWithdrawable(current time.Time, vestingPool types.VestingPool) sdk.Int {
+func CalculateWithdrawable(current time.Time, vestingPool types.VestingPool) math.Int {
 	if current.Equal(vestingPool.LockEnd) || current.After(vestingPool.LockEnd) {
 		return vestingPool.GetCurrentlyLocked()
 	}
 	return sdk.ZeroInt()
 }
 
-func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount sdk.Int, free sdk.Dec,
+func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount math.Int, free sdk.Dec,
 	lockEnd time.Time,
 	vestingEnd time.Time) error {
 	denom := k.GetParams(ctx).Denom
@@ -376,7 +377,7 @@ func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount sdk.
 		return sdkerrors.Wrapf(types.ErrInvalidAccountType, "new vesting account - expected BaseAccount, got: %T", baseAccount)
 	}
 
-	decimalAmount := amount.ToDec()
+	decimalAmount := sdk.NewDecFromInt(amount)
 	originalVestingAmount := decimalAmount.Sub(decimalAmount.Mul(free)).TruncateInt()
 	originalVestingCoin := sdk.NewCoin(denom, originalVestingAmount)
 	originalVesting := sdk.NewCoins(originalVestingCoin)

@@ -13,10 +13,8 @@ export interface VestingType {
   name: string;
   /** period of locked coins (minutes) from vesting start */
   lockup_period: Duration | undefined;
-  /** period of vesting coins (minutes) from lockup period end */
+  /** period of veesting coins (minutes) from lockup period end */
   vesting_period: Duration | undefined;
-  /** the percentage of tokens that are released initially */
-  free: string;
 }
 
 const baseVestingTypes: object = {};
@@ -85,7 +83,7 @@ export const VestingTypes = {
   },
 };
 
-const baseVestingType: object = { name: "", free: "" };
+const baseVestingType: object = { name: "" };
 
 export const VestingType = {
   encode(message: VestingType, writer: Writer = Writer.create()): Writer {
@@ -100,9 +98,6 @@ export const VestingType = {
         message.vesting_period,
         writer.uint32(26).fork()
       ).ldelim();
-    }
-    if (message.free !== "") {
-      writer.uint32(34).string(message.free);
     }
     return writer;
   },
@@ -122,9 +117,6 @@ export const VestingType = {
           break;
         case 3:
           message.vesting_period = Duration.decode(reader, reader.uint32());
-          break;
-        case 4:
-          message.free = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -151,11 +143,6 @@ export const VestingType = {
     } else {
       message.vesting_period = undefined;
     }
-    if (object.free !== undefined && object.free !== null) {
-      message.free = String(object.free);
-    } else {
-      message.free = "";
-    }
     return message;
   },
 
@@ -170,7 +157,6 @@ export const VestingType = {
       (obj.vesting_period = message.vesting_period
         ? Duration.toJSON(message.vesting_period)
         : undefined);
-    message.free !== undefined && (obj.free = message.free);
     return obj;
   },
 
@@ -190,11 +176,6 @@ export const VestingType = {
       message.vesting_period = Duration.fromPartial(object.vesting_period);
     } else {
       message.vesting_period = undefined;
-    }
-    if (object.free !== undefined && object.free !== null) {
-      message.free = object.free;
-    } else {
-      message.free = "";
     }
     return message;
   },

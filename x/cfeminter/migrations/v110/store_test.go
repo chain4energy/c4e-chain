@@ -126,7 +126,7 @@ func createV101MinterState(
 	remainderToMint,
 	remainderFromPreviousPeriod sdk.Dec,
 	lastMintBlockTime time.Time,
-	amountMinted sdk.Int,
+	amountMinted math.Int,
 ) v101.MinterState {
 	return v101.MinterState{
 		Position:                    position,

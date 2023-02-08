@@ -3,11 +3,12 @@ import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-cli
 import { GenericAuthorization } from "chain4energy-c4e-chain-client-ts/cosmos.authz.v1beta1/types"
 import { Grant } from "chain4energy-c4e-chain-client-ts/cosmos.authz.v1beta1/types"
 import { GrantAuthorization } from "chain4energy-c4e-chain-client-ts/cosmos.authz.v1beta1/types"
+import { GrantQueueItem } from "chain4energy-c4e-chain-client-ts/cosmos.authz.v1beta1/types"
 import { EventGrant } from "chain4energy-c4e-chain-client-ts/cosmos.authz.v1beta1/types"
 import { EventRevoke } from "chain4energy-c4e-chain-client-ts/cosmos.authz.v1beta1/types"
 
 
-export { GenericAuthorization, Grant, GrantAuthorization, EventGrant, EventRevoke };
+export { GenericAuthorization, Grant, GrantAuthorization, GrantQueueItem, EventGrant, EventRevoke };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -46,6 +47,7 @@ const getDefaultState = () => {
 						GenericAuthorization: getStructure(GenericAuthorization.fromPartial({})),
 						Grant: getStructure(Grant.fromPartial({})),
 						GrantAuthorization: getStructure(GrantAuthorization.fromPartial({})),
+						GrantQueueItem: getStructure(GrantQueueItem.fromPartial({})),
 						EventGrant: getStructure(EventGrant.fromPartial({})),
 						EventRevoke: getStructure(EventRevoke.fromPartial({})),
 						
@@ -206,6 +208,19 @@ export default {
 		},
 		
 		
+		async sendMsgExec({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.CosmosAuthzV1Beta1.tx.sendMsgExec({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgExec:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgExec:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		async sendMsgRevoke({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -232,20 +247,20 @@ export default {
 				}
 			}
 		},
-		async sendMsgExec({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		async MsgExec({ rootGetters }, { value }) {
 			try {
-				const client=await initClient(rootGetters)
-				const result = await client.CosmosAuthzV1Beta1.tx.sendMsgExec({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
+				const client=initClient(rootGetters)
+				const msg = await client.CosmosAuthzV1Beta1.tx.msgExec({value})
+				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgExec:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgExec:Send Could not broadcast Tx: '+ e.message)
+				} else{
+					throw new Error('TxClient:MsgExec:Create Could not create message: ' + e.message)
 				}
 			}
 		},
-		
 		async MsgRevoke({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -269,19 +284,6 @@ export default {
 					throw new Error('TxClient:MsgGrant:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgGrant:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgExec({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.CosmosAuthzV1Beta1.tx.msgExec({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgExec:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgExec:Create Could not create message: ' + e.message)
 				}
 			}
 		},

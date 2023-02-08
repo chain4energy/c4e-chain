@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	"sort"
 	"time"
@@ -197,7 +198,7 @@ func (a BySequenceId) Len() int           { return len(a) }
 func (a BySequenceId) Less(i, j int) bool { return a[i].SequenceId < a[j].SequenceId }
 func (a BySequenceId) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
-func (m *Minter) CalculateInflation(totalSupply sdk.Int, startTime time.Time, blockTime time.Time) sdk.Dec {
+func (m *Minter) CalculateInflation(totalSupply math.Int, startTime time.Time, blockTime time.Time) sdk.Dec {
 	if startTime.After(blockTime) {
 		return sdk.ZeroDec()
 	}
@@ -213,7 +214,7 @@ func (m *Minter) CalculateInflation(totalSupply sdk.Int, startTime time.Time, bl
 	}
 }
 
-func (m *LinearMinting) calculateInflation(totalSupply sdk.Int, minterStart time.Time, endTime time.Time) sdk.Dec {
+func (m *LinearMinting) calculateInflation(totalSupply math.Int, minterStart time.Time, endTime time.Time) sdk.Dec {
 	if totalSupply.LTE(sdk.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
@@ -223,7 +224,7 @@ func (m *LinearMinting) calculateInflation(totalSupply sdk.Int, minterStart time
 	return mintedYearly.QuoInt(totalSupply)
 }
 
-func (m *ExponentialStepMinting) calculateInflation(totalSupply sdk.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
+func (m *ExponentialStepMinting) calculateInflation(totalSupply math.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
 	if totalSupply.LTE(sdk.ZeroInt()) {
 		return sdk.ZeroDec()
 	}

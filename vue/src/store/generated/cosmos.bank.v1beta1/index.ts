@@ -9,9 +9,10 @@ import { Supply } from "chain4energy-c4e-chain-client-ts/cosmos.bank.v1beta1/typ
 import { DenomUnit } from "chain4energy-c4e-chain-client-ts/cosmos.bank.v1beta1/types"
 import { Metadata } from "chain4energy-c4e-chain-client-ts/cosmos.bank.v1beta1/types"
 import { Balance } from "chain4energy-c4e-chain-client-ts/cosmos.bank.v1beta1/types"
+import { DenomOwner } from "chain4energy-c4e-chain-client-ts/cosmos.bank.v1beta1/types"
 
 
-export { SendAuthorization, Params, SendEnabled, Input, Output, Supply, DenomUnit, Metadata, Balance };
+export { SendAuthorization, Params, SendEnabled, Input, Output, Supply, DenomUnit, Metadata, Balance, DenomOwner };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -50,6 +51,7 @@ const getDefaultState = () => {
 				Params: {},
 				DenomMetadata: {},
 				DenomsMetadata: {},
+				DenomOwners: {},
 				
 				_Structure: {
 						SendAuthorization: getStructure(SendAuthorization.fromPartial({})),
@@ -61,6 +63,7 @@ const getDefaultState = () => {
 						DenomUnit: getStructure(DenomUnit.fromPartial({})),
 						Metadata: getStructure(Metadata.fromPartial({})),
 						Balance: getStructure(Balance.fromPartial({})),
+						DenomOwner: getStructure(DenomOwner.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -136,6 +139,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.DenomsMetadata[JSON.stringify(params)] ?? {}
+		},
+				getDenomOwners: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.DenomOwners[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -284,9 +293,13 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.CosmosBankV1Beta1.query.querySupplyOf( key.denom)).data
+				let value= (await client.CosmosBankV1Beta1.query.querySupplyOf(query ?? undefined)).data
 				
 					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.CosmosBankV1Beta1.query.querySupplyOf({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
 				commit('QUERY', { query: 'SupplyOf', key: { params: {...key}, query}, value })
 				if (subscribe) commit('SUBSCRIBE', { action: 'QuerySupplyOf', payload: { options: { all }, params: {...key},query }})
 				return getters['getSupplyOf']( { params: {...key}, query}) ?? {}
@@ -362,6 +375,32 @@ export default {
 				return getters['getDenomsMetadata']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryDenomsMetadata API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryDenomOwners({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosBankV1Beta1.query.queryDenomOwners( key.denom, query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.CosmosBankV1Beta1.query.queryDenomOwners( key.denom, {...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'DenomOwners', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryDenomOwners', payload: { options: { all }, params: {...key},query }})
+				return getters['getDenomOwners']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryDenomOwners API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

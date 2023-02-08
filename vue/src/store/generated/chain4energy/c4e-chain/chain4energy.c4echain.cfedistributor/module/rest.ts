@@ -14,16 +14,14 @@ export interface CfedistributorAccount {
   type?: string;
 }
 
-export interface CfedistributorDestinationShare {
-  name?: string;
-  share?: string;
-  destination?: CfedistributorAccount;
+export interface CfedistributorBurnShare {
+  percent?: string;
 }
 
-export interface CfedistributorDestinations {
-  primary_share?: CfedistributorAccount;
-  burn_share?: string;
-  shares?: CfedistributorDestinationShare[];
+export interface CfedistributorDestination {
+  account?: CfedistributorAccount;
+  share?: CfedistributorShare[];
+  burn_share?: CfedistributorBurnShare;
 }
 
 /**
@@ -37,7 +35,7 @@ export interface CfedistributorParams {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CfedistributorQueryParamsResponse {
-  /** params holds all the parameters of this module. */
+  /** Params defines the parameters for the module. */
   params?: CfedistributorParams;
 }
 
@@ -46,16 +44,22 @@ export interface CfedistributorQueryStatesResponse {
   coins_on_distributor_account?: V1Beta1Coin[];
 }
 
+export interface CfedistributorShare {
+  name?: string;
+  percent?: string;
+  account?: CfedistributorAccount;
+}
+
 export interface CfedistributorState {
   account?: CfedistributorAccount;
   burn?: boolean;
-  remains?: V1Beta1DecCoin[];
+  coins_states?: V1Beta1DecCoin[];
 }
 
 export interface CfedistributorSubDistributor {
   name?: string;
   sources?: CfedistributorAccount[];
-  destinations?: CfedistributorDestinations;
+  destination?: CfedistributorDestination;
 }
 
 export interface ProtobufAny {
@@ -293,11 +297,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/distributor/v1beta1/params
+   * @request GET:/c4e/distributor/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfedistributorQueryParamsResponse, RpcStatus>({
-      path: `/c4e/distributor/v1beta1/params`,
+      path: `/c4e/distributor/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -309,11 +313,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryStates
    * @summary Queries a list of States items.
-   * @request GET:/c4e/distributor/v1beta1/states
+   * @request GET:/c4e/distributor/states
    */
   queryStates = (params: RequestParams = {}) =>
     this.request<CfedistributorQueryStatesResponse, RpcStatus>({
-      path: `/c4e/distributor/v1beta1/states`,
+      path: `/c4e/distributor/states`,
       method: "GET",
       format: "json",
       ...params,

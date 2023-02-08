@@ -109,6 +109,19 @@ export default {
 			})
 		},
 		
+		async sendMsgCreatePermanentLockedAccount({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.CosmosVestingV1Beta1.tx.sendMsgCreatePermanentLockedAccount({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreatePermanentLockedAccount:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgCreatePermanentLockedAccount:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		async sendMsgCreateVestingAccount({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -122,7 +135,33 @@ export default {
 				}
 			}
 		},
+		async sendMsgCreatePeriodicVestingAccount({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.CosmosVestingV1Beta1.tx.sendMsgCreatePeriodicVestingAccount({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreatePeriodicVestingAccount:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgCreatePeriodicVestingAccount:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		
+		async MsgCreatePermanentLockedAccount({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.CosmosVestingV1Beta1.tx.msgCreatePermanentLockedAccount({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreatePermanentLockedAccount:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCreatePermanentLockedAccount:Create Could not create message: ' + e.message)
+				}
+			}
+		},
 		async MsgCreateVestingAccount({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -133,6 +172,19 @@ export default {
 					throw new Error('TxClient:MsgCreateVestingAccount:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgCreateVestingAccount:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgCreatePeriodicVestingAccount({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.CosmosVestingV1Beta1.tx.msgCreatePeriodicVestingAccount({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCreatePeriodicVestingAccount:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCreatePeriodicVestingAccount:Create Could not create message: ' + e.message)
 				}
 			}
 		},

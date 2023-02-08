@@ -38,11 +38,11 @@ func (h *C4eVestingKeeperUtils) GetC4eVestingKeeper() *cfevestingmodulekeeper.Ke
 	return h.helperCfevestingKeeper
 }
 
-func (h *C4eVestingKeeperUtils) SetupAccountVestingPools(ctx sdk.Context, address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
+func (h *C4eVestingKeeperUtils) SetupAccountVestingPools(ctx sdk.Context, address string, numberOfVestingPools int, vestingAmount math.Int, withdrawnAmount math.Int) cfevestingtypes.AccountVestingPools {
 	return h.SetupAccountVestingPoolsWithModification(ctx, func(*cfevestingtypes.VestingPool) { /*do not modify*/ }, address, numberOfVestingPools, vestingAmount, withdrawnAmount)
 }
 
-func (h *C4eVestingKeeperUtils) SetupAccountVestingPoolsWithModification(ctx sdk.Context, modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
+func (h *C4eVestingKeeperUtils) SetupAccountVestingPoolsWithModification(ctx sdk.Context, modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestingPools int, vestingAmount math.Int, withdrawnAmount math.Int) cfevestingtypes.AccountVestingPools {
 	accountVestingPools := GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(numberOfVestingPools, 1, 1)
 	accountVestingPools.Address = address
 
@@ -95,8 +95,8 @@ func NewC4eVestingUtils(t *testing.T, helperCfevestingKeeper *cfevestingmoduleke
 }
 
 func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
-	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest sdk.Int, accAmountBefore sdk.Int, moduleAmountBefore sdk.Int,
-	accAmountAfter sdk.Int, moduleAmountAfter sdk.Int) {
+	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int, accAmountBefore math.Int, moduleAmountBefore math.Int,
+	accAmountAfter math.Int, moduleAmountAfter math.Int) {
 	_, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
 	require.EqualValues(h.t, accountVestingPoolsExistsBefore, accFound)
 
@@ -129,7 +129,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.
 }
 
 func (h *C4eVestingUtils) MessageCreateVestingPoolError(ctx sdk.Context, address sdk.AccAddress,
-	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest sdk.Int,
+	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int,
 	errorMessage string) {
 
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
@@ -159,7 +159,7 @@ func newTimeArray(n int, v time.Time) []time.Time {
 }
 
 func (h *C4eVestingUtils) VerifyAccountVestingPools(ctx sdk.Context, address sdk.AccAddress,
-	vestingNames []string, durations []time.Duration, vestingTypes []cfevestingtypes.VestingType, vestedAmounts []sdk.Int, withdrawnAmounts []sdk.Int, startAndModificationTime ...time.Time) {
+	vestingNames []string, durations []time.Duration, vestingTypes []cfevestingtypes.VestingType, vestedAmounts []math.Int, withdrawnAmounts []math.Int, startAndModificationTime ...time.Time) {
 
 	// startAndModificationTime allows to handle 3 cases - time from context, one time for all
 	var times []time.Time
@@ -176,8 +176,8 @@ func (h *C4eVestingUtils) VerifyAccountVestingPools(ctx sdk.Context, address sdk
 }
 
 func (h *C4eVestingUtils) VerifyAccountVestingPoolsWithModification(ctx sdk.Context, address sdk.AccAddress,
-	amountOfAllAccVestingPools int, vestingNames []string, durations []time.Duration, vestingTypes []cfevestingtypes.VestingType, startsTimes []time.Time, vestedAmounts []sdk.Int, withdrawnAmounts []sdk.Int,
-	sentAmounts []int64, modificationsTimes []time.Time, modificationsVested []sdk.Int, modificationsWithdrawn []sdk.Int) {
+	amountOfAllAccVestingPools int, vestingNames []string, durations []time.Duration, vestingTypes []cfevestingtypes.VestingType, startsTimes []time.Time, vestedAmounts []math.Int, withdrawnAmounts []math.Int,
+	sentAmounts []int64, modificationsTimes []time.Time, modificationsVested []math.Int, modificationsWithdrawn []math.Int) {
 
 	allAccVestingPools := h.helperCfevestingKeeper.GetAllAccountVestingPools(ctx)
 
@@ -204,8 +204,8 @@ func (h *C4eVestingUtils) VerifyAccountVestingPoolsWithModification(ctx sdk.Cont
 }
 
 func (h *C4eVestingUtils) VerifyVestingPool(ctx sdk.Context, vp *cfevestingtypes.VestingPool, expectedName string,
-	expectedVestingType string, expectedLockStart time.Time, expectedLockEnd time.Time, expectedInitiallyLocked sdk.Int,
-	expectedWithdrawn sdk.Int, expectedSent sdk.Int) {
+	expectedVestingType string, expectedLockStart time.Time, expectedLockEnd time.Time, expectedInitiallyLocked math.Int,
+	expectedWithdrawn math.Int, expectedSent math.Int) {
 	require.EqualValues(h.t, expectedName, vp.Name)
 	require.EqualValues(h.t, expectedVestingType, vp.VestingType)
 	require.EqualValues(h.t, true, expectedLockStart.Equal(vp.LockStart))
@@ -229,8 +229,8 @@ func (h *C4eVestingUtils) SetupVestingTypesWithModification(ctx sdk.Context, mod
 	return vestingTypes
 }
 
-func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address sdk.AccAddress, accountBalanceBefore sdk.Int, moduleBalanceBefore sdk.Int,
-	expectedWithdrawn sdk.Int) {
+func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address sdk.AccAddress, accountBalanceBefore math.Int, moduleBalanceBefore math.Int,
+	expectedWithdrawn math.Int) {
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceBefore)
@@ -320,7 +320,7 @@ func (h *C4eVestingUtils) SetVestingTypes(ctx sdk.Context, vestingTypes cfevesti
 	h.helperCfevestingKeeper.SetVestingTypes(ctx, vestingTypes)
 }
 
-func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount sdk.Int, restartVesting bool, expectedLocked sdk.Int) {
+func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount math.Int, restartVesting bool, expectedLocked math.Int) {
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
@@ -364,7 +364,7 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	}
 }
 
-func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount sdk.Int, restartVesting bool, errorMessage string) {
+func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount math.Int, restartVesting bool, errorMessage string) {
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
 	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
@@ -390,29 +390,29 @@ func NewContextC4eVestingUtils(t *testing.T, testContext testenv.TestContext, he
 	return &ContextC4eVestingUtils{C4eVestingUtils: c4eVestingUtils, testContext: testContext}
 }
 
-func (h *ContextC4eVestingUtils) SetupAccountVestingPools(address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
+func (h *ContextC4eVestingUtils) SetupAccountVestingPools(address string, numberOfVestingPools int, vestingAmount math.Int, withdrawnAmount math.Int) cfevestingtypes.AccountVestingPools {
 	return h.C4eVestingUtils.SetupAccountVestingPools(h.testContext.GetContext(), address, numberOfVestingPools, vestingAmount, withdrawnAmount)
 }
 
-func (h *ContextC4eVestingUtils) SetupAccountVestingsPoolsWithModification(modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestingPools int, vestingAmount sdk.Int, withdrawnAmount sdk.Int) cfevestingtypes.AccountVestingPools {
+func (h *ContextC4eVestingUtils) SetupAccountVestingsPoolsWithModification(modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestingPools int, vestingAmount math.Int, withdrawnAmount math.Int) cfevestingtypes.AccountVestingPools {
 	return h.C4eVestingUtils.SetupAccountVestingPoolsWithModification(h.testContext.GetContext(), modifyVesting, address, numberOfVestingPools, vestingAmount, withdrawnAmount)
 }
 
 func (h *ContextC4eVestingUtils) MessageCreateVestingPool(address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
-	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest sdk.Int, accAmountBefore sdk.Int, moduleAmountBefore sdk.Int,
-	accAmountAfter sdk.Int, moduleAmountAfter sdk.Int) {
+	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int, accAmountBefore math.Int, moduleAmountBefore math.Int,
+	accAmountAfter math.Int, moduleAmountAfter math.Int) {
 	h.C4eVestingUtils.MessageCreateVestingPool(h.testContext.GetContext(), address, accountVestingPoolsExistsBefore, accountVestingPoolsExistsAfter, vestingPoolName, lockupDuration,
 		vestingType, amountToVest, accAmountBefore, moduleAmountBefore, accAmountAfter, moduleAmountAfter)
 }
 
 func (h *ContextC4eVestingUtils) VerifyAccountVestingPools(address sdk.AccAddress,
-	vestingNames []string, durations []time.Duration, vestingTypes []cfevestingtypes.VestingType, vestedAmounts []sdk.Int, withdrawnAmounts []sdk.Int, startAndModificationTime ...time.Time) {
+	vestingNames []string, durations []time.Duration, vestingTypes []cfevestingtypes.VestingType, vestedAmounts []math.Int, withdrawnAmounts []math.Int, startAndModificationTime ...time.Time) {
 	h.C4eVestingUtils.VerifyAccountVestingPools(h.testContext.GetContext(), address, vestingNames, durations, vestingTypes, vestedAmounts, withdrawnAmounts, startAndModificationTime...)
 }
 
 func (h *ContextC4eVestingUtils) VerifyAccountVestingPoolsWithModification(address sdk.AccAddress,
-	amountOfAllAccVestingPools int, vestingNames []string, durations []time.Duration, vestingTypes []cfevestingtypes.VestingType, startsTimes []time.Time, vestedAmounts []sdk.Int, withdrawnAmounts []sdk.Int,
-	sentAmounts []int64, modificationsTimes []time.Time, modificationsVested []sdk.Int, modificationsWithdrawn []sdk.Int) {
+	amountOfAllAccVestingPools int, vestingNames []string, durations []time.Duration, vestingTypes []cfevestingtypes.VestingType, startsTimes []time.Time, vestedAmounts []math.Int, withdrawnAmounts []math.Int,
+	sentAmounts []int64, modificationsTimes []time.Time, modificationsVested []math.Int, modificationsWithdrawn []math.Int) {
 	h.C4eVestingUtils.VerifyAccountVestingPoolsWithModification(h.testContext.GetContext(), address, amountOfAllAccVestingPools, vestingNames, durations, vestingTypes, startsTimes, vestedAmounts,
 		withdrawnAmounts, sentAmounts, modificationsTimes, modificationsVested, modificationsWithdrawn)
 }
@@ -425,8 +425,8 @@ func (h *ContextC4eVestingUtils) SetupVestingTypesWithModification(modifyVesting
 	return h.C4eVestingUtils.SetupVestingTypesWithModification(h.testContext.GetContext(), modifyVestingType, numberOfVestingTypes, amountOf10BasedVestingTypes, startId)
 }
 
-func (h *ContextC4eVestingUtils) MessageWithdrawAllAvailable(address sdk.AccAddress, accountBalanceBefore sdk.Int, moduleBalanceBefore sdk.Int,
-	expectedWithdrawn sdk.Int) {
+func (h *ContextC4eVestingUtils) MessageWithdrawAllAvailable(address sdk.AccAddress, accountBalanceBefore math.Int, moduleBalanceBefore math.Int,
+	expectedWithdrawn math.Int) {
 	h.C4eVestingUtils.MessageWithdrawAllAvailable(h.testContext.GetContext(), address, accountBalanceBefore, moduleBalanceBefore, expectedWithdrawn)
 }
 
@@ -443,7 +443,7 @@ func (h *ContextC4eVestingUtils) QueryVestings(expectedResponse cfevestingtypes.
 }
 
 func (h *ContextC4eVestingUtils) MessageCreateVestingPoolError(address sdk.AccAddress,
-	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest sdk.Int,
+	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int,
 	errorMessage string) {
 	h.C4eVestingUtils.MessageCreateVestingPoolError(h.testContext.GetContext(), address, vestingPoolName, lockupDuration,
 		vestingType, amountToVest, errorMessage)
@@ -453,11 +453,11 @@ func (h *ContextC4eVestingUtils) SetVestingTypes(vestingTypes cfevestingtypes.Ve
 	h.C4eVestingUtils.SetVestingTypes(h.testContext.GetContext(), vestingTypes)
 }
 
-func (h *ContextC4eVestingUtils) MessageSendToVestingAccount(fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount sdk.Int, restartVesting bool, expectedLocked sdk.Int) {
+func (h *ContextC4eVestingUtils) MessageSendToVestingAccount(fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount math.Int, restartVesting bool, expectedLocked math.Int) {
 	h.C4eVestingUtils.MessageSendToVestingAccount(h.testContext.GetContext(), fromAddress, vestingAccAddress, vestingPoolName, amount, restartVesting, expectedLocked)
 }
 
-func (h *ContextC4eVestingUtils) MessageSendToVestingAccountError(fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount sdk.Int, restartVesting bool, errorMessage string) {
+func (h *ContextC4eVestingUtils) MessageSendToVestingAccountError(fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount math.Int, restartVesting bool, errorMessage string) {
 	h.C4eVestingUtils.MessageSendToVestingAccountError(h.testContext.GetContext(), fromAddress, vestingAccAddress, vestingPoolName, amount, restartVesting, errorMessage)
 }
 
@@ -492,7 +492,7 @@ func (h *ContextC4eVestingUtils) MessageCreateVestingAccount(
 	coins sdk.Coins,
 	startTime time.Time,
 	endTime time.Time,
-	amountBefore sdk.Int,
+	amountBefore math.Int,
 ) {
 	h.C4eVestingUtils.MessageCreateVestingAccount(
 		h.testContext.GetContext(),
@@ -512,7 +512,7 @@ func (h *C4eVestingUtils) MessageCreateVestingAccount(
 	coins sdk.Coins,
 	startTime time.Time,
 	endTime time.Time,
-	amountBefore sdk.Int,
+	amountBefore math.Int,
 ) {
 	_, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, toAddress.String())
 	require.EqualValues(h.t, false, accFound)
@@ -547,7 +547,7 @@ func (h *ContextC4eVestingUtils) MessageCreateVestingAccountError(
 	amount sdk.Coins,
 	startTime time.Time,
 	endTime time.Time,
-	amountBefore sdk.Int,
+	amountBefore math.Int,
 	errorMessage string,
 ) {
 	h.C4eVestingUtils.MessageCreateVestingAccountError(
@@ -569,7 +569,7 @@ func (h *C4eVestingUtils) MessageCreateVestingAccountError(
 	amount sdk.Coins,
 	startTime time.Time,
 	endTime time.Time,
-	amountBefore sdk.Int,
+	amountBefore math.Int,
 	errorMessage string,
 ) {
 	vestingAccountCountBefore := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)

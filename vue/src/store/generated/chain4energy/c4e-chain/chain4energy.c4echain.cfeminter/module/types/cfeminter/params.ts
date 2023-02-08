@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { MinterConfig } from "../cfeminter/minter";
+import { Minter } from "../cfeminter/minter";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
@@ -7,7 +7,7 @@ export const protobufPackage = "chain4energy.c4echain.cfeminter";
 /** Params defines the parameters for the module. */
 export interface Params {
   mint_denom: string;
-  minter_config: MinterConfig | undefined;
+  minter: Minter | undefined;
 }
 
 const baseParams: object = { mint_denom: "" };
@@ -17,11 +17,8 @@ export const Params = {
     if (message.mint_denom !== "") {
       writer.uint32(10).string(message.mint_denom);
     }
-    if (message.minter_config !== undefined) {
-      MinterConfig.encode(
-        message.minter_config,
-        writer.uint32(18).fork()
-      ).ldelim();
+    if (message.minter !== undefined) {
+      Minter.encode(message.minter, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -37,7 +34,7 @@ export const Params = {
           message.mint_denom = reader.string();
           break;
         case 2:
-          message.minter_config = MinterConfig.decode(reader, reader.uint32());
+          message.minter = Minter.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -54,10 +51,10 @@ export const Params = {
     } else {
       message.mint_denom = "";
     }
-    if (object.minter_config !== undefined && object.minter_config !== null) {
-      message.minter_config = MinterConfig.fromJSON(object.minter_config);
+    if (object.minter !== undefined && object.minter !== null) {
+      message.minter = Minter.fromJSON(object.minter);
     } else {
-      message.minter_config = undefined;
+      message.minter = undefined;
     }
     return message;
   },
@@ -65,10 +62,8 @@ export const Params = {
   toJSON(message: Params): unknown {
     const obj: any = {};
     message.mint_denom !== undefined && (obj.mint_denom = message.mint_denom);
-    message.minter_config !== undefined &&
-      (obj.minter_config = message.minter_config
-        ? MinterConfig.toJSON(message.minter_config)
-        : undefined);
+    message.minter !== undefined &&
+      (obj.minter = message.minter ? Minter.toJSON(message.minter) : undefined);
     return obj;
   },
 
@@ -79,10 +74,10 @@ export const Params = {
     } else {
       message.mint_denom = "";
     }
-    if (object.minter_config !== undefined && object.minter_config !== null) {
-      message.minter_config = MinterConfig.fromPartial(object.minter_config);
+    if (object.minter !== undefined && object.minter !== null) {
+      message.minter = Minter.fromPartial(object.minter);
     } else {
-      message.minter_config = undefined;
+      message.minter = undefined;
     }
     return message;
   },

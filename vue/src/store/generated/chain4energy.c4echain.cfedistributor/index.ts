@@ -1,17 +1,16 @@
 import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-client-ts'
 
-import { DistributionResult } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
-import { DistributionsResult } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
+import { Distribution } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
+import { DistributionBurn } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
 import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
 import { State } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
 import { SubDistributor } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
-import { Destination } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
-import { BurnShare } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
-import { Share } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
+import { Destinations } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
+import { DestinationShare } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
 import { Account } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfedistributor/types"
 
 
-export { DistributionResult, DistributionsResult, Params, State, SubDistributor, Destination, BurnShare, Share, Account };
+export { Distribution, DistributionBurn, Params, State, SubDistributor, Destinations, DestinationShare, Account };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -46,14 +45,13 @@ const getDefaultState = () => {
 				States: {},
 				
 				_Structure: {
-						DistributionResult: getStructure(DistributionResult.fromPartial({})),
-						DistributionsResult: getStructure(DistributionsResult.fromPartial({})),
+						Distribution: getStructure(Distribution.fromPartial({})),
+						DistributionBurn: getStructure(DistributionBurn.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						State: getStructure(State.fromPartial({})),
 						SubDistributor: getStructure(SubDistributor.fromPartial({})),
-						Destination: getStructure(Destination.fromPartial({})),
-						BurnShare: getStructure(BurnShare.fromPartial({})),
-						Share: getStructure(Share.fromPartial({})),
+						Destinations: getStructure(Destinations.fromPartial({})),
+						DestinationShare: getStructure(DestinationShare.fromPartial({})),
 						Account: getStructure(Account.fromPartial({})),
 						
 		},

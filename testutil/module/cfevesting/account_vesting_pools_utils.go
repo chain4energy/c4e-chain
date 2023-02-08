@@ -149,7 +149,7 @@ func ToAccountVestingPoolsPointersArray(src []types.AccountVestingPools) []*type
 	return result
 }
 
-func GetExpectedWithdrawableForVesting(vestingPool types.VestingPool, current time.Time) sdk.Int {
+func GetExpectedWithdrawableForVesting(vestingPool types.VestingPool, current time.Time) math.Int {
 	result := GetExpectedWithdrawable(vestingPool.LockEnd, current, vestingPool.InitiallyLocked.Sub(vestingPool.Sent).Sub(vestingPool.Withdrawn))
 	if result.LT(sdk.ZeroInt()) {
 		return sdk.ZeroInt()
@@ -157,7 +157,7 @@ func GetExpectedWithdrawableForVesting(vestingPool types.VestingPool, current ti
 	return result
 }
 
-func GetExpectedWithdrawable(lockEnd time.Time, current time.Time, amount sdk.Int) sdk.Int {
+func GetExpectedWithdrawable(lockEnd time.Time, current time.Time, amount math.Int) math.Int {
 	if current.Equal(lockEnd) || current.After(lockEnd) {
 		return amount
 	}

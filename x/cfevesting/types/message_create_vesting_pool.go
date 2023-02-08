@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,7 +12,7 @@ const TypeMsgCreateVestingPool = "create_vesting_pool"
 
 var _ sdk.Msg = &MsgCreateVestingPool{}
 
-func NewMsgCreateVestingPool(creator string, name string, amount sdk.Int, duration time.Duration, vestingType string) *MsgCreateVestingPool {
+func NewMsgCreateVestingPool(creator string, name string, amount math.Int, duration time.Duration, vestingType string) *MsgCreateVestingPool {
 	return &MsgCreateVestingPool{
 		Creator:     creator,
 		Name:        name,

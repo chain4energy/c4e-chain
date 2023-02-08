@@ -137,7 +137,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 }
 
-func getVestingPoolsAmount(accVestingPools []*types.AccountVestingPools) sdk.Int {
+func getVestingPoolsAmount(accVestingPools []*types.AccountVestingPools) math.Int {
 	result := sdk.ZeroInt()
 	for _, accV := range accVestingPools {
 		for _, v := range accV.VestingPools {
@@ -183,7 +183,7 @@ func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {
 
 }
 
-func mintUndelegableCoinsToModule(testHelper *testapp.TestHelper, genesisState types.GenesisState, amount sdk.Int) {
+func mintUndelegableCoinsToModule(testHelper *testapp.TestHelper, genesisState types.GenesisState, amount math.Int) {
 	mintedCoin := sdk.NewCoin(genesisState.Params.Denom, amount)
 	testHelper.BankUtils.AddCoinsToModule(mintedCoin, types.ModuleName)
 }

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -9,7 +10,7 @@ const TypeMsgSendToVestingAccount = "send_to_vesting_account"
 
 var _ sdk.Msg = &MsgSendToVestingAccount{}
 
-func NewMsgSendToVestingAccount(fromAddress string, toAddress string, vestingPoolName string, amount sdk.Int, restartVesting bool) *MsgSendToVestingAccount {
+func NewMsgSendToVestingAccount(fromAddress string, toAddress string, vestingPoolName string, amount math.Int, restartVesting bool) *MsgSendToVestingAccount {
 	return &MsgSendToVestingAccount{
 		FromAddress:     fromAddress,
 		ToAddress:       toAddress,

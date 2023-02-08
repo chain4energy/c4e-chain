@@ -1,6 +1,7 @@
 package cosmossdk
 
 import (
+	"cosmossdk.io/math"
 	"testing"
 	"time"
 
@@ -46,11 +47,11 @@ func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coin 
 	return nil
 }
 
-func (au *AuthUtils) CreateDefaultDenomVestingAccount(ctx sdk.Context, address string, amount sdk.Int, start time.Time, end time.Time) error {
+func (au *AuthUtils) CreateDefaultDenomVestingAccount(ctx sdk.Context, address string, amount math.Int, start time.Time, end time.Time) error {
 	return au.CreateVestingAccount(ctx, address, sdk.NewCoin(testenv.DefaultTestDenom, amount), start, end)
 }
 
-func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedDenom string, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
+func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedDenom string, lockedAmount math.Int, startTime time.Time, endTime time.Time) {
 	account := au.helperAccountKeeper.GetAccount(ctx, address)
 
 	vacc, ok := account.(vestexported.VestingAccount)
@@ -68,7 +69,7 @@ func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddres
 	require.Equal(au.t, startTime.Unix(), vacc.GetStartTime())
 }
 
-func (au *AuthUtils) VerifyDefaultDenomVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
+func (au *AuthUtils) VerifyDefaultDenomVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedAmount math.Int, startTime time.Time, endTime time.Time) {
 	au.VerifyVestingAccount(ctx, address, testenv.DefaultTestDenom, lockedAmount, startTime, endTime)
 }
 
@@ -86,14 +87,14 @@ func (au *ContextAuthUtils) CreateVestingAccount(address string, coin sdk.Coin, 
 	return au.AuthUtils.CreateVestingAccount(au.testContext.GetContext(), address, coin, start, end)
 }
 
-func (au *ContextAuthUtils) CreateDefaultDenomVestingAccount(address string, amount sdk.Int, start time.Time, end time.Time) error {
+func (au *ContextAuthUtils) CreateDefaultDenomVestingAccount(address string, amount math.Int, start time.Time, end time.Time) error {
 	return au.AuthUtils.CreateDefaultDenomVestingAccount(au.testContext.GetContext(), address, amount, start, end)
 }
 
-func (au *ContextAuthUtils) VerifyVestingAccount(address sdk.AccAddress, lockedDenom string, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
+func (au *ContextAuthUtils) VerifyVestingAccount(address sdk.AccAddress, lockedDenom string, lockedAmount math.Int, startTime time.Time, endTime time.Time) {
 	au.AuthUtils.VerifyVestingAccount(au.testContext.GetContext(), address, lockedDenom, lockedAmount, startTime, endTime)
 }
 
-func (au *ContextAuthUtils) VerifyDefaultDenomVestingAccount(address sdk.AccAddress, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
+func (au *ContextAuthUtils) VerifyDefaultDenomVestingAccount(address sdk.AccAddress, lockedAmount math.Int, startTime time.Time, endTime time.Time) {
 	au.AuthUtils.VerifyDefaultDenomVestingAccount(au.testContext.GetContext(), address, lockedAmount, startTime, endTime)
 }

@@ -27,6 +27,7 @@ export interface QueryVestingPoolsRequest {
 }
 
 export interface QueryVestingPoolsResponse {
+  delegable_address: string;
   vesting_pools: VestingPoolInfo[];
 }
 
@@ -342,13 +343,16 @@ export const QueryVestingPoolsRequest = {
   },
 };
 
-const baseQueryVestingPoolsResponse: object = {};
+const baseQueryVestingPoolsResponse: object = { delegable_address: "" };
 
 export const QueryVestingPoolsResponse = {
   encode(
     message: QueryVestingPoolsResponse,
     writer: Writer = Writer.create()
   ): Writer {
+    if (message.delegable_address !== "") {
+      writer.uint32(10).string(message.delegable_address);
+    }
     for (const v of message.vesting_pools) {
       VestingPoolInfo.encode(v!, writer.uint32(18).fork()).ldelim();
     }
@@ -368,6 +372,9 @@ export const QueryVestingPoolsResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.delegable_address = reader.string();
+          break;
         case 2:
           message.vesting_pools.push(
             VestingPoolInfo.decode(reader, reader.uint32())
@@ -386,6 +393,14 @@ export const QueryVestingPoolsResponse = {
       ...baseQueryVestingPoolsResponse,
     } as QueryVestingPoolsResponse;
     message.vesting_pools = [];
+    if (
+      object.delegable_address !== undefined &&
+      object.delegable_address !== null
+    ) {
+      message.delegable_address = String(object.delegable_address);
+    } else {
+      message.delegable_address = "";
+    }
     if (object.vesting_pools !== undefined && object.vesting_pools !== null) {
       for (const e of object.vesting_pools) {
         message.vesting_pools.push(VestingPoolInfo.fromJSON(e));
@@ -396,6 +411,8 @@ export const QueryVestingPoolsResponse = {
 
   toJSON(message: QueryVestingPoolsResponse): unknown {
     const obj: any = {};
+    message.delegable_address !== undefined &&
+      (obj.delegable_address = message.delegable_address);
     if (message.vesting_pools) {
       obj.vesting_pools = message.vesting_pools.map((e) =>
         e ? VestingPoolInfo.toJSON(e) : undefined
@@ -413,6 +430,14 @@ export const QueryVestingPoolsResponse = {
       ...baseQueryVestingPoolsResponse,
     } as QueryVestingPoolsResponse;
     message.vesting_pools = [];
+    if (
+      object.delegable_address !== undefined &&
+      object.delegable_address !== null
+    ) {
+      message.delegable_address = object.delegable_address;
+    } else {
+      message.delegable_address = "";
+    }
     if (object.vesting_pools !== undefined && object.vesting_pools !== null) {
       for (const e of object.vesting_pools) {
         message.vesting_pools.push(VestingPoolInfo.fromPartial(e));

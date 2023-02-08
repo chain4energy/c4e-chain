@@ -26,14 +26,6 @@ export interface GenesisVestingType {
   /** period of veesting coins from lockup period end */
   vesting_period: number;
   vesting_period_unit: string;
-  /**
-   * units to select:
-   * days
-   * hours
-   * minutes
-   * seconds
-   */
-  free: string;
 }
 
 const baseGenesisState: object = { vesting_account_count: 0 };
@@ -218,7 +210,6 @@ const baseGenesisVestingType: object = {
   lockup_period_unit: "",
   vesting_period: 0,
   vesting_period_unit: "",
-  free: "",
 };
 
 export const GenesisVestingType = {
@@ -240,9 +231,6 @@ export const GenesisVestingType = {
     }
     if (message.vesting_period_unit !== "") {
       writer.uint32(42).string(message.vesting_period_unit);
-    }
-    if (message.free !== "") {
-      writer.uint32(50).string(message.free);
     }
     return writer;
   },
@@ -268,9 +256,6 @@ export const GenesisVestingType = {
           break;
         case 5:
           message.vesting_period_unit = reader.string();
-          break;
-        case 6:
-          message.free = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -313,11 +298,6 @@ export const GenesisVestingType = {
     } else {
       message.vesting_period_unit = "";
     }
-    if (object.free !== undefined && object.free !== null) {
-      message.free = String(object.free);
-    } else {
-      message.free = "";
-    }
     return message;
   },
 
@@ -332,7 +312,6 @@ export const GenesisVestingType = {
       (obj.vesting_period = message.vesting_period);
     message.vesting_period_unit !== undefined &&
       (obj.vesting_period_unit = message.vesting_period_unit);
-    message.free !== undefined && (obj.free = message.free);
     return obj;
   },
 
@@ -368,11 +347,6 @@ export const GenesisVestingType = {
       message.vesting_period_unit = object.vesting_period_unit;
     } else {
       message.vesting_period_unit = "";
-    }
-    if (object.free !== undefined && object.free !== null) {
-      message.free = object.free;
-    } else {
-      message.free = "";
     }
     return message;
   },

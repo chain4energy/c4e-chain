@@ -14,11 +14,11 @@ import (
 const oneYearDuration = time.Hour * 24 * 365
 
 type testResult struct {
-	developmentFundCoinsInt   sdk.Int
-	governanceBoosterCoinInt  sdk.Int
-	greenEnergyBoosterCoinInt sdk.Int
-	lpProviders               sdk.Int
-	totalSupply               sdk.Int
+	developmentFundCoinsInt   math.Int
+	governanceBoosterCoinInt  math.Int
+	greenEnergyBoosterCoinInt math.Int
+	lpProviders               math.Int
+	totalSupply               math.Int
 }
 
 func TestMinterWithDistributor(t *testing.T) {

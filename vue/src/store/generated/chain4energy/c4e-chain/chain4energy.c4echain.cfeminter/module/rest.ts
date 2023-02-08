@@ -9,36 +9,15 @@
  * ---------------------------------------------------------------
  */
 
-export interface CfeminterExponentialStepMinting {
-  amount?: string;
-  step_duration?: string;
-  amount_multiplier?: string;
-}
-
-export interface CfeminterLinearMinting {
-  amount?: string;
-}
-
 export interface CfeminterMinter {
-  /** @format int64 */
-  sequence_id?: number;
-
   /** @format date-time */
-  end_time?: string;
-  type?: string;
-  linear_minting?: CfeminterLinearMinting;
-  exponential_step_minting?: CfeminterExponentialStepMinting;
-}
-
-export interface CfeminterMinterConfig {
-  /** @format date-time */
-  start_time?: string;
-  minters?: CfeminterMinter[];
+  start?: string;
+  periods?: CfeminterMintingPeriod[];
 }
 
 export interface CfeminterMinterState {
-  /** @format int64 */
-  sequence_id?: number;
+  /** @format int32 */
+  position?: number;
   amount_minted?: string;
   remainder_to_mint?: string;
 
@@ -47,12 +26,33 @@ export interface CfeminterMinterState {
   remainder_from_previous_period?: string;
 }
 
+export interface CfeminterMintingPeriod {
+  /** @format int32 */
+  position?: number;
+
+  /** @format date-time */
+  period_end?: string;
+  type?: string;
+  time_linear_minter?: CfeminterTimeLinearMinter;
+  periodic_reduction_minter?: CfeminterPeriodicReductionMinter;
+}
+
 /**
  * Params defines the parameters for the module.
  */
 export interface CfeminterParams {
   mint_denom?: string;
-  minter_config?: CfeminterMinterConfig;
+  minter?: CfeminterMinter;
+}
+
+export interface CfeminterPeriodicReductionMinter {
+  /** @format int32 */
+  mint_period?: number;
+  mint_amount?: string;
+
+  /** @format int32 */
+  reduction_period_length?: number;
+  reduction_factor?: string;
 }
 
 export interface CfeminterQueryInflationResponse {
@@ -63,13 +63,17 @@ export interface CfeminterQueryInflationResponse {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CfeminterQueryParamsResponse {
-  /** params holds all the parameters of this module. */
+  /** Params defines the parameters for the module. */
   params?: CfeminterParams;
 }
 
 export interface CfeminterQueryStateResponse {
   minter_state?: CfeminterMinterState;
   state_history?: CfeminterMinterState[];
+}
+
+export interface CfeminterTimeLinearMinter {
+  amount?: string;
 }
 
 export interface ProtobufAny {
@@ -285,11 +289,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryInflation
    * @summary Queries a list of Inflation items.
-   * @request GET:/c4e/minter/v1beta1/inflation
+   * @request GET:/c4e/minter/inflation
    */
   queryInflation = (params: RequestParams = {}) =>
     this.request<CfeminterQueryInflationResponse, RpcStatus>({
-      path: `/c4e/minter/v1beta1/inflation`,
+      path: `/c4e/minter/inflation`,
       method: "GET",
       format: "json",
       ...params,
@@ -301,11 +305,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/minter/v1beta1/params
+   * @request GET:/c4e/minter/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfeminterQueryParamsResponse, RpcStatus>({
-      path: `/c4e/minter/v1beta1/params`,
+      path: `/c4e/minter/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -317,11 +321,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryState
    * @summary Queries a list of State items.
-   * @request GET:/c4e/minter/v1beta1/state
+   * @request GET:/c4e/minter/state
    */
   queryState = (params: RequestParams = {}) =>
     this.request<CfeminterQueryStateResponse, RpcStatus>({
-      path: `/c4e/minter/v1beta1/state`,
+      path: `/c4e/minter/state`,
       method: "GET",
       format: "json",
       ...params,

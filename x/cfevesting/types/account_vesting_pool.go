@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -53,7 +54,7 @@ func (av AccountVestingPools) ValidateAgainstVestingTypes(vestingTypes []Genesis
 	return nil
 }
 
-func (m *VestingPool) GetCurrentlyLocked() sdk.Int {
+func (m *VestingPool) GetCurrentlyLocked() math.Int {
 	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn)
 }
 

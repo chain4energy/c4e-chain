@@ -39,6 +39,7 @@ const getDefaultState = () => {
 				DenomTraces: {},
 				Params: {},
 				DenomHash: {},
+				EscrowAddress: {},
 				
 				_Structure: {
 						DenomTrace: getStructure(DenomTrace.fromPartial({})),
@@ -94,6 +95,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.DenomHash[JSON.stringify(params)] ?? {}
+		},
+				getEscrowAddress: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.EscrowAddress[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -216,6 +223,28 @@ export default {
 				return getters['getDenomHash']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryDenomHash API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryEscrowAddress({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.IbcApplicationsTransferV1.query.queryEscrowAddress( key.channel_id,  key.port_id)).data
+				
+					
+				commit('QUERY', { query: 'EscrowAddress', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryEscrowAddress', payload: { options: { all }, params: {...key},query }})
+				return getters['getEscrowAddress']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryEscrowAddress API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

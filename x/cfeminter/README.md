@@ -149,14 +149,14 @@ The Chain4Energy minter module contains the following configurations parameters:
 
 | Param    | Type          | Description                                  |
 |----------|---------------|----------------------------------------------|
-| amount   | sdk.Int       | An amount to mint linearly during the period |
+| amount   | math.Int       | An amount to mint linearly during the period |
 
 ### ExponentialStepMinting type
 
 | Param             | Type      | Description                          |
 |-------------------|-----------|--------------------------------------|
 | step_duration     | uint32    | period of time of token emission     |
-| amount            | sdk.Int   | amount to mint during "stepDuration" |
+| amount            | math.Int   | amount to mint during "stepDuration" |
 | amount_multiplier | sdk.Dec   | amount multiplying factor            |
 
 ### Example params
@@ -233,7 +233,7 @@ Module state contains following data:
 | Key                            | Type     | Description                                                        |
 |--------------------------------|----------|--------------------------------------------------------------------|
 | sequence_id                    | uint32   | current minter sequenceId                                          |
-| amount_minted                  | sdk.Int  | amount minted by current minter                                    |
+| amount_minted                  | math.Int  | amount minted by current minter                                    |
 | remainder_to_mint              | sdk.Dec  | amount that should have been minted in previous block but was not  |
 | last_mint_block_time           | sdk.Time | Time of last mint                                                  |
 | remainder_from_previous_period | sdk.Dec  | amount that should have been minted in previous minter but was not | // TODO: rename to remainder_from_previous_minter
@@ -265,7 +265,7 @@ Chain4Energy minter module emits the following events:
 |--------------|---------------|-------------------------------|
 | bonded_ratio | Dec           |                               |
 | inflation    | sdk.Dec       | Minting block inflation level |
-| amount       | sdk.Int       | Amount minted in block        |
+| amount       | math.Int       | Amount minted in block        |
 
 TODO remove bonded_ratio 
 TODO add minter period id

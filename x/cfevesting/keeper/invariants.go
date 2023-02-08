@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -77,7 +78,7 @@ func ModuleAccountInvariant(k Keeper) sdk.Invariant {
 	}
 }
 
-func getLockedSum(k Keeper, ctx sdk.Context) sdk.Int {
+func getLockedSum(k Keeper, ctx sdk.Context) math.Int {
 	allVestingPools := k.GetAllAccountVestingPools(ctx)
 	sum := sdk.ZeroInt()
 	for _, accountVestingPools := range allVestingPools {

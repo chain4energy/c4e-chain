@@ -49,7 +49,7 @@ export interface Period {
 export interface PeriodicVestingAccount {
   base_vesting_account: BaseVestingAccount | undefined;
   start_time: number;
-  vesting_Minters: Period[];
+  vesting_periods: Period[];
 }
 
 /**
@@ -513,7 +513,7 @@ export const PeriodicVestingAccount = {
     if (message.start_time !== 0) {
       writer.uint32(16).int64(message.start_time);
     }
-    for (const v of message.vesting_Minters) {
+    for (const v of message.vesting_periods) {
       Period.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
@@ -523,7 +523,7 @@ export const PeriodicVestingAccount = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...basePeriodicVestingAccount } as PeriodicVestingAccount;
-    message.vesting_Minters = [];
+    message.vesting_periods = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -537,7 +537,7 @@ export const PeriodicVestingAccount = {
           message.start_time = longToNumber(reader.int64() as Long);
           break;
         case 3:
-          message.vesting_Minters.push(Period.decode(reader, reader.uint32()));
+          message.vesting_periods.push(Period.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -549,7 +549,7 @@ export const PeriodicVestingAccount = {
 
   fromJSON(object: any): PeriodicVestingAccount {
     const message = { ...basePeriodicVestingAccount } as PeriodicVestingAccount;
-    message.vesting_Minters = [];
+    message.vesting_periods = [];
     if (
       object.base_vesting_account !== undefined &&
       object.base_vesting_account !== null
@@ -566,11 +566,11 @@ export const PeriodicVestingAccount = {
       message.start_time = 0;
     }
     if (
-      object.vesting_Minters !== undefined &&
-      object.vesting_Minters !== null
+      object.vesting_periods !== undefined &&
+      object.vesting_periods !== null
     ) {
-      for (const e of object.vesting_Minters) {
-        message.vesting_Minters.push(Period.fromJSON(e));
+      for (const e of object.vesting_periods) {
+        message.vesting_periods.push(Period.fromJSON(e));
       }
     }
     return message;
@@ -583,12 +583,12 @@ export const PeriodicVestingAccount = {
         ? BaseVestingAccount.toJSON(message.base_vesting_account)
         : undefined);
     message.start_time !== undefined && (obj.start_time = message.start_time);
-    if (message.vesting_Minters) {
-      obj.vesting_Minters = message.vesting_Minters.map((e) =>
+    if (message.vesting_periods) {
+      obj.vesting_periods = message.vesting_periods.map((e) =>
         e ? Period.toJSON(e) : undefined
       );
     } else {
-      obj.vesting_Minters = [];
+      obj.vesting_periods = [];
     }
     return obj;
   },
@@ -597,7 +597,7 @@ export const PeriodicVestingAccount = {
     object: DeepPartial<PeriodicVestingAccount>
   ): PeriodicVestingAccount {
     const message = { ...basePeriodicVestingAccount } as PeriodicVestingAccount;
-    message.vesting_Minters = [];
+    message.vesting_periods = [];
     if (
       object.base_vesting_account !== undefined &&
       object.base_vesting_account !== null
@@ -614,11 +614,11 @@ export const PeriodicVestingAccount = {
       message.start_time = 0;
     }
     if (
-      object.vesting_Minters !== undefined &&
-      object.vesting_Minters !== null
+      object.vesting_periods !== undefined &&
+      object.vesting_periods !== null
     ) {
-      for (const e of object.vesting_Minters) {
-        message.vesting_Minters.push(Period.fromPartial(e));
+      for (const e of object.vesting_periods) {
+        message.vesting_periods.push(Period.fromPartial(e));
       }
     }
     return message;

@@ -7,8 +7,8 @@ export const protobufPackage = "chain4energy.c4echain.cfeminter";
 
 /** GenesisState defines the cfeminter module's genesis state. */
 export interface GenesisState {
-  params: Params | undefined;
   /** this line is used by starport scaffolding # genesis/proto/state */
+  params: Params | undefined;
   minter_state: MinterState | undefined;
   state_history: MinterState[];
 }

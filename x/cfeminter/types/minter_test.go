@@ -330,7 +330,7 @@ func TestValidateMinterNoMintigTypeWithLinearMinting(t *testing.T) {
 
 func TestValidateMinterNoMintigTypeWithExponentialStepMinting(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.Int{}, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: math.Int{}, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
 	minter1 := types.Minter{SequenceId: 1, Type: types.NoMintingType, ExponentialStepMinting: &exponentialStepMinting}
 	minters := []*types.Minter{&minter1}
@@ -408,7 +408,7 @@ func TestValidateLinearMintingAmountIsNil(t *testing.T) {
 	startTime := time.Now()
 	endTime1 := startTime.Add(PeriodDuration)
 
-	LinearMinting1 := types.LinearMinting{Amount: sdk.Int{}}
+	LinearMinting1 := types.LinearMinting{Amount: math.Int{}}
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
 	minter2 := types.Minter{SequenceId: 2, Type: types.NoMintingType}
@@ -427,7 +427,7 @@ func TestValidateExponentialStepMintingAmountIsNil(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(PeriodDuration)
 
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.Int{}, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: math.Int{}, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.ExponentialStepMintingType, ExponentialStepMinting: &exponentialStepMinting}
 	minter2 := types.Minter{SequenceId: 2, Type: types.NoMintingType}
