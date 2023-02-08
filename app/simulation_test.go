@@ -8,6 +8,7 @@ import (
 	cfesignaturetypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"

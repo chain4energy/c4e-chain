@@ -1,11 +1,11 @@
 package keeper_test
 
 import (
-	"testing"
-	"time"
-
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"testing"
+	"time"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"

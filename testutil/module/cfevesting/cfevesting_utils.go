@@ -2,10 +2,10 @@ package cfevesting
 
 import (
 	"context"
+	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/testutil/nullify"
 	"strconv"
 	"time"
-
-	"github.com/chain4energy/c4e-chain/testutil/nullify"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"

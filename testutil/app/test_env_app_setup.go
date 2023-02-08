@@ -76,7 +76,7 @@ func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time
 	maccPerms := testcosmos.AddHelperModuleAccountPermissions(c4eapp.GetMaccPerms())
 
 	helperAk := authkeeper.NewAccountKeeper(
-		app.AppCodec(), app.GetKey(authtypes.StoreKey), app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
+		app.AppCodec(), app.GetKey(authtypes.StoreKey), app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms, c4eapp.AccountAddressPrefix,
 	)
 
 	moduleAccAddrs := testcosmos.AddHelperModuleAccountAddr(app.ModuleAccountAddrs())

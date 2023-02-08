@@ -1,10 +1,10 @@
 package types_test
 
 import (
+	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"testing"
 	"time"
-
-	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"

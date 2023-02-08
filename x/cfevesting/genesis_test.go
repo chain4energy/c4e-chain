@@ -1,11 +1,11 @@
 package cfevesting_test
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
-	"testing"
-
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"testing"
 
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 

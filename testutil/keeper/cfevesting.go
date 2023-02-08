@@ -39,8 +39,8 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight in
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
-	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
 
 	require.NoError(t, stateStore.LoadLatestVersion())
 

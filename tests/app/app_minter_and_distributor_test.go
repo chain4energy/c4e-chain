@@ -1,14 +1,14 @@
 package e2e
 
 import (
+	"cosmossdk.io/math"
 	testgenesis "github.com/chain4energy/c4e-chain/tests/app/genesis"
-	"testing"
-	"time"
-
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"testing"
+	"time"
 )
 
 const oneYearDuration = time.Hour * 24 * 365
