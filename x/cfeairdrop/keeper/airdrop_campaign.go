@@ -46,8 +46,13 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 	}
 
 	campaignId := k.AppendNewCampaign(ctx, campaign)
+
 	missionInitial := types.NewInitialMission(campaignId)
-	k.AppendNewMission(ctx, campaignId, *missionInitial)
+	err = k.AddMissionToCampaign(ctx, owner, campaignId, missionInitial.Name, missionInitial.Description,
+		missionInitial.MissionType, missionInitial.Weight, missionInitial.ClaimStartDate)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -92,16 +97,16 @@ func ValidateCampaignEditParams(log log.Logger, name string, description string,
 }
 
 func GetFeeGrantAmount(logger log.Logger, feeGrantAmount *sdk.Int) (*sdk.Int, error) {
+	if feeGrantAmount.IsNil() {
+		zeroInt := sdk.ZeroInt()
+		feeGrantAmount = &zeroInt
+	}
 
 	if feeGrantAmount.IsNegative() {
 		logger.Debug("initial feegrant amount cannot be negative", "initialClaimFreeAmount", feeGrantAmount)
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
 	}
 
-	if feeGrantAmount.IsNil() {
-		zeroInt := sdk.ZeroInt()
-		feeGrantAmount = &zeroInt
-	}
 	return feeGrantAmount, nil
 }
 
@@ -153,7 +158,7 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 		return err
 	}
 
-	if err = ValidateCampaignDisabled(logger, campaign); err != nil {
+	if err = ValidateCampaignIsNotEnabled(logger, campaign); err != nil {
 		return err
 	}
 
@@ -301,7 +306,7 @@ func (k Keeper) ValidateStartCampaignParams(logger log.Logger, campaignId uint64
 		return types.Campaign{}, err
 	}
 
-	if err = ValidateCampaignDisabled(logger, campaign); err != nil {
+	if err = ValidateCampaignIsNotEnabled(logger, campaign); err != nil {
 		return types.Campaign{}, err
 	}
 
@@ -324,7 +329,7 @@ func (k Keeper) ValidateRemoveCampaignParams(ctx sdk.Context, owner string, camp
 		return err
 	}
 
-	if err = ValidateCampaignDisabled(logger, campaign); err != nil {
+	if err = ValidateCampaignIsNotEnabled(logger, campaign); err != nil {
 		return err
 	}
 
@@ -348,7 +353,7 @@ func ValidateOwner(log log.Logger, campaign types.Campaign, owner string) error 
 	return nil
 }
 
-func ValidateCampaignDisabled(log log.Logger, campaign types.Campaign) error {
+func ValidateCampaignIsNotEnabled(log log.Logger, campaign types.Campaign) error {
 	if campaign.Enabled == true {
 		log.Debug("campaign is enabled")
 		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "campaign is enabled")
@@ -356,8 +361,8 @@ func ValidateCampaignDisabled(log log.Logger, campaign types.Campaign) error {
 	return nil
 }
 
-func ValidateCampaignEnabled(log log.Logger, campaign types.Campaign) error {
-	if campaign.Enabled != false {
+func ValidateCampaignIsNotDisabled(log log.Logger, campaign types.Campaign) error {
+	if campaign.Enabled == false {
 		log.Debug("campaign is disabled")
 		return sdkerrors.Wrap(c4eerrors.ErrAlreadyExists, "campaign is disabled")
 	}
@@ -425,14 +430,14 @@ func ValidateCampaignStart(ctx sdk.Context, campaign types.Campaign, logger log.
 }
 
 func GetInitialClaimFreeAmount(log log.Logger, initialClaimFreeAmount *sdk.Int) (*sdk.Int, error) {
-	if initialClaimFreeAmount.IsNegative() {
-		log.Debug("initial claim free amount cannot be negative", "initialClaimFreeAmount", initialClaimFreeAmount)
-		return nil, sdkerrors.Wrapf(c4eerrors.ErrParam, "initial claim free amount (%s) cannot be negative", initialClaimFreeAmount.String())
-	}
-
 	if initialClaimFreeAmount.IsNil() {
 		zeroInt := sdk.ZeroInt()
 		initialClaimFreeAmount = &zeroInt
+	}
+
+	if initialClaimFreeAmount.IsNegative() {
+		log.Debug("initial claim free amount cannot be negative", "initialClaimFreeAmount", initialClaimFreeAmount)
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrParam, "initial claim free amount (%s) cannot be negative", initialClaimFreeAmount.String())
 	}
 
 	return initialClaimFreeAmount, nil

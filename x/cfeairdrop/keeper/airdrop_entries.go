@@ -103,7 +103,7 @@ func (k Keeper) ValidateAddUsersEntries(logger log.Logger, ctx sdk.Context, owne
 		return nil, err
 	}
 
-	if err = ValidateCampaignEnabled(logger, campaign); err != nil {
+	if err = ValidateCampaignIsNotDisabled(logger, campaign); err != nil {
 		return nil, err
 	}
 
