@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/chain4energy/c4e-chain/cmd/c4e-chaind/cmd"
+	"github.com/chain4energy/c4e-chain/cmd/c4ed/cmd"
 	"github.com/cosmos/cosmos-sdk/server"
 	"os"
 

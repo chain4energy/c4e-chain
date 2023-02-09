@@ -1,5 +1,7 @@
 version: 1
 build:
+  binary: "c4ed"
+  main: "./cmd/c4ed"
   proto:
     path: proto
     third_party_paths:
