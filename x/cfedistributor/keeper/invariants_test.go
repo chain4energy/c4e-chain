@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"testing"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/testutil/testapp"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"

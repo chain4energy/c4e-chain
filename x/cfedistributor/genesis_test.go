@@ -3,8 +3,8 @@ package cfedistributor_test
 import (
 	"testing"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
+	"github.com/chain4energy/c4e-chain/testutil/testapp"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 )
 

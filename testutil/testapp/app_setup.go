@@ -1,6 +1,7 @@
-package app
+package testapp
 
 import (
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
@@ -54,12 +55,12 @@ func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
 		map[int64]bool{},
 		c4eapp.DefaultNodeHome,
 		0,
-		encoding,
+		appparams.EncodingConfig(encoding),
 		simapp.EmptyAppOptions{},
 	)
 	genesisState := c4eapp.NewDefaultGenesisState(encoding.Marshaler)
 
-	return app.(*c4eapp.App), genesisState
+	return app, genesisState
 }
 
 func createValidatorSet(validatorsAmount int) *tmtypes.ValidatorSet {

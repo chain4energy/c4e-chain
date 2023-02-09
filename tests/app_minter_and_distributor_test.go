@@ -1,9 +1,9 @@
-package e2e
+package tests
 
 import (
 	"cosmossdk.io/math"
-	testgenesis "github.com/chain4energy/c4e-chain/tests/app/genesis"
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	testgenesis "github.com/chain4energy/c4e-chain/tests/genesis"
+	"github.com/chain4energy/c4e-chain/testutil/testapp"
 	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
