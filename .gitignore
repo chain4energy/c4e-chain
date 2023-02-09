@@ -6,6 +6,7 @@ release/
 .DS_Store
 build/
 .data
+.backup_data
 .log
 .scannerwork/
 coverage.out
