@@ -22,7 +22,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -129,7 +128,7 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		tb,
 		os.Stdout,
-		app.GetBaseApp(),
+		app.BaseApp,
 		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
 		simulationtypes.RandomAccounts,
 		weightedOperations,
@@ -156,7 +155,7 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 		require.NoError(tb, err)
 	})
 
-	encoding := cosmoscmd.MakeEncodingConfig(ModuleBasics)
+	encoding := MakeEncodingConfig()
 	app := New(
 		log.TestingLogger(),
 		db,
@@ -170,5 +169,5 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 	)
 	genesisState := NewDefaultGenesisState(encoding.Marshaler)
 
-	return app.(*App), genesisState, config, db
+	return app, genesisState, config, db
 }
