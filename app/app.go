@@ -6,7 +6,6 @@ import (
 	"github.com/chain4energy/c4e-chain/app/upgrades"
 	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 
@@ -101,12 +100,6 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/ignite/cli/ignite/pkg/openapiconsole"
-
-	monitoringp "github.com/tendermint/spn/x/monitoringp"
-	monitoringpkeeper "github.com/tendermint/spn/x/monitoringp/keeper"
-	monitoringptypes "github.com/tendermint/spn/x/monitoringp/types"
-
 	"github.com/chain4energy/c4e-chain/docs"
 	cfedistributormodule "github.com/chain4energy/c4e-chain/x/cfedistributor"
 	cfedistributormodulekeeper "github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
@@ -174,7 +167,6 @@ var (
 		transfer.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		monitoringp.AppModuleBasic{},
 		cfevestingmodule.AppModuleBasic{},
 		cfesignaturemodule.AppModuleBasic{},
 		cfemintermodule.AppModuleBasic{},
@@ -252,7 +244,6 @@ type App struct {
 	TransferKeeper   ibctransferkeeper.Keeper
 	ICAHostKeeper    icahostkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
-	MonitoringKeeper monitoringpkeeper.Keeper
 	GroupKeeper      groupkeeper.Keeper
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper        capabilitykeeper.ScopedKeeper
@@ -301,7 +292,6 @@ func New(
 		distrtypes.StoreKey, slashingtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
-		monitoringptypes.StoreKey,
 		govtypes.StoreKey,
 		evidencetypes.StoreKey,
 		cfevestingmoduletypes.StoreKey,
@@ -507,21 +497,6 @@ func New(
 		govConfig,
 	)
 
-	scopedMonitoringKeeper := app.CapabilityKeeper.ScopeToModule(monitoringptypes.ModuleName)
-	app.MonitoringKeeper = *monitoringpkeeper.NewKeeper(
-		appCodec,
-		keys[monitoringptypes.StoreKey],
-		keys[monitoringptypes.MemStoreKey],
-		app.GetSubspace(monitoringptypes.ModuleName),
-		app.StakingKeeper,
-		app.IBCKeeper.ClientKeeper,
-		app.IBCKeeper.ConnectionKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		scopedMonitoringKeeper,
-	)
-	monitoringModule := monitoringp.NewAppModule(appCodec, app.MonitoringKeeper)
-
 	app.CfevestingKeeper = *cfevestingmodulekeeper.NewKeeper(
 		appCodec,
 		keys[cfevestingmoduletypes.StoreKey],
@@ -570,8 +545,8 @@ func New(
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
-		AddRoute(monitoringptypes.ModuleName, monitoringModule)
+		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+
 	// this line is used by starport scaffolding # ibc/app/router
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -607,7 +582,6 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		icaModule,
-		monitoringModule,
 		cfevestingModule,
 		cfesignatureModule,
 		cfeminterModule,
@@ -645,7 +619,6 @@ func New(
 		feegrant.ModuleName,
 		group.ModuleName,
 		paramstypes.ModuleName,
-		monitoringptypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
 
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
@@ -673,7 +646,6 @@ func New(
 		upgradetypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
-		monitoringptypes.ModuleName,
 		cfevestingmoduletypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
@@ -712,7 +684,6 @@ func New(
 		upgradetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		feegrant.ModuleName,
-		monitoringptypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
@@ -744,7 +715,6 @@ func New(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		monitoringModule,
 		cfevestingModule,
 		cfesignatureModule, // - no simulations yey
 		cfeminterModule,
@@ -788,7 +758,6 @@ func New(
 
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
-	app.ScopedMonitoringKeeper = scopedMonitoringKeeper
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 
 	return app
@@ -904,8 +873,7 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register app's OpenAPI routes.
-	apiSvr.Router.Handle("/static/openapi.yml", http.FileServer(http.FS(docs.Docs)))
-	apiSvr.Router.HandleFunc("/", openapiconsole.Handler(Name, "/static/openapi.yml"))
+	docs.RegisterOpenAPIService(Name, apiSvr.Router)
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
@@ -946,7 +914,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
-	paramsKeeper.Subspace(monitoringptypes.ModuleName)
 	paramsKeeper.Subspace(cfevestingmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfesignaturemoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfemintermoduletypes.ModuleName)

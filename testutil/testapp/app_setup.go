@@ -15,7 +15,6 @@ import (
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -46,7 +45,7 @@ func SetupWithValidatorsAmount(isCheckTx bool, bondDenom string, validatorsAmoun
 
 func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
 	db := dbm.NewMemDB()
-	encoding := cosmoscmd.MakeEncodingConfig(c4eapp.ModuleBasics)
+	encoding := c4eapp.MakeEncodingConfig()
 	app := c4eapp.New(
 		log.TestingLogger(),
 		db,
