@@ -11,24 +11,19 @@ accounts:
 - name: alice
   coins:
   - 120000000000uc4e
-  mnemonic: cabin gun luggage green fever either engage nest arrow sure record physical
-    palace dutch clap vocal north snack birth exhibit either ancient sniff settle
+  mnemonic: cabin gun luggage green fever either engage nest arrow sure record physical palace dutch clap vocal north snack birth exhibit either ancient sniff settle
 - name: bob
   coins:
   - 4000000000uc4e
-  mnemonic: genuine author egg good melt obey omit antique flight fade midnight funny
-    security budget inquiry animal unfold film soft midnight company rack kitchen
-    monitor
+  mnemonic: genuine author egg good melt obey omit antique flight fade midnight funny security budget inquiry animal unfold film soft midnight company rack kitchen monitor
 - name: vesting_pools_owner
   coins:
   - 15000000000000uc4e
-  mnemonic: radar there legend edge jar across night figure dog oval clump endorse
-    garage office upon square worth harvest twelve trust menu mother gossip simple
+  mnemonic: radar there legend edge jar across night figure dog oval clump endorse garage office upon square worth harvest twelve trust menu mother gossip simple
 - name: validators_pool_owner
   coins:
   - 15000000uc4e
-  mnemonic: forget mesh pet uphold prison daughter surround drop fire surface nurse
-    swing long black hockey hover bulb reform female prefer aim ten category rhythm
+  mnemonic: forget mesh pet uphold prison daughter surround drop fire surface nurse swing long black hockey hover bulb reform female prefer aim ten category rhythm
 faucet:
   name: bob
   coins:
