@@ -119,6 +119,7 @@ import (
 const (
 	AccountAddressPrefix = "c4e"
 	Name                 = "c4e"
+	HomeName             = "c4e-chain"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -206,7 +207,7 @@ func init() {
 		panic(err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, "."+Name)
+	DefaultNodeHome = filepath.Join(userHomeDir, "."+HomeName)
 	cfedistributormoduletypes.SetMaccPerms(maccPerms) // TODO: workaround, change the way maccPerms is passed when switching to the new way of storing parameters
 }
 

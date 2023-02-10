@@ -24,7 +24,7 @@ RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 # Runner
 # --------------------------------------------------------
 
-FROM gcr.io/distroless/base-debian11:${BASE_IMG_TAG}
+FROM ubuntu
 
 COPY --from=build /chain4energy/build/c4ed /bin/c4ed
 
