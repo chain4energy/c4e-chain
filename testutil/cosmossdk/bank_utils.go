@@ -91,6 +91,18 @@ func (bu *BankUtils) VerifyAccountBalanceByDenom(ctx sdk.Context, addr sdk.AccAd
 	require.Truef(bu.t, expectedAmount.Equal(balance.Amount), "expectedAmount %s <> account balance %s", expectedAmount, balance.Amount)
 }
 
+func (bu *BankUtils) VerifyAccountBalances(ctx sdk.Context, addr sdk.AccAddress, expectedBalances sdk.Coins, isAllBalances bool) {
+	balances := bu.helperBankKeeper.GetAllBalances(ctx, addr)
+	if isAllBalances {
+		require.Truef(bu.t, expectedBalances.IsEqual(balances), "expectedBalances %s <> account balances %s", expectedBalances, balances)
+
+	} else {
+		for _, expectedBalance := range expectedBalances {
+			require.Truef(bu.t, expectedBalance.Amount.Equal(balances.AmountOf(expectedBalance.Denom)), "expectedBalance %s <> account balance %s for denom %s", expectedBalance.Amount, balances.AmountOf(expectedBalance.Denom), expectedBalance.Denom)
+		}
+	}
+}
+
 func (bu *BankUtils) VerifyAccountDefultDenomBalance(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {
 	bu.VerifyAccountBalanceByDenom(ctx, addr, testenv.DefaultTestDenom, expectedAmount)
 }
@@ -162,4 +174,8 @@ func (bu *ContextBankUtils) GetModuleAccountDefultDenomBalance(accName string) s
 func (bu *ContextBankUtils) GetAccountDefultDenomBalance(addr sdk.AccAddress) sdk.Int {
 	return bu.BankUtils.GetAccountDefultDenomBalance(bu.testContext.GetContext(), addr)
 
+}
+
+func (bu *ContextBankUtils) VerifyAccountBalances(addr sdk.AccAddress, expectedBalances sdk.Coins, isAllBalances bool) {
+	bu.BankUtils.VerifyAccountBalances(bu.testContext.GetContext(), addr, expectedBalances, isAllBalances)
 }

@@ -376,6 +376,25 @@ func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, from
 	require.Equal(h.t, uint64(vestingAccountCount), h.helperCfevestingKeeper.GetVestingAccountCount(ctx))
 }
 
+func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountsToUnlock sdk.Coins, expectedAccountBalances sdk.Coins, expectedLockedBalancesBefore sdk.Coins) {
+	h.bankUtils.VerifyAccountBalances(ctx, ownerAddress, expectedAccountBalances, true)
+	locked := (*h.helperBankKeeper).LockedCoins(ctx, ownerAddress)
+	require.Truef(h.t, expectedLockedBalancesBefore.IsEqual(locked), "expectedLockedBalancesBefore %s <> locked %s", expectedLockedBalancesBefore, locked)
+
+	require.NoError(h.t, h.helperCfevestingKeeper.UnlockUnbondedContinuousVestingAccountCoins(ctx, ownerAddress, amountsToUnlock))
+
+	h.bankUtils.VerifyAccountBalances(ctx, ownerAddress, expectedAccountBalances, true)
+	locked = (*h.helperBankKeeper).LockedCoins(ctx, ownerAddress)
+	require.Truef(h.t, expectedLockedBalancesBefore.Sub(amountsToUnlock).IsEqual(locked), "expectedLockedBalances %s <> locked %s", expectedLockedBalancesBefore.Sub(amountsToUnlock), locked)
+}
+
+func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int) {
+	h.UnlockUnbondedContinuousVestingAccountCoins(ctx, ownerAddress,
+		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amountToUnlock)),
+		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedAccountBalance)),
+		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedLockedBalanceBefore)))
+}
+
 type ContextC4eVestingUtils struct {
 	C4eVestingUtils
 	testContext testenv.TestContext
@@ -590,4 +609,8 @@ func (h *C4eVestingUtils) MessageCreateVestingAccountError(
 	require.EqualValues(h.t, vestingAccountCountBefore, vestingAccountCountAfter)
 	_, found := h.helperCfevestingKeeper.GetVestingAccount(ctx, vestingAccountCountBefore)
 	require.Equal(h.t, false, found)
+}
+
+func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int) {
+	h.C4eVestingUtils.UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(h.testContext.GetContext(), ownerAddress, amountToUnlock, expectedAccountBalance, expectedLockedBalanceBefore)
 }

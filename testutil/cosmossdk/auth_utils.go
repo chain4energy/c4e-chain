@@ -1,6 +1,7 @@
 package cosmossdk
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -22,6 +23,22 @@ type AuthUtils struct {
 
 func NewAuthUtils(t *testing.T, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) AuthUtils {
 	return AuthUtils{t: t, helperAccountKeeper: helperAccountKeeper, bankUtils: bankUtils}
+}
+
+func (au *AuthUtils) ModifyVestingAccountOriginalVesting(ctx sdk.Context, address string, newOrignalVestings sdk.Coins) error {
+	bechAddress := sdk.MustAccAddressFromBech32(address)
+	ownerAccount := au.helperAccountKeeper.GetAccount(ctx, bechAddress)
+	if ownerAccount == nil {
+		return fmt.Errorf("account %s doesn't exist", address)
+	}
+
+	vestingAcc, ok := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
+	if !ok {
+		return fmt.Errorf("account %s is not ContinuousVestingAccount", address)
+	}
+	vestingAcc.OriginalVesting = newOrignalVestings
+	au.helperAccountKeeper.SetAccount(ctx, vestingAcc)
+	return nil
 }
 
 func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coin sdk.Coin, start time.Time, end time.Time) error {
@@ -96,4 +113,8 @@ func (au *ContextAuthUtils) VerifyVestingAccount(address sdk.AccAddress, lockedD
 
 func (au *ContextAuthUtils) VerifyDefaultDenomVestingAccount(address sdk.AccAddress, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
 	au.AuthUtils.VerifyDefaultDenomVestingAccount(au.testContext.GetContext(), address, lockedAmount, startTime, endTime)
+}
+
+func (au *ContextAuthUtils) ModifyVestingAccountOriginalVesting(address string, newOrignalVestings sdk.Coins) error {
+	return au.AuthUtils.ModifyVestingAccountOriginalVesting(au.testContext.GetContext(), address, newOrignalVestings)
 }
