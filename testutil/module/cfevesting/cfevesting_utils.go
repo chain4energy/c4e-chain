@@ -381,7 +381,8 @@ func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Co
 	locked := (*h.helperBankKeeper).LockedCoins(ctx, ownerAddress)
 	require.Truef(h.t, expectedLockedBalancesBefore.IsEqual(locked), "expectedLockedBalancesBefore %s <> locked %s", expectedLockedBalancesBefore, locked)
 
-	require.NoError(h.t, h.helperCfevestingKeeper.UnlockUnbondedContinuousVestingAccountCoins(ctx, ownerAddress, amountsToUnlock))
+	_, err := h.helperCfevestingKeeper.UnlockUnbondedContinuousVestingAccountCoins(ctx, ownerAddress, amountsToUnlock)
+	require.NoError(h.t, err)
 
 	h.bankUtils.VerifyAccountBalances(ctx, ownerAddress, expectedAccountBalances, true)
 	locked = (*h.helperBankKeeper).LockedCoins(ctx, ownerAddress)

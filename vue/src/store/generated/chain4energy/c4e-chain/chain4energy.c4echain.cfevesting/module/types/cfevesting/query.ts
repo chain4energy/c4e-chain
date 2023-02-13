@@ -433,34 +433,34 @@ const baseVestingPoolInfo: object = {
 export const VestingPoolInfo = {
   encode(message: VestingPoolInfo, writer: Writer = Writer.create()): Writer {
     if (message.name !== "") {
-      writer.uint32(18).string(message.name);
+      writer.uint32(10).string(message.name);
     }
     if (message.vesting_type !== "") {
-      writer.uint32(26).string(message.vesting_type);
+      writer.uint32(18).string(message.vesting_type);
     }
     if (message.lock_start !== undefined) {
       Timestamp.encode(
         toTimestamp(message.lock_start),
-        writer.uint32(34).fork()
+        writer.uint32(26).fork()
       ).ldelim();
     }
     if (message.lock_end !== undefined) {
       Timestamp.encode(
         toTimestamp(message.lock_end),
-        writer.uint32(42).fork()
+        writer.uint32(34).fork()
       ).ldelim();
     }
     if (message.withdrawable !== "") {
-      writer.uint32(50).string(message.withdrawable);
+      writer.uint32(42).string(message.withdrawable);
     }
     if (message.initially_locked !== undefined) {
-      Coin.encode(message.initially_locked, writer.uint32(58).fork()).ldelim();
+      Coin.encode(message.initially_locked, writer.uint32(50).fork()).ldelim();
     }
     if (message.currently_locked !== "") {
-      writer.uint32(66).string(message.currently_locked);
+      writer.uint32(58).string(message.currently_locked);
     }
     if (message.sent_amount !== "") {
-      writer.uint32(74).string(message.sent_amount);
+      writer.uint32(66).string(message.sent_amount);
     }
     return writer;
   },
@@ -472,32 +472,32 @@ export const VestingPoolInfo = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 2:
+        case 1:
           message.name = reader.string();
           break;
-        case 3:
+        case 2:
           message.vesting_type = reader.string();
           break;
-        case 4:
+        case 3:
           message.lock_start = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 5:
+        case 4:
           message.lock_end = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 6:
+        case 5:
           message.withdrawable = reader.string();
           break;
-        case 7:
+        case 6:
           message.initially_locked = Coin.decode(reader, reader.uint32());
           break;
-        case 8:
+        case 7:
           message.currently_locked = reader.string();
           break;
-        case 9:
+        case 8:
           message.sent_amount = reader.string();
           break;
         default:

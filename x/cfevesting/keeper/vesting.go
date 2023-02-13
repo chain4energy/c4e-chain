@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -370,31 +371,21 @@ func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount sdk.
 		return sdkerrors.Wrapf(types.ErrAlreadyExists, "new vesting account - account address: %s", toAddress)
 	}
 
-	baseAccount := ak.NewAccountWithAddress(ctx, to)
-	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
-		k.Logger(ctx).Debug("new vesting account invalid account type; expected: BaseAccount", "toAddress", toAddress, "notExpectedAccount", baseAccount)
-		return sdkerrors.Wrapf(types.ErrInvalidAccountType, "new vesting account - expected BaseAccount, got: %T", baseAccount)
-	}
-
 	decimalAmount := amount.ToDec()
 	originalVestingAmount := decimalAmount.Sub(decimalAmount.Mul(free)).TruncateInt()
 	originalVestingCoin := sdk.NewCoin(denom, originalVestingAmount)
 	originalVesting := sdk.NewCoins(originalVestingCoin)
-
-	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), originalVesting.Sort(), vestingEnd.Unix())
-
-	var acc authtypes.AccountI
 
 	startTime := lockEnd
 	if lockEnd.Before(ctx.BlockTime()) {
 		startTime = ctx.BlockTime()
 	}
 
-	acc = vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime.Unix())
-
-	ak.SetAccount(ctx, acc)
-	k.Logger(ctx).Debug("new vesting account", "baseAccount", baseVestingAccount.BaseAccount, "baseVestingAccount",
-		baseVestingAccount, "startTime", startTime.Unix())
+	acc, err := k.newContinuousVestingAccount(ctx, to, originalVesting, startTime.Unix(), vestingEnd.Unix())
+	if err != nil {
+		k.Logger(ctx).Debug("new vesting account - to account creation error", "error", err.Error())
+		return sdkerrors.Wrap(err, fmt.Sprintf("new vesting account - to account creation error: %s", toAddress))
+	}
 
 	err = ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
 		Address: acc.GetAddress().String(),
@@ -412,4 +403,20 @@ func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount sdk.
 	}
 
 	return nil
+}
+
+func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, originalVesting sdk.Coins, startTime int64, vestingEnd int64) (*vestingtypes.ContinuousVestingAccount, error) {
+	baseAccount := k.account.NewAccountWithAddress(ctx, to)
+	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
+		k.Logger(ctx).Debug("new continuous vesting account invalid account type; expected: BaseAccount", "toAddress", to, "notExpectedAccount", baseAccount)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidAccountType, "new continuous vesting account - expected BaseAccount, got: %T", baseAccount)
+	}
+	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), originalVesting.Sort(), vestingEnd)
+
+	acc := vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime)
+
+	k.account.SetAccount(ctx, acc)
+	k.Logger(ctx).Debug("new continuous vesting account", "baseAccount", baseVestingAccount.BaseAccount, "baseVestingAccount",
+		baseVestingAccount, "startTime", startTime)
+	return acc, nil
 }

@@ -8,6 +8,7 @@ export interface NewVestingAccount {
 }
 
 export interface NewVestingPool {
+  /** TODO: rename to owner */
   creator: string;
   name: string;
   amount: string;
@@ -16,6 +17,7 @@ export interface NewVestingPool {
 }
 
 export interface NewVestingAccountFromVestingPool {
+  /** TODO: rename to owner */
   owner_address: string;
   address: string;
   vesting_pool_name: string;
@@ -24,6 +26,7 @@ export interface NewVestingAccountFromVestingPool {
 }
 
 export interface WithdrawAvailable {
+  /** TODO: rename to owner */
   owner_address: string;
   vesting_pool_name: string;
   amount: string;
@@ -234,13 +237,13 @@ export const NewVestingAccountFromVestingPool = {
       writer.uint32(18).string(message.address);
     }
     if (message.vesting_pool_name !== "") {
-      writer.uint32(34).string(message.vesting_pool_name);
+      writer.uint32(26).string(message.vesting_pool_name);
     }
     if (message.amount !== "") {
-      writer.uint32(42).string(message.amount);
+      writer.uint32(34).string(message.amount);
     }
     if (message.restart_vesting !== "") {
-      writer.uint32(50).string(message.restart_vesting);
+      writer.uint32(42).string(message.restart_vesting);
     }
     return writer;
   },
@@ -263,13 +266,13 @@ export const NewVestingAccountFromVestingPool = {
         case 2:
           message.address = reader.string();
           break;
-        case 4:
+        case 3:
           message.vesting_pool_name = reader.string();
           break;
-        case 5:
+        case 4:
           message.amount = reader.string();
           break;
-        case 6:
+        case 5:
           message.restart_vesting = reader.string();
           break;
         default:
@@ -384,10 +387,10 @@ export const WithdrawAvailable = {
       writer.uint32(10).string(message.owner_address);
     }
     if (message.vesting_pool_name !== "") {
-      writer.uint32(34).string(message.vesting_pool_name);
+      writer.uint32(18).string(message.vesting_pool_name);
     }
     if (message.amount !== "") {
-      writer.uint32(42).string(message.amount);
+      writer.uint32(26).string(message.amount);
     }
     return writer;
   },
@@ -402,10 +405,10 @@ export const WithdrawAvailable = {
         case 1:
           message.owner_address = reader.string();
           break;
-        case 4:
+        case 2:
           message.vesting_pool_name = reader.string();
           break;
-        case 5:
+        case 3:
           message.amount = reader.string();
           break;
         default:

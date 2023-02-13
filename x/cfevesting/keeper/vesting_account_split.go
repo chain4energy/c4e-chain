@@ -7,25 +7,25 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
-func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Coins) error {
+func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Coins) (*vestingtypes.ContinuousVestingAccount, error) {
 	k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins", "ownerAddress", ownerAddress, "amountToUnlock", amountToUnlock)
 	ownerAccount := k.account.GetAccount(ctx, ownerAddress)
 	if ownerAccount == nil {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - account doesn't exist", "ownerAddress", ownerAddress)
-		return sdkerrors.Wrapf(types.ErrNotExists, "account %s doesn't exist", ownerAddress) // TODO ErrNotExists to c4eerrors namespace and remove from this module
+		return nil, sdkerrors.Wrapf(types.ErrNotExists, "account %s doesn't exist", ownerAddress) // TODO ErrNotExists to c4eerrors namespace and remove from this module
 	}
 
 	vestingAcc, ok := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
 	if !ok {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - account is not ContinuousVestingAccount", "account", ownerAccount)
-		return sdkerrors.Wrapf(types.ErrNotExists, "account %s is not ContinuousVestingAccount", ownerAddress) // TODO some other error
+		return nil, sdkerrors.Wrapf(types.ErrNotExists, "account %s is not ContinuousVestingAccount", ownerAddress) // TODO some other error
 	}
 
 	lockedCoins := vestingAcc.LockedCoins(ctx.BlockTime())
 
 	if amountToUnlock.IsAnyGT(lockedCoins) {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - not enough to unlock", "account", ownerAccount, "lockedCoins", lockedCoins, "amountToUnlock", amountToUnlock)
-		return sdkerrors.Wrapf(types.ErrNotExists, "account %s: not enough to unlock. locked: %s, to unlock: %s", ownerAddress, lockedCoins, amountToUnlock) // TODO some other error
+		return nil, sdkerrors.Wrapf(types.ErrNotExists, "account %s: not enough to unlock. locked: %s, to unlock: %s", ownerAddress, lockedCoins, amountToUnlock) // TODO some other error
 	}
 
 	vestingCoins := vestingAcc.GetVestingCoins(ctx.BlockTime())
@@ -47,5 +47,5 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 		"newOrignalVestings", vestingAcc.OriginalVesting, "newVestingCoins", vestingAcc.GetVestingCoins(ctx.BlockTime()))
 
 	k.account.SetAccount(ctx, vestingAcc)
-	return nil
+	return vestingAcc, nil
 }

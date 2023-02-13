@@ -7,6 +7,7 @@ import { Coin } from "../cosmos/base/v1beta1/coin";
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
 export interface MsgCreateVestingPool {
+  /** TODO: rename to owner */
   creator: string;
   name: string;
   amount: string;
@@ -17,6 +18,7 @@ export interface MsgCreateVestingPool {
 export interface MsgCreateVestingPoolResponse {}
 
 export interface MsgWithdrawAllAvailable {
+  /** TODO: rename to owner */
   creator: string;
 }
 
@@ -35,6 +37,7 @@ export interface MsgCreateVestingAccount {
 export interface MsgCreateVestingAccountResponse {}
 
 export interface MsgSendToVestingAccount {
+  /** TODO: rename to owner */
   from_address: string;
   to_address: string;
   vesting_pool_name: string;
@@ -43,6 +46,14 @@ export interface MsgSendToVestingAccount {
 }
 
 export interface MsgSendToVestingAccountResponse {}
+
+export interface MsgSplitVesting {
+  fromAddress: string;
+  toAddress: string;
+  amount: string;
+}
+
+export interface MsgSplitVestingResponse {}
 
 const baseMsgCreateVestingPool: object = {
   creator: "",
@@ -772,6 +783,146 @@ export const MsgSendToVestingAccountResponse = {
   },
 };
 
+const baseMsgSplitVesting: object = {
+  fromAddress: "",
+  toAddress: "",
+  amount: "",
+};
+
+export const MsgSplitVesting = {
+  encode(message: MsgSplitVesting, writer: Writer = Writer.create()): Writer {
+    if (message.fromAddress !== "") {
+      writer.uint32(10).string(message.fromAddress);
+    }
+    if (message.toAddress !== "") {
+      writer.uint32(18).string(message.toAddress);
+    }
+    if (message.amount !== "") {
+      writer.uint32(26).string(message.amount);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgSplitVesting {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgSplitVesting } as MsgSplitVesting;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.fromAddress = reader.string();
+          break;
+        case 2:
+          message.toAddress = reader.string();
+          break;
+        case 3:
+          message.amount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgSplitVesting {
+    const message = { ...baseMsgSplitVesting } as MsgSplitVesting;
+    if (object.fromAddress !== undefined && object.fromAddress !== null) {
+      message.fromAddress = String(object.fromAddress);
+    } else {
+      message.fromAddress = "";
+    }
+    if (object.toAddress !== undefined && object.toAddress !== null) {
+      message.toAddress = String(object.toAddress);
+    } else {
+      message.toAddress = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = String(object.amount);
+    } else {
+      message.amount = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgSplitVesting): unknown {
+    const obj: any = {};
+    message.fromAddress !== undefined &&
+      (obj.fromAddress = message.fromAddress);
+    message.toAddress !== undefined && (obj.toAddress = message.toAddress);
+    message.amount !== undefined && (obj.amount = message.amount);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgSplitVesting>): MsgSplitVesting {
+    const message = { ...baseMsgSplitVesting } as MsgSplitVesting;
+    if (object.fromAddress !== undefined && object.fromAddress !== null) {
+      message.fromAddress = object.fromAddress;
+    } else {
+      message.fromAddress = "";
+    }
+    if (object.toAddress !== undefined && object.toAddress !== null) {
+      message.toAddress = object.toAddress;
+    } else {
+      message.toAddress = "";
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    } else {
+      message.amount = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgSplitVestingResponse: object = {};
+
+export const MsgSplitVestingResponse = {
+  encode(_: MsgSplitVestingResponse, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgSplitVestingResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgSplitVestingResponse,
+    } as MsgSplitVestingResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgSplitVestingResponse {
+    const message = {
+      ...baseMsgSplitVestingResponse,
+    } as MsgSplitVestingResponse;
+    return message;
+  },
+
+  toJSON(_: MsgSplitVestingResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgSplitVestingResponse>
+  ): MsgSplitVestingResponse {
+    const message = {
+      ...baseMsgSplitVestingResponse,
+    } as MsgSplitVestingResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   CreateVestingPool(
@@ -783,10 +934,11 @@ export interface Msg {
   CreateVestingAccount(
     request: MsgCreateVestingAccount
   ): Promise<MsgCreateVestingAccountResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   SendToVestingAccount(
     request: MsgSendToVestingAccount
   ): Promise<MsgSendToVestingAccountResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  SplitVesting(request: MsgSplitVesting): Promise<MsgSplitVestingResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -847,6 +999,18 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgSendToVestingAccountResponse.decode(new Reader(data))
+    );
+  }
+
+  SplitVesting(request: MsgSplitVesting): Promise<MsgSplitVestingResponse> {
+    const data = MsgSplitVesting.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfevesting.Msg",
+      "SplitVesting",
+      data
+    );
+    return promise.then((data) =>
+      MsgSplitVestingResponse.decode(new Reader(data))
     );
   }
 }

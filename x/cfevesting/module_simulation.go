@@ -1,8 +1,9 @@
 package cfevesting
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
+
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
@@ -24,7 +25,11 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgSplitVesting = "op_weight_msg_split_vesting"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSplitVesting int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -110,6 +115,17 @@ func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.Weig
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateWithdrawAllAvailable,
 		cfevestingpoolsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSplitVesting = 10
+	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSplitVesting, &weightMsgSplitVesting, nil,
+	// 	func(_ *rand.Rand) {
+	// 		weightMsgSplitVesting = defaultWeightMsgSplitVesting
+	// 	},
+	// )
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSplitVesting,
+		cfevestingpoolsimulation.SimulateMsgSplitVesting(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
