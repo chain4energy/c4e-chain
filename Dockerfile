@@ -22,7 +22,7 @@ RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 # Runner
 # --------------------------------------------------------
 
-FROM ubuntu
+FROM ubuntu:22.04
 
 COPY --from=build /chain4energy/build/c4ed /bin/c4ed
 
