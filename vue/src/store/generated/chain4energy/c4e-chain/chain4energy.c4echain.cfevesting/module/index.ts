@@ -4,19 +4,21 @@ import { StdFee } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgCreateVestingAccount } from "./types/cfevesting/tx";
-import { MsgSendToVestingAccount } from "./types/cfevesting/tx";
+import { MsgMoveAvailableVesting } from "./types/cfevesting/tx";
 import { MsgWithdrawAllAvailable } from "./types/cfevesting/tx";
-import { MsgSplitVesting } from "./types/cfevesting/tx";
+import { MsgSendToVestingAccount } from "./types/cfevesting/tx";
 import { MsgCreateVestingPool } from "./types/cfevesting/tx";
+import { MsgCreateVestingAccount } from "./types/cfevesting/tx";
+import { MsgSplitVesting } from "./types/cfevesting/tx";
 
 
 const types = [
-  ["/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", MsgCreateVestingAccount],
-  ["/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", MsgSendToVestingAccount],
+  ["/chain4energy.c4echain.cfevesting.MsgMoveAvailableVesting", MsgMoveAvailableVesting],
   ["/chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailable", MsgWithdrawAllAvailable],
-  ["/chain4energy.c4echain.cfevesting.MsgSplitVesting", MsgSplitVesting],
+  ["/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", MsgSendToVestingAccount],
   ["/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", MsgCreateVestingPool],
+  ["/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", MsgCreateVestingAccount],
+  ["/chain4energy.c4echain.cfevesting.MsgSplitVesting", MsgSplitVesting],
   
 ];
 export const MissingWalletError = new Error("wallet is required");
@@ -49,11 +51,12 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
 
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
-    msgCreateVestingAccount: (data: MsgCreateVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", value: MsgCreateVestingAccount.fromPartial( data ) }),
-    msgSendToVestingAccount: (data: MsgSendToVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", value: MsgSendToVestingAccount.fromPartial( data ) }),
+    msgMoveAvailableVesting: (data: MsgMoveAvailableVesting): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgMoveAvailableVesting", value: MsgMoveAvailableVesting.fromPartial( data ) }),
     msgWithdrawAllAvailable: (data: MsgWithdrawAllAvailable): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailable", value: MsgWithdrawAllAvailable.fromPartial( data ) }),
-    msgSplitVesting: (data: MsgSplitVesting): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgSplitVesting", value: MsgSplitVesting.fromPartial( data ) }),
+    msgSendToVestingAccount: (data: MsgSendToVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", value: MsgSendToVestingAccount.fromPartial( data ) }),
     msgCreateVestingPool: (data: MsgCreateVestingPool): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", value: MsgCreateVestingPool.fromPartial( data ) }),
+    msgCreateVestingAccount: (data: MsgCreateVestingAccount): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingAccount", value: MsgCreateVestingAccount.fromPartial( data ) }),
+    msgSplitVesting: (data: MsgSplitVesting): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfevesting.MsgSplitVesting", value: MsgSplitVesting.fromPartial( data ) }),
     
   };
 };

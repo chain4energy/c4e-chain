@@ -29,6 +29,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgSplitVesting int = 100
 
+	opWeightMsgMoveAvailableVesting = "op_weight_msg_move_available_vesting"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgMoveAvailableVesting int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -126,6 +130,17 @@ func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.Weig
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgSplitVesting,
 		cfevestingpoolsimulation.SimulateMsgSplitVesting(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgMoveAvailableVesting = 10
+	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgMoveAvailableVesting, &weightMsgMoveAvailableVesting, nil,
+	// 	func(_ *rand.Rand) {
+	// 		weightMsgMoveAvailableVesting = defaultWeightMsgMoveAvailableVesting
+	// 	},
+	// )
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgMoveAvailableVesting,
+		cfevestingpoolsimulation.SimulateMsgMoveAvailableVesting(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
