@@ -1,29 +1,25 @@
 # syntax=docker/dockerfile:1
 
 ## Build Image
-FROM golang:1.18.2-alpine3.15 as build
+FROM golang:1.19-alpine as build
 
-ARG E2E_SCRIPT_NAME
-
-RUN set -eux; apk add --no-cache ca-certificates build-base;
-
+RUN set -eux; apk add --no-cache ca-certificates build-base wget;
 RUN apk add git
-
-# needed by github.com/zondax/hid
+# Needed by github.com/zondax/hid
 RUN apk add linux-headers
 
 WORKDIR /chain4energy
 COPY . /chain4energy
 
-RUN BUILD_TAGS=muslc LINK_STATICALLY=true E2E_SCRIPT_NAME=${E2E_SCRIPT_NAME} make build-e2e-script
+RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 
-## Deploy image
-FROM ubuntu
+# --------------------------------------------------------
+# Runner
+# --------------------------------------------------------
 
-# Args only last for a single build stage - renew
-ARG E2E_SCRIPT_NAME
+FROM ubuntu:22.04
 
-COPY --from=build /chain4energy/build/${E2E_SCRIPT_NAME} /bin/${E2E_SCRIPT_NAME}
+COPY --from=build /chain4energy/build/c4ed /bin/c4ed
 
 ENV HOME /chain4energy
 WORKDIR $HOME
