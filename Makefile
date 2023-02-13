@@ -1,16 +1,7 @@
-PACKAGES=$(shell go list ./... | grep -v '/simulation')
+PACKAGES=$(shell go list ./... | grep -v '/simulation\|e2e')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
- 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=c4e \
-	-X github.com/cosmos/cosmos-sdk/version.AppName=c4ed \
-	-X github.com/cosmos/cosmos-sdk/version.ServerName=c4ed \
-	-X github.com/cosmos/cosmos-sdk/version.ClientName=c4ecli \
-	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
-	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) 
-
-#BUILD_FLAGS := -ldflags '$(ldflags)'
 
 build_tags = netgo
 ifeq ($(LEDGER_ENABLED),true)
@@ -36,13 +27,50 @@ ifeq ($(LEDGER_ENABLED),true)
   endif
 endif
 
+ifeq (cleveldb,$(findstring cleveldb,$(OSMOSIS_BUILD_OPTIONS)))
+  build_tags += gcc
+else ifeq (rocksdb,$(findstring rocksdb,$(OSMOSIS_BUILD_OPTIONS)))
+  build_tags += gcc
+endif
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
+
+whitespace :=
+whitespace += $(whitespace)
+comma := ,
+build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
+
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=c4e \
+	-X github.com/cosmos/cosmos-sdk/version.AppName=c4ed \
+	-X github.com/cosmos/cosmos-sdk/version.ServerName=c4ed \
+	-X github.com/cosmos/cosmos-sdk/version.ClientName=c4ecli \
+	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
+	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
+	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
+
+ifeq (cleveldb,$(findstring cleveldb,$(OSMOSIS_BUILD_OPTIONS)))
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
+else ifeq (rocksdb,$(findstring rocksdb,$(OSMOSIS_BUILD_OPTIONS)))
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb
+endif
+ifeq (,$(findstring nostrip,$(OSMOSIS_BUILD_OPTIONS)))
+  ldflags += -w -s
+endif
+ifeq ($(LINK_STATICALLY),true)
+	ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
+endif
+ldflags += $(LDFLAGS)
+ldflags := $(strip $(ldflags))
+
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+# check for nostrip option
+ifeq (,$(findstring nostrip,$(OSMOSIS_BUILD_OPTIONS)))
+  BUILD_FLAGS += -trimpath
+endif
 
 release = GOOS=$(1) GOARCH=$(2) go build -o ./build/c4ed -mod=readonly $(BUILD_FLAGS)  ./cmd/c4ed
 tar = cd build && tar -cvzf c4ed_$(tag)_$(1)_$(2).tar.gz c4ed && rm c4ed
 
-clean:
-	rm -rf ./build/
 
 # include Makefile.ledger
 all: install
@@ -60,7 +88,7 @@ go.sum: go.mod
 		GO111MODULE=on go mod verify
 
 test:
-	@go test -coverprofile=coverage.out -mod=readonly -coverpkg=./... -covermode=atomic $(PACKAGES)
+	@go test -coverprofile=coverage.out -mod=readonly $(PACKAGES)
 
 release:
 	@echo "--> Prepare release linux amd64"
@@ -75,30 +103,26 @@ release:
 
 # blockchain simulation tests
 
-SIM_NUM_BLOCKS = 528
-SIM_BLOCK_SIZE = 277
+SIM_NUM_BLOCKS = 100
+SIM_BLOCK_SIZE = 200
 SIM_COMMIT = true
-SIM_SEED = 3274
 SIMAPP = ./app
 
 test-simulation-benchmark:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -Seed=$(SIM_SEED) -v -Period=1 -PrintAllInvariants \
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -Seed=589 -v -Period=1 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
 
 test-simulation-benchmark-profile:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -v -Seed=$(SIM_SEED) -Period=1 -PrintAllInvariants \
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -v -Seed=589 -Period=1 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) \
 		-timeout 24h -cpuprofile cpu.out -memprofile mem.out
 
 test-simulation-import-export:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimTest$$ -Seed=$(SIM_SEED) -v -Period=1 -PrintAllInvariants \
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimTest$$ -Seed=589 -v -Period=1 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
-
-stop-running-simulations:
-	@ps aux | grep "BenchmarkSimulation\|run-simulations.sh" | awk '{print $$2}' | xargs -r kill -9
 
 open-cpu-profiler-result:
 	@go tool pprof cpu.out
@@ -106,3 +130,23 @@ open-cpu-profiler-result:
 
 open-memory-profiler-result:
 	@go tool pprof mem.out
+
+#E2E
+PACKAGES_E2E=$(shell go list ./... | grep '/e2e')
+BUILDDIR ?= $(CURDIR)/build
+
+test-e2e:
+	@VERSION=$(VERSION) go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -v
+
+test-e2e-skip-upgrade:
+	@VERSION=$(VERSION) OSMOSIS_E2E_SKIP_UPGRADE=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -v
+
+build-e2e-script:
+	mkdir -p $(BUILDDIR)
+	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./tests/e2e/initialization/$(E2E_SCRIPT_NAME)
+
+docker-build-debug:
+	@docker build -t chain4energy-old-dev:v1.0.0 --build-arg BASE_IMG_TAG=debug -f Dockerfile .
+
+docker-build-e2e-init-chain:
+	@docker build -t chain4energy-old-chain-init:v1.0.0 --build-arg E2E_SCRIPT_NAME=chain -f tests/e2e/initialization/init.Dockerfile .
