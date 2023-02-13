@@ -1,7 +1,7 @@
 package e2e
 
 import (
-	appparams "github.com/chain4energy/c4e-chain/tests/e2e/encoding/params"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"

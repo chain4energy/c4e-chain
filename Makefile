@@ -71,6 +71,8 @@ endif
 release = GOOS=$(1) GOARCH=$(2) go build -o ./build/c4ed -mod=readonly $(BUILD_FLAGS)  ./cmd/c4ed
 tar = cd build && tar -cvzf c4ed_$(tag)_$(1)_$(2).tar.gz c4ed && rm c4ed
 
+clean: e2e-cleanup
+	rm -rf ./build/
 
 # include Makefile.ledger
 all: install
@@ -173,6 +175,7 @@ e2e-check-image-sha:
 
 e2e-cleanup:
 	tests/e2e/scripts/run/remove_stale_resources.sh
+	rm -rf tests/e2e/scripts/.c4e-chain
 
 build-e2e-script:
 	mkdir -p $(BUILDDIR)

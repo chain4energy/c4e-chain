@@ -2,9 +2,9 @@ package e2e
 
 import (
 	"fmt"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
-	appparams "github.com/chain4energy/c4e-chain/tests/e2e/encoding/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/helpers"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"

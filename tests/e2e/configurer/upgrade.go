@@ -3,7 +3,7 @@ package configurer
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/tests/e2e/encoding/params"
+	"github.com/chain4energy/c4e-chain/app/params"
 	"os"
 	"testing"
 	"time"
