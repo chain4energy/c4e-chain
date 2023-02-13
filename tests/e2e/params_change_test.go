@@ -11,7 +11,6 @@ import (
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramsutils "github.com/cosmos/cosmos-sdk/x/params/client/utils"
 	"github.com/stretchr/testify/suite"
 	"k8s.io/kubernetes/staging/src/k8s.io/apimachinery/pkg/util/json"
@@ -70,8 +69,8 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {
 			},
 			Destinations: cfedistributortypes.Destinations{
 				PrimaryShare: cfedistributortypes.Account{
-					Id:   cfedistributortypes.GreenEnergyBoosterCollector,
-					Type: cfedistributortypes.ModuleAccount,
+					Id:   "c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph",
+					Type: cfedistributortypes.BaseAccount,
 				},
 				BurnShare: sdk.ZeroDec(),
 			},
@@ -79,26 +78,24 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {
 	}
 	s.cfedistributorParamsChange(node, chainA, newSubDistributors)
 
-	accAddress := authtypes.NewModuleAddress(cfedistributortypes.GreenEnergyBoosterCollector).String()
-	s.validateBalanceOfAccount(node, newDenom, accAddress, true, 15)
+	s.validateBalanceOfAccount(node, newDenom, "c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph", true, 15)
 }
 
 func (s *ParamsSetupSuite) TestMinterAndDistributorMainnetShort() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
-	newDenom := "newTestDenom"
-	totalSupplyBefore, err := node.QuerySupplyOf(appparams.CoinDenom)
-	fmt.Println(totalSupplyBefore)
-	greenEnergyBoosterAddress := helpers.GetModuleAccountAddress(cfedistributortypes.GreenEnergyBoosterCollector)
+	newDenom := "MinterAndDistributorMainnetShortDenom2"
+
 	s.cfedistributorParamsChange(node, chainA, helpers.MainnetSubdistributors)
 	s.cfeminterParamsChange(node, chainA, newDenom, helpers.MainnetMinterConfigShort)
+	totalSupplyBefore, err := node.QuerySupplyOf(appparams.CoinDenom)
 	time.Sleep(time.Minute * 1)
 	totalSupplyAfter, err := node.QuerySupplyOf(newDenom)
-	fmt.Println(totalSupplyAfter)
-	s.Greater(totalSupplyAfter.Int64(), int64(299999999900000))
+	s.Greater(totalSupplyAfter.Int64(), totalSupplyBefore.Int64())
+	greenEnergyBoosterAddress := helpers.GetModuleAccountAddress(cfedistributortypes.GreenEnergyBoosterCollector)
 	greenEnergyBoosterBalanceAfter, err := node.QueryBalances(greenEnergyBoosterAddress)
-	s.Equal(sdk.NewDec(totalSupplyAfter.Int64()).Mul(sdk.MustNewDecFromStr("0.35")).Mul(sdk.MustNewDecFromStr("0.34")).TruncateInt(), greenEnergyBoosterBalanceAfter.AmountOf(newDenom))
+	s.Equal(sdk.NewDec(totalSupplyAfter.Int64()).Mul(sdk.MustNewDecFromStr("0.3")).Mul(sdk.MustNewDecFromStr("0.67")).TruncateInt(), greenEnergyBoosterBalanceAfter.AmountOf(newDenom))
 }
 
 func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {
@@ -358,7 +355,7 @@ func (s *ParamsSetupSuite) TestCfeminterNoMinters() {
 	}
 
 	proposalJSON, err := json.Marshal(proposal)
-	node.SubmitParamChangeNotValidProposal(string(proposalJSON), initialization.ValidatorWalletName, "invalid parameter value: no minters defined")
+	node.SubmitParamChangeNotValidProposal(string(proposalJSON), initialization.ValidatorWalletName, "invalid parameter value: minter on position 1 cannot be nil")
 	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
 }
 

@@ -17,6 +17,12 @@ var oneYearDuration = time.Hour * 365
 var MainnetSubdistributors = []cfedistributortypes.SubDistributor{
 	{
 		Name: "tx_fee_distributor",
+		Sources: []*cfedistributortypes.Account{
+			{
+				Id:   "fee_collector",
+				Type: cfedistributortypes.ModuleAccount,
+			},
+		},
 		Destinations: cfedistributortypes.Destinations{
 			PrimaryShare: cfedistributortypes.Account{
 				Id:   "c4e_distributor",
@@ -24,15 +30,15 @@ var MainnetSubdistributors = []cfedistributortypes.SubDistributor{
 			},
 			BurnShare: sdk.ZeroDec(),
 		},
-		Sources: []*cfedistributortypes.Account{
-			{
-				Id:   "fee_collector",
-				Type: cfedistributortypes.ModuleName,
-			},
-		},
 	},
 	{
 		Name: "inflation_and_fee_distributor",
+		Sources: []*cfedistributortypes.Account{
+			{
+				Id:   "c4e_distributor",
+				Type: cfedistributortypes.Main,
+			},
+		},
 		Destinations: cfedistributortypes.Destinations{
 			PrimaryShare: cfedistributortypes.Account{
 				Id:   cfedistributortypes.ValidatorsRewardsCollector,
@@ -41,16 +47,8 @@ var MainnetSubdistributors = []cfedistributortypes.SubDistributor{
 			BurnShare: sdk.ZeroDec(),
 			Shares: []*cfedistributortypes.DestinationShare{
 				{
-					Name:  "development_fund",
-					Share: sdk.MustNewDecFromStr("0.05"),
-					Destination: cfedistributortypes.Account{
-						Id:   "c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl",
-						Type: cfedistributortypes.BaseAccount,
-					},
-				},
-				{
 					Name:  "usage_incentives",
-					Share: sdk.MustNewDecFromStr("0.35"),
+					Share: sdk.MustNewDecFromStr("0.3"),
 					Destination: cfedistributortypes.Account{
 						Id:   "usage_incentives_collector",
 						Type: cfedistributortypes.InternalAccount,
@@ -58,44 +56,30 @@ var MainnetSubdistributors = []cfedistributortypes.SubDistributor{
 				},
 			},
 		},
-		Sources: []*cfedistributortypes.Account{
-			{
-				Id:   "c4e_distributor",
-				Type: cfedistributortypes.Main,
-			},
-		},
 	},
 	{
 		Name: "usage_incentives_distributor",
+		Sources: []*cfedistributortypes.Account{
+			{
+				Id:   "usage_incentives_collector",
+				Type: cfedistributortypes.InternalAccount,
+			},
+		},
 		Destinations: cfedistributortypes.Destinations{
 			PrimaryShare: cfedistributortypes.Account{
-				Id:   "c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph",
-				Type: cfedistributortypes.BaseAccount,
+				Id:   "green_energy_booster_collector",
+				Type: cfedistributortypes.ModuleAccount,
 			},
 			BurnShare: sdk.ZeroDec(),
 			Shares: []*cfedistributortypes.DestinationShare{
-				{
-					Name:  "green_energy_booster",
-					Share: sdk.MustNewDecFromStr("0.34"),
-					Destination: cfedistributortypes.Account{
-						Id:   "green_energy_booster_collector",
-						Type: cfedistributortypes.ModuleName,
-					},
-				},
 				{
 					Name:  "governance_booster",
 					Share: sdk.MustNewDecFromStr("0.33"),
 					Destination: cfedistributortypes.Account{
 						Id:   "governance_booster_collector",
-						Type: cfedistributortypes.ModuleName,
+						Type: cfedistributortypes.ModuleAccount,
 					},
 				},
-			},
-		},
-		Sources: []*cfedistributortypes.Account{
-			{
-				Id:   "usage_incentives_collector",
-				Type: cfedistributortypes.InternalAccount,
 			},
 		},
 	},
@@ -109,15 +93,11 @@ var MainnetMinterConfigLong = cfemintertypes.MinterConfig{
 			SequenceId: 1,
 			Type:       cfemintertypes.ExponentialStepMintingType,
 			ExponentialStepMinting: &cfemintertypes.ExponentialStepMinting{
-				Amount:           sdk.NewInt(160000000000000),
+				Amount:           sdk.NewInt(32000000000000),
 				AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
 				StepDuration:     oneYearDuration * 4,
 			},
 			EndTime: &minterConfigLongEndTime,
-		},
-		{
-			SequenceId: 2,
-			Type:       cfemintertypes.NoMintingType,
 		},
 	},
 }

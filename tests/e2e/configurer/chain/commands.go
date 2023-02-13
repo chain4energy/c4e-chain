@@ -52,7 +52,7 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
 	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
@@ -74,7 +74,7 @@ func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, error
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
 	_, _, err = n.containerManager.ExecTxCmdWithSuccessString(n.t, n.chainId, n.Name, cmd, errorMessage)
 	require.NoError(n.t, err)
@@ -94,7 +94,7 @@ func (n *NodeConfig) SubmitParamChangeProposalRequireError(proposalJson, from st
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
 	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
