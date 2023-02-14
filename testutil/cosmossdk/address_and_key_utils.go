@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -72,7 +74,7 @@ func createRandomAccAddressHexAndBechNoBalance(i int64) (hex string, bech string
 	numString := strconv.Itoa(int(i))
 	buffer.WriteString("A58856F0FD53BF058B4909A21AEC019107BA6") // base address string
 	buffer.WriteString(numString)                               // adding on final two digits to make addresses unique
-	res, _ := sdk.AccAddressFromBech32(buffer.String())
+	res, _ := sdk.AccAddressFromHexUnsafe(buffer.String())
 	return buffer.String(), res.String()
 }
 
@@ -108,7 +110,7 @@ func TestAddr(addr string, bech string) (sdk.AccAddress, error) {
 		return nil, fmt.Errorf("bech encoding doesn't match reference")
 	}
 
-	bechres, err := sdk.AccAddressFromBech32(bech)
+	bechres, err := AccAddressFromBech32(bech)
 	if err != nil {
 		return nil, err
 	}
@@ -117,4 +119,25 @@ func TestAddr(addr string, bech string) (sdk.AccAddress, error) {
 	}
 
 	return res, nil
+}
+
+// AccAddressFromBech32 creates an AccAddress from a Bech32 string.
+func AccAddressFromBech32(address string) (addr sdk.AccAddress, err error) {
+	if len(strings.TrimSpace(address)) == 0 {
+		return sdk.AccAddress{}, fmt.Errorf("empty address string is not allowed")
+	}
+
+	bech32PrefixAccAddr := appparams.Bech32PrefixAccAddr
+
+	bz, err := sdk.GetFromBech32(address, bech32PrefixAccAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	err = sdk.VerifyAddressFormat(bz)
+	if err != nil {
+		return nil, err
+	}
+
+	return bz, nil
 }

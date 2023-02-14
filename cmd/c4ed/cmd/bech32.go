@@ -3,6 +3,7 @@ package cmd
 // DONTCOVER
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/types/bech32"
@@ -32,6 +33,7 @@ Example:
 			}
 
 			_, bz, err := bech32.DecodeAndConvert(args[0])
+			fmt.Println(len(bz))
 			if err != nil {
 				return err
 			}

@@ -1,8 +1,6 @@
 package keeper_test
 
 import (
-	"fmt"
-	"strconv"
 	"testing"
 
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
@@ -40,8 +38,7 @@ func TestGetAccountVestingPools(t *testing.T) {
 	require.EqualValues(t, 2, len(allVestingPools))
 
 	found := false
-	for i, accVestExp := range allVestingPools {
-		fmt.Println("accVestExp: " + strconv.Itoa(i) + " - " + accVestExp.Address)
+	for _, accVestExp := range allVestingPools {
 		if accountVestingPools[0].Address == accVestExp.Address {
 			testutils.AssertAccountVestingPools(t, *accountVestingPools[0], accVestExp)
 			found = true
@@ -50,8 +47,7 @@ func TestGetAccountVestingPools(t *testing.T) {
 	require.True(t, found, "not found: "+accountVestingPools[0].Address)
 
 	found = false
-	for i, accVestExp := range allVestingPools {
-		fmt.Println("accVestExp: " + strconv.Itoa(i) + " - " + accVestExp.Address)
+	for _, accVestExp := range allVestingPools {
 		if accountVestingPools[1].Address == accVestExp.Address {
 			testutils.AssertAccountVestingPools(t, *accountVestingPools[1], accVestExp)
 			found = true
