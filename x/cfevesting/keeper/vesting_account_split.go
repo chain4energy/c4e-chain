@@ -32,15 +32,16 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 	orignalVestings := vestingAcc.OriginalVesting
 
 	for _, coin := range amountToUnlock {
-		orignalVesting := orignalVestings.AmountOf(coin.Denom)
-		vestingCoin := vestingCoins.AmountOf(coin.Denom)
-		originalVestingDiffDec := coin.Amount.ToDec().Mul(orignalVesting.ToDec()).Quo(vestingCoin.ToDec())
-		originalVestingDiff := originalVestingDiffDec.TruncateInt()
-		vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(coin.Denom, originalVestingDiff)))
-		if !vestingCoin.Equal(coin.Amount.Add(vestingAcc.GetVestingCoins(ctx.BlockTime()).AmountOf(coin.Denom))) {
-			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(coin.Denom, sdk.NewInt(1)))) // TODO is this enough ??
+		if coin.IsPositive() {
+			orignalVesting := orignalVestings.AmountOf(coin.Denom)
+			vestingCoin := vestingCoins.AmountOf(coin.Denom)
+			originalVestingDiffDec := coin.Amount.ToDec().Mul(orignalVesting.ToDec()).Quo(vestingCoin.ToDec())
+			originalVestingDiff := originalVestingDiffDec.TruncateInt()
+			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(coin.Denom, originalVestingDiff)))
+			if !vestingCoin.Equal(coin.Amount.Add(vestingAcc.GetVestingCoins(ctx.BlockTime()).AmountOf(coin.Denom))) {
+				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(coin.Denom, sdk.NewInt(1)))) // TODO is this enough ??
+			}
 		}
-
 	}
 	k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins", "ownerAddress", ownerAddress,
 		"amountToUnlock", amountToUnlock, "vestingCoins", vestingCoins, "orignalVestings", orignalVestings,

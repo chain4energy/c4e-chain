@@ -11,31 +11,49 @@ import (
 func (k msgServer) SplitVesting(goCtx context.Context, msg *types.MsgSplitVesting) (*types.MsgSplitVestingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.bank.IsSendEnabledCoins(ctx, msg.Amount...); err != nil {
-		return nil, err
-	}
-
 	from, err := sdk.AccAddressFromBech32(msg.FromAddress)
 	if err != nil {
 		return nil, err
 	}
-	to, err := sdk.AccAddressFromBech32(msg.ToAddress)
-	if err != nil {
+
+	if err := k.splitVestingCoins(ctx, from, msg.ToAddress, msg.Amount); err != nil {
 		return nil, err
+	}
+	return &types.MsgSplitVestingResponse{}, nil
+}
+
+func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAddress string,
+	amount sdk.Coins) error {
+
+	if amount.IsZero() || amount.IsAnyNegative() || amount.IsAnyNil() {
+		return sdkerrors.Wrapf(types.ErrParam, "split vesting coins - amount must be positive: %s", amount)
+	}
+
+	if amount.IsAnyNil() {
+		return sdkerrors.Wrapf(types.ErrParam, "split vesting coins - all coins of amount must not be null: %s", amount)
+	}
+
+	if err := k.bank.IsSendEnabledCoins(ctx, amount...); err != nil {
+		return err
+	}
+
+	to, err := sdk.AccAddressFromBech32(toAddress)
+	if err != nil {
+		return err
 	}
 
 	if k.bank.BlockedAddr(to) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", msg.ToAddress)
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", toAddress)
 	}
 
 	if acc := k.account.GetAccount(ctx, to); acc != nil {
-		k.Logger(ctx).Debug("new vesting account account already exists error", "toAddress", to)
-		return nil, sdkerrors.Wrapf(types.ErrAlreadyExists, "new vesting account - account address: %s", to)
+		k.Logger(ctx).Debug("split vesting coins - to account already exists error", "toAddress", to)
+		return sdkerrors.Wrapf(types.ErrAlreadyExists, "split vesting coins - account address: %s", to)
 	}
 
-	vestingAcc, err := k.UnlockUnbondedContinuousVestingAccountCoins(ctx, from, msg.Amount)
+	vestingAcc, err := k.UnlockUnbondedContinuousVestingAccountCoins(ctx, from, amount)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	startTime := ctx.BlockTime().Unix()
@@ -43,11 +61,11 @@ func (k msgServer) SplitVesting(goCtx context.Context, msg *types.MsgSplitVestin
 		startTime = vestingAcc.StartTime
 	}
 
-	if _, err = k.newContinuousVestingAccount(ctx, to, msg.Amount, startTime, vestingAcc.EndTime); err != nil {
-		return nil, err
+	if _, err = k.newContinuousVestingAccount(ctx, to, amount, startTime, vestingAcc.EndTime); err != nil {
+		return err
 	}
 
-	k.bank.SendCoins(ctx, from, to, msg.Amount)
+	k.bank.SendCoins(ctx, from, to, amount)
 
-	return &types.MsgSplitVestingResponse{}, nil
+	return nil
 }

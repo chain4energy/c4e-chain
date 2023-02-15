@@ -62,6 +62,14 @@ export interface MsgMoveAvailableVesting {
 
 export interface MsgMoveAvailableVestingResponse {}
 
+export interface MsgMoveAvailableVestingByDenoms {
+  fromAddress: string;
+  toAddress: string;
+  denoms: string;
+}
+
+export interface MsgMoveAvailableVestingByDenomsResponse {}
+
 const baseMsgCreateVestingPool: object = {
   creator: "",
   name: "",
@@ -1069,6 +1077,166 @@ export const MsgMoveAvailableVestingResponse = {
   },
 };
 
+const baseMsgMoveAvailableVestingByDenoms: object = {
+  fromAddress: "",
+  toAddress: "",
+  denoms: "",
+};
+
+export const MsgMoveAvailableVestingByDenoms = {
+  encode(
+    message: MsgMoveAvailableVestingByDenoms,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.fromAddress !== "") {
+      writer.uint32(10).string(message.fromAddress);
+    }
+    if (message.toAddress !== "") {
+      writer.uint32(18).string(message.toAddress);
+    }
+    if (message.denoms !== "") {
+      writer.uint32(26).string(message.denoms);
+    }
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgMoveAvailableVestingByDenoms {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgMoveAvailableVestingByDenoms,
+    } as MsgMoveAvailableVestingByDenoms;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.fromAddress = reader.string();
+          break;
+        case 2:
+          message.toAddress = reader.string();
+          break;
+        case 3:
+          message.denoms = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgMoveAvailableVestingByDenoms {
+    const message = {
+      ...baseMsgMoveAvailableVestingByDenoms,
+    } as MsgMoveAvailableVestingByDenoms;
+    if (object.fromAddress !== undefined && object.fromAddress !== null) {
+      message.fromAddress = String(object.fromAddress);
+    } else {
+      message.fromAddress = "";
+    }
+    if (object.toAddress !== undefined && object.toAddress !== null) {
+      message.toAddress = String(object.toAddress);
+    } else {
+      message.toAddress = "";
+    }
+    if (object.denoms !== undefined && object.denoms !== null) {
+      message.denoms = String(object.denoms);
+    } else {
+      message.denoms = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgMoveAvailableVestingByDenoms): unknown {
+    const obj: any = {};
+    message.fromAddress !== undefined &&
+      (obj.fromAddress = message.fromAddress);
+    message.toAddress !== undefined && (obj.toAddress = message.toAddress);
+    message.denoms !== undefined && (obj.denoms = message.denoms);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<MsgMoveAvailableVestingByDenoms>
+  ): MsgMoveAvailableVestingByDenoms {
+    const message = {
+      ...baseMsgMoveAvailableVestingByDenoms,
+    } as MsgMoveAvailableVestingByDenoms;
+    if (object.fromAddress !== undefined && object.fromAddress !== null) {
+      message.fromAddress = object.fromAddress;
+    } else {
+      message.fromAddress = "";
+    }
+    if (object.toAddress !== undefined && object.toAddress !== null) {
+      message.toAddress = object.toAddress;
+    } else {
+      message.toAddress = "";
+    }
+    if (object.denoms !== undefined && object.denoms !== null) {
+      message.denoms = object.denoms;
+    } else {
+      message.denoms = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgMoveAvailableVestingByDenomsResponse: object = {};
+
+export const MsgMoveAvailableVestingByDenomsResponse = {
+  encode(
+    _: MsgMoveAvailableVestingByDenomsResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    return writer;
+  },
+
+  decode(
+    input: Reader | Uint8Array,
+    length?: number
+  ): MsgMoveAvailableVestingByDenomsResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgMoveAvailableVestingByDenomsResponse,
+    } as MsgMoveAvailableVestingByDenomsResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgMoveAvailableVestingByDenomsResponse {
+    const message = {
+      ...baseMsgMoveAvailableVestingByDenomsResponse,
+    } as MsgMoveAvailableVestingByDenomsResponse;
+    return message;
+  },
+
+  toJSON(_: MsgMoveAvailableVestingByDenomsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgMoveAvailableVestingByDenomsResponse>
+  ): MsgMoveAvailableVestingByDenomsResponse {
+    const message = {
+      ...baseMsgMoveAvailableVestingByDenomsResponse,
+    } as MsgMoveAvailableVestingByDenomsResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   CreateVestingPool(
@@ -1084,10 +1252,13 @@ export interface Msg {
     request: MsgSendToVestingAccount
   ): Promise<MsgSendToVestingAccountResponse>;
   SplitVesting(request: MsgSplitVesting): Promise<MsgSplitVestingResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   MoveAvailableVesting(
     request: MsgMoveAvailableVesting
   ): Promise<MsgMoveAvailableVestingResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  MoveAvailableVestingByDenoms(
+    request: MsgMoveAvailableVestingByDenoms
+  ): Promise<MsgMoveAvailableVestingByDenomsResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1174,6 +1345,20 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgMoveAvailableVestingResponse.decode(new Reader(data))
+    );
+  }
+
+  MoveAvailableVestingByDenoms(
+    request: MsgMoveAvailableVestingByDenoms
+  ): Promise<MsgMoveAvailableVestingByDenomsResponse> {
+    const data = MsgMoveAvailableVestingByDenoms.encode(request).finish();
+    const promise = this.rpc.request(
+      "chain4energy.c4echain.cfevesting.Msg",
+      "MoveAvailableVestingByDenoms",
+      data
+    );
+    return promise.then((data) =>
+      MsgMoveAvailableVestingByDenomsResponse.decode(new Reader(data))
     );
   }
 }

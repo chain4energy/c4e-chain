@@ -32736,6 +32736,8 @@ definitions:
     type: object
   chain4energy.c4echain.cfevesting.MsgCreateVestingPoolResponse:
     type: object
+  chain4energy.c4echain.cfevesting.MsgMoveAvailableVestingByDenomsResponse:
+    type: object
   chain4energy.c4echain.cfevesting.MsgMoveAvailableVestingResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:

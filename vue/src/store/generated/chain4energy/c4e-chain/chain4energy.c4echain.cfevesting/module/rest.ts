@@ -26,6 +26,8 @@ export type CfevestingMsgCreateVestingAccountResponse = object;
 
 export type CfevestingMsgCreateVestingPoolResponse = object;
 
+export type CfevestingMsgMoveAvailableVestingByDenomsResponse = object;
+
 export type CfevestingMsgMoveAvailableVestingResponse = object;
 
 export type CfevestingMsgSendToVestingAccountResponse = object;

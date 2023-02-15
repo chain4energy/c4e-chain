@@ -19,6 +19,7 @@ service Msg {
   rpc SendToVestingAccount(MsgSendToVestingAccount) returns (MsgSendToVestingAccountResponse);
   rpc SplitVesting(MsgSplitVesting) returns (MsgSplitVestingResponse);
   rpc MoveAvailableVesting(MsgMoveAvailableVesting) returns (MsgMoveAvailableVestingResponse);
+  rpc MoveAvailableVestingByDenoms(MsgMoveAvailableVestingByDenoms) returns (MsgMoveAvailableVestingByDenomsResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -94,11 +95,20 @@ message MsgSplitVestingResponse {
 }
 
 message MsgMoveAvailableVesting {
-  string fromAddress = 1;
-  string toAddress = 2;
+  string from_address = 1;
+  string to_address = 2;
 }
 
 message MsgMoveAvailableVestingResponse {
+}
+
+message MsgMoveAvailableVestingByDenoms {
+  string from_address = 1;
+  string to_address = 2;
+  repeated string denoms = 3;
+}
+
+message MsgMoveAvailableVestingByDenomsResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

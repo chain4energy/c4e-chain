@@ -35,6 +35,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdSendToVestingAccount())
 	cmd.AddCommand(CmdSplitVesting())
 	cmd.AddCommand(CmdMoveAvailableVesting())
+	cmd.AddCommand(CmdMoveAvailableVestingByDenoms())
 	// this line is used by starport scaffolding # 1
 
 	return cmd
