@@ -154,7 +154,7 @@ genesis:
           start_time: "2022-07-05T00:00:00.00000000Z"
     cfevesting:
       account_vesting_pools:
-      - address: c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm
+      - owner: c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm
         vesting_pools:
         - initially_locked: "15000000000000"
           lock_end: "2025-03-30T00:00:00.00000000Z"

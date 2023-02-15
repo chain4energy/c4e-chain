@@ -48,14 +48,14 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 		}
 
 		newAccPool := types.AccountVestingPools{
-			Address:      oldAccPool.Address,
+			Owner:        oldAccPool.Address,
 			VestingPools: newPools,
 		}
 		av, err := cdc.Marshal(&newAccPool)
 		if err != nil {
 			return err
 		}
-		prefixStore.Set([]byte(newAccPool.Address), av)
+		prefixStore.Set([]byte(newAccPool.Owner), av)
 	}
 	return nil
 }

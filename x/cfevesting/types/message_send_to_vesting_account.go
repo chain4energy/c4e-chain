@@ -10,9 +10,9 @@ const TypeMsgSendToVestingAccount = "send_to_vesting_account"
 
 var _ sdk.Msg = &MsgSendToVestingAccount{}
 
-func NewMsgSendToVestingAccount(fromAddress string, toAddress string, vestingPoolName string, amount math.Int, restartVesting bool) *MsgSendToVestingAccount {
+func NewMsgSendToVestingAccount(owner string, toAddress string, vestingPoolName string, amount math.Int, restartVesting bool) *MsgSendToVestingAccount {
 	return &MsgSendToVestingAccount{
-		FromAddress:     fromAddress,
+		Owner:           owner,
 		ToAddress:       toAddress,
 		VestingPoolName: vestingPoolName,
 		Amount:          amount,
@@ -29,11 +29,11 @@ func (msg *MsgSendToVestingAccount) Type() string {
 }
 
 func (msg *MsgSendToVestingAccount) GetSigners() []sdk.AccAddress {
-	fromAddress, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{fromAddress}
+	return []sdk.AccAddress{owner}
 }
 
 func (msg *MsgSendToVestingAccount) GetSignBytes() []byte {
@@ -42,9 +42,9 @@ func (msg *MsgSendToVestingAccount) GetSignBytes() []byte {
 }
 
 func (msg *MsgSendToVestingAccount) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid fromAddress address (%s)", err)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 	return nil
 }

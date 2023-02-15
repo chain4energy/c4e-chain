@@ -12,7 +12,7 @@ var (
 	flagBech32Prefix = "prefix"
 )
 
-// get cmd to convert any bech32 address to an osmo prefix
+// get cmd to convert any bech32 address to an c4e prefix
 func ConvertBech32Cmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "bech32-convert [bech32 string]",

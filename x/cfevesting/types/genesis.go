@@ -81,11 +81,11 @@ func (gs GenesisState) validateAccountVestingPools() error {
 		numOfAddress := 0
 
 		for _, avtCheck := range avts {
-			if avt.Address == avtCheck.Address {
+			if avt.Owner == avtCheck.Owner {
 				numOfAddress++
 			}
 			if numOfAddress > 1 {
-				return fmt.Errorf("account vesting pools with address: %s defined more than once", avt.Address)
+				return fmt.Errorf("account vesting pools with address: %s defined more than once", avt.Owner)
 			}
 		}
 		err = avt.ValidateAgainstVestingTypes(vts)

@@ -29,13 +29,13 @@ func NonNegativeVestingPoolAmountsInvariant(k Keeper) sdk.Invariant {
 			for _, vestingPool := range accountVestingPools.VestingPools {
 				if vestingPool.Withdrawn.IsNegative() {
 					return sdk.FormatInvariant(types.ModuleName, NONNEGATIVE_AMOUNTS_INVARIANT,
-						fmt.Sprintf("\tnegative Withdrawn %s in vesting pool: %s for address: %s", vestingPool.Withdrawn, vestingPool.Name, accountVestingPools.Address)), true
+						fmt.Sprintf("\tnegative Withdrawn %s in vesting pool: %s for address: %s", vestingPool.Withdrawn, vestingPool.Name, accountVestingPools.Owner)), true
 				} else if vestingPool.Sent.IsNegative() {
 					return sdk.FormatInvariant(types.ModuleName, NONNEGATIVE_AMOUNTS_INVARIANT,
-						fmt.Sprintf("\tnegative Sent %s in vesting pool: %s for address: %s", vestingPool.Sent, vestingPool.Name, accountVestingPools.Address)), true
+						fmt.Sprintf("\tnegative Sent %s in vesting pool: %s for address: %s", vestingPool.Sent, vestingPool.Name, accountVestingPools.Owner)), true
 				} else if vestingPool.InitiallyLocked.IsNegative() {
 					return sdk.FormatInvariant(types.ModuleName, NONNEGATIVE_AMOUNTS_INVARIANT,
-						fmt.Sprintf("\tnegative InitiallyLocked %s in vesting pool: %s for address: %s", vestingPool.InitiallyLocked, vestingPool.Name, accountVestingPools.Address)), true
+						fmt.Sprintf("\tnegative InitiallyLocked %s in vesting pool: %s for address: %s", vestingPool.InitiallyLocked, vestingPool.Name, accountVestingPools.Owner)), true
 				}
 			}
 		}
@@ -53,7 +53,7 @@ func VestingPoolConsistentDataInvariant(k Keeper) sdk.Invariant {
 				if vestingPool.Withdrawn.Add(vestingPool.Sent).GT(vestingPool.InitiallyLocked) {
 					return sdk.FormatInvariant(types.ModuleName, "vesting pool consistent data",
 						fmt.Sprintf("\tWithdrawn (%s) + Sent (%s) GT InitiallyLocked (%s) in vesting pool: %s for address: %s",
-							vestingPool.Withdrawn, vestingPool.Sent, vestingPool.InitiallyLocked, vestingPool.Name, accountVestingPools.Address)), true
+							vestingPool.Withdrawn, vestingPool.Sent, vestingPool.InitiallyLocked, vestingPool.Name, accountVestingPools.Owner)), true
 				}
 			}
 		}

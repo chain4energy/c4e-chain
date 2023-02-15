@@ -7,7 +7,7 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
 message AccountVestingPools {
-  string address = 1; // TODO: rename to owner
+  string owner = 1;
   repeated VestingPool vesting_pools = 3; 
 }
 

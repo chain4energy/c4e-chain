@@ -17,7 +17,7 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	keeper := k.Keeper
-	err := keeper.CreateVestingPool(ctx, msg.Creator, msg.Name, msg.Amount, msg.Duration, msg.VestingType)
+	err := keeper.CreateVestingPool(ctx, msg.Owner, msg.Name, msg.Amount, msg.Duration, msg.VestingType)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 	}
 
 	event := &types.NewVestingPool{
-		Creator:     msg.Creator,
+		Owner:       msg.Owner,
 		Name:        msg.Name,
 		Amount:      msg.Amount.String() + denom,
 		Duration:    msg.Duration.String(),

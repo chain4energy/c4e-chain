@@ -9,9 +9,9 @@ const TypeMsgWithdrawAllAvailable = "withdraw_all_available"
 
 var _ sdk.Msg = &MsgWithdrawAllAvailable{}
 
-func NewMsgWithdrawAllAvailable(creator string) *MsgWithdrawAllAvailable {
+func NewMsgWithdrawAllAvailable(owner string) *MsgWithdrawAllAvailable {
 	return &MsgWithdrawAllAvailable{
-		Creator: creator,
+		Owner: owner,
 	}
 }
 
@@ -24,11 +24,11 @@ func (msg *MsgWithdrawAllAvailable) Type() string {
 }
 
 func (msg *MsgWithdrawAllAvailable) GetSigners() []sdk.AccAddress {
-	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{creator}
+	return []sdk.AccAddress{owner}
 }
 
 func (msg *MsgWithdrawAllAvailable) GetSignBytes() []byte {
@@ -37,9 +37,9 @@ func (msg *MsgWithdrawAllAvailable) GetSignBytes() []byte {
 }
 
 func (msg *MsgWithdrawAllAvailable) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 	return nil
 }

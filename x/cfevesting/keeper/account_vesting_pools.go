@@ -24,7 +24,7 @@ func (k Keeper) GetAccountVestingPools(ctx sdk.Context, accountAddress string) (
 func (k Keeper) SetAccountVestingPools(ctx sdk.Context, accountVestingPools types.AccountVestingPools) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 	av := k.cdc.MustMarshal(&accountVestingPools)
-	store.Set([]byte(accountVestingPools.Address), av)
+	store.Set([]byte(accountVestingPools.Owner), av)
 }
 
 // get the vesting types

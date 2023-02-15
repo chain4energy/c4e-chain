@@ -24,7 +24,7 @@ func SimulateSendToVestingAccount(
 			return simtypes.NewOperationMsg(&types.MsgSendToVestingAccount{}, false, "", nil), nil, nil
 		}
 		randVestingPoolId := helpers.RandomInt(r, len(allVestingPools))
-		accAddress := allVestingPools[randVestingPoolId].Address
+		accAddress := allVestingPools[randVestingPoolId].Owner
 		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10))
 		randInt := helpers.RandomInt(r, 1000000000)
 		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
@@ -34,7 +34,7 @@ func SimulateSendToVestingAccount(
 			randVestingId = helpers.RandomInt(r, numOfPools-1)
 		}
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
-			FromAddress:     accAddress,
+			Owner:           accAddress,
 			ToAddress:       simAccount2Address,
 			VestingPoolName: allVestingPools[randVestingPoolId].VestingPools[randVestingId].Name,
 			Amount:          randMsgSendToVestinAccAmount,
