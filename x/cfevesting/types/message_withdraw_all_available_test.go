@@ -17,13 +17,13 @@ func TestMsgWithdrawAllAvailable_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgWithdrawAllAvailable{
-				Creator: "invalid_address",
+				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgWithdrawAllAvailable{
-				Creator: sample.AccAddress(),
+				Owner: sample.AccAddress(),
 			},
 		},
 	}

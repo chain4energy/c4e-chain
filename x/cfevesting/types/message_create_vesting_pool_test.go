@@ -17,13 +17,13 @@ func TestMsgVest_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgCreateVestingPool{
-				Creator: "invalid_address",
+				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgCreateVestingPool{
-				Creator: sample.AccAddress(),
+				Owner: sample.AccAddress(),
 			},
 		},
 	}

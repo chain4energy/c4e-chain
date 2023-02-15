@@ -158,7 +158,7 @@ func MigrateV101ToV110(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 
 	require.EqualValues(t, len(oldAccPools), len(newAccPools))
 	for i := 0; i < len(oldAccPools); i++ {
-		require.EqualValues(t, oldAccPools[i].Address, newAccPools[i].Address)
+		require.EqualValues(t, oldAccPools[i].Address, newAccPools[i].Owner)
 		require.EqualValues(t, len(oldAccPools[i].VestingPools), len(newAccPools[i].VestingPools))
 		for j := 0; j < len(oldAccPools[i].VestingPools); j++ {
 			oldVestingPool := oldAccPools[i].VestingPools[j]

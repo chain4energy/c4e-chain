@@ -23,7 +23,7 @@ func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools,
 	j := 0
 	require.EqualValues(t, len(expected.VestingPools), len(actual.VestingPools))
 	j++
-	require.EqualValues(t, expected.Address, actual.Address)
+	require.EqualValues(t, expected.Owner, actual.Owner)
 	j++
 	require.EqualValues(t, numOfFields, j)
 
@@ -57,12 +57,12 @@ func AssertAccountVestingPoolsArrays(t *testing.T, expected []*types.AccountVest
 	for _, accVest := range expected {
 		found := false
 		for _, accVestExp := range actual {
-			if accVest.Address == accVestExp.Address {
+			if accVest.Owner == accVestExp.Owner {
 				AssertAccountVestingPools(t, *accVest, *accVestExp)
 				found = true
 			}
 		}
-		require.True(t, found, "not found: "+accVest.Address)
+		require.True(t, found, "not found: "+accVest.Owner)
 
 	}
 }
@@ -96,9 +96,9 @@ func generateAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAc
 
 	for i := 0; i < numberOfAccounts; i++ {
 		accountVestingPools := types.AccountVestingPools{}
-		accountVestingPools.Address = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
+		accountVestingPools.Owner = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
 
-		accountVestingPools.Address = accountsAddresses[i].String()
+		accountVestingPools.Owner = accountsAddresses[i].String()
 
 		var vestingPools []*types.VestingPool
 		for j := 0; j < numberOfVestingPoolsPerAccount; j++ {

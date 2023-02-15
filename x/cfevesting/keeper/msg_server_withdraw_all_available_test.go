@@ -181,5 +181,5 @@ func TestWithdrawAllAvailableBadAddress(t *testing.T) {
 
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
 
-	testHelper.C4eVestingUtils.MessageWithdrawAllAvailableError("badaddress", "withdraw all available address parsing error: badaddress: decoding bech32 failed: invalid separator index -1: failed to parse")
+	testHelper.C4eVestingUtils.MessageWithdrawAllAvailableError("badaddress", "withdraw all available owner parsing error: badaddress: decoding bech32 failed: invalid separator index -1: failed to parse")
 }

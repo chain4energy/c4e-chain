@@ -155,7 +155,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, "pool", sdk.NewInt(100), true,
-		"send to new vesting account - withdraw all available error: withdraw all available - no vesting pools found error: address: c4e15ky9du8a2wlstz6fpx3p4mqpjyrm5cgq3kx2f7: not found")
+		"send to new vesting account - withdraw all available error: withdraw all available - no vesting pools found error: owner: c4e15ky9du8a2wlstz6fpx3p4mqpjyrm5cgq3kx2f7: not found")
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 

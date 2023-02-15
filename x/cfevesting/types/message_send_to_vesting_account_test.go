@@ -17,13 +17,13 @@ func TestMsgSendToVestingAccount_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgSendToVestingAccount{
-				FromAddress: "invalid_address",
+				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgSendToVestingAccount{
-				FromAddress: sample.AccAddress(),
+				Owner: sample.AccAddress(),
 			},
 		},
 	}

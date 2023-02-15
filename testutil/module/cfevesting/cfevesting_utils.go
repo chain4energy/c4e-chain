@@ -44,7 +44,7 @@ func (h *C4eVestingKeeperUtils) SetupAccountVestingPools(ctx sdk.Context, addres
 
 func (h *C4eVestingKeeperUtils) SetupAccountVestingPoolsWithModification(ctx sdk.Context, modifyVesting func(*cfevestingtypes.VestingPool), address string, numberOfVestingPools int, vestingAmount math.Int, withdrawnAmount math.Int) cfevestingtypes.AccountVestingPools {
 	accountVestingPools := GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(numberOfVestingPools, 1, 1)
-	accountVestingPools.Address = address
+	accountVestingPools.Owner = address
 
 	for _, vesting := range accountVestingPools.VestingPools {
 		vesting.InitiallyLocked = vestingAmount
@@ -105,7 +105,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.
 
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	msg := cfevestingtypes.MsgCreateVestingPool{Creator: address.String(), Name: vestingPoolName,
+	msg := cfevestingtypes.MsgCreateVestingPool{Owner: address.String(), Name: vestingPoolName,
 		Amount: amountToVest, Duration: lockupDuration, VestingType: vestingType.Name}
 	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
 	require.EqualValues(h.t, nil, err)
@@ -134,7 +134,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPoolError(ctx sdk.Context, address
 
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	msg := cfevestingtypes.MsgCreateVestingPool{Creator: address.String(), Name: vestingPoolName,
+	msg := cfevestingtypes.MsgCreateVestingPool{Owner: address.String(), Name: vestingPoolName,
 		Amount: amountToVest, Duration: lockupDuration, VestingType: vestingType.Name}
 	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
 
@@ -187,7 +187,7 @@ func (h *C4eVestingUtils) VerifyAccountVestingPoolsWithModification(ctx sdk.Cont
 	require.EqualValues(h.t, amountOfAllAccVestingPools, len(allAccVestingPools))
 	require.EqualValues(h.t, len(vestingTypes), len(accVestingPools.VestingPools))
 
-	require.EqualValues(h.t, address.String(), accVestingPools.Address)
+	require.EqualValues(h.t, address.String(), accVestingPools.Owner)
 
 	for i, vesting := range accVestingPools.VestingPools {
 		found := false
@@ -236,7 +236,7 @@ func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address s
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceBefore)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalanceBefore)
 
-	msg := cfevestingtypes.MsgWithdrawAllAvailable{Creator: address.String()}
+	msg := cfevestingtypes.MsgWithdrawAllAvailable{Owner: address.String()}
 	resp, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 	require.EqualValues(h.t, nil, err)
 	require.True(h.t, expectedWithdrawn.Equal(resp.Withdrawn.Amount))
@@ -248,7 +248,7 @@ func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address s
 func (h *C4eVestingUtils) MessageWithdrawAllAvailableError(ctx sdk.Context, address string, errorMessage string) {
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	msg := cfevestingtypes.MsgWithdrawAllAvailable{Creator: address}
+	msg := cfevestingtypes.MsgWithdrawAllAvailable{Owner: address}
 	_, err := msgServer.WithdrawAllAvailable(msgServerCtx, &msg)
 
 	require.EqualError(h.t, err, errorMessage)
@@ -332,7 +332,7 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	foundVPool, _ := GetVestingPoolByName(vestingPools.VestingPools, vestingPoolName)
 	require.NotNilf(h.t, foundVPool, "vesting pool no found. Name: %s", vestingPoolName)
 	sentBefore := foundVPool.Sent
-	msg := cfevestingtypes.MsgSendToVestingAccount{FromAddress: fromAddress.String(), ToAddress: vestingAccAddress.String(),
+	msg := cfevestingtypes.MsgSendToVestingAccount{Owner: fromAddress.String(), ToAddress: vestingAccAddress.String(),
 		VestingPoolName: vestingPoolName, Amount: amount, RestartVesting: restartVesting}
 	_, err := msgServer.SendToVestingAccount(msgServerCtx, &msg)
 	require.EqualValues(h.t, nil, err)
@@ -369,7 +369,7 @@ func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, from
 
 	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountCount(ctx)
 
-	msg := cfevestingtypes.MsgSendToVestingAccount{FromAddress: fromAddress.String(), ToAddress: vestingAccAddress.String(),
+	msg := cfevestingtypes.MsgSendToVestingAccount{Owner: fromAddress.String(), ToAddress: vestingAccAddress.String(),
 		VestingPoolName: vestingPoolName, Amount: amount, RestartVesting: restartVesting}
 	_, err := msgServer.SendToVestingAccount(msgServerCtx, &msg)
 	require.EqualError(h.t, err, errorMessage)
