@@ -1,8 +1,6 @@
 package cosmossdk
 
 import (
-	"testing"
-
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -24,25 +22,26 @@ func AddHelperModuleAccountAddr(moduleAccAddrs map[string]bool) map[string]bool 
 }
 
 type BankUtils struct {
-	t                   *testing.T
+	t                   require.TestingT
 	helperAccountKeeper *authkeeper.AccountKeeper
 	helperBankKeeper    bankkeeper.Keeper
 }
 
-func NewBankUtils(t *testing.T, ctx sdk.Context, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) BankUtils {
+func NewBankUtils(t require.TestingT, ctx sdk.Context, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) BankUtils {
 	helperAccountKeeper.GetModuleAccount(ctx, helperModuleAccount)
 	return BankUtils{t: t, helperAccountKeeper: helperAccountKeeper, helperBankKeeper: helperBankKeeper}
 }
 
-func (bu *BankUtils) AddCoinsToAccount(ctx sdk.Context, coinsToMint sdk.Coin, toAddr sdk.AccAddress) {
-	mintedCoins := sdk.NewCoins(coinsToMint)
-	bu.helperBankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
-	bu.helperBankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, mintedCoins)
+func (bu *BankUtils) AddCoinsToAccount(ctx sdk.Context, coinsToMint sdk.Coins, toAddr sdk.AccAddress) {
+	// mintedCoins := sdk.NewCoins(coinsToMint)
+	bu.helperBankKeeper.MintCoins(ctx, helperModuleAccount, coinsToMint)
+	bu.helperBankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, coinsToMint)
 }
 
 func (bu *BankUtils) AddDefaultDenomCoinsToAccount(ctx sdk.Context, amount sdk.Int, toAddr sdk.AccAddress) (denom string) {
 	coinsToMint := sdk.NewCoin(testenv.DefaultTestDenom, amount)
-	bu.AddCoinsToAccount(ctx, coinsToMint, toAddr)
+	mintedCoins := sdk.NewCoins(coinsToMint)
+	bu.AddCoinsToAccount(ctx, mintedCoins, toAddr)
 	return testenv.DefaultTestDenom
 }
 
@@ -121,12 +120,12 @@ type ContextBankUtils struct {
 	testContext testenv.TestContext
 }
 
-func NewContextBankUtils(t *testing.T, testContext testenv.TestContext, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) *ContextBankUtils {
+func NewContextBankUtils(t require.TestingT, testContext testenv.TestContext, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) *ContextBankUtils {
 	bankUtils := NewBankUtils(t, testContext.GetContext(), helperAccountKeeper, helperBankKeeper)
 	return &ContextBankUtils{BankUtils: bankUtils, testContext: testContext}
 }
 
-func (bu *ContextBankUtils) AddCoinsToAccount(coinsToMint sdk.Coin, toAddr sdk.AccAddress) {
+func (bu *ContextBankUtils) AddCoinsToAccount(coinsToMint sdk.Coins, toAddr sdk.AccAddress) {
 	bu.BankUtils.AddCoinsToAccount(bu.testContext.GetContext(), coinsToMint, toAddr)
 }
 

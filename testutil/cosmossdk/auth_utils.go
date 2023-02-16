@@ -2,7 +2,6 @@ package cosmossdk
 
 import (
 	"fmt"
-	"testing"
 	"time"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -16,12 +15,12 @@ import (
 )
 
 type AuthUtils struct {
-	t                   *testing.T
+	t                   require.TestingT
 	helperAccountKeeper *authkeeper.AccountKeeper
 	bankUtils           *BankUtils
 }
 
-func NewAuthUtils(t *testing.T, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) AuthUtils {
+func NewAuthUtils(t require.TestingT, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) AuthUtils {
 	return AuthUtils{t: t, helperAccountKeeper: helperAccountKeeper, bankUtils: bankUtils}
 }
 
@@ -41,7 +40,7 @@ func (au *AuthUtils) ModifyVestingAccountOriginalVesting(ctx sdk.Context, addres
 	return nil
 }
 
-func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coin sdk.Coin, start time.Time, end time.Time) error {
+func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coins sdk.Coins, start time.Time, end time.Time) error {
 	to := sdk.MustAccAddressFromBech32(address)
 
 	if acc := au.helperAccountKeeper.GetAccount(ctx, to); acc != nil {
@@ -53,18 +52,40 @@ func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coin 
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
 	}
 
-	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(coin).Sort(), end.Unix())
+	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), coins.Sort(), end.Unix())
 
 	acc := vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, start.Unix())
 
 	au.helperAccountKeeper.SetAccount(ctx, acc)
+
+	au.bankUtils.AddCoinsToAccount(ctx, coins, to)
+	return nil
+}
+
+func (au *AuthUtils) CreateBaseAccount(ctx sdk.Context, address string, coin sdk.Coins) error {
+	to := sdk.MustAccAddressFromBech32(address)
+
+	if acc := au.helperAccountKeeper.GetAccount(ctx, to); acc != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "account %s already exists", address)
+	}
+
+	baseAccount := au.helperAccountKeeper.NewAccountWithAddress(ctx, to)
+	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
+	}
+
+	au.helperAccountKeeper.SetAccount(ctx, baseAccount)
 
 	au.bankUtils.AddCoinsToAccount(ctx, coin, to)
 	return nil
 }
 
 func (au *AuthUtils) CreateDefaultDenomVestingAccount(ctx sdk.Context, address string, amount sdk.Int, start time.Time, end time.Time) error {
-	return au.CreateVestingAccount(ctx, address, sdk.NewCoin(testenv.DefaultTestDenom, amount), start, end)
+	return au.CreateVestingAccount(ctx, address, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount)), start, end)
+}
+
+func (au *AuthUtils) CreateDefaultDenomBaseAccount(ctx sdk.Context, address string, amount sdk.Int) error {
+	return au.CreateBaseAccount(ctx, address, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount)))
 }
 
 func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedDenom string, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
@@ -94,13 +115,13 @@ type ContextAuthUtils struct {
 	testContext testenv.TestContext
 }
 
-func NewContextAuthUtils(t *testing.T, testContext testenv.TestContext, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) *ContextAuthUtils {
+func NewContextAuthUtils(t require.TestingT, testContext testenv.TestContext, helperAccountKeeper *authkeeper.AccountKeeper, bankUtils *BankUtils) *ContextAuthUtils {
 	authUtils := NewAuthUtils(t, helperAccountKeeper, bankUtils)
 	return &ContextAuthUtils{AuthUtils: authUtils, testContext: testContext}
 }
 
-func (au *ContextAuthUtils) CreateVestingAccount(address string, coin sdk.Coin, start time.Time, end time.Time) error {
-	return au.AuthUtils.CreateVestingAccount(au.testContext.GetContext(), address, coin, start, end)
+func (au *ContextAuthUtils) CreateVestingAccount(address string, coins sdk.Coins, start time.Time, end time.Time) error {
+	return au.AuthUtils.CreateVestingAccount(au.testContext.GetContext(), address, coins, start, end)
 }
 
 func (au *ContextAuthUtils) CreateDefaultDenomVestingAccount(address string, amount sdk.Int, start time.Time, end time.Time) error {
@@ -117,4 +138,8 @@ func (au *ContextAuthUtils) VerifyDefaultDenomVestingAccount(address sdk.AccAddr
 
 func (au *ContextAuthUtils) ModifyVestingAccountOriginalVesting(address string, newOrignalVestings sdk.Coins) error {
 	return au.AuthUtils.ModifyVestingAccountOriginalVesting(au.testContext.GetContext(), address, newOrignalVestings)
+}
+
+func (au *ContextAuthUtils) CreateDefaultDenomBaseAccount(address string, amount sdk.Int) error {
+	return au.AuthUtils.CreateDefaultDenomBaseAccount(au.testContext.GetContext(), address, amount)
 }

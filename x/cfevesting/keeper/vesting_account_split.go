@@ -9,6 +9,12 @@ import (
 
 func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Coins) (*vestingtypes.ContinuousVestingAccount, error) {
 	k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins", "ownerAddress", ownerAddress, "amountToUnlock", amountToUnlock)
+	if err := amountToUnlock.Validate(); err != nil {
+		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - amountToUnlock validation error", "error", err)
+		return nil, sdkerrors.Wrap(err, "amount to unlock validation error")
+
+	}
+
 	ownerAccount := k.account.GetAccount(ctx, ownerAddress)
 	if ownerAccount == nil {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - account doesn't exist", "ownerAddress", ownerAddress)
@@ -23,7 +29,7 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 
 	lockedCoins := vestingAcc.LockedCoins(ctx.BlockTime())
 
-	if amountToUnlock.IsAnyGT(lockedCoins) {
+	if !amountToUnlock.IsAllLTE(lockedCoins) {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - not enough to unlock", "account", ownerAccount, "lockedCoins", lockedCoins, "amountToUnlock", amountToUnlock)
 		return nil, sdkerrors.Wrapf(types.ErrNotExists, "account %s: not enough to unlock. locked: %s, to unlock: %s", ownerAddress, lockedCoins, amountToUnlock) // TODO some other error
 	}
@@ -32,7 +38,7 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 	orignalVestings := vestingAcc.OriginalVesting
 
 	for _, coin := range amountToUnlock {
-		if coin.IsPositive() {
+		if coin.Amount.GT(sdk.ZeroInt()) {
 			orignalVesting := orignalVestings.AmountOf(coin.Denom)
 			vestingCoin := vestingCoins.AmountOf(coin.Denom)
 			originalVestingDiffDec := coin.Amount.ToDec().Mul(orignalVesting.ToDec()).Quo(vestingCoin.ToDec())

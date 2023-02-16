@@ -12,8 +12,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"testing"
-
 	"github.com/chain4energy/c4e-chain/x/cfevesting"
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -26,11 +24,11 @@ import (
 )
 
 type C4eVestingKeeperUtils struct {
-	t                      *testing.T
+	t                      require.TestingT
 	helperCfevestingKeeper *cfevestingmodulekeeper.Keeper
 }
 
-func NewC4eVestingKeeperUtils(t *testing.T, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper) C4eVestingKeeperUtils {
+func NewC4eVestingKeeperUtils(t require.TestingT, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper) C4eVestingKeeperUtils {
 	return C4eVestingKeeperUtils{t: t, helperCfevestingKeeper: helperCfevestingKeeper}
 }
 
@@ -85,7 +83,7 @@ type C4eVestingUtils struct {
 	authUtils           *testcosmos.AuthUtils
 }
 
-func NewC4eVestingUtils(t *testing.T, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
+func NewC4eVestingUtils(t require.TestingT, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	helperBankKeeper *bankkeeper.Keeper,
 	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *testcosmos.BankUtils,
@@ -382,7 +380,7 @@ func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Co
 	require.Truef(h.t, expectedLockedBalancesBefore.IsEqual(locked), "expectedLockedBalancesBefore %s <> locked %s", expectedLockedBalancesBefore, locked)
 
 	_, err := h.helperCfevestingKeeper.UnlockUnbondedContinuousVestingAccountCoins(ctx, ownerAddress, amountsToUnlock)
-	require.NoError(h.t, err)
+	require.NoError(h.t, err, err)
 
 	h.bankUtils.VerifyAccountBalances(ctx, ownerAddress, expectedAccountBalances, true)
 	locked = (*h.helperBankKeeper).LockedCoins(ctx, ownerAddress)
@@ -396,12 +394,30 @@ func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoin
 		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedLockedBalanceBefore)))
 }
 
+func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoinsError(ctx sdk.Context, ownerAddress sdk.AccAddress, amountsToUnlock sdk.Coins, expectedAccountBalances sdk.Coins, expectedLockedBalancesBefore sdk.Coins, expectedError string) {
+	h.bankUtils.VerifyAccountBalances(ctx, ownerAddress, expectedAccountBalances, true)
+	locked := (*h.helperBankKeeper).LockedCoins(ctx, ownerAddress)
+	require.Truef(h.t, expectedLockedBalancesBefore.IsEqual(locked), "expectedLockedBalancesBefore %s <> locked %s", expectedLockedBalancesBefore, locked)
+
+	_, err := h.helperCfevestingKeeper.UnlockUnbondedContinuousVestingAccountCoins(ctx, ownerAddress, amountsToUnlock)
+	require.Error(h.t, err)
+	require.EqualError(h.t, err, expectedError)
+
+}
+
+func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int, expectedError string) {
+	h.UnlockUnbondedContinuousVestingAccountCoinsError(ctx, ownerAddress,
+		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amountToUnlock)),
+		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedAccountBalance)),
+		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedLockedBalanceBefore)), expectedError)
+}
+
 type ContextC4eVestingUtils struct {
 	C4eVestingUtils
 	testContext testenv.TestContext
 }
 
-func NewContextC4eVestingUtils(t *testing.T, testContext testenv.TestContext, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
+func NewContextC4eVestingUtils(t require.TestingT, testContext testenv.TestContext, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	helperBankKeeper *bankkeeper.Keeper,
 	helperStakingKeeper *stakingkeeper.Keeper, bankUtils *testcosmos.BankUtils,
@@ -614,4 +630,17 @@ func (h *C4eVestingUtils) MessageCreateVestingAccountError(
 
 func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int) {
 	h.C4eVestingUtils.UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(h.testContext.GetContext(), ownerAddress, amountToUnlock, expectedAccountBalance, expectedLockedBalanceBefore)
+}
+
+func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int, expectedError string) {
+	h.C4eVestingUtils.UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(h.testContext.GetContext(), ownerAddress, amountToUnlock, expectedAccountBalance, expectedLockedBalanceBefore, expectedError)
+}
+
+func (h *ContextC4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoins(ownerAddress sdk.AccAddress, amountsToUnlock sdk.Coins, expectedAccountBalances sdk.Coins, expectedLockedBalancesBefore sdk.Coins) {
+	h.C4eVestingUtils.UnlockUnbondedContinuousVestingAccountCoins(h.testContext.GetContext(), ownerAddress, amountsToUnlock, expectedAccountBalances, expectedLockedBalancesBefore)
+}
+
+func (h *ContextC4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoinsError(ownerAddress sdk.AccAddress, amountsToUnlock sdk.Coins, expectedAccountBalances sdk.Coins, expectedLockedBalancesBefore sdk.Coins, expectedError string) {
+	h.C4eVestingUtils.UnlockUnbondedContinuousVestingAccountCoinsError(h.testContext.GetContext(), ownerAddress, amountsToUnlock, expectedAccountBalances, expectedLockedBalancesBefore, expectedError)
+
 }

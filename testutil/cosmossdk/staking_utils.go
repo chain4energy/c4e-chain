@@ -1,8 +1,6 @@
 package cosmossdk
 
 import (
-	"testing"
-
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/stretchr/testify/require"
@@ -14,12 +12,12 @@ import (
 )
 
 type StakingUtils struct {
-	t                   *testing.T
+	t                   require.TestingT
 	helperStakingkeeper stakingkeeper.Keeper
 	bankUtils           *BankUtils
 }
 
-func NewStakingUtils(t *testing.T, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) StakingUtils {
+func NewStakingUtils(t require.TestingT, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) StakingUtils {
 	return StakingUtils{t: t, helperStakingkeeper: helperStakingkeeper, bankUtils: bankUtils}
 }
 
@@ -37,7 +35,7 @@ func (su *StakingUtils) SetupValidators(ctx sdk.Context, validators []sdk.ValAdd
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 	delCoin := sdk.NewCoin(testenv.DefaultTestDenom, delegatePerValidator)
 	for i, valAddr := range validators {
-		su.bankUtils.AddCoinsToAccount(ctx, delCoin, valAddr.Bytes())
+		su.bankUtils.AddCoinsToAccount(ctx, sdk.NewCoins(delCoin), valAddr.Bytes())
 		su.CreateValidator(ctx, valAddr, PKs[i], delCoin, commission)
 	}
 	require.EqualValues(su.t, len(validators)+1, len(su.helperStakingkeeper.GetAllValidators(ctx)))
@@ -81,7 +79,7 @@ type ContextStakingUtils struct {
 	testContext testenv.TestContext
 }
 
-func NewContextStakingUtils(t *testing.T, testContext testenv.TestContext, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) *ContextStakingUtils {
+func NewContextStakingUtils(t require.TestingT, testContext testenv.TestContext, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) *ContextStakingUtils {
 	stakingUtils := NewStakingUtils(t, helperStakingkeeper, bankUtils)
 	return &ContextStakingUtils{StakingUtils: stakingUtils, testContext: testContext}
 }

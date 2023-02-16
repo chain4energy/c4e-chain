@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"reflect"
 	"strconv"
-	"testing"
 	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -17,7 +16,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools, actual types.AccountVestingPools) {
+func AssertAccountVestingPools(t require.TestingT, expected types.AccountVestingPools, actual types.AccountVestingPools) {
 
 	numOfFields := reflect.TypeOf(types.AccountVestingPools{}).NumField()
 	j := 0
@@ -51,7 +50,7 @@ func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools,
 
 }
 
-func AssertAccountVestingPoolsArrays(t *testing.T, expected []*types.AccountVestingPools, actual []*types.AccountVestingPools) {
+func AssertAccountVestingPoolsArrays(t require.TestingT, expected []*types.AccountVestingPools, actual []*types.AccountVestingPools) {
 	require.EqualValues(t, len(expected), len(actual))
 
 	for _, accVest := range expected {
