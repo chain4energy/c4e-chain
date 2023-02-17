@@ -5,6 +5,7 @@ import (
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/app/upgrades"
 	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
+	v120 "github.com/chain4energy/c4e-chain/app/upgrades/v120"
 	"io"
 	"os"
 	"path/filepath"
@@ -198,7 +199,7 @@ var (
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v110.Upgrade}
+	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade}
 )
 
 func init() {
@@ -955,6 +956,7 @@ func (app *App) SetupUpgradeHandlers() {
 				app.mm,
 				app.configurator,
 				app.BaseApp,
+				app,
 			),
 		)
 	}

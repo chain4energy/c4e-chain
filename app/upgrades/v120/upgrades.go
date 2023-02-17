@@ -1,4 +1,4 @@
-package v110
+package v120
 
 import (
 	"github.com/chain4energy/c4e-chain/app/upgrades"
@@ -15,6 +15,7 @@ func CreateUpgradeHandler(
 	appKeepers cfeupgradetypes.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		//todo Prepare migration
 		return mm.RunMigrations(ctx, configurator, vm)
 	}
 }
