@@ -206,8 +206,6 @@ func generateOldAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPe
 
 	for i := 0; i < numberOfAccounts; i++ {
 		accountVestingPools := v101.AccountVestingPools{}
-		accountVestingPools.Address = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
-
 		accountVestingPools.Address = accountsAddresses[i].String()
 
 		var vestingPools []*v101.VestingPool
