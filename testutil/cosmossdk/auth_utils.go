@@ -88,26 +88,32 @@ func (au *AuthUtils) CreateDefaultDenomBaseAccount(ctx sdk.Context, address stri
 	return au.CreateBaseAccount(ctx, address, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount)))
 }
 
-func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedDenom string, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
+func (au *AuthUtils) VerifyIsContinuousVestingAccount(ctx sdk.Context, address sdk.AccAddress) {
+	account := au.helperAccountKeeper.GetAccount(ctx, address)
+	require.NotNil(au.t, account)
+	_, ok := account.(*vestingtypes.ContinuousVestingAccount)
+	require.True(au.t, ok)
+}
+
+func (au *AuthUtils) VerifyAccountDoesNotExist(ctx sdk.Context, address sdk.AccAddress) {
+	account := au.helperAccountKeeper.GetAccount(ctx, address)
+	require.Nil(au.t, account)
+}
+
+func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedAmount sdk.Coins, startTime time.Time, endTime time.Time) {
 	account := au.helperAccountKeeper.GetAccount(ctx, address)
 
 	vacc, ok := account.(vestexported.VestingAccount)
 	require.True(au.t, ok, ok)
 	locked := vacc.LockedCoins(ctx.BlockTime())
-	if !lockedAmount.IsZero() {
-		require.Equal(au.t, 1, len(locked))
-		require.Equal(au.t, lockedDenom, locked[0].Denom)
-		require.Equal(au.t, lockedAmount, locked[0].Amount)
-	} else {
-		require.Equal(au.t, 0, len(locked))
-	}
+	require.True(au.t, locked.IsEqual(lockedAmount))
 
 	require.Equal(au.t, endTime.Unix(), vacc.GetEndTime())
 	require.Equal(au.t, startTime.Unix(), vacc.GetStartTime())
 }
 
 func (au *AuthUtils) VerifyDefaultDenomVestingAccount(ctx sdk.Context, address sdk.AccAddress, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
-	au.VerifyVestingAccount(ctx, address, testenv.DefaultTestDenom, lockedAmount, startTime, endTime)
+	au.VerifyVestingAccount(ctx, address, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, lockedAmount)), startTime, endTime)
 }
 
 type ContextAuthUtils struct {
@@ -128,8 +134,8 @@ func (au *ContextAuthUtils) CreateDefaultDenomVestingAccount(address string, amo
 	return au.AuthUtils.CreateDefaultDenomVestingAccount(au.testContext.GetContext(), address, amount, start, end)
 }
 
-func (au *ContextAuthUtils) VerifyVestingAccount(address sdk.AccAddress, lockedDenom string, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
-	au.AuthUtils.VerifyVestingAccount(au.testContext.GetContext(), address, lockedDenom, lockedAmount, startTime, endTime)
+func (au *ContextAuthUtils) VerifyVestingAccount(address sdk.AccAddress, lockedAmount sdk.Coins, startTime time.Time, endTime time.Time) {
+	au.AuthUtils.VerifyVestingAccount(au.testContext.GetContext(), address, lockedAmount, startTime, endTime)
 }
 
 func (au *ContextAuthUtils) VerifyDefaultDenomVestingAccount(address sdk.AccAddress, lockedAmount sdk.Int, startTime time.Time, endTime time.Time) {
@@ -142,4 +148,13 @@ func (au *ContextAuthUtils) ModifyVestingAccountOriginalVesting(address string, 
 
 func (au *ContextAuthUtils) CreateDefaultDenomBaseAccount(address string, amount sdk.Int) error {
 	return au.AuthUtils.CreateDefaultDenomBaseAccount(au.testContext.GetContext(), address, amount)
+}
+
+func (au *ContextAuthUtils) VerifyIsContinuousVestingAccount(address sdk.AccAddress) {
+	au.AuthUtils.VerifyIsContinuousVestingAccount(au.testContext.GetContext(), address)
+}
+
+func (au *ContextAuthUtils) VerifyAccountDoesNotExist(address sdk.AccAddress) {
+	au.AuthUtils.VerifyAccountDoesNotExist(au.testContext.GetContext(), address)
+
 }

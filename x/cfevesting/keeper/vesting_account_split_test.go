@@ -14,6 +14,8 @@ import (
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 )
 
+var TestDenomPrefix = "denom"
+
 func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T) {
 	denom1 := sdk.NewInt(8999999999999999999)
 	denom2 := sdk.NewInt(123124)
@@ -45,7 +47,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denon1,123124denon2,10denon3, to unlock: 9000000000000000000denon1,123125denon2,11denon3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 9000000000000000000denom1,123125denom2,11denom3: entity not exists",
 		},
 		{
 			desc:            "first not enough to unlock - before start",
@@ -55,7 +57,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denon1,123124denon2,10denon3, to unlock: 9000000000000000000denon1,123124denon2,10denon3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 9000000000000000000denom1,123124denom2,10denom3: entity not exists",
 		},
 		{
 			desc:            "second not enough to unlock - before start",
@@ -65,7 +67,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denon1,123124denon2,10denon3, to unlock: 8999999999999999999denon1,123125denon2,10denon3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 8999999999999999999denom1,123125denom2,10denom3: entity not exists",
 		},
 		{
 			desc:            "thrid not enough to unlock - before start",
@@ -75,7 +77,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denon1,123124denon2,10denon3, to unlock: 8999999999999999999denon1,123124denon2,11denon3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 8999999999999999999denom1,123124denom2,11denom3: entity not exists",
 		},
 		{
 			desc:            "unknown denom - not enough to unlock - before start",
@@ -85,7 +87,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denon1,123124denon2,10denon3, to unlock: 8999999999999999999denon1,123124denon2,10denon3,1denon4: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 8999999999999999999denom1,123124denom2,10denom3,1denom4: entity not exists",
 		},
 		{
 			desc:            "unknown denom only - not enough to unlock - before start",
@@ -95,17 +97,17 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denon1,123124denon2,10denon3, to unlock: 1unknown: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 1unknown: entity not exists",
 		},
 		{
 			desc:            "one denom - not enough to unlock - before start",
 			initialAmount:   initialAmount,
 			lockedBefore:    initialAmount,
-			toUnlock:        sdk.NewCoins(sdk.NewCoin("denon2", denom2.AddRaw(1))),
+			toUnlock:        sdk.NewCoins(sdk.NewCoin("denom2", denom2.AddRaw(1))),
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denon1,123124denon2,10denon3, to unlock: 123125denon2: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 123125denom2: entity not exists",
 		},
 
 		{
@@ -113,13 +115,13 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			initialAmount: initialAmount,
 			lockedBefore:  initialAmount,
 			toUnlock: sdk.Coins{
-				sdk.NewCoin("denon2", denom2.AddRaw(1)),
-				sdk.NewCoin("denon2", denom2.AddRaw(1)),
+				sdk.NewCoin("denom2", denom2.AddRaw(1)),
+				sdk.NewCoin("denom2", denom2.AddRaw(1)),
 			},
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "amount to unlock validation error: duplicate denomination denon2",
+			expectedError:   "amount to unlock validation error: duplicate denomination denom2",
 		},
 		{
 			desc:            "second not enough to unlock -  half vesting",
@@ -129,7 +131,17 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(duration / 2),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 4499999999999999999denon1,61562denon2,5denon3, to unlock: 4499999999999999999denon1,61563denon2,5denon3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 4499999999999999999denom1,61562denom2,5denom3, to unlock: 4499999999999999999denom1,61563denom2,5denom3: entity not exists",
+		},
+		{
+			desc:            "one coin is zore - before start",
+			initialAmount:   initialAmount,
+			lockedBefore:    initialAmount,
+			toUnlock:        createDenomCoins([]sdk.Int{denom1, sdk.ZeroInt(), denom3}),
+			blockTime:       startTime.Add(-time.Hour),
+			vAccStartTime:   startTime,
+			vestingDuration: duration,
+			expectedError:   "amount to unlock validation error: coin denom2 amount is not positive",
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -395,7 +407,13 @@ func testSingleTimeUnlockUnbondedContinuousVestingAccountCoins(t require.Testing
 func createDenomCoins(amounts []sdk.Int) sdk.Coins {
 	result := sdk.Coins{}
 	for i, amount := range amounts {
-		result = result.Add(sdk.NewCoin(fmt.Sprintf("denon%d", i+1), amount))
+		coin := sdk.Coin{
+			Denom:  fmt.Sprintf("%s%d", TestDenomPrefix, i+1),
+			Amount: amount,
+		}
+		result = append(result, coin)
+
+		// result = result.Add(sdk.NewCoin(fmt.Sprintf("denom%d", i+1), amount))
 	}
 	return result
 }

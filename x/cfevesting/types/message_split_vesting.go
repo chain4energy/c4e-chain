@@ -43,5 +43,13 @@ func (msg *MsgSplitVesting) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid fromAddress address (%s)", err)
 	}
+	_, err = sdk.AccAddressFromBech32(msg.ToAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid toAddress address (%s)", err)
+	}
+	err = msg.Amount.Validate()
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid amount (%s)", err)
+	}
 	return nil
 }

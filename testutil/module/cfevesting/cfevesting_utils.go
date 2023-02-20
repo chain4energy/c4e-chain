@@ -355,10 +355,11 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 
 	denom := h.helperCfevestingKeeper.Denom(ctx)
 
+	lockedAmount := sdk.NewCoins(sdk.NewCoin(denom, expectedLocked))
 	if restartVesting {
-		h.authUtils.VerifyVestingAccount(ctx, vestingAccAddress, denom, expectedLocked, ctx.BlockTime().Add(vestingType.LockupPeriod), ctx.BlockTime().Add(vestingType.LockupPeriod).Add(vestingType.VestingPeriod))
+		h.authUtils.VerifyVestingAccount(ctx, vestingAccAddress, lockedAmount, ctx.BlockTime().Add(vestingType.LockupPeriod), ctx.BlockTime().Add(vestingType.LockupPeriod).Add(vestingType.VestingPeriod))
 	} else {
-		h.authUtils.VerifyVestingAccount(ctx, vestingAccAddress, denom, expectedLocked, foundVPool.LockStart, foundVPool.LockEnd)
+		h.authUtils.VerifyVestingAccount(ctx, vestingAccAddress, lockedAmount, foundVPool.LockStart, foundVPool.LockEnd)
 	}
 }
 
@@ -571,7 +572,7 @@ func (h *C4eVestingUtils) MessageCreateVestingAccount(
 	require.EqualValues(h.t, vestingAccountCountBefore+1, vestingAccountCountAfter)
 
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore.Sub(coins.AmountOf(testenv.DefaultTestDenom)))
-	h.authUtils.VerifyVestingAccount(ctx, toAddress, testenv.DefaultTestDenom, coins.AmountOf(testenv.DefaultTestDenom), startTime, endTime)
+	h.authUtils.VerifyVestingAccount(ctx, toAddress, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, coins.AmountOf(testenv.DefaultTestDenom))), startTime, endTime)
 	accFromList, found := h.helperCfevestingKeeper.GetVestingAccount(ctx, vestingAccountCountBefore)
 	require.Equal(h.t, true, found)
 	require.Equal(h.t, toAddress.String(), accFromList.Address)

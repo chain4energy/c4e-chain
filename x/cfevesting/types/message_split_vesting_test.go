@@ -1,29 +1,60 @@
-package types
+package types_test
 
 import (
 	"testing"
 
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+
 )
 
 func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		name string
-		msg  MsgSplitVesting
-		err  error
+		name   string
+		msg    types.MsgSplitVesting
+		err    error
+		errMsg string
 	}{
 		{
-			name: "invalid address",
-			msg: MsgSplitVesting{
+			name: "invalid from address",
+			msg: types.MsgSplitVesting{
 				FromAddress: "invalid_address",
+				ToAddress:   sample.AccAddress(),
+				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
 			},
-			err: sdkerrors.ErrInvalidAddress,
-		}, {
-			name: "valid address",
-			msg: MsgSplitVesting{
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid fromAddress address (decoding bech32 failed: invalid separator index -1): invalid address",
+		},
+		{
+			name: "invalid to address",
+			msg: types.MsgSplitVesting{
 				FromAddress: sample.AccAddress(),
+				ToAddress:   "invalid_address",
+				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
+			},
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid toAddress address (decoding bech32 failed: invalid separator index -1): invalid address",
+		},
+		{
+			name: "invalid Amount",
+			msg: types.MsgSplitVesting{
+				FromAddress: sample.AccAddress(),
+				ToAddress:   sample.AccAddress(),
+				Amount:      sdk.Coins{sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2)), sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))},
+			},
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid amount (duplicate denomination uc4e): invalid address",
+		},
+		{
+			name: "valid address",
+			msg: types.MsgSplitVesting{
+				FromAddress: sample.AccAddress(),
+				ToAddress:   sample.AccAddress(),
+				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
 			},
 		},
 	}
@@ -32,6 +63,7 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 			err := tt.msg.ValidateBasic()
 			if tt.err != nil {
 				require.ErrorIs(t, err, tt.err)
+				require.EqualError(t, err, tt.errMsg)
 				return
 			}
 			require.NoError(t, err)

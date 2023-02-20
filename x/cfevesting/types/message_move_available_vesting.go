@@ -42,5 +42,9 @@ func (msg *MsgMoveAvailableVesting) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid fromAddress address (%s)", err)
 	}
+	_, err = sdk.AccAddressFromBech32(msg.ToAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid toAddress address (%s)", err)
+	}
 	return nil
 }

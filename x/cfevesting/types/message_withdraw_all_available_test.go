@@ -1,8 +1,9 @@
-package types
+package types_test
 
 import (
 	"testing"
 
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
@@ -11,18 +12,18 @@ import (
 func TestMsgWithdrawAllAvailable_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgWithdrawAllAvailable
+		msg  types.MsgWithdrawAllAvailable
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgWithdrawAllAvailable{
+			msg: types.MsgWithdrawAllAvailable{
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgWithdrawAllAvailable{
+			msg: types.MsgWithdrawAllAvailable{
 				Creator: sample.AccAddress(),
 			},
 		},

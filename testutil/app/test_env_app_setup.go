@@ -96,11 +96,11 @@ func newTestHelper(t require.TestingT, ctx sdk.Context, app *c4eapp.App, initTim
 
 	var testHelperP testenv.TestContext = &testHelper
 
-	bankUtils := testcosmos.NewContextBankUtils(t, testHelper, &helperAk, helperBk)
+	bankUtils := testcosmos.NewContextBankUtils(t, testHelperP, &helperAk, helperBk)
 
 	testHelper.BankUtils = bankUtils
-	testHelper.AuthUtils = testcosmos.NewContextAuthUtils(t, testHelper, &helperAk, &bankUtils.BankUtils)
-	testHelper.StakingUtils = testcosmos.NewContextStakingUtils(t, testHelper, app.StakingKeeper, &bankUtils.BankUtils)
+	testHelper.AuthUtils = testcosmos.NewContextAuthUtils(t, testHelperP, &helperAk, &bankUtils.BankUtils)
+	testHelper.StakingUtils = testcosmos.NewContextStakingUtils(t, testHelperP, app.StakingKeeper, &bankUtils.BankUtils)
 	testHelper.C4eVestingUtils = testcfevesting.NewContextC4eVestingUtils(t, testHelperP, &app.CfevestingKeeper, &app.AccountKeeper, &app.BankKeeper, &app.StakingKeeper, &bankUtils.BankUtils, &testHelper.AuthUtils.AuthUtils)
 	testHelper.C4eMinterUtils = testcfeminter.NewContextC4eMinterUtils(t, testHelperP, &app.CfeminterKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
 	testHelper.C4eDistributorUtils = testcfedistributor.NewContextC4eDistributorUtils(t, testHelperP, &app.CfedistributorKeeper, &app.AccountKeeper, &bankUtils.BankUtils)

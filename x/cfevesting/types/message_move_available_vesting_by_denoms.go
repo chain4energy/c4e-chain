@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -43,6 +45,43 @@ func (msg *MsgMoveAvailableVestingByDenoms) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid fromAddress address (%s)", err)
 	}
-	// TODO check if duplications
+	_, err = sdk.AccAddressFromBech32(msg.ToAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid toAddress address (%s)", err)
+	}
+	denomLen := len(msg.Denoms)
+	fmt.Printf("XXXXX: %d\n", denomLen)
+	if denomLen == 0 {
+		return sdkerrors.Wrap(ErrParam, "no denominations")
+	}
+
+	if denomLen == 1 {
+		if len(msg.Denoms[0]) == 0 {
+			return sdkerrors.Wrap(ErrParam, "empty denomination")
+		}
+	}
+
+	if denomLen > 1 {
+		if len(msg.Denoms[0]) == 0 {
+			return sdkerrors.Wrap(ErrParam, "empty denomination at position 0")
+		}
+
+		firstDenom := msg.Denoms[0]
+		seenDenoms := make(map[string]bool)
+		seenDenoms[firstDenom] = true
+
+		for i, denom := range msg.Denoms[1:] {
+			if len(denom) == 0 {
+				return sdkerrors.Wrapf(ErrParam, "empty denomination at position %d", i+1)
+			}
+
+			if seenDenoms[denom] {
+				return sdkerrors.Wrapf(ErrParam, "duplicate denomination %s", denom)
+			}
+
+			seenDenoms[denom] = true
+		}
+
+	}
 	return nil
 }

@@ -13,11 +13,11 @@ func (k msgServer) SplitVesting(goCtx context.Context, msg *types.MsgSplitVestin
 
 	from, err := sdk.AccAddressFromBech32(msg.FromAddress)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.Wrapf(err, "split vesting - error parsing from address: %s", msg.FromAddress)
 	}
 
 	if err := k.splitVestingCoins(ctx, from, msg.ToAddress, msg.Amount); err != nil {
-		return nil, err
+		return nil, sdkerrors.Wrap(err, "split vesting")
 	}
 	return &types.MsgSplitVestingResponse{}, nil
 }
@@ -25,12 +25,12 @@ func (k msgServer) SplitVesting(goCtx context.Context, msg *types.MsgSplitVestin
 func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAddress string,
 	amount sdk.Coins) error {
 
-	if amount.IsZero() || amount.IsAnyNegative() || amount.IsAnyNil() {
-		return sdkerrors.Wrapf(types.ErrParam, "split vesting coins - amount must be positive: %s", amount)
+	if len(amount) == 0 {
+		return sdkerrors.Wrapf(types.ErrParam, "split vesting coins - no coins to split %s", amount)
 	}
 
 	if amount.IsAnyNil() {
-		return sdkerrors.Wrapf(types.ErrParam, "split vesting coins - all coins of amount must not be null: %s", amount)
+		return sdkerrors.Wrapf(types.ErrParam, "split vesting coins - all coins of amount must not be nil: %s", amount)
 	}
 
 	if err := k.bank.IsSendEnabledCoins(ctx, amount...); err != nil {
@@ -39,7 +39,7 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 
 	to, err := sdk.AccAddressFromBech32(toAddress)
 	if err != nil {
-		return err
+		return sdkerrors.Wrapf(err, "split vesting coins - error parsing to address: %s", toAddress)
 	}
 
 	if k.bank.BlockedAddr(to) {
@@ -53,7 +53,7 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 
 	vestingAcc, err := k.UnlockUnbondedContinuousVestingAccountCoins(ctx, from, amount)
 	if err != nil {
-		return err
+		return sdkerrors.Wrap(err, "split vesting coins")
 	}
 
 	startTime := ctx.BlockTime().Unix()
@@ -62,10 +62,11 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 	}
 
 	if _, err = k.newContinuousVestingAccount(ctx, to, amount, startTime, vestingAcc.EndTime); err != nil {
-		return err
+		return sdkerrors.Wrap(err, "split vesting coins")
 	}
 
-	k.bank.SendCoins(ctx, from, to, amount)
-
+	if err = k.bank.SendCoins(ctx, from, to, amount); err != nil {
+		return sdkerrors.Wrap(err, "split vesting coins")
+	}
 	return nil
 }
