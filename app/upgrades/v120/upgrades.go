@@ -15,7 +15,12 @@ func CreateUpgradeHandler(
 	appKeepers cfeupgradetypes.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		//todo Prepare migration
+		if err := ModifyVestingPoolsState(ctx, appKeepers); err != nil {
+			return vm, err
+		}
+		if err := ModifyVestingAccountsState(ctx, appKeepers); err != nil {
+			return vm, err
+		}
 		return mm.RunMigrations(ctx, configurator, vm)
 	}
 }

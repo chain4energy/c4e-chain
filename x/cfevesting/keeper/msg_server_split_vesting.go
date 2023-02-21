@@ -10,7 +10,7 @@ import (
 
 func (k msgServer) SplitVesting(goCtx context.Context, msg *types.MsgSplitVesting) (*types.MsgSplitVestingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
+	// TODO events and telemetry
 	from, err := sdk.AccAddressFromBech32(msg.FromAddress)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(err, "split vesting - error parsing from address: %s", msg.FromAddress)

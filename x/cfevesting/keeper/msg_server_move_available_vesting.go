@@ -10,7 +10,7 @@ import (
 
 func (k msgServer) MoveAvailableVesting(goCtx context.Context, msg *types.MsgMoveAvailableVesting) (*types.MsgMoveAvailableVestingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
+	// TODO events and telemetry
 	from, err := sdk.AccAddressFromBech32(msg.FromAddress)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(err, "move available vesting - error parsing from address: %s", msg.FromAddress)

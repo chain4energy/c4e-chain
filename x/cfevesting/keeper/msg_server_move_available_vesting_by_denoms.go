@@ -9,6 +9,7 @@ import (
 )
 
 func (k msgServer) MoveAvailableVestingByDenoms(goCtx context.Context, msg *types.MsgMoveAvailableVestingByDenoms) (*types.MsgMoveAvailableVestingByDenomsResponse, error) {
+	// TODO events and telemetry
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	from, err := sdk.AccAddressFromBech32(msg.FromAddress)
