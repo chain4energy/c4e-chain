@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	"github.com/chain4energy/c4e-chain/testutil/testapp"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

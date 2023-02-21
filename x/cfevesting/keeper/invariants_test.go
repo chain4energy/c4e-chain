@@ -6,9 +6,9 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	"github.com/chain4energy/c4e-chain/testutil/testapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

@@ -45,8 +45,7 @@ $ %s query %s vesting-pools %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 			queryClient := types.NewQueryClient(clientCtx)
 
 			params := &types.QueryVestingPoolsRequest{
-
-				Address: reqAddress,
+				Owner: reqAddress,
 			}
 
 			res, err := queryClient.VestingPools(cmd.Context(), params)

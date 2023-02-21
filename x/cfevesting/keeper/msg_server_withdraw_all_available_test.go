@@ -1,14 +1,14 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	"github.com/chain4energy/c4e-chain/testutil/testapp"
 
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 )
@@ -165,14 +165,14 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, sdk.ZeroInt())
 
-	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []sdk.Int{vested}, []sdk.Int{sdk.ZeroInt()})
+	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []math.Int{vested}, []math.Int{sdk.ZeroInt()})
 
 	testHelper.SetContextBlockHeightAndTime(int64(110000), testutils.CreateTimeFromNumOfHours(110000))
 
 	withdrawn := vested
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, sdk.ZeroInt(), vested, withdrawn)
 
-	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []sdk.Int{vested}, []sdk.Int{withdrawn}, startTime)
+	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []math.Int{vested}, []math.Int{withdrawn}, startTime)
 
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
@@ -181,5 +181,5 @@ func TestWithdrawAllAvailableBadAddress(t *testing.T) {
 
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
 
-	testHelper.C4eVestingUtils.MessageWithdrawAllAvailableError("badaddress", "withdraw all available address parsing error: badaddress: decoding bech32 failed: invalid separator index -1: failed to parse")
+	testHelper.C4eVestingUtils.MessageWithdrawAllAvailableError("badaddress", "withdraw all available owner parsing error: badaddress: decoding bech32 failed: invalid separator index -1: failed to parse")
 }

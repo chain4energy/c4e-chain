@@ -1,10 +1,7 @@
 package v110_test
 
 import (
-	"strconv"
-	"testing"
-	"time"
-
+	"cosmossdk.io/math"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
@@ -13,6 +10,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/stretchr/testify/require"
+	"strconv"
+	"testing"
+	"time"
 
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -126,7 +126,7 @@ func createV101MinterState(
 	remainderToMint,
 	remainderFromPreviousPeriod sdk.Dec,
 	lastMintBlockTime time.Time,
-	amountMinted sdk.Int,
+	amountMinted math.Int,
 ) v101.MinterState {
 	return v101.MinterState{
 		Position:                    position,

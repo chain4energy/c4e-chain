@@ -81,9 +81,9 @@ Chain4Energy vesting module state contains vesting pools lists per owner.
 | vesting_type     | string        | vesting type used by vesting pool (see **[Vesting Type](#vesting-type)**)          |
 | lock_start       | time.Duration | time of pool creation                                                              |
 | lock_end         | time.Duration | unlocking time (end of lock period)                                                |
-| initially_locked | sdk.Int       | amount of tokens locked initially in the pool                                      |
-| withdrawn        | sdk.Int       | amount of tokens that were already withdrawn from the pool                         |
-| sent             | sdk.Int       | amount of tokens that were already sent to vesting accounts from the vesting pool  |
+| initially_locked | math.Int       | amount of tokens locked initially in the pool                                      |
+| withdrawn        | math.Int       | amount of tokens that were already withdrawn from the pool                         |
+| sent             | math.Int       | amount of tokens that were already sent to vesting accounts from the vesting pool  |
 
 ### Vesting types data dictionary
 
@@ -118,7 +118,7 @@ Creates new vesting pool for the creator account.
 type MsgCreateVestingPool struct {
 	Creator     string
 	Name        string
-	Amount      sdk.Int
+	Amount      math.Int
 	Duration    time.Duration
 	VestingType string
 }
@@ -153,7 +153,7 @@ type MsgSendToVestingAccount struct {
 	FromAddress     string
 	ToAddress       string
 	VestingPoolName string
-	Amount          sdk.Int
+	Amount          math.Int
 	RestartVesting  bool
 }
 ```

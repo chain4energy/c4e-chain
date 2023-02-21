@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"cosmossdk.io/math"
 	"errors"
 	"math/big"
 	"math/rand"
@@ -42,9 +43,9 @@ func RandStringOfLength(n int) string {
 	return RandStringOfLengthCustomSeed(r, n)
 }
 
-func RandPositiveInt(r *rand.Rand, max sdk.Int) (sdk.Int, error) {
+func RandPositiveInt(r *rand.Rand, max math.Int) (math.Int, error) {
 	if !max.GTE(sdk.OneInt()) {
-		return sdk.Int{}, errors.New("max too small")
+		return math.Int{}, errors.New("max too small")
 	}
 
 	max = max.Sub(sdk.OneInt())
@@ -52,7 +53,7 @@ func RandPositiveInt(r *rand.Rand, max sdk.Int) (sdk.Int, error) {
 	return sdk.NewIntFromBigInt(new(big.Int).Rand(r, max.BigInt())).Add(sdk.OneInt()), nil
 }
 
-func RandomAmount(r *rand.Rand, max sdk.Int) sdk.Int {
+func RandomAmount(r *rand.Rand, max math.Int) math.Int {
 	randInt := big.NewInt(0)
 
 	switch r.Intn(10) {

@@ -1,9 +1,9 @@
 package v110_test
 
 import (
-	"time"
-
+	"cosmossdk.io/math"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	v101 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
@@ -239,7 +239,7 @@ func createV100MinterPeriod(
 }
 
 func createV101TimeLinearMinter(
-	amount sdk.Int,
+	amount math.Int,
 ) *v101.TimeLinearMinter {
 	return &v101.TimeLinearMinter{
 		Amount: amount,
@@ -250,7 +250,7 @@ func createV101TimePeriodicReductionMinter(
 	reductionPeriodLength int32,
 	mintPeriod int32,
 	reductionFactor sdk.Dec,
-	mintAmount sdk.Int,
+	mintAmount math.Int,
 ) *v101.PeriodicReductionMinter {
 	return &v101.PeriodicReductionMinter{
 		ReductionPeriodLength: reductionPeriodLength,

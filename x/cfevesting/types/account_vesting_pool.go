@@ -1,18 +1,19 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (av AccountVestingPools) Validate() error {
 	vs := av.VestingPools
-	_, err := sdk.AccAddressFromBech32(av.Address)
+	_, err := sdk.AccAddressFromBech32(av.Owner)
 	if err != nil {
-		return fmt.Errorf("account vesting pools address: %s: %s", av.Address, err.Error())
+		return fmt.Errorf("account vesting pools address: %s: %s", av.Owner, err.Error())
 	}
 	for _, v := range vs {
-		if err = v.Validate(av.Address); err != nil {
+		if err = v.Validate(av.Owner); err != nil {
 			return err
 		}
 		err = av.checkDuplications(vs, v)
@@ -30,7 +31,7 @@ func (av AccountVestingPools) checkDuplications(vs []*VestingPool, v *VestingPoo
 			numOfNames++
 		}
 		if numOfNames > 1 {
-			return fmt.Errorf("vesting pool with name: %s defined more than once for account: %s", v.Name, av.Address)
+			return fmt.Errorf("vesting pool with name: %s defined more than once for account: %s", v.Name, av.Owner)
 		}
 	}
 
@@ -47,13 +48,13 @@ func (av AccountVestingPools) ValidateAgainstVestingTypes(vestingTypes []Genesis
 			}
 		}
 		if !found {
-			return fmt.Errorf("vesting pool with name: %s defined for account: %s - vesting type not found: %s", v.Name, av.Address, v.VestingType)
+			return fmt.Errorf("vesting pool with name: %s defined for account: %s - vesting type not found: %s", v.Name, av.Owner, v.VestingType)
 		}
 	}
 	return nil
 }
 
-func (m *VestingPool) GetCurrentlyLocked() sdk.Int {
+func (m *VestingPool) GetCurrentlyLocked() math.Int {
 	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn)
 }
 

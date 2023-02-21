@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"testing"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/testutil/testapp"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -32,7 +32,7 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 		Sent:            sdk.ZeroInt(),
 	}
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
@@ -77,7 +77,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 	}
 
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
@@ -150,7 +150,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	}
 
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
@@ -236,7 +236,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 	}
 
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
@@ -329,7 +329,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	}
 
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/math"
 	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
@@ -8,7 +9,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
+func (k Keeper) Mint(ctx sdk.Context) (math.Int, error) {
 	lastBlockTimeForMinter := k.GetMinterState(ctx).LastMintBlockTime
 	lastBlockTime := ctx.BlockTime()
 	params := k.GetParams(ctx)
@@ -25,7 +26,7 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	return k.mint(ctx, &params, 0)
 }
 
-func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int, error) {
+func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int, error) {
 	minterState := k.GetMinterState(ctx)
 
 	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.MinterConfig, &minterState)
@@ -75,7 +76,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 	minterState.LastMintBlockTime = ctx.BlockTime()
 	minterState.RemainderToMint = remainder
 
-	var result sdk.Int
+	var result math.Int
 	if currentMinter.EndTime == nil || ctx.BlockTime().Before(*currentMinter.EndTime) {
 		k.SetMinterState(ctx, minterState)
 		result = amount

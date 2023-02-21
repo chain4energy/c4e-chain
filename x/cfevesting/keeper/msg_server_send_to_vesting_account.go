@@ -27,7 +27,7 @@ func (k msgServer) SendToVestingAccount(goCtx context.Context, msg *types.MsgSen
 	}()
 
 	keeper := k.Keeper
-	_, err := keeper.SendToNewVestingAccount(ctx, msg.FromAddress, msg.ToAddress, msg.VestingPoolName, msg.Amount, msg.RestartVesting)
+	_, err := keeper.SendToNewVestingAccount(ctx, msg.Owner, msg.ToAddress, msg.VestingPoolName, msg.Amount, msg.RestartVesting)
 	if err != nil {
 		return nil, err
 	}

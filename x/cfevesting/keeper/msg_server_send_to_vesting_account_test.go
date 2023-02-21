@@ -8,8 +8,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	"github.com/chain4energy/c4e-chain/testutil/testapp"
 )
 
 func TestSendVestingAccount(t *testing.T) {
@@ -155,7 +155,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, "pool", sdk.NewInt(100), true,
-		"send to new vesting account - withdraw all available error: withdraw all available - no vesting pools found error: address: cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq: not found")
+		"send to new vesting account - withdraw all available error: withdraw all available - no vesting pools found error: owner: c4e15ky9du8a2wlstz6fpx3p4mqpjyrm5cgq3kx2f7: not found")
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 

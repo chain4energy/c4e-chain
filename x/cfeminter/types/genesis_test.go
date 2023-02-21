@@ -1,12 +1,12 @@
 package types_test
 
 import (
-	"testing"
-	"time"
-
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	"testing"
+	"time"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
@@ -201,7 +201,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createOkMinterConfig()),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.Int{},
+					AmountMinted:                math.Int{},
 					RemainderToMint:             sdk.MustNewDecFromStr("324.543"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("324.543"),
