@@ -12,9 +12,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	"github.com/chain4energy/c4e-chain/testutil/testapp"
 )
 
 func TestMoveAvailableVestingByDenoms(t *testing.T) {
@@ -75,8 +75,8 @@ func TestMoveAvailableVestingByDenoms(t *testing.T) {
 			_, err := msgServer.MoveAvailableVestingByDenoms(testHelper.WrappedContext, types.NewMsgMoveAvailableVestingByDenoms(srcAccAddr.String(), dstAccAddr.String(), tc.unlockDenoms))
 			require.NoError(t, err)
 
-			testHelper.BankUtils.VerifyLockedCoins(srcAccAddr, lockedBefore.Sub(lockedBeforeByDenoms), true)
-			testHelper.BankUtils.VerifyAccountBalances(srcAccAddr, balancesBefore.Sub(lockedBeforeByDenoms), true)
+			testHelper.BankUtils.VerifyLockedCoins(srcAccAddr, lockedBefore.Sub(lockedBeforeByDenoms...), true)
+			testHelper.BankUtils.VerifyAccountBalances(srcAccAddr, balancesBefore.Sub(lockedBeforeByDenoms...), true)
 
 			testHelper.AuthUtils.VerifyIsContinuousVestingAccount(dstAccAddr)
 

@@ -2,10 +2,11 @@ package cfevesting
 
 import (
 	"context"
-	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/testutil/nullify"
 	"strconv"
 	"time"
+
+	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/testutil/nullify"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -385,7 +386,7 @@ func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Co
 
 	h.bankUtils.VerifyAccountBalances(ctx, ownerAddress, expectedAccountBalances, true)
 	locked = (*h.helperBankKeeper).LockedCoins(ctx, ownerAddress)
-	require.Truef(h.t, expectedLockedBalancesBefore.Sub(amountsToUnlock).IsEqual(locked), "expectedLockedBalances %s <> locked %s", expectedLockedBalancesBefore.Sub(amountsToUnlock), locked)
+	require.Truef(h.t, expectedLockedBalancesBefore.Sub(amountsToUnlock...).IsEqual(locked), "expectedLockedBalances %s <> locked %s", expectedLockedBalancesBefore.Sub(amountsToUnlock...), locked)
 }
 
 func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int) {
