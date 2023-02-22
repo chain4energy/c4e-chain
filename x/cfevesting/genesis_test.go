@@ -3,11 +3,10 @@ package cfevesting_test
 import (
 	"cosmossdk.io/math"
 	"fmt"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
-
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -24,7 +23,7 @@ func TestGenesisWholeApp(t *testing.T) {
 		VestingTypes: []types.GenesisVestingType{},
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 }
@@ -48,7 +47,7 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 		VestingTypes:        vestingTypesArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
@@ -63,7 +62,7 @@ func TestGenesisVestingTypes(t *testing.T) {
 		VestingTypes:        vestingTypesArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
@@ -124,7 +123,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 		VestingTypes:        vestingTypesArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
@@ -157,7 +156,7 @@ func TestGenesisAccountVestingPools(t *testing.T) {
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	mintUndelegableCoinsToModule(testHelper, genesisState, getVestingPoolsAmount(accountVestingPoolsArray))
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
@@ -174,7 +173,7 @@ func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	VestingPoolsAmount := getVestingPoolsAmount(accountVestingPoolsArray)
 	wrongAcountAmount := getVestingPoolsAmount(accountVestingPoolsArray).SubRaw(10)
@@ -183,7 +182,7 @@ func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {
 
 }
 
-func mintUndelegableCoinsToModule(testHelper *testapp.TestHelper, genesisState types.GenesisState, amount math.Int) {
+func mintUndelegableCoinsToModule(testHelper *app.TestHelper, genesisState types.GenesisState, amount math.Int) {
 	mintedCoin := sdk.NewCoin(genesisState.Params.Denom, amount)
 	testHelper.BankUtils.AddCoinsToModule(mintedCoin, types.ModuleName)
 }

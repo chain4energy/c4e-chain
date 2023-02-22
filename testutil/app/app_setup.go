@@ -1,4 +1,4 @@
-package testapp
+package app
 
 import (
 	appparams "github.com/chain4energy/c4e-chain/app/params"

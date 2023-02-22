@@ -2,21 +2,20 @@ package keeper_test
 
 import (
 	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
-
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 )
 
 func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
 	vested := sdk.NewInt(1000000)
 
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
@@ -35,7 +34,7 @@ func TestWithdrawAllAvailableOnLockStart(t *testing.T) {
 
 func TestWithdrawAllAvailableManyVestingPoolsOnLockStart(t *testing.T) {
 	vested := sdk.NewInt(1000000)
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
@@ -55,7 +54,7 @@ func TestWithdrawAllAvailableManyVestingPoolsOnLockStart(t *testing.T) {
 func TestWithdrawAllAvailableDuringLock(t *testing.T) {
 	vested := sdk.NewInt(1000000)
 	withdrawable := sdk.ZeroInt()
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(vested, types.ModuleName)
@@ -75,7 +74,7 @@ func TestWithdrawAllAvailableDuringLock(t *testing.T) {
 func TestWithdrawAllAvailableManyLockedDuringLock(t *testing.T) {
 	vested := sdk.NewInt(1000000)
 	withdrawable := sdk.ZeroInt()
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(vested.MulRaw(3), types.ModuleName)
@@ -100,7 +99,7 @@ func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 	withdrawn := sdk.NewInt(300)
 	balance := vested.Sub(withdrawn)
 
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 110000, testutils.CreateTimeFromNumOfHours(110000))
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 110000, testutils.CreateTimeFromNumOfHours(110000))
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(balance, types.ModuleName)
@@ -124,7 +123,7 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 	withdrawn := sdk.NewInt(300)
 	balance := vested.Sub(withdrawn).MulRaw(3)
 
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 110000, testutils.CreateTimeFromNumOfHours(110000))
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 110000, testutils.CreateTimeFromNumOfHours(110000))
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(balance, types.ModuleName)
@@ -145,7 +144,7 @@ func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.
 
 func TestVestAndWithdrawAllAvailable(t *testing.T) {
 	vested := sdk.NewInt(1000000)
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 	accAddr := acountsAddresses[0]
@@ -179,7 +178,7 @@ func TestVestAndWithdrawAllAvailable(t *testing.T) {
 
 func TestWithdrawAllAvailableBadAddress(t *testing.T) {
 
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 10100, testutils.CreateTimeFromNumOfHours(10100))
 
 	testHelper.C4eVestingUtils.MessageWithdrawAllAvailableError("badaddress", "withdraw all available owner parsing error: badaddress: decoding bech32 failed: invalid separator index -1: failed to parse")
 }

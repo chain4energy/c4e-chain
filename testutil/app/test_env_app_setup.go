@@ -1,4 +1,4 @@
-package testapp
+package app
 
 import (
 	"context"
