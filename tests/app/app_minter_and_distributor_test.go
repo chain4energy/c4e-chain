@@ -1,9 +1,9 @@
-package tests
+package app
 
 import (
 	"cosmossdk.io/math"
-	testgenesis "github.com/chain4energy/c4e-chain/tests/genesis"
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
+	testgenesis "github.com/chain4energy/c4e-chain/tests/app/genesis"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -59,7 +59,7 @@ func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults tes
 	var distributorParams = testgenesis.CfeDistributorParams
 	var minterParams = testgenesis.CfeMinterrParams
 
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, minterParams.MinterConfig.StartTime)
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 1, minterParams.MinterConfig.StartTime)
 	testHelper.C4eMinterUtils.SetParams(minterParams)
 	testHelper.C4eDistributorUtils.SetParams(distributorParams)
 

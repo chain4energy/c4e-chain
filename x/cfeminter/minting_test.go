@@ -1,10 +1,9 @@
 package cfeminter_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 	"time"
-
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 
@@ -18,7 +17,7 @@ import (
 func TestOneYearLinear(t *testing.T) {
 	totalSupply := sdk.NewInt(40000000000000)
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	yearFromNow := testHelper.InitTime.Add(time.Hour * 24 * 365)
 
@@ -79,7 +78,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(160000000000000)
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	pminter := types.ExponentialStepMinting{Amount: startAmountYearly, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
 	minters := []*types.Minter{
@@ -146,7 +145,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(160000000000000)
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	minter1 := types.ExponentialStepMinting{Amount: startAmountYearly, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
@@ -196,7 +195,7 @@ func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
 	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(160000000000000)
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	tenYears := Year * 10
 	endTime1 := testHelper.InitTime.Add(tenYears)

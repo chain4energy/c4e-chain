@@ -1,9 +1,8 @@
 package keeper_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
-
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -45,7 +44,7 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
@@ -96,7 +95,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
 	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
@@ -169,7 +168,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.StakingUtils.SetupValidators(validatorsAddresses, sdk.NewInt(100))
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
@@ -255,7 +254,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.StakingUtils.SetupValidators(validatorsAddresses, sdk.NewInt(100))
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
@@ -348,7 +347,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.StakingUtils.SetupValidators(validatorsAddresses, sdk.NewInt(100))
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)

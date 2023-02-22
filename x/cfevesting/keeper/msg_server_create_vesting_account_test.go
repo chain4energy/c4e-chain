@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 	"time"
 
@@ -8,11 +9,10 @@ import (
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
 )
 
 func TestCreateVestingAccount(t *testing.T) {
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	accAddr1 := acountsAddresses[0]
@@ -38,7 +38,7 @@ func TestCreateVestingAccount(t *testing.T) {
 }
 
 func TestCreateVestingAccountAccountExists(t *testing.T) {
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 	accAddr1 := acountsAddresses[0]
@@ -106,7 +106,7 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 }
 
 func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 	accAddr1 := acountsAddresses[0]
@@ -144,7 +144,7 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 }
 
 func TestCreateVestingAccountStartTimeAfterEndTime(t *testing.T) {
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(3, 0)
 	accAddr1 := acountsAddresses[0]

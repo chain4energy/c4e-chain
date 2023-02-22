@@ -1,10 +1,10 @@
 package cfedistributor_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 
 	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 )
 
@@ -31,7 +31,7 @@ func TestGenesis(t *testing.T) {
 
 	genesisState.Params.SubDistributors = subdistributors
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
 	testHelper.C4eDistributorUtils.SetState(state)
 	genesisState.States = []*types.State{&state}
@@ -62,7 +62,7 @@ func TestGenesisImport(t *testing.T) {
 	subdistributors = append(subdistributors, burningSubSistributor)
 	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destinations.PrimaryShare))
 	genesisState.Params.SubDistributors = subdistributors
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
 	testHelper.C4eDistributorUtils.ExportGenesis(genesisState)
 	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
@@ -79,7 +79,7 @@ func TestGenesisNoStates(t *testing.T) {
 	subdistributors = append(subdistributors, subdistributortestutils.PreparareHelperDistributorForDestination(burningSubSistributor.Destinations.PrimaryShare))
 	genesisState.Params.SubDistributors = subdistributors
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
 	testHelper.C4eDistributorUtils.ExportGenesis(genesisState)
 	testHelper.C4eDistributorUtils.ValidateGenesisAndInvariants()
@@ -108,7 +108,7 @@ func TestGenesisBurnStateAccNotNil(t *testing.T) {
 
 	genesisState.Params.SubDistributors = subdistributors
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
 	testHelper.C4eDistributorUtils.SetState(state)
 	state.Account = nil
@@ -136,7 +136,7 @@ func TestGenesisBurnState(t *testing.T) {
 
 	genesisState.Params.SubDistributors = subdistributors
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eDistributorUtils.InitGenesis(genesisState)
 	testHelper.C4eDistributorUtils.SetState(state)
 	genesisState.States = []*types.State{&state}

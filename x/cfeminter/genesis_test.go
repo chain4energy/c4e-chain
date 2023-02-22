@@ -1,10 +1,9 @@
 package cfeminter_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 	"time"
-
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 
@@ -36,7 +35,7 @@ func TestGenesis(t *testing.T) {
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
 	testHelper.C4eMinterUtils.ExportGenesis(genesisState)
 	// this line is used by starport scaffolding # genesis/test/assert
@@ -64,7 +63,7 @@ func TestGenesisWithHistory(t *testing.T) {
 
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
 	testHelper.C4eMinterUtils.ExportGenesis(genesisState)
 }

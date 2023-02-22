@@ -1,9 +1,9 @@
 package keeper_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -48,7 +48,7 @@ func TestNonNegativeCoinStateInvariantNegativeBurnSate(t *testing.T) {
 }
 
 func TestStateSumBalanceCheckInvariantCorrect(t *testing.T) {
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testenv.DefaultTestDenom, Amount: sdk.NewDec(1324)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
@@ -63,7 +63,7 @@ func TestStateSumBalanceCheckInvariantCorrect(t *testing.T) {
 }
 
 func TestStateSumBalanceCheckInvariantSumNotInt(t *testing.T) {
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testenv.DefaultTestDenom, Amount: sdk.MustNewDecFromStr("12.132")}}}
 	testHelper.C4eDistributorUtils.SetState(state)
@@ -78,7 +78,7 @@ func TestStateSumBalanceCheckInvariantSumNotInt(t *testing.T) {
 }
 
 func TestStateSumBalanceCheckInvariantSumDiffersFromModuleAccountBalance(t *testing.T) {
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	state := types.State{Account: &types.Account{Id: "test", Type: types.InternalAccount}, Burn: false, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testenv.DefaultTestDenom, Amount: sdk.NewDec(1324)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
