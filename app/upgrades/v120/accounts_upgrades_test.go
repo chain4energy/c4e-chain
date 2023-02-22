@@ -6,7 +6,7 @@ import (
 
 	"cosmossdk.io/math"
 	v120 "github.com/chain4energy/c4e-chain/app/upgrades/v120"
-	"github.com/chain4energy/c4e-chain/testutil/testapp"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/stretchr/testify/require"
