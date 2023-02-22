@@ -184,4 +184,8 @@ build-e2e-script:
 # Docker commands
 
 docker-build-debug:
-	@docker build -t chain4energy:debug --build-arg BASE_IMG_TAG=debug -f Dockerfile .
+	@docker build -t chain4energy:debug --build-arg BASE_IMG_TAG=debug -f dockerfiles/Dockerfile .
+
+docker-build-old-chain:
+	@docker build -t chain4energy-old-chain-init:v1.1.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/init.Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.1.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/old.Dockerfile .
