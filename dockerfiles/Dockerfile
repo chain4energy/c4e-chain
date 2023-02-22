@@ -15,7 +15,7 @@ RUN apk add linux-headers
 
 WORKDIR /chain4energy
 COPY . /chain4energy
-RUN rm -r /chain4energy/build
+RUN rm -rf /chain4energy/build
 RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 
 # --------------------------------------------------------
