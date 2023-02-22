@@ -13,9 +13,8 @@ RUN apk add git
 # Needed by github.com/zondax/hid
 RUN apk add linux-headers
 
-WORKDIR /chain4energy
-COPY .. /chain4energy
-
+WORKDIR /
+COPY ./ ./
 RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 
 # --------------------------------------------------------
@@ -24,7 +23,7 @@ RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 
 FROM ubuntu:22.04
 
-COPY --from=build /chain4energy/build/c4ed /bin/c4ed
+COPY --from=build /build/c4ed /bin/c4ed
 
 ENV HOME /chain4energy
 WORKDIR $HOME
