@@ -1,7 +1,6 @@
 package v120
 
 import (
-	"fmt"
 	"time"
 
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
@@ -36,11 +35,13 @@ func upgradeVestingAccounnt(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepe
 	}
 	account := appKeepers.GetAccountKeeper().GetAccount(ctx, accAddr)
 	if account == nil {
-		return fmt.Errorf("account does not exist: %s", address)
+		ctx.Logger().Info("account does not exist", "address", address)
+		return nil
 	}
 	vestingAccount, ok := account.(*vestingtypes.ContinuousVestingAccount)
 	if !ok {
-		return fmt.Errorf("account is not ContinuousVestingAccount: %T", vestingAccount)
+		ctx.Logger().Info("account is not ContinuousVestingAccount", "address", address)
+		return nil
 	}
 	startTime := time.Unix(vestingAccount.StartTime, 0)
 	endTime := time.Unix(vestingAccount.EndTime, 0)

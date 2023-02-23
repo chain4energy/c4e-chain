@@ -36,19 +36,47 @@ var (
 	earlyBirdRoundUc4e                 = math.NewInt(8000000).MulRaw(toUc4e)
 	publicRoundUc4e                    = math.NewInt(9000000).MulRaw(toUc4e)
 	strategicReserveShortTermRoundUc4e = math.NewInt(40000000).MulRaw(toUc4e)
+	sum                                = vcRoundUc4e.Add(earlyBirdRoundUc4e).Add(publicRoundUc4e).Add(strategicReserveShortTermRoundUc4e)
 )
 
 func ModifyVestingPoolsState(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
-	if err := modifyAndAddVestingTypes(ctx, appKeepers); err != nil {
-		return err
-	}
-	return modifyAndAddVestingPools(ctx, appKeepers)
-}
-
-func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
-	vestingType, err := appKeepers.GetC4eVestingKeeper().GetVestingType(ctx, oldValidatorTypeName)
+	poolsOwnerAddress, err := sdk.AccAddressFromBech32(ValidatorsVestingPoolOwner)
 	if err != nil {
 		return err
+	}
+	vestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, poolsOwnerAddress.String())
+	if !found {
+		ctx.Logger().Info("vesting pools not found", "owner", poolsOwnerAddress.String())
+		return nil
+	}
+	vestingPoolsP := &vestingPools
+	var validatorsVestingPools *cfevestingtypes.VestingPool = nil
+	for _, vp := range vestingPoolsP.VestingPools {
+		if vp.Name == oldValidatorPoolName {
+			validatorsVestingPools = vp
+		}
+	}
+	if validatorsVestingPools == nil {
+		ctx.Logger().Info("validators vesting pool of not found", "owner", poolsOwnerAddress.String())
+		return nil
+	}
+
+	if validatorsVestingPools.GetCurrentlyLocked().LT(sum) {
+		ctx.Logger().Info("validators vesting pool not enough locked to split", "owner", poolsOwnerAddress.String())
+		return nil
+	}
+	if !modifyAndAddVestingTypes(ctx, appKeepers) {
+		return nil
+	}
+
+	return modifyAndAddVestingPools(ctx, appKeepers, vestingPoolsP, validatorsVestingPools)
+}
+
+func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) bool {
+	vestingType, err := appKeepers.GetC4eVestingKeeper().GetVestingType(ctx, oldValidatorTypeName)
+	if err != nil {
+		ctx.Logger().Info("vesting type not found", "vestingType", oldValidatorTypeName)
+		return false
 	}
 	appKeepers.GetC4eVestingKeeper().RemoveVestingType(ctx, oldValidatorTypeName)
 	vestingType.Name = validatorRoundTypeName
@@ -85,32 +113,15 @@ func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 		VestingPeriod: 365 * 24 * time.Hour,
 	}
 	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, strategicReserveShortTermRoundType)
-	return nil
+	return true
 }
 
-func modifyAndAddVestingPools(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
-	poolsOwnerAddress, err := sdk.AccAddressFromBech32(ValidatorsVestingPoolOwner)
-	if err != nil {
-		return err
-	}
-	vestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, poolsOwnerAddress.String())
-	if !found {
-		return fmt.Errorf("vesting pools of %s not found", poolsOwnerAddress.String())
-	}
-	vestingPoolsP := &vestingPools
-	var validatorsVestingPools *cfevestingtypes.VestingPool = nil
-	for _, vp := range vestingPools.VestingPools {
-		if vp.Name == oldValidatorPoolName {
-			validatorsVestingPools = vp
-		}
-	}
-	if validatorsVestingPools == nil {
-		return fmt.Errorf("validators vesting pool of %s not found", poolsOwnerAddress.String())
-	}
+func modifyAndAddVestingPools(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers, vestingPoolsP *cfevestingtypes.AccountVestingPools, validatorsVestingPools *cfevestingtypes.VestingPool) error {
+
 	validatorsVestingPools.Name = validatorRoundPoolName
 	validatorsVestingPools.VestingType = validatorRoundTypeName
 
-	_, err = splitVestingPool(vestingPoolsP, validatorsVestingPools, vcRoundPoolName, vcRoundTypeName, vcRoundUc4e, 3, 0)
+	_, err := splitVestingPool(vestingPoolsP, validatorsVestingPools, vcRoundPoolName, vcRoundTypeName, vcRoundUc4e, 3, 0)
 	if err != nil {
 		return err
 	}
@@ -130,7 +141,7 @@ func modifyAndAddVestingPools(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 		return err
 	}
 
-	appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, vestingPools)
+	appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, *vestingPoolsP)
 
 	return nil
 }

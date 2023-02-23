@@ -179,6 +179,114 @@ func TestSplitVestingPools(t *testing.T) {
 
 }
 
+func TestSplitVestingPoolsNoVestingPools(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	addVestingTypes(testHelper)
+
+	_, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
+	require.False(t, found)
+
+	err := v120.ModifyVestingPoolsState(testHelper.Context, testHelper.App)
+	require.NoError(t, err)
+
+	vts := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAllVestingTypes(testHelper.Context)
+	require.Equal(t, 2, len(vts.VestingTypes))
+	expectedTypes := []*cfevestingtypes.VestingType{&advisorsType, &oldValidatorsType}
+	require.ElementsMatch(t, expectedTypes, vts.VestingTypes)
+
+	_, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
+	require.False(t, found)
+
+}
+
+func TestSplitVestingPoolsNoValidatorsVestingPool(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	addVestingTypes(testHelper)
+	addAdvisorsVestingPools(testHelper)
+
+	avps, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
+	require.True(t, found)
+	require.Equal(t, 1, len(avps.VestingPools))
+
+	err := v120.ModifyVestingPoolsState(testHelper.Context, testHelper.App)
+	require.NoError(t, err)
+
+	vts := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAllVestingTypes(testHelper.Context)
+	require.Equal(t, 2, len(vts.VestingTypes))
+	expectedTypes := []*cfevestingtypes.VestingType{&advisorsType, &oldValidatorsType}
+	require.ElementsMatch(t, expectedTypes, vts.VestingTypes)
+
+	avps, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
+	require.True(t, found)
+	require.Equal(t, v120.ValidatorsVestingPoolOwner, avps.Owner)
+	require.Equal(t, 1, len(avps.VestingPools))
+
+	expectedPools := []*cfevestingtypes.VestingPool{&advisorsPool}
+	require.ElementsMatch(t, expectedPools, avps.VestingPools)
+
+}
+
+func TestSplitVestingPoolsNoEnoughValidatorsVestingPoolToSplit(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	addVestingTypes(testHelper)
+	vestinngPoolNotEnough := addVestingPoolsNotEnoughCoins(testHelper)
+
+	avps, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
+	require.True(t, found)
+	require.Equal(t, 2, len(avps.VestingPools))
+
+	err := v120.ModifyVestingPoolsState(testHelper.Context, testHelper.App)
+	require.NoError(t, err)
+
+	vts := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAllVestingTypes(testHelper.Context)
+	require.Equal(t, 2, len(vts.VestingTypes))
+	expectedTypes := []*cfevestingtypes.VestingType{&advisorsType, &oldValidatorsType}
+	require.ElementsMatch(t, expectedTypes, vts.VestingTypes)
+
+	avps, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
+	require.True(t, found)
+	require.Equal(t, v120.ValidatorsVestingPoolOwner, avps.Owner)
+	require.Equal(t, 2, len(avps.VestingPools))
+
+	expectedPools := []*cfevestingtypes.VestingPool{&advisorsPool, &vestinngPoolNotEnough}
+	require.ElementsMatch(t, expectedPools, avps.VestingPools)
+
+}
+
+func TestSplitVestingPoolsNoVestingType(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	addAdvisorsVestingTypes(testHelper)
+	addVestingPools(testHelper)
+
+	avps, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
+	require.True(t, found)
+	require.Equal(t, 2, len(avps.VestingPools))
+
+	err := v120.ModifyVestingPoolsState(testHelper.Context, testHelper.App)
+	require.NoError(t, err)
+
+	vts := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAllVestingTypes(testHelper.Context)
+	require.Equal(t, 1, len(vts.VestingTypes))
+	expectedTypes := []*cfevestingtypes.VestingType{&advisorsType}
+	require.ElementsMatch(t, expectedTypes, vts.VestingTypes)
+
+	avps, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
+	require.True(t, found)
+	require.Equal(t, v120.ValidatorsVestingPoolOwner, avps.Owner)
+	require.Equal(t, 2, len(avps.VestingPools))
+
+	expectedPools := []*cfevestingtypes.VestingPool{&advisorsPool, &oldValidatorsPool}
+	require.ElementsMatch(t, expectedPools, avps.VestingPools)
+
+}
+
+func addAdvisorsVestingTypes(testHelper *testapp.TestHelper) {
+	vestingTypes := cfevestingtypes.VestingTypes{
+		VestingTypes: []*cfevestingtypes.VestingType{&advisorsType},
+	}
+	testHelper.App.CfevestingKeeper.SetVestingTypes(testHelper.Context, vestingTypes)
+}
+
 func addVestingTypes(testHelper *testapp.TestHelper) {
 	vestingTypes := cfevestingtypes.VestingTypes{
 		VestingTypes: []*cfevestingtypes.VestingType{&advisorsType, &oldValidatorsType},
@@ -190,6 +298,27 @@ func addVestingPools(testHelper *testapp.TestHelper) {
 	vpools := cfevestingtypes.AccountVestingPools{
 		Owner:        v120.ValidatorsVestingPoolOwner,
 		VestingPools: []*cfevestingtypes.VestingPool{&advisorsPool, &oldValidatorsPool},
+	}
+	testHelper.App.CfevestingKeeper.SetAccountVestingPools(testHelper.Context, vpools)
+}
+
+func addVestingPoolsNotEnoughCoins(testHelper *testapp.TestHelper) cfevestingtypes.VestingPool {
+	oldValidatorsPoolNotEnough := oldValidatorsPool
+	oldValidatorsPoolNotEnough.InitiallyLocked = oldValidatorsPool.Sent.Add(newVcRoundPool.InitiallyLocked).
+		Add(newEarlyBirdRoundPool.InitiallyLocked).Add(newPublicRoundPool.InitiallyLocked).
+		Add(newStrategicRoundPool.InitiallyLocked).SubRaw(1)
+	vpools := cfevestingtypes.AccountVestingPools{
+		Owner:        v120.ValidatorsVestingPoolOwner,
+		VestingPools: []*cfevestingtypes.VestingPool{&advisorsPool, &oldValidatorsPoolNotEnough},
+	}
+	testHelper.App.CfevestingKeeper.SetAccountVestingPools(testHelper.Context, vpools)
+	return oldValidatorsPoolNotEnough
+}
+
+func addAdvisorsVestingPools(testHelper *testapp.TestHelper) {
+	vpools := cfevestingtypes.AccountVestingPools{
+		Owner:        v120.ValidatorsVestingPoolOwner,
+		VestingPools: []*cfevestingtypes.VestingPool{&advisorsPool},
 	}
 	testHelper.App.CfevestingKeeper.SetAccountVestingPools(testHelper.Context, vpools)
 }
