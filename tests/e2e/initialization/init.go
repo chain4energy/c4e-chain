@@ -1,6 +1,7 @@
 package initialization
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -9,14 +10,14 @@ import (
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
 
-func InitChain(id, dataDir string, nodeConfigs []*NodeConfig, votingPeriod, expeditedVotingPeriod time.Duration, forkHeight int) (*Chain, error) {
+func InitChain(id, dataDir string, nodeConfigs []*NodeConfig, votingPeriod, expeditedVotingPeriod time.Duration, forkHeight int, appState map[string]json.RawMessage) (*Chain, error) {
 	chain, err := new(id, dataDir)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, nodeConfig := range nodeConfigs {
-		newNode, err := newNode(chain, nodeConfig)
+		newNode, err := newNode(chain, nodeConfig, appState)
 		if err != nil {
 			return nil, err
 		}
@@ -54,7 +55,7 @@ func InitSingleNode(chainId, dataDir string, existingGenesisDir string, nodeConf
 		return nil, err
 	}
 
-	newNode, err := newNode(chain, nodeConfig)
+	newNode, err := newNode(chain, nodeConfig, nil)
 	if err != nil {
 		return nil, err
 	}
