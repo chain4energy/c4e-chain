@@ -115,8 +115,8 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings Upg
 		// to utilize the older version of osmosis to upgrade from
 		return NewUpgradeConfigurer(t,
 			[]*chain.Config{
-				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA),
-				chain.New(t, containerManager, initialization.ChainBID, validatorConfigsChainB),
+				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA, nil),
+				chain.New(t, containerManager, initialization.ChainBID, validatorConfigsChainB, nil),
 			},
 			withUpgrade(withIBC(baseSetup)), // base set up with IBC and upgrade
 			containerManager,
@@ -126,7 +126,7 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings Upg
 	} else if upgradeSettings.IsEnabled {
 		return NewUpgradeConfigurer(t,
 			[]*chain.Config{
-				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA),
+				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA, upgradeSettings.OldInitialAppStateBytes),
 			},
 			withUpgrade(baseSetup), // base set up with IBC and upgrade
 			containerManager,
@@ -137,8 +137,8 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings Upg
 		// configure two chains from current Git branch
 		return NewCurrentBranchConfigurer(t,
 			[]*chain.Config{
-				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA),
-				chain.New(t, containerManager, initialization.ChainBID, validatorConfigsChainB),
+				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA, nil),
+				chain.New(t, containerManager, initialization.ChainBID, validatorConfigsChainB, nil),
 			},
 			withIBC(baseSetup), // base set up with IBC
 			containerManager,
@@ -147,7 +147,7 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings Upg
 		// configure one chain from current Git branch
 		return NewCurrentBranchConfigurer(t,
 			[]*chain.Config{
-				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA),
+				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA, nil),
 			},
 			baseSetup, // base set up only
 			containerManager,

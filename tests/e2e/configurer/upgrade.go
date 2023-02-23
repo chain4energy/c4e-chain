@@ -3,10 +3,11 @@ package configurer
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/app/params"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/chain4energy/c4e-chain/app/params"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -17,9 +18,10 @@ import (
 )
 
 type UpgradeSettings struct {
-	IsEnabled  bool
-	Version    string
-	ForkHeight int64 // non-zero height implies that this is a fork upgrade.
+	IsEnabled               bool
+	Version                 string
+	ForkHeight              int64 // non-zero height implies that this is a fork upgrade.
+	OldInitialAppStateBytes []byte
 }
 
 type UpgradeConfigurer struct {
@@ -70,7 +72,7 @@ func (uc *UpgradeConfigurer) ConfigureChain(chainConfig *chain.Config) error {
 		forkHeight = forkHeight - config.ForkHeightPreUpgradeOffset
 	}
 
-	chainInitResource, err := uc.containerManager.RunChainInitResource(chainConfig.Id, int(chainConfig.VotingPeriod), int(chainConfig.ExpeditedVotingPeriod), validatorConfigBytes, tmpDir, int(forkHeight))
+	chainInitResource, err := uc.containerManager.RunChainInitResource(chainConfig.Id, int(chainConfig.VotingPeriod), int(chainConfig.ExpeditedVotingPeriod), validatorConfigBytes, tmpDir, int(forkHeight), chainConfig.AppStateBytes)
 	if err != nil {
 		return err
 	}
