@@ -1,4 +1,4 @@
-package init_main
+package main
 
 import (
 	"encoding/json"
@@ -19,11 +19,14 @@ func main() {
 		votingPeriod          time.Duration
 		expeditedVotingPeriod time.Duration
 		forkHeight            int
+        appState              string
+        valAppState           map[string]json.RawMessage
 	)
 
 	flag.StringVar(&dataDir, "data-dir", "", "chain data directory")
 	flag.StringVar(&chainId, "chain-id", "", "chain ID")
 	flag.StringVar(&config, "config", "", "serialized config")
+	flag.StringVar(&appState, "app-state", "", "serialized app state")
 	flag.DurationVar(&votingPeriod, "voting-period", 30000000000, "voting period")
 
 	flag.Parse()
@@ -41,7 +44,13 @@ func main() {
 		panic(err)
 	}
 
-	createdChain, err := initialization.InitChain(chainId, dataDir, valConfig, votingPeriod, expeditedVotingPeriod, forkHeight)
+	if len(appState) > 0 {
+		err = json.Unmarshal([]byte(appState), &valAppState)
+		if err != nil {
+			panic(err)
+		}
+	}
+	createdChain, err := initialization.InitChain(chainId, dataDir, valConfig, votingPeriod, expeditedVotingPeriod, forkHeight, valAppState)
 	if err != nil {
 		panic(err)
 	}

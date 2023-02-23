@@ -46,14 +46,14 @@ type internalNode struct {
 	isValidator  bool
 }
 
-func newNode(chain *internalChain, nodeConfig *NodeConfig) (*internalNode, error) {
+func newNode(chain *internalChain, nodeConfig *NodeConfig, appState map[string]json.RawMessage) (*internalNode, error) {
 	node := &internalNode{
 		chain:       chain,
 		moniker:     fmt.Sprintf("%s-node-%s", chain.chainMeta.Id, nodeConfig.Name),
 		isValidator: nodeConfig.IsValidator,
 	}
 	// generate genesis files
-	if err := node.init(); err != nil {
+	if err := node.init(appState); err != nil {
 		return nil, err
 	}
 	// create keys
@@ -248,7 +248,7 @@ func (n *internalNode) getGenesisDoc() (*tmtypes.GenesisDoc, error) {
 	return doc, nil
 }
 
-func (n *internalNode) init() error {
+func (n *internalNode) init(appState map[string]json.RawMessage) error {
 	if err := n.createConfig(); err != nil {
 		return err
 	}
@@ -264,14 +264,20 @@ func (n *internalNode) init() error {
 		return err
 	}
 
-	appState, err := json.MarshalIndent(c4eapp.ModuleBasics.DefaultGenesis(util.Cdc), "", " ")
+	genesisToMarshal := c4eapp.ModuleBasics.DefaultGenesis(util.Cdc)
+
+    if len(appState) > 0 {
+		genesisToMarshal = appState
+	}
+
+	appStateBytes, err := json.MarshalIndent(genesisToMarshal, "", " ")
 	if err != nil {
 		return fmt.Errorf("failed to JSON encode app genesis state: %w", err)
 	}
 
 	genDoc.ChainID = n.chain.chainMeta.Id
 	genDoc.Validators = nil
-	genDoc.AppState = appState
+	genDoc.AppState = appStateBytes
 
 	if err = genutil.ExportGenesisFile(genDoc, config.GenesisFile()); err != nil {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
