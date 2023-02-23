@@ -246,7 +246,7 @@
             "lock_start": "2022-09-22T14:00:00.00000000Z",
             "name": "Advisors pool",
             "sent": "500000000000",
-            "vesting_type": "Advisors pool",
+            "vesting_type": "Advisors",
             "withdrawn": "0"
           },
           {
@@ -255,7 +255,7 @@
             "lock_start": "2022-09-22T14:00:00.00000000Z",
             "name": "Validators pool",
             "sent": "95000000000",
-            "vesting_type": "Validators pool",
+            "vesting_type": "Validators",
             "withdrawn": "0"
           }
         ]
