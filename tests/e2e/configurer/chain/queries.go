@@ -176,6 +176,15 @@ func (n *NodeConfig) QueryVestingPools(address string) []*cfevestingmoduletypes.
 	return response.VestingPools
 }
 
+func (n *NodeConfig) QueryVestingPoolsNotFound(address string) {
+	path := "/c4e/vesting/v1beta1/vesting_pools/" + address
+
+	_, err := n.QueryGRPCGateway(path)
+	require.Error(n.t, err)
+	require.EqualError(n.t, err, "unexpected status code: 404, body: {\n  \"code\": 5,\n  \"message\": \"vesting pools not found\",\n  \"details\": [\n  ]\n}")
+
+}
+
 func (n *NodeConfig) QueryVestingTypes() []cfevestingmoduletypes.GenesisVestingType {
 	path := "/c4e/vesting/v1beta1/vesting_type"
 
@@ -208,4 +217,13 @@ func (n *NodeConfig) QueryAccount(address string) authtypes.AccountI {
 		return nil
 	}
 	return acc.GetCachedValue().(authtypes.AccountI)
+}
+
+func (n *NodeConfig) QueryAccountNotFound(address string) {
+	path := "/cosmos/auth/v1beta1/accounts/" + address
+
+	_, err := n.QueryGRPCGateway(path)
+	require.Error(n.t, err)
+	require.EqualError(n.t, err, "unexpected status code: 404, body: {\n  \"code\": 5,\n  \"message\": \"account "+address+" not found\",\n  \"details\": [\n  ]\n}")
+
 }

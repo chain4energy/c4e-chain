@@ -15,15 +15,15 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type MigrationSetupSuite struct {
+type MainnetMigrationSetupSuite struct {
 	BaseSetupSuite
 }
 
-func TestMigrationSuite(t *testing.T) {
-	suite.Run(t, new(MigrationSetupSuite))
+func TestMainnnetMigrationSuite(t *testing.T) {
+	suite.Run(t, new(MainnetMigrationSetupSuite))
 }
 
-func (s *MigrationSetupSuite) SetupSuite() {
+func (s *MainnetMigrationSetupSuite) SetupSuite() {
 	bytes, err := os.ReadFile("./resources/mainnet-vestings-migration-app-state.json")
 	if err != nil {
 		panic(err)
@@ -31,7 +31,7 @@ func (s *MigrationSetupSuite) SetupSuite() {
 	s.BaseSetupSuite.SetupSuiteWithUpgradeAppState(true, false, bytes)
 }
 
-func (s *MigrationSetupSuite) TestVestingsMigration() {
+func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
@@ -39,7 +39,7 @@ func (s *MigrationSetupSuite) TestVestingsMigration() {
 	vestingTypes := node.QueryVestingTypes()
 	s.Equal(7, len(vestingTypes))
 
-	s.ElementsMatch(createVestingTypes(), vestingTypes)
+	s.ElementsMatch(createMainnetVestingTypes(), vestingTypes)
 
 	vestingPools := node.QueryVestingPools(v120.ValidatorsVestingPoolOwner)
 	s.Equal(6, len(vestingPools))
@@ -96,7 +96,37 @@ func (s *MigrationSetupSuite) TestVestingsMigration() {
 
 }
 
-func createVestingTypes() []types.GenesisVestingType {
+type NonMainnetMigrationSetupSuite struct {
+	BaseSetupSuite
+}
+
+func TestNonMainnnetMigrationSuite(t *testing.T) {
+	suite.Run(t, new(NonMainnetMigrationSetupSuite))
+}
+
+func (s *NonMainnetMigrationSetupSuite) SetupSuite() {
+	s.BaseSetupSuite.SetupSuite(true, false)
+}
+
+func (s *NonMainnetMigrationSetupSuite) TestNonMainnetVestingsMigration() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
+
+	vestingTypes := node.QueryVestingTypes()
+	s.Equal(2, len(vestingTypes))
+
+	s.ElementsMatch(createNonMainnetVestingTypes(), vestingTypes)
+
+	node.QueryVestingPoolsNotFound(v120.ValidatorsVestingPoolOwner)
+
+	node.QueryAccountNotFound(v120.Account1)
+	node.QueryAccountNotFound(v120.Account2)
+	node.QueryAccountNotFound(v120.Account3)
+	node.QueryAccountNotFound(v120.Account4)
+}
+
+func createMainnetVestingTypes() []types.GenesisVestingType {
 	vt1 := types.GenesisVestingType{
 		Name:              "Advisors",
 		LockupPeriod:      365,
@@ -235,4 +265,26 @@ func createVestingPools() []*types.VestingPoolInfo {
 		CurrentlyLocked: coin6.Amount.String(),
 	}
 	return []*types.VestingPoolInfo{&advisorsPool, &newValidatorsRoundPool, &newVcRoundPool, &newEarlyBirdRoundPool, &newPublicRoundPool, &newStrategicRoundPool}
+}
+
+func createNonMainnetVestingTypes() []types.GenesisVestingType {
+	vt1 := types.GenesisVestingType{
+		Name:              "Advisors",
+		LockupPeriod:      365,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     730,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.000000000000000000"),
+	}
+
+	vt2 := types.GenesisVestingType{
+		Name:              "TestVestingPool",
+		LockupPeriod:      30,
+		LockupPeriodUnit:  "second",
+		VestingPeriod:     30,
+		VestingPeriodUnit: "second",
+		Free:              sdk.MustNewDecFromStr("0.000000000000000000"),
+	}
+
+	return []types.GenesisVestingType{vt1, vt2}
 }
