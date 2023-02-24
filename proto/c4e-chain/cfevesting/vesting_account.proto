@@ -3,7 +3,11 @@ package chain4energy.c4echain.cfevesting;
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
-message VestingAccount {
+message VestingAccountTrace {
   uint64 id = 1;
   string address = 2;
+  bool genesis = 3;
+  string source_vesting_pool_owner = 4;
+  string source_vesting_pool = 5;
+  string source_account = 6;
 }

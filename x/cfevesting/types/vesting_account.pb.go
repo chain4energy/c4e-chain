@@ -22,23 +22,27 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type VestingAccount struct {
-	Id      uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+type VestingAccountTrace struct {
+	Id                     uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Address                string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	Genesis                bool   `protobuf:"varint,3,opt,name=genesis,proto3" json:"genesis,omitempty"`
+	SourceVestingPoolOwner string `protobuf:"bytes,4,opt,name=source_vesting_pool_owner,json=sourceVestingPoolOwner,proto3" json:"source_vesting_pool_owner,omitempty"`
+	SourceVestingPool      string `protobuf:"bytes,5,opt,name=source_vesting_pool,json=sourceVestingPool,proto3" json:"source_vesting_pool,omitempty"`
+	SourceAccount          string `protobuf:"bytes,6,opt,name=source_account,json=sourceAccount,proto3" json:"source_account,omitempty"`
 }
 
-func (m *VestingAccount) Reset()         { *m = VestingAccount{} }
-func (m *VestingAccount) String() string { return proto.CompactTextString(m) }
-func (*VestingAccount) ProtoMessage()    {}
-func (*VestingAccount) Descriptor() ([]byte, []int) {
+func (m *VestingAccountTrace) Reset()         { *m = VestingAccountTrace{} }
+func (m *VestingAccountTrace) String() string { return proto.CompactTextString(m) }
+func (*VestingAccountTrace) ProtoMessage()    {}
+func (*VestingAccountTrace) Descriptor() ([]byte, []int) {
 	return fileDescriptor_2177771eed4a6edc, []int{0}
 }
-func (m *VestingAccount) XXX_Unmarshal(b []byte) error {
+func (m *VestingAccountTrace) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *VestingAccount) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *VestingAccountTrace) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_VestingAccount.Marshal(b, m, deterministic)
+		return xxx_messageInfo_VestingAccountTrace.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -48,34 +52,62 @@ func (m *VestingAccount) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *VestingAccount) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VestingAccount.Merge(m, src)
+func (m *VestingAccountTrace) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VestingAccountTrace.Merge(m, src)
 }
-func (m *VestingAccount) XXX_Size() int {
+func (m *VestingAccountTrace) XXX_Size() int {
 	return m.Size()
 }
-func (m *VestingAccount) XXX_DiscardUnknown() {
-	xxx_messageInfo_VestingAccount.DiscardUnknown(m)
+func (m *VestingAccountTrace) XXX_DiscardUnknown() {
+	xxx_messageInfo_VestingAccountTrace.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_VestingAccount proto.InternalMessageInfo
+var xxx_messageInfo_VestingAccountTrace proto.InternalMessageInfo
 
-func (m *VestingAccount) GetId() uint64 {
+func (m *VestingAccountTrace) GetId() uint64 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *VestingAccount) GetAddress() string {
+func (m *VestingAccountTrace) GetAddress() string {
 	if m != nil {
 		return m.Address
 	}
 	return ""
 }
 
+func (m *VestingAccountTrace) GetGenesis() bool {
+	if m != nil {
+		return m.Genesis
+	}
+	return false
+}
+
+func (m *VestingAccountTrace) GetSourceVestingPoolOwner() string {
+	if m != nil {
+		return m.SourceVestingPoolOwner
+	}
+	return ""
+}
+
+func (m *VestingAccountTrace) GetSourceVestingPool() string {
+	if m != nil {
+		return m.SourceVestingPool
+	}
+	return ""
+}
+
+func (m *VestingAccountTrace) GetSourceAccount() string {
+	if m != nil {
+		return m.SourceAccount
+	}
+	return ""
+}
+
 func init() {
-	proto.RegisterType((*VestingAccount)(nil), "chain4energy.c4echain.cfevesting.VestingAccount")
+	proto.RegisterType((*VestingAccountTrace)(nil), "chain4energy.c4echain.cfevesting.VestingAccountTrace")
 }
 
 func init() {
@@ -83,22 +115,28 @@ func init() {
 }
 
 var fileDescriptor_2177771eed4a6edc = []byte{
-	// 188 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0x4a, 0x36, 0x49, 0xd5,
-	0x4d, 0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x4f, 0x4e, 0x4b, 0x2d, 0x4b, 0x2d, 0x2e, 0xc9, 0xcc, 0x4b,
-	0xd7, 0x87, 0xd2, 0xf1, 0x89, 0xc9, 0xc9, 0xf9, 0xa5, 0x79, 0x25, 0x7a, 0x05, 0x45, 0xf9, 0x25,
-	0xf9, 0x42, 0x0a, 0x60, 0x75, 0x26, 0xa9, 0x79, 0xa9, 0x45, 0xe9, 0x95, 0x7a, 0xc9, 0x26, 0xa9,
-	0x60, 0xbe, 0x1e, 0x42, 0x9f, 0x92, 0x15, 0x17, 0x5f, 0x18, 0x84, 0xe9, 0x08, 0xd1, 0x29, 0xc4,
-	0xc7, 0xc5, 0x94, 0x99, 0x22, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x12, 0xc4, 0x94, 0x99, 0x22, 0x24,
-	0xc1, 0xc5, 0x9e, 0x98, 0x92, 0x52, 0x94, 0x5a, 0x5c, 0x2c, 0xc1, 0xa4, 0xc0, 0xa8, 0xc1, 0x19,
-	0x04, 0xe3, 0x3a, 0xf9, 0x9d, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72,
-	0x8c, 0x13, 0x1e, 0xcb, 0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x49,
-	0x7a, 0x66, 0x49, 0x46, 0x69, 0x92, 0x5e, 0x72, 0x7e, 0xae, 0x3e, 0xb2, 0x13, 0xf4, 0x11, 0x6e,
-	0xaf, 0x40, 0x76, 0x7d, 0x49, 0x65, 0x41, 0x6a, 0x71, 0x12, 0x1b, 0xd8, 0xd1, 0xc6, 0x80, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x33, 0x95, 0xce, 0xa8, 0xe2, 0x00, 0x00, 0x00,
+	// 282 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x90, 0xc1, 0x4a, 0xc3, 0x30,
+	0x18, 0xc7, 0x9b, 0x3a, 0xa7, 0x06, 0x1c, 0x98, 0x81, 0xc4, 0x4b, 0x28, 0x82, 0x50, 0x04, 0xdb,
+	0x83, 0xbd, 0x78, 0xd4, 0x07, 0x50, 0x29, 0xe2, 0xc1, 0x4b, 0xe9, 0xd2, 0xcf, 0x2e, 0x30, 0x93,
+	0x92, 0xb4, 0xea, 0xde, 0xc2, 0xc7, 0xf2, 0xb8, 0xa3, 0x47, 0x69, 0x8f, 0xbe, 0x84, 0x2c, 0x4d,
+	0xd9, 0x40, 0x4f, 0xed, 0x3f, 0xdf, 0xff, 0x17, 0xbe, 0xfc, 0xf0, 0x39, 0x4f, 0xe0, 0x82, 0xcf,
+	0x73, 0x21, 0x63, 0xfe, 0x0c, 0xaf, 0x60, 0x6a, 0x21, 0xcb, 0xd8, 0x7d, 0xb3, 0x9c, 0x73, 0xd5,
+	0xc8, 0x3a, 0xaa, 0xb4, 0xaa, 0x15, 0x09, 0x6c, 0x2f, 0x01, 0x09, 0xba, 0x5c, 0x46, 0x3c, 0x01,
+	0x9b, 0xa3, 0x0d, 0x77, 0xfa, 0x83, 0xf0, 0xf4, 0xb1, 0xff, 0xbf, 0xee, 0xd1, 0x07, 0x9d, 0x73,
+	0x20, 0x13, 0xec, 0x8b, 0x82, 0xa2, 0x00, 0x85, 0xa3, 0xd4, 0x17, 0x05, 0xa1, 0x78, 0x2f, 0x2f,
+	0x0a, 0x0d, 0xc6, 0x50, 0x3f, 0x40, 0xe1, 0x41, 0x3a, 0xc4, 0xf5, 0xa4, 0x04, 0x09, 0x46, 0x18,
+	0xba, 0x13, 0xa0, 0x70, 0x3f, 0x1d, 0x22, 0xb9, 0xc2, 0x27, 0x46, 0x35, 0x9a, 0x43, 0x36, 0x6c,
+	0x57, 0x29, 0xb5, 0xc8, 0xd4, 0x9b, 0x04, 0x4d, 0x47, 0xf6, 0x96, 0xe3, 0xbe, 0xe0, 0x36, 0xb8,
+	0x57, 0x6a, 0x71, 0xb7, 0x9e, 0x92, 0x08, 0x4f, 0xff, 0x41, 0xe9, 0xae, 0x85, 0x8e, 0xfe, 0x40,
+	0xe4, 0x0c, 0x4f, 0x5c, 0xdf, 0x09, 0xa0, 0x63, 0x5b, 0x3d, 0xec, 0x4f, 0xdd, 0xd3, 0x6e, 0x6e,
+	0x3f, 0x5b, 0x86, 0x56, 0x2d, 0x43, 0xdf, 0x2d, 0x43, 0x1f, 0x1d, 0xf3, 0x56, 0x1d, 0xf3, 0xbe,
+	0x3a, 0xe6, 0x3d, 0x25, 0xa5, 0xa8, 0xe7, 0xcd, 0x2c, 0xe2, 0xea, 0x25, 0xde, 0x96, 0x16, 0x6f,
+	0x6c, 0xbf, 0x6f, 0xfb, 0xae, 0x97, 0x15, 0x98, 0xd9, 0xd8, 0x6a, 0xbe, 0xfc, 0x0d, 0x00, 0x00,
+	0xff, 0xff, 0x58, 0x94, 0xcb, 0xbb, 0x94, 0x01, 0x00, 0x00,
 }
 
-func (m *VestingAccount) Marshal() (dAtA []byte, err error) {
+func (m *VestingAccountTrace) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -108,16 +146,47 @@ func (m *VestingAccount) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *VestingAccount) MarshalTo(dAtA []byte) (int, error) {
+func (m *VestingAccountTrace) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *VestingAccount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *VestingAccountTrace) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if len(m.SourceAccount) > 0 {
+		i -= len(m.SourceAccount)
+		copy(dAtA[i:], m.SourceAccount)
+		i = encodeVarintVestingAccount(dAtA, i, uint64(len(m.SourceAccount)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.SourceVestingPool) > 0 {
+		i -= len(m.SourceVestingPool)
+		copy(dAtA[i:], m.SourceVestingPool)
+		i = encodeVarintVestingAccount(dAtA, i, uint64(len(m.SourceVestingPool)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.SourceVestingPoolOwner) > 0 {
+		i -= len(m.SourceVestingPoolOwner)
+		copy(dAtA[i:], m.SourceVestingPoolOwner)
+		i = encodeVarintVestingAccount(dAtA, i, uint64(len(m.SourceVestingPoolOwner)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.Genesis {
+		i--
+		if m.Genesis {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x18
+	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
@@ -144,7 +213,7 @@ func encodeVarintVestingAccount(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *VestingAccount) Size() (n int) {
+func (m *VestingAccountTrace) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -157,6 +226,21 @@ func (m *VestingAccount) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovVestingAccount(uint64(l))
 	}
+	if m.Genesis {
+		n += 2
+	}
+	l = len(m.SourceVestingPoolOwner)
+	if l > 0 {
+		n += 1 + l + sovVestingAccount(uint64(l))
+	}
+	l = len(m.SourceVestingPool)
+	if l > 0 {
+		n += 1 + l + sovVestingAccount(uint64(l))
+	}
+	l = len(m.SourceAccount)
+	if l > 0 {
+		n += 1 + l + sovVestingAccount(uint64(l))
+	}
 	return n
 }
 
@@ -166,7 +250,7 @@ func sovVestingAccount(x uint64) (n int) {
 func sozVestingAccount(x uint64) (n int) {
 	return sovVestingAccount(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *VestingAccount) Unmarshal(dAtA []byte) error {
+func (m *VestingAccountTrace) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -189,10 +273,10 @@ func (m *VestingAccount) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: VestingAccount: wiretype end group for non-group")
+			return fmt.Errorf("proto: VestingAccountTrace: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: VestingAccount: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: VestingAccountTrace: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -245,6 +329,122 @@ func (m *VestingAccount) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Genesis", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Genesis = bool(v != 0)
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceVestingPoolOwner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SourceVestingPoolOwner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceVestingPool", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SourceVestingPool = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceAccount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SourceAccount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

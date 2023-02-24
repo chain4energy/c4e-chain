@@ -261,7 +261,100 @@
         ]
       }
     ],
-    "vesting_account_list": [],
+    "vesting_account_list": [
+      {
+        "address": "c4e1z5h0squtynr8rhwl0mzqdcd0wgmfyvpqmx3y2r",
+        "id": "0"
+      },
+      {
+        "address": "c4e1x6umuffxgcrgqqqdncwn2t8qdnc2muvultxmza",
+        "id": "1"
+      },
+      {
+        "address": "c4e1wrhuuwjjmkjx3lxs08ych9ddgdzvujgdr6hnwv",
+        "id": "2"
+      },
+      {
+        "address": "c4e12rxujjj4th90t8z30gnre5tv4zmguuqvtn2u02",
+        "id": "3"
+      },
+      {
+        "address": "c4e1zvkxuvk8t6wju76pxkp3f4kk447sjm2kdsgvwy",
+        "id": "4"
+      },
+      {
+        "address": "c4e13qamrx863pa72ku88d3ykypdh0ar6rjycnpkl2",
+        "id": "5"
+      },
+      {
+        "address": "c4e1f57wax48ttw068e6lgag9fse62d4m3e24u0sph",
+        "id": "6"
+      },
+      {
+        "address": "c4e1jxlv64qf8rvy8zayl7m2m8a0jzhxkfj9aw96f3",
+        "id": "7"
+      },
+      {
+        "address": "c4e1cpnh73765mx3q87lxacqwvwxn4s8ppry458xp4",
+        "id": "8"
+      },
+      {
+        "address": "c4e1argfhnzzxjft426tnj4crjsu8lqp0av3x8gjey",
+        "id": "9"
+      },
+      {
+        "address": "c4e1w8hdxd6g7vzupll9ynmenjkln9rs4kcq0mdesf",
+        "id": "10"
+      },
+      {
+        "address": "c4e12znccp5u8zx9qy4u9gmpxjge9reaxy80qfm295",
+        "id": "11"
+      },
+      {
+        "address": "c4e1t45l2pnk5uwj2qqjw4f6rcy6jw5f9lkplmp49e",
+        "id": "12"
+      },
+      {
+        "address": "c4e1nmfgexjj3yvvrnc2n7yyahgxsm0vqcm57dqx5f",
+        "id": "13"
+      },
+      {
+        "address": "c4e1ej2es5fjztqjcd4pwa0zyvaevtjd2y5wq2vaaq",
+        "id": "14"
+      },
+      {
+        "address": "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8",
+        "id": "15"
+      },
+      {
+        "address": "c4e10wjj2qmn4zjg2sdxq9mfyj5v4yukwyhzdtf2zp",
+        "id": "16"
+      },
+      {
+        "address": "c4e1zrd0783g8qa5659apw5tpuqmz2ct6j20t4ymx3",
+        "id": "17"
+      },
+      {
+        "address": "c4e1y8lndj6jz5z93g4xd05nmwyc3wtn39dfgfx7r7",
+        "id": "18"
+      },
+      {
+        "address": "c4e12845qa79cwlvf3jdcnfq2jy2jfmzslcg52lv3g",
+        "id": "19"
+      },
+      {
+        "address": "c4e19je7lmu4yzrpzh7gksj3uhku4as8at6lk36qe7",
+        "id": "20"
+      },
+      {
+        "address": "c4e1nm50zycnm9yf33rv8n6lpks24usxzahk5usl7e",
+        "id": "21"
+      },
+      {
+        "address": "c4e13e303u43k7mng4927axuhve0plgsyxc4xky63k",
+        "id": "22"
+      }
+    ],
     "vesting_account_count": "0"
   },
   "crisis": {

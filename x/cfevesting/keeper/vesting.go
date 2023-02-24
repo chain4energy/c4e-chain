@@ -243,7 +243,13 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 	}
 	if err == nil {
 		k.SetAccountVestingPools(ctx, accVestingPools)
-		k.AppendVestingAccount(ctx, types.VestingAccount{Address: toAddr})
+		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
+			Address:                toAddr,
+			Genesis:                false,
+			SourceVestingPoolOwner: owner,
+			SourceVestingPool:      vestingPoolName,
+			SourceAccount:          "",
+		})
 
 		eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
 			Owner:           owner,
@@ -315,7 +321,6 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 			"create vesting account - send coins to vesting account error (from: %s, to: %s, amount: %s)", fromAddress, toAddress, amount).Error())
 	}
 
-	k.AppendVestingAccount(ctx, types.VestingAccount{Address: acc.Address})
 	k.Logger(ctx).Debug("append vesting account", "address", acc.Address)
 	return nil
 }

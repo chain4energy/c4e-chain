@@ -61,7 +61,15 @@ func TestSplitVesting(t *testing.T) {
 			testHelper.SetContextBlockTime(tc.blockTime)
 			require.NoError(t, testHelper.AuthUtils.CreateVestingAccount(srcAccAddr.String(), tc.initialVestingAmount, tc.vAccStartTime, tc.vAccStartTime.Add(tc.vestingDuration)))
 			if tc.vestingPoolSourced {
-				testHelper.App.CfevestingKeeper.AppendVestingAccount(testHelper.Context, types.VestingAccount{Address: srcAccAddr.String()})
+				testHelper.App.CfevestingKeeper.AppendVestingAccountTrace(testHelper.Context,
+					types.VestingAccountTrace{
+						Address:                srcAccAddr.String(),
+						Genesis:                true,
+						SourceVestingPoolOwner: "test_owner",
+						SourceVestingPool:      "test pool",
+						SourceAccount:          "test acc",
+					},
+				)
 			}
 			msgServer := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper)
 
@@ -83,8 +91,18 @@ func TestSplitVesting(t *testing.T) {
 				newAccStartTime = tc.blockTime
 			}
 			testHelper.AuthUtils.VerifyVestingAccount(dstAccAddr, tc.amountToSend, newAccStartTime, tc.vAccStartTime.Add(duration))
-			require.Equal(t, tc.vestingPoolSourced, testHelper.App.CfevestingKeeper.IsOnVestingAccountList(testHelper.Context, dstAccAddr.String()))
-
+			trace, found := testHelper.App.CfevestingKeeper.GetVestingAccountTrace(testHelper.Context, dstAccAddr.String())
+			require.Equal(t, tc.vestingPoolSourced, found)
+			if tc.vestingPoolSourced {
+				require.EqualValues(t, types.VestingAccountTrace{
+					Id:                     1,
+					Address:                dstAccAddr.String(),
+					Genesis:                true,
+					SourceVestingPoolOwner: "test_owner",
+					SourceVestingPool:      "test pool",
+					SourceAccount:          srcAccAddr.String(),
+				}, trace)
+			}
 		})
 	}
 }

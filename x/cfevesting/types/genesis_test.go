@@ -76,7 +76,7 @@ func validVestingAccountsTest(acountsAddresses []sdk.AccAddress) TcData {
 		desc: "valid vesting accounts",
 		genState: &types.GenesisState{
 
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountList: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),
@@ -99,7 +99,7 @@ func emptyDenomTest(acountsAddresses []sdk.AccAddress) TcData {
 		desc: "empty denom",
 		genState: &types.GenesisState{
 
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountList: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),
@@ -121,7 +121,7 @@ func duplicatedVestingAccountTest(acountsAddresses []sdk.AccAddress) TcData {
 	return TcData{
 		desc: "duplicated vestingAccount",
 		genState: &types.GenesisState{
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountList: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),
@@ -142,7 +142,7 @@ func invalidVestingAccountCountTest(acountsAddresses []sdk.AccAddress) TcData {
 	return TcData{
 		desc: "invalid vestingAccount count",
 		genState: &types.GenesisState{
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountList: []types.VestingAccountTrace{
 				{
 					Id:      1,
 					Address: acountsAddresses[0].String(),
@@ -171,7 +171,7 @@ func validVestingAccountsWithVestingTypesTest(acountsAddresses []sdk.AccAddress)
 		desc: "Valid VestingAccounts",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountList: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),
@@ -207,7 +207,7 @@ func invalidVestingAccountsWrongIdTest(acountsAddresses []sdk.AccAddress) TcData
 		desc: "invalid VestingAccounts wrong id",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountList: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),

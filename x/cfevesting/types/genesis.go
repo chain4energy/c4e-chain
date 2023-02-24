@@ -3,6 +3,7 @@ package types
 import (
 	// this line is used by starport scaffolding # genesis/types/import
 	fmt "fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -12,7 +13,7 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		VestingAccountList: []VestingAccount{},
+		VestingAccountList: []VestingAccountTrace{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}

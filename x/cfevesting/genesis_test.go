@@ -1,12 +1,13 @@
 package cfevesting_test
 
 import (
-	"cosmossdk.io/math"
 	"fmt"
+	"testing"
+
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"testing"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -17,7 +18,7 @@ import (
 func TestGenesisWholeApp(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params:              types.NewParams("uc4e"),
-		VestingAccountList:  []types.VestingAccount{},
+		VestingAccountList:  []types.VestingAccountTrace{},
 		VestingAccountCount: 0,
 		// this line is used by starport scaffolding # genesis/test/state
 		VestingTypes: []types.GenesisVestingType{},
@@ -33,7 +34,7 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 	vestingTypesArray := testutils.GenerateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
 		Params: types.NewParams("uc4e"),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountList: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[0].String(),
@@ -57,7 +58,7 @@ func TestGenesisVestingTypes(t *testing.T) {
 	vestingTypesArray := testutils.GenerateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
 		Params:              types.NewParams("uc4e"),
-		VestingAccountList:  []types.VestingAccount{},
+		VestingAccountList:  []types.VestingAccountTrace{},
 		VestingAccountCount: 0,
 		VestingTypes:        vestingTypesArray,
 	}
@@ -118,7 +119,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	vestingTypesArray[0].Free = sdk.ZeroDec()
 	genesisState := types.GenesisState{
 		Params:              types.NewParams("uc4e"),
-		VestingAccountList:  []types.VestingAccount{},
+		VestingAccountList:  []types.VestingAccountTrace{},
 		VestingAccountCount: 0,
 		VestingTypes:        vestingTypesArray,
 	}

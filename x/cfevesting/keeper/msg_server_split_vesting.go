@@ -88,8 +88,16 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 	if err = k.bank.SendCoins(ctx, from, to, amount); err != nil {
 		return sdkerrors.Wrap(err, "split vesting coins")
 	}
-	if k.IsOnVestingAccountList(ctx, from.String()) {
-		k.AppendVestingAccount(ctx, types.VestingAccount{Address: toAddress})
+
+	vAcc, found := k.GetVestingAccountTrace(ctx, from.String())
+	if found {
+		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
+			Address:                toAddress,
+			Genesis:                vAcc.Genesis,
+			SourceVestingPoolOwner: vAcc.SourceVestingPoolOwner,
+			SourceVestingPool:      vAcc.SourceVestingPool,
+			SourceAccount:          vAcc.Address,
+		})
 	}
 	return nil
 }

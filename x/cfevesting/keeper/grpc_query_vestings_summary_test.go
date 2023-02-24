@@ -1,8 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
+
+	"github.com/chain4energy/c4e-chain/testutil/app"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -84,7 +85,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountList: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
@@ -157,7 +158,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountList: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
@@ -243,7 +244,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountList: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
@@ -336,7 +337,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountList: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),

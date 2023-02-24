@@ -22,7 +22,7 @@ func (k Keeper) VestingsSummary(goCtx context.Context, req *types.QueryVestingsS
 	modBalance := k.bank.GetBalance(ctx, mAcc.GetAddress(), denom)
 	vestingInPoolsAmount := modBalance.Amount
 
-	allAcc := k.GetAllVestingAccount(ctx)
+	allAcc := k.GetAllVestingAccountTrace(ctx)
 	allVestingInAccounts := sdk.ZeroInt()
 	allLockedNotDelegated := sdk.ZeroInt()
 	for _, accFromList := range allAcc {
