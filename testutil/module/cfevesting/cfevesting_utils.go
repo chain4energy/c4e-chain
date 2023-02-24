@@ -280,7 +280,7 @@ func (h *C4eVestingUtils) ExportGenesis(ctx sdk.Context, expected cfevestingtype
 	require.EqualValues(h.t, len(expected.AccountVestingPools), len((*got).AccountVestingPools))
 	AssertAccountVestingPoolsArrays(h.t, expected.AccountVestingPools, (*got).AccountVestingPools)
 	require.EqualValues(h.t, expected.VestingAccountCount, (*got).VestingAccountCount)
-	require.ElementsMatch(h.t, expected.VestingAccountList, (*got).VestingAccountList)
+	require.ElementsMatch(h.t, expected.VestingAccountTraces, (*got).VestingAccountTraces)
 
 	nullify.Fill(&expected)
 	nullify.Fill(got)

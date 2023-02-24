@@ -85,7 +85,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccountTrace{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
@@ -158,7 +158,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccountTrace{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
@@ -244,7 +244,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccountTrace{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
@@ -337,7 +337,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccountTrace{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),

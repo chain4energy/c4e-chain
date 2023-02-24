@@ -22,7 +22,7 @@ message GenesisState {
   repeated AccountVestingPools account_vesting_pools = 3 [
     (gogoproto.moretags) = "yaml:\"account_vesting_pools\""
   ];
-  repeated VestingAccountTrace vesting_account_list = 4 [
+  repeated VestingAccountTrace vesting_account_traces = 4 [
     (gogoproto.nullable) = false
   ];
   uint64 vesting_account_count = 5;
