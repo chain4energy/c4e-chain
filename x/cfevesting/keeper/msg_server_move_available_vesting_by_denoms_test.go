@@ -115,9 +115,9 @@ func TestMoveAvailableVestingByDenomsError(t *testing.T) {
 		createToAddressAccountBeforeSplit bool
 	}{
 		{desc: "wrong src addr", srcAddr: "invalid", dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), denomsToSend: []string{TestDenomPrefix + "1"}, blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms - error parsing from address: invalid: decoding bech32 failed: invalid bech32 string length 7"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms - error parsing from address: invalid: decoding bech32 failed: invalid bech32 string length 7: wrong param value"},
 		{desc: "wrong dst addr", srcAddr: srcAccAddr.String(), dstAddr: "invalid", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), denomsToSend: []string{TestDenomPrefix + "1"}, blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: split vesting coins - error parsing to address: invalid: decoding bech32 failed: invalid bech32 string length 7"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: split vesting coins - error parsing to address: invalid: decoding bech32 failed: invalid bech32 string length 7: wrong param value"},
 
 		{desc: "wrong amount - empty among many", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), denomsToSend: []string{TestDenomPrefix + "1", "", TestDenomPrefix + "1"}, blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms - empty denom: wrong param value"},

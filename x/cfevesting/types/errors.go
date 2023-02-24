@@ -17,5 +17,5 @@ var (
 	ErrInvalidAccountType              = sdkerrors.Register(ModuleName, 8, "invalid account type")
 	ErrParsing                         = sdkerrors.Register(ModuleName, 9, "failed to parse")
 	ErrParam                           = sdkerrors.Register(ModuleName, 10, "wrong param value")
-	ErrNotExists                       = sdkerrors.Register(ModuleName, 11, "entity not exists") // TODO move to c4e namespace
+	ErrNotExists                       = sdkerrors.Register(ModuleName, 11, "entity not exists")
 )

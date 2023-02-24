@@ -2,9 +2,10 @@ package keeper
 
 import (
 	"fmt"
-	"cosmossdk.io/math"
 	"strconv"
 	"time"
+
+	"cosmossdk.io/math"
 
 	metrics "github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -300,25 +301,10 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 		return sdkerrors.Wrapf(types.ErrAlreadyExists, "create vesting account - account address: %s", toAddress)
 	}
 
-	baseAccount := ak.NewAccountWithAddress(ctx, to)
-	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
-		k.Logger(ctx).Debug("create vesting account invalid account type; expected: BaseAccount", "notExpectedAccount", baseAccount)
-		return sdkerrors.Wrapf(types.ErrInvalidAccountType, "create vesting account - expected BaseAccount, got: %T", baseAccount)
-	}
-
-	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), amount.Sort(), endTime)
-
-	acc := vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime)
-
-	ak.SetAccount(ctx, acc)
-	k.Logger(ctx).Debug("create vesting account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
-		baseVestingAccount.OriginalVesting, "delegatedFree", baseVestingAccount.DelegatedFree, "delegatedVesting",
-		baseVestingAccount.DelegatedVesting, "endTime", baseVestingAccount.EndTime, "startTime", startTime)
-	err = ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
-		Address: acc.Address,
-	})
+	acc, err := k.newContinuousVestingAccount(ctx, to, amount.Sort(), startTime, endTime)
 	if err != nil {
-		k.Logger(ctx).Error("new vestig account emit event error", "error", err.Error())
+		k.Logger(ctx).Debug("create vesting account - to account creation error", "error", err.Error())
+		return sdkerrors.Wrap(err, fmt.Sprintf("new vesting account - to account creation error: %s", toAddress))
 	}
 
 	err = bk.SendCoins(ctx, from, to, amount)
@@ -382,17 +368,10 @@ func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount math
 		startTime = ctx.BlockTime()
 	}
 
-	acc, err := k.newContinuousVestingAccount(ctx, to, originalVesting, startTime.Unix(), vestingEnd.Unix())
+	_, err = k.newContinuousVestingAccount(ctx, to, originalVesting, startTime.Unix(), vestingEnd.Unix())
 	if err != nil {
 		k.Logger(ctx).Debug("new vesting account - to account creation error", "error", err.Error())
 		return sdkerrors.Wrap(err, fmt.Sprintf("new vesting account - to account creation error: %s", toAddress))
-	}
-
-	err = ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
-		Address: acc.GetAddress().String(),
-	})
-	if err != nil {
-		k.Logger(ctx).Error("new vesting account emit event error", "error", err.Error())
 	}
 
 	coinsToSend := sdk.NewCoins(coinToSend)
@@ -415,9 +394,15 @@ func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, 
 	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), originalVesting.Sort(), vestingEnd)
 
 	acc := vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime)
-
+	defer telemetry.IncrCounter(1, "new", "account")
 	k.account.SetAccount(ctx, acc)
 	k.Logger(ctx).Debug("new continuous vesting account", "baseAccount", baseVestingAccount.BaseAccount, "baseVestingAccount",
 		baseVestingAccount, "startTime", startTime)
+	err := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
+		Address: acc.Address,
+	})
+	if err != nil {
+		k.Logger(ctx).Error("new vestig account emit event error", "error", err.Error())
+	}
 	return acc, nil
 }

@@ -106,9 +106,9 @@ func TestSplitVestingError(t *testing.T) {
 		createToAddressAccountBeforeSplit bool
 	}{
 		{desc: "wrong src addr", srcAddr: "invalid", dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting - error parsing from address: invalid: decoding bech32 failed: invalid bech32 string length 7"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting - error parsing from address: invalid: decoding bech32 failed: invalid bech32 string length 7: wrong param value"},
 		{desc: "wrong dst addr", srcAddr: srcAccAddr.String(), dstAddr: "invalid", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting: split vesting coins - error parsing to address: invalid: decoding bech32 failed: invalid bech32 string length 7"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting: split vesting coins - error parsing to address: invalid: decoding bech32 failed: invalid bech32 string length 7: wrong param value"},
 		{desc: "wrong amount - single zero", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.ZeroInt()}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting: split vesting coins: amount to unlock validation error: coin 0denom1 amount is not positive"},
 		{desc: "wrong amount - single nil", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{{}}), blockTime: startTime.Add(-duration),
