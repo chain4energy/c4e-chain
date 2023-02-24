@@ -33,6 +33,7 @@ func TestSplitVesting(t *testing.T) {
 		blockTime            time.Time
 		vAccStartTime        time.Time
 		vestingDuration      time.Duration
+		vestingPoolSourced   bool
 	}{
 		{desc: "before vesting start - one denom", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration},
@@ -52,12 +53,16 @@ func TestSplitVesting(t *testing.T) {
 			vAccStartTime: startTime, vestingDuration: duration},
 		{desc: "after vesting start - many denoms", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999), sdk.NewInt(300000), sdk.NewInt(700000)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300), sdk.NewInt(25)}), blockTime: startTime.Add(duration / 2),
 			vAccStartTime: startTime, vestingDuration: duration},
+		{desc: "src acc from vesting pool", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
+			vAccStartTime: startTime, vestingDuration: duration, vestingPoolSourced: true},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 			testHelper.SetContextBlockTime(tc.blockTime)
 			require.NoError(t, testHelper.AuthUtils.CreateVestingAccount(srcAccAddr.String(), tc.initialVestingAmount, tc.vAccStartTime, tc.vAccStartTime.Add(tc.vestingDuration)))
-
+			if tc.vestingPoolSourced {
+				testHelper.App.CfevestingKeeper.AppendVestingAccount(testHelper.Context, types.VestingAccount{Address: srcAccAddr.String()})
+			}
 			msgServer := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper)
 
 			lockedBefore := testHelper.BankUtils.GetAccountLockedCoins(srcAccAddr)
@@ -78,6 +83,7 @@ func TestSplitVesting(t *testing.T) {
 				newAccStartTime = tc.blockTime
 			}
 			testHelper.AuthUtils.VerifyVestingAccount(dstAccAddr, tc.amountToSend, newAccStartTime, tc.vAccStartTime.Add(duration))
+			require.Equal(t, tc.vestingPoolSourced, testHelper.App.CfevestingKeeper.IsOnVestingAccountList(testHelper.Context, dstAccAddr.String()))
 
 		})
 	}

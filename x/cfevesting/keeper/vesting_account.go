@@ -104,3 +104,13 @@ func GetVestingAccountIDBytes(id uint64) []byte {
 func GetVestingAccountIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
+
+func (k Keeper) IsOnVestingAccountList(ctx sdk.Context, address string) bool {
+	list := k.GetAllVestingAccount(ctx)
+	for _, acc := range list {
+		if address == acc.Address {
+			return true
+		}
+	}
+	return false
+}

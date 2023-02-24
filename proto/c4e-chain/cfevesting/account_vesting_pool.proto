@@ -8,7 +8,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
 message AccountVestingPools {
   string owner = 1;
-  repeated VestingPool vesting_pools = 3; 
+  repeated VestingPool vesting_pools = 2; 
 }
 
 message VestingPool {

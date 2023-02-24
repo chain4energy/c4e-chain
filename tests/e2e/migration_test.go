@@ -19,7 +19,7 @@ type MainnetMigrationSetupSuite struct {
 	BaseSetupSuite
 }
 
-func TestMainnnetMigrationSuite(t *testing.T) {
+func TestMainnetMigrationSuite(t *testing.T) {
 	suite.Run(t, new(MainnetMigrationSetupSuite))
 }
 
@@ -100,7 +100,7 @@ type NonMainnetMigrationSetupSuite struct {
 	BaseSetupSuite
 }
 
-func TestNonMainnnetMigrationSuite(t *testing.T) {
+func TestNonMainnetMigrationSuite(t *testing.T) {
 	suite.Run(t, new(NonMainnetMigrationSetupSuite))
 }
 
