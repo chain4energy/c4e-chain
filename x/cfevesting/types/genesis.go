@@ -24,7 +24,7 @@ func DefaultGenesis() *GenesisState {
 func (gs GenesisState) Validate() error {
 	// Check for duplicated ID in vestingAccount
 	vestingAccountIdMap := make(map[uint64]bool)
-	vestingAccountCount := gs.GetVestingAccountCount()
+	vestingAccountCount := gs.GetVestingAccountTraceCount()
 	for _, elem := range gs.VestingAccountTraces {
 		if _, ok := vestingAccountIdMap[elem.Id]; ok {
 			return fmt.Errorf("duplicated id for vestingAccount")

@@ -92,11 +92,10 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 	vAcc, found := k.GetVestingAccountTrace(ctx, from.String())
 	if found {
 		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
-			Address:                toAddress,
-			Genesis:                vAcc.Genesis,
-			SourceVestingPoolOwner: vAcc.SourceVestingPoolOwner,
-			SourceVestingPool:      vAcc.SourceVestingPool,
-			SourceAccount:          vAcc.Address,
+			Address:            toAddress,
+			Genesis:            false,
+			FromGenesisPool:    vAcc.FromGenesisPool,
+			FromGenesisAccount: vAcc.Genesis || vAcc.FromGenesisAccount,
 		})
 	}
 	return nil

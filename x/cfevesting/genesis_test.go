@@ -17,9 +17,9 @@ import (
 
 func TestGenesisWholeApp(t *testing.T) {
 	genesisState := types.GenesisState{
-		Params:               types.NewParams("uc4e"),
-		VestingAccountTraces: []types.VestingAccountTrace{},
-		VestingAccountCount:  0,
+		Params:                   types.NewParams("uc4e"),
+		VestingAccountTraces:     []types.VestingAccountTrace{},
+		VestingAccountTraceCount: 0,
 		// this line is used by starport scaffolding # genesis/test/state
 		VestingTypes: []types.GenesisVestingType{},
 	}
@@ -44,8 +44,8 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 2,
-		VestingTypes:        vestingTypesArray,
+		VestingAccountTraceCount: 2,
+		VestingTypes:             vestingTypesArray,
 	}
 
 	testHelper := app.SetupTestApp(t)
@@ -57,10 +57,10 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 func TestGenesisVestingTypes(t *testing.T) {
 	vestingTypesArray := testutils.GenerateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
-		Params:               types.NewParams("uc4e"),
-		VestingAccountTraces: []types.VestingAccountTrace{},
-		VestingAccountCount:  0,
-		VestingTypes:         vestingTypesArray,
+		Params:                   types.NewParams("uc4e"),
+		VestingAccountTraces:     []types.VestingAccountTrace{},
+		VestingAccountTraceCount: 0,
+		VestingTypes:             vestingTypesArray,
 	}
 
 	testHelper := app.SetupTestApp(t)
@@ -118,10 +118,10 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	vestingTypesArray[0].VestingPeriodUnit = srcUnits
 	vestingTypesArray[0].Free = sdk.ZeroDec()
 	genesisState := types.GenesisState{
-		Params:               types.NewParams("uc4e"),
-		VestingAccountTraces: []types.VestingAccountTrace{},
-		VestingAccountCount:  0,
-		VestingTypes:         vestingTypesArray,
+		Params:                   types.NewParams("uc4e"),
+		VestingAccountTraces:     []types.VestingAccountTrace{},
+		VestingAccountTraceCount: 0,
+		VestingTypes:             vestingTypesArray,
 	}
 
 	testHelper := app.SetupTestApp(t)

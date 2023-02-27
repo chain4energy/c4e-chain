@@ -35,7 +35,16 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 		oldPools := oldAccPool.VestingPools
 		var newPools []*types.VestingPool
 		for _, oldPool := range oldPools {
-			newPool := types.VestingPool(*oldPool)
+			newPool := types.VestingPool{
+				Name:            oldPool.Name,
+				VestingType:     oldPool.VestingType,
+				LockStart:       oldPool.LockStart,
+				LockEnd:         oldPool.LockEnd,
+				InitiallyLocked: oldPool.InitiallyLocked,
+				Withdrawn:       oldPool.Withdrawn,
+				Sent:            oldPool.Sent,
+				GensisPool:      false,
+			}
 			newPools = append(newPools, &newPool)
 		}
 
@@ -104,12 +113,11 @@ func setNewVestingAccountAccountTraces(store sdk.KVStore, cdc codec.BinaryCodec,
 	prefixStore := prefix.NewStore(store, types.KeyPrefix(types.VestingAccountTraceKey))
 	for _, oldVestingAccounntTrace := range oldVestingAccounntTraces {
 		vestingAccountTrace := types.VestingAccountTrace{
-			Id:                     oldVestingAccounntTrace.Id,
-			Address:                oldVestingAccounntTrace.Address,
-			Genesis:                false,
-			SourceVestingPoolOwner: "",
-			SourceVestingPool:      "",
-			SourceAccount:          "",
+			Id:                 oldVestingAccounntTrace.Id,
+			Address:            oldVestingAccounntTrace.Address,
+			Genesis:            false,
+			FromGenesisPool:    false,
+			FromGenesisAccount: false,
 		}
 		b, err := cdc.Marshal(&vestingAccountTrace)
 		if err != nil {

@@ -168,7 +168,7 @@ test-e2e-migration: e2e-setup
 
 SPECIFIC_TEST_NAME=TestMainnetVestingsMigration
 test-e2e-run-specific-test: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=False go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
+	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 
 e2e-setup: e2e-cleanup
 	@echo Finished e2e environment setup, ready to start the test

@@ -34,4 +34,5 @@ message VestingPool {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false
   ];
+  bool gensis_pool = 8;
 }

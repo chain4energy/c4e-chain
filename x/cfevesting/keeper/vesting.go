@@ -244,11 +244,10 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 	if err == nil {
 		k.SetAccountVestingPools(ctx, accVestingPools)
 		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
-			Address:                toAddr,
-			Genesis:                false,
-			SourceVestingPoolOwner: owner,
-			SourceVestingPool:      vestingPoolName,
-			SourceAccount:          "",
+			Address:            toAddr,
+			Genesis:            false,
+			FromGenesisPool:    vestingPool.GensisPool,
+			FromGenesisAccount: false,
 		})
 
 		eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{

@@ -7,7 +7,6 @@ message VestingAccountTrace {
   uint64 id = 1;
   string address = 2;
   bool genesis = 3;
-  string source_vesting_pool_owner = 4;
-  string source_vesting_pool = 5;
-  string source_account = 6;
+  bool from_genesis_pool = 4;
+  bool from_genesis_account = 5;
 }

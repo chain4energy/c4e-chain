@@ -25,7 +25,7 @@ message GenesisState {
   repeated VestingAccountTrace vesting_account_traces = 4 [
     (gogoproto.nullable) = false
   ];
-  uint64 vesting_account_count = 5;
+  uint64 vesting_account_trace_count = 5;
   // this line is used by starport scaffolding # genesis/proto/state
 }
 

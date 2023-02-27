@@ -26,6 +26,15 @@ func TestSplitVesting(t *testing.T) {
 
 	startTime := testenv.TestEnvTime
 
+	type Source int
+
+	const (
+		Normal Source = iota
+		GenesisAccount
+		AccountFromGenesisPool
+		AccountFromGenesisAccount
+	)
+
 	for _, tc := range []struct {
 		desc                 string
 		initialVestingAmount sdk.Coins
@@ -33,7 +42,7 @@ func TestSplitVesting(t *testing.T) {
 		blockTime            time.Time
 		vAccStartTime        time.Time
 		vestingDuration      time.Duration
-		vestingPoolSourced   bool
+		Source               Source
 	}{
 		{desc: "before vesting start - one denom", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration},
@@ -54,23 +63,28 @@ func TestSplitVesting(t *testing.T) {
 		{desc: "after vesting start - many denoms", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999), sdk.NewInt(300000), sdk.NewInt(700000)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300), sdk.NewInt(25)}), blockTime: startTime.Add(duration / 2),
 			vAccStartTime: startTime, vestingDuration: duration},
 		{desc: "src acc from vesting pool", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, vestingPoolSourced: true},
+			vAccStartTime: startTime, vestingDuration: duration, Source: GenesisAccount},
+		{desc: "src acc from vesting pool", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
+			vAccStartTime: startTime, vestingDuration: duration, Source: AccountFromGenesisPool},
+		{desc: "src acc from vesting pool", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
+			vAccStartTime: startTime, vestingDuration: duration, Source: AccountFromGenesisAccount},
+		// TODO cases fo VestingAccountTrace
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 			testHelper.SetContextBlockTime(tc.blockTime)
 			require.NoError(t, testHelper.AuthUtils.CreateVestingAccount(srcAccAddr.String(), tc.initialVestingAmount, tc.vAccStartTime, tc.vAccStartTime.Add(tc.vestingDuration)))
-			if tc.vestingPoolSourced {
+			if tc.Source != Normal {
 				testHelper.App.CfevestingKeeper.AppendVestingAccountTrace(testHelper.Context,
 					types.VestingAccountTrace{
-						Address:                srcAccAddr.String(),
-						Genesis:                true,
-						SourceVestingPoolOwner: "test_owner",
-						SourceVestingPool:      "test pool",
-						SourceAccount:          "test acc",
+						Address:            srcAccAddr.String(),
+						Genesis:            tc.Source == GenesisAccount,
+						FromGenesisPool:    tc.Source == AccountFromGenesisPool,
+						FromGenesisAccount: tc.Source == AccountFromGenesisAccount,
 					},
 				)
 			}
+
 			msgServer := keeper.NewMsgServerImpl(testHelper.App.CfevestingKeeper)
 
 			lockedBefore := testHelper.BankUtils.GetAccountLockedCoins(srcAccAddr)
@@ -92,15 +106,14 @@ func TestSplitVesting(t *testing.T) {
 			}
 			testHelper.AuthUtils.VerifyVestingAccount(dstAccAddr, tc.amountToSend, newAccStartTime, tc.vAccStartTime.Add(duration))
 			trace, found := testHelper.App.CfevestingKeeper.GetVestingAccountTrace(testHelper.Context, dstAccAddr.String())
-			require.Equal(t, tc.vestingPoolSourced, found)
-			if tc.vestingPoolSourced {
+			require.Equal(t, tc.Source != Normal, found)
+			if tc.Source != Normal {
 				require.EqualValues(t, types.VestingAccountTrace{
-					Id:                     1,
-					Address:                dstAccAddr.String(),
-					Genesis:                true,
-					SourceVestingPoolOwner: "test_owner",
-					SourceVestingPool:      "test pool",
-					SourceAccount:          srcAccAddr.String(),
+					Id:                 1,
+					Address:            dstAccAddr.String(),
+					Genesis:            false,
+					FromGenesisPool:    tc.Source == AccountFromGenesisPool,
+					FromGenesisAccount: tc.Source == GenesisAccount || tc.Source == AccountFromGenesisAccount,
 				}, trace)
 			}
 		})

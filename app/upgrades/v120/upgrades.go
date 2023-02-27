@@ -19,6 +19,7 @@ func CreateUpgradeHandler(
 		if err != nil {
 			return vmResult, err
 		}
+		UpdateVestingAccountTraces(ctx, appKeepers)
 		if err := ModifyVestingPoolsState(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}

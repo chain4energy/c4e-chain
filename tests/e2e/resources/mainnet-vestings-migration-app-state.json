@@ -353,9 +353,13 @@
       {
         "address": "c4e13e303u43k7mng4927axuhve0plgsyxc4xky63k",
         "id": "22"
+      },
+      {
+        "address": "c4e1twh6302lzcvn7lr3x0fjwfkgryn9ac5c6v2zaj",
+        "id": "23"
       }
     ],
-    "vesting_account_count": "0"
+    "vesting_account_count": "24"
   },
   "crisis": {
     "constant_fee": {

@@ -96,6 +96,21 @@ func NewC4eVestingUtils(t require.TestingT, helperCfevestingKeeper *cfevestingmo
 func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
 	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int, accAmountBefore math.Int, moduleAmountBefore math.Int,
 	accAmountAfter math.Int, moduleAmountAfter math.Int) {
+	h.MessageCreateVestingPoolWithGenesisParam(ctx, address, accountVestingPoolsExistsBefore, accountVestingPoolsExistsAfter, vestingPoolName, lockupDuration, vestingType,
+		amountToVest, accAmountBefore, moduleAmountBefore, accAmountAfter, moduleAmountAfter, false)
+}
+
+func (h *C4eVestingUtils) MessageCreateGenesisVestingPool(ctx sdk.Context, address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
+	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int, accAmountBefore math.Int, moduleAmountBefore math.Int,
+	accAmountAfter math.Int, moduleAmountAfter math.Int) {
+	h.MessageCreateVestingPoolWithGenesisParam(ctx, address, accountVestingPoolsExistsBefore, accountVestingPoolsExistsAfter, vestingPoolName, lockupDuration, vestingType,
+		amountToVest, accAmountBefore, moduleAmountBefore, accAmountAfter, moduleAmountAfter, true)
+
+}
+
+func (h *C4eVestingUtils) MessageCreateVestingPoolWithGenesisParam(ctx sdk.Context, address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
+	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int, accAmountBefore math.Int, moduleAmountBefore math.Int,
+	accAmountAfter math.Int, moduleAmountAfter math.Int, isGenesisPool bool) {
 	_, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
 	require.EqualValues(h.t, accountVestingPoolsExistsBefore, accFound)
 
@@ -116,8 +131,24 @@ func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.
 		var vestingPool *cfevestingtypes.VestingPool = nil
 		for _, vest := range accVestingPools.VestingPools {
 			if vest.Name == vestingPoolName {
+				if isGenesisPool {
+					vest.GensisPool = true
+				}
 				vestingPool = vest
+
 			}
+		}
+		if isGenesisPool {
+			h.helperCfevestingKeeper.SetAccountVestingPools(ctx, accVestingPools)
+			accVestingPools, accFound = h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
+			require.EqualValues(h.t, accountVestingPoolsExistsAfter, accFound)
+			for _, vest := range accVestingPools.VestingPools {
+				if vest.Name == vestingPoolName {
+					vestingPool = vest
+				}
+			}
+			require.True(h.t, vestingPool.GensisPool)
+
 		}
 		require.NotNil(h.t, vestingPool)
 		h.VerifyVestingPool(ctx, vestingPool, vestingPoolName, vestingType.Name, ctx.BlockTime(), ctx.BlockTime().Add(lockupDuration),
@@ -125,6 +156,12 @@ func (h *C4eVestingUtils) MessageCreateVestingPool(ctx sdk.Context, address sdk.
 	}
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accAmountAfter)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountAfter)
+
+	if isGenesisPool && accountVestingPoolsExistsAfter {
+		accVestingPools, accFound = h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
+		require.EqualValues(h.t, accountVestingPoolsExistsAfter, accFound)
+
+	}
 }
 
 func (h *C4eVestingUtils) MessageCreateVestingPoolError(ctx sdk.Context, address sdk.AccAddress,
@@ -279,7 +316,7 @@ func (h *C4eVestingUtils) ExportGenesis(ctx sdk.Context, expected cfevestingtype
 	require.ElementsMatch(h.t, expected.VestingTypes, (*got).VestingTypes)
 	require.EqualValues(h.t, len(expected.AccountVestingPools), len((*got).AccountVestingPools))
 	AssertAccountVestingPoolsArrays(h.t, expected.AccountVestingPools, (*got).AccountVestingPools)
-	require.EqualValues(h.t, expected.VestingAccountCount, (*got).VestingAccountCount)
+	require.EqualValues(h.t, expected.VestingAccountTraceCount, (*got).VestingAccountTraceCount)
 	require.ElementsMatch(h.t, expected.VestingAccountTraces, (*got).VestingAccountTraces)
 
 	nullify.Fill(&expected)
@@ -343,12 +380,11 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	vaccFromList, found := h.helperCfevestingKeeper.GetVestingAccountTraceById(ctx, uint64(vestingAccountCount))
 	require.Equal(h.t, true, found)
 	expectedVestingAccountTrace := cfevestingtypes.VestingAccountTrace{
-		Id:                     uint64(vestingAccountCount),
-		Address:                vestingAccAddress.String(),
-		Genesis:                false,
-		SourceVestingPoolOwner: fromAddress.String(),
-		SourceVestingPool:      vestingPoolName,
-		SourceAccount:          "",
+		Id:                 uint64(vestingAccountCount),
+		Address:            vestingAccAddress.String(),
+		Genesis:            false,
+		FromGenesisPool:    foundVPool.GensisPool,
+		FromGenesisAccount: false,
 	}
 	require.EqualValues(h.t, expectedVestingAccountTrace, vaccFromList)
 
@@ -448,6 +484,13 @@ func (h *ContextC4eVestingUtils) MessageCreateVestingPool(address sdk.AccAddress
 	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int, accAmountBefore math.Int, moduleAmountBefore math.Int,
 	accAmountAfter math.Int, moduleAmountAfter math.Int) {
 	h.C4eVestingUtils.MessageCreateVestingPool(h.testContext.GetContext(), address, accountVestingPoolsExistsBefore, accountVestingPoolsExistsAfter, vestingPoolName, lockupDuration,
+		vestingType, amountToVest, accAmountBefore, moduleAmountBefore, accAmountAfter, moduleAmountAfter)
+}
+
+func (h *ContextC4eVestingUtils) MessageCreateGenesisVestingPool(address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
+	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int, accAmountBefore math.Int, moduleAmountBefore math.Int,
+	accAmountAfter math.Int, moduleAmountAfter math.Int) {
+	h.C4eVestingUtils.MessageCreateGenesisVestingPool(h.testContext.GetContext(), address, accountVestingPoolsExistsBefore, accountVestingPoolsExistsAfter, vestingPoolName, lockupDuration,
 		vestingType, amountToVest, accAmountBefore, moduleAmountBefore, accAmountAfter, moduleAmountAfter)
 }
 

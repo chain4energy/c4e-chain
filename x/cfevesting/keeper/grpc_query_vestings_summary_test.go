@@ -91,9 +91,9 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 1,
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingPools: accountVestingPoolsArray,
+		VestingAccountTraceCount: 1,
+		VestingTypes:             []types.GenesisVestingType{},
+		AccountVestingPools:      accountVestingPoolsArray,
 	}
 
 	testHelper := app.SetupTestApp(t)
@@ -164,9 +164,9 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 1,
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingPools: accountVestingPoolsArray,
+		VestingAccountTraceCount: 1,
+		VestingTypes:             []types.GenesisVestingType{},
+		AccountVestingPools:      accountVestingPoolsArray,
 	}
 
 	testHelper := app.SetupTestApp(t)
@@ -250,9 +250,9 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 1,
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingPools: accountVestingPoolsArray,
+		VestingAccountTraceCount: 1,
+		VestingTypes:             []types.GenesisVestingType{},
+		AccountVestingPools:      accountVestingPoolsArray,
 	}
 
 	testHelper := app.SetupTestApp(t)
@@ -343,9 +343,9 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 1,
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingPools: accountVestingPoolsArray,
+		VestingAccountTraceCount: 1,
+		VestingTypes:             []types.GenesisVestingType{},
+		AccountVestingPools:      accountVestingPoolsArray,
 	}
 
 	testHelper := app.SetupTestApp(t)

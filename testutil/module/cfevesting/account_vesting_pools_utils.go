@@ -2,13 +2,14 @@ package cfevesting
 
 import (
 	// "math"
-	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	"github.com/stretchr/testify/require"
 	"math/rand"
 	"reflect"
 	"strconv"
 	"time"
+
+	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/stretchr/testify/require"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -43,6 +44,8 @@ func AssertAccountVestingPools(t require.TestingT, expected types.AccountVesting
 		require.EqualValues(t, expectedVesting.Withdrawn, actualVesting.Withdrawn)
 		j++
 		require.EqualValues(t, expectedVesting.Sent, actualVesting.Sent)
+		j++
+		require.EqualValues(t, expectedVesting.GensisPool, actualVesting.GensisPool)
 		j++
 		require.EqualValues(t, numOfFields, j)
 
@@ -125,6 +128,7 @@ func generateRandomVestingPool(accuntId int, vestingId int) types.VestingPool {
 		InitiallyLocked: sdk.NewInt(int64(initiallyLocked)),
 		Withdrawn:       sdk.NewInt(int64(withdrawn)),
 		Sent:            sdk.NewInt(int64(sent)),
+		GensisPool:      rgen.Int()%2 == 0,
 	}
 }
 
@@ -137,6 +141,7 @@ func generate10BasedVestingPool(accuntId int, vestingId int) types.VestingPool {
 		InitiallyLocked: sdk.NewInt(1000000),
 		Withdrawn:       sdk.ZeroInt(),
 		Sent:            sdk.ZeroInt(),
+		GensisPool:      true,
 	}
 }
 

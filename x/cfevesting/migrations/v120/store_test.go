@@ -110,8 +110,18 @@ func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 		require.EqualValues(t, len(oldAccPools[i].VestingPools), len(newAccPools[i].VestingPools))
 		for j := 0; j < len(oldAccPools[i].VestingPools); j++ {
 			oldVestingPool := oldAccPools[i].VestingPools[j]
+			expectedVestingPool := types.VestingPool{
+				Name:            oldVestingPool.Name,
+				VestingType:     oldVestingPool.VestingType,
+				LockStart:       oldVestingPool.LockStart,
+				LockEnd:         oldVestingPool.LockEnd,
+				InitiallyLocked: oldVestingPool.InitiallyLocked,
+				Withdrawn:       oldVestingPool.Withdrawn,
+				Sent:            oldVestingPool.Sent,
+				GensisPool:      false,
+			}
 			newVestingPool := newAccPools[i].VestingPools[j]
-			require.EqualValues(t, oldVestingPool, newVestingPool)
+			require.EqualValues(t, &expectedVestingPool, newVestingPool)
 		}
 	}
 
@@ -119,12 +129,11 @@ func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 	for _, oldVestingAccountTrace := range oldVestingAccountTraces {
 		expected = append(expected,
 			types.VestingAccountTrace{
-				Id:                     oldVestingAccountTrace.Id,
-				Address:                oldVestingAccountTrace.Address,
-				Genesis:                false,
-				SourceVestingPoolOwner: "",
-				SourceVestingPool:      "",
-				SourceAccount:          "",
+				Id:                 oldVestingAccountTrace.Id,
+				Address:            oldVestingAccountTrace.Address,
+				Genesis:            false,
+				FromGenesisPool:    false,
+				FromGenesisAccount: false,
 			},
 		)
 	}
