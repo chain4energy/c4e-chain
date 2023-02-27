@@ -58,6 +58,10 @@ export interface QueryGenesisVestingsSummaryRequest {
 }
 
 export interface QueryGenesisVestingsSummaryResponse {
+  vestingAllAmount: string;
+  vestingInPoolsAmount: string;
+  vestingInAccountsAmount: string;
+  delegatedVestingAmount: string;
 }
 
 function createBaseQueryParamsRequest(): QueryParamsRequest {
@@ -625,11 +629,23 @@ export const QueryGenesisVestingsSummaryRequest = {
 };
 
 function createBaseQueryGenesisVestingsSummaryResponse(): QueryGenesisVestingsSummaryResponse {
-  return {};
+  return { vestingAllAmount: "", vestingInPoolsAmount: "", vestingInAccountsAmount: "", delegatedVestingAmount: "" };
 }
 
 export const QueryGenesisVestingsSummaryResponse = {
-  encode(_: QueryGenesisVestingsSummaryResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: QueryGenesisVestingsSummaryResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.vestingAllAmount !== "") {
+      writer.uint32(10).string(message.vestingAllAmount);
+    }
+    if (message.vestingInPoolsAmount !== "") {
+      writer.uint32(18).string(message.vestingInPoolsAmount);
+    }
+    if (message.vestingInAccountsAmount !== "") {
+      writer.uint32(26).string(message.vestingInAccountsAmount);
+    }
+    if (message.delegatedVestingAmount !== "") {
+      writer.uint32(34).string(message.delegatedVestingAmount);
+    }
     return writer;
   },
 
@@ -640,6 +656,18 @@ export const QueryGenesisVestingsSummaryResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.vestingAllAmount = reader.string();
+          break;
+        case 2:
+          message.vestingInPoolsAmount = reader.string();
+          break;
+        case 3:
+          message.vestingInAccountsAmount = reader.string();
+          break;
+        case 4:
+          message.delegatedVestingAmount = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -648,19 +676,32 @@ export const QueryGenesisVestingsSummaryResponse = {
     return message;
   },
 
-  fromJSON(_: any): QueryGenesisVestingsSummaryResponse {
-    return {};
+  fromJSON(object: any): QueryGenesisVestingsSummaryResponse {
+    return {
+      vestingAllAmount: isSet(object.vestingAllAmount) ? String(object.vestingAllAmount) : "",
+      vestingInPoolsAmount: isSet(object.vestingInPoolsAmount) ? String(object.vestingInPoolsAmount) : "",
+      vestingInAccountsAmount: isSet(object.vestingInAccountsAmount) ? String(object.vestingInAccountsAmount) : "",
+      delegatedVestingAmount: isSet(object.delegatedVestingAmount) ? String(object.delegatedVestingAmount) : "",
+    };
   },
 
-  toJSON(_: QueryGenesisVestingsSummaryResponse): unknown {
+  toJSON(message: QueryGenesisVestingsSummaryResponse): unknown {
     const obj: any = {};
+    message.vestingAllAmount !== undefined && (obj.vestingAllAmount = message.vestingAllAmount);
+    message.vestingInPoolsAmount !== undefined && (obj.vestingInPoolsAmount = message.vestingInPoolsAmount);
+    message.vestingInAccountsAmount !== undefined && (obj.vestingInAccountsAmount = message.vestingInAccountsAmount);
+    message.delegatedVestingAmount !== undefined && (obj.delegatedVestingAmount = message.delegatedVestingAmount);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryGenesisVestingsSummaryResponse>, I>>(
-    _: I,
+    object: I,
   ): QueryGenesisVestingsSummaryResponse {
     const message = createBaseQueryGenesisVestingsSummaryResponse();
+    message.vestingAllAmount = object.vestingAllAmount ?? "";
+    message.vestingInPoolsAmount = object.vestingInPoolsAmount ?? "";
+    message.vestingInAccountsAmount = object.vestingInAccountsAmount ?? "";
+    message.delegatedVestingAmount = object.delegatedVestingAmount ?? "";
     return message;
   },
 };

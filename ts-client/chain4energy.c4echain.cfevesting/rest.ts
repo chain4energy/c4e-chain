@@ -60,7 +60,12 @@ export interface CfevestingParams {
   denom?: string;
 }
 
-export type CfevestingQueryGenesisVestingsSummaryResponse = object;
+export interface CfevestingQueryGenesisVestingsSummaryResponse {
+  vesting_all_amount?: string;
+  vesting_in_pools_amount?: string;
+  vesting_in_accounts_amount?: string;
+  delegated_vesting_amount?: string;
+}
 
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
@@ -258,6 +263,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
+   * @name QueryGenesisVestingsSummary
+   * @summary Queries a list of GenesisVestingsSummary items.
+   * @request GET:/c4e/vesting/v1beta1/genesis_summary
+   */
+  queryGenesisVestingsSummary = (params: RequestParams = {}) =>
+    this.request<CfevestingQueryGenesisVestingsSummaryResponse, RpcStatus>({
+      path: `/c4e/vesting/v1beta1/genesis_summary`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
    * @request GET:/c4e/vesting/v1beta1/params
@@ -313,22 +334,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryVestingType = (params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingTypeResponse, RpcStatus>({
       path: `/c4e/vesting/v1beta1/vesting_type`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryGenesisVestingsSummary
-   * @summary Queries a list of GenesisVestingsSummary items.
-   * @request GET:/chain4energy/c4e-chain/cfevesting/genesis_vestings_summary
-   */
-  queryGenesisVestingsSummary = (params: RequestParams = {}) =>
-    this.request<CfevestingQueryGenesisVestingsSummaryResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfevesting/genesis_vestings_summary`,
       method: "GET",
       format: "json",
       ...params,

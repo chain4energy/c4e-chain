@@ -17,7 +17,7 @@ export interface VestingPool {
   initiallyLocked: string;
   withdrawn: string;
   sent: string;
-  gensisPool: boolean;
+  genesisPool: boolean;
 }
 
 function createBaseAccountVestingPools(): AccountVestingPools {
@@ -93,7 +93,7 @@ function createBaseVestingPool(): VestingPool {
     initiallyLocked: "",
     withdrawn: "",
     sent: "",
-    gensisPool: false,
+    genesisPool: false,
   };
 }
 
@@ -120,8 +120,8 @@ export const VestingPool = {
     if (message.sent !== "") {
       writer.uint32(58).string(message.sent);
     }
-    if (message.gensisPool === true) {
-      writer.uint32(64).bool(message.gensisPool);
+    if (message.genesisPool === true) {
+      writer.uint32(64).bool(message.genesisPool);
     }
     return writer;
   },
@@ -155,7 +155,7 @@ export const VestingPool = {
           message.sent = reader.string();
           break;
         case 8:
-          message.gensisPool = reader.bool();
+          message.genesisPool = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -174,7 +174,7 @@ export const VestingPool = {
       initiallyLocked: isSet(object.initiallyLocked) ? String(object.initiallyLocked) : "",
       withdrawn: isSet(object.withdrawn) ? String(object.withdrawn) : "",
       sent: isSet(object.sent) ? String(object.sent) : "",
-      gensisPool: isSet(object.gensisPool) ? Boolean(object.gensisPool) : false,
+      genesisPool: isSet(object.genesisPool) ? Boolean(object.genesisPool) : false,
     };
   },
 
@@ -187,7 +187,7 @@ export const VestingPool = {
     message.initiallyLocked !== undefined && (obj.initiallyLocked = message.initiallyLocked);
     message.withdrawn !== undefined && (obj.withdrawn = message.withdrawn);
     message.sent !== undefined && (obj.sent = message.sent);
-    message.gensisPool !== undefined && (obj.gensisPool = message.gensisPool);
+    message.genesisPool !== undefined && (obj.genesisPool = message.genesisPool);
     return obj;
   },
 
@@ -200,7 +200,7 @@ export const VestingPool = {
     message.initiallyLocked = object.initiallyLocked ?? "";
     message.withdrawn = object.withdrawn ?? "";
     message.sent = object.sent ?? "";
-    message.gensisPool = object.gensisPool ?? false;
+    message.genesisPool = object.genesisPool ?? false;
     return message;
   },
 };
