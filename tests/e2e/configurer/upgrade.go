@@ -17,29 +17,26 @@ import (
 )
 
 type UpgradeSettings struct {
-	IsEnabled  bool
-	Version    string
-	ForkHeight int64 // non-zero height implies that this is a fork upgrade.
+	IsEnabled bool
+	Version   string
 }
 
 type UpgradeConfigurer struct {
 	baseConfigurer
 	upgradeVersion string
-	forkHeight     int64 // forkHeight > 0 implies that this is a fork upgrade. Otherwise, proposal upgrade.
 }
 
 var _ Configurer = (*UpgradeConfigurer)(nil)
 
-func NewUpgradeConfigurer(t *testing.T, chainConfigs []*chain.Config, setupTests setupFn, containerManager *containers.Manager, upgradeVersion string, forkHeight int64) Configurer {
+func NewUpgradeConfigurer(t *testing.T, chainConfigs []*chain.Config, setupTests setupFn, containerManager *containers.Manager, upgradeVersion string) Configurer {
 	return &UpgradeConfigurer{
 		baseConfigurer: baseConfigurer{
 			chainConfigs:     chainConfigs,
 			containerManager: containerManager,
 			setupTests:       setupTests,
-			syncUntilHeight:  forkHeight + defaultSyncUntilHeight,
+			syncUntilHeight:  defaultSyncUntilHeight,
 			t:                t,
 		},
-		forkHeight:     forkHeight,
 		upgradeVersion: upgradeVersion,
 	}
 }
@@ -65,12 +62,7 @@ func (uc *UpgradeConfigurer) ConfigureChain(chainConfig *chain.Config) error {
 		return err
 	}
 
-	forkHeight := uc.forkHeight
-	if forkHeight > 0 {
-		forkHeight = forkHeight - config.ForkHeightPreUpgradeOffset
-	}
-
-	chainInitResource, err := uc.containerManager.RunChainInitResource(chainConfig.Id, int(chainConfig.VotingPeriod), int(chainConfig.ExpeditedVotingPeriod), validatorConfigBytes, tmpDir, int(forkHeight))
+	chainInitResource, err := uc.containerManager.RunChainInitResource(chainConfig.Id, int(chainConfig.VotingPeriod), int(chainConfig.ExpeditedVotingPeriod), validatorConfigBytes, tmpDir)
 	if err != nil {
 		return err
 	}
@@ -110,9 +102,6 @@ func (uc *UpgradeConfigurer) RunSetup() error {
 }
 
 func (uc *UpgradeConfigurer) RunUpgrade() error {
-	if uc.forkHeight > 0 {
-		return uc.runForkUpgrade()
-	}
 	return uc.runProposalUpgrade()
 }
 
@@ -155,15 +144,6 @@ func (uc *UpgradeConfigurer) runProposalUpgrade() error {
 		if err := uc.upgradeContainers(chainConfig, chainConfig.UpgradePropHeight); err != nil {
 			return err
 		}
-	}
-	return nil
-}
-
-func (uc *UpgradeConfigurer) runForkUpgrade() error {
-	for _, chainConfig := range uc.chainConfigs {
-		uc.t.Logf("waiting to reach fork height on chain %s", chainConfig.Id)
-		chainConfig.WaitUntilHeight(uc.forkHeight)
-		uc.t.Logf("fork height reached on chain %s", chainConfig.Id)
 	}
 	return nil
 }

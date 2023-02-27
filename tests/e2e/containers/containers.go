@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
-	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -36,9 +35,9 @@ type Manager struct {
 
 // NewManager creates a new Manager instance and initializes
 // all Docker specific utilies. Returns an error if initialiation fails.
-func NewManager(isUpgrade bool, isFork bool, isDebugLogEnabled bool) (docker *Manager, err error) {
+func NewManager(isUpgrade bool, isDebugLogEnabled bool) (docker *Manager, err error) {
 	docker = &Manager{
-		ImageConfig:       NewImageConfig(isUpgrade, isFork),
+		ImageConfig:       NewImageConfig(isUpgrade),
 		resources:         make(map[string]*dockertest.Resource),
 		isDebugLogEnabled: isDebugLogEnabled,
 	}
@@ -195,12 +194,7 @@ func (m *Manager) RunHermesResource(chainAID, c4eARelayerNodeName, c4eAValMnemon
 
 // RunNodeResource runs a node container. Assings containerName to the container.
 // Mounts the container on valConfigDir volume on the running host. Returns the container resource and error if any.
-func (m *Manager) RunNodeResource(chainId string, containerName, valCondifDir string) (*dockertest.Resource, error) {
-	pwd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
+func (m *Manager) RunNodeResource(containerName, valCondifDir string) (*dockertest.Resource, error) {
 	runOpts := &dockertest.RunOptions{
 		Name:       containerName,
 		Repository: m.C4eRepository,
@@ -210,7 +204,6 @@ func (m *Manager) RunNodeResource(chainId string, containerName, valCondifDir st
 		Cmd:        []string{"start"},
 		Mounts: []string{
 			fmt.Sprintf("%s/:/chain4energy/.c4e-chain", valCondifDir),
-			fmt.Sprintf("%s/scripts:/chain4energy", pwd),
 		},
 		ExposedPorts: []string{
 			"1317",
@@ -232,7 +225,7 @@ func (m *Manager) RunNodeResource(chainId string, containerName, valCondifDir st
 // The genesis and configs are to be mounted on the init container as volume on mountDir path.
 // Returns the container resource and error if any. This method does not Purge the container. The caller
 // must deal with removing the resource.
-func (m *Manager) RunChainInitResource(chainId string, chainVotingPeriod, chainExpeditedVotingPeriod int, validatorConfigBytes []byte, mountDir string, forkHeight int) (*dockertest.Resource, error) {
+func (m *Manager) RunChainInitResource(chainId string, chainVotingPeriod, chainExpeditedVotingPeriod int, validatorConfigBytes []byte, mountDir string) (*dockertest.Resource, error) {
 	votingPeriodDuration := time.Duration(chainVotingPeriod * 1000000000)
 
 	initResource, err := m.pool.RunWithOptions(

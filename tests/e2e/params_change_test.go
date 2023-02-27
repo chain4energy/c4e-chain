@@ -144,6 +144,7 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenom() {
 	chainA.LatestProposalNumber += 1
 
 	for _, n := range chainA.NodeConfigs {
+
 		n.VoteYesProposal(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
 	}
 

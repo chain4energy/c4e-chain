@@ -42,9 +42,7 @@ func (n *NodeConfig) ValidateParams(oldParams []byte, subspace, key string) bool
 
 func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	n.LogActionF("submitting param change proposal %s", proposalJson)
-	wd, err := os.Getwd()
-	require.NoError(n.t, err)
-	localProposalFile := wd + "/scripts/param_change_proposal.json"
+	localProposalFile := n.ConfigDir + "/param_change_proposal.json"
 	f, err := os.Create(localProposalFile)
 	require.NoError(n.t, err)
 	_, err = f.WriteString(proposalJson)
@@ -52,7 +50,7 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", ".c4e-chain/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
 	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
@@ -63,10 +61,8 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 }
 
 func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, errorMessage string) {
-	n.LogActionF("submitting param change proposal %s", proposalJson)
-	wd, err := os.Getwd()
-	require.NoError(n.t, err)
-	localProposalFile := wd + "/scripts/param_change_proposal.json"
+	n.LogActionF("submitting not valid param change proposal %s", proposalJson)
+	localProposalFile := n.ConfigDir + "/param_change_proposal.json"
 	f, err := os.Create(localProposalFile)
 	require.NoError(n.t, err)
 	_, err = f.WriteString(proposalJson)
@@ -74,34 +70,12 @@ func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, error
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", ".c4e-chain/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
 	_, _, err = n.containerManager.ExecTxCmdWithSuccessString(n.t, n.chainId, n.Name, cmd, errorMessage)
 	require.NoError(n.t, err)
 	err = os.Remove(localProposalFile)
 	require.NoError(n.t, err)
-}
-
-func (n *NodeConfig) SubmitParamChangeProposalRequireError(proposalJson, from string) {
-	n.LogActionF("submitting param change proposal %s", proposalJson)
-	wd, err := os.Getwd()
-	require.NoError(n.t, err)
-	localProposalFile := wd + "/scripts/param_change_proposal.json"
-	f, err := os.Create(localProposalFile)
-	require.NoError(n.t, err)
-	_, err = f.WriteString(proposalJson)
-	require.NoError(n.t, err)
-	err = f.Close()
-	require.NoError(n.t, err)
-
-	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", "/chain4energy/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
-
-	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
-	require.NoError(n.t, err)
-	err = os.Remove(localProposalFile)
-	require.NoError(n.t, err)
-
-	n.LogActionF("successfully submitted param change proposal")
 }
 
 func (n *NodeConfig) FailIBCTransfer(from, recipient, amount string) {
@@ -209,25 +183,6 @@ func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus stri
 	elapsed := time.Since(start)
 	totalTime <- elapsed
 }
-
-//func (n *NodeConfig) CerateVestingAccount(toAddress, from string, startTime time.Time, endTime time.Time, amount int) uint64 {
-//	n.LogActionF("creating vesting account")
-//	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-account", toAddress, ), fmt.Sprintf("--from=%s", from)}
-//	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
-//	require.NoError(n.t, err)
-//
-//	path := "osmosis/gamm/v1beta1/num_pools"
-//
-//	bz, err := n.QueryGRPCGateway(path)
-//	require.NoError(n.t, err)
-//
-//	var numPools gammtypes.QueryNumPoolsResponse
-//	err = util.Cdc.UnmarshalJSON(bz, &numPools)
-//	require.NoError(n.t, err)
-//	poolID := numPools.NumPools
-//	n.LogActionF("successfully created pool %d", poolID)
-//	return poolID
-//}
 
 func (n *NodeConfig) CreateVestingPool(vestingPoolName, amount, duration, vestinType, from string) {
 	n.LogActionF("creating vesting pool")
