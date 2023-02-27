@@ -4,7 +4,7 @@ package chain4energy.c4echain.cfesignature;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "c4e-chain/cfesignature/params.proto";
+import "c4echain/cfesignature/params.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfesignature/types";

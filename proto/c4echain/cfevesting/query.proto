@@ -5,8 +5,8 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
-import "c4e-chain/cfevesting/genesis.proto";
-import "c4e-chain/cfevesting/params.proto";
+import "c4echain/cfevesting/genesis.proto";
+import "c4echain/cfevesting/params.proto";
 
 // this line is used by starport scaffolding # 1
 
