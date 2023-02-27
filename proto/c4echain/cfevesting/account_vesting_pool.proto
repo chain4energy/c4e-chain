@@ -4,7 +4,7 @@ package chain4energy.c4echain.cfevesting;
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
+option go_package = "github.com/chain4energy/c4echain/x/cfevesting/types";
 
 message AccountVestingPools {
   string owner = 1;
