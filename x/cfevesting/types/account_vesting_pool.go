@@ -1,8 +1,9 @@
 package types
 
 import (
-	"cosmossdk.io/math"
 	"fmt"
+
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -76,4 +77,18 @@ func (m *VestingPool) Validate(accountAdd string) error {
 			m.Name, accountAdd, m.InitiallyLocked, m.Withdrawn, m.Sent)
 	}
 	return nil
+}
+
+type AccountVestingPoolsList []AccountVestingPools
+
+func (avpl AccountVestingPoolsList) GetGenesisAmount() math.Int {
+	result := math.ZeroInt()
+	for _, avp := range avpl {
+		for _, vp := range avp.VestingPools {
+			if vp.GenesisPool {
+				result = result.Add(vp.GetCurrentlyLocked())
+			}
+		}
+	}
+	return result
 }

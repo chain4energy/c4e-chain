@@ -59,7 +59,7 @@ func parseDenoms(denomsStr string) (denoms []string, err error) {
 	for _, denomStr := range denomStrs {
 		coin := strings.TrimSpace(denomStr)
 		if len(coin) > 0 {
- 			denoms = append(denoms, coin)
+			denoms = append(denoms, coin)
 		}
 		// TODO check if duplications
 	}

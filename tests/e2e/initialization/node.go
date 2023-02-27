@@ -266,7 +266,7 @@ func (n *internalNode) init(appState map[string]json.RawMessage) error {
 
 	genesisToMarshal := c4eapp.ModuleBasics.DefaultGenesis(util.Cdc)
 
-    if len(appState) > 0 {
+	if len(appState) > 0 {
 		genesisToMarshal = appState
 	}
 

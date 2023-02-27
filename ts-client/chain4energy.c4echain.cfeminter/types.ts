@@ -1,10 +1,10 @@
-import { Mint } from "./types/c4e-chain/cfeminter/event"
-import { MinterConfig } from "./types/c4e-chain/cfeminter/minter"
-import { Minter } from "./types/c4e-chain/cfeminter/minter"
-import { LinearMinting } from "./types/c4e-chain/cfeminter/minter"
-import { ExponentialStepMinting } from "./types/c4e-chain/cfeminter/minter"
-import { MinterState } from "./types/c4e-chain/cfeminter/minter"
-import { Params } from "./types/c4e-chain/cfeminter/params"
+import { Mint } from "./types/c4echain/cfeminter/event"
+import { MinterConfig } from "./types/c4echain/cfeminter/minter"
+import { Minter } from "./types/c4echain/cfeminter/minter"
+import { LinearMinting } from "./types/c4echain/cfeminter/minter"
+import { ExponentialStepMinting } from "./types/c4echain/cfeminter/minter"
+import { MinterState } from "./types/c4echain/cfeminter/minter"
+import { Params } from "./types/c4echain/cfeminter/params"
 
 
 export {     

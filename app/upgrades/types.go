@@ -1,12 +1,12 @@
 package upgrades
 
 import (
+	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )

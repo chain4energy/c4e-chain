@@ -79,7 +79,7 @@ var (
 		LockEnd:         advisorsLockEnd,
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.NewInt(500000000000),
-		GensisPool:      false,
+		GenesisPool:      false,
 	}
 
 	oldValidatorsPool = cfevestingtypes.VestingPool{
@@ -90,7 +90,7 @@ var (
 		LockEnd:         validatorsLockEnd,
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.NewInt(95000000000),
-		GensisPool:      false,
+		GenesisPool:      false,
 	}
 
 	newAdvisorsPool = cfevestingtypes.VestingPool{
@@ -101,7 +101,7 @@ var (
 		LockEnd:         advisorsLockEnd,
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.NewInt(500000000000),
-		GensisPool:      true,
+		GenesisPool:      true,
 	}
 
 	newValidatorsRoundPool = cfevestingtypes.VestingPool{
@@ -112,7 +112,7 @@ var (
 		LockEnd:         validatorsLockEnd,
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.NewInt(95000000000),
-		GensisPool:      true,
+		GenesisPool:      true,
 	}
 
 	newVcRoundPool = cfevestingtypes.VestingPool{
@@ -123,7 +123,7 @@ var (
 		LockEnd:         validatorsLockStart.AddDate(3, 0, 0),
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.ZeroInt(),
-		GensisPool:      true,
+		GenesisPool:      true,
 	}
 
 	newEarlyBirdRoundPool = cfevestingtypes.VestingPool{
@@ -134,7 +134,7 @@ var (
 		LockEnd:         validatorsLockStart.AddDate(2, 3, 0),
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.ZeroInt(),
-		GensisPool:      true,
+		GenesisPool:      true,
 	}
 
 	newPublicRoundPool = cfevestingtypes.VestingPool{
@@ -145,7 +145,7 @@ var (
 		LockEnd:         validatorsLockStart.AddDate(1, 6, 0),
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.ZeroInt(),
-		GensisPool:      true,
+		GenesisPool:      true,
 	}
 
 	newStrategicRoundPool = cfevestingtypes.VestingPool{
@@ -156,7 +156,7 @@ var (
 		LockEnd:         validatorsLockStart.AddDate(2, 0, 0),
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.ZeroInt(),
-		GensisPool:      true,
+		GenesisPool:      true,
 	}
 )
 

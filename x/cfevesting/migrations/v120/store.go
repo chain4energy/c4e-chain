@@ -43,7 +43,7 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 				InitiallyLocked: oldPool.InitiallyLocked,
 				Withdrawn:       oldPool.Withdrawn,
 				Sent:            oldPool.Sent,
-				GensisPool:      false,
+				GenesisPool:      false,
 			}
 			newPools = append(newPools, &newPool)
 		}

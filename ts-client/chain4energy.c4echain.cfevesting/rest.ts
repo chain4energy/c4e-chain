@@ -41,7 +41,13 @@ export type CfevestingMsgCreateVestingAccountResponse = object;
 
 export type CfevestingMsgCreateVestingPoolResponse = object;
 
+export type CfevestingMsgMoveAvailableVestingByDenomsResponse = object;
+
+export type CfevestingMsgMoveAvailableVestingResponse = object;
+
 export type CfevestingMsgSendToVestingAccountResponse = object;
+
+export type CfevestingMsgSplitVestingResponse = object;
 
 export interface CfevestingMsgWithdrawAllAvailableResponse {
   withdrawn?: string;
@@ -53,6 +59,8 @@ export interface CfevestingMsgWithdrawAllAvailableResponse {
 export interface CfevestingParams {
   denom?: string;
 }
+
+export type CfevestingQueryGenesisVestingsSummaryResponse = object;
 
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
@@ -242,7 +250,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title c4e-chain/cfevesting/account_vesting_pool.proto
+ * @title c4echain/cfevesting/account_vesting_pool.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -284,11 +292,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVestingPools
    * @summary Queries a list of Vesting items.
-   * @request GET:/c4e/vesting/v1beta1/vesting_pools/{address}
+   * @request GET:/c4e/vesting/v1beta1/vesting_pools/{owner}
    */
-  queryVestingPools = (address: string, params: RequestParams = {}) =>
+  queryVestingPools = (owner: string, params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingPoolsResponse, RpcStatus>({
-      path: `/c4e/vesting/v1beta1/vesting_pools/${address}`,
+      path: `/c4e/vesting/v1beta1/vesting_pools/${owner}`,
       method: "GET",
       format: "json",
       ...params,
@@ -305,6 +313,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryVestingType = (params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingTypeResponse, RpcStatus>({
       path: `/c4e/vesting/v1beta1/vesting_type`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryGenesisVestingsSummary
+   * @summary Queries a list of GenesisVestingsSummary items.
+   * @request GET:/chain4energy/c4e-chain/cfevesting/genesis_vestings_summary
+   */
+  queryGenesisVestingsSummary = (params: RequestParams = {}) =>
+    this.request<CfevestingQueryGenesisVestingsSummaryResponse, RpcStatus>({
+      path: `/chain4energy/c4e-chain/cfevesting/genesis_vestings_summary`,
       method: "GET",
       format: "json",
       ...params,

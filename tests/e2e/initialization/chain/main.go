@@ -19,8 +19,8 @@ func main() {
 		votingPeriod          time.Duration
 		expeditedVotingPeriod time.Duration
 		forkHeight            int
-        appState              string
-        valAppState           map[string]json.RawMessage
+		appState              string
+		valAppState           map[string]json.RawMessage
 	)
 
 	flag.StringVar(&dataDir, "data-dir", "", "chain data directory")

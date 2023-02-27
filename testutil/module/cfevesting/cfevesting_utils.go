@@ -132,7 +132,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPoolWithGenesisParam(ctx sdk.Conte
 		for _, vest := range accVestingPools.VestingPools {
 			if vest.Name == vestingPoolName {
 				if isGenesisPool {
-					vest.GensisPool = true
+					vest.GenesisPool = true
 				}
 				vestingPool = vest
 
@@ -147,7 +147,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPoolWithGenesisParam(ctx sdk.Conte
 					vestingPool = vest
 				}
 			}
-			require.True(h.t, vestingPool.GensisPool)
+			require.True(h.t, vestingPool.GenesisPool)
 
 		}
 		require.NotNil(h.t, vestingPool)
@@ -352,6 +352,12 @@ func (h *C4eVestingUtils) QueryVestingsSummary(wctx context.Context, expectedRes
 	require.Equal(h.t, expectedResponse, *resp)
 }
 
+func (h *C4eVestingUtils) QueryGenesisVestingsSummary(wctx context.Context, expectedResponse cfevestingtypes.QueryGenesisVestingsSummaryResponse) {
+	resp, err := h.helperCfevestingKeeper.GenesisVestingsSummary(wctx, &cfevestingtypes.QueryGenesisVestingsSummaryRequest{})
+	require.NoError(h.t, err)
+	require.Equal(h.t, expectedResponse, *resp)
+}
+
 func (h *C4eVestingUtils) SetVestingTypes(ctx sdk.Context, vestingTypes cfevestingtypes.VestingTypes) {
 	h.helperCfevestingKeeper.SetVestingTypes(ctx, vestingTypes)
 }
@@ -383,7 +389,7 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 		Id:                 uint64(vestingAccountCount),
 		Address:            vestingAccAddress.String(),
 		Genesis:            false,
-		FromGenesisPool:    foundVPool.GensisPool,
+		FromGenesisPool:    foundVPool.GenesisPool,
 		FromGenesisAccount: false,
 	}
 	require.EqualValues(h.t, expectedVestingAccountTrace, vaccFromList)
@@ -529,6 +535,10 @@ func (h *ContextC4eVestingUtils) InitGenesis(genState cfevestingtypes.GenesisSta
 
 func (h *ContextC4eVestingUtils) QueryVestings(expectedResponse cfevestingtypes.QueryVestingsSummaryResponse) {
 	h.C4eVestingUtils.QueryVestingsSummary(h.testContext.GetWrappedContext(), expectedResponse)
+}
+
+func (h *ContextC4eVestingUtils) QueryGenesisVestings(expectedResponse cfevestingtypes.QueryGenesisVestingsSummaryResponse) {
+	h.C4eVestingUtils.QueryGenesisVestingsSummary(h.testContext.GetWrappedContext(), expectedResponse)
 }
 
 func (h *ContextC4eVestingUtils) MessageCreateVestingPoolError(address sdk.AccAddress,

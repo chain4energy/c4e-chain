@@ -57,7 +57,7 @@ func ModifyVestingPoolsState(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeep
 			validatorsVestingPools = vp
 		}
 		if vp.Name == oldAdvisorsPoolName {
-			vp.GensisPool = true
+			vp.GenesisPool = true
 		}
 	}
 	if validatorsVestingPools == nil {
@@ -124,7 +124,7 @@ func modifyAndAddVestingPools(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 
 	validatorsVestingPools.Name = validatorRoundPoolName
 	validatorsVestingPools.VestingType = validatorRoundTypeName
-	validatorsVestingPools.GensisPool = true
+	validatorsVestingPools.GenesisPool = true
 	_, err := splitVestingPool(vestingPoolsP, validatorsVestingPools, vcRoundPoolName, vcRoundTypeName, vcRoundUc4e, 3, 0)
 	if err != nil {
 		return err
@@ -164,7 +164,7 @@ func splitVestingPool(vestingPools *cfevestingtypes.AccountVestingPools, validat
 		LockEnd:         validatorsVestingPools.LockStart.AddDate(addYears, addMonths, 0),
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.ZeroInt(),
-		GensisPool:      true,
+		GenesisPool:     true,
 	}
 
 	vestingPools.VestingPools = append(vestingPools.VestingPools, &newPool)

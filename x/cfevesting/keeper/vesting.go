@@ -246,7 +246,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
 			Address:            toAddr,
 			Genesis:            false,
-			FromGenesisPool:    vestingPool.GensisPool,
+			FromGenesisPool:    vestingPool.GenesisPool,
 			FromGenesisAccount: false,
 		})
 

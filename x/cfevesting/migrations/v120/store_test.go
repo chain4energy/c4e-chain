@@ -118,7 +118,7 @@ func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 				InitiallyLocked: oldVestingPool.InitiallyLocked,
 				Withdrawn:       oldVestingPool.Withdrawn,
 				Sent:            oldVestingPool.Sent,
-				GensisPool:      false,
+				GenesisPool:      false,
 			}
 			newVestingPool := newAccPools[i].VestingPools[j]
 			require.EqualValues(t, &expectedVestingPool, newVestingPool)

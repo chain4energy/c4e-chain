@@ -5,11 +5,10 @@ import (
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-
 )
 
 func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
