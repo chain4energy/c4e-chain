@@ -4,8 +4,8 @@ package chain4energy.c4echain.cfeminter;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "c4echain/cfeminter/params.proto";
-import "c4echain/cfeminter/minter.proto";
+import "c4e-chain/cfeminter/params.proto";
+import "c4e-chain/cfeminter/minter.proto";
 
 // this line is used by starport scaffolding # 1
 

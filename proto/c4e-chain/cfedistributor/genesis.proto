@@ -2,8 +2,8 @@ syntax = "proto3";
 package chain4energy.c4echain.cfedistributor;
 
 import "gogoproto/gogo.proto";
-import "c4echain/cfedistributor/params.proto";
-import "c4echain/cfedistributor/sub_distributor.proto";
+import "c4e-chain/cfedistributor/params.proto";
+import "c4e-chain/cfedistributor/sub_distributor.proto";
 
 // this line is used by starport scaffolding # genesis/proto/import
 
