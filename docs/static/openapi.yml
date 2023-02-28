@@ -4,866 +4,6 @@ info:
   name: ''
   description: ''
 paths:
-  /c4e/distributor/v1beta1/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCfedistributorParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-                properties:
-                  sub_distributors:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                        sources:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              type:
-                                type: string
-                        destinations:
-                          type: object
-                          properties:
-                            primary_share:
-                              type: object
-                              properties:
-                                id:
-                                  type: string
-                                type:
-                                  type: string
-                            burn_share:
-                              type: string
-                            shares:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  name:
-                                    type: string
-                                  share:
-                                    type: string
-                                  destination:
-                                    type: object
-                                    properties:
-                                      id:
-                                        type: string
-                                      type:
-                                        type: string
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/distributor/v1beta1/states:
-    get:
-      summary: Queries a list of States items.
-      operationId: Chain4EnergyC4EchainCfedistributorStates
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              states:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    account:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        type:
-                          type: string
-                    burn:
-                      type: boolean
-                    remains:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          denom:
-                            type: string
-                          amount:
-                            type: string
-                        description: >-
-                          DecCoin defines a token with a denomination and a
-                          decimal amount.
-
-
-                          NOTE: The amount field is an Dec which implements the
-                          custom method
-
-                          signatures required by gogoproto.
-              coins_on_distributor_account:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/minter/v1beta1/inflation:
-    get:
-      summary: Queries a list of Inflation items.
-      operationId: Chain4EnergyC4EchainCfeminterInflation
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              inflation:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/minter/v1beta1/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCfeminterParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-                properties:
-                  mint_denom:
-                    type: string
-                  minter_config:
-                    type: object
-                    properties:
-                      start_time:
-                        type: string
-                        format: date-time
-                      minters:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            sequence_id:
-                              type: integer
-                              format: int64
-                            end_time:
-                              type: string
-                              format: date-time
-                            type:
-                              type: string
-                              title: |-
-                                types:
-                                  NO_MINTING;
-                                  LINEAR_MINTING;
-                                  EXPONENTIAL_STEP_MINTING;
-                            linear_minting:
-                              type: object
-                              properties:
-                                amount:
-                                  type: string
-                            exponential_step_minting:
-                              type: object
-                              properties:
-                                amount:
-                                  type: string
-                                step_duration:
-                                  type: string
-                                amount_multiplier:
-                                  type: string
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/minter/v1beta1/state:
-    get:
-      summary: Queries a list of State items.
-      operationId: Chain4EnergyC4EchainCfeminterState
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              minter_state:
-                type: object
-                properties:
-                  sequence_id:
-                    type: integer
-                    format: int64
-                  amount_minted:
-                    type: string
-                  remainder_to_mint:
-                    type: string
-                  last_mint_block_time:
-                    type: string
-                    format: date-time
-                  remainder_from_previous_period:
-                    type: string
-              state_history:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    sequence_id:
-                      type: integer
-                      format: int64
-                    amount_minted:
-                      type: string
-                    remainder_to_mint:
-                      type: string
-                    last_mint_block_time:
-                      type: string
-                      format: date-time
-                    remainder_from_previous_period:
-                      type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/signature/v1beta1/create_reference_id/{creator}:
-    get:
-      summary: Queries a list of CreateReferenceId items.
-      operationId: Chain4EnergyC4EchainCfesignatureCreateReferenceId
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              referenceId:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: creator
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/create_reference_payload_link/{referenceId}/{payloadHash}:
-    get:
-      summary: Queries a list of CreateReferencePayloadLink items.
-      operationId: Chain4EnergyC4EchainCfesignatureCreateReferencePayloadLink
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              referenceKey:
-                type: string
-              referenceValue:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-        - name: payloadHash
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/create_storage_key/{targetAccAddress}/{referenceId}:
-    get:
-      summary: Queries a list of CreateStorageKey items.
-      operationId: Chain4EnergyC4EchainCfesignatureCreateStorageKey
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              storageKey:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: targetAccAddress
-          in: path
-          required: true
-          type: string
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/get_account_info/{accAddressString}:
-    get:
-      summary: Queries a list of GetAccountInfo items.
-      operationId: Chain4EnergyC4EchainCfesignatureGetAccountInfo
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              accAddress:
-                type: string
-              pubKey:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: accAddressString
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/get_reference_payload_link/{referenceId}:
-    get:
-      summary: Queries a list of GetReferencePayloadLink items.
-      operationId: Chain4EnergyC4EchainCfesignatureGetReferencePayloadLink
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              referencePayloadLinkValue:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCfesignatureParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/signature/v1beta1/verify_reference_payload_link/{referenceId}/{payloadHash}:
-    get:
-      summary: Queries a list of VerifyReferencePayloadLink items.
-      operationId: Chain4EnergyC4EchainCfesignatureVerifyReferencePayloadLink
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              isValid:
-                type: boolean
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-        - name: payloadHash
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/verify_signature/{referenceId}/{targetAccAddress}:
-    get:
-      summary: Queries a list of VerifySignature items.
-      operationId: Chain4EnergyC4EchainCfesignatureVerifySignature
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              signature:
-                type: string
-              algorithm:
-                type: string
-              certificate:
-                type: string
-              timestamp:
-                type: string
-              valid:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-        - name: targetAccAddress
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/vesting/v1beta1/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCfevestingParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-                properties:
-                  denom:
-                    type: string
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/vesting/v1beta1/summary:
-    get:
-      summary: Queries a summary of the entire vesting.
-      operationId: Chain4EnergyC4EchainCfevestingVestingsSummary
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              vesting_all_amount:
-                type: string
-              vesting_in_pools_amount:
-                type: string
-              vesting_in_accounts_amount:
-                type: string
-              delegated_vesting_amount:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/vesting/v1beta1/vesting_pools/{owner}:
-    get:
-      summary: Queries a list of Vesting items.
-      operationId: Chain4EnergyC4EchainCfevestingVestingPools
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              vesting_pools:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    vesting_type:
-                      type: string
-                    lock_start:
-                      type: string
-                      format: date-time
-                    lock_end:
-                      type: string
-                      format: date-time
-                    withdrawable:
-                      type: string
-                    initially_locked:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-                    currently_locked:
-                      type: string
-                    sent_amount:
-                      type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: owner
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/vesting/v1beta1/vesting_type:
-    get:
-      summary: Queries a list of VestingType items.
-      operationId: Chain4EnergyC4EchainCfevestingVestingType
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              vesting_types:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                      title: vesting type name
-                    lockup_period:
-                      type: string
-                      format: int64
-                      title: period of locked coins from vesting start
-                    lockup_period_unit:
-                      type: string
-                    vesting_period:
-                      type: string
-                      format: int64
-                      title: period of veesting coins from lockup period end
-                    vesting_period_unit:
-                      type: string
-                    free:
-                      type: string
-                      title: |-
-                        units to select:
-                         days
-                         hours
-                         minutes
-                         seconds
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
   /cosmos/auth/v1beta1/accounts:
     get:
       summary: Accounts returns all the existing accounts
@@ -45409,1087 +44549,6 @@ paths:
       tags:
         - Query
 definitions:
-  chain4energy.c4echain.cfedistributor.Account:
-    type: object
-    properties:
-      id:
-        type: string
-      type:
-        type: string
-  chain4energy.c4echain.cfedistributor.DestinationShare:
-    type: object
-    properties:
-      name:
-        type: string
-      share:
-        type: string
-      destination:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-  chain4energy.c4echain.cfedistributor.Destinations:
-    type: object
-    properties:
-      primary_share:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-      burn_share:
-        type: string
-      shares:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            share:
-              type: string
-            destination:
-              type: object
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-  chain4energy.c4echain.cfedistributor.Params:
-    type: object
-    properties:
-      sub_distributors:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            sources:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  type:
-                    type: string
-            destinations:
-              type: object
-              properties:
-                primary_share:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    type:
-                      type: string
-                burn_share:
-                  type: string
-                shares:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                      share:
-                        type: string
-                      destination:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                          type:
-                            type: string
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfedistributor.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params holds all the parameters of this module.
-        type: object
-        properties:
-          sub_distributors:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                sources:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      type:
-                        type: string
-                destinations:
-                  type: object
-                  properties:
-                    primary_share:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        type:
-                          type: string
-                    burn_share:
-                      type: string
-                    shares:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                          share:
-                            type: string
-                          destination:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              type:
-                                type: string
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfedistributor.QueryStatesResponse:
-    type: object
-    properties:
-      states:
-        type: array
-        items:
-          type: object
-          properties:
-            account:
-              type: object
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-            burn:
-              type: boolean
-            remains:
-              type: array
-              items:
-                type: object
-                properties:
-                  denom:
-                    type: string
-                  amount:
-                    type: string
-                description: >-
-                  DecCoin defines a token with a denomination and a decimal
-                  amount.
-
-
-                  NOTE: The amount field is an Dec which implements the custom
-                  method
-
-                  signatures required by gogoproto.
-      coins_on_distributor_account:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cfedistributor.State:
-    type: object
-    properties:
-      account:
-        type: object
-        properties:
-          id:
-            type: string
-          type:
-            type: string
-      burn:
-        type: boolean
-      remains:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-  chain4energy.c4echain.cfedistributor.SubDistributor:
-    type: object
-    properties:
-      name:
-        type: string
-      sources:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-            type:
-              type: string
-      destinations:
-        type: object
-        properties:
-          primary_share:
-            type: object
-            properties:
-              id:
-                type: string
-              type:
-                type: string
-          burn_share:
-            type: string
-          shares:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                share:
-                  type: string
-                destination:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    type:
-                      type: string
-  cosmos.base.v1beta1.Coin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      Coin defines a token with a denomination and an amount.
-
-      NOTE: The amount field is an Int which implements the custom method
-      signatures required by gogoproto.
-  cosmos.base.v1beta1.DecCoin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      DecCoin defines a token with a denomination and a decimal amount.
-
-      NOTE: The amount field is an Dec which implements the custom method
-      signatures required by gogoproto.
-  google.protobuf.Any:
-    type: object
-    properties:
-      '@type':
-        type: string
-        description: >-
-          A URL/resource name that uniquely identifies the type of the
-          serialized
-
-          protocol buffer message. This string must contain at least
-
-          one "/" character. The last segment of the URL's path must represent
-
-          the fully qualified name of the type (as in
-
-          `path/google.protobuf.Duration`). The name should be in a canonical
-          form
-
-          (e.g., leading "." is not accepted).
-
-
-          In practice, teams usually precompile into the binary all types that
-          they
-
-          expect it to use in the context of Any. However, for URLs which use
-          the
-
-          scheme `http`, `https`, or no scheme, one can optionally set up a type
-
-          server that maps type URLs to message definitions as follows:
-
-
-          * If no scheme is provided, `https` is assumed.
-
-          * An HTTP GET on the URL must yield a [google.protobuf.Type][]
-            value in binary format, or produce an error.
-          * Applications are allowed to cache lookup results based on the
-            URL, or have them precompiled into a binary to avoid any
-            lookup. Therefore, binary compatibility needs to be preserved
-            on changes to types. (Use versioned type names to manage
-            breaking changes.)
-
-          Note: this functionality is not currently available in the official
-
-          protobuf release, and it is not used for type URLs beginning with
-
-          type.googleapis.com.
-
-
-          Schemes other than `http`, `https` (or the empty scheme) might be
-
-          used with implementation specific semantics.
-    additionalProperties: {}
-    description: >-
-      `Any` contains an arbitrary serialized protocol buffer message along with
-      a
-
-      URL that describes the type of the serialized message.
-
-
-      Protobuf library provides support to pack/unpack Any values in the form
-
-      of utility functions or additional generated methods of the Any type.
-
-
-      Example 1: Pack and unpack a message in C++.
-
-          Foo foo = ...;
-          Any any;
-          any.PackFrom(foo);
-          ...
-          if (any.UnpackTo(&foo)) {
-            ...
-          }
-
-      Example 2: Pack and unpack a message in Java.
-
-          Foo foo = ...;
-          Any any = Any.pack(foo);
-          ...
-          if (any.is(Foo.class)) {
-            foo = any.unpack(Foo.class);
-          }
-
-       Example 3: Pack and unpack a message in Python.
-
-          foo = Foo(...)
-          any = Any()
-          any.Pack(foo)
-          ...
-          if any.Is(Foo.DESCRIPTOR):
-            any.Unpack(foo)
-            ...
-
-       Example 4: Pack and unpack a message in Go
-
-           foo := &pb.Foo{...}
-           any, err := anypb.New(foo)
-           if err != nil {
-             ...
-           }
-           ...
-           foo := &pb.Foo{}
-           if err := any.UnmarshalTo(foo); err != nil {
-             ...
-           }
-
-      The pack methods provided by protobuf library will by default use
-
-      'type.googleapis.com/full.type.name' as the type URL and the unpack
-
-      methods only use the fully qualified type name after the last '/'
-
-      in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-      name "y.z".
-
-
-
-      JSON
-
-      ====
-
-      The JSON representation of an `Any` value uses the regular
-
-      representation of the deserialized, embedded message, with an
-
-      additional field `@type` which contains the type URL. Example:
-
-          package google.profile;
-          message Person {
-            string first_name = 1;
-            string last_name = 2;
-          }
-
-          {
-            "@type": "type.googleapis.com/google.profile.Person",
-            "firstName": <string>,
-            "lastName": <string>
-          }
-
-      If the embedded message type is well-known and has a custom JSON
-
-      representation, that representation will be embedded adding a field
-
-      `value` which holds the custom JSON in addition to the `@type`
-
-      field. Example (for message [google.protobuf.Duration][]):
-
-          {
-            "@type": "type.googleapis.com/google.protobuf.Duration",
-            "value": "1.212s"
-          }
-  google.rpc.Status:
-    type: object
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
-      details:
-        type: array
-        items:
-          type: object
-          properties:
-            '@type':
-              type: string
-              description: >-
-                A URL/resource name that uniquely identifies the type of the
-                serialized
-
-                protocol buffer message. This string must contain at least
-
-                one "/" character. The last segment of the URL's path must
-                represent
-
-                the fully qualified name of the type (as in
-
-                `path/google.protobuf.Duration`). The name should be in a
-                canonical form
-
-                (e.g., leading "." is not accepted).
-
-
-                In practice, teams usually precompile into the binary all types
-                that they
-
-                expect it to use in the context of Any. However, for URLs which
-                use the
-
-                scheme `http`, `https`, or no scheme, one can optionally set up
-                a type
-
-                server that maps type URLs to message definitions as follows:
-
-
-                * If no scheme is provided, `https` is assumed.
-
-                * An HTTP GET on the URL must yield a [google.protobuf.Type][]
-                  value in binary format, or produce an error.
-                * Applications are allowed to cache lookup results based on the
-                  URL, or have them precompiled into a binary to avoid any
-                  lookup. Therefore, binary compatibility needs to be preserved
-                  on changes to types. (Use versioned type names to manage
-                  breaking changes.)
-
-                Note: this functionality is not currently available in the
-                official
-
-                protobuf release, and it is not used for type URLs beginning
-                with
-
-                type.googleapis.com.
-
-
-                Schemes other than `http`, `https` (or the empty scheme) might
-                be
-
-                used with implementation specific semantics.
-          additionalProperties: {}
-          description: >-
-            `Any` contains an arbitrary serialized protocol buffer message along
-            with a
-
-            URL that describes the type of the serialized message.
-
-
-            Protobuf library provides support to pack/unpack Any values in the
-            form
-
-            of utility functions or additional generated methods of the Any
-            type.
-
-
-            Example 1: Pack and unpack a message in C++.
-
-                Foo foo = ...;
-                Any any;
-                any.PackFrom(foo);
-                ...
-                if (any.UnpackTo(&foo)) {
-                  ...
-                }
-
-            Example 2: Pack and unpack a message in Java.
-
-                Foo foo = ...;
-                Any any = Any.pack(foo);
-                ...
-                if (any.is(Foo.class)) {
-                  foo = any.unpack(Foo.class);
-                }
-
-             Example 3: Pack and unpack a message in Python.
-
-                foo = Foo(...)
-                any = Any()
-                any.Pack(foo)
-                ...
-                if any.Is(Foo.DESCRIPTOR):
-                  any.Unpack(foo)
-                  ...
-
-             Example 4: Pack and unpack a message in Go
-
-                 foo := &pb.Foo{...}
-                 any, err := anypb.New(foo)
-                 if err != nil {
-                   ...
-                 }
-                 ...
-                 foo := &pb.Foo{}
-                 if err := any.UnmarshalTo(foo); err != nil {
-                   ...
-                 }
-
-            The pack methods provided by protobuf library will by default use
-
-            'type.googleapis.com/full.type.name' as the type URL and the unpack
-
-            methods only use the fully qualified type name after the last '/'
-
-            in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-            name "y.z".
-
-
-
-            JSON
-
-            ====
-
-            The JSON representation of an `Any` value uses the regular
-
-            representation of the deserialized, embedded message, with an
-
-            additional field `@type` which contains the type URL. Example:
-
-                package google.profile;
-                message Person {
-                  string first_name = 1;
-                  string last_name = 2;
-                }
-
-                {
-                  "@type": "type.googleapis.com/google.profile.Person",
-                  "firstName": <string>,
-                  "lastName": <string>
-                }
-
-            If the embedded message type is well-known and has a custom JSON
-
-            representation, that representation will be embedded adding a field
-
-            `value` which holds the custom JSON in addition to the `@type`
-
-            field. Example (for message [google.protobuf.Duration][]):
-
-                {
-                  "@type": "type.googleapis.com/google.protobuf.Duration",
-                  "value": "1.212s"
-                }
-  chain4energy.c4echain.cfeminter.ExponentialStepMinting:
-    type: object
-    properties:
-      amount:
-        type: string
-      step_duration:
-        type: string
-      amount_multiplier:
-        type: string
-  chain4energy.c4echain.cfeminter.LinearMinting:
-    type: object
-    properties:
-      amount:
-        type: string
-  chain4energy.c4echain.cfeminter.Minter:
-    type: object
-    properties:
-      sequence_id:
-        type: integer
-        format: int64
-      end_time:
-        type: string
-        format: date-time
-      type:
-        type: string
-        title: |-
-          types:
-            NO_MINTING;
-            LINEAR_MINTING;
-            EXPONENTIAL_STEP_MINTING;
-      linear_minting:
-        type: object
-        properties:
-          amount:
-            type: string
-      exponential_step_minting:
-        type: object
-        properties:
-          amount:
-            type: string
-          step_duration:
-            type: string
-          amount_multiplier:
-            type: string
-  chain4energy.c4echain.cfeminter.MinterConfig:
-    type: object
-    properties:
-      start_time:
-        type: string
-        format: date-time
-      minters:
-        type: array
-        items:
-          type: object
-          properties:
-            sequence_id:
-              type: integer
-              format: int64
-            end_time:
-              type: string
-              format: date-time
-            type:
-              type: string
-              title: |-
-                types:
-                  NO_MINTING;
-                  LINEAR_MINTING;
-                  EXPONENTIAL_STEP_MINTING;
-            linear_minting:
-              type: object
-              properties:
-                amount:
-                  type: string
-            exponential_step_minting:
-              type: object
-              properties:
-                amount:
-                  type: string
-                step_duration:
-                  type: string
-                amount_multiplier:
-                  type: string
-  chain4energy.c4echain.cfeminter.MinterState:
-    type: object
-    properties:
-      sequence_id:
-        type: integer
-        format: int64
-      amount_minted:
-        type: string
-      remainder_to_mint:
-        type: string
-      last_mint_block_time:
-        type: string
-        format: date-time
-      remainder_from_previous_period:
-        type: string
-  chain4energy.c4echain.cfeminter.Params:
-    type: object
-    properties:
-      mint_denom:
-        type: string
-      minter_config:
-        type: object
-        properties:
-          start_time:
-            type: string
-            format: date-time
-          minters:
-            type: array
-            items:
-              type: object
-              properties:
-                sequence_id:
-                  type: integer
-                  format: int64
-                end_time:
-                  type: string
-                  format: date-time
-                type:
-                  type: string
-                  title: |-
-                    types:
-                      NO_MINTING;
-                      LINEAR_MINTING;
-                      EXPONENTIAL_STEP_MINTING;
-                linear_minting:
-                  type: object
-                  properties:
-                    amount:
-                      type: string
-                exponential_step_minting:
-                  type: object
-                  properties:
-                    amount:
-                      type: string
-                    step_duration:
-                      type: string
-                    amount_multiplier:
-                      type: string
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeminter.QueryInflationResponse:
-    type: object
-    properties:
-      inflation:
-        type: string
-  chain4energy.c4echain.cfeminter.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params holds all the parameters of this module.
-        type: object
-        properties:
-          mint_denom:
-            type: string
-          minter_config:
-            type: object
-            properties:
-              start_time:
-                type: string
-                format: date-time
-              minters:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    sequence_id:
-                      type: integer
-                      format: int64
-                    end_time:
-                      type: string
-                      format: date-time
-                    type:
-                      type: string
-                      title: |-
-                        types:
-                          NO_MINTING;
-                          LINEAR_MINTING;
-                          EXPONENTIAL_STEP_MINTING;
-                    linear_minting:
-                      type: object
-                      properties:
-                        amount:
-                          type: string
-                    exponential_step_minting:
-                      type: object
-                      properties:
-                        amount:
-                          type: string
-                        step_duration:
-                          type: string
-                        amount_multiplier:
-                          type: string
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfeminter.QueryStateResponse:
-    type: object
-    properties:
-      minter_state:
-        type: object
-        properties:
-          sequence_id:
-            type: integer
-            format: int64
-          amount_minted:
-            type: string
-          remainder_to_mint:
-            type: string
-          last_mint_block_time:
-            type: string
-            format: date-time
-          remainder_from_previous_period:
-            type: string
-      state_history:
-        type: array
-        items:
-          type: object
-          properties:
-            sequence_id:
-              type: integer
-              format: int64
-            amount_minted:
-              type: string
-            remainder_to_mint:
-              type: string
-            last_mint_block_time:
-              type: string
-              format: date-time
-            remainder_from_previous_period:
-              type: string
-  chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
-    type: object
-    properties:
-      accountNumber:
-        type: string
-  chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLinkResponse:
-    type: object
-    properties:
-      txTimestamp:
-        type: string
-  chain4energy.c4echain.cfesignature.MsgStoreSignatureResponse:
-    type: object
-    properties:
-      txId:
-        type: string
-      txTimestamp:
-        type: string
-  chain4energy.c4echain.cfesignature.Params:
-    type: object
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfesignature.QueryCreateReferenceIdResponse:
-    type: object
-    properties:
-      referenceId:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryCreateReferencePayloadLinkResponse:
-    type: object
-    properties:
-      referenceKey:
-        type: string
-      referenceValue:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryCreateStorageKeyResponse:
-    type: object
-    properties:
-      storageKey:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryGetAccountInfoResponse:
-    type: object
-    properties:
-      accAddress:
-        type: string
-      pubKey:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryGetReferencePayloadLinkResponse:
-    type: object
-    properties:
-      referencePayloadLinkValue:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params holds all the parameters of this module.
-        type: object
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfesignature.QueryVerifyReferencePayloadLinkResponse:
-    type: object
-    properties:
-      isValid:
-        type: boolean
-  chain4energy.c4echain.cfesignature.QueryVerifySignatureResponse:
-    type: object
-    properties:
-      signature:
-        type: string
-      algorithm:
-        type: string
-      certificate:
-        type: string
-      timestamp:
-        type: string
-      valid:
-        type: string
-  chain4energy.c4echain.cfevesting.GenesisVestingType:
-    type: object
-    properties:
-      name:
-        type: string
-        title: vesting type name
-      lockup_period:
-        type: string
-        format: int64
-        title: period of locked coins from vesting start
-      lockup_period_unit:
-        type: string
-      vesting_period:
-        type: string
-        format: int64
-        title: period of veesting coins from lockup period end
-      vesting_period_unit:
-        type: string
-      free:
-        type: string
-        title: |-
-          units to select:
-           days
-           hours
-           minutes
-           seconds
-  chain4energy.c4echain.cfevesting.MsgCreateVestingAccountResponse:
-    type: object
-  chain4energy.c4echain.cfevesting.MsgCreateVestingPoolResponse:
-    type: object
-  chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:
-    type: object
-  chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
-    type: object
-    properties:
-      withdrawn:
-        type: string
-  chain4energy.c4echain.cfevesting.Params:
-    type: object
-    properties:
-      denom:
-        type: string
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfevesting.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params holds all the parameters of this module.
-        type: object
-        properties:
-          denom:
-            type: string
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfevesting.QueryVestingPoolsResponse:
-    type: object
-    properties:
-      vesting_pools:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            vesting_type:
-              type: string
-            lock_start:
-              type: string
-              format: date-time
-            lock_end:
-              type: string
-              format: date-time
-            withdrawable:
-              type: string
-            initially_locked:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
-            currently_locked:
-              type: string
-            sent_amount:
-              type: string
-  chain4energy.c4echain.cfevesting.QueryVestingTypeResponse:
-    type: object
-    properties:
-      vesting_types:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-              title: vesting type name
-            lockup_period:
-              type: string
-              format: int64
-              title: period of locked coins from vesting start
-            lockup_period_unit:
-              type: string
-            vesting_period:
-              type: string
-              format: int64
-              title: period of veesting coins from lockup period end
-            vesting_period_unit:
-              type: string
-            free:
-              type: string
-              title: |-
-                units to select:
-                 days
-                 hours
-                 minutes
-                 seconds
-  chain4energy.c4echain.cfevesting.QueryVestingsSummaryResponse:
-    type: object
-    properties:
-      vesting_all_amount:
-        type: string
-      vesting_in_pools_amount:
-        type: string
-      vesting_in_accounts_amount:
-        type: string
-      delegated_vesting_amount:
-        type: string
-  chain4energy.c4echain.cfevesting.VestingPoolInfo:
-    type: object
-    properties:
-      name:
-        type: string
-      vesting_type:
-        type: string
-      lock_start:
-        type: string
-        format: date-time
-      lock_end:
-        type: string
-        format: date-time
-      withdrawable:
-        type: string
-      initially_locked:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
-      currently_locked:
-        type: string
-      sent_amount:
-        type: string
   cosmos.auth.v1beta1.AddressBytesToStringResponse:
     type: object
     properties:
@@ -47338,6 +45397,329 @@ definitions:
                repeated Bar results = 1;
                PageResponse page = 2;
        }
+  google.protobuf.Any:
+    type: object
+    properties:
+      '@type':
+        type: string
+        description: >-
+          A URL/resource name that uniquely identifies the type of the
+          serialized
+
+          protocol buffer message. This string must contain at least
+
+          one "/" character. The last segment of the URL's path must represent
+
+          the fully qualified name of the type (as in
+
+          `path/google.protobuf.Duration`). The name should be in a canonical
+          form
+
+          (e.g., leading "." is not accepted).
+
+
+          In practice, teams usually precompile into the binary all types that
+          they
+
+          expect it to use in the context of Any. However, for URLs which use
+          the
+
+          scheme `http`, `https`, or no scheme, one can optionally set up a type
+
+          server that maps type URLs to message definitions as follows:
+
+
+          * If no scheme is provided, `https` is assumed.
+
+          * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+            value in binary format, or produce an error.
+          * Applications are allowed to cache lookup results based on the
+            URL, or have them precompiled into a binary to avoid any
+            lookup. Therefore, binary compatibility needs to be preserved
+            on changes to types. (Use versioned type names to manage
+            breaking changes.)
+
+          Note: this functionality is not currently available in the official
+
+          protobuf release, and it is not used for type URLs beginning with
+
+          type.googleapis.com.
+
+
+          Schemes other than `http`, `https` (or the empty scheme) might be
+
+          used with implementation specific semantics.
+    additionalProperties: {}
+    description: >-
+      `Any` contains an arbitrary serialized protocol buffer message along with
+      a
+
+      URL that describes the type of the serialized message.
+
+
+      Protobuf library provides support to pack/unpack Any values in the form
+
+      of utility functions or additional generated methods of the Any type.
+
+
+      Example 1: Pack and unpack a message in C++.
+
+          Foo foo = ...;
+          Any any;
+          any.PackFrom(foo);
+          ...
+          if (any.UnpackTo(&foo)) {
+            ...
+          }
+
+      Example 2: Pack and unpack a message in Java.
+
+          Foo foo = ...;
+          Any any = Any.pack(foo);
+          ...
+          if (any.is(Foo.class)) {
+            foo = any.unpack(Foo.class);
+          }
+
+       Example 3: Pack and unpack a message in Python.
+
+          foo = Foo(...)
+          any = Any()
+          any.Pack(foo)
+          ...
+          if any.Is(Foo.DESCRIPTOR):
+            any.Unpack(foo)
+            ...
+
+       Example 4: Pack and unpack a message in Go
+
+           foo := &pb.Foo{...}
+           any, err := anypb.New(foo)
+           if err != nil {
+             ...
+           }
+           ...
+           foo := &pb.Foo{}
+           if err := any.UnmarshalTo(foo); err != nil {
+             ...
+           }
+
+      The pack methods provided by protobuf library will by default use
+
+      'type.googleapis.com/full.type.name' as the type URL and the unpack
+
+      methods only use the fully qualified type name after the last '/'
+
+      in the type URL, for example "foo.bar.com/x/y.z" will yield type
+
+      name "y.z".
+
+
+
+      JSON
+
+      ====
+
+      The JSON representation of an `Any` value uses the regular
+
+      representation of the deserialized, embedded message, with an
+
+      additional field `@type` which contains the type URL. Example:
+
+          package google.profile;
+          message Person {
+            string first_name = 1;
+            string last_name = 2;
+          }
+
+          {
+            "@type": "type.googleapis.com/google.profile.Person",
+            "firstName": <string>,
+            "lastName": <string>
+          }
+
+      If the embedded message type is well-known and has a custom JSON
+
+      representation, that representation will be embedded adding a field
+
+      `value` which holds the custom JSON in addition to the `@type`
+
+      field. Example (for message [google.protobuf.Duration][]):
+
+          {
+            "@type": "type.googleapis.com/google.protobuf.Duration",
+            "value": "1.212s"
+          }
+  google.rpc.Status:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      details:
+        type: array
+        items:
+          type: object
+          properties:
+            '@type':
+              type: string
+              description: >-
+                A URL/resource name that uniquely identifies the type of the
+                serialized
+
+                protocol buffer message. This string must contain at least
+
+                one "/" character. The last segment of the URL's path must
+                represent
+
+                the fully qualified name of the type (as in
+
+                `path/google.protobuf.Duration`). The name should be in a
+                canonical form
+
+                (e.g., leading "." is not accepted).
+
+
+                In practice, teams usually precompile into the binary all types
+                that they
+
+                expect it to use in the context of Any. However, for URLs which
+                use the
+
+                scheme `http`, `https`, or no scheme, one can optionally set up
+                a type
+
+                server that maps type URLs to message definitions as follows:
+
+
+                * If no scheme is provided, `https` is assumed.
+
+                * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+                  value in binary format, or produce an error.
+                * Applications are allowed to cache lookup results based on the
+                  URL, or have them precompiled into a binary to avoid any
+                  lookup. Therefore, binary compatibility needs to be preserved
+                  on changes to types. (Use versioned type names to manage
+                  breaking changes.)
+
+                Note: this functionality is not currently available in the
+                official
+
+                protobuf release, and it is not used for type URLs beginning
+                with
+
+                type.googleapis.com.
+
+
+                Schemes other than `http`, `https` (or the empty scheme) might
+                be
+
+                used with implementation specific semantics.
+          additionalProperties: {}
+          description: >-
+            `Any` contains an arbitrary serialized protocol buffer message along
+            with a
+
+            URL that describes the type of the serialized message.
+
+
+            Protobuf library provides support to pack/unpack Any values in the
+            form
+
+            of utility functions or additional generated methods of the Any
+            type.
+
+
+            Example 1: Pack and unpack a message in C++.
+
+                Foo foo = ...;
+                Any any;
+                any.PackFrom(foo);
+                ...
+                if (any.UnpackTo(&foo)) {
+                  ...
+                }
+
+            Example 2: Pack and unpack a message in Java.
+
+                Foo foo = ...;
+                Any any = Any.pack(foo);
+                ...
+                if (any.is(Foo.class)) {
+                  foo = any.unpack(Foo.class);
+                }
+
+             Example 3: Pack and unpack a message in Python.
+
+                foo = Foo(...)
+                any = Any()
+                any.Pack(foo)
+                ...
+                if any.Is(Foo.DESCRIPTOR):
+                  any.Unpack(foo)
+                  ...
+
+             Example 4: Pack and unpack a message in Go
+
+                 foo := &pb.Foo{...}
+                 any, err := anypb.New(foo)
+                 if err != nil {
+                   ...
+                 }
+                 ...
+                 foo := &pb.Foo{}
+                 if err := any.UnmarshalTo(foo); err != nil {
+                   ...
+                 }
+
+            The pack methods provided by protobuf library will by default use
+
+            'type.googleapis.com/full.type.name' as the type URL and the unpack
+
+            methods only use the fully qualified type name after the last '/'
+
+            in the type URL, for example "foo.bar.com/x/y.z" will yield type
+
+            name "y.z".
+
+
+
+            JSON
+
+            ====
+
+            The JSON representation of an `Any` value uses the regular
+
+            representation of the deserialized, embedded message, with an
+
+            additional field `@type` which contains the type URL. Example:
+
+                package google.profile;
+                message Person {
+                  string first_name = 1;
+                  string last_name = 2;
+                }
+
+                {
+                  "@type": "type.googleapis.com/google.profile.Person",
+                  "firstName": <string>,
+                  "lastName": <string>
+                }
+
+            If the embedded message type is well-known and has a custom JSON
+
+            representation, that representation will be embedded adding a field
+
+            `value` which holds the custom JSON in addition to the `@type`
+
+            field. Example (for message [google.protobuf.Duration][]):
+
+                {
+                  "@type": "type.googleapis.com/google.protobuf.Duration",
+                  "value": "1.212s"
+                }
   cosmos.authz.v1beta1.Grant:
     type: object
     properties:
@@ -49006,6 +47388,18 @@ definitions:
     description: |-
       SendEnabled maps coin denom to a send_enabled status (whether a denom is
       sendable).
+  cosmos.base.v1beta1.Coin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      Coin defines a token with a denomination and an amount.
+
+      NOTE: The amount field is an Int which implements the custom method
+      signatures required by gogoproto.
   cosmos.base.tendermint.v1beta1.ABCIQueryResponse:
     type: object
     properties:
@@ -55271,6 +53665,18 @@ definitions:
   cosmos.crisis.v1beta1.MsgVerifyInvariantResponse:
     type: object
     description: MsgVerifyInvariantResponse defines the Msg/VerifyInvariant response type.
+  cosmos.base.v1beta1.DecCoin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      DecCoin defines a token with a denomination and a decimal amount.
+
+      NOTE: The amount field is an Dec which implements the custom method
+      signatures required by gogoproto.
   cosmos.distribution.v1beta1.DelegationDelegatorReward:
     type: object
     properties:
