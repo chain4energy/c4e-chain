@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 
-option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
+option go_package = "github.com/chain4energy/c4echain/x/cfeminter/types";
 
 message MinterConfig {
   google.protobuf.Timestamp start_time = 2 [

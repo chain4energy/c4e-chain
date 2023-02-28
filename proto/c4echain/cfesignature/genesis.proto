@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "c4echain/cfesignature/params.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
-option go_package = "github.com/chain4energy/c4e-chain/x/cfesignature/types";
+option go_package = "github.com/chain4energy/c4echain/x/cfesignature/types";
 
 // GenesisState defines the cfesignature module's genesis state.
 message GenesisState {

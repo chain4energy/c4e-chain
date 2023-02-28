@@ -3,7 +3,7 @@ package chain4energy.c4echain.cfeminter;
 
 // this line is used by starport scaffolding # proto/tx/import
 
-option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
+option go_package = "github.com/chain4energy/c4echain/x/cfeminter/types";
 
 // Msg defines the Msg service.
 service Msg {
