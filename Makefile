@@ -152,7 +152,7 @@ E2E_SCRIPT_NAME=chain
 test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-migration
 
 run-e2e-chain: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions
+	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions -count=1
 
 test-e2e-ibc: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestIbcSuite
@@ -167,8 +167,9 @@ test-e2e-migration: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
 
 SPECIFIC_TEST_NAME=TestMainnetVestingsMigration
+SPECIFIC_TESTING_SUITE_NAME=TestMainnetMigrationSuite
 test-e2e-run-specific-test: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=false go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
+	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=false go test -mod=readonly -timeout=25m -v $ -run $(SPECIFIC_TESTING_SUITE_NAME) $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 
 e2e-setup: e2e-cleanup
 	@echo Finished e2e environment setup, ready to start the test
@@ -178,7 +179,6 @@ e2e-check-image-sha:
 
 e2e-cleanup:
 	tests/e2e/scripts/run/remove_stale_resources.sh
-	rm -rf tests/e2e/scripts/.c4e-chain
 
 build-e2e-script:
 	mkdir -p $(BUILDDIR)

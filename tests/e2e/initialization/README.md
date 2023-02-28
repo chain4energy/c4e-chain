@@ -6,10 +6,10 @@ This package contains all logic necessary for initializing configuration
 data either for a new chain or a single node via Docker containers.
 
 The motivation for doing this via Docker is to be able to initialize
-configs of any Osmosis version.
+configs of any Chain4Energy version.
 
-For example, while the latest Osmosis version is v9,
-we might want to spin up a chain of v8 and test the upgrade.
+For example, while the latest Chain4Energy version is v1.2.0,
+we might want to spin up a chain of v1.1.0 and test the upgrade.
 
 Additionally, there are known file permission errors when initializing
 configurations as non-root. This is troublesome both in CI and locally.
@@ -30,7 +30,7 @@ any of these local scripts
 
 ## Scripts
 
-### Initializing a Chain (`chain`)
+### Initializing a Chain
 
 From root folder:
 
@@ -47,7 +47,6 @@ When running a container with the specified script, it must mount a folder on a 
 to have all configuration files produced.
 
 Additionally, it takes the following arguments:
-
 - `--data-dir`
   - the location of where the configuration data is written inside
     the container (string)
@@ -63,65 +62,65 @@ Additionally, it takes the following arguments:
   - The configurable voting period duration for the chain
 
 ```go
-    tmpDir, _ := os.MkdirTemp("", "osmosis-e2e-testnet-")
+tmpDir, _ := os.MkdirTemp("", "chain4energyn-e2e-testnet-")
 
- initResource, _ = s.dkrPool.RunWithOptions(
-  &dockertest.RunOptions{
-   Name:       fmt.Sprintf("%s", chainId),
-   Repository: s.dockerImages.InitRepository,
-   Tag:        s.dockerImages.InitTag,
-   NetworkID:  s.dkrNet.Network.ID,
-   Cmd: []string{
-    fmt.Sprintf("--data-dir=%s", tmpDir),
-    fmt.Sprintf("--chain-id=%s", chainId),
-    fmt.Sprintf("--config=%s", nodeConfigBytes),
-    fmt.Sprintf("--voting-period=%v", votingPeriodDuration),
-   },
-   User: "root:root",
-   Mounts: []string{
-    fmt.Sprintf("%s:%s", tmpDir, tmpDir), 
-   },
-  },
-  noRestart,
- )
+initResource, _ = s.dkrPool.RunWithOptions(
+&dockertest.RunOptions{
+ Name:       fmt.Sprintf("%s", chainId),
+ Repository: s.dockerImages.InitRepository,
+ Tag:        s.dockerImages.InitTag,
+ NetworkID:  s.dkrNet.Network.ID,
+ Cmd: []string{
+  fmt.Sprintf("--data-dir=%s", tmpDir),
+  fmt.Sprintf("--chain-id=%s", chainId),
+  fmt.Sprintf("--config=%s", nodeConfigBytes),
+  fmt.Sprintf("--voting-period=%v", votingPeriodDuration),
+ },
+ User: "root:root",
+ Mounts: []string{
+  fmt.Sprintf("%s:%s", tmpDir, tmpDir), 
+ },
+},
+noRestart,
+)
 ```
 
 #### Container Output
 
-Assumming that a the container was correctly mounted on a volume,
+Assumming that the container was correctly mounted on a volume,
 it produces the following:
 
-- `osmo-test-< chain id >-encode` file
+- `chain4energy-test-< chain id >-encode` file
   - This is encoded metadata about the newly created chain with its nodes
-- `osmo-test-< chain id >` folder
-  - For every `NodeCondig` provided to the container, it will produce a folder
-    with the respective node configs
+- `chain4energy-test-< chain id >` folder
+- For every `NodeCondig` provided to the container, it will produce a folder
+  with the respective node configs
 
 Example:
 
 ```sh
-$:/tmp/osmosis-e2e-testnet-1167397304 $ ls
+$:/tmp/chain4energy-e2e-testnet-1167397304 $ ls
 osmo-test-a  osmo-test-a-encode
 
-$:/tmp/osmosis-e2e-testnet-1167397304/osmo-test-a $ cd  osmo-test-a
+$:/tmp/chain4energy-e2e-testnet-1167397304/c4e-chain-test-a $ cd  osmo-test-a
 
-$:/tmp/osmosis-e2e-testnet-1167397304/osmo-test-a $ ls
-osmo-test-a-osmosis-00  osmo-test-a-osmosis-11  osmo-test-a-osmosis-22  osmo-test-a-osmosis-33
+$:/tmp/chain4energy-e2e-testnet-1167397304/c4e-chain-test-a $ ls
+c4e-chain-test-a-00  c4e-chain-test-a-11  c4e-chain-test-a-22  osmo-test-a-33
 
-$:/tmp/osmosis-e2e-testnet-1167397304/osmo-test-a $ cd  osmo-test-a-osmosis-00
+$:/tmp/chain4energy-e2e-testnet-1167397304/c4e-chain-test-a $ cd  c4e-chain-test-a-00
 
-$:/tmp/osmosis-e2e-testnet-1167397304/osmo-test-a/osmo-test-a-osmosis-00 $ ls
+$:/tmp/chain4energy-e2e-testnet-1167397304/c4e-chain-test-a/c4e-chain-test-a-00 $ ls
 config  data  keyring-test  wasm
 ```
 
 - Here we mounted the container on
-`/tmp/osmosis-e2e-testnet-1167397304/osmo-test`as a volume
+`/tmp/chain4energy-e2e-testnet-1167397304/c4e-chain-test`as a volume
 - < chain id > = "a"
 - 4 `NodeConfig`s were provided via the `--config` flag
-- `osmo-test-a-encode` output file corresponds to the serialized `Chain` struct
+- `c4e-chain-test-a-encode` output file corresponds to the serialized `Chain` struct
 defined in `tests/e2e/chain/chain.go`
 
-### Initializing a Node (`node`)
+### Initializing a Node
 
 ```sh
 make docker-build-e2e-init-node

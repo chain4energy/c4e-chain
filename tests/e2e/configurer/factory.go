@@ -105,7 +105,7 @@ var (
 // - If !isIBCEnabled and !isUpgradeEnabled, we only need one chain at the current
 // Git branch version of the C4e code.
 func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings UpgradeSettings) (Configurer, error) {
-	containerManager, err := containers.NewManager(upgradeSettings.IsEnabled, upgradeSettings.ForkHeight > 0, isDebugLogEnabled)
+	containerManager, err := containers.NewManager(upgradeSettings.IsEnabled, isDebugLogEnabled)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,6 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings Upg
 			withUpgrade(withIBC(baseSetup)), // base set up with IBC and upgrade
 			containerManager,
 			upgradeSettings.Version,
-			upgradeSettings.ForkHeight,
 		), nil
 	} else if upgradeSettings.IsEnabled {
 		return NewUpgradeConfigurer(t,
@@ -131,7 +130,6 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings Upg
 			withUpgrade(baseSetup), // base set up with IBC and upgrade
 			containerManager,
 			upgradeSettings.Version,
-			upgradeSettings.ForkHeight,
 		), nil
 	} else if isIBCEnabled {
 		// configure two chains from current Git branch
