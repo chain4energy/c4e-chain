@@ -1,8 +1,8 @@
 package types
 
 var (
-	VestingTypesKeyPrefix = []byte{0x01}
-
+	ParamsKey                    = []byte{0x00}
+	VestingTypesKeyPrefix        = []byte{0x01}
 	AccountVestingPoolsKeyPrefix = []byte{0x02}
 )
 

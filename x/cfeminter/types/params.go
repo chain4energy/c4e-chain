@@ -4,7 +4,6 @@ import (
 	fmt "fmt"
 	"time"
 
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
 
@@ -23,13 +22,6 @@ var (
 	}
 ) //
 
-var _ paramtypes.ParamSet = (*Params)(nil)
-
-// ParamKeyTable the param key table for launch module
-func ParamKeyTable() paramtypes.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
-}
-
 // NewParams creates a new Params instance
 func NewParams(denom string, minterConfig MinterConfig) Params {
 	return Params{MintDenom: denom, MinterConfig: minterConfig}
@@ -38,14 +30,6 @@ func NewParams(denom string, minterConfig MinterConfig) Params {
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
 	return NewParams(DefaultMintDenom, DefaultMinters)
-}
-
-// ParamSetPairs get the params.ParamSet
-func (params *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyMintDenom, &params.MintDenom, validateDenom),
-		paramtypes.NewParamSetPair(KeyMinterConfig, &params.MinterConfig, validateMinters),
-	}
 }
 
 // Validate validates the set of params

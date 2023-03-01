@@ -5,26 +5,37 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// GetParams get all parameters as types.Params
-func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	minters := k.MinterConfig(ctx)
-	return types.NewParams(k.MintDenom(ctx), minters)
+// SetParams sets the x/mint module parameters.
+func (k Keeper) SetParams(ctx sdk.Context, p types.Params) error {
+	if err := p.Validate(); err != nil {
+		return err
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&p)
+	store.Set(types.ParamsKey, bz)
+
+	return nil
 }
 
-// SetParams set the params
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+// GetParams returns the current x/mint module parameters.
+func (k Keeper) GetParams(ctx sdk.Context) (p types.Params) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return p
+	}
 
-	k.paramstore.SetParamSet(ctx, &params)
+	k.cdc.MustUnmarshal(bz, &p)
+	return p
 }
 
 // MintDenom returns the denom param
 func (k Keeper) MintDenom(ctx sdk.Context) (res string) {
-	k.paramstore.Get(ctx, types.KeyMintDenom, &res)
-	return
+	return k.GetParams(ctx).MintDenom
 }
 
 // MintDenom returns the denom param
 func (k Keeper) MinterConfig(ctx sdk.Context) (res types.MinterConfig) {
-	k.paramstore.Get(ctx, types.KeyMinterConfig, &res)
-	return
+	return k.GetParams(ctx).MinterConfig
 }

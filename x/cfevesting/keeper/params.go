@@ -5,18 +5,32 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// GetParams get all parameters as types.Params
-func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	return types.NewParams(k.Denom(ctx))
+// SetParams sets the x/mint module parameters.
+func (k Keeper) SetParams(ctx sdk.Context, p types.Params) error {
+	if err := p.Validate(); err != nil {
+		return err
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&p)
+	store.Set(types.ParamsKey, bz)
+
+	return nil
 }
 
-// SetParams set the params
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
-	k.paramstore.SetParamSet(ctx, &params)
+// GetParams returns the current x/mint module parameters.
+func (k Keeper) GetParams(ctx sdk.Context) (p types.Params) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return p
+	}
+
+	k.cdc.MustUnmarshal(bz, &p)
+	return p
 }
 
 // Denom returns the denom param
 func (k Keeper) Denom(ctx sdk.Context) (res string) {
-	k.paramstore.Get(ctx, types.KeyDenom, &res)
-	return
-} //
+	return k.GetParams(ctx).Denom
+}

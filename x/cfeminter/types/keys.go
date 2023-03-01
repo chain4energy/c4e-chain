@@ -1,9 +1,12 @@
 package types
 
 // MinterKey is the key to use for the keeper store.
-var IsGenesisKey = []byte{0x01}
-var MinterStateKey = []byte{0x02}
-var MinterStateHistoryKeyPrefix = []byte{0x03}
+var (
+	ParamsKey                   = []byte{0x00}
+	IsGenesisKey                = []byte{0x01}
+	MinterStateKey              = []byte{0x02}
+	MinterStateHistoryKeyPrefix = []byte{0x03}
+)
 
 const (
 	// ModuleName defines the module name
