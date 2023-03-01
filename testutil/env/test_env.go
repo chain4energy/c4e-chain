@@ -17,3 +17,5 @@ var TestEnvTime = time.Now()
 
 const DefaultTestDenom = "uc4e"
 const DefaultDistributionDestination = cfedistributortypes.GreenEnergyBoosterCollector
+
+const AuthorityModuleAddress = "c4e10d07y265gmmuvt4z0w9aw880jnsr700je62g0d"

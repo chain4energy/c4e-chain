@@ -63,6 +63,7 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight in
 		nil,
 		nil,
 		nil,
+		testenv.AuthorityModuleAddress,
 	)
 
 	header := tmproto.Header{}

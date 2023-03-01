@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/x/cfesignature/keeper"
@@ -45,6 +46,7 @@ func CfesignatureKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		memStoreKey,
 		paramsSubspace,
 		accountKeeper,
+		testenv.AuthorityModuleAddress,
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())

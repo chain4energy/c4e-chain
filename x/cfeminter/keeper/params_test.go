@@ -40,7 +40,8 @@ func TestSetParamsNoDenom(t *testing.T) {
 	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
 	params.MintDenom = ""
-	require.PanicsWithValue(t, "value from ParamSetPair is invalid: denom cannot be empty", func() { k.SetParams(ctx, params) })
+	err := k.SetParams(ctx, params)
+	require.Error(t, err, "denom cannot be empty")
 }
 
 func TestSetParamsWrongMinterEndTime(t *testing.T) {
@@ -53,6 +54,6 @@ func TestSetParamsWrongMinterEndTime(t *testing.T) {
 		StartTime: time.Now().Add(time.Hour),
 		Minters:   minters,
 	}
-
-	require.PanicsWithValue(t, "value from ParamSetPair is invalid: first minter end must be bigger than minter start", func() { k.SetParams(ctx, params) })
+	err := k.SetParams(ctx, params)
+	require.Error(t, err, "first minter end must be bigger than minter start")
 }
