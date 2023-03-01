@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) UpdateDenomParam(goCtx context.Context, msg *types.MsgUpdateDenomParam) (*types.MsgUpdateDenomParamResponse, error) {
+func (k msgServer) UpdateDenom(goCtx context.Context, msg *types.MsgUpdateDenom) (*types.MsgUpdateDenomResponse, error) {
 	if k.authority != msg.Authority {
 		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
 	}
@@ -25,5 +25,5 @@ func (k msgServer) UpdateDenomParam(goCtx context.Context, msg *types.MsgUpdateD
 		return nil, err
 	}
 
-	return &types.MsgUpdateDenomParamResponse{}, nil
+	return &types.MsgUpdateDenomResponse{}, nil
 }

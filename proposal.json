@@ -1,0 +1,12 @@
+{
+  "messages": [
+    {
+      "@type": "/chain4energy.c4echain.cfedistributor.MsgUpdateParams",
+      "authority": "c4e10d07y265gmmuvt4z0w9aw880jnsr700je62g0d",
+      "denom": "denom2"
+    }
+  ],
+  "metadata": "custom_metadata",
+  "deposit": "10000000000uc4e"
+}
+

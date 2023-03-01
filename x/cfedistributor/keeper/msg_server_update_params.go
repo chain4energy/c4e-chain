@@ -9,15 +9,34 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+func (k msgServer) UpdateAllSubDistributors(goCtx context.Context, msg *types.MsgUpdateAllSubDistributors) (*types.MsgUpdateAllSubDistributorsResponse, error) {
 	if k.authority != msg.Authority {
 		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
 	}
-	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.SetParams(ctx, msg.Params); err != nil {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.SetParams(ctx, types.Params{SubDistributors: msg.SubDistributors}); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgUpdateParamsResponse{}, nil
+	return &types.MsgUpdateAllSubDistributorsResponse{}, nil
+}
+
+func (k msgServer) UpdateSingleSubdistributor(goCtx context.Context, distributor *types.MsgUpdateSingleSubdistributor) (*types.MsgUpdateSingleSubdistributorResponse, error) {
+	if k.authority != distributor.Authority {
+		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, distributor.Authority)
+	}
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	subDistributors := k.Keeper.GetParams(ctx).SubDistributors
+	for i, subDistributor := range subDistributors {
+		if subDistributor.Name == distributor.SubDistributor.Name {
+			subDistributors[i] = *distributor.SubDistributor
+			if err := k.SetParams(ctx, types.Params{SubDistributors: subDistributors}); err != nil {
+				return nil, sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
+			}
+			return &types.MsgUpdateSingleSubdistributorResponse{}, nil
+		}
+	}
+
+	return nil, sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "distributor not found")
 }

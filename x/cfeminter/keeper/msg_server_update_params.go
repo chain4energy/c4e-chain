@@ -9,15 +9,28 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+func (k msgServer) UpdateMinters(goCtx context.Context, msg *types.MsgUpdateMinters) (*types.MsgUpdateMintersResponse, error) {
 	if k.authority != msg.Authority {
 		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	if err := k.SetParams(ctx, msg.Params); err != nil {
-		return nil, err
+	params := k.GetParams(ctx)
+	params.MinterConfig.Minters = msg.Minters
+	if err := k.SetParams(ctx, params); err != nil {
+		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
 	}
 
-	return &types.MsgUpdateParamsResponse{}, nil
+	return &types.MsgUpdateMintersResponse{}, nil
+}
+
+func (k msgServer) UpdateMintDenom(goCtx context.Context, msg *types.MsgUpdateMintDenom) (*types.MsgUpdateMintDenomResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	params := k.GetParams(ctx)
+	params.MintDenom = msg.MintDenom
+	if err := k.SetParams(ctx, params); err != nil {
+		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
+
+	}
+
+	return &types.MsgUpdateMintDenomResponse{}, nil
 }

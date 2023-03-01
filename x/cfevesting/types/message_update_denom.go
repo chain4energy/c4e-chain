@@ -5,25 +5,19 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgUpdateDenomParam = "update_denom_param"
+const TypeMsgUpdateDenom = "update_denom"
 
-var _ sdk.Msg = &MsgUpdateDenomParam{}
+var _ sdk.Msg = &MsgUpdateDenom{}
 
-func NewMsgUpdateDenomParam(creator string) *MsgUpdateDenomParam {
-	return &MsgUpdateDenomParam{
-		Authority: creator,
-	}
-}
-
-func (msg *MsgUpdateDenomParam) Route() string {
+func (msg *MsgUpdateDenom) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUpdateDenomParam) Type() string {
-	return TypeMsgUpdateDenomParam
+func (msg *MsgUpdateDenom) Type() string {
+	return TypeMsgUpdateDenom
 }
 
-func (msg *MsgUpdateDenomParam) GetSigners() []sdk.AccAddress {
+func (msg *MsgUpdateDenom) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -31,12 +25,12 @@ func (msg *MsgUpdateDenomParam) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgUpdateDenomParam) GetSignBytes() []byte {
+func (msg *MsgUpdateDenom) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgUpdateDenomParam) ValidateBasic() error {
+func (msg *MsgUpdateDenom) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

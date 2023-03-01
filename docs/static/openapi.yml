@@ -44055,7 +44055,9 @@ definitions:
                   type: string
                 type:
                   type: string
-  chain4energy.c4echain.cfedistributor.MsgUpdateParamsResponse:
+  chain4energy.c4echain.cfedistributor.MsgUpdateAllSubDistributorsResponse:
+    type: object
+  chain4energy.c4echain.cfedistributor.MsgUpdateSingleSubdistributorResponse:
     type: object
   chain4energy.c4echain.cfedistributor.Params:
     type: object
@@ -44718,7 +44720,7 @@ definitions:
         format: date-time
       remainder_from_previous_period:
         type: string
-  chain4energy.c4echain.cfeminter.MsgUpdateParamsResponse:
+  chain4energy.c4echain.cfeminter.MsgUpdateMintersResponse:
     type: object
   chain4energy.c4echain.cfeminter.Params:
     type: object
@@ -44960,7 +44962,7 @@ definitions:
     type: object
   chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:
     type: object
-  chain4energy.c4echain.cfevesting.MsgUpdateDenomParamResponse:
+  chain4energy.c4echain.cfevesting.MsgUpdateDenomResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
     type: object

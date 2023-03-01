@@ -30,24 +30,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgUpdateParams struct {
+type MsgUpdateAllSubDistributors struct {
 	// authority is the address of the governance account.
-	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	Params    Params `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`
+	Authority       string           `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	SubDistributors []SubDistributor `protobuf:"bytes,2,rep,name=sub_distributors,json=subDistributors,proto3" json:"sub_distributors"`
 }
 
-func (m *MsgUpdateParams) Reset()         { *m = MsgUpdateParams{} }
-func (m *MsgUpdateParams) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateParams) ProtoMessage()    {}
-func (*MsgUpdateParams) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateAllSubDistributors) Reset()         { *m = MsgUpdateAllSubDistributors{} }
+func (m *MsgUpdateAllSubDistributors) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateAllSubDistributors) ProtoMessage()    {}
+func (*MsgUpdateAllSubDistributors) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{0}
 }
-func (m *MsgUpdateParams) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateAllSubDistributors) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateAllSubDistributors) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateParams.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateAllSubDistributors.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -57,47 +57,47 @@ func (m *MsgUpdateParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateParams) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateParams.Merge(m, src)
+func (m *MsgUpdateAllSubDistributors) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateAllSubDistributors.Merge(m, src)
 }
-func (m *MsgUpdateParams) XXX_Size() int {
+func (m *MsgUpdateAllSubDistributors) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateParams) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateParams.DiscardUnknown(m)
+func (m *MsgUpdateAllSubDistributors) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateAllSubDistributors.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateParams proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateAllSubDistributors proto.InternalMessageInfo
 
-func (m *MsgUpdateParams) GetAuthority() string {
+func (m *MsgUpdateAllSubDistributors) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgUpdateParams) GetParams() Params {
+func (m *MsgUpdateAllSubDistributors) GetSubDistributors() []SubDistributor {
 	if m != nil {
-		return m.Params
+		return m.SubDistributors
 	}
-	return Params{}
+	return nil
 }
 
-type MsgUpdateParamsResponse struct {
+type MsgUpdateAllSubDistributorsResponse struct {
 }
 
-func (m *MsgUpdateParamsResponse) Reset()         { *m = MsgUpdateParamsResponse{} }
-func (m *MsgUpdateParamsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateParamsResponse) ProtoMessage()    {}
-func (*MsgUpdateParamsResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateAllSubDistributorsResponse) Reset()         { *m = MsgUpdateAllSubDistributorsResponse{} }
+func (m *MsgUpdateAllSubDistributorsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateAllSubDistributorsResponse) ProtoMessage()    {}
+func (*MsgUpdateAllSubDistributorsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{1}
 }
-func (m *MsgUpdateParamsResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateAllSubDistributorsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateAllSubDistributorsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateParamsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateAllSubDistributorsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -107,46 +107,142 @@ func (m *MsgUpdateParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateParamsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateParamsResponse.Merge(m, src)
+func (m *MsgUpdateAllSubDistributorsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateAllSubDistributorsResponse.Merge(m, src)
 }
-func (m *MsgUpdateParamsResponse) XXX_Size() int {
+func (m *MsgUpdateAllSubDistributorsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateParamsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateParamsResponse.DiscardUnknown(m)
+func (m *MsgUpdateAllSubDistributorsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateAllSubDistributorsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateParamsResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateAllSubDistributorsResponse proto.InternalMessageInfo
+
+type MsgUpdateSingleSubdistributor struct {
+	// authority is the address of the governance account.
+	Authority      string          `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	SubDistributor *SubDistributor `protobuf:"bytes,2,opt,name=sub_distributor,json=subDistributor,proto3" json:"sub_distributor,omitempty"`
+}
+
+func (m *MsgUpdateSingleSubdistributor) Reset()         { *m = MsgUpdateSingleSubdistributor{} }
+func (m *MsgUpdateSingleSubdistributor) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSingleSubdistributor) ProtoMessage()    {}
+func (*MsgUpdateSingleSubdistributor) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{2}
+}
+func (m *MsgUpdateSingleSubdistributor) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSingleSubdistributor) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSingleSubdistributor.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSingleSubdistributor) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSingleSubdistributor.Merge(m, src)
+}
+func (m *MsgUpdateSingleSubdistributor) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSingleSubdistributor) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSingleSubdistributor.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSingleSubdistributor proto.InternalMessageInfo
+
+func (m *MsgUpdateSingleSubdistributor) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgUpdateSingleSubdistributor) GetSubDistributor() *SubDistributor {
+	if m != nil {
+		return m.SubDistributor
+	}
+	return nil
+}
+
+type MsgUpdateSingleSubdistributorResponse struct {
+}
+
+func (m *MsgUpdateSingleSubdistributorResponse) Reset()         { *m = MsgUpdateSingleSubdistributorResponse{} }
+func (m *MsgUpdateSingleSubdistributorResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSingleSubdistributorResponse) ProtoMessage()    {}
+func (*MsgUpdateSingleSubdistributorResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{3}
+}
+func (m *MsgUpdateSingleSubdistributorResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSingleSubdistributorResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSingleSubdistributorResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSingleSubdistributorResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSingleSubdistributorResponse.Merge(m, src)
+}
+func (m *MsgUpdateSingleSubdistributorResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSingleSubdistributorResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSingleSubdistributorResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSingleSubdistributorResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgUpdateParams)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateParams")
-	proto.RegisterType((*MsgUpdateParamsResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateParamsResponse")
+	proto.RegisterType((*MsgUpdateAllSubDistributors)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateAllSubDistributors")
+	proto.RegisterType((*MsgUpdateAllSubDistributorsResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateAllSubDistributorsResponse")
+	proto.RegisterType((*MsgUpdateSingleSubdistributor)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSingleSubdistributor")
+	proto.RegisterType((*MsgUpdateSingleSubdistributorResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSingleSubdistributorResponse")
 }
 
 func init() { proto.RegisterFile("c4echain/cfedistributor/tx.proto", fileDescriptor_666a85c20069e03a) }
 
 var fileDescriptor_666a85c20069e03a = []byte{
-	// 299 bytes of a gzipped FileDescriptorProto
+	// 380 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x48, 0x36, 0x49, 0x4d,
 	0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x4f, 0x4e, 0x4b, 0x4d, 0xc9, 0x2c, 0x2e, 0x29, 0xca, 0x4c, 0x2a,
 	0x2d, 0xc9, 0x2f, 0xd2, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x52, 0x01, 0x4b,
 	0x9b, 0xa4, 0xe6, 0xa5, 0x16, 0xa5, 0x57, 0xea, 0xc1, 0x94, 0xeb, 0xa1, 0x2a, 0x97, 0x12, 0x4f,
 	0xce, 0x2f, 0xce, 0xcd, 0x2f, 0xd6, 0xcf, 0x2d, 0x4e, 0xd7, 0x2f, 0x33, 0x04, 0x51, 0x10, 0xed,
 	0x52, 0x22, 0xe9, 0xf9, 0xe9, 0xf9, 0x60, 0xa6, 0x3e, 0x88, 0x05, 0x15, 0x95, 0x84, 0x28, 0x8f,
-	0x87, 0x48, 0x40, 0x38, 0x50, 0x29, 0x15, 0x5c, 0x2e, 0x2a, 0x48, 0x2c, 0x4a, 0xcc, 0x85, 0xaa,
-	0x52, 0xaa, 0xe6, 0xe2, 0xf7, 0x2d, 0x4e, 0x0f, 0x2d, 0x48, 0x49, 0x2c, 0x49, 0x0d, 0x00, 0x4b,
-	0x08, 0xc9, 0x70, 0x71, 0x26, 0x96, 0x96, 0x64, 0xe4, 0x17, 0x65, 0x96, 0x54, 0x4a, 0x30, 0x2a,
-	0x30, 0x6a, 0x70, 0x06, 0x21, 0x04, 0x84, 0xbc, 0xb8, 0xd8, 0x20, 0x06, 0x48, 0x30, 0x29, 0x30,
-	0x6a, 0x70, 0x1b, 0xe9, 0xe8, 0x11, 0xe3, 0x2f, 0x3d, 0x88, 0xd9, 0x4e, 0x2c, 0x27, 0xee, 0xc9,
-	0x33, 0x04, 0x41, 0x4d, 0x50, 0x92, 0xe4, 0x12, 0x47, 0xb3, 0x3c, 0x28, 0xb5, 0xb8, 0x20, 0x3f,
-	0xaf, 0x38, 0xd5, 0xa8, 0x87, 0x91, 0x8b, 0xd9, 0xb7, 0x38, 0x5d, 0xa8, 0x85, 0x91, 0x8b, 0x07,
-	0xc5, 0x75, 0xa6, 0xc4, 0xd9, 0x87, 0x66, 0xae, 0x94, 0x2d, 0x59, 0xda, 0x60, 0xce, 0x71, 0x0a,
-	0x3a, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96,
-	0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0x8b, 0xf4, 0xcc, 0x92, 0x8c,
-	0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0x64, 0x2b, 0xf4, 0x93, 0x4d, 0x52, 0x75, 0x21, 0xe1,
-	0x5f, 0x81, 0x91, 0x26, 0x2a, 0x0b, 0x52, 0x8b, 0x93, 0xd8, 0xc0, 0x31, 0x60, 0x0c, 0x08, 0x00,
-	0x00, 0xff, 0xff, 0x44, 0xae, 0x7b, 0x8f, 0x3b, 0x02, 0x00, 0x00,
+	0x87, 0x48, 0x40, 0x38, 0x50, 0x29, 0x5d, 0x5c, 0x2e, 0x2a, 0x2e, 0x4d, 0x8a, 0x47, 0xe2, 0x43,
+	0x94, 0x2b, 0x2d, 0x62, 0xe4, 0x92, 0xf6, 0x2d, 0x4e, 0x0f, 0x2d, 0x48, 0x49, 0x2c, 0x49, 0x75,
+	0xcc, 0xc9, 0x09, 0x2e, 0x4d, 0x72, 0x41, 0x28, 0x2a, 0x16, 0x92, 0xe1, 0xe2, 0x4c, 0x2c, 0x2d,
+	0xc9, 0xc8, 0x2f, 0xca, 0x2c, 0xa9, 0x94, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c, 0x42, 0x08, 0x08,
+	0xa5, 0x72, 0x09, 0xa0, 0x19, 0x5b, 0x2c, 0xc1, 0xa4, 0xc0, 0xac, 0xc1, 0x6d, 0x64, 0xa2, 0x47,
+	0x8c, 0xbf, 0xf5, 0x50, 0xad, 0x73, 0x62, 0x39, 0x71, 0x4f, 0x9e, 0x21, 0x88, 0xbf, 0x18, 0xd5,
+	0x11, 0x4a, 0xaa, 0x5c, 0xca, 0x78, 0xdc, 0x18, 0x94, 0x5a, 0x5c, 0x90, 0x9f, 0x57, 0x9c, 0xaa,
+	0x34, 0x87, 0x91, 0x4b, 0x16, 0xae, 0x2e, 0x38, 0x33, 0x2f, 0x3d, 0x27, 0x35, 0xb8, 0x34, 0x09,
+	0xc9, 0x3a, 0x02, 0xbe, 0x89, 0xe5, 0xe2, 0x47, 0xf3, 0x8d, 0x04, 0x93, 0x02, 0x23, 0xb9, 0x9e,
+	0x09, 0xe2, 0x43, 0xf5, 0x86, 0x92, 0x3a, 0x97, 0x2a, 0x5e, 0xd7, 0xc1, 0xfc, 0x61, 0xf4, 0x90,
+	0x89, 0x8b, 0xd9, 0xb7, 0x38, 0x5d, 0x68, 0x05, 0x23, 0x97, 0x04, 0xce, 0x88, 0x71, 0x24, 0xce,
+	0x4d, 0x78, 0xc2, 0x4d, 0xca, 0x93, 0x62, 0x23, 0x60, 0x4e, 0x16, 0x5a, 0xc7, 0xc8, 0x25, 0x85,
+	0x27, 0xdc, 0x9d, 0x49, 0xb4, 0x09, 0x9b, 0x21, 0x52, 0xde, 0x54, 0x30, 0x04, 0xe6, 0x60, 0xa7,
+	0xa0, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63,
+	0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18, 0x6e, 0x3c, 0x96, 0x63, 0x88, 0xb2, 0x48, 0xcf, 0x2c, 0xc9,
+	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x47, 0xb6, 0x50, 0x3f, 0xd9, 0x24, 0x55, 0x17, 0x92,
+	0xb3, 0x2a, 0x30, 0x72, 0x7b, 0x65, 0x41, 0x6a, 0x71, 0x12, 0x1b, 0x38, 0x4b, 0x19, 0x03, 0x02,
+	0x00, 0x00, 0xff, 0xff, 0xc3, 0x78, 0xd6, 0x0d, 0x15, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -162,7 +258,8 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
 	// this line is used by starport scaffolding # proto/tx/rpc
-	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
+	UpdateAllSubDistributors(ctx context.Context, in *MsgUpdateAllSubDistributors, opts ...grpc.CallOption) (*MsgUpdateAllSubDistributorsResponse, error)
+	UpdateSingleSubdistributor(ctx context.Context, in *MsgUpdateSingleSubdistributor, opts ...grpc.CallOption) (*MsgUpdateSingleSubdistributorResponse, error)
 }
 
 type msgClient struct {
@@ -173,9 +270,18 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error) {
-	out := new(MsgUpdateParamsResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateParams", in, out, opts...)
+func (c *msgClient) UpdateAllSubDistributors(ctx context.Context, in *MsgUpdateAllSubDistributors, opts ...grpc.CallOption) (*MsgUpdateAllSubDistributorsResponse, error) {
+	out := new(MsgUpdateAllSubDistributorsResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateAllSubDistributors", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateSingleSubdistributor(ctx context.Context, in *MsgUpdateSingleSubdistributor, opts ...grpc.CallOption) (*MsgUpdateSingleSubdistributorResponse, error) {
+	out := new(MsgUpdateSingleSubdistributorResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateSingleSubdistributor", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -185,35 +291,57 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// this line is used by starport scaffolding # proto/tx/rpc
-	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
+	UpdateAllSubDistributors(context.Context, *MsgUpdateAllSubDistributors) (*MsgUpdateAllSubDistributorsResponse, error)
+	UpdateSingleSubdistributor(context.Context, *MsgUpdateSingleSubdistributor) (*MsgUpdateSingleSubdistributorResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) UpdateParams(ctx context.Context, req *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
+func (*UnimplementedMsgServer) UpdateAllSubDistributors(ctx context.Context, req *MsgUpdateAllSubDistributors) (*MsgUpdateAllSubDistributorsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAllSubDistributors not implemented")
+}
+func (*UnimplementedMsgServer) UpdateSingleSubdistributor(ctx context.Context, req *MsgUpdateSingleSubdistributor) (*MsgUpdateSingleSubdistributorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSingleSubdistributor not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateParams)
+func _Msg_UpdateAllSubDistributors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateAllSubDistributors)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateParams(ctx, in)
+		return srv.(MsgServer).UpdateAllSubDistributors(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateParams",
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateAllSubDistributors",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateParams(ctx, req.(*MsgUpdateParams))
+		return srv.(MsgServer).UpdateAllSubDistributors(ctx, req.(*MsgUpdateAllSubDistributors))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateSingleSubdistributor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateSingleSubdistributor)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateSingleSubdistributor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateSingleSubdistributor",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateSingleSubdistributor(ctx, req.(*MsgUpdateSingleSubdistributor))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -223,15 +351,19 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UpdateParams",
-			Handler:    _Msg_UpdateParams_Handler,
+			MethodName: "UpdateAllSubDistributors",
+			Handler:    _Msg_UpdateAllSubDistributors_Handler,
+		},
+		{
+			MethodName: "UpdateSingleSubdistributor",
+			Handler:    _Msg_UpdateSingleSubdistributor_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "c4echain/cfedistributor/tx.proto",
 }
 
-func (m *MsgUpdateParams) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateAllSubDistributors) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -241,26 +373,30 @@ func (m *MsgUpdateParams) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateParams) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateAllSubDistributors) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateAllSubDistributors) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	{
-		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
+	if len(m.SubDistributors) > 0 {
+		for iNdEx := len(m.SubDistributors) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SubDistributors[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
 		}
-		i -= size
-		i = encodeVarintTx(dAtA, i, uint64(size))
 	}
-	i--
-	dAtA[i] = 0x12
 	if len(m.Authority) > 0 {
 		i -= len(m.Authority)
 		copy(dAtA[i:], m.Authority)
@@ -271,7 +407,7 @@ func (m *MsgUpdateParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateParamsResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateAllSubDistributorsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -281,12 +417,77 @@ func (m *MsgUpdateParamsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateParamsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateAllSubDistributorsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateAllSubDistributorsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateSingleSubdistributor) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSingleSubdistributor) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSingleSubdistributor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.SubDistributor != nil {
+		{
+			size, err := m.SubDistributor.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateSingleSubdistributorResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSingleSubdistributorResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSingleSubdistributorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -305,7 +506,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgUpdateParams) Size() (n int) {
+func (m *MsgUpdateAllSubDistributors) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -315,12 +516,42 @@ func (m *MsgUpdateParams) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = m.Params.Size()
-	n += 1 + l + sovTx(uint64(l))
+	if len(m.SubDistributors) > 0 {
+		for _, e := range m.SubDistributors {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
 	return n
 }
 
-func (m *MsgUpdateParamsResponse) Size() (n int) {
+func (m *MsgUpdateAllSubDistributorsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateSingleSubdistributor) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.SubDistributor != nil {
+		l = m.SubDistributor.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateSingleSubdistributorResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -335,7 +566,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgUpdateParams) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateAllSubDistributors) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -358,10 +589,10 @@ func (m *MsgUpdateParams) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateParams: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateAllSubDistributors: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateParams: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateAllSubDistributors: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -398,7 +629,7 @@ func (m *MsgUpdateParams) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SubDistributors", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -425,7 +656,8 @@ func (m *MsgUpdateParams) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.SubDistributors = append(m.SubDistributors, SubDistributor{})
+			if err := m.SubDistributors[len(m.SubDistributors)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -450,7 +682,7 @@ func (m *MsgUpdateParams) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateParamsResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateAllSubDistributorsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -473,10 +705,178 @@ func (m *MsgUpdateParamsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateParamsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateAllSubDistributorsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateAllSubDistributorsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSingleSubdistributor) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSingleSubdistributor: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSingleSubdistributor: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubDistributor", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.SubDistributor == nil {
+				m.SubDistributor = &SubDistributor{}
+			}
+			if err := m.SubDistributor.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSingleSubdistributorResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSingleSubdistributorResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSingleSubdistributorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
