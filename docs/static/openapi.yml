@@ -44960,7 +44960,7 @@ definitions:
     type: object
   chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:
     type: object
-  chain4energy.c4echain.cfevesting.MsgUpdateParamsResponse:
+  chain4energy.c4echain.cfevesting.MsgUpdateDenomParamResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
     type: object

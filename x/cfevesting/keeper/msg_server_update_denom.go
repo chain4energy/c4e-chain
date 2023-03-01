@@ -9,15 +9,21 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+func (k msgServer) UpdateDenomParam(goCtx context.Context, msg *types.MsgUpdateDenomParam) (*types.MsgUpdateDenomParamResponse, error) {
 	if k.authority != msg.Authority {
 		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	poolList := k.GetAllAccountVestingPools(ctx)
 
-	if err := k.SetParams(ctx, msg.Params); err != nil {
+	if len(poolList) > 0 {
+		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidProposalMsg, "Pool exist cannot change denom")
+
+	}
+
+	if err := k.SetParams(ctx, types.Params{Denom: msg.Denom}); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgUpdateParamsResponse{}, nil
+	return &types.MsgUpdateDenomParamResponse{}, nil
 }

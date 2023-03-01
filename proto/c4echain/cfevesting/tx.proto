@@ -18,7 +18,7 @@ service Msg {
   rpc WithdrawAllAvailable(MsgWithdrawAllAvailable) returns (MsgWithdrawAllAvailableResponse);
   rpc CreateVestingAccount(MsgCreateVestingAccount) returns (MsgCreateVestingAccountResponse);
   rpc SendToVestingAccount(MsgSendToVestingAccount) returns (MsgSendToVestingAccountResponse);
-  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+  rpc UpdateParams(MsgUpdateDenomParam) returns (MsgUpdateDenomParamResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -85,11 +85,11 @@ message MsgSendToVestingAccountResponse {}
 
 // this line is used by starport scaffolding # proto/tx/message
 
-message MsgUpdateParams {
+message MsgUpdateDenomParam {
   // authority is the address of the governance account.
   string authority = 1;
+  string denom = 2;
 
-  Params params = 2 [(gogoproto.nullable) = false];
 }
 
-message MsgUpdateParamsResponse {}
+message MsgUpdateDenomParamResponse {}
