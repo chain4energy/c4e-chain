@@ -106,17 +106,15 @@ var CfeDistributorParams = distributortypes.Params{
 
 var CfeMinterrParams = mintertypes.Params{
 	MintDenom: "uc4e",
-	MinterConfig: mintertypes.MinterConfig{
-		StartTime: time.Now(),
-		Minters: []*mintertypes.Minter{
-			{
-				SequenceId: 1,
-				Type:       mintertypes.ExponentialStepMintingType,
-				ExponentialStepMinting: &mintertypes.ExponentialStepMinting{
-					StepDuration:     time.Hour * 24 * 365 * 4, // 4 years
-					Amount:           sdk.NewInt(160000000000000),
-					AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
-				},
+	StartTime: time.Now(),
+	Minters: []*mintertypes.Minter{
+		{
+			SequenceId: 1,
+			Type:       mintertypes.ExponentialStepMintingType,
+			ExponentialStepMinting: &mintertypes.ExponentialStepMinting{
+				StepDuration:     time.Hour * 24 * 365 * 4, // 4 years
+				Amount:           sdk.NewInt(160000000000000),
+				AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
 			},
 		},
 	},

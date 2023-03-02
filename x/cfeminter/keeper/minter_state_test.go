@@ -17,7 +17,7 @@ func TestGetMinterState(t *testing.T) {
 		SequenceId:                  7,
 		AmountMinted:                sdk.NewInt(123412),
 		RemainderToMint:             sdk.ZeroDec(),
-		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+		RemainderFromPreviousMinter: sdk.ZeroDec(),
 		LastMintBlockTime:           time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC),
 	}
 

@@ -31,7 +31,7 @@ package v110
 //		SequenceId:                  uint32(oldMinterState.Position),
 //		AmountMinted:                oldMinterState.AmountMinted,
 //		LastMintBlockTime:           oldMinterState.LastMintBlockTime,
-//		RemainderFromPreviousPeriod: oldMinterState.RemainderFromPreviousPeriod,
+//		RemainderFromPreviousMinter: oldMinterState.RemainderFromPreviousMinter,
 //		RemainderToMint:             oldMinterState.RemainderToMint,
 //	}
 //	err := newMinterState.Validate()
@@ -77,7 +77,7 @@ package v110
 //			SequenceId:                  uint32(oldMinterState.Position),
 //			AmountMinted:                oldMinterState.AmountMinted,
 //			LastMintBlockTime:           oldMinterState.LastMintBlockTime,
-//			RemainderFromPreviousPeriod: oldMinterState.RemainderFromPreviousPeriod,
+//			RemainderFromPreviousMinter: oldMinterState.RemainderFromPreviousMinter,
 //			RemainderToMint:             oldMinterState.RemainderToMint,
 //		}
 //		err := newMinterState.Validate()

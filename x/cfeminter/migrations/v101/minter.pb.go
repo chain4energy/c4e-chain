@@ -258,7 +258,7 @@ type MinterState struct {
 	AmountMinted                github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=amount_minted,json=amountMinted,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount_minted"`
 	RemainderToMint             github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=remainder_to_mint,json=remainderToMint,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"remainder_to_mint"`
 	LastMintBlockTime           time.Time                              `protobuf:"bytes,4,opt,name=last_mint_block_time,json=lastMintBlockTime,proto3,stdtime" json:"last_mint_block_time"`
-	RemainderFromPreviousPeriod github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,5,opt,name=remainder_from_previous_period,json=remainderFromPreviousPeriod,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"remainder_from_previous_period"`
+	RemainderFromPreviousMinter github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,5,opt,name=remainder_from_previous_period,json=remainderFromPreviousMinter,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"remainder_from_previous_period"`
 }
 
 func (m *MinterState) Reset()         { *m = MinterState{} }
@@ -583,9 +583,9 @@ func (m *MinterState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	{
-		size := m.RemainderFromPreviousPeriod.Size()
+		size := m.RemainderFromPreviousMinter.Size()
 		i -= size
-		if _, err := m.RemainderFromPreviousPeriod.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.RemainderFromPreviousMinter.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintMinter(dAtA, i, uint64(size))
@@ -729,7 +729,7 @@ func (m *MinterState) Size() (n int) {
 	n += 1 + l + sovMinter(uint64(l))
 	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastMintBlockTime)
 	n += 1 + l + sovMinter(uint64(l))
-	l = m.RemainderFromPreviousPeriod.Size()
+	l = m.RemainderFromPreviousMinter.Size()
 	n += 1 + l + sovMinter(uint64(l))
 	return n
 }
@@ -1457,7 +1457,7 @@ func (m *MinterState) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RemainderFromPreviousPeriod", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RemainderFromPreviousMinter", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1485,7 +1485,7 @@ func (m *MinterState) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.RemainderFromPreviousPeriod.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.RemainderFromPreviousMinter.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

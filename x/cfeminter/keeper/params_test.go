@@ -17,23 +17,21 @@ func TestGetDefaultParams(t *testing.T) {
 	k.SetParams(ctx, params)
 
 	getParams := k.GetParams(ctx)
-	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinterConfigs(t, params.MinterConfig, getParams.MinterConfig)
+	testminter.CompareCfeminterParams(t, params, getParams)
 }
 
 func TestGetParams(t *testing.T) {
 	k, ctx, _ := testkeeper.CfeminterKeeper(t)
-	params := types.DefaultParams()
-	params.MintDenom = "dfda"
-	params.MinterConfig = types.MinterConfig{
+	params := types.Params{
+		MintDenom: "dfda",
 		StartTime: time.Now().Add(time.Hour),
 		Minters:   createLinearMintings(time.Now()),
 	}
+
 	k.SetParams(ctx, params)
 
 	getParams := k.GetParams(ctx)
-	require.EqualValues(t, params.MintDenom, getParams.MintDenom)
-	testminter.CompareMinterConfigs(t, params.MinterConfig, getParams.MinterConfig)
+	testminter.CompareCfeminterParams(t, params, getParams)
 }
 
 func TestSetParamsNoDenom(t *testing.T) {
@@ -46,14 +44,15 @@ func TestSetParamsNoDenom(t *testing.T) {
 
 func TestSetParamsWrongMinterEndTime(t *testing.T) {
 	k, ctx, _ := testkeeper.CfeminterKeeper(t)
-	params := types.DefaultParams()
 	minters := createLinearMintings(time.Now())
 	timeNow := time.Now()
 	minters[0].EndTime = &timeNow
-	params.MinterConfig = types.MinterConfig{
+	params := types.Params{
+		MintDenom: "dfda",
 		StartTime: time.Now().Add(time.Hour),
 		Minters:   minters,
 	}
+
 	err := k.SetParams(ctx, params)
 	require.Error(t, err, "first minter end must be bigger than minter start")
 }

@@ -7,8 +7,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CompareMinterConfigs(t *testing.T, m1 types.MinterConfig, m2 types.MinterConfig) {
+func CompareCfeminterParams(t *testing.T, m1 types.Params, m2 types.Params) {
 	require.True(t, m1.StartTime.Equal(m2.StartTime))
+	require.True(t, m1.MintDenom == m2.MintDenom)
 	for i, p1 := range m1.Minters {
 		p2 := m2.Minters[i]
 		if p1.EndTime == nil {
@@ -27,5 +28,5 @@ func CompareMinterStates(t *testing.T, expected types.MinterState, state types.M
 	require.Truef(t, expected.AmountMinted.Equal(state.AmountMinted), "expected.AmountMinted %s <> state.AmountMinted %s", expected.AmountMinted, state.AmountMinted)
 	require.Truef(t, expected.RemainderToMint.Equal(state.RemainderToMint), "expected.RemainderToMint %s <> state.RemainderToMint %s", expected.RemainderToMint, state.RemainderToMint)
 	require.Truef(t, expected.LastMintBlockTime.Equal(state.LastMintBlockTime), "expected.LastMintBlockTime %s <> state.LastMintBlockTime %s", expected.LastMintBlockTime.Local(), state.LastMintBlockTime.Local())
-	require.Truef(t, expected.RemainderFromPreviousPeriod.Equal(state.RemainderFromPreviousPeriod), "expected.RemainderFromPreviousPeriod %s <> state.RemainderFromPreviousPeriod %s", expected.RemainderFromPreviousPeriod, state.RemainderFromPreviousPeriod)
+	require.Truef(t, expected.RemainderFromPreviousMinter.Equal(state.RemainderFromPreviousMinter), "expected.RemainderFromPreviousMinter %s <> state.RemainderFromPreviousMinter %s", expected.RemainderFromPreviousMinter, state.RemainderFromPreviousMinter)
 }

@@ -45,7 +45,7 @@ package v110_test
 //	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
 //	state := createV101MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("-100"), time.Now(), sdk.NewInt(10000))
 //	setV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, state)
-//	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, true, "minter state validation error: remainderFromPreviousPeriod cannot be less than 0")
+//	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, true, "minter state validation error: remainderFromPreviousMinter cannot be less than 0")
 //}
 //
 //func TestMigrationNoMinterStates(t *testing.T) {
@@ -74,7 +74,7 @@ package v110_test
 //	minterState := createV101MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000))
 //	setV101MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, minterState)
 //	setOldMinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc, stateHistory)
-//	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, true, "minter state validation error: remainderFromPreviousPeriod cannot be less than 0")
+//	MigrateStoreV100ToV101(t, ctx, *k, &keeperData, true, "minter state validation error: remainderFromPreviousMinter cannot be less than 0")
 //}
 //
 //func TestMigrationNoStateHistory(t *testing.T) {
@@ -105,7 +105,7 @@ package v110_test
 //
 //	newState := keeper.GetMinterState(ctx)
 //	require.Equal(t, newState.AmountMinted, oldState.AmountMinted)
-//	require.Equal(t, newState.RemainderFromPreviousPeriod, oldState.RemainderFromPreviousPeriod)
+//	require.Equal(t, newState.RemainderFromPreviousMinter, oldState.RemainderFromPreviousMinter)
 //	require.Equal(t, newState.RemainderToMint, oldState.RemainderToMint)
 //	require.Equal(t, newState.LastMintBlockTime, oldState.LastMintBlockTime)
 //	require.EqualValues(t, newState.SequenceId, oldState.Position)
@@ -114,7 +114,7 @@ package v110_test
 //	require.Equal(t, len(oldMinterHistory), len(newMinterStateHistory))
 //	for i, oldMinterHistory := range oldMinterHistory {
 //		require.Equal(t, newMinterStateHistory[i].AmountMinted, oldMinterHistory.AmountMinted)
-//		require.Equal(t, newMinterStateHistory[i].RemainderFromPreviousPeriod, oldMinterHistory.RemainderFromPreviousPeriod)
+//		require.Equal(t, newMinterStateHistory[i].RemainderFromPreviousMinter, oldMinterHistory.RemainderFromPreviousMinter)
 //		require.Equal(t, newMinterStateHistory[i].RemainderToMint, oldMinterHistory.RemainderToMint)
 //		require.Equal(t, newMinterStateHistory[i].LastMintBlockTime, oldMinterHistory.LastMintBlockTime)
 //		require.EqualValues(t, newMinterStateHistory[i].SequenceId, oldMinterHistory.Position)
@@ -125,14 +125,14 @@ package v110_test
 //func createV101MinterState(
 //	position int32,
 //	remainderToMint,
-//	remainderFromPreviousPeriod sdk.Dec,
+//	remainderFromPreviousMinter sdk.Dec,
 //	lastMintBlockTime time.Time,
 //	amountMinted math.Int,
 //) v101.MinterState {
 //	return v101.MinterState{
 //		Position:                    position,
 //		RemainderToMint:             remainderToMint,
-//		RemainderFromPreviousPeriod: remainderFromPreviousPeriod,
+//		RemainderFromPreviousMinter: remainderFromPreviousMinter,
 //		LastMintBlockTime:           lastMintBlockTime,
 //		AmountMinted:                amountMinted,
 //	}

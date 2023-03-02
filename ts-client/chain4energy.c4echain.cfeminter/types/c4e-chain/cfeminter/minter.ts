@@ -41,7 +41,7 @@ export interface MinterState {
   amountMinted: string;
   remainderToMint: string;
   lastMintBlockTime: Date | undefined;
-  remainderFromPreviousPeriod: string;
+  remainderFromPreviousMinter: string;
 }
 
 function createBaseMinterConfig(): MinterConfig {
@@ -324,7 +324,7 @@ function createBaseMinterState(): MinterState {
     amountMinted: "",
     remainderToMint: "",
     lastMintBlockTime: undefined,
-    remainderFromPreviousPeriod: "",
+    remainderFromPreviousMinter: "",
   };
 }
 
@@ -342,8 +342,8 @@ export const MinterState = {
     if (message.lastMintBlockTime !== undefined) {
       Timestamp.encode(toTimestamp(message.lastMintBlockTime), writer.uint32(34).fork()).ldelim();
     }
-    if (message.remainderFromPreviousPeriod !== "") {
-      writer.uint32(42).string(message.remainderFromPreviousPeriod);
+    if (message.remainderFromPreviousMinter !== "") {
+      writer.uint32(42).string(message.remainderFromPreviousMinter);
     }
     return writer;
   },
@@ -368,7 +368,7 @@ export const MinterState = {
           message.lastMintBlockTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 5:
-          message.remainderFromPreviousPeriod = reader.string();
+          message.remainderFromPreviousMinter = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -384,8 +384,8 @@ export const MinterState = {
       amountMinted: isSet(object.amountMinted) ? String(object.amountMinted) : "",
       remainderToMint: isSet(object.remainderToMint) ? String(object.remainderToMint) : "",
       lastMintBlockTime: isSet(object.lastMintBlockTime) ? fromJsonTimestamp(object.lastMintBlockTime) : undefined,
-      remainderFromPreviousPeriod: isSet(object.remainderFromPreviousPeriod)
-        ? String(object.remainderFromPreviousPeriod)
+      remainderFromPreviousMinter: isSet(object.remainderFromPreviousMinter)
+        ? String(object.remainderFromPreviousMinter)
         : "",
     };
   },
@@ -396,8 +396,8 @@ export const MinterState = {
     message.amountMinted !== undefined && (obj.amountMinted = message.amountMinted);
     message.remainderToMint !== undefined && (obj.remainderToMint = message.remainderToMint);
     message.lastMintBlockTime !== undefined && (obj.lastMintBlockTime = message.lastMintBlockTime.toISOString());
-    message.remainderFromPreviousPeriod !== undefined
-      && (obj.remainderFromPreviousPeriod = message.remainderFromPreviousPeriod);
+    message.remainderFromPreviousMinter !== undefined
+      && (obj.remainderFromPreviousMinter = message.remainderFromPreviousMinter);
     return obj;
   },
 
@@ -407,7 +407,7 @@ export const MinterState = {
     message.amountMinted = object.amountMinted ?? "";
     message.remainderToMint = object.remainderToMint ?? "";
     message.lastMintBlockTime = object.lastMintBlockTime ?? undefined;
-    message.remainderFromPreviousPeriod = object.remainderFromPreviousPeriod ?? "";
+    message.remainderFromPreviousMinter = object.remainderFromPreviousMinter ?? "";
     return message;
   },
 };
