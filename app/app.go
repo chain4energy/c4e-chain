@@ -520,7 +520,6 @@ func New(
 		keys[cfesignaturemoduletypes.MemStoreKey],
 		app.GetSubspace(cfesignaturemoduletypes.ModuleName),
 		app.AccountKeeper,
-		authorityModuleAddress,
 	)
 	cfesignatureModule := cfesignaturemodule.NewAppModule(appCodec, app.CfesignatureKeeper)
 	app.CfeminterKeeper = *cfemintermodulekeeper.NewKeeper(

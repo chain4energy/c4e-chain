@@ -46,7 +46,7 @@ func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, testenv.Additio
 		nil,
 		nil,
 		"test",
-		testenv.AuthorityModuleAddress,
+		testenv.GetAuthority(),
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())

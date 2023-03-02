@@ -20,7 +20,6 @@ type (
 		memKey     storetypes.StoreKey
 		paramstore paramtypes.Subspace
 		authKeeper types.AccountKeeper
-		authority  string
 	}
 )
 
@@ -31,7 +30,6 @@ func NewKeeper(
 	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 	authKeeper types.AccountKeeper,
-	authority string,
 ) *Keeper {
 	return &Keeper{
 		cdc:        cdc,
@@ -40,7 +38,6 @@ func NewKeeper(
 		memKey:     memKey,
 		paramstore: ps,
 		authKeeper: authKeeper,
-		authority:  authority,
 	}
 }
 

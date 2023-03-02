@@ -73,7 +73,7 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, Additional
 		paramsStore,
 		nil,
 		nil,
-		testenv.AuthorityModuleAddress,
+		testenv.GetAuthority(),
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())

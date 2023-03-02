@@ -14,7 +14,6 @@ service Msg {
   rpc StoreSignature(MsgStoreSignature) returns (MsgStoreSignatureResponse);
   rpc PublishReferencePayloadLink(MsgPublishReferencePayloadLink) returns (MsgPublishReferencePayloadLinkResponse);
   rpc CreateAccount(MsgCreateAccount) returns (MsgCreateAccountResponse);
-  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -49,12 +48,3 @@ message MsgCreateAccountResponse {
   string accountNumber = 1;
 }
 
-message MsgUpdateParams {
-  // authority is the address of the governance account.
-  string authority = 1;
-
-  Params params = 2 [(gogoproto.nullable) = false];
-}
-
-message MsgUpdateParamsResponse {}
-// this line is used by starport scaffolding # proto/tx/message
