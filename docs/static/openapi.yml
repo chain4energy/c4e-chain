@@ -44057,6 +44057,10 @@ definitions:
                   type: string
   chain4energy.c4echain.cfedistributor.MsgUpdateAllSubDistributorsResponse:
     type: object
+  chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareResponse:
+    type: object
+  chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShareResponse:
+    type: object
   chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorResponse:
     type: object
   chain4energy.c4echain.cfedistributor.Params:

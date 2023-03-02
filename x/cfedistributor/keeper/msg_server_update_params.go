@@ -22,7 +22,7 @@ func (k msgServer) UpdateAllSubDistributors(goCtx context.Context, msg *types.Ms
 	return &types.MsgUpdateAllSubDistributorsResponse{}, nil
 }
 
-func (k msgServer) UpdateSubdistributor(goCtx context.Context, distributor *types.MsgUpdateSubDistributor) (*types.MsgUpdateSubDistributorResponse, error) {
+func (k msgServer) UpdateSubDistributor(goCtx context.Context, distributor *types.MsgUpdateSubDistributor) (*types.MsgUpdateSubDistributorResponse, error) {
 	if k.authority != distributor.Authority {
 		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, distributor.Authority)
 	}
@@ -39,4 +39,14 @@ func (k msgServer) UpdateSubdistributor(goCtx context.Context, distributor *type
 	}
 
 	return nil, sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "distributor not found")
+}
+
+func (k msgServer) UpdateSubDistributorDestinationShare(ctx context.Context, share *types.MsgUpdateSubDistributorDestinationShare) (*types.MsgUpdateSubDistributorDestinationShareResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (k msgServer) UpdateMsgUpdateSubDistributorBurnShare(ctx context.Context, share *types.MsgUpdateSubDistributorBurnShare) (*types.MsgUpdateSubDistributorBurnShareResponse, error) {
+	//TODO implement me
+	panic("implement me")
 }
