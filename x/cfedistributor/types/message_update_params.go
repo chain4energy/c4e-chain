@@ -38,19 +38,19 @@ func (msg *MsgUpdateAllSubDistributors) ValidateBasic() error {
 	return nil
 }
 
-const TypeMsgUpdateSingleSubdistributor = "update_single_subdistributor"
+const TypeMsgUpdateSubDistributor = "update_single_subdistributor"
 
-var _ sdk.Msg = &MsgUpdateSingleSubdistributor{}
+var _ sdk.Msg = &MsgUpdateSubDistributor{}
 
-func (msg *MsgUpdateSingleSubdistributor) Route() string {
+func (msg *MsgUpdateSubDistributor) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUpdateSingleSubdistributor) Type() string {
-	return TypeMsgUpdateSingleSubdistributor
+func (msg *MsgUpdateSubDistributor) Type() string {
+	return TypeMsgUpdateSubDistributor
 }
 
-func (msg *MsgUpdateSingleSubdistributor) GetSigners() []sdk.AccAddress {
+func (msg *MsgUpdateSubDistributor) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -58,12 +58,12 @@ func (msg *MsgUpdateSingleSubdistributor) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgUpdateSingleSubdistributor) GetSignBytes() []byte {
+func (msg *MsgUpdateSubDistributor) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgUpdateSingleSubdistributor) ValidateBasic() error {
+func (msg *MsgUpdateSubDistributor) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

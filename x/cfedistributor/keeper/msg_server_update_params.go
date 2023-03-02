@@ -22,7 +22,7 @@ func (k msgServer) UpdateAllSubDistributors(goCtx context.Context, msg *types.Ms
 	return &types.MsgUpdateAllSubDistributorsResponse{}, nil
 }
 
-func (k msgServer) UpdateSingleSubdistributor(goCtx context.Context, distributor *types.MsgUpdateSingleSubdistributor) (*types.MsgUpdateSingleSubdistributorResponse, error) {
+func (k msgServer) UpdateSubdistributor(goCtx context.Context, distributor *types.MsgUpdateSubDistributor) (*types.MsgUpdateSubDistributorResponse, error) {
 	if k.authority != distributor.Authority {
 		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, distributor.Authority)
 	}
@@ -34,7 +34,7 @@ func (k msgServer) UpdateSingleSubdistributor(goCtx context.Context, distributor
 			if err := k.SetParams(ctx, types.Params{SubDistributors: subDistributors}); err != nil {
 				return nil, sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
 			}
-			return &types.MsgUpdateSingleSubdistributorResponse{}, nil
+			return &types.MsgUpdateSubDistributorResponse{}, nil
 		}
 	}
 

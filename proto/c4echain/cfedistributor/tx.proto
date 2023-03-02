@@ -13,7 +13,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 service Msg {
   // this line is used by starport scaffolding # proto/tx/rpc
   rpc UpdateAllSubDistributors(MsgUpdateAllSubDistributors) returns (MsgUpdateAllSubDistributorsResponse);
-  rpc UpdateSingleSubdistributor(MsgUpdateSingleSubdistributor) returns (MsgUpdateSingleSubdistributorResponse);
+  rpc UpdateSingleSubdistributor(MsgUpdateSubDistributor) returns (MsgUpdateSubDistributorResponse);
 }
 
 message MsgUpdateAllSubDistributors {
@@ -27,12 +27,12 @@ message MsgUpdateAllSubDistributors {
 
 message MsgUpdateAllSubDistributorsResponse {}
 
-message MsgUpdateSingleSubdistributor {
+message MsgUpdateSubDistributor {
   // authority is the address of the governance account.
   string authority = 1;
   SubDistributor sub_distributor = 2;
 }
 
-message MsgUpdateSingleSubdistributorResponse {}
+message MsgUpdateSubDistributorResponse {}
 
 // this line is used by starport scaffolding # proto/tx/message
