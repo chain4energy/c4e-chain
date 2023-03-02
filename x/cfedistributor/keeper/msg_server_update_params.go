@@ -32,21 +32,52 @@ func (k msgServer) UpdateSubDistributor(goCtx context.Context, distributor *type
 		if subDistributor.Name == distributor.SubDistributor.Name {
 			subDistributors[i] = *distributor.SubDistributor
 			if err := k.SetParams(ctx, types.Params{SubDistributors: subDistributors}); err != nil {
-				return nil, errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
+				return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "validation error: %s", err)
 			}
 			return &types.MsgUpdateSubDistributorResponse{}, nil
 		}
 	}
 
-	return nil, errors.Wrapf(govtypes.ErrInvalidProposalContent, "distributor not found")
+	return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "distributor not found")
 }
 
-func (k msgServer) UpdateSubDistributorDestinationShare(ctx context.Context, share *types.MsgUpdateSubDistributorDestinationShare) (*types.MsgUpdateSubDistributorDestinationShareResponse, error) {
-	//TODO implement me
-	panic("implement me")
+func (k msgServer) UpdateSubDistributorDestinationShare(goCtx context.Context, msg *types.MsgUpdateSubDistributorDestinationShare) (*types.MsgUpdateSubDistributorDestinationShareResponse, error) {
+	if k.authority != msg.Authority {
+		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	subDistributors := k.Keeper.GetParams(ctx).SubDistributors
+	for i, subDistributor := range subDistributors {
+		for y, share := range subDistributor.Destinations.Shares {
+			if share.Name == msg.DestinationName {
+				subDistributors[i].Destinations.Shares[y].Share = msg.Share
+				if err := k.SetParams(ctx, types.Params{SubDistributors: subDistributors}); err != nil {
+					return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "validation error: %s", err)
+				}
+				return &types.MsgUpdateSubDistributorDestinationShareResponse{}, nil
+			}
+		}
+	}
+	return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "distributor not found")
 }
 
-func (k msgServer) UpdateMsgUpdateSubDistributorBurnShare(ctx context.Context, share *types.MsgUpdateSubDistributorBurnShare) (*types.MsgUpdateSubDistributorBurnShareResponse, error) {
-	//TODO implement me
-	panic("implement me")
+func (k msgServer) UpdateMsgUpdateSubDistributorBurnShare(goCtx context.Context, msg *types.MsgUpdateSubDistributorBurnShare) (*types.MsgUpdateSubDistributorBurnShareResponse, error) {
+	if k.authority != msg.Authority {
+		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	subDistributors := k.Keeper.GetParams(ctx).SubDistributors
+	for i, subDistributor := range subDistributors {
+		if subDistributor.Name == msg.SubDistributorName {
+			subDistributors[i].Destinations.BurnShare = msg.BurnShare
+			if err := k.SetParams(ctx, types.Params{SubDistributors: subDistributors}); err != nil {
+				return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "validation error: %s", err)
+			}
+			return &types.MsgUpdateSubDistributorBurnShareResponse{}, nil
+		}
+	}
+	return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "distributor not found")
+
 }
