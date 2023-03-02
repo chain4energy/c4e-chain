@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"cosmossdk.io/errors"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
@@ -10,6 +11,8 @@ import (
 )
 
 func (k msgServer) UpdateAllSubDistributors(goCtx context.Context, msg *types.MsgUpdateAllSubDistributors) (*types.MsgUpdateAllSubDistributorsResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "Update all sub distributors")
+
 	if k.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
 	}
@@ -23,6 +26,8 @@ func (k msgServer) UpdateAllSubDistributors(goCtx context.Context, msg *types.Ms
 }
 
 func (k msgServer) UpdateSubDistributor(goCtx context.Context, distributor *types.MsgUpdateSubDistributor) (*types.MsgUpdateSubDistributorResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "Update sub distributor")
+
 	if k.authority != distributor.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, distributor.Authority)
 	}
@@ -42,6 +47,8 @@ func (k msgServer) UpdateSubDistributor(goCtx context.Context, distributor *type
 }
 
 func (k msgServer) UpdateSubDistributorDestinationShare(goCtx context.Context, msg *types.MsgUpdateSubDistributorDestinationShare) (*types.MsgUpdateSubDistributorDestinationShareResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "Update sub distributor destination share")
+
 	if k.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
 	}
@@ -63,6 +70,8 @@ func (k msgServer) UpdateSubDistributorDestinationShare(goCtx context.Context, m
 }
 
 func (k msgServer) UpdateMsgUpdateSubDistributorBurnShare(goCtx context.Context, msg *types.MsgUpdateSubDistributorBurnShare) (*types.MsgUpdateSubDistributorBurnShareResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "Update sub distributor burn share")
+
 	if k.authority != msg.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, msg.Authority)
 	}
