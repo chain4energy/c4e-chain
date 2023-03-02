@@ -22,7 +22,7 @@ func (k msgServer) UpdateDenom(goCtx context.Context, msg *types.MsgUpdateDenom)
 	}
 
 	if err := k.SetParams(ctx, types.Params{Denom: msg.Denom}); err != nil {
-		return nil, err
+		return nil, sdkerrors.Wrap(govtypes.ErrInvalidProposalMsg, err.Error())
 	}
 
 	return &types.MsgUpdateDenomResponse{}, nil

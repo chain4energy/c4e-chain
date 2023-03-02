@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 const TypeMsgUpdateAllSubDistributors = "update_all_subdistributors"
@@ -34,6 +35,11 @@ func (msg *MsgUpdateAllSubDistributors) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+
+	err = Params{SubDistributors: msg.SubDistributors}.Validate()
+	if err != nil {
+		sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
 	}
 	return nil
 }
@@ -67,6 +73,11 @@ func (msg *MsgUpdateSubDistributor) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+
+	err = msg.SubDistributor.Validate()
+	if err != nil {
+		sdkerrors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
 	}
 	return nil
 }

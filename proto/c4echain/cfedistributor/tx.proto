@@ -13,7 +13,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 service Msg {
   // this line is used by starport scaffolding # proto/tx/rpc
   rpc UpdateAllSubDistributors(MsgUpdateAllSubDistributors) returns (MsgUpdateAllSubDistributorsResponse);
-  rpc UpdateSingleSubdistributor(MsgUpdateSubDistributor) returns (MsgUpdateSubDistributorResponse);
+  rpc UpdateSubdistributor(MsgUpdateSubDistributor) returns (MsgUpdateSubDistributorResponse);
 }
 
 message MsgUpdateAllSubDistributors {

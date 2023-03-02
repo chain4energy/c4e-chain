@@ -35,5 +35,9 @@ func (msg *MsgUpdateDenom) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
+	err = Params{Denom: msg.Denom}.Validate()
+	if err != nil {
+		return err
+	}
 	return nil
 }
