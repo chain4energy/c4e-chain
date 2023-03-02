@@ -13,7 +13,9 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 service Msg {
   // this line is used by starport scaffolding # proto/tx/rpc
   rpc UpdateAllSubDistributors(MsgUpdateAllSubDistributors) returns (MsgUpdateAllSubDistributorsResponse);
-  rpc UpdateSubdistributor(MsgUpdateSubDistributor) returns (MsgUpdateSubDistributorResponse);
+  rpc UpdateSubDistributor(MsgUpdateSubDistributor) returns (MsgUpdateSubDistributorResponse);
+  rpc UpdateSubDistributorDestinationShare(MsgUpdateSubDistributorDestinationShare) returns (MsgUpdateSubDistributorDestinationShareResponse);
+  rpc UpdateMsgUpdateSubDistributorBurnShare(MsgUpdateSubDistributorBurnShare) returns (MsgUpdateSubDistributorBurnShareResponse);
 }
 
 message MsgUpdateAllSubDistributors {
@@ -35,4 +37,27 @@ message MsgUpdateSubDistributor {
 
 message MsgUpdateSubDistributorResponse {}
 
-// this line is used by starport scaffolding # proto/tx/message
+message MsgUpdateSubDistributorDestinationShare {
+  string authority = 1;
+  string sub_distributor_name = 2;
+  string destination_name = 3;
+  string share = 4 [
+    (gogoproto.moretags)   = "yaml:\"share\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgUpdateSubDistributorDestinationShareResponse{}
+
+message  MsgUpdateSubDistributorBurnShare {
+  string authority = 1;
+  string sub_distributor_name = 2;
+  string burn_share = 3 [
+    (gogoproto.moretags)   = "yaml:\"burn_share\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgUpdateSubDistributorBurnShareResponse{}

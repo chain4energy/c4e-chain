@@ -81,3 +81,69 @@ func (msg *MsgUpdateSubDistributor) ValidateBasic() error {
 	}
 	return nil
 }
+
+const TypeMsgUpdateSubDistributorBurnShare = "update_sub_distributor_burn_share"
+
+var _ sdk.Msg = &MsgUpdateSubDistributorBurnShare{}
+
+func (msg *MsgUpdateSubDistributorBurnShare) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgUpdateSubDistributorBurnShare) Type() string {
+	return TypeMsgUpdateSubDistributorBurnShare
+}
+
+func (msg *MsgUpdateSubDistributorBurnShare) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Authority)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgUpdateSubDistributorBurnShare) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgUpdateSubDistributorBurnShare) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Authority)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
+
+const TypeMsgUpdateSubDistributorDestinationShare = "update_sub_distributor_destination_share"
+
+var _ sdk.Msg = &MsgUpdateSubDistributorBurnShare{}
+
+func (msg *MsgUpdateSubDistributorDestinationShare) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgUpdateSubDistributorDestinationShare) Type() string {
+	return TypeMsgUpdateSubDistributorDestinationShare
+}
+
+func (msg *MsgUpdateSubDistributorDestinationShare) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(msg.Authority)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (msg *MsgUpdateSubDistributorDestinationShare) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgUpdateSubDistributorDestinationShare) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Authority)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	return nil
+}
