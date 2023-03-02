@@ -6,6 +6,7 @@ import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
 import "c4echain/cfeminter/params.proto";
 import "c4echain/cfeminter/minter.proto";
+import "google/protobuf/timestamp.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -16,6 +17,7 @@ service Msg {
   // this line is used by starport scaffolding # proto/tx/rpc
   rpc UpdateMinters(MsgUpdateMinters) returns (MsgUpdateMintersResponse);
   rpc UpdateMintDenom(MsgUpdateMintDenom) returns (MsgUpdateMintDenomResponse);
+  rpc UpdateStartTime(MsgUpdateStartTime) returns (MsgUpdateStartTimeResponse);
 }
 
 message MsgUpdateMinters {
@@ -25,11 +27,21 @@ message MsgUpdateMinters {
   repeated Minter minters = 2 [(gogoproto.nullable) = true];
 }
 
+message MsgUpdateMintersResponse {}
+
 message MsgUpdateMintDenom {
   string authority = 1;
   string mint_denom = 2;
 }
 
-message MsgUpdateMintersResponse {}
-
 message MsgUpdateMintDenomResponse{}
+
+message MsgUpdateStartTime {
+  string authority = 1;
+  google.protobuf.Timestamp start_time = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}
+
+message MsgUpdateStartTimeResponse{}

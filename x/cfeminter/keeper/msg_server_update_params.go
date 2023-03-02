@@ -15,7 +15,7 @@ func (k msgServer) UpdateMinters(goCtx context.Context, msg *types.MsgUpdateMint
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	params := k.GetParams(ctx)
-	params.MinterConfig.Minters = msg.Minters
+	params.Minters = msg.Minters
 	if err := k.SetParams(ctx, params); err != nil {
 		return nil, errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
 	}
@@ -33,4 +33,16 @@ func (k msgServer) UpdateMintDenom(goCtx context.Context, msg *types.MsgUpdateMi
 	}
 
 	return &types.MsgUpdateMintDenomResponse{}, nil
+}
+
+func (k msgServer) UpdateStartTime(goCtx context.Context, msg *types.MsgUpdateStartTime) (*types.MsgUpdateStartTimeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	params := k.GetParams(ctx)
+	params.StartTime = msg.StartTime
+	if err := k.SetParams(ctx, params); err != nil {
+		return nil, errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
+
+	}
+
+	return &types.MsgUpdateStartTimeResponse{}, nil
 }

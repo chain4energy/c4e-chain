@@ -18,7 +18,11 @@ const ( // MintingPeriod types
 	ExponentialStepMintingType string = "EXPONENTIAL_STEP_MINTING"
 )
 
-func (params MinterConfig) Validate() error {
+func (params Params) Validate() error {
+	if len(params.MintDenom) == 0 {
+		return fmt.Errorf("denom cannot be empty")
+	}
+
 	if len(params.Minters) < 1 {
 		return fmt.Errorf("no minters defined")
 	}
@@ -56,7 +60,7 @@ func (params MinterConfig) Validate() error {
 	return nil
 }
 
-func (params MinterConfig) validateMinterOrderingId(minter *Minter, id uint32) (uint32, error) {
+func (params Params) validateMinterOrderingId(minter *Minter, id uint32) (uint32, error) {
 	if id == 0 {
 		if minter.SequenceId <= id {
 			return 0, fmt.Errorf("first minter sequence id must be bigger than 0, but is %d", minter.SequenceId)
@@ -71,7 +75,7 @@ func (params MinterConfig) validateMinterOrderingId(minter *Minter, id uint32) (
 	return id, nil
 }
 
-func (params MinterConfig) validateEndTimeExistance(minter *Minter, sequenceId int, lastPos int) error {
+func (params Params) validateEndTimeExistance(minter *Minter, sequenceId int, lastPos int) error {
 	if sequenceId == lastPos && minter.EndTime != nil {
 		return fmt.Errorf("last minter cannot have EndTime set, but is set to %s", minter.EndTime)
 	}
@@ -81,7 +85,7 @@ func (params MinterConfig) validateEndTimeExistance(minter *Minter, sequenceId i
 	return nil
 }
 
-func (params MinterConfig) validateMintersEndTimeValue(minter *Minter, sequenceId int, lastPos int) error {
+func (params Params) validateMintersEndTimeValue(minter *Minter, sequenceId int, lastPos int) error {
 	if lastPos > 0 {
 		if sequenceId == 0 {
 			if minter.EndTime.Before(params.StartTime) || minter.EndTime.Equal(params.StartTime) {
@@ -97,7 +101,7 @@ func (params MinterConfig) validateMintersEndTimeValue(minter *Minter, sequenceI
 	return nil
 }
 
-func (params MinterConfig) ContainsMinter(sequenceId uint32) bool {
+func (params Params) ContainsMinter(sequenceId uint32) bool {
 	for _, minter := range params.Minters {
 		if sequenceId == minter.SequenceId {
 			return true
@@ -177,11 +181,11 @@ func (m MinterState) Validate() error {
 	if m.AmountMinted.IsNegative() {
 		return fmt.Errorf("minter state validation error: amountMinted cannot be less than 0")
 	}
-	if m.RemainderFromPreviousPeriod.IsNil() {
-		return fmt.Errorf("minter state validation error: remainderFromPreviousPeriod cannot be nil")
+	if m.RemainderFromPreviousMinter.IsNil() {
+		return fmt.Errorf("minter state validation error: remainderFromPreviousMinter cannot be nil")
 	}
-	if m.RemainderFromPreviousPeriod.IsNegative() {
-		return fmt.Errorf("minter state validation error: remainderFromPreviousPeriod cannot be less than 0")
+	if m.RemainderFromPreviousMinter.IsNegative() {
+		return fmt.Errorf("minter state validation error: remainderFromPreviousMinter cannot be less than 0")
 	}
 	if m.RemainderToMint.IsNil() {
 		return fmt.Errorf("minter state validation error: remainderToMint cannot be nil")

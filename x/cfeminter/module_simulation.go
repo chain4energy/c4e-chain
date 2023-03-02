@@ -51,12 +51,8 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		},
 	}
 
-	minterConfig := types.MinterConfig{
-		StartTime: now,
-		Minters:   minters,
-	}
 	genesisState := types.GenesisState{
-		Params: types.NewParams("stake", minterConfig),
+		Params: types.NewParams("stake", now, minters),
 		MinterState: types.MinterState{
 			SequenceId:   1,
 			AmountMinted: sdk.NewInt(0),

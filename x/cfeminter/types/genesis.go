@@ -22,7 +22,7 @@ func DefaultGenesis() *GenesisState {
 			AmountMinted:                sdk.ZeroInt(),
 			RemainderToMint:             sdk.ZeroDec(),
 			LastMintBlockTime:           time.Now(),
-			RemainderFromPreviousPeriod: sdk.ZeroDec(),
+			RemainderFromPreviousMinter: sdk.ZeroDec(),
 		},
 	}
 }
@@ -37,7 +37,7 @@ func (gs GenesisState) Validate() error {
 	if err := gs.MinterState.Validate(); err != nil {
 		return err
 	}
-	if !gs.Params.MinterConfig.ContainsMinter(gs.MinterState.SequenceId) {
+	if !gs.Params.ContainsMinter(gs.MinterState.SequenceId) {
 		return fmt.Errorf("cfeminter genesis validation error: minter state sequence id %d not found in minters", gs.MinterState.SequenceId)
 	}
 	return nil

@@ -34,8 +34,3 @@ func (k Keeper) GetParams(ctx sdk.Context) (p types.Params) {
 func (k Keeper) MintDenom(ctx sdk.Context) (res string) {
 	return k.GetParams(ctx).MintDenom
 }
-
-// MintDenom returns the denom param
-func (k Keeper) MinterConfig(ctx sdk.Context) (res types.MinterConfig) {
-	return k.GetParams(ctx).MinterConfig
-}
