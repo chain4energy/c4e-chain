@@ -252,8 +252,8 @@ func createOkCfeminterParams() types.Params {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, LinearMinting: &LinearMinting2}
 
 	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
@@ -272,8 +272,8 @@ func createNotOkCfeminterParams() types.Params {
 	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
 	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, LinearMinting: &LinearMinting1}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, LinearMinting: &LinearMinting2}
 
 	minter3 := types.Minter{SequenceId: 5, Type: types.NoMintingType}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}

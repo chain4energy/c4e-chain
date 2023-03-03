@@ -28,7 +28,6 @@ func (k Keeper) Mint(ctx sdk.Context) (math.Int, error) {
 
 func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int, error) {
 	minterState := k.GetMinterState(ctx)
-
 	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.Minters, &minterState)
 
 	if currentMinter == nil {
@@ -43,7 +42,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int
 		startTime = *previousMinter.EndTime
 	}
 
-	expectedAmountToMint := currentMinter.AmountToMint(k.Logger(ctx), &minterState, startTime, ctx.BlockTime())
+	expectedAmountToMint := currentMinter.AmountToMint(k.Logger(ctx), startTime, ctx.BlockTime())
 	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousMinter)
 
 	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)

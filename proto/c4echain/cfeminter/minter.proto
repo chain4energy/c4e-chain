@@ -1,9 +1,11 @@
 syntax = "proto3";
 package chain4energy.c4echain.cfeminter;
 
+import "google/protobuf/any.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
+import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 
@@ -12,13 +14,9 @@ message Minter {
   google.protobuf.Timestamp end_time = 2 [
     (gogoproto.stdtime) = true
   ];
-  // types:
-  //   NO_MINTING;
-  //   LINEAR_MINTING;
-  //   EXPONENTIAL_STEP_MINTING;
-  string type = 3;
-  LinearMinting linear_minting = 4;
-  ExponentialStepMinting exponential_step_minting = 5;
+  google.protobuf.Any config = 6 [
+    (cosmos_proto.accepts_interface) = "MinterConfigI"
+  ];
 }
 
 message LinearMinting {
@@ -29,15 +27,15 @@ message LinearMinting {
 }
 
 message ExponentialStepMinting {
-  string amount = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable) = false
-  ];
   google.protobuf.Duration step_duration = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
-  string amount_multiplier = 4 [
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string amount_multiplier = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];

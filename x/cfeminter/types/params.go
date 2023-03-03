@@ -14,7 +14,7 @@ var (
 	DefaultMinters   = []*Minter{
 		{
 			SequenceId: 1,
-			Type:       NoMintingType,
+			Config:     nil,
 		},
 	}
 )

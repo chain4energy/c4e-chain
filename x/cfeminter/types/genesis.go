@@ -30,7 +30,7 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	// this line is used by starport scaffolding # genesis/types/validate
+	// this line is used by starport scaffolding # genesis/types/Validate
 	if err := gs.Params.Validate(); err != nil {
 		return err
 	}

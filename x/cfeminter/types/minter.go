@@ -12,10 +12,9 @@ import (
 
 const year = time.Hour * 24 * 365
 
-const ( // MintingPeriod types
-	NoMintingType              string = "NO_MINTING"
-	LinearMintingType          string = "LINEAR_MINTING"
-	ExponentialStepMintingType string = "EXPONENTIAL_STEP_MINTING"
+var (
+	_ MinterConfigI = &LinearMinting{}
+	_ MinterConfigI = &ExponentialStepMinting{}
 )
 
 func (params Params) Validate() error {
@@ -111,35 +110,25 @@ func (params Params) ContainsMinter(sequenceId uint32) bool {
 }
 
 func (m Minter) validate() error {
-	switch m.Type {
-	case NoMintingType:
-		if m.LinearMinting != nil || m.ExponentialStepMinting != nil {
-			return fmt.Errorf("for NO_MINTING type (0) LinearMinting and ExponentialStepMinting cannot be set")
-		}
-	case LinearMintingType:
-		if m.ExponentialStepMinting != nil {
-			return fmt.Errorf("for LinearMintingType type (1) ExponentialStepMinting cannot be set")
-		}
+	minterConfig := m.GetMinterConfig()
+	if minterConfig == nil {
+		return nil
+	}
+
+	_, ok := m.Config.GetCachedValue().(LinearMinting)
+	if ok {
 		if m.EndTime == nil {
 			return fmt.Errorf("for LinearMintingType type (1) EndTime must be set")
 		}
-		if err := m.LinearMinting.validate(); err != nil {
-			return fmt.Errorf("LinearMintingType error: %w", err)
-		}
-	case ExponentialStepMintingType:
-		if m.LinearMinting != nil {
-			return fmt.Errorf("for ExponentialStepMintingType type (2) LinearMinting cannot be set")
-		}
-		if err := m.ExponentialStepMinting.validate(); err != nil {
-			return fmt.Errorf("ExponentialStepMintingType error: %w", err)
-		}
-	default:
-		return fmt.Errorf("unknow minting configuration type: %s", m.Type)
 	}
+	if err := minterConfig.Validate(); err != nil {
+		return fmt.Errorf("LinearMintingType error: %w", err)
+	}
+
 	return nil
 }
 
-func (m *LinearMinting) validate() error {
+func (m *LinearMinting) Validate() error {
 	if m == nil {
 		return fmt.Errorf("for LinearMintingType type (1) LinearMinting must be set")
 	}
@@ -152,7 +141,7 @@ func (m *LinearMinting) validate() error {
 	return nil
 }
 
-func (m *ExponentialStepMinting) validate() error {
+func (m *ExponentialStepMinting) Validate() error {
 	if m == nil {
 		return fmt.Errorf("for ExponentialStepMintingType type (2) ExponentialStepMinting must be set")
 	}
@@ -206,19 +195,14 @@ func (m *Minter) CalculateInflation(totalSupply math.Int, startTime time.Time, b
 	if startTime.After(blockTime) {
 		return sdk.ZeroDec()
 	}
-	switch m.Type {
-	case NoMintingType:
-		return sdk.ZeroDec()
-	case LinearMintingType:
-		return m.LinearMinting.calculateInflation(totalSupply, startTime, *m.EndTime)
-	case ExponentialStepMintingType:
-		return m.ExponentialStepMinting.calculateInflation(totalSupply, startTime, m.EndTime, blockTime)
-	default:
+	minterConfig := m.GetMinterConfig()
+	if minterConfig == nil {
 		return sdk.ZeroDec()
 	}
+	return minterConfig.CalculateInflation(totalSupply, startTime, m.EndTime, blockTime)
 }
 
-func (m *LinearMinting) calculateInflation(totalSupply math.Int, minterStart time.Time, endTime time.Time) sdk.Dec {
+func (m *LinearMinting) CalculateInflation(totalSupply math.Int, minterStart time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
 	if totalSupply.LTE(sdk.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
@@ -228,7 +212,7 @@ func (m *LinearMinting) calculateInflation(totalSupply math.Int, minterStart tim
 	return mintedYearly.QuoInt(totalSupply)
 }
 
-func (m *ExponentialStepMinting) calculateInflation(totalSupply math.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
+func (m *ExponentialStepMinting) CalculateInflation(totalSupply math.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
 	if totalSupply.LTE(sdk.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
@@ -256,40 +240,35 @@ func (m *ExponentialStepMinting) calculateInflation(totalSupply math.Int, startT
 	return mintedYearly.QuoInt(totalSupply)
 }
 
-func (m *Minter) AmountToMint(logger log.Logger, state *MinterState, minterStart time.Time, blockTime time.Time) sdk.Dec {
-	switch m.Type {
-	case NoMintingType:
-		return sdk.ZeroDec()
-	case LinearMintingType:
-		return m.LinearMinting.amountToMint(minterStart, *m.EndTime, blockTime)
-	case ExponentialStepMintingType:
-		return m.ExponentialStepMinting.amountToMint(logger, minterStart, m.EndTime, blockTime)
-	default:
+func (m *Minter) AmountToMint(logger log.Logger, startTime time.Time, blockTime time.Time) sdk.Dec {
+	minterConfig := m.GetMinterConfig()
+	if minterConfig == nil {
 		return sdk.ZeroDec()
 	}
+	return minterConfig.AmountToMint(logger, startTime, m.EndTime, blockTime)
 }
 
-func (m *LinearMinting) amountToMint(minterStart time.Time, EndTime time.Time, blockTime time.Time) sdk.Dec {
-	if blockTime.After(EndTime) {
+func (m *LinearMinting) AmountToMint(logger log.Logger, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
+	if blockTime.After(*endTime) {
 		return sdk.NewDecFromInt(m.Amount)
 	}
-	if blockTime.Before(minterStart) {
+	if blockTime.Before(startTime) {
 		return sdk.ZeroDec()
 	}
 	amount := sdk.NewDecFromInt(m.Amount)
 
-	passedTime := blockTime.UnixMilli() - minterStart.UnixMilli()
-	period := EndTime.UnixMilli() - minterStart.UnixMilli()
+	passedTime := blockTime.UnixMilli() - startTime.UnixMilli()
+	period := endTime.UnixMilli() - startTime.UnixMilli()
 
 	return amount.MulInt64(passedTime).QuoInt64(period)
 }
 
-func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
+func (m *ExponentialStepMinting) AmountToMint(logger log.Logger, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
 	now := blockTime
 	if endTime != nil && blockTime.After(*endTime) {
 		now = *endTime
 	}
-	passedTime := int64(now.Sub(startTIme))
+	passedTime := int64(now.Sub(startTime))
 	epoch := int64(m.StepDuration)
 	numOfPassedEpochs := passedTime / epoch
 
@@ -301,7 +280,7 @@ func (m *ExponentialStepMinting) amountToMint(logger log.Logger, startTIme time.
 		}
 		amountToMint = amountToMint.Add(epochAmount)
 	}
-	currentEpochStart := startTIme.Add(time.Duration(numOfPassedEpochs * epoch))
+	currentEpochStart := startTime.Add(time.Duration(numOfPassedEpochs * epoch))
 	currentEpochPassedTime := now.Sub(currentEpochStart)
 	currentEpochAmount := epochAmount
 
