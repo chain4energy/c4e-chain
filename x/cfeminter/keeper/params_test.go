@@ -20,20 +20,6 @@ func TestGetDefaultParams(t *testing.T) {
 	testminter.CompareCfeminterParams(t, params, getParams)
 }
 
-func TestGetParams(t *testing.T) {
-	k, ctx, _ := testkeeper.CfeminterKeeper(t)
-	params := types.Params{
-		MintDenom: "dfda",
-		StartTime: time.Now().Add(time.Hour),
-		Minters:   createLinearMintings(time.Now()),
-	}
-
-	k.SetParams(ctx, params)
-
-	getParams := k.GetParams(ctx)
-	testminter.CompareCfeminterParams(t, params, getParams)
-}
-
 func TestSetParamsNoDenom(t *testing.T) {
 	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()

@@ -47,13 +47,14 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int
 
 	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
 	if amount.IsNegative() {
-		k.Logger(ctx).Error("mint negative amount", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter,
-			"previousMinter", previousMinter, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
+		//k.Logger(ctx).Error("mint negative amount", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter,
+		//	"previousMinter", previousMinter, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
+		// TODO: Fix log
 		return sdk.ZeroInt(), nil
 	}
-	k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter,
-		"previousMinter", previousMinter, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
-
+	//k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter,
+	//	"previousMinter", previousMinter, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
+	// TODO: FIX
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
 
 	coin := sdk.NewCoin(params.MintDenom, amount)

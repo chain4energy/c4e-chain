@@ -147,7 +147,7 @@ package v110_test
 //func getV101MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterState v101.MinterState) {
 //	store := ctx.KVStore(storeKey)
 //	b := store.Get(types.MinterStateKey)
-//	cdc.MustUnmarshal(b, &minterState)
+//	cdc.MustUnmarshal(b)
 //	return
 //}
 //

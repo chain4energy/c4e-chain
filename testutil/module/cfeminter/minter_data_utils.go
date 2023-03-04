@@ -18,8 +18,7 @@ func CompareCfeminterParams(t *testing.T, m1 types.Params, m2 types.Params) {
 			require.True(t, p1.EndTime.Equal(*p2.EndTime))
 		}
 		require.EqualValues(t, p1.SequenceId, p2.SequenceId)
-		//require.EqualValues(t, p1.LinearMinting, p2.LinearMinting)
-		require.EqualValues(t, p1.Type, p2.Type)
+		require.EqualValues(t, p1.GetMinterConfig(), p2.GetMinterConfig())
 	}
 }
 

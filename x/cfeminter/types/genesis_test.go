@@ -3,6 +3,7 @@ package types_test
 import (
 	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -249,13 +250,15 @@ func createOkCfeminterParams() types.Params {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
+	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
 
-	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
+	minter3 := types.Minter{SequenceId: 3}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
 	return types.Params{
 		StartTime: startTime,
@@ -269,13 +272,15 @@ func createNotOkCfeminterParams() types.Params {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
+	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, LinearMinting: &LinearMinting2}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
 
-	minter3 := types.Minter{SequenceId: 5, Type: types.NoMintingType}
+	minter3 := types.Minter{SequenceId: 5}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
 
 	return types.Params{

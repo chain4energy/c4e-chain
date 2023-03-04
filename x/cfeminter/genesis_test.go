@@ -4,7 +4,6 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/gogo/protobuf/proto"
 	"testing"
 	"time"
 
@@ -94,22 +93,15 @@ func createHistory() []*types.MinterState {
 func createMinter(startTime time.Time) []*types.Minter {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
-	var minterConfig types.MinterConfigI
-	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
-	minterConfig = &LinearMinting1
-	msg, ok := minterConfig.(proto.Message)
-	if !ok {
-		return []*types.Minter{}
-	}
 
-	value, err := codectypes.NewAnyWithValue(msg)
-	if err != nil {
-		return []*types.Minter{}
-	}
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, LinearMinting: &LinearMinting1, Config: value}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, LinearMinting: &LinearMinting2}
-	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
+	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
+	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
+
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
+	minter3 := types.Minter{SequenceId: 3}
 
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }
