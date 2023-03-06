@@ -313,9 +313,8 @@ func TestValidateLinearMintingAmountIsNil(t *testing.T) {
 	startTime := time.Now()
 	endTime1 := startTime.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: math.Int{}}
+	linearMinting1 := types.LinearMinting{Amount: sdk.Int{}}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
-
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
 	minter2 := types.Minter{SequenceId: 2}
 	minters := []*types.Minter{&minter1, &minter2}

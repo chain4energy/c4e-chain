@@ -10,19 +10,18 @@ import "cosmos_proto/cosmos.proto";
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 
 message Minter {
+  option (gogoproto.goproto_stringer) = false;
+
   uint32 sequence_id = 1;
   google.protobuf.Timestamp end_time = 2 [
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Any config = 6 [
+  google.protobuf.Any config = 3 [
     (cosmos_proto.accepts_interface) = "MinterConfigI"
   ];
 }
 
 message LinearMinting {
-  option (gogoproto.goproto_getters)  = false;
-  option (gogoproto.goproto_stringer) = false;
-
   string amount = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false
@@ -30,9 +29,6 @@ message LinearMinting {
 }
 
 message ExponentialStepMinting {
-  option (gogoproto.goproto_getters)  = false;
-  option (gogoproto.goproto_stringer) = false;
-
   google.protobuf.Duration step_duration = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true

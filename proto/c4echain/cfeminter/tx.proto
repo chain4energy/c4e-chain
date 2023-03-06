@@ -21,10 +21,8 @@ service Msg {
 }
 
 message MsgUpdateMinters {
-  // authority is the address of the governance account.
   string authority = 1;
-
-  repeated Minter minters = 2 [(gogoproto.nullable) = true];
+  repeated Minter minters = 2;
 }
 
 message MsgUpdateMintersResponse {}
