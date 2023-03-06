@@ -13,7 +13,6 @@ import (
 func TestGetDefaultParams(t *testing.T) {
 	k, ctx, _ := testkeeper.CfeminterKeeper(t)
 	params := types.DefaultParams()
-
 	k.SetParams(ctx, params)
 
 	getParams := k.GetParams(ctx)

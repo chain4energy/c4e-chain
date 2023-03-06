@@ -7,8 +7,6 @@ import (
 )
 
 var (
-	KeyMintDenom     = []byte("MintDenom")
-	KeyMinterConfig  = []byte("MinterConfig")
 	DefaultMintDenom = "uc4e"
 	DefaultStartTime = time.Now()
 	DefaultMinters   = []*Minter{

@@ -25,7 +25,7 @@ func TestOneYearLinear(t *testing.T) {
 
 	minters := []*types.Minter{
 		{SequenceId: 1, EndTime: &yearFromNow, Config: config},
-		{SequenceId: 2},
+		{SequenceId: 2, Config: testenv.NoMintingConfig},
 	}
 
 	genesisState := types.GenesisState{

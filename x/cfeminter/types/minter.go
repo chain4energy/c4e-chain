@@ -12,11 +12,6 @@ import (
 
 const year = time.Hour * 24 * 365
 
-var (
-	_ MinterConfigI = &LinearMinting{}
-	_ MinterConfigI = &ExponentialStepMinting{}
-)
-
 func (params Params) Validate() error {
 	if len(params.MintDenom) == 0 {
 		return fmt.Errorf("denom cannot be empty")
@@ -109,10 +104,10 @@ func (params Params) ContainsMinter(sequenceId uint32) bool {
 	return false
 }
 
-func (m Minter) validate() error {
+func (m *Minter) validate() error {
 	minterConfig := m.GetMinterConfig()
 	if minterConfig == nil {
-		return nil
+		return fmt.Errorf("minter config must be set")
 	}
 
 	_, ok := m.Config.GetCachedValue().(*LinearMinting)
@@ -205,11 +200,8 @@ func (m *Minter) CalculateInflation(totalSupply math.Int, startTime time.Time, b
 	if startTime.After(blockTime) {
 		return sdk.ZeroDec()
 	}
-	minterConfig := m.GetMinterConfig()
-	if minterConfig == nil {
-		return sdk.ZeroDec()
-	}
-	return minterConfig.CalculateInflation(totalSupply, startTime, m.EndTime, blockTime)
+
+	return m.GetMinterConfig().CalculateInflation(totalSupply, startTime, m.EndTime, blockTime)
 }
 
 func (m *LinearMinting) CalculateInflation(totalSupply math.Int, minterStart time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
@@ -251,11 +243,7 @@ func (m *ExponentialStepMinting) CalculateInflation(totalSupply math.Int, startT
 }
 
 func (m *Minter) AmountToMint(logger log.Logger, startTime time.Time, blockTime time.Time) sdk.Dec {
-	minterConfig := m.GetMinterConfig()
-	if minterConfig == nil {
-		return sdk.ZeroDec()
-	}
-	return minterConfig.AmountToMint(logger, startTime, m.EndTime, blockTime)
+	return m.GetMinterConfig().AmountToMint(logger, startTime, m.EndTime, blockTime)
 }
 
 func (m *LinearMinting) AmountToMint(logger log.Logger, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {

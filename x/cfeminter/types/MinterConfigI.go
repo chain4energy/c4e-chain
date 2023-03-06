@@ -2,30 +2,31 @@ package types
 
 import (
 	"cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gogo/protobuf/proto"
 	"github.com/tendermint/tendermint/libs/log"
 	"gopkg.in/yaml.v2"
 	"time"
 )
 
 var (
-	_ MinterConfigI                      = (*LinearMinting)(nil)
-	_ MinterConfigI                      = (*ExponentialStepMinting)(nil)
+	_ MinterConfigI                      = &LinearMinting{}
+	_ MinterConfigI                      = &NoMinting{}
+	_ MinterConfigI                      = &ExponentialStepMinting{}
 	_ codectypes.UnpackInterfacesMessage = (*Minter)(nil)
 	_ codectypes.UnpackInterfacesMessage = (*Params)(nil)
 )
 
 type MinterConfigI interface {
-	proto.Message
+	codec.ProtoMarshaler
 	Validate() error
 	CalculateInflation(totalSupply math.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec
 	AmountToMint(logger log.Logger, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec
 	String() string
 }
 
-func (m Minter) GetMinterConfig() MinterConfigI {
+func (m *Minter) GetMinterConfig() MinterConfigI {
 	if m.Config == nil {
 		return nil
 	}
@@ -84,4 +85,16 @@ func (m *Minter) GetMinterJSON() MinterJSON {
 		Type:       m.Config.GetTypeUrl(),
 		Config:     config,
 	}
+}
+
+func (m *NoMinting) Validate() error {
+	return nil
+}
+
+func (m *NoMinting) CalculateInflation(totalSupply math.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
+	return sdk.ZeroDec()
+}
+
+func (m *NoMinting) AmountToMint(logger log.Logger, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
+	return sdk.ZeroDec()
 }

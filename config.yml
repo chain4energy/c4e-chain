@@ -147,7 +147,7 @@ genesis:
         minters:
         - sequence_id: 1
           config:
-            "@type": "/chain4energy.c4echain.cfeminter.ExponentialStepMinting"
+            '@type': "/chain4energy.c4echain.cfeminter.ExponentialStepMinting"
             amount: "160000000000000"
             amount_multiplier: "0.5"
             step_duration: 126144000s

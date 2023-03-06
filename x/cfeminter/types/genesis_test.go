@@ -2,6 +2,7 @@ package types_test
 
 import (
 	"cosmossdk.io/math"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -257,8 +258,8 @@ func createOkCfeminterParams() types.Params {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
+	minter3 := types.Minter{SequenceId: 3, Config: testenv.NoMintingConfig}
 
-	minter3 := types.Minter{SequenceId: 3}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
 	return types.Params{
 		StartTime: startTime,
@@ -279,8 +280,8 @@ func createNotOkCfeminterParams() types.Params {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
+	minter3 := types.Minter{SequenceId: 5, Config: testenv.NoMintingConfig}
 
-	minter3 := types.Minter{SequenceId: 5}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
 
 	return types.Params{

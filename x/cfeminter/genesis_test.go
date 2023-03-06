@@ -101,7 +101,7 @@ func createMinter(startTime time.Time) []*types.Minter {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
-	minter3 := types.Minter{SequenceId: 3}
+	minter3 := types.Minter{SequenceId: 3, Config: testenv.NoMintingConfig}
 
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }

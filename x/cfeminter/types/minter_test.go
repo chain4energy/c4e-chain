@@ -2,6 +2,7 @@ package types_test
 
 import (
 	"cosmossdk.io/math"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"testing"
@@ -54,7 +55,7 @@ func TestNoMinting(t *testing.T) {
 	endTime := startTime.Add(time.Duration(345600000000 * 1000000))
 	blockTime := startTime.Add(time.Duration(345600000000 * 1000000 / 2))
 
-	minter := types.Minter{SequenceId: 1, EndTime: &endTime}
+	minter := types.Minter{SequenceId: 1, EndTime: &endTime, Config: testenv.NoMintingConfig}
 	amount := minter.AmountToMint(log.TestingLogger(), startTime, blockTime)
 	require.EqualValues(t, sdk.NewDec(0), amount)
 
@@ -89,7 +90,7 @@ func TestValidateMinterPariodsOrder(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
-	minter3 := types.Minter{SequenceId: 3}
+	minter3 := types.Minter{SequenceId: 3, Config: testenv.NoMintingConfig}
 	minters := []*types.Minter{&minter1, &minter2, &minter3}
 
 	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
@@ -108,7 +109,7 @@ func TestValidateMinterPariodsOrderInitialyNotOrdered(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
 	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
-	minter3 := types.Minter{SequenceId: 3}
+	minter3 := types.Minter{SequenceId: 3, Config: testenv.NoMintingConfig}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
 
 	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
@@ -127,7 +128,7 @@ func TestValidateMinterPariodsOrderInitialyNotFromOne(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 5, EndTime: &endTime1, Config: config}
 	minter2 := types.Minter{SequenceId: 6, EndTime: &endTime2, Config: config2}
-	minter3 := types.Minter{SequenceId: 7}
+	minter3 := types.Minter{SequenceId: 7, Config: testenv.NoMintingConfig}
 	minters := []*types.Minter{&minter3, &minter1, &minter2}
 
 	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
@@ -271,7 +272,7 @@ func TestValidateMinterNextPeriodWrongEnd(t *testing.T) {
 func TestValidateMinterNoMintigType(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 
-	minter1 := types.Minter{SequenceId: 1, Config: nil}
+	minter1 := types.Minter{SequenceId: 1, Config: testenv.NoMintingConfig}
 	minters := []*types.Minter{&minter1}
 
 	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
@@ -486,7 +487,7 @@ func TestNoMintingInfation(t *testing.T) {
 	duration := time.Hour * 24 * 365
 	endTime := startTime.Add(duration)
 
-	minter1 := types.Minter{SequenceId: 3}
+	minter1 := types.Minter{SequenceId: 3, Config: testenv.NoMintingConfig}
 
 	inflation := minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime.Add(-1000))
 	expected := sdk.ZeroDec()
@@ -702,6 +703,16 @@ func TestValidateExponentialStepMintingAmountBelowZero(t *testing.T) {
 
 	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
 	require.EqualError(t, params.Validate(), "minter with id 1 validation error: minter config validation error: amount cannot be less than 0")
+}
+
+func TestValidateMinterNoMinterConfigSet(t *testing.T) {
+	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
+
+	minter1 := types.Minter{SequenceId: 1, Config: nil}
+	minters := []*types.Minter{&minter1}
+
+	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
+	require.EqualError(t, params.Validate(), "minter with id 1 validation error: minter config must be set")
 }
 
 func TestValidateExponentialStepMinterLessThanZeror(t *testing.T) {

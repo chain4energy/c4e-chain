@@ -2,15 +2,15 @@ package types
 
 import (
 	fmt "fmt"
-	"time"
-
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"time"
 )
 
 // this line is used by starport scaffolding # genesis/types/import
 
-// DefaultIndex is the default capability global index
-const DefaultIndex uint64 = 1
+var _ types.UnpackInterfacesMessage = GenesisState{}
 
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
@@ -41,4 +41,8 @@ func (gs GenesisState) Validate() error {
 		return fmt.Errorf("cfeminter genesis validation error: minter state sequence id %d not found in minters", gs.MinterState.SequenceId)
 	}
 	return nil
+}
+
+func (gs GenesisState) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	return gs.Params.UnpackInterfaces(unpacker)
 }
