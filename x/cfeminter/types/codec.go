@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	_ proto.Message = (*LinearMinting)(nil)
-	_ proto.Message = (*ExponentialStepMinting)(nil)
-
+	_ proto.Message                      = (*LinearMinting)(nil)
+	_ proto.Message                      = (*ExponentialStepMinting)(nil)
+	_ MinterConfigI                      = (*LinearMinting)(nil)
+	_ MinterConfigI                      = (*ExponentialStepMinting)(nil)
 	_ codectypes.UnpackInterfacesMessage = (*Minter)(nil)
 	_ codectypes.UnpackInterfacesMessage = (*Params)(nil)
 )

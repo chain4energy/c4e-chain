@@ -72,7 +72,7 @@ func TestOneYearLinear(t *testing.T) {
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.MulRaw(2))
 }
 
-func TestFewYearsPeriodicReduction(t *testing.T) {
+func TestFewYearsExponentialStepMinting(t *testing.T) {
 	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(160000000000000)
 
@@ -136,7 +136,7 @@ func TestFewYearsPeriodicReduction(t *testing.T) {
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.Add(expectedMinted))
 }
 
-func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
+func TestFewYearsExponentialStepMintingInOneBlock(t *testing.T) {
 	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(160000000000000)
 	testHelper := app.SetupTestApp(t)
@@ -182,7 +182,7 @@ func TestFewYearsPeriodicReductionInOneBlock(t *testing.T) {
 	testHelper.C4eMinterUtils.ExportGenesisAndValidate()
 }
 
-func TestFewYearsLinearAndPeriodicReductionInOneBlock(t *testing.T) {
+func TestFewYearsLinearMintingAndExponentialStepMintingInOneBlock(t *testing.T) {
 	totalSupply := sdk.NewInt(400000000000000)
 	startAmountYearly := sdk.NewInt(160000000000000)
 

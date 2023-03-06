@@ -115,14 +115,14 @@ func (m Minter) validate() error {
 		return nil
 	}
 
-	_, ok := m.Config.GetCachedValue().(LinearMinting)
+	_, ok := m.Config.GetCachedValue().(*LinearMinting)
 	if ok {
 		if m.EndTime == nil {
-			return fmt.Errorf("for LinearMintingType type (1) EndTime must be set")
+			return fmt.Errorf("for LinearMinting EndTime must be set")
 		}
 	}
 	if err := minterConfig.Validate(); err != nil {
-		return fmt.Errorf("LinearMintingType error: %w", err)
+		return fmt.Errorf("minter config validation error: %w", err)
 	}
 
 	return nil
@@ -130,20 +130,23 @@ func (m Minter) validate() error {
 
 func (m *LinearMinting) Validate() error {
 	if m == nil {
-		return fmt.Errorf("for LinearMintingType type (1) LinearMinting must be set")
+		return fmt.Errorf("LinearMinting must be set")
 	}
 	if m.Amount.IsNil() {
 		return fmt.Errorf("amount cannot be nil")
 	}
 	if m.Amount.IsNegative() {
 		return fmt.Errorf("amount cannot be less than 0")
+	}
+	if !m.Amount.IsPositive() {
+		return fmt.Errorf("amount must be positive")
 	}
 	return nil
 }
 
 func (m *ExponentialStepMinting) Validate() error {
 	if m == nil {
-		return fmt.Errorf("for ExponentialStepMintingType type (2) ExponentialStepMinting must be set")
+		return fmt.Errorf("ExponentialStepMintingType must be set")
 	}
 	if m.Amount.IsNil() {
 		return fmt.Errorf("amount cannot be nil")
@@ -151,11 +154,18 @@ func (m *ExponentialStepMinting) Validate() error {
 	if m.Amount.IsNegative() {
 		return fmt.Errorf("amount cannot be less than 0")
 	}
+	if !m.Amount.IsPositive() {
+		return fmt.Errorf("amount must be positive")
+	}
 	if m.AmountMultiplier.IsNil() {
 		return fmt.Errorf("amountMultiplier cannot be nil")
 	}
+
 	if m.AmountMultiplier.IsNegative() {
 		return fmt.Errorf("amountMultiplier cannot be less than 0")
+	}
+	if !m.AmountMultiplier.IsPositive() {
+		return fmt.Errorf("amountMultiplier must be positive")
 	}
 	if m.StepDuration <= 0 {
 		return fmt.Errorf("stepDuration must be bigger than 0")

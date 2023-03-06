@@ -54,7 +54,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int
 	}
 	//k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter,
 	//	"previousMinter", previousMinter, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
-	// TODO: FIX
+
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
 
 	coin := sdk.NewCoin(params.MintDenom, amount)
