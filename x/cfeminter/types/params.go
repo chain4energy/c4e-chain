@@ -1,6 +1,7 @@
 package types
 
 import (
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"time"
 
 	"gopkg.in/yaml.v2"
@@ -12,7 +13,7 @@ var (
 	DefaultMinters   = []*Minter{
 		{
 			SequenceId: 1,
-			Config:     nil,
+			Config:     LinearMIntingCOnfig(),
 		},
 	}
 )
@@ -31,4 +32,12 @@ func DefaultParams() Params {
 func (params Params) String() string {
 	out, _ := yaml.Marshal(params)
 	return string(out)
+}
+
+// String implements the Stringer interface.
+func LinearMIntingCOnfig() *codectypes.Any {
+	linearMinting1 := NoMinting{}
+	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
+	config.TypeUrl = "/chain4energy.c4echain.cfeminter.NoMinting"
+	return config
 }
