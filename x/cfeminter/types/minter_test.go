@@ -712,7 +712,7 @@ func TestValidateMinterNoMinterConfigSet(t *testing.T) {
 	minters := []*types.Minter{&minter1}
 
 	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
-	require.EqualError(t, params.Validate(), "minter with id 1 validation error: minter config must be set")
+	require.EqualError(t, params.Validate(), "minter with id 1 validation error: minter config is nil")
 }
 
 func TestValidateExponentialStepMinterLessThanZeror(t *testing.T) {

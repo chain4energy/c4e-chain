@@ -2,9 +2,11 @@ package types
 
 import (
 	"cosmossdk.io/math"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/gogo/protobuf/proto"
 	"github.com/tendermint/tendermint/libs/log"
 	"gopkg.in/yaml.v2"
 	"time"
@@ -16,25 +18,27 @@ var (
 	_ MinterConfigI                      = &ExponentialStepMinting{}
 	_ codectypes.UnpackInterfacesMessage = (*Minter)(nil)
 	_ codectypes.UnpackInterfacesMessage = (*Params)(nil)
+	_ codectypes.UnpackInterfacesMessage = (*MsgUpdateMinters)(nil)
 )
 
 type MinterConfigI interface {
 	codec.ProtoMarshaler
+	proto.Message
 	Validate() error
 	CalculateInflation(totalSupply math.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec
 	AmountToMint(logger log.Logger, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec
 	String() string
 }
 
-func (m *Minter) GetMinterConfig() MinterConfigI {
+func (m *Minter) GetMinterConfig() (MinterConfigI, error) {
 	if m.Config == nil {
-		return nil
+		return nil, fmt.Errorf("minter config is nil")
 	}
 	minterConfigI, ok := m.Config.GetCachedValue().(MinterConfigI)
 	if !ok {
-		return nil
+		return nil, fmt.Errorf("expected %T, got %T", (MinterConfigI)(nil), m.Config.GetCachedValue())
 	}
-	return minterConfigI
+	return minterConfigI, nil
 }
 
 func (m Minter) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
@@ -74,7 +78,7 @@ func (m *Minter) GetMinterJSON() MinterJSON {
 	if m == nil {
 		return MinterJSON{}
 	}
-	minterConfig := m.GetMinterConfig()
+	minterConfig, _ := m.GetMinterConfig()
 	var config string
 	if minterConfig != nil {
 		config = minterConfig.String()
@@ -97,4 +101,13 @@ func (m *NoMinting) CalculateInflation(totalSupply math.Int, startTime time.Time
 
 func (m *NoMinting) AmountToMint(logger log.Logger, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
 	return sdk.ZeroDec()
+}
+
+func (m *MsgUpdateMinters) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	for _, minter := range m.Minters {
+		if err := minter.UnpackInterfaces(unpacker); err != nil {
+			return err
+		}
+	}
+	return nil
 }

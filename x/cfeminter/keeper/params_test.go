@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 	"time"
 
@@ -11,11 +12,13 @@ import (
 )
 
 func TestGetDefaultParams(t *testing.T) {
-	k, ctx, _ := testkeeper.CfeminterKeeper(t)
+	testHelper := app.SetupTestApp(t)
+	k := testHelper.C4eMinterUtils.GetC4eMinterKeeper()
 	params := types.DefaultParams()
-	k.SetParams(ctx, params)
+	err := k.SetParams(testHelper.Context, params)
+	require.NoError(t, err)
 
-	getParams := k.GetParams(ctx)
+	getParams := k.GetParams(testHelper.Context)
 	testminter.CompareCfeminterParams(t, params, getParams)
 }
 

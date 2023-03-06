@@ -3,11 +3,10 @@ package types
 import (
 	"cosmossdk.io/math"
 	"fmt"
-	"sort"
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
+	"sort"
+	"time"
 )
 
 const year = time.Hour * 24 * 365
@@ -105,9 +104,9 @@ func (params Params) ContainsMinter(sequenceId uint32) bool {
 }
 
 func (m *Minter) validate() error {
-	minterConfig := m.GetMinterConfig()
-	if minterConfig == nil {
-		return fmt.Errorf("minter config must be set")
+	minterConfig, err := m.GetMinterConfig()
+	if err != nil {
+		return err
 	}
 
 	_, ok := m.Config.GetCachedValue().(*LinearMinting)
@@ -200,8 +199,8 @@ func (m *Minter) CalculateInflation(totalSupply math.Int, startTime time.Time, b
 	if startTime.After(blockTime) {
 		return sdk.ZeroDec()
 	}
-
-	return m.GetMinterConfig().CalculateInflation(totalSupply, startTime, m.EndTime, blockTime)
+	minterConfig, _ := m.GetMinterConfig()
+	return minterConfig.CalculateInflation(totalSupply, startTime, m.EndTime, blockTime)
 }
 
 func (m *LinearMinting) CalculateInflation(totalSupply math.Int, minterStart time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
@@ -243,7 +242,8 @@ func (m *ExponentialStepMinting) CalculateInflation(totalSupply math.Int, startT
 }
 
 func (m *Minter) AmountToMint(logger log.Logger, startTime time.Time, blockTime time.Time) sdk.Dec {
-	return m.GetMinterConfig().AmountToMint(logger, startTime, m.EndTime, blockTime)
+	minterConfig, _ := m.GetMinterConfig()
+	return minterConfig.AmountToMint(logger, startTime, m.EndTime, blockTime)
 }
 
 func (m *LinearMinting) AmountToMint(logger log.Logger, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {

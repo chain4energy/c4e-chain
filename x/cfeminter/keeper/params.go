@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/binary"
+	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -9,6 +10,7 @@ import (
 // SetParams sets the x/mint module parameters.
 func (k Keeper) SetParams(ctx sdk.Context, p types.Params) error {
 	if err := p.Validate(); err != nil {
+		fmt.Println("Set params error")
 		return err
 	}
 

@@ -36,8 +36,7 @@ func (params Params) String() string {
 
 // String implements the Stringer interface.
 func LinearMIntingCOnfig() *codectypes.Any {
-	linearMinting1 := NoMinting{}
-	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
+	config, _ := codectypes.NewAnyWithValue(&NoMinting{})
 	config.TypeUrl = "/chain4energy.c4echain.cfeminter.NoMinting"
 	return config
 }
