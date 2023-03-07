@@ -1,12 +1,12 @@
-package v110_test
+package v2_test
 
 import (
 	"testing"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
-	v101 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
-	v110 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v110"
+	v101 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v1"
+	v110 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/stretchr/testify/require"

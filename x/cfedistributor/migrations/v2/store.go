@@ -1,7 +1,7 @@
-package v110
+package v2
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v1"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -9,13 +9,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func getAllOldSubDistributorStatesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (states []v101.State, err error) {
-	prefixStore := prefix.NewStore(store, v101.RemainsKeyPrefix)
+func getAllOldSubDistributorStatesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (states []v1.State, err error) {
+	prefixStore := prefix.NewStore(store, v1.RemainsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val v101.State
+		var val v1.State
 		err := cdc.Unmarshal(iterator.Value(), &val)
 		if err != nil {
 			return nil, err
@@ -26,7 +26,7 @@ func getAllOldSubDistributorStatesAndDelete(store sdk.KVStore, cdc codec.BinaryC
 	return
 }
 
-func setNewSubDistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldStates []v101.State) error {
+func setNewSubDistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldStates []v1.State) error {
 	prefixStore := prefix.NewStore(store, types.StateKeyPrefix)
 
 	for _, oldState := range oldStates {

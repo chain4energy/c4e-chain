@@ -104,5 +104,8 @@ func CfedistributorKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eDistributorK
 		subDistributorKeeperData.KVStoreKey,
 		subDistributorKeeperData.Subspace,
 	)
+	keyTable := types.ParamKeyTable() //nolint:staticcheck
+	utils.Subspace.WithKeyTable(keyTable)
+
 	return &utils, ctx
 }

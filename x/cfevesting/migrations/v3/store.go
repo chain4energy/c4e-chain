@@ -1,7 +1,7 @@
-package v120
+package v3
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v110"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -10,13 +10,13 @@ import (
 )
 
 // getAllOldAccountVestingPoolsAndDelete returns all old version AccountVestingPools and deletes them from the KVStore
-func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldAccPools []v110.AccountVestingPools, err error) {
-	prefixStore := prefix.NewStore(store, v110.AccountVestingPoolsKeyPrefix)
+func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldAccPools []v2.AccountVestingPools, err error) {
+	prefixStore := prefix.NewStore(store, v2.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val v110.AccountVestingPools
+		var val v2.AccountVestingPools
 		err := cdc.Unmarshal(iterator.Value(), &val)
 		if err != nil {
 			return nil, err
@@ -27,7 +27,7 @@ func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCo
 	return
 }
 
-func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccPools []v110.AccountVestingPools) error {
+func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccPools []v2.AccountVestingPools) error {
 	prefixStore := prefix.NewStore(store, types.AccountVestingPoolsKeyPrefix)
 	for _, oldAccPool := range oldAccPools {
 		oldPools := oldAccPool.VestingPools

@@ -1,7 +1,7 @@
-package v110
+package v2
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v101"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v1"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -10,13 +10,13 @@ import (
 )
 
 // getAllOldAccountVestingPoolsAndDelete returns all old version AccountVestingPools and deletes them from the KVStore
-func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldAccPools []v101.AccountVestingPools, err error) {
-	prefixStore := prefix.NewStore(store, v101.AccountVestingPoolsKeyPrefix)
+func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldAccPools []v1.AccountVestingPools, err error) {
+	prefixStore := prefix.NewStore(store, v1.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val v101.AccountVestingPools
+		var val v1.AccountVestingPools
 		err := cdc.Unmarshal(iterator.Value(), &val)
 		if err != nil {
 			return nil, err
@@ -27,7 +27,7 @@ func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCo
 	return
 }
 
-func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccPools []v101.AccountVestingPools) error {
+func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccPools []v1.AccountVestingPools) error {
 	prefixStore := prefix.NewStore(store, types.AccountVestingPoolsKeyPrefix)
 	for _, oldAccPool := range oldAccPools {
 		oldPools := oldAccPool.VestingPools
@@ -60,8 +60,8 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 	return nil
 }
 
-func getOldVestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vestingTypes v101.VestingTypes, err error) {
-	b := store.Get(v101.VestingTypesKey)
+func getOldVestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vestingTypes v1.VestingTypes, err error) {
+	b := store.Get(v1.VestingTypesKey)
 	if b == nil {
 		return vestingTypes, nil
 	}
@@ -70,11 +70,11 @@ func getOldVestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vest
 	if err != nil {
 		return vestingTypes, err
 	}
-	store.Delete(v101.VestingTypesKey)
+	store.Delete(v1.VestingTypesKey)
 	return
 }
 
-func setNewVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes v101.VestingTypes) error {
+func setNewVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes v1.VestingTypes) error {
 	for _, vt := range vestingTypes.VestingTypes {
 		newVestingType := types.VestingType{
 			Name:          vt.Name,

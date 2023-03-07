@@ -1,7 +1,7 @@
-package v110
+package v2
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v101"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v1"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,7 +13,7 @@ import (
 // - SubDistributor params structure changed.
 // - BurnShare and Share now must be set between 0 and 1, not 0 and 100.
 func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
-	var oldSubDistributors []v101.SubDistributor
+	var oldSubDistributors []v1.SubDistributor
 	oldSubDistributorsRaw := paramStore.GetRaw(ctx, types.KeySubDistributors)
 	if err := codec.NewLegacyAmino().UnmarshalJSON(oldSubDistributorsRaw, &oldSubDistributors); err != nil {
 		panic(err)

@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	v110cfeminter "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v110"
+	v110cfeminter "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

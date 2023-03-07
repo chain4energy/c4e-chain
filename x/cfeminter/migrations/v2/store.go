@@ -1,9 +1,9 @@
-package v110
+package v2
 
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v101"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v1"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -11,8 +11,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func getOldMinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMinterState v101.MinterState, err error) {
-	b := store.Get(v101.MinterStateKey)
+func getOldMinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMinterState v1.MinterState, err error) {
+	b := store.Get(v1.MinterStateKey)
 	if b == nil {
 		return oldMinterState, fmt.Errorf("stored minter state should not have been nil")
 	}
@@ -21,11 +21,11 @@ func getOldMinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMi
 	if err != nil {
 		return oldMinterState, err
 	}
-	store.Delete(v101.MinterStateKey)
+	store.Delete(v1.MinterStateKey)
 	return
 }
 
-func setNewMinterState(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterState v101.MinterState) error {
+func setNewMinterState(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterState v1.MinterState) error {
 	newMinterState := types.MinterState{
 		SequenceId:                  uint32(oldMinterState.Position),
 		AmountMinted:                oldMinterState.AmountMinted,
@@ -41,7 +41,7 @@ func setNewMinterState(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterState 
 	if err != nil {
 		return err
 	}
-	store.Set(v101.MinterStateKey, av)
+	store.Set(v1.MinterStateKey, av)
 	return nil
 }
 
@@ -53,14 +53,14 @@ func migrateMinterState(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return setNewMinterState(store, cdc, oldMinterState)
 }
 
-func getOldMinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMinterStateHistoryList []*v101.MinterState, err error) {
-	prefixStore := prefix.NewStore(store, v101.MinterStateHistoryKeyPrefix)
+func getOldMinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMinterStateHistoryList []*v1.MinterState, err error) {
+	prefixStore := prefix.NewStore(store, v1.MinterStateHistoryKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val v101.MinterState
+		var val v1.MinterState
 		cdc.MustUnmarshal(iterator.Value(), &val)
 		oldMinterStateHistoryList = append(oldMinterStateHistoryList, &val)
 		prefixStore.Delete(iterator.Key())
@@ -69,7 +69,7 @@ func getOldMinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec)
 	return
 }
 
-func setNewMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterStateHistory []*v101.MinterState) error {
+func setNewMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterStateHistory []*v1.MinterState) error {
 	prefixStore := prefix.NewStore(store, types.MinterStateHistoryKeyPrefix)
 	for _, oldMinterState := range oldMinterStateHistory {
 		newMinterState := types.MinterState{

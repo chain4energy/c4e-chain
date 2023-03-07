@@ -1,8 +1,8 @@
-package v120_test
+package v3_test
 
 import (
-	v110 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v110"
-	v120 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v120"
+	v110 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
+	v120 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
 	"math/rand"
 	"strconv"
 	"testing"

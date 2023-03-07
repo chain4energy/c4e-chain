@@ -1,4 +1,4 @@
-package v110
+package v2
 
 var (
 	VestingTypesKey              = []byte{0x01}

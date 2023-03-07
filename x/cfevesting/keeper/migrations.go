@@ -2,8 +2,8 @@ package keeper
 
 import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
-	v110cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v110"
-	v120cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v120"
+	v110cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
+	v120cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
 	v4 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v4"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
