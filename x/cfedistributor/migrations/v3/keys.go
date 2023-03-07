@@ -5,4 +5,4 @@ const (
 	ModuleName = "cfedistributor"
 )
 
-var ParamsKey = []byte{0x00} // prefix for parameters for module x/staking
+var ParamsKey = []byte{0x00} // prefix for parameters for module x/cfedistributor

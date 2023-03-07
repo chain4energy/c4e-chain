@@ -149,6 +149,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 
 	mig := keeper.NewMigrator(am.keeper, am.legacySubspace)
 	err := cfg.RegisterMigration(types.ModuleName, 1, mig.Migrate1to2)
+	err = cfg.RegisterMigration(types.ModuleName, 2, mig.Migrate2to3)
 	if err != nil {
 		panic(err)
 	}

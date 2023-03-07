@@ -1,8 +1,8 @@
 package v4
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/exported"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

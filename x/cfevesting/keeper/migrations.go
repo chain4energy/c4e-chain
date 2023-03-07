@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
+	v110cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v110"
 	v120cfevesting "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v120"
 	v4 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v4"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,6 +17,11 @@ type Migrator struct {
 // NewMigrator returns a new Migrator.
 func NewMigrator(keeper Keeper, legacySubspace exported.Subspace) Migrator {
 	return Migrator{keeper: keeper, legacySubspace: legacySubspace}
+}
+
+// Migrate2to3 migrates from version 1 to 2.
+func (m Migrator) Migrate1to2(ctx sdk.Context) error {
+	return v110cfevesting.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
 }
 
 // Migrate2to3 migrates from version 2 to 3.
