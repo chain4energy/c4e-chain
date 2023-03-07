@@ -13,7 +13,6 @@ func SetMaccPerms(perms map[string][]string) {
 }
 
 var (
-	KeySubDistributors     = []byte("SubDistributors")
 	DefaultSubDistributors = []SubDistributor{
 		{
 			Name: "default_distributor",
