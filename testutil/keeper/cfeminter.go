@@ -53,7 +53,8 @@ func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, testenv.Additio
 
 	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())
-
+	keyTable := types.ParamKeyTable() //nolint:staticcheck
+	paramsSubspace.WithKeyTable(keyTable)
 	return k, ctx, testenv.AdditionalKeeperData{
 		Cdc:      cdc,
 		StoreKey: storeKey,

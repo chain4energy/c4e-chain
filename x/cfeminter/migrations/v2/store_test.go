@@ -102,14 +102,14 @@ func MigrateStoreV100ToV101(
 	}
 	require.NoError(t, err)
 
-	newState := keeper.GetMinterState(ctx)
+	newState := getV2MinterState(ctx, keeperData.StoreKey, keeperData.Cdc)
 	require.Equal(t, newState.AmountMinted, oldState.AmountMinted)
 	require.Equal(t, newState.RemainderFromPreviousPeriod, oldState.RemainderFromPreviousPeriod)
 	require.Equal(t, newState.RemainderToMint, oldState.RemainderToMint)
 	require.Equal(t, newState.LastMintBlockTime, oldState.LastMintBlockTime)
 	require.EqualValues(t, newState.SequenceId, oldState.Position)
 
-	newMinterStateHistory := keeper.GetAllMinterStateHistory(ctx)
+	newMinterStateHistory := getV2MinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc)
 	require.Equal(t, len(oldMinterHistory), len(newMinterStateHistory))
 	for i, oldMinterHistory := range oldMinterHistory {
 		require.Equal(t, newMinterStateHistory[i].AmountMinted, oldMinterHistory.AmountMinted)
@@ -150,6 +150,13 @@ func getV101MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec
 	return
 }
 
+func getV2MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterState v2.MinterState) {
+	store := ctx.KVStore(storeKey)
+	b := store.Get(types.MinterStateKey)
+	cdc.MustUnmarshal(b, &minterState)
+	return
+}
+
 func getV101MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterStateList []*v1.MinterState) {
 	store := ctx.KVStore(storeKey)
 	prefixStore := prefix.NewStore(store, v1.MinterStateHistoryKeyPrefix)
@@ -159,6 +166,22 @@ func getV101MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cd
 
 	for ; iterator.Valid(); iterator.Next() {
 		var val v1.MinterState
+		cdc.MustUnmarshal(iterator.Value(), &val)
+		minterStateList = append(minterStateList, &val)
+	}
+
+	return
+}
+
+func getV2MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterStateList []*v2.MinterState) {
+	store := ctx.KVStore(storeKey)
+	prefixStore := prefix.NewStore(store, v1.MinterStateHistoryKeyPrefix)
+	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val v2.MinterState
 		cdc.MustUnmarshal(iterator.Value(), &val)
 		minterStateList = append(minterStateList, &val)
 	}

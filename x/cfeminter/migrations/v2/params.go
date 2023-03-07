@@ -23,7 +23,7 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 
 	var newMinterConfig types.MinterConfig
 	newMinterConfig.StartTime = oldMinterConfig.Start
-	var newMinters []*types.Minter
+	var newMinters []*types.LegacyMinter
 	for _, oldMinter := range oldMinterConfig.Periods {
 		var linearMinting *types.LinearMinting
 		var exponentialStepMinting *types.ExponentialStepMinting
@@ -57,7 +57,7 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 			return fmt.Errorf("wrong minting period type")
 		}
 
-		newMinter := types.Minter{
+		newMinter := types.LegacyMinter{
 			SequenceId:             uint32(oldMinter.Position),
 			EndTime:                oldMinter.PeriodEnd,
 			Type:                   newType,
