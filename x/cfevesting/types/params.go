@@ -7,7 +7,6 @@ import (
 )
 
 var (
-	KeyDenom            = []byte("Denom")
 	DefaultDenom string = "uc4e"
 ) //
 

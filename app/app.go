@@ -511,7 +511,8 @@ func New(
 		app.GovKeeper,
 		authorityModuleAddress,
 	)
-	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
+	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper,
+		app.StakingKeeper, app.GetSubspace(cfevestingmoduletypes.ModuleName))
 
 	app.CfesignatureKeeper = *cfesignaturemodulekeeper.NewKeeper(
 		appCodec,
@@ -543,7 +544,8 @@ func New(
 		app.AccountKeeper,
 		authorityModuleAddress,
 	)
-	cfedistributorModule := cfedistributormodule.NewAppModule(appCodec, app.CfedistributorKeeper, app.AccountKeeper, app.BankKeeper)
+	cfedistributorModule := cfedistributormodule.NewAppModule(appCodec, app.CfedistributorKeeper, app.AccountKeeper,
+		app.BankKeeper, app.GetSubspace(cfedistributormoduletypes.ModuleName))
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
