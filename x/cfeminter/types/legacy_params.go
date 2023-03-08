@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"time"
@@ -26,8 +27,8 @@ func ParamKeyTable() paramtypes.KeyTable {
 // ParamSetPairs get the params.ParamSet
 func (params *LegacyParams) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyMintDenom, &params.MintDenom, emptyValidation),
-		paramtypes.NewParamSetPair(KeyMinterConfig, &params.MinterConfig, emptyValidation),
+		paramtypes.NewParamSetPair(KeyMintDenom, &params.MintDenom, validateDenom),
+		paramtypes.NewParamSetPair(KeyMinterConfig, &params.MinterConfig, validateMinters),
 	}
 }
 
@@ -57,6 +58,30 @@ type LegacyMinterState struct {
 	RemainderFromPreviousPeriod github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,5,opt,name=remainder_from_previous_period,json=remainderFromPreviousPeriod,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"remainder_from_previous_period"`
 }
 
-func emptyValidation(v interface{}) error {
+// validateDenom validates the Denom param
+func validateDenom(v interface{}) error {
+	denom, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", v)
+	}
+
+	if len(denom) == 0 {
+		return fmt.Errorf("denom cannot be empty")
+	}
+
+	return nil
+}
+
+// validateMinters validates Minters
+func validateMinters(v interface{}) error {
+	minterConfig, ok := v.(MinterConfig)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", minterConfig)
+	}
+	err := minterConfig.Validate()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

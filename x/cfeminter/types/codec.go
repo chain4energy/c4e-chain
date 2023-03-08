@@ -3,22 +3,11 @@ package types
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	// this line is used by starport scaffolding # 1
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
-	"github.com/gogo/protobuf/proto"
-)
-
-var (
-	_ proto.Message                      = (*LinearMinting)(nil)
-	_ proto.Message                      = (*ExponentialStepMinting)(nil)
-	_ MinterConfigI                      = (*LinearMinting)(nil)
-	_ MinterConfigI                      = (*ExponentialStepMinting)(nil)
-	_ codectypes.UnpackInterfacesMessage = (*Minter)(nil)
-	_ codectypes.UnpackInterfacesMessage = (*Params)(nil)
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
@@ -28,13 +17,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&NoMinting{}, "c4e-chain/NoMinting", nil)
 }
 
-var (
-	_ MinterConfigI = &LinearMinting{}
-	_ MinterConfigI = &ExponentialStepMinting{}
-)
-
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
-
 	registry.RegisterInterface(
 		"chain4energy.c4echain.cfeminter.MinterConfigI",
 		(*MinterConfigI)(nil),
@@ -42,12 +25,14 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&ExponentialStepMinting{},
 		&NoMinting{},
 	)
+
 	registry.RegisterImplementations(
 		(*MinterConfigI)(nil),
 		&LinearMinting{},
 		&ExponentialStepMinting{},
 		&NoMinting{},
 	)
+
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
