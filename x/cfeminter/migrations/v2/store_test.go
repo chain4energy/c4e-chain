@@ -150,7 +150,7 @@ func getV101MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec
 	return
 }
 
-func getV2MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterState v2.MinterState) {
+func getV2MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterState types.LegacyMinterState) {
 	store := ctx.KVStore(storeKey)
 	b := store.Get(types.MinterStateKey)
 	cdc.MustUnmarshal(b, &minterState)
@@ -173,7 +173,7 @@ func getV101MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cd
 	return
 }
 
-func getV2MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterStateList []*v2.MinterState) {
+func getV2MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterStateList []*types.LegacyMinterState) {
 	store := ctx.KVStore(storeKey)
 	prefixStore := prefix.NewStore(store, v1.MinterStateHistoryKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
@@ -181,7 +181,7 @@ func getV2MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val v2.MinterState
+		var val types.LegacyMinterState
 		cdc.MustUnmarshal(iterator.Value(), &val)
 		minterStateList = append(minterStateList, &val)
 	}

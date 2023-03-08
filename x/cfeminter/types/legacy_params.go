@@ -9,7 +9,12 @@ import (
 var (
 	KeyMintDenom    = []byte("MintDenom")
 	KeyMinterConfig = []byte("MinterConfig")
-) //
+)       //
+const ( // MintingPeriod types
+	NoMintingType              string = "NO_MINTING"
+	LinearMintingType          string = "LINEAR_MINTING"
+	ExponentialStepMintingType string = "EXPONENTIAL_STEP_MINTING"
+)
 
 var _ paramtypes.ParamSet = (*LegacyParams)(nil)
 
@@ -37,13 +42,8 @@ type MinterConfig struct {
 }
 
 type LegacyMinter struct {
-	SequenceId uint32     `protobuf:"varint,1,opt,name=sequence_id,json=sequenceId,proto3" json:"sequence_id,omitempty"`
-	EndTime    *time.Time `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time,omitempty"`
-	// types:
-	//
-	//	NO_MINTING;
-	//	LINEAR_MINTING;
-	//	EXPONENTIAL_STEP_MINTING;
+	SequenceId             uint32                  `protobuf:"varint,1,opt,name=sequence_id,json=sequenceId,proto3" json:"sequence_id,omitempty"`
+	EndTime                *time.Time              `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time,omitempty"`
 	Type                   string                  `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
 	LinearMinting          *LinearMinting          `protobuf:"bytes,4,opt,name=linear_minting,json=linearMinting,proto3" json:"linear_minting,omitempty"`
 	ExponentialStepMinting *ExponentialStepMinting `protobuf:"bytes,5,opt,name=exponential_step_minting,json=exponentialStepMinting,proto3" json:"exponential_step_minting,omitempty"`
@@ -60,21 +60,3 @@ type LegacyMinterState struct {
 func emptyValidation(v interface{}) error {
 	return nil
 }
-func DefaultLegacyParams() LegacyParams {
-	return NewLegacyParams(DefaultMintDenom, DefaultLegacyMinters)
-}
-func NewLegacyParams(denom string, minterConfig MinterConfig) LegacyParams {
-	return LegacyParams{MintDenom: denom, MinterConfig: minterConfig}
-}
-
-var (
-	DefaultLegacyMinters = MinterConfig{
-		StartTime: time.Now(),
-		Minters: []*LegacyMinter{
-			{
-				SequenceId: 1,
-				Type:       "NO_MINTING",
-			},
-		},
-	}
-)

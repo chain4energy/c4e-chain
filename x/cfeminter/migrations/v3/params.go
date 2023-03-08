@@ -2,7 +2,6 @@ package v3
 
 import (
 	"github.com/chain4energy/c4e-chain/x/cfeminter/exported"
-	v2 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -24,9 +23,9 @@ func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace
 		newMinter.EndTime = oldMinter.EndTime
 		newParams.Minters = append(newParams.Minters, &newMinter)
 		var config *codectypes.Any
-		if oldMinter.Type == v2.ExponentialStepMintingType {
+		if oldMinter.Type == types.ExponentialStepMintingType {
 			config, _ = codectypes.NewAnyWithValue(oldMinter.ExponentialStepMinting)
-		} else if oldMinter.Type == v2.LinearMintingType {
+		} else if oldMinter.Type == types.LinearMintingType {
 			config, _ = codectypes.NewAnyWithValue(oldMinter.LinearMinting)
 		} else {
 			config, _ = codectypes.NewAnyWithValue(&types.NoMinting{})

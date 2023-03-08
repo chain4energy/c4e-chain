@@ -4,7 +4,6 @@ import (
 	"cosmossdk.io/math"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v1"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v3"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -54,7 +53,7 @@ func TestMigrationNoMinterStates(t *testing.T) {
 
 func TestMigrationMinterStateHistory(t *testing.T) {
 	_, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	stateHistory := []v2.MinterState{
+	stateHistory := []types.LegacyMinterState{
 		createV2MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000)),
 		createV2MinterState(2, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10001)),
 	}
@@ -66,7 +65,7 @@ func TestMigrationMinterStateHistory(t *testing.T) {
 
 func TestMigrationWrongMinterStateHistory(t *testing.T) {
 	_, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	stateHistory := []v2.MinterState{
+	stateHistory := []types.LegacyMinterState{
 		createV2MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("-100"), time.Now(), sdk.NewInt(10000)),
 		createV2MinterState(2, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10001)),
 	}
@@ -78,7 +77,7 @@ func TestMigrationWrongMinterStateHistory(t *testing.T) {
 
 func TestMigrationNoStateHistory(t *testing.T) {
 	_, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	stateHistory := []v2.MinterState{}
+	stateHistory := []types.LegacyMinterState{}
 	minterState := createV2MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000))
 	setV2MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, minterState)
 	setOldMinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc, stateHistory)
@@ -126,8 +125,8 @@ func createV2MinterState(
 	remainderFromPreviousPeriod sdk.Dec,
 	lastMintBlockTime time.Time,
 	amountMinted math.Int,
-) v2.MinterState {
-	return v2.MinterState{
+) types.LegacyMinterState {
+	return types.LegacyMinterState{
 		SequenceId:                  sequenceId,
 		RemainderToMint:             remainderToMint,
 		RemainderFromPreviousPeriod: remainderFromPreviousPeriod,
@@ -136,7 +135,7 @@ func createV2MinterState(
 	}
 }
 
-func setV2MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, state v2.MinterState) {
+func setV2MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, state types.LegacyMinterState) {
 	store := ctx.KVStore(storeKey)
 	b := cdc.MustMarshal(&state)
 	store.Set(types.MinterStateKey, b)
@@ -149,14 +148,14 @@ func getV101MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec
 	return
 }
 
-func getV3MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterState v2.MinterState) {
+func getV3MinterState(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterState types.LegacyMinterState) {
 	store := ctx.KVStore(storeKey)
 	b := store.Get(types.MinterStateKey)
 	cdc.MustUnmarshal(b, &minterState)
 	return
 }
 
-func getV2MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterStateList []*v2.MinterState) {
+func getV2MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (minterStateList []*types.LegacyMinterState) {
 	store := ctx.KVStore(storeKey)
 	prefixStore := prefix.NewStore(store, v1.MinterStateHistoryKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
@@ -164,7 +163,7 @@ func getV2MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val v2.MinterState
+		var val types.LegacyMinterState
 		cdc.MustUnmarshal(iterator.Value(), &val)
 		minterStateList = append(minterStateList, &val)
 	}
@@ -188,7 +187,7 @@ func getV3MinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc 
 	return
 }
 
-func setOldMinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, minterStateList []v2.MinterState) {
+func setOldMinterStateHistory(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, minterStateList []types.LegacyMinterState) {
 	store := ctx.KVStore(storeKey)
 	prefixStore := prefix.NewStore(store, types.MinterStateHistoryKeyPrefix)
 	for _, V101MinterState := range minterStateList {

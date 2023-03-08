@@ -2,8 +2,6 @@ package v3_test
 
 import (
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/exported"
-	v2 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v3"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,26 +13,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type mockSubspace struct {
-	ps v2.Params
-}
-
-func newMockSubspace(ps v2.Params) mockSubspace {
-	return mockSubspace{ps: ps}
-}
-
-func (ms mockSubspace) GetParamSet(ctx sdk.Context, ps exported.ParamSet) {
-	*ps.(*v2.Params) = ms.ps
-}
-
 func TestMigrateLinearMinter(t *testing.T) {
 	testUtil, ctx := testkeeper.CfeminterKeeperTestUtilWithCdc(t)
-	minterConfigNoMinting := v2.MinterConfig{
+	minterConfigNoMinting := types.MinterConfig{
 		StartTime: time.Now(),
-		Minters: []*v2.Minter{
+		Minters: []*types.LegacyMinter{
 			{
 				SequenceId: 1,
-				Type:       v2.NoMintingType,
+				Type:       types.NoMintingType,
 			},
 		},
 	}
@@ -43,7 +29,7 @@ func TestMigrateLinearMinter(t *testing.T) {
 	MigrateParamsV2ToV3(t, ctx, testUtil, false, "")
 }
 
-func setV2MinterConfig(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eMinterKeeperUtils, minterConfig v2.MinterConfig) {
+func setV2MinterConfig(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eMinterKeeperUtils, minterConfig types.MinterConfig) {
 	store := newStore(ctx, testUtil)
 	bz, err := codec.NewLegacyAmino().MarshalJSON(minterConfig)
 	require.NoError(t, err)
@@ -67,7 +53,7 @@ func MigrateParamsV2ToV3(
 	testUtil *testkeeper.ExtendedC4eMinterKeeperUtils,
 	expectError bool, errorMessage string,
 ) {
-	var oldMinterConfig v2.MinterConfig
+	var oldMinterConfig types.MinterConfig
 	store := newStore(ctx, testUtil)
 	oldMinterConfigRaw := store.Get(types.KeyMinterConfig)
 	err := codec.NewLegacyAmino().UnmarshalJSON(oldMinterConfigRaw, &oldMinterConfig)

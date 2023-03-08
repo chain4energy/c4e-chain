@@ -2,7 +2,6 @@ package helpers
 
 import (
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
-	v2 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -92,7 +91,7 @@ var MainnetMinterConfigLong = cfemintertypes.MinterConfig{
 	Minters: []*cfemintertypes.LegacyMinter{
 		{
 			SequenceId: 1,
-			Type:       v2.ExponentialStepMintingType,
+			Type:       cfemintertypes.ExponentialStepMintingType,
 			ExponentialStepMinting: &cfemintertypes.ExponentialStepMinting{
 				Amount:           sdk.NewInt(32000000000000),
 				AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
@@ -109,7 +108,7 @@ var MainnetMinterConfigShort = cfemintertypes.MinterConfig{
 	Minters: []*cfemintertypes.LegacyMinter{
 		{
 			SequenceId: 1,
-			Type:       v2.ExponentialStepMintingType,
+			Type:       cfemintertypes.ExponentialStepMintingType,
 			ExponentialStepMinting: &cfemintertypes.ExponentialStepMinting{
 				Amount:           sdk.NewInt(160000000000000),
 				AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
@@ -119,7 +118,7 @@ var MainnetMinterConfigShort = cfemintertypes.MinterConfig{
 		},
 		{
 			SequenceId: 2,
-			Type:       v2.NoMintingType,
+			Type:       cfemintertypes.NoMintingType,
 		},
 	},
 }

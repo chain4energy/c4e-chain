@@ -26,7 +26,7 @@ func getOldMinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMi
 }
 
 func setNewMinterState(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterState v1.MinterState) error {
-	newMinterState := MinterState{
+	newMinterState := types.LegacyMinterState{
 		SequenceId:                  uint32(oldMinterState.Position),
 		AmountMinted:                oldMinterState.AmountMinted,
 		LastMintBlockTime:           oldMinterState.LastMintBlockTime,
@@ -72,7 +72,7 @@ func getOldMinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec)
 func setNewMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterStateHistory []*v1.MinterState) error {
 	prefixStore := prefix.NewStore(store, types.MinterStateHistoryKeyPrefix)
 	for _, oldMinterState := range oldMinterStateHistory {
-		newMinterState := MinterState{
+		newMinterState := types.LegacyMinterState{
 			SequenceId:                  uint32(oldMinterState.Position),
 			AmountMinted:                oldMinterState.AmountMinted,
 			LastMintBlockTime:           oldMinterState.LastMintBlockTime,

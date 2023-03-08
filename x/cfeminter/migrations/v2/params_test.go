@@ -178,7 +178,7 @@ func MigrateParamsV100ToV101(
 		return
 	}
 	require.NoError(t, err)
-	var newMinterConfig v2.MinterConfig
+	var newMinterConfig types.MinterConfig
 	newMinterConfigRaw := store.Get(types.KeyMinterConfig)
 	err = codec.NewLegacyAmino().UnmarshalJSON(newMinterConfigRaw, &newMinterConfig)
 	require.NoError(t, err)
@@ -191,13 +191,13 @@ func MigrateParamsV100ToV101(
 
 		switch oldMinterPeriod.Type {
 		case "TIME_LINEAR_MINTER":
-			require.EqualValues(t, newMinters[i].Type, v2.LinearMintingType)
+			require.EqualValues(t, newMinters[i].Type, types.LinearMintingType)
 			break
 		case "PERIODIC_REDUCTION_MINTER":
-			require.EqualValues(t, newMinters[i].Type, v2.ExponentialStepMintingType)
+			require.EqualValues(t, newMinters[i].Type, types.ExponentialStepMintingType)
 			break
 		case "NO_MINTING":
-			require.EqualValues(t, newMinters[i].Type, v2.NoMintingType)
+			require.EqualValues(t, newMinters[i].Type, types.NoMintingType)
 			break
 		}
 
