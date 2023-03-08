@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"time"
@@ -22,8 +21,8 @@ func ParamKeyTable() paramtypes.KeyTable {
 // ParamSetPairs get the params.ParamSet
 func (params *LegacyParams) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyMintDenom, &params.MintDenom, validateLegacyDenom),
-		paramtypes.NewParamSetPair(KeyMinterConfig, &params.MinterConfig, validateLEgacyMinters),
+		paramtypes.NewParamSetPair(KeyMintDenom, &params.MintDenom, emptyValidation),
+		paramtypes.NewParamSetPair(KeyMinterConfig, &params.MinterConfig, emptyValidation),
 	}
 }
 
@@ -58,30 +57,24 @@ type LegacyMinterState struct {
 	RemainderFromPreviousPeriod github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,5,opt,name=remainder_from_previous_period,json=remainderFromPreviousPeriod,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"remainder_from_previous_period"`
 }
 
-// validateDenom validates the Denom param
-func validateLegacyDenom(v interface{}) error {
-	denom, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", v)
-	}
-
-	if len(denom) == 0 {
-		return fmt.Errorf("denom cannot be empty")
-	}
-
+func emptyValidation(v interface{}) error {
 	return nil
 }
-
-// validateMinters validates Minters
-func validateLEgacyMinters(v interface{}) error {
-	minterConfig, ok := v.(MinterConfig)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", minterConfig)
-	}
-	err := minterConfig.Validate()
-	if err != nil {
-		return err
-	}
-
-	return nil
+func DefaultLegacyParams() LegacyParams {
+	return NewLegacyParams(DefaultMintDenom, DefaultLegacyMinters)
 }
+func NewLegacyParams(denom string, minterConfig MinterConfig) LegacyParams {
+	return LegacyParams{MintDenom: denom, MinterConfig: minterConfig}
+}
+
+var (
+	DefaultLegacyMinters = MinterConfig{
+		StartTime: time.Now(),
+		Minters: []*LegacyMinter{
+			{
+				SequenceId: 1,
+				Type:       "NO_MINTING",
+			},
+		},
+	}
+)

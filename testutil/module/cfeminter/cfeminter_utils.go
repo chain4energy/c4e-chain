@@ -18,6 +18,15 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 )
 
+type C4eMinterKeeperUtils struct {
+	t                      *testing.T
+	helperCfevestingKeeper *cfemintermodulekeeper.Keeper
+}
+
+func NewC4eMinterKeeperUtils(t *testing.T, helperCfevestingKeeper *cfemintermodulekeeper.Keeper) C4eMinterKeeperUtils {
+	return C4eMinterKeeperUtils{t: t, helperCfevestingKeeper: helperCfevestingKeeper}
+}
+
 type C4eMinterUtils struct {
 	t                     *testing.T
 	helperCfeminterKeeper *cfemintermodulekeeper.Keeper

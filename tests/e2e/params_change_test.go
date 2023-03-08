@@ -8,6 +8,7 @@ import (
 	"github.com/chain4energy/c4e-chain/tests/e2e/helpers"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	v2 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -39,10 +40,10 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {
 	endTime := time.Now().Add(10 * time.Minute).UTC()
 	newMinter := cfemintertypes.MinterConfig{
 		StartTime: time.Now().UTC(),
-		Minters: []*cfemintertypes.Minter{
+		Minters: []*cfemintertypes.LegacyMinter{
 			{
 				SequenceId: 1,
-				Type:       cfemintertypes.LinearMintingType,
+				Type:       v2.LinearMintingType,
 				LinearMinting: &cfemintertypes.LinearMinting{
 					Amount: sdk.NewInt(100000),
 				},
@@ -50,7 +51,7 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {
 			},
 			{
 				SequenceId: 2,
-				Type:       cfemintertypes.NoMintingType,
+				Type:       v2.NoMintingType,
 			},
 		},
 	}
@@ -105,10 +106,10 @@ func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {
 
 	newMinter := cfemintertypes.MinterConfig{
 		StartTime: time.Now().UTC(),
-		Minters: []*cfemintertypes.Minter{
+		Minters: []*cfemintertypes.LegacyMinter{
 			{
 				SequenceId: 1,
-				Type:       cfemintertypes.NoMintingType,
+				Type:       v2.NoMintingType,
 			},
 		},
 	}
@@ -278,10 +279,10 @@ func (s *ParamsSetupSuite) TestCfeminterEmptyDenom() {
 	endTime := time.Now().Add(10 * time.Minute).UTC()
 	newMinterConfig := cfemintertypes.MinterConfig{
 		StartTime: time.Now().UTC(),
-		Minters: []*cfemintertypes.Minter{
+		Minters: []*cfemintertypes.LegacyMinter{
 			{
 				SequenceId: 1,
-				Type:       cfemintertypes.LinearMintingType,
+				Type:       v2.LinearMintingType,
 				LinearMinting: &cfemintertypes.LinearMinting{
 					Amount: sdk.NewInt(100000),
 				},
@@ -289,7 +290,7 @@ func (s *ParamsSetupSuite) TestCfeminterEmptyDenom() {
 			},
 			{
 				SequenceId: 2,
-				Type:       cfemintertypes.NoMintingType,
+				Type:       v2.NoMintingType,
 			},
 		},
 	}
@@ -328,7 +329,7 @@ func (s *ParamsSetupSuite) TestCfeminterNoMinters() {
 	newMinterConfig := cfemintertypes.MinterConfig{
 		StartTime: time.Now().UTC(),
 	}
-	newMinterConfig.Minters = make([]*cfemintertypes.Minter, 1)
+	newMinterConfig.Minters = make([]*cfemintertypes.LegacyMinter, 1)
 
 	newDenomJSON, err := json.Marshal("newDenom")
 	newMinterJSON, err := json.Marshal(newMinterConfig)

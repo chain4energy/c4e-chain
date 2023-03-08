@@ -2,6 +2,7 @@ package helpers
 
 import (
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	v2 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -88,10 +89,10 @@ var MainnetSubdistributors = []cfedistributortypes.SubDistributor{
 var minterConfigLongEndTime = time.Now().Add(16 * oneYearDuration).UTC()
 var MainnetMinterConfigLong = cfemintertypes.MinterConfig{
 	StartTime: time.Now().UTC(),
-	Minters: []*cfemintertypes.Minter{
+	Minters: []*cfemintertypes.LegacyMinter{
 		{
 			SequenceId: 1,
-			Type:       cfemintertypes.ExponentialStepMintingType,
+			Type:       v2.ExponentialStepMintingType,
 			ExponentialStepMinting: &cfemintertypes.ExponentialStepMinting{
 				Amount:           sdk.NewInt(32000000000000),
 				AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
@@ -105,10 +106,10 @@ var timeNow = time.Now()
 var minterConfigShortEndTime = timeNow.Add(time.Second * 48).UTC()
 var MainnetMinterConfigShort = cfemintertypes.MinterConfig{
 	StartTime: time.Now().UTC(),
-	Minters: []*cfemintertypes.Minter{
+	Minters: []*cfemintertypes.LegacyMinter{
 		{
 			SequenceId: 1,
-			Type:       cfemintertypes.ExponentialStepMintingType,
+			Type:       v2.ExponentialStepMintingType,
 			ExponentialStepMinting: &cfemintertypes.ExponentialStepMinting{
 				Amount:           sdk.NewInt(160000000000000),
 				AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
@@ -118,7 +119,7 @@ var MainnetMinterConfigShort = cfemintertypes.MinterConfig{
 		},
 		{
 			SequenceId: 2,
-			Type:       cfemintertypes.NoMintingType,
+			Type:       v2.NoMintingType,
 		},
 	},
 }

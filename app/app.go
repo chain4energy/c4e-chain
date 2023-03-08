@@ -538,7 +538,9 @@ func New(
 		cfedistributormoduletypes.DistributorMainAccount,
 		authorityModuleAddress,
 	)
-	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper)
+	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper,
+		app.GetSubspace(cfemintermoduletypes.ModuleName))
+
 	app.CfedistributorKeeper = *cfedistributormodulekeeper.NewKeeper(
 		appCodec,
 		keys[cfedistributormoduletypes.StoreKey],

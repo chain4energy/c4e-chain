@@ -253,28 +253,6 @@ type MinterState struct {
 	RemainderFromPreviousPeriod github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,5,opt,name=remainder_from_previous_period,json=remainderFromPreviousPeriod,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"remainder_from_previous_period"`
 }
 
-func (m MinterState) Validate() error {
-	if m.AmountMinted.IsNil() {
-		return fmt.Errorf("minter state validation error: amountMinted cannot be nil")
-	}
-	if m.AmountMinted.IsNegative() {
-		return fmt.Errorf("minter state validation error: amountMinted cannot be less than 0")
-	}
-	if m.RemainderFromPreviousPeriod.IsNil() {
-		return fmt.Errorf("minter state validation error: remainderFromPreviousPeriod cannot be nil")
-	}
-	if m.RemainderFromPreviousPeriod.IsNegative() {
-		return fmt.Errorf("minter state validation error: remainderFromPreviousPeriod cannot be less than 0")
-	}
-	if m.RemainderToMint.IsNil() {
-		return fmt.Errorf("minter state validation error: remainderToMint cannot be nil")
-	}
-	if m.RemainderToMint.IsNegative() {
-		return fmt.Errorf("minter state validation error: remainderToMint cannot be less than 0")
-	}
-	return nil
-}
-
 func (m *MinterState) Reset()         { *m = MinterState{} }
 func (m *MinterState) String() string { return proto.CompactTextString(m) }
 func (*MinterState) ProtoMessage()    {}

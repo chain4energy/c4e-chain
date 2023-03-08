@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	cfemintertestutils "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	"testing"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -18,6 +19,34 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 )
+
+type ExtendedC4eMinterKeeperUtils struct {
+	cfemintertestutils.C4eMinterKeeperUtils
+	Cdc      *codec.ProtoCodec
+	StoreKey *storetypes.KVStoreKey
+	typesparams.Subspace
+}
+
+func NewExtendedC4eMinterKeeperUtils(
+	t *testing.T,
+	helperCfedistributorKeeper *keeper.Keeper,
+	cdc *codec.ProtoCodec,
+	storeKey *storetypes.KVStoreKey,
+	paramsStore typesparams.Subspace,
+) ExtendedC4eMinterKeeperUtils {
+	return ExtendedC4eMinterKeeperUtils{
+		C4eMinterKeeperUtils: cfemintertestutils.NewC4eMinterKeeperUtils(t, helperCfedistributorKeeper),
+		Cdc:                  cdc,
+		StoreKey:             storeKey,
+		Subspace:             paramsStore,
+	}
+}
+
+type AdditionalMinterKeeperData struct {
+	*codec.ProtoCodec
+	*storetypes.KVStoreKey
+	typesparams.Subspace
+}
 
 func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, testenv.AdditionalKeeperData) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
@@ -51,13 +80,32 @@ func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, testenv.Additio
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 
-	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())
-	keyTable := types.ParamKeyTable() //nolint:staticcheck
+	keyTable := types.ParamKeyTable()
 	paramsSubspace.WithKeyTable(keyTable)
+
 	return k, ctx, testenv.AdditionalKeeperData{
 		Cdc:      cdc,
 		StoreKey: storeKey,
 		Subspace: paramsSubspace,
 	}
+}
+
+func CfeminterKeeperTestUtil(t *testing.T) (*cfemintertestutils.C4eMinterKeeperUtils, *keeper.Keeper, sdk.Context) {
+	k, ctx, _ := CfeminterKeeper(t)
+	utils := cfemintertestutils.NewC4eMinterKeeperUtils(t, k)
+	return &utils, k, ctx
+}
+
+func CfeminterKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eMinterKeeperUtils, sdk.Context) {
+	k, ctx, additionalKeeperData := CfeminterKeeper(t)
+	utils := NewExtendedC4eMinterKeeperUtils(
+		t,
+		k,
+		additionalKeeperData.Cdc,
+		additionalKeeperData.StoreKey,
+		additionalKeeperData.Subspace,
+	)
+
+	return &utils, ctx
 }
