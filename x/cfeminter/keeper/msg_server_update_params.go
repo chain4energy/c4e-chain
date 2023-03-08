@@ -35,7 +35,7 @@ func (k msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParam
 	params.Minters = msg.Minters
 
 	if err := k.Keeper.UpdateParams(ctx, msg.Authority, params); err != nil {
-		return nil, errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
+		return nil, err
 	}
 
 	return &types.MsgUpdateParamsResponse{}, nil
@@ -43,7 +43,7 @@ func (k msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParam
 
 func (k Keeper) UpdateParams(ctx sdk.Context, authority string, params types.Params) error {
 	if k.authority != authority {
-		return errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, authority)
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, govtypes.ErrInvalidSigner.Error())
 	}
 
 	minterState := k.GetMinterState(ctx)

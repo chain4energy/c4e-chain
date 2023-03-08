@@ -88,6 +88,19 @@ func (m *C4eMinterUtils) Mint(ctx sdk.Context, expectedMintedAmount math.Int, ex
 	m.VerifyMinterHistory(ctx, expectedMinterStateHistory...)
 }
 
+func (m *C4eMinterUtils) UpdateParams(ctx sdk.Context, authority string, params cfemintertypes.Params) {
+	require.NoError(m.t, m.helperCfeminterKeeper.UpdateParams(ctx, authority, params))
+	newParams := m.helperCfeminterKeeper.GetParams(ctx)
+	CompareCfeminterParams(m.t, params, newParams)
+}
+
+func (m *C4eMinterUtils) UpdateParamsError(ctx sdk.Context, authority string, params cfemintertypes.Params, error string) {
+	previousParams := m.helperCfeminterKeeper.GetParams(ctx)
+	require.EqualError(m.t, m.helperCfeminterKeeper.UpdateParams(ctx, authority, params), error)
+	newParams := m.helperCfeminterKeeper.GetParams(ctx)
+	CompareCfeminterParams(m.t, previousParams, newParams)
+}
+
 func (m *C4eMinterUtils) MintError(ctx sdk.Context, errorMessage string) {
 	_, err := m.helperCfeminterKeeper.Mint(ctx)
 	require.EqualError(m.t, err, errorMessage)
@@ -141,6 +154,14 @@ func NewContextC4eMinterUtils(t *testing.T, testContext testenv.TestContext, hel
 func (m *ContextC4eMinterUtils) SetMinterState(sequenceId uint32, amountMinted math.Int,
 	remainderToMint sdk.Dec, lastMintBlockTime time.Time, remainderFromPreviousMinter sdk.Dec) {
 	m.C4eMinterUtils.SetMinterState(m.testContext.GetContext(), sequenceId, amountMinted, remainderToMint, lastMintBlockTime, remainderFromPreviousMinter)
+}
+
+func (m *ContextC4eMinterUtils) UpdateParams(authority string, params cfemintertypes.Params) {
+	m.C4eMinterUtils.UpdateParams(m.testContext.GetContext(), authority, params)
+}
+
+func (m *ContextC4eMinterUtils) UpdateParamsError(authority string, params cfemintertypes.Params, error string) {
+	m.C4eMinterUtils.UpdateParamsError(m.testContext.GetContext(), authority, params, error)
 }
 
 func (m *ContextC4eMinterUtils) Mint(expectedMintedAmount math.Int, expectedMinterStateSequenceId uint32, expectedMinterStateAmountMinted math.Int,
