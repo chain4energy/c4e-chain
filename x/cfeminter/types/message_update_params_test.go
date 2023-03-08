@@ -20,7 +20,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 				Authority: "abcd",
 			},
 			expectError:  true,
-			errorMessage: "invalid authority address (abcd): invalid address",
+			errorMessage: "expected gov account as only signer for proposal message",
 		},
 		{
 			name: "correct config",
@@ -66,14 +66,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 		})
 	}
 }
-func WrongMinters() []*types.Minter {
-	return []*types.Minter{
-		{
-			SequenceId: 1,
-			Config:     nil,
-		},
-	}
-}
+
 func TestMsgUpdateMinters_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -87,7 +80,7 @@ func TestMsgUpdateMinters_ValidateBasic(t *testing.T) {
 				Authority: "abcd",
 			},
 			expectError:  true,
-			errorMessage: "invalid authority address (abcd): invalid address",
+			errorMessage: "expected gov account as only signer for proposal message",
 		},
 		{
 			name: "correct config",
@@ -118,5 +111,14 @@ func TestMsgUpdateMinters_ValidateBasic(t *testing.T) {
 			}
 			require.NoError(t, err)
 		})
+	}
+}
+
+func WrongMinters() []*types.Minter {
+	return []*types.Minter{
+		{
+			SequenceId: 1,
+			Config:     nil,
+		},
 	}
 }

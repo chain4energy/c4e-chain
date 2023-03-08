@@ -1,10 +1,9 @@
 package types
 
 import (
-	"cosmossdk.io/errors"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 const TypeMsgUpdateMintersParams = "update_minters_params"
@@ -34,7 +33,7 @@ func (msg *MsgUpdateMintersParams) GetSignBytes() []byte {
 
 func (msg *MsgUpdateMintersParams) ValidateBasic() error {
 	if msg.Authority != appparams.GetAuthority() {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid authority address (%s)", msg.Authority)
+		return govtypes.ErrInvalidSigner
 	}
 
 	params := Params{
@@ -74,7 +73,7 @@ func (msg *MsgUpdateParams) GetSignBytes() []byte {
 
 func (msg *MsgUpdateParams) ValidateBasic() error {
 	if msg.Authority != appparams.GetAuthority() {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid authority address (%s)", msg.Authority)
+		return govtypes.ErrInvalidSigner
 	}
 
 	params := Params{
