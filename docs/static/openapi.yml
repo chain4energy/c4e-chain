@@ -46864,11 +46864,9 @@ definitions:
         format: date-time
       remainder_from_previous_minter:
         type: string
-  chain4energy.c4echain.cfeminter.MsgUpdateMintDenomResponse:
+  chain4energy.c4echain.cfeminter.MsgUpdateMintersParamsResponse:
     type: object
-  chain4energy.c4echain.cfeminter.MsgUpdateMintersResponse:
-    type: object
-  chain4energy.c4echain.cfeminter.MsgUpdateStartTimeResponse:
+  chain4energy.c4echain.cfeminter.MsgUpdateParamsResponse:
     type: object
   chain4energy.c4echain.cfeminter.Params:
     type: object

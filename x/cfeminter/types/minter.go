@@ -5,6 +5,7 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
+	"gopkg.in/yaml.v2"
 	"sort"
 	"time"
 )
@@ -12,10 +13,23 @@ import (
 const year = time.Hour * 24 * 365
 
 func (params Params) Validate() error {
+	if err := params.ValidateParamsMintDenom(); err != nil {
+		return err
+	}
+	if err := params.ValidateParamsMinters(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (params Params) ValidateParamsMintDenom() error {
 	if len(params.MintDenom) == 0 {
 		return fmt.Errorf("denom cannot be empty")
 	}
+	return nil
+}
 
+func (params Params) ValidateParamsMinters() error {
 	if len(params.Minters) < 1 {
 		return fmt.Errorf("no minters defined")
 	}
@@ -189,6 +203,10 @@ func (m MinterState) Validate() error {
 	return nil
 }
 
+func (m *NoMinting) Validate() error {
+	return nil
+}
+
 type BySequenceId []*Minter
 
 func (a BySequenceId) Len() int           { return len(a) }
@@ -239,6 +257,10 @@ func (m *ExponentialStepMinting) CalculateInflation(totalSupply math.Int, startT
 
 	mintedYearly := epochAmount.MulInt64(int64(year)).QuoInt64(epoch)
 	return mintedYearly.QuoInt(totalSupply)
+}
+
+func (m *NoMinting) CalculateInflation(totalSupply math.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
+	return sdk.ZeroDec()
 }
 
 func (m *Minter) AmountToMint(logger log.Logger, startTime time.Time, blockTime time.Time) sdk.Dec {
@@ -292,4 +314,13 @@ func (m *ExponentialStepMinting) AmountToMint(logger log.Logger, startTime time.
 	currentEpochAmountToMint := currentEpochAmount.MulInt64(int64(currentEpochPassedTime)).QuoInt64(epoch)
 	logger.Debug("ESMintingMintCon", "AmountMultiplier", m.AmountMultiplier, "currentEpochAmount", currentEpochAmount, "currentEpochAmountToMint", currentEpochAmountToMint)
 	return amountToMint.Add(currentEpochAmountToMint)
+}
+
+func (m *NoMinting) AmountToMint(logger log.Logger, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
+	return sdk.ZeroDec()
+}
+
+func (acc *Minter) String() string {
+	out, _ := yaml.Marshal(acc)
+	return string(out)
 }

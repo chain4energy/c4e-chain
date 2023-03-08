@@ -15,31 +15,29 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 // Msg defines the Msg service.
 service Msg {
   // this line is used by starport scaffolding # proto/tx/rpc
-  rpc UpdateMinters(MsgUpdateMinters) returns (MsgUpdateMintersResponse);
-  rpc UpdateMintDenom(MsgUpdateMintDenom) returns (MsgUpdateMintDenomResponse);
-  rpc UpdateStartTime(MsgUpdateStartTime) returns (MsgUpdateStartTimeResponse);
+  rpc UpdateMintersParams(MsgUpdateMintersParams) returns (MsgUpdateMintersParamsResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
-message MsgUpdateMinters {
-  string authority = 1;
-  repeated Minter minters = 2;
-}
-
-message MsgUpdateMintersResponse {}
-
-message MsgUpdateMintDenom {
+message MsgUpdateParams {
   string authority = 1;
   string mint_denom = 2;
+  google.protobuf.Timestamp start_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  repeated Minter minters = 4;
 }
 
-message MsgUpdateMintDenomResponse{}
+message MsgUpdateParamsResponse {}
 
-message MsgUpdateStartTime {
+message MsgUpdateMintersParams {
   string authority = 1;
   google.protobuf.Timestamp start_time = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+  repeated Minter minters = 3;
 }
 
-message MsgUpdateStartTimeResponse{}
+message MsgUpdateMintersParamsResponse{}

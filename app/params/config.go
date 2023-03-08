@@ -2,6 +2,8 @@ package params
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/address"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -52,4 +54,9 @@ func SetAddressPrefixes() {
 
 		return nil
 	})
+}
+
+// GetAuthority returns gov moduel authority address
+func GetAuthority() string {
+	return authtypes.NewModuleAddress(govtypes.ModuleName).String()
 }
