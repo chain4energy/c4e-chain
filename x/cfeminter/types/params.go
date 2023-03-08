@@ -13,7 +13,7 @@ var (
 	DefaultMinters   = []*Minter{
 		{
 			SequenceId: 1,
-			Config:     LinearMIntingCOnfig(),
+			Config:     LinearMintingConfig(),
 		},
 	}
 )
@@ -34,8 +34,7 @@ func (params Params) String() string {
 	return string(out)
 }
 
-// String implements the Stringer interface.
-func LinearMIntingCOnfig() *codectypes.Any {
+func LinearMintingConfig() *codectypes.Any {
 	config, _ := codectypes.NewAnyWithValue(&NoMinting{})
 	config.TypeUrl = "/chain4energy.c4echain.cfeminter.NoMinting"
 	return config

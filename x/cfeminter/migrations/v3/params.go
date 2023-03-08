@@ -13,6 +13,9 @@ func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace
 	store := ctx.KVStore(storeKey)
 	var oldParams types.LegacyParams
 	legacySubspace.GetParamSet(ctx, &oldParams)
+	if err := oldParams.MinterConfig.Validate(); err != nil {
+		return err
+	}
 
 	var newParams types.Params
 	newParams.MintDenom = oldParams.MintDenom
@@ -23,12 +26,22 @@ func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace
 		newMinter.EndTime = oldMinter.EndTime
 		newParams.Minters = append(newParams.Minters, &newMinter)
 		var config *codectypes.Any
+		var err error
 		if oldMinter.Type == types.ExponentialStepMintingType {
-			config, _ = codectypes.NewAnyWithValue(oldMinter.ExponentialStepMinting)
+			config, err = codectypes.NewAnyWithValue(oldMinter.ExponentialStepMinting)
+			if err != nil {
+				return err
+			}
 		} else if oldMinter.Type == types.LinearMintingType {
-			config, _ = codectypes.NewAnyWithValue(oldMinter.LinearMinting)
+			config, err = codectypes.NewAnyWithValue(oldMinter.LinearMinting)
+			if err != nil {
+				return err
+			}
 		} else {
-			config, _ = codectypes.NewAnyWithValue(&types.NoMinting{})
+			config, err = codectypes.NewAnyWithValue(&types.NoMinting{})
+			if err != nil {
+				return err
+			}
 		}
 		newMinter.Config = config
 	}
