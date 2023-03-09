@@ -1,4 +1,4 @@
-package v120_test
+package v3_test
 
 import (
 	"encoding/binary"
@@ -7,9 +7,6 @@ import (
 	"strconv"
 	"testing"
 	"time"
-
-	v110 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v110"
-	v120 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v120"
 
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
@@ -82,15 +79,15 @@ func TestMigrationVestingAccountTraces(t *testing.T) {
 	MigrateV110ToV120(t, testUtil, ctx)
 }
 
-func SetupOldAccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v110.AccountVestingPools {
+func SetupOldAccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v2.AccountVestingPools {
 	accountVestingPools := generateOneOldAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
 	accountVestingPools.Address = address
 	setOldAccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
 	return accountVestingPools
 }
 
-func setOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, accountVestingPools v110.AccountVestingPools) {
-	store := prefix.NewStore(ctx.KVStore(storeKey), v110.AccountVestingPoolsKeyPrefix)
+func setOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, accountVestingPools v2.AccountVestingPools) {
+	store := prefix.NewStore(ctx.KVStore(storeKey), v2.AccountVestingPoolsKeyPrefix)
 	av := cdc.MustMarshal(&accountVestingPools)
 	store.Set([]byte(accountVestingPools.Address), av)
 }
@@ -99,7 +96,7 @@ func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 	oldAccPools := getAllOldAccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc)
 	oldVestingAccountTraces := GetAllOldVestingAccountTraces(ctx, testUtil.StoreKey, testUtil.Cdc)
 	oldVestingAccountTracesCount := GetOldVestingAccountTraceCount(ctx, testUtil.StoreKey, testUtil.Cdc)
-	err := v120.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)
+	err := v2.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)
 	require.NoError(t, err)
 
 	newAccPools := testUtil.GetC4eVestingKeeper().GetAllAccountVestingPools(ctx)
@@ -118,7 +115,7 @@ func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 				InitiallyLocked: oldVestingPool.InitiallyLocked,
 				Withdrawn:       oldVestingPool.Withdrawn,
 				Sent:            oldVestingPool.Sent,
-				GenesisPool:      false,
+				GenesisPool:     false,
 			}
 			newVestingPool := newAccPools[i].VestingPools[j]
 			require.EqualValues(t, &expectedVestingPool, newVestingPool)
@@ -143,13 +140,13 @@ func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 
 }
 
-func getAllOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v110.AccountVestingPools) {
-	prefixStore := prefix.NewStore(ctx.KVStore(storeKey), v110.AccountVestingPoolsKeyPrefix)
+func getAllOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v2.AccountVestingPools) {
+	prefixStore := prefix.NewStore(ctx.KVStore(storeKey), v2.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(prefixStore, []byte{})
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val v110.AccountVestingPools
+		var val v2.AccountVestingPools
 		cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}
@@ -157,26 +154,26 @@ func getAllOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey,
 }
 
 func generateOneOldAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPoolsPerAccount int,
-	accountId int, vestingStartId int) v110.AccountVestingPools {
+	accountId int, vestingStartId int) v2.AccountVestingPools {
 	return *generateOldAccountVestingPoolsWithRandomVestingPools(1, numberOfVestingPoolsPerAccount, accountId, vestingStartId)[0]
 }
 
 func generateOldAccountVestingPoolsWithRandomVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
-	accountStartId int, vestingStartId int) []*v110.AccountVestingPools {
+	accountStartId int, vestingStartId int) []*v2.AccountVestingPools {
 	return generateOldAccountVestingPools(numberOfAccounts, numberOfVestingPoolsPerAccount,
 		accountStartId, vestingStartId, generateRandomOldVestingPool)
 }
 
 func generateOldAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAccount int,
-	accountStartId int, vestingStartId int, generateVesting func(accuntId int, vestingId int) v110.VestingPool) []*v110.AccountVestingPools {
-	var accountVestingPoolsArr []*v110.AccountVestingPools
+	accountStartId int, vestingStartId int, generateVesting func(accuntId int, vestingId int) v2.VestingPool) []*v2.AccountVestingPools {
+	var accountVestingPoolsArr []*v2.AccountVestingPools
 	accountsAddresses, _ := testcosmos.CreateAccounts(2*numberOfAccounts, 0)
 
 	for i := 0; i < numberOfAccounts; i++ {
-		accountVestingPools := v110.AccountVestingPools{}
+		accountVestingPools := v2.AccountVestingPools{}
 		accountVestingPools.Address = accountsAddresses[i].String()
 
-		var vestingPools []*v110.VestingPool
+		var vestingPools []*v2.VestingPool
 		for j := 0; j < numberOfVestingPoolsPerAccount; j++ {
 			vesting := generateVesting(i+accountStartId, j+vestingStartId)
 			vestingPools = append(vestingPools, &vesting)
@@ -189,13 +186,13 @@ func generateOldAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPe
 	return accountVestingPoolsArr
 }
 
-func generateRandomOldVestingPool(accuntId int, vestingId int) v110.VestingPool {
+func generateRandomOldVestingPool(accuntId int, vestingId int) v2.VestingPool {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	vested := int(helpers.RandIntBetweenWith0(r, 1, 10000000))
 	withdrawn := r.Intn(vested)
 	sent := helpers.RandIntWith0(r, vested-withdrawn)
 
-	return v110.VestingPool{
+	return v2.VestingPool{
 		Name:            "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingType:     "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:       testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
@@ -206,24 +203,24 @@ func generateRandomOldVestingPool(accuntId int, vestingId int) v110.VestingPool 
 	}
 }
 
-func generateOldVestingAccountTraces(amount int) []v110.VestingAccount {
-	traces := []v110.VestingAccount{}
+func generateOldVestingAccountTraces(amount int) []v2.VestingAccount {
+	traces := []v2.VestingAccount{}
 	for i := 0; i < amount; i++ {
-		traces = append(traces, v110.VestingAccount{Id: uint64(i), Address: fmt.Sprintf("Address-%d", i)})
+		traces = append(traces, v2.VestingAccount{Id: uint64(i), Address: fmt.Sprintf("Address-%d", i)})
 	}
 	return traces
 }
 
 func SetOldVestingAccountTraceCount(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, count uint64) {
 	store := prefix.NewStore(ctx.KVStore(storeKey), []byte{})
-	byteKey := []byte(v110.VestingAccountCountKey)
+	byteKey := []byte(v2.VestingAccountCountKey)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
 	store.Set(byteKey, bz)
 }
 
-func SetOldVestingTraceAccount(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, vestingAccount v110.VestingAccount) {
-	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(v110.VestingAccountKey))
+func SetOldVestingTraceAccount(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, vestingAccount v2.VestingAccount) {
+	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(v2.VestingAccountKey))
 	b := cdc.MustMarshal(&vestingAccount)
 	store.Set(GetOldVestingAccountTraceIDBytes(vestingAccount.Id), b)
 }
@@ -234,14 +231,14 @@ func GetOldVestingAccountTraceIDBytes(id uint64) []byte {
 	return bz
 }
 
-func GetAllOldVestingAccountTraces(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v110.VestingAccount) {
-	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(v110.VestingAccountKey))
+func GetAllOldVestingAccountTraces(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v2.VestingAccount) {
+	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(v2.VestingAccountKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
-	list = []v110.VestingAccount{}
+	list = []v2.VestingAccount{}
 	for ; iterator.Valid(); iterator.Next() {
-		var val v110.VestingAccount
+		var val v2.VestingAccount
 		cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}
@@ -251,7 +248,7 @@ func GetAllOldVestingAccountTraces(ctx sdk.Context, storeKey storetypes.StoreKey
 
 func GetOldVestingAccountTraceCount(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) uint64 {
 	store := prefix.NewStore(ctx.KVStore(storeKey), []byte{})
-	byteKey := types.KeyPrefix(v110.VestingAccountCountKey)
+	byteKey := types.KeyPrefix(v2.VestingAccountCountKey)
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element

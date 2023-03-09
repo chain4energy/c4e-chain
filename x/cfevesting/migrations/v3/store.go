@@ -1,4 +1,4 @@
-package v120
+package v3
 
 import (
 	"encoding/binary"
@@ -43,7 +43,7 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 				InitiallyLocked: oldPool.InitiallyLocked,
 				Withdrawn:       oldPool.Withdrawn,
 				Sent:            oldPool.Sent,
-				GenesisPool:      false,
+				GenesisPool:     false,
 			}
 			newPools = append(newPools, &newPool)
 		}

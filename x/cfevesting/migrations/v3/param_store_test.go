@@ -1,10 +1,10 @@
-package v4_test
+package v3_test
 
 import (
 	"github.com/chain4energy/c4e-chain/app"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/exported"
-	v3 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v3"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
+	v3 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -34,7 +34,7 @@ func TestMigrate(t *testing.T) {
 	store := ctx.KVStore(storeKey)
 
 	legacySubspace := newMockSubspace(types.DefaultParams())
-	require.NoError(t, v3.MigrateStore(ctx, storeKey, legacySubspace, cdc))
+	require.NoError(t, v3.MigrateParams(ctx, storeKey, legacySubspace, cdc))
 
 	var res types.Params
 	bz := store.Get(v3.ParamsKey)
