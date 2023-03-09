@@ -25,6 +25,7 @@ var (
 func init() {
 	SetAddressPrefixes()
 	RegisterDenoms()
+	SetAuthorityAddress()
 }
 
 func RegisterDenoms() {
@@ -56,5 +57,14 @@ func SetAddressPrefixes() {
 	})
 }
 
-// AuthorityAddress is a gov module authority address
-var AuthorityAddress = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+var authorityAddress string
+
+// GetAuthority returns gov module authority address
+func GetAuthority() string {
+	return authorityAddress
+}
+
+// SetAuthorityAddress set gov module authority address
+func SetAuthorityAddress() {
+	authorityAddress = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+}

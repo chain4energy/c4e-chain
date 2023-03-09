@@ -12,13 +12,13 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 // Msg defines the Msg service.
 service Msg {
   // this line is used by starport scaffolding # proto/tx/rpc
-  rpc UpdateAllSubDistributors(MsgUpdateAllSubDistributors) returns (MsgUpdateAllSubDistributorsResponse);
-  rpc UpdateSubDistributor(MsgUpdateSubDistributor) returns (MsgUpdateSubDistributorResponse);
-  rpc UpdateSubDistributorDestinationShare(MsgUpdateSubDistributorDestinationShare) returns (MsgUpdateSubDistributorDestinationShareResponse);
-  rpc UpdateMsgUpdateSubDistributorBurnShare(MsgUpdateSubDistributorBurnShare) returns (MsgUpdateSubDistributorBurnShareResponse);
+  rpc UpdateAllSubDistributorsParams(MsgUpdateAllSubDistributorsParams) returns (MsgUpdateAllSubDistributorsParamsResponse);
+  rpc UpdateSubDistributorParam(MsgUpdateSubDistributorParam) returns (MsgUpdateSubDistributorParamResponse);
+  rpc UpdateSubDistributorDestinationShareParam(MsgUpdateSubDistributorDestinationShareParam) returns (MsgUpdateSubDistributorDestinationShareParamResponse);
+  rpc UpdateMsgUpdateSubDistributorBurnShareParam(MsgUpdateSubDistributorBurnShareParam) returns (MsgUpdateSubDistributorBurnShareParamResponse);
 }
 
-message MsgUpdateAllSubDistributors {
+message MsgUpdateAllSubDistributorsParams {
   // authority is the address of the governance account.
   string authority = 1;
 
@@ -27,17 +27,17 @@ message MsgUpdateAllSubDistributors {
   ];
 }
 
-message MsgUpdateAllSubDistributorsResponse {}
+message MsgUpdateAllSubDistributorsParamsResponse {}
 
-message MsgUpdateSubDistributor {
+message MsgUpdateSubDistributorParam {
   // authority is the address of the governance account.
   string authority = 1;
   SubDistributor sub_distributor = 2;
 }
 
-message MsgUpdateSubDistributorResponse {}
+message MsgUpdateSubDistributorParamResponse {}
 
-message MsgUpdateSubDistributorDestinationShare {
+message MsgUpdateSubDistributorDestinationShareParam {
   string authority = 1;
   string sub_distributor_name = 2;
   string destination_name = 3;
@@ -48,9 +48,9 @@ message MsgUpdateSubDistributorDestinationShare {
   ];
 }
 
-message MsgUpdateSubDistributorDestinationShareResponse{}
+message MsgUpdateSubDistributorDestinationShareParamResponse{}
 
-message  MsgUpdateSubDistributorBurnShare {
+message  MsgUpdateSubDistributorBurnShareParam {
   string authority = 1;
   string sub_distributor_name = 2;
   string burn_share = 3 [
@@ -60,4 +60,4 @@ message  MsgUpdateSubDistributorBurnShare {
   ];
 }
 
-message MsgUpdateSubDistributorBurnShareResponse{}
+message MsgUpdateSubDistributorBurnShareParamResponse{}

@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) UpdateAllSubDistributors(goCtx context.Context, msg *types.MsgUpdateAllSubDistributors) (*types.MsgUpdateAllSubDistributorsResponse, error) {
+func (k msgServer) UpdateAllSubDistributorsParams(goCtx context.Context, msg *types.MsgUpdateAllSubDistributorsParams) (*types.MsgUpdateAllSubDistributorsParamsResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "Update all sub distributors")
 
 	if k.authority != msg.Authority {
@@ -22,10 +22,10 @@ func (k msgServer) UpdateAllSubDistributors(goCtx context.Context, msg *types.Ms
 		return nil, err
 	}
 
-	return &types.MsgUpdateAllSubDistributorsResponse{}, nil
+	return &types.MsgUpdateAllSubDistributorsParamsResponse{}, nil
 }
 
-func (k msgServer) UpdateSubDistributor(goCtx context.Context, distributor *types.MsgUpdateSubDistributor) (*types.MsgUpdateSubDistributorResponse, error) {
+func (k msgServer) UpdateSubDistributorParam(goCtx context.Context, distributor *types.MsgUpdateSubDistributorParam) (*types.MsgUpdateSubDistributorParamResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "Update sub distributor")
 
 	if k.authority != distributor.Authority {
@@ -39,14 +39,14 @@ func (k msgServer) UpdateSubDistributor(goCtx context.Context, distributor *type
 			if err := k.SetParams(ctx, types.Params{SubDistributors: subDistributors}); err != nil {
 				return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "validation error: %s", err)
 			}
-			return &types.MsgUpdateSubDistributorResponse{}, nil
+			return &types.MsgUpdateSubDistributorParamResponse{}, nil
 		}
 	}
 
 	return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "distributor not found")
 }
 
-func (k msgServer) UpdateSubDistributorDestinationShare(goCtx context.Context, msg *types.MsgUpdateSubDistributorDestinationShare) (*types.MsgUpdateSubDistributorDestinationShareResponse, error) {
+func (k msgServer) UpdateSubDistributorDestinationShareParam(goCtx context.Context, msg *types.MsgUpdateSubDistributorDestinationShareParam) (*types.MsgUpdateSubDistributorDestinationShareParamResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "Update sub distributor destination share")
 
 	if k.authority != msg.Authority {
@@ -62,14 +62,14 @@ func (k msgServer) UpdateSubDistributorDestinationShare(goCtx context.Context, m
 				if err := k.SetParams(ctx, types.Params{SubDistributors: subDistributors}); err != nil {
 					return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "validation error: %s", err)
 				}
-				return &types.MsgUpdateSubDistributorDestinationShareResponse{}, nil
+				return &types.MsgUpdateSubDistributorDestinationShareParamResponse{}, nil
 			}
 		}
 	}
 	return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "distributor not found")
 }
 
-func (k msgServer) UpdateMsgUpdateSubDistributorBurnShare(goCtx context.Context, msg *types.MsgUpdateSubDistributorBurnShare) (*types.MsgUpdateSubDistributorBurnShareResponse, error) {
+func (k msgServer) UpdateMsgUpdateSubDistributorBurnShareParam(goCtx context.Context, msg *types.MsgUpdateSubDistributorBurnShareParam) (*types.MsgUpdateSubDistributorBurnShareParamResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "Update sub distributor burn share")
 
 	if k.authority != msg.Authority {
@@ -84,7 +84,7 @@ func (k msgServer) UpdateMsgUpdateSubDistributorBurnShare(goCtx context.Context,
 			if err := k.SetParams(ctx, types.Params{SubDistributors: subDistributors}); err != nil {
 				return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "validation error: %s", err)
 			}
-			return &types.MsgUpdateSubDistributorBurnShareResponse{}, nil
+			return &types.MsgUpdateSubDistributorBurnShareParamResponse{}, nil
 		}
 	}
 	return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "distributor not found")

@@ -31,24 +31,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgUpdateAllSubDistributors struct {
+type MsgUpdateAllSubDistributorsParams struct {
 	// authority is the address of the governance account.
 	Authority       string           `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	SubDistributors []SubDistributor `protobuf:"bytes,2,rep,name=sub_distributors,json=subDistributors,proto3" json:"sub_distributors"`
 }
 
-func (m *MsgUpdateAllSubDistributors) Reset()         { *m = MsgUpdateAllSubDistributors{} }
-func (m *MsgUpdateAllSubDistributors) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateAllSubDistributors) ProtoMessage()    {}
-func (*MsgUpdateAllSubDistributors) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateAllSubDistributorsParams) Reset()         { *m = MsgUpdateAllSubDistributorsParams{} }
+func (m *MsgUpdateAllSubDistributorsParams) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateAllSubDistributorsParams) ProtoMessage()    {}
+func (*MsgUpdateAllSubDistributorsParams) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{0}
 }
-func (m *MsgUpdateAllSubDistributors) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateAllSubDistributorsParams) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateAllSubDistributors) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateAllSubDistributorsParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateAllSubDistributors.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateAllSubDistributorsParams.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -58,47 +58,51 @@ func (m *MsgUpdateAllSubDistributors) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateAllSubDistributors) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateAllSubDistributors.Merge(m, src)
+func (m *MsgUpdateAllSubDistributorsParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateAllSubDistributorsParams.Merge(m, src)
 }
-func (m *MsgUpdateAllSubDistributors) XXX_Size() int {
+func (m *MsgUpdateAllSubDistributorsParams) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateAllSubDistributors) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateAllSubDistributors.DiscardUnknown(m)
+func (m *MsgUpdateAllSubDistributorsParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateAllSubDistributorsParams.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateAllSubDistributors proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateAllSubDistributorsParams proto.InternalMessageInfo
 
-func (m *MsgUpdateAllSubDistributors) GetAuthority() string {
+func (m *MsgUpdateAllSubDistributorsParams) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgUpdateAllSubDistributors) GetSubDistributors() []SubDistributor {
+func (m *MsgUpdateAllSubDistributorsParams) GetSubDistributors() []SubDistributor {
 	if m != nil {
 		return m.SubDistributors
 	}
 	return nil
 }
 
-type MsgUpdateAllSubDistributorsResponse struct {
+type MsgUpdateAllSubDistributorsParamsResponse struct {
 }
 
-func (m *MsgUpdateAllSubDistributorsResponse) Reset()         { *m = MsgUpdateAllSubDistributorsResponse{} }
-func (m *MsgUpdateAllSubDistributorsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateAllSubDistributorsResponse) ProtoMessage()    {}
-func (*MsgUpdateAllSubDistributorsResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateAllSubDistributorsParamsResponse) Reset() {
+	*m = MsgUpdateAllSubDistributorsParamsResponse{}
+}
+func (m *MsgUpdateAllSubDistributorsParamsResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*MsgUpdateAllSubDistributorsParamsResponse) ProtoMessage() {}
+func (*MsgUpdateAllSubDistributorsParamsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{1}
 }
-func (m *MsgUpdateAllSubDistributorsResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateAllSubDistributorsParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateAllSubDistributorsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateAllSubDistributorsParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateAllSubDistributorsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateAllSubDistributorsParamsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -108,36 +112,36 @@ func (m *MsgUpdateAllSubDistributorsResponse) XXX_Marshal(b []byte, deterministi
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateAllSubDistributorsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateAllSubDistributorsResponse.Merge(m, src)
+func (m *MsgUpdateAllSubDistributorsParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateAllSubDistributorsParamsResponse.Merge(m, src)
 }
-func (m *MsgUpdateAllSubDistributorsResponse) XXX_Size() int {
+func (m *MsgUpdateAllSubDistributorsParamsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateAllSubDistributorsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateAllSubDistributorsResponse.DiscardUnknown(m)
+func (m *MsgUpdateAllSubDistributorsParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateAllSubDistributorsParamsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateAllSubDistributorsResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateAllSubDistributorsParamsResponse proto.InternalMessageInfo
 
-type MsgUpdateSubDistributor struct {
+type MsgUpdateSubDistributorParam struct {
 	// authority is the address of the governance account.
 	Authority      string          `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	SubDistributor *SubDistributor `protobuf:"bytes,2,opt,name=sub_distributor,json=subDistributor,proto3" json:"sub_distributor,omitempty"`
 }
 
-func (m *MsgUpdateSubDistributor) Reset()         { *m = MsgUpdateSubDistributor{} }
-func (m *MsgUpdateSubDistributor) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateSubDistributor) ProtoMessage()    {}
-func (*MsgUpdateSubDistributor) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateSubDistributorParam) Reset()         { *m = MsgUpdateSubDistributorParam{} }
+func (m *MsgUpdateSubDistributorParam) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSubDistributorParam) ProtoMessage()    {}
+func (*MsgUpdateSubDistributorParam) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{2}
 }
-func (m *MsgUpdateSubDistributor) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateSubDistributorParam) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateSubDistributor) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateSubDistributorParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateSubDistributor.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateSubDistributorParam.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -147,47 +151,47 @@ func (m *MsgUpdateSubDistributor) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateSubDistributor) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateSubDistributor.Merge(m, src)
+func (m *MsgUpdateSubDistributorParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorParam.Merge(m, src)
 }
-func (m *MsgUpdateSubDistributor) XXX_Size() int {
+func (m *MsgUpdateSubDistributorParam) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateSubDistributor) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateSubDistributor.DiscardUnknown(m)
+func (m *MsgUpdateSubDistributorParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorParam.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateSubDistributor proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateSubDistributorParam proto.InternalMessageInfo
 
-func (m *MsgUpdateSubDistributor) GetAuthority() string {
+func (m *MsgUpdateSubDistributorParam) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgUpdateSubDistributor) GetSubDistributor() *SubDistributor {
+func (m *MsgUpdateSubDistributorParam) GetSubDistributor() *SubDistributor {
 	if m != nil {
 		return m.SubDistributor
 	}
 	return nil
 }
 
-type MsgUpdateSubDistributorResponse struct {
+type MsgUpdateSubDistributorParamResponse struct {
 }
 
-func (m *MsgUpdateSubDistributorResponse) Reset()         { *m = MsgUpdateSubDistributorResponse{} }
-func (m *MsgUpdateSubDistributorResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateSubDistributorResponse) ProtoMessage()    {}
-func (*MsgUpdateSubDistributorResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateSubDistributorParamResponse) Reset()         { *m = MsgUpdateSubDistributorParamResponse{} }
+func (m *MsgUpdateSubDistributorParamResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSubDistributorParamResponse) ProtoMessage()    {}
+func (*MsgUpdateSubDistributorParamResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{3}
 }
-func (m *MsgUpdateSubDistributorResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateSubDistributorParamResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateSubDistributorResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateSubDistributorParamResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateSubDistributorResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateSubDistributorParamResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -197,39 +201,41 @@ func (m *MsgUpdateSubDistributorResponse) XXX_Marshal(b []byte, deterministic bo
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateSubDistributorResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateSubDistributorResponse.Merge(m, src)
+func (m *MsgUpdateSubDistributorParamResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorParamResponse.Merge(m, src)
 }
-func (m *MsgUpdateSubDistributorResponse) XXX_Size() int {
+func (m *MsgUpdateSubDistributorParamResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateSubDistributorResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateSubDistributorResponse.DiscardUnknown(m)
+func (m *MsgUpdateSubDistributorParamResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorParamResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateSubDistributorResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateSubDistributorParamResponse proto.InternalMessageInfo
 
-type MsgUpdateSubDistributorDestinationShare struct {
+type MsgUpdateSubDistributorDestinationShareParam struct {
 	Authority          string                                 `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	SubDistributorName string                                 `protobuf:"bytes,2,opt,name=sub_distributor_name,json=subDistributorName,proto3" json:"sub_distributor_name,omitempty"`
 	DestinationName    string                                 `protobuf:"bytes,3,opt,name=destination_name,json=destinationName,proto3" json:"destination_name,omitempty"`
 	Share              github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=share,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"share" yaml:"share"`
 }
 
-func (m *MsgUpdateSubDistributorDestinationShare) Reset() {
-	*m = MsgUpdateSubDistributorDestinationShare{}
+func (m *MsgUpdateSubDistributorDestinationShareParam) Reset() {
+	*m = MsgUpdateSubDistributorDestinationShareParam{}
 }
-func (m *MsgUpdateSubDistributorDestinationShare) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateSubDistributorDestinationShare) ProtoMessage()    {}
-func (*MsgUpdateSubDistributorDestinationShare) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateSubDistributorDestinationShareParam) String() string {
+	return proto.CompactTextString(m)
+}
+func (*MsgUpdateSubDistributorDestinationShareParam) ProtoMessage() {}
+func (*MsgUpdateSubDistributorDestinationShareParam) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{4}
 }
-func (m *MsgUpdateSubDistributorDestinationShare) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateSubDistributorDestinationShare) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateSubDistributorDestinationShare.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParam.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -239,58 +245,58 @@ func (m *MsgUpdateSubDistributorDestinationShare) XXX_Marshal(b []byte, determin
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateSubDistributorDestinationShare) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateSubDistributorDestinationShare.Merge(m, src)
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParam.Merge(m, src)
 }
-func (m *MsgUpdateSubDistributorDestinationShare) XXX_Size() int {
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateSubDistributorDestinationShare) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateSubDistributorDestinationShare.DiscardUnknown(m)
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParam.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateSubDistributorDestinationShare proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParam proto.InternalMessageInfo
 
-func (m *MsgUpdateSubDistributorDestinationShare) GetAuthority() string {
+func (m *MsgUpdateSubDistributorDestinationShareParam) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgUpdateSubDistributorDestinationShare) GetSubDistributorName() string {
+func (m *MsgUpdateSubDistributorDestinationShareParam) GetSubDistributorName() string {
 	if m != nil {
 		return m.SubDistributorName
 	}
 	return ""
 }
 
-func (m *MsgUpdateSubDistributorDestinationShare) GetDestinationName() string {
+func (m *MsgUpdateSubDistributorDestinationShareParam) GetDestinationName() string {
 	if m != nil {
 		return m.DestinationName
 	}
 	return ""
 }
 
-type MsgUpdateSubDistributorDestinationShareResponse struct {
+type MsgUpdateSubDistributorDestinationShareParamResponse struct {
 }
 
-func (m *MsgUpdateSubDistributorDestinationShareResponse) Reset() {
-	*m = MsgUpdateSubDistributorDestinationShareResponse{}
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) Reset() {
+	*m = MsgUpdateSubDistributorDestinationShareParamResponse{}
 }
-func (m *MsgUpdateSubDistributorDestinationShareResponse) String() string {
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*MsgUpdateSubDistributorDestinationShareResponse) ProtoMessage() {}
-func (*MsgUpdateSubDistributorDestinationShareResponse) Descriptor() ([]byte, []int) {
+func (*MsgUpdateSubDistributorDestinationShareParamResponse) ProtoMessage() {}
+func (*MsgUpdateSubDistributorDestinationShareParamResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{5}
 }
-func (m *MsgUpdateSubDistributorDestinationShareResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateSubDistributorDestinationShareResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateSubDistributorDestinationShareResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParamResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -300,36 +306,36 @@ func (m *MsgUpdateSubDistributorDestinationShareResponse) XXX_Marshal(b []byte, 
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateSubDistributorDestinationShareResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareResponse.Merge(m, src)
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParamResponse.Merge(m, src)
 }
-func (m *MsgUpdateSubDistributorDestinationShareResponse) XXX_Size() int {
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateSubDistributorDestinationShareResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareResponse.DiscardUnknown(m)
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParamResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateSubDistributorDestinationShareResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParamResponse proto.InternalMessageInfo
 
-type MsgUpdateSubDistributorBurnShare struct {
+type MsgUpdateSubDistributorBurnShareParam struct {
 	Authority          string                                 `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	SubDistributorName string                                 `protobuf:"bytes,2,opt,name=sub_distributor_name,json=subDistributorName,proto3" json:"sub_distributor_name,omitempty"`
 	BurnShare          github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=burn_share,json=burnShare,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"burn_share" yaml:"burn_share"`
 }
 
-func (m *MsgUpdateSubDistributorBurnShare) Reset()         { *m = MsgUpdateSubDistributorBurnShare{} }
-func (m *MsgUpdateSubDistributorBurnShare) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateSubDistributorBurnShare) ProtoMessage()    {}
-func (*MsgUpdateSubDistributorBurnShare) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateSubDistributorBurnShareParam) Reset()         { *m = MsgUpdateSubDistributorBurnShareParam{} }
+func (m *MsgUpdateSubDistributorBurnShareParam) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSubDistributorBurnShareParam) ProtoMessage()    {}
+func (*MsgUpdateSubDistributorBurnShareParam) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{6}
 }
-func (m *MsgUpdateSubDistributorBurnShare) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateSubDistributorBurnShare) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateSubDistributorBurnShare.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateSubDistributorBurnShareParam.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -339,49 +345,51 @@ func (m *MsgUpdateSubDistributorBurnShare) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateSubDistributorBurnShare) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateSubDistributorBurnShare.Merge(m, src)
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorBurnShareParam.Merge(m, src)
 }
-func (m *MsgUpdateSubDistributorBurnShare) XXX_Size() int {
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateSubDistributorBurnShare) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateSubDistributorBurnShare.DiscardUnknown(m)
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorBurnShareParam.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateSubDistributorBurnShare proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateSubDistributorBurnShareParam proto.InternalMessageInfo
 
-func (m *MsgUpdateSubDistributorBurnShare) GetAuthority() string {
+func (m *MsgUpdateSubDistributorBurnShareParam) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgUpdateSubDistributorBurnShare) GetSubDistributorName() string {
+func (m *MsgUpdateSubDistributorBurnShareParam) GetSubDistributorName() string {
 	if m != nil {
 		return m.SubDistributorName
 	}
 	return ""
 }
 
-type MsgUpdateSubDistributorBurnShareResponse struct {
+type MsgUpdateSubDistributorBurnShareParamResponse struct {
 }
 
-func (m *MsgUpdateSubDistributorBurnShareResponse) Reset() {
-	*m = MsgUpdateSubDistributorBurnShareResponse{}
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) Reset() {
+	*m = MsgUpdateSubDistributorBurnShareParamResponse{}
 }
-func (m *MsgUpdateSubDistributorBurnShareResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateSubDistributorBurnShareResponse) ProtoMessage()    {}
-func (*MsgUpdateSubDistributorBurnShareResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*MsgUpdateSubDistributorBurnShareParamResponse) ProtoMessage() {}
+func (*MsgUpdateSubDistributorBurnShareParamResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_666a85c20069e03a, []int{7}
 }
-func (m *MsgUpdateSubDistributorBurnShareResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateSubDistributorBurnShareResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateSubDistributorBurnShareResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateSubDistributorBurnShareParamResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -391,70 +399,70 @@ func (m *MsgUpdateSubDistributorBurnShareResponse) XXX_Marshal(b []byte, determi
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateSubDistributorBurnShareResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateSubDistributorBurnShareResponse.Merge(m, src)
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorBurnShareParamResponse.Merge(m, src)
 }
-func (m *MsgUpdateSubDistributorBurnShareResponse) XXX_Size() int {
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateSubDistributorBurnShareResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateSubDistributorBurnShareResponse.DiscardUnknown(m)
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorBurnShareParamResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateSubDistributorBurnShareResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateSubDistributorBurnShareParamResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgUpdateAllSubDistributors)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateAllSubDistributors")
-	proto.RegisterType((*MsgUpdateAllSubDistributorsResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateAllSubDistributorsResponse")
-	proto.RegisterType((*MsgUpdateSubDistributor)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributor")
-	proto.RegisterType((*MsgUpdateSubDistributorResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorResponse")
-	proto.RegisterType((*MsgUpdateSubDistributorDestinationShare)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShare")
-	proto.RegisterType((*MsgUpdateSubDistributorDestinationShareResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShareResponse")
-	proto.RegisterType((*MsgUpdateSubDistributorBurnShare)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShare")
-	proto.RegisterType((*MsgUpdateSubDistributorBurnShareResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareResponse")
+	proto.RegisterType((*MsgUpdateAllSubDistributorsParams)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateAllSubDistributorsParams")
+	proto.RegisterType((*MsgUpdateAllSubDistributorsParamsResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateAllSubDistributorsParamsResponse")
+	proto.RegisterType((*MsgUpdateSubDistributorParam)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorParam")
+	proto.RegisterType((*MsgUpdateSubDistributorParamResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorParamResponse")
+	proto.RegisterType((*MsgUpdateSubDistributorDestinationShareParam)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShareParam")
+	proto.RegisterType((*MsgUpdateSubDistributorDestinationShareParamResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShareParamResponse")
+	proto.RegisterType((*MsgUpdateSubDistributorBurnShareParam)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareParam")
+	proto.RegisterType((*MsgUpdateSubDistributorBurnShareParamResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareParamResponse")
 }
 
 func init() { proto.RegisterFile("c4echain/cfedistributor/tx.proto", fileDescriptor_666a85c20069e03a) }
 
 var fileDescriptor_666a85c20069e03a = []byte{
-	// 583 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0x31, 0x6f, 0xd3, 0x40,
-	0x14, 0xce, 0x35, 0x2d, 0x52, 0x1e, 0x88, 0x14, 0x2b, 0x52, 0x83, 0x41, 0x4e, 0x30, 0xa5, 0x04,
-	0xa4, 0xd8, 0xb4, 0x64, 0x40, 0x48, 0x20, 0x35, 0x04, 0x24, 0x86, 0x74, 0x70, 0xe9, 0x82, 0x84,
-	0x22, 0xdb, 0x39, 0x1c, 0x8b, 0xd8, 0x17, 0xf9, 0xce, 0xa8, 0xf9, 0x17, 0x4c, 0x4c, 0x4c, 0x4c,
-	0xfc, 0x0c, 0xc6, 0x0e, 0x0c, 0x9d, 0x10, 0x62, 0x88, 0x20, 0xf9, 0x07, 0x8c, 0x4c, 0xc8, 0xbe,
-	0xd8, 0x89, 0x03, 0x6e, 0x52, 0xd2, 0x4e, 0xbe, 0xbb, 0xf7, 0xbd, 0xef, 0x7d, 0xdf, 0xf3, 0x3d,
-	0x1d, 0x94, 0xcd, 0x1a, 0x36, 0x3b, 0xba, 0xed, 0xaa, 0xe6, 0x6b, 0xdc, 0xb6, 0x29, 0xf3, 0x6c,
-	0xc3, 0x67, 0xc4, 0x53, 0xd9, 0xa1, 0xd2, 0xf3, 0x08, 0x23, 0xc2, 0x66, 0x18, 0xae, 0x61, 0x17,
-	0x7b, 0x56, 0x5f, 0x89, 0xe0, 0x4a, 0x12, 0x2e, 0x6e, 0x98, 0x84, 0x3a, 0x84, 0xaa, 0x0e, 0xb5,
-	0xd4, 0xb7, 0xdb, 0xc1, 0x87, 0xa7, 0x8b, 0x05, 0x8b, 0x58, 0x24, 0x5c, 0xaa, 0xc1, 0x6a, 0x7c,
-	0x7a, 0x95, 0xc3, 0x5b, 0x3c, 0xc0, 0x37, 0xe3, 0x50, 0x35, 0x4d, 0x11, 0xf5, 0x8d, 0xd6, 0xd4,
-	0x9e, 0xc3, 0xe5, 0x8f, 0x08, 0xae, 0x35, 0xa9, 0x75, 0xd0, 0x6b, 0xeb, 0x0c, 0xef, 0x76, 0xbb,
-	0xfb, 0xbe, 0xd1, 0x98, 0x80, 0xa8, 0x70, 0x1d, 0x72, 0xba, 0xcf, 0x3a, 0xc4, 0xb3, 0x59, 0xbf,
-	0x88, 0xca, 0xa8, 0x92, 0xd3, 0x26, 0x07, 0x02, 0x86, 0xf5, 0x19, 0x5a, 0x5a, 0x5c, 0x29, 0x67,
-	0x2b, 0x17, 0x77, 0x6a, 0xca, 0x22, 0xbe, 0x95, 0x64, 0xb9, 0xfa, 0xea, 0xd1, 0xa0, 0x94, 0xd1,
-	0xf2, 0x34, 0x29, 0x42, 0xbe, 0x05, 0x37, 0x4f, 0xd0, 0xa8, 0x61, 0xda, 0x23, 0x2e, 0xc5, 0xf2,
-	0x7b, 0x04, 0x1b, 0x31, 0x2e, 0x09, 0x9a, 0xe3, 0xe3, 0x15, 0xe4, 0x67, 0x7c, 0x14, 0x57, 0xca,
-	0xe8, 0x7f, 0x6d, 0x68, 0x97, 0x93, 0x06, 0xe4, 0x1b, 0x50, 0x4a, 0xd1, 0x15, 0x6b, 0xff, 0x8d,
-	0xe0, 0x76, 0x0a, 0xa6, 0x81, 0x29, 0xb3, 0x5d, 0x9d, 0xd9, 0xc4, 0xdd, 0xef, 0xe8, 0x1e, 0x9e,
-	0xe3, 0xe5, 0x1e, 0x14, 0x66, 0xbc, 0xb4, 0x5c, 0xdd, 0xc1, 0xa1, 0xa1, 0x9c, 0x26, 0x24, 0xa5,
-	0xed, 0xe9, 0x0e, 0x16, 0xee, 0xc0, 0x7a, 0x7b, 0x52, 0x83, 0xa3, 0xb3, 0x21, 0x3a, 0x3f, 0x75,
-	0x1e, 0x42, 0x5f, 0xc0, 0x1a, 0x0d, 0x34, 0x14, 0x57, 0x83, 0x78, 0xfd, 0x71, 0xf0, 0xbf, 0xbe,
-	0x0f, 0x4a, 0x5b, 0x96, 0xcd, 0x3a, 0xbe, 0xa1, 0x98, 0xc4, 0x19, 0xdf, 0xc6, 0xf1, 0xa7, 0x4a,
-	0xdb, 0x6f, 0x54, 0xd6, 0xef, 0x61, 0xaa, 0x34, 0xb0, 0xf9, 0x6b, 0x50, 0xba, 0xd4, 0xd7, 0x9d,
-	0xee, 0x43, 0x39, 0x24, 0x91, 0x35, 0x4e, 0x26, 0x6f, 0x83, 0xba, 0xa0, 0xf7, 0xb8, 0x5f, 0x5f,
-	0x11, 0x94, 0x53, 0x72, 0xea, 0xbe, 0x77, 0x4e, 0x8d, 0x32, 0x00, 0x0c, 0xdf, 0x73, 0x5b, 0xbc,
-	0x05, 0x61, 0x8b, 0xea, 0x4f, 0x4e, 0xdd, 0x82, 0x2b, 0xbc, 0x05, 0x13, 0x26, 0x59, 0xcb, 0x19,
-	0x91, 0x66, 0xf9, 0x2e, 0x54, 0xe6, 0xf9, 0x8a, 0x9a, 0xb0, 0xf3, 0x73, 0x0d, 0xb2, 0x4d, 0x6a,
-	0x09, 0x9f, 0x10, 0x14, 0x53, 0x27, 0x78, 0x77, 0xb1, 0x2b, 0x7c, 0xc2, 0x80, 0x89, 0xcf, 0x97,
-	0xa6, 0x88, 0x24, 0x0b, 0x1f, 0x10, 0x14, 0xfe, 0x39, 0xa0, 0x8f, 0x4e, 0x59, 0x23, 0x99, 0x2e,
-	0x3e, 0x5d, 0x2a, 0x3d, 0x96, 0xf7, 0x05, 0xc1, 0xe6, 0x42, 0x33, 0xd8, 0x5c, 0xaa, 0xde, 0x2c,
-	0x9d, 0x78, 0x70, 0xa6, 0x74, 0xb1, 0x9d, 0xcf, 0x08, 0xb6, 0x78, 0xc2, 0xdc, 0x59, 0x79, 0xb6,
-	0x94, 0x82, 0x98, 0x47, 0xdc, 0x3b, 0x1b, 0x9e, 0xc8, 0x42, 0x5d, 0x3b, 0x1a, 0x4a, 0xe8, 0x78,
-	0x28, 0xa1, 0x1f, 0x43, 0x09, 0xbd, 0x1b, 0x49, 0x99, 0xe3, 0x91, 0x94, 0xf9, 0x36, 0x92, 0x32,
-	0x2f, 0x1f, 0x4c, 0x4f, 0xdc, 0x54, 0x4d, 0xd5, 0xac, 0xe1, 0x2a, 0x7f, 0x02, 0x0f, 0xff, 0x7a,
-	0x96, 0x83, 0x39, 0x34, 0x2e, 0x84, 0x6f, 0xdf, 0xfd, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xe9,
-	0x2f, 0xba, 0x67, 0xbe, 0x07, 0x00, 0x00,
+	// 590 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0xd1, 0x8a, 0xd3, 0x4c,
+	0x18, 0xed, 0x6c, 0xf7, 0x5f, 0xe8, 0xf7, 0x8b, 0x5d, 0xc3, 0x82, 0xdd, 0xb0, 0xa4, 0x35, 0xac,
+	0xcb, 0x96, 0xb5, 0x89, 0xae, 0x45, 0xc4, 0x0b, 0xc1, 0x58, 0x10, 0x94, 0x55, 0x49, 0xf5, 0x66,
+	0x41, 0x4a, 0x92, 0x8e, 0x69, 0xb0, 0xc9, 0x94, 0xcc, 0x44, 0xb6, 0x6f, 0xe1, 0xbd, 0x37, 0x5e,
+	0x0a, 0xbe, 0x81, 0x4f, 0xb0, 0x77, 0xee, 0xa5, 0xb8, 0x50, 0xa4, 0x7d, 0x03, 0x5f, 0x40, 0x49,
+	0xa6, 0x4d, 0x9b, 0xba, 0xb5, 0xa9, 0xad, 0x57, 0x49, 0xe6, 0x3b, 0x73, 0xbe, 0x73, 0x4e, 0xe6,
+	0x63, 0xa0, 0x64, 0x55, 0xb1, 0xd5, 0x32, 0x1c, 0x4f, 0xb5, 0x5e, 0xe3, 0xa6, 0x43, 0x99, 0xef,
+	0x98, 0x01, 0x23, 0xbe, 0xca, 0x4e, 0x94, 0x8e, 0x4f, 0x18, 0x11, 0x76, 0xa3, 0x72, 0x15, 0x7b,
+	0xd8, 0xb7, 0xbb, 0xca, 0x08, 0xae, 0x24, 0xe1, 0xe2, 0x55, 0x8b, 0x50, 0x97, 0x50, 0xd5, 0xa5,
+	0xb6, 0xfa, 0xf6, 0x56, 0xf8, 0xe0, 0xdb, 0xc5, 0x2d, 0x9b, 0xd8, 0x24, 0x7a, 0x55, 0xc3, 0xb7,
+	0xe1, 0xea, 0x36, 0x87, 0x37, 0x78, 0x81, 0x7f, 0x0c, 0x4b, 0x95, 0x59, 0x8a, 0x68, 0x60, 0x36,
+	0x26, 0xbe, 0x39, 0x5c, 0xfe, 0x88, 0xe0, 0xda, 0x11, 0xb5, 0x5f, 0x76, 0x9a, 0x06, 0xc3, 0x0f,
+	0xda, 0xed, 0x7a, 0x60, 0xd6, 0xc6, 0x20, 0xfa, 0xdc, 0xf0, 0x0d, 0x97, 0x0a, 0x3b, 0x90, 0x33,
+	0x02, 0xd6, 0x22, 0xbe, 0xc3, 0xba, 0x05, 0x54, 0x42, 0xfb, 0x39, 0x7d, 0xbc, 0x20, 0x60, 0xd8,
+	0x9c, 0x22, 0xa7, 0x85, 0xb5, 0x52, 0x76, 0xff, 0xff, 0xc3, 0xaa, 0x92, 0xc6, 0xbd, 0x92, 0x6c,
+	0xaa, 0xad, 0x9f, 0xf6, 0x8a, 0x19, 0x3d, 0x4f, 0x93, 0x52, 0xe4, 0x03, 0x28, 0xcf, 0x55, 0xaa,
+	0x63, 0xda, 0x21, 0x1e, 0xc5, 0xf2, 0x7b, 0x04, 0x3b, 0x31, 0x3a, 0x09, 0x8d, 0x90, 0x73, 0x2c,
+	0xbd, 0x82, 0xfc, 0x94, 0xa5, 0xc2, 0x5a, 0x09, 0xfd, 0xad, 0x23, 0xfd, 0x72, 0xd2, 0x8b, 0xbc,
+	0x07, 0xbb, 0x7f, 0x12, 0x17, 0xbb, 0xf8, 0x89, 0xe0, 0xc6, 0x0c, 0x60, 0x0d, 0x53, 0xe6, 0x78,
+	0x06, 0x73, 0x88, 0x57, 0x6f, 0x19, 0x3e, 0x4e, 0xe3, 0xea, 0x26, 0x6c, 0x4d, 0xb9, 0x6a, 0x78,
+	0x86, 0x8b, 0x23, 0x6b, 0x39, 0x5d, 0x48, 0x8a, 0x7c, 0x6a, 0xb8, 0x58, 0x28, 0xc3, 0x66, 0x73,
+	0xdc, 0x88, 0xa3, 0xb3, 0x11, 0x3a, 0x3f, 0xb1, 0x1e, 0x41, 0x5f, 0xc0, 0x7f, 0x34, 0x14, 0x52,
+	0x58, 0x0f, 0xeb, 0xda, 0xfd, 0xf0, 0x27, 0x7e, 0xeb, 0x15, 0xf7, 0x6c, 0x87, 0xb5, 0x02, 0x53,
+	0xb1, 0x88, 0x3b, 0x3c, 0xa8, 0xc3, 0x47, 0x85, 0x36, 0xdf, 0xa8, 0xac, 0xdb, 0xc1, 0x54, 0xa9,
+	0x61, 0xeb, 0x47, 0xaf, 0x78, 0xa9, 0x6b, 0xb8, 0xed, 0x7b, 0x72, 0x44, 0x22, 0xeb, 0x9c, 0x4c,
+	0xbe, 0x03, 0xd5, 0x45, 0x02, 0x88, 0x93, 0x3b, 0x47, 0x70, 0x7d, 0xc6, 0x46, 0x2d, 0xf0, 0xff,
+	0x65, 0x64, 0x26, 0x80, 0x19, 0xf8, 0x5e, 0x83, 0x87, 0x11, 0x85, 0xa5, 0x3d, 0x5c, 0x38, 0x8c,
+	0x2b, 0x3c, 0x8c, 0x31, 0x93, 0xac, 0xe7, 0xcc, 0x91, 0x70, 0x59, 0x85, 0x4a, 0x2a, 0x73, 0xa3,
+	0x38, 0x0e, 0x3f, 0x6c, 0x40, 0xf6, 0x88, 0xda, 0xc2, 0x67, 0x04, 0xd2, 0x9c, 0x59, 0x7f, 0x94,
+	0xee, 0x84, 0xcf, 0x1d, 0x45, 0xf1, 0xd9, 0x8a, 0x88, 0x46, 0x26, 0x84, 0x4f, 0x08, 0xb6, 0x67,
+	0x0f, 0xb4, 0xb6, 0x60, 0xbb, 0x0b, 0x38, 0xc4, 0xc7, 0xcb, 0x73, 0xc4, 0x6a, 0xcf, 0x11, 0x94,
+	0xd3, 0x0f, 0xae, 0xbe, 0x54, 0xe7, 0x0b, 0x39, 0xc5, 0xe3, 0xd5, 0x73, 0xc6, 0xee, 0xbe, 0x20,
+	0x38, 0xe0, 0xbb, 0xd2, 0x4d, 0xd9, 0x93, 0xa5, 0xb4, 0x24, 0xc9, 0xc4, 0xfa, 0x0a, 0xc9, 0x46,
+	0x8e, 0x34, 0xfd, 0xb4, 0x2f, 0xa1, 0xb3, 0xbe, 0x84, 0xbe, 0xf7, 0x25, 0xf4, 0x6e, 0x20, 0x65,
+	0xce, 0x06, 0x52, 0xe6, 0xeb, 0x40, 0xca, 0x1c, 0xdf, 0x9d, 0x9c, 0xda, 0x89, 0xc6, 0xaa, 0x55,
+	0xc5, 0x15, 0x7e, 0xd7, 0x9e, 0xfc, 0x76, 0xff, 0x87, 0xb3, 0x6c, 0x6e, 0x44, 0x97, 0xec, 0xed,
+	0x5f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x1a, 0x57, 0x6b, 0xa7, 0x27, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -470,10 +478,10 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
 	// this line is used by starport scaffolding # proto/tx/rpc
-	UpdateAllSubDistributors(ctx context.Context, in *MsgUpdateAllSubDistributors, opts ...grpc.CallOption) (*MsgUpdateAllSubDistributorsResponse, error)
-	UpdateSubDistributor(ctx context.Context, in *MsgUpdateSubDistributor, opts ...grpc.CallOption) (*MsgUpdateSubDistributorResponse, error)
-	UpdateSubDistributorDestinationShare(ctx context.Context, in *MsgUpdateSubDistributorDestinationShare, opts ...grpc.CallOption) (*MsgUpdateSubDistributorDestinationShareResponse, error)
-	UpdateMsgUpdateSubDistributorBurnShare(ctx context.Context, in *MsgUpdateSubDistributorBurnShare, opts ...grpc.CallOption) (*MsgUpdateSubDistributorBurnShareResponse, error)
+	UpdateAllSubDistributorsParams(ctx context.Context, in *MsgUpdateAllSubDistributorsParams, opts ...grpc.CallOption) (*MsgUpdateAllSubDistributorsParamsResponse, error)
+	UpdateSubDistributorParam(ctx context.Context, in *MsgUpdateSubDistributorParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorParamResponse, error)
+	UpdateSubDistributorDestinationShareParam(ctx context.Context, in *MsgUpdateSubDistributorDestinationShareParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorDestinationShareParamResponse, error)
+	UpdateMsgUpdateSubDistributorBurnShareParam(ctx context.Context, in *MsgUpdateSubDistributorBurnShareParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorBurnShareParamResponse, error)
 }
 
 type msgClient struct {
@@ -484,36 +492,36 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) UpdateAllSubDistributors(ctx context.Context, in *MsgUpdateAllSubDistributors, opts ...grpc.CallOption) (*MsgUpdateAllSubDistributorsResponse, error) {
-	out := new(MsgUpdateAllSubDistributorsResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateAllSubDistributors", in, out, opts...)
+func (c *msgClient) UpdateAllSubDistributorsParams(ctx context.Context, in *MsgUpdateAllSubDistributorsParams, opts ...grpc.CallOption) (*MsgUpdateAllSubDistributorsParamsResponse, error) {
+	out := new(MsgUpdateAllSubDistributorsParamsResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateAllSubDistributorsParams", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) UpdateSubDistributor(ctx context.Context, in *MsgUpdateSubDistributor, opts ...grpc.CallOption) (*MsgUpdateSubDistributorResponse, error) {
-	out := new(MsgUpdateSubDistributorResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributor", in, out, opts...)
+func (c *msgClient) UpdateSubDistributorParam(ctx context.Context, in *MsgUpdateSubDistributorParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorParamResponse, error) {
+	out := new(MsgUpdateSubDistributorParamResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorParam", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) UpdateSubDistributorDestinationShare(ctx context.Context, in *MsgUpdateSubDistributorDestinationShare, opts ...grpc.CallOption) (*MsgUpdateSubDistributorDestinationShareResponse, error) {
-	out := new(MsgUpdateSubDistributorDestinationShareResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorDestinationShare", in, out, opts...)
+func (c *msgClient) UpdateSubDistributorDestinationShareParam(ctx context.Context, in *MsgUpdateSubDistributorDestinationShareParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorDestinationShareParamResponse, error) {
+	out := new(MsgUpdateSubDistributorDestinationShareParamResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorDestinationShareParam", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) UpdateMsgUpdateSubDistributorBurnShare(ctx context.Context, in *MsgUpdateSubDistributorBurnShare, opts ...grpc.CallOption) (*MsgUpdateSubDistributorBurnShareResponse, error) {
-	out := new(MsgUpdateSubDistributorBurnShareResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateMsgUpdateSubDistributorBurnShare", in, out, opts...)
+func (c *msgClient) UpdateMsgUpdateSubDistributorBurnShareParam(ctx context.Context, in *MsgUpdateSubDistributorBurnShareParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorBurnShareParamResponse, error) {
+	out := new(MsgUpdateSubDistributorBurnShareParamResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateMsgUpdateSubDistributorBurnShareParam", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -523,101 +531,101 @@ func (c *msgClient) UpdateMsgUpdateSubDistributorBurnShare(ctx context.Context, 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// this line is used by starport scaffolding # proto/tx/rpc
-	UpdateAllSubDistributors(context.Context, *MsgUpdateAllSubDistributors) (*MsgUpdateAllSubDistributorsResponse, error)
-	UpdateSubDistributor(context.Context, *MsgUpdateSubDistributor) (*MsgUpdateSubDistributorResponse, error)
-	UpdateSubDistributorDestinationShare(context.Context, *MsgUpdateSubDistributorDestinationShare) (*MsgUpdateSubDistributorDestinationShareResponse, error)
-	UpdateMsgUpdateSubDistributorBurnShare(context.Context, *MsgUpdateSubDistributorBurnShare) (*MsgUpdateSubDistributorBurnShareResponse, error)
+	UpdateAllSubDistributorsParams(context.Context, *MsgUpdateAllSubDistributorsParams) (*MsgUpdateAllSubDistributorsParamsResponse, error)
+	UpdateSubDistributorParam(context.Context, *MsgUpdateSubDistributorParam) (*MsgUpdateSubDistributorParamResponse, error)
+	UpdateSubDistributorDestinationShareParam(context.Context, *MsgUpdateSubDistributorDestinationShareParam) (*MsgUpdateSubDistributorDestinationShareParamResponse, error)
+	UpdateMsgUpdateSubDistributorBurnShareParam(context.Context, *MsgUpdateSubDistributorBurnShareParam) (*MsgUpdateSubDistributorBurnShareParamResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) UpdateAllSubDistributors(ctx context.Context, req *MsgUpdateAllSubDistributors) (*MsgUpdateAllSubDistributorsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateAllSubDistributors not implemented")
+func (*UnimplementedMsgServer) UpdateAllSubDistributorsParams(ctx context.Context, req *MsgUpdateAllSubDistributorsParams) (*MsgUpdateAllSubDistributorsParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAllSubDistributorsParams not implemented")
 }
-func (*UnimplementedMsgServer) UpdateSubDistributor(ctx context.Context, req *MsgUpdateSubDistributor) (*MsgUpdateSubDistributorResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubDistributor not implemented")
+func (*UnimplementedMsgServer) UpdateSubDistributorParam(ctx context.Context, req *MsgUpdateSubDistributorParam) (*MsgUpdateSubDistributorParamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubDistributorParam not implemented")
 }
-func (*UnimplementedMsgServer) UpdateSubDistributorDestinationShare(ctx context.Context, req *MsgUpdateSubDistributorDestinationShare) (*MsgUpdateSubDistributorDestinationShareResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubDistributorDestinationShare not implemented")
+func (*UnimplementedMsgServer) UpdateSubDistributorDestinationShareParam(ctx context.Context, req *MsgUpdateSubDistributorDestinationShareParam) (*MsgUpdateSubDistributorDestinationShareParamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubDistributorDestinationShareParam not implemented")
 }
-func (*UnimplementedMsgServer) UpdateMsgUpdateSubDistributorBurnShare(ctx context.Context, req *MsgUpdateSubDistributorBurnShare) (*MsgUpdateSubDistributorBurnShareResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateMsgUpdateSubDistributorBurnShare not implemented")
+func (*UnimplementedMsgServer) UpdateMsgUpdateSubDistributorBurnShareParam(ctx context.Context, req *MsgUpdateSubDistributorBurnShareParam) (*MsgUpdateSubDistributorBurnShareParamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMsgUpdateSubDistributorBurnShareParam not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_UpdateAllSubDistributors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateAllSubDistributors)
+func _Msg_UpdateAllSubDistributorsParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateAllSubDistributorsParams)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateAllSubDistributors(ctx, in)
+		return srv.(MsgServer).UpdateAllSubDistributorsParams(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateAllSubDistributors",
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateAllSubDistributorsParams",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateAllSubDistributors(ctx, req.(*MsgUpdateAllSubDistributors))
+		return srv.(MsgServer).UpdateAllSubDistributorsParams(ctx, req.(*MsgUpdateAllSubDistributorsParams))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateSubDistributor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateSubDistributor)
+func _Msg_UpdateSubDistributorParam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateSubDistributorParam)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateSubDistributor(ctx, in)
+		return srv.(MsgServer).UpdateSubDistributorParam(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributor",
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorParam",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateSubDistributor(ctx, req.(*MsgUpdateSubDistributor))
+		return srv.(MsgServer).UpdateSubDistributorParam(ctx, req.(*MsgUpdateSubDistributorParam))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateSubDistributorDestinationShare_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateSubDistributorDestinationShare)
+func _Msg_UpdateSubDistributorDestinationShareParam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateSubDistributorDestinationShareParam)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateSubDistributorDestinationShare(ctx, in)
+		return srv.(MsgServer).UpdateSubDistributorDestinationShareParam(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorDestinationShare",
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorDestinationShareParam",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateSubDistributorDestinationShare(ctx, req.(*MsgUpdateSubDistributorDestinationShare))
+		return srv.(MsgServer).UpdateSubDistributorDestinationShareParam(ctx, req.(*MsgUpdateSubDistributorDestinationShareParam))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateMsgUpdateSubDistributorBurnShare_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateSubDistributorBurnShare)
+func _Msg_UpdateMsgUpdateSubDistributorBurnShareParam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateSubDistributorBurnShareParam)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateMsgUpdateSubDistributorBurnShare(ctx, in)
+		return srv.(MsgServer).UpdateMsgUpdateSubDistributorBurnShareParam(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateMsgUpdateSubDistributorBurnShare",
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateMsgUpdateSubDistributorBurnShareParam",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateMsgUpdateSubDistributorBurnShare(ctx, req.(*MsgUpdateSubDistributorBurnShare))
+		return srv.(MsgServer).UpdateMsgUpdateSubDistributorBurnShareParam(ctx, req.(*MsgUpdateSubDistributorBurnShareParam))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -627,27 +635,27 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UpdateAllSubDistributors",
-			Handler:    _Msg_UpdateAllSubDistributors_Handler,
+			MethodName: "UpdateAllSubDistributorsParams",
+			Handler:    _Msg_UpdateAllSubDistributorsParams_Handler,
 		},
 		{
-			MethodName: "UpdateSubDistributor",
-			Handler:    _Msg_UpdateSubDistributor_Handler,
+			MethodName: "UpdateSubDistributorParam",
+			Handler:    _Msg_UpdateSubDistributorParam_Handler,
 		},
 		{
-			MethodName: "UpdateSubDistributorDestinationShare",
-			Handler:    _Msg_UpdateSubDistributorDestinationShare_Handler,
+			MethodName: "UpdateSubDistributorDestinationShareParam",
+			Handler:    _Msg_UpdateSubDistributorDestinationShareParam_Handler,
 		},
 		{
-			MethodName: "UpdateMsgUpdateSubDistributorBurnShare",
-			Handler:    _Msg_UpdateMsgUpdateSubDistributorBurnShare_Handler,
+			MethodName: "UpdateMsgUpdateSubDistributorBurnShareParam",
+			Handler:    _Msg_UpdateMsgUpdateSubDistributorBurnShareParam_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "c4echain/cfedistributor/tx.proto",
 }
 
-func (m *MsgUpdateAllSubDistributors) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateAllSubDistributorsParams) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -657,12 +665,12 @@ func (m *MsgUpdateAllSubDistributors) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateAllSubDistributors) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateAllSubDistributorsParams) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateAllSubDistributors) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateAllSubDistributorsParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -691,7 +699,7 @@ func (m *MsgUpdateAllSubDistributors) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateAllSubDistributorsResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateAllSubDistributorsParamsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -701,12 +709,12 @@ func (m *MsgUpdateAllSubDistributorsResponse) Marshal() (dAtA []byte, err error)
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateAllSubDistributorsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateAllSubDistributorsParamsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateAllSubDistributorsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateAllSubDistributorsParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -714,7 +722,7 @@ func (m *MsgUpdateAllSubDistributorsResponse) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateSubDistributor) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateSubDistributorParam) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -724,12 +732,12 @@ func (m *MsgUpdateSubDistributor) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateSubDistributor) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorParam) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateSubDistributor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorParam) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -756,7 +764,7 @@ func (m *MsgUpdateSubDistributor) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateSubDistributorResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateSubDistributorParamResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -766,12 +774,12 @@ func (m *MsgUpdateSubDistributorResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateSubDistributorResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorParamResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateSubDistributorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorParamResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -779,7 +787,7 @@ func (m *MsgUpdateSubDistributorResponse) MarshalToSizedBuffer(dAtA []byte) (int
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateSubDistributorDestinationShare) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateSubDistributorDestinationShareParam) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -789,12 +797,12 @@ func (m *MsgUpdateSubDistributorDestinationShare) Marshal() (dAtA []byte, err er
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateSubDistributorDestinationShare) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorDestinationShareParam) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateSubDistributorDestinationShare) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorDestinationShareParam) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -833,7 +841,7 @@ func (m *MsgUpdateSubDistributorDestinationShare) MarshalToSizedBuffer(dAtA []by
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateSubDistributorDestinationShareResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -843,12 +851,12 @@ func (m *MsgUpdateSubDistributorDestinationShareResponse) Marshal() (dAtA []byte
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateSubDistributorDestinationShareResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateSubDistributorDestinationShareResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -856,7 +864,7 @@ func (m *MsgUpdateSubDistributorDestinationShareResponse) MarshalToSizedBuffer(d
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateSubDistributorBurnShare) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateSubDistributorBurnShareParam) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -866,12 +874,12 @@ func (m *MsgUpdateSubDistributorBurnShare) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateSubDistributorBurnShare) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorBurnShareParam) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateSubDistributorBurnShare) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorBurnShareParam) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -903,7 +911,7 @@ func (m *MsgUpdateSubDistributorBurnShare) MarshalToSizedBuffer(dAtA []byte) (in
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateSubDistributorBurnShareResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -913,12 +921,12 @@ func (m *MsgUpdateSubDistributorBurnShareResponse) Marshal() (dAtA []byte, err e
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateSubDistributorBurnShareResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateSubDistributorBurnShareResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -937,7 +945,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgUpdateAllSubDistributors) Size() (n int) {
+func (m *MsgUpdateAllSubDistributorsParams) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -956,7 +964,7 @@ func (m *MsgUpdateAllSubDistributors) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateAllSubDistributorsResponse) Size() (n int) {
+func (m *MsgUpdateAllSubDistributorsParamsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -965,7 +973,7 @@ func (m *MsgUpdateAllSubDistributorsResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateSubDistributor) Size() (n int) {
+func (m *MsgUpdateSubDistributorParam) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -982,7 +990,7 @@ func (m *MsgUpdateSubDistributor) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateSubDistributorResponse) Size() (n int) {
+func (m *MsgUpdateSubDistributorParamResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -991,7 +999,7 @@ func (m *MsgUpdateSubDistributorResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateSubDistributorDestinationShare) Size() (n int) {
+func (m *MsgUpdateSubDistributorDestinationShareParam) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1014,7 +1022,7 @@ func (m *MsgUpdateSubDistributorDestinationShare) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateSubDistributorDestinationShareResponse) Size() (n int) {
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1023,7 +1031,7 @@ func (m *MsgUpdateSubDistributorDestinationShareResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateSubDistributorBurnShare) Size() (n int) {
+func (m *MsgUpdateSubDistributorBurnShareParam) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1042,7 +1050,7 @@ func (m *MsgUpdateSubDistributorBurnShare) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateSubDistributorBurnShareResponse) Size() (n int) {
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1057,7 +1065,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgUpdateAllSubDistributors) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateAllSubDistributorsParams) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1080,10 +1088,10 @@ func (m *MsgUpdateAllSubDistributors) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateAllSubDistributors: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateAllSubDistributorsParams: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateAllSubDistributors: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateAllSubDistributorsParams: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1173,7 +1181,7 @@ func (m *MsgUpdateAllSubDistributors) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateAllSubDistributorsResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateAllSubDistributorsParamsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1196,10 +1204,10 @@ func (m *MsgUpdateAllSubDistributorsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateAllSubDistributorsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateAllSubDistributorsParamsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateAllSubDistributorsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateAllSubDistributorsParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1223,7 +1231,7 @@ func (m *MsgUpdateAllSubDistributorsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateSubDistributor) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateSubDistributorParam) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1246,10 +1254,10 @@ func (m *MsgUpdateSubDistributor) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributor: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateSubDistributorParam: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributor: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateSubDistributorParam: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1341,7 +1349,7 @@ func (m *MsgUpdateSubDistributor) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateSubDistributorResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateSubDistributorParamResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1364,10 +1372,10 @@ func (m *MsgUpdateSubDistributorResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateSubDistributorParamResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateSubDistributorParamResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1391,7 +1399,7 @@ func (m *MsgUpdateSubDistributorResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateSubDistributorDestinationShare) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateSubDistributorDestinationShareParam) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1414,10 +1422,10 @@ func (m *MsgUpdateSubDistributorDestinationShare) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShare: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareParam: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShare: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareParam: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1571,7 +1579,7 @@ func (m *MsgUpdateSubDistributorDestinationShare) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateSubDistributorDestinationShareResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1594,10 +1602,10 @@ func (m *MsgUpdateSubDistributorDestinationShareResponse) Unmarshal(dAtA []byte)
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareParamResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareParamResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1621,7 +1629,7 @@ func (m *MsgUpdateSubDistributorDestinationShareResponse) Unmarshal(dAtA []byte)
 	}
 	return nil
 }
-func (m *MsgUpdateSubDistributorBurnShare) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateSubDistributorBurnShareParam) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1644,10 +1652,10 @@ func (m *MsgUpdateSubDistributorBurnShare) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShare: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareParam: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShare: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareParam: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1769,7 +1777,7 @@ func (m *MsgUpdateSubDistributorBurnShare) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateSubDistributorBurnShareResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1792,10 +1800,10 @@ func (m *MsgUpdateSubDistributorBurnShareResponse) Unmarshal(dAtA []byte) error 
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareParamResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareParamResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
