@@ -201,7 +201,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title c4e-chain/cfesignature/genesis.proto
+ * @title c4echain/cfesignature/genesis.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {

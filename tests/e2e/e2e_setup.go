@@ -25,6 +25,10 @@ type BaseSetupSuite struct {
 }
 
 func (s *BaseSetupSuite) SetupSuite(startUpgrade, startIBC bool) {
+	s.SetupSuiteWithUpgradeAppState(startUpgrade, startIBC, nil)
+}
+
+func (s *BaseSetupSuite) SetupSuiteWithUpgradeAppState(startUpgrade, startIBC bool, beforeUpgradeAppStateBytes []byte) {
 	s.T().Log("setting up e2e integration test suite...")
 	var (
 		err             error
@@ -34,6 +38,7 @@ func (s *BaseSetupSuite) SetupSuite(startUpgrade, startIBC bool) {
 	if startUpgrade {
 		s.T().Log("start upgrade was true, starting upgrade setup")
 		upgradeSettings.IsEnabled = startUpgrade
+		upgradeSettings.OldInitialAppStateBytes = beforeUpgradeAppStateBytes
 		if str := os.Getenv(upgradeVersionEnv); len(str) > 0 {
 			upgradeSettings.Version = str
 			s.T().Log(fmt.Sprintf("upgrade version set to %s", upgradeSettings.Version))

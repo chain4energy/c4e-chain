@@ -2,11 +2,12 @@ package chain
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
 	"github.com/chain4energy/c4e-chain/tests/e2e/containers"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
-	"testing"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -25,6 +26,7 @@ type Config struct {
 	LatestProposalNumber int
 	LatestLockNumber     int
 	NodeConfigs          []*NodeConfig
+	AppStateBytes        []byte
 
 	LatestCodeId int
 
@@ -42,7 +44,7 @@ const (
 	waitUntilrepeatMax = 60
 )
 
-func New(t *testing.T, containerManager *containers.Manager, id string, initValidatorConfigs []*initialization.NodeConfig) *Config {
+func New(t *testing.T, containerManager *containers.Manager, id string, initValidatorConfigs []*initialization.NodeConfig, appStateBytes []byte) *Config {
 	numVal := float32(len(initValidatorConfigs))
 	return &Config{
 		ChainMeta: initialization.ChainMeta{
@@ -51,6 +53,7 @@ func New(t *testing.T, containerManager *containers.Manager, id string, initVali
 		ValidatorInitConfigs:  initValidatorConfigs,
 		VotingPeriod:          config.PropDepositBlocks + numVal*config.PropVoteBlocks + config.PropBufferBlocks,
 		ExpeditedVotingPeriod: config.PropDepositBlocks + numVal*config.PropVoteBlocks + config.PropBufferBlocks - 2,
+		AppStateBytes:         appStateBytes,
 		t:                     t,
 		containerManager:      containerManager,
 	}

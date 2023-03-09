@@ -50,3 +50,9 @@ func (k Keeper) SetVestingType(ctx sdk.Context, vestingType types.VestingType) {
 	av := k.cdc.MustMarshal(&vestingType)
 	store.Set([]byte(vestingType.Name), av)
 }
+
+// get the vesting type by name
+func (k Keeper) RemoveVestingType(ctx sdk.Context, name string) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.VestingTypesKeyPrefix)
+	store.Delete([]byte(name))
+}

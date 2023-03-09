@@ -2,13 +2,14 @@ package app
 
 import (
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/app/upgrades"
 	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
 	v120 "github.com/chain4energy/c4e-chain/app/upgrades/v120"
-	"io"
-	"os"
-	"path/filepath"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -393,7 +394,7 @@ func New(
 		app.GetSubspace(crisistypes.ModuleName),
 		invCheckPeriod,
 		app.BankKeeper,
-		authtypes.FeeCollectorName, // TODO verify if authtypes.FeeCollectorName  is ok
+		authtypes.FeeCollectorName,
 	)
 
 	groupConfig := group.DefaultConfig()

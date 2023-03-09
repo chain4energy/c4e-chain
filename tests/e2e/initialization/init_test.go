@@ -48,7 +48,7 @@ func TestChainInit(t *testing.T) {
 		dataDir, err = os.MkdirTemp("", "chain4energy-e2e-testnet-test")
 	)
 
-	chain, err := initialization.InitChain(id, dataDir, nodeConfigs, time.Second*3, time.Second, forkHeight)
+	chain, err := initialization.InitChain(id, dataDir, nodeConfigs, time.Second*3, time.Second, forkHeight, nil)
 	require.NoError(t, err)
 
 	require.Equal(t, chain.ChainMeta.DataDir, dataDir)
@@ -106,7 +106,7 @@ func TestSingleNodeInit(t *testing.T) {
 	)
 
 	// Setup
-	existingChain, err := initialization.InitChain(id, dataDir, existingChainNodeConfigs, time.Second*3, time.Second, forkHeight)
+	existingChain, err := initialization.InitChain(id, dataDir, existingChainNodeConfigs, time.Second*3, time.Second, forkHeight, nil)
 	require.NoError(t, err)
 
 	actualNode, err := initialization.InitSingleNode(existingChain.ChainMeta.Id, dataDir, filepath.Join(existingChain.Nodes[0].ConfigDir, "config", "genesis.json"), expectedConfig, 3, "testHash", []string{"some server"}, []string{"some server"})

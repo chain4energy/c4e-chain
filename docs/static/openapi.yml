@@ -658,6 +658,44 @@ paths:
           type: string
       tags:
         - Query
+  /c4e/vesting/v1beta1/genesis_summary:
+    get:
+      summary: Queries a list of GenesisVestingsSummary items.
+      operationId: Chain4EnergyC4EchainCfevestingGenesisVestingsSummary
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              vesting_all_amount:
+                type: string
+              vesting_in_pools_amount:
+                type: string
+              vesting_in_accounts_amount:
+                type: string
+              delegated_vesting_amount:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /c4e/vesting/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -46355,7 +46393,13 @@ definitions:
     type: object
   chain4energy.c4echain.cfevesting.MsgCreateVestingPoolResponse:
     type: object
+  chain4energy.c4echain.cfevesting.MsgMoveAvailableVestingByDenomsResponse:
+    type: object
+  chain4energy.c4echain.cfevesting.MsgMoveAvailableVestingResponse:
+    type: object
   chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:
+    type: object
+  chain4energy.c4echain.cfevesting.MsgSplitVestingResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
     type: object
@@ -46368,6 +46412,17 @@ definitions:
       denom:
         type: string
     description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfevesting.QueryGenesisVestingsSummaryResponse:
+    type: object
+    properties:
+      vesting_all_amount:
+        type: string
+      vesting_in_pools_amount:
+        type: string
+      vesting_in_accounts_amount:
+        type: string
+      delegated_vesting_amount:
+        type: string
   chain4energy.c4echain.cfevesting.QueryParamsResponse:
     type: object
     properties:

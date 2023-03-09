@@ -1,9 +1,11 @@
 package keeper
 
 import (
-	"cosmossdk.io/math"
+	"fmt"
 	"strconv"
 	"time"
+
+	"cosmossdk.io/math"
 
 	metrics "github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -241,7 +243,12 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 	}
 	if err == nil {
 		k.SetAccountVestingPools(ctx, accVestingPools)
-		k.AppendVestingAccount(ctx, types.VestingAccount{Address: toAddr})
+		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
+			Address:            toAddr,
+			Genesis:            false,
+			FromGenesisPool:    vestingPool.GenesisPool,
+			FromGenesisAccount: false,
+		})
 
 		eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
 			Owner:           owner,
@@ -299,25 +306,10 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 		return sdkerrors.Wrapf(types.ErrAlreadyExists, "create vesting account - account address: %s", toAddress)
 	}
 
-	baseAccount := ak.NewAccountWithAddress(ctx, to)
-	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
-		k.Logger(ctx).Debug("create vesting account invalid account type; expected: BaseAccount", "notExpectedAccount", baseAccount)
-		return sdkerrors.Wrapf(types.ErrInvalidAccountType, "create vesting account - expected BaseAccount, got: %T", baseAccount)
-	}
-
-	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), amount.Sort(), endTime)
-
-	acc := vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime)
-
-	ak.SetAccount(ctx, acc)
-	k.Logger(ctx).Debug("create vesting account", "baseAccount", baseVestingAccount.BaseAccount, "originalVesting",
-		baseVestingAccount.OriginalVesting, "delegatedFree", baseVestingAccount.DelegatedFree, "delegatedVesting",
-		baseVestingAccount.DelegatedVesting, "endTime", baseVestingAccount.EndTime, "startTime", startTime)
-	err = ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
-		Address: acc.Address,
-	})
+	acc, err := k.newContinuousVestingAccount(ctx, to, amount.Sort(), startTime, endTime)
 	if err != nil {
-		k.Logger(ctx).Error("new vestig account emit event error", "error", err.Error())
+		k.Logger(ctx).Debug("create vesting account - to account creation error", "error", err.Error())
+		return sdkerrors.Wrap(err, fmt.Sprintf("new vesting account - to account creation error: %s", toAddress))
 	}
 
 	err = bk.SendCoins(ctx, from, to, amount)
@@ -328,7 +320,6 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 			"create vesting account - send coins to vesting account error (from: %s, to: %s, amount: %s)", fromAddress, toAddress, amount).Error())
 	}
 
-	k.AppendVestingAccount(ctx, types.VestingAccount{Address: acc.Address})
 	k.Logger(ctx).Debug("append vesting account", "address", acc.Address)
 	return nil
 }
@@ -371,37 +362,20 @@ func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount math
 		return sdkerrors.Wrapf(types.ErrAlreadyExists, "new vesting account - account address: %s", toAddress)
 	}
 
-	baseAccount := ak.NewAccountWithAddress(ctx, to)
-	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
-		k.Logger(ctx).Debug("new vesting account invalid account type; expected: BaseAccount", "toAddress", toAddress, "notExpectedAccount", baseAccount)
-		return sdkerrors.Wrapf(types.ErrInvalidAccountType, "new vesting account - expected BaseAccount, got: %T", baseAccount)
-	}
-
 	decimalAmount := sdk.NewDecFromInt(amount)
 	originalVestingAmount := decimalAmount.Sub(decimalAmount.Mul(free)).TruncateInt()
 	originalVestingCoin := sdk.NewCoin(denom, originalVestingAmount)
 	originalVesting := sdk.NewCoins(originalVestingCoin)
-
-	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), originalVesting.Sort(), vestingEnd.Unix())
-
-	var acc authtypes.AccountI
 
 	startTime := lockEnd
 	if lockEnd.Before(ctx.BlockTime()) {
 		startTime = ctx.BlockTime()
 	}
 
-	acc = vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime.Unix())
-
-	ak.SetAccount(ctx, acc)
-	k.Logger(ctx).Debug("new vesting account", "baseAccount", baseVestingAccount.BaseAccount, "baseVestingAccount",
-		baseVestingAccount, "startTime", startTime.Unix())
-
-	err = ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
-		Address: acc.GetAddress().String(),
-	})
+	_, err = k.newContinuousVestingAccount(ctx, to, originalVesting, startTime.Unix(), vestingEnd.Unix())
 	if err != nil {
-		k.Logger(ctx).Error("new vesting account emit event error", "error", err.Error())
+		k.Logger(ctx).Debug("new vesting account - to account creation error", "error", err.Error())
+		return sdkerrors.Wrap(err, fmt.Sprintf("new vesting account - to account creation error: %s", toAddress))
 	}
 
 	coinsToSend := sdk.NewCoins(coinToSend)
@@ -413,4 +387,26 @@ func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress string, amount math
 	}
 
 	return nil
+}
+
+func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, originalVesting sdk.Coins, startTime int64, vestingEnd int64) (*vestingtypes.ContinuousVestingAccount, error) {
+	baseAccount := k.account.NewAccountWithAddress(ctx, to)
+	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
+		k.Logger(ctx).Debug("new continuous vesting account invalid account type; expected: BaseAccount", "toAddress", to, "notExpectedAccount", baseAccount)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidAccountType, "new continuous vesting account - expected BaseAccount, got: %T", baseAccount)
+	}
+	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), originalVesting.Sort(), vestingEnd)
+
+	acc := vestingtypes.NewContinuousVestingAccountRaw(baseVestingAccount, startTime)
+	defer telemetry.IncrCounter(1, "new", "account")
+	k.account.SetAccount(ctx, acc)
+	k.Logger(ctx).Debug("new continuous vesting account", "baseAccount", baseVestingAccount.BaseAccount, "baseVestingAccount",
+		baseVestingAccount, "startTime", startTime)
+	err := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
+		Address: acc.Address,
+	})
+	if err != nil {
+		k.Logger(ctx).Error("new vestig account emit event error", "error", err.Error())
+	}
+	return acc, nil
 }

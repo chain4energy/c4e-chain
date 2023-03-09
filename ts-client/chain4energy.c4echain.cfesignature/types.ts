@@ -1,5 +1,5 @@
-import { Params } from "./types/c4e-chain/cfesignature/params"
-import { Signature } from "./types/c4e-chain/cfesignature/signature"
+import { Params } from "./types/c4echain/cfesignature/params"
+import { Signature } from "./types/c4echain/cfesignature/signature"
 
 
 export {     

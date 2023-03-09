@@ -33,6 +33,27 @@ func TestSendVestingAccount(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
+func TestSendVestingAccountFromGenesisPool(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateGenesisVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+
+	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, vPool1, sdk.NewInt(100), true, sdk.NewInt(95))
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
 func TestSendVestingAccountJustBeforeLockEnd(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := app.SetupTestAppWithHeight(t, 1000)

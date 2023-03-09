@@ -4,14 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"io"
 	"net/http"
 	"time"
 
+	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
 	"github.com/stretchr/testify/require"
 	tmabcitypes "github.com/tendermint/tendermint/abci/types"
 
@@ -173,6 +176,15 @@ func (n *NodeConfig) QueryVestingPools(address string) []*cfevestingmoduletypes.
 	return response.VestingPools
 }
 
+func (n *NodeConfig) QueryVestingPoolsNotFound(address string) {
+	path := "/c4e/vesting/v1beta1/vesting_pools/" + address
+
+	_, err := n.QueryGRPCGateway(path)
+	require.Error(n.t, err)
+	require.EqualError(n.t, err, "unexpected status code: 404, body: {\n  \"code\": 5,\n  \"message\": \"vesting pools not found\",\n  \"details\": [\n  ]\n}")
+
+}
+
 func (n *NodeConfig) QueryVestingTypes() []cfevestingmoduletypes.GenesisVestingType {
 	path := "/c4e/vesting/v1beta1/vesting_type"
 
@@ -189,4 +201,29 @@ func (n *NodeConfig) QueryFailedProposal(proposalNumber int) {
 	_, err := n.QueryGRPCGateway(path)
 	fmt.Println(err)
 	require.Error(n.t, err)
+}
+
+func (n *NodeConfig) QueryAccount(address string) authtypes.AccountI {
+	path := "/cosmos/auth/v1beta1/accounts/" + address
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response authtypes.QueryAccountResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	acc := response.Account
+	if acc == nil {
+		return nil
+	}
+	return acc.GetCachedValue().(authtypes.AccountI)
+}
+
+func (n *NodeConfig) QueryAccountNotFound(address string) {
+	path := "/cosmos/auth/v1beta1/accounts/" + address
+
+	_, err := n.QueryGRPCGateway(path)
+	require.Error(n.t, err)
+	require.EqualError(n.t, err, "unexpected status code: 404, body: {\n  \"code\": 5,\n  \"message\": \"account "+address+" not found\",\n  \"details\": [\n  ]\n}")
+
 }

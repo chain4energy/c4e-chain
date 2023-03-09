@@ -1,12 +1,13 @@
 package cfevesting_test
 
 import (
-	"cosmossdk.io/math"
 	"fmt"
+	"testing"
+
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"testing"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -16,9 +17,9 @@ import (
 
 func TestGenesisWholeApp(t *testing.T) {
 	genesisState := types.GenesisState{
-		Params:              types.NewParams("uc4e"),
-		VestingAccountList:  []types.VestingAccount{},
-		VestingAccountCount: 0,
+		Params:                   types.NewParams("uc4e"),
+		VestingAccountTraces:     []types.VestingAccountTrace{},
+		VestingAccountTraceCount: 0,
 		// this line is used by starport scaffolding # genesis/test/state
 		VestingTypes: []types.GenesisVestingType{},
 	}
@@ -33,7 +34,7 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 	vestingTypesArray := testutils.GenerateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
 		Params: types.NewParams("uc4e"),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[0].String(),
@@ -43,8 +44,8 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 2,
-		VestingTypes:        vestingTypesArray,
+		VestingAccountTraceCount: 2,
+		VestingTypes:             vestingTypesArray,
 	}
 
 	testHelper := app.SetupTestApp(t)
@@ -56,10 +57,10 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 func TestGenesisVestingTypes(t *testing.T) {
 	vestingTypesArray := testutils.GenerateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
-		Params:              types.NewParams("uc4e"),
-		VestingAccountList:  []types.VestingAccount{},
-		VestingAccountCount: 0,
-		VestingTypes:        vestingTypesArray,
+		Params:                   types.NewParams("uc4e"),
+		VestingAccountTraces:     []types.VestingAccountTrace{},
+		VestingAccountTraceCount: 0,
+		VestingTypes:             vestingTypesArray,
 	}
 
 	testHelper := app.SetupTestApp(t)
@@ -117,10 +118,10 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	vestingTypesArray[0].VestingPeriodUnit = srcUnits
 	vestingTypesArray[0].Free = sdk.ZeroDec()
 	genesisState := types.GenesisState{
-		Params:              types.NewParams("uc4e"),
-		VestingAccountList:  []types.VestingAccount{},
-		VestingAccountCount: 0,
-		VestingTypes:        vestingTypesArray,
+		Params:                   types.NewParams("uc4e"),
+		VestingAccountTraces:     []types.VestingAccountTrace{},
+		VestingAccountTraceCount: 0,
+		VestingTypes:             vestingTypesArray,
 	}
 
 	testHelper := app.SetupTestApp(t)

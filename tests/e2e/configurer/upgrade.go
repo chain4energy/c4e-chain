@@ -3,10 +3,11 @@ package configurer
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/app/params"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/chain4energy/c4e-chain/app/params"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -19,6 +20,7 @@ import (
 type UpgradeSettings struct {
 	IsEnabled bool
 	Version   string
+	OldInitialAppStateBytes []byte
 }
 
 type UpgradeConfigurer struct {
@@ -62,7 +64,7 @@ func (uc *UpgradeConfigurer) ConfigureChain(chainConfig *chain.Config) error {
 		return err
 	}
 
-	chainInitResource, err := uc.containerManager.RunChainInitResource(chainConfig.Id, int(chainConfig.VotingPeriod), int(chainConfig.ExpeditedVotingPeriod), validatorConfigBytes, tmpDir)
+	chainInitResource, err := uc.containerManager.RunChainInitResource(chainConfig.Id, int(chainConfig.VotingPeriod), int(chainConfig.ExpeditedVotingPeriod), validatorConfigBytes, tmpDir, chainConfig.AppStateBytes)
 	if err != nil {
 		return err
 	}

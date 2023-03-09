@@ -18,14 +18,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 		panic(err)
 	}
 	// Set all the vestingAccount
-	for _, elem := range genState.VestingAccountList {
+	for _, elem := range genState.VestingAccountTraces {
 		k.Logger(ctx).Debug("set vesting account", "vestingAccount", elem)
-		k.SetVestingAccount(ctx, elem)
+		k.SetVestingAccountTrace(ctx, elem)
 	}
 
 	// Set vestingAccount count
-	k.SetVestingAccountCount(ctx, genState.VestingAccountCount)
-	k.Logger(ctx).Debug("set vesting account count", "vestingAccountCount", genState.VestingAccountCount)
+	k.SetVestingAccountTraceCount(ctx, genState.VestingAccountTraceCount)
+	k.Logger(ctx).Debug("set vesting account count", "VestingAccountTraceCount", genState.VestingAccountTraceCount)
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 	vestingTypes := types.VestingTypes{}
@@ -101,8 +101,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		genesis.AccountVestingPools = append(genesis.AccountVestingPools, &allAccountVestingPools[i])
 	}
 
-	genesis.VestingAccountList = k.GetAllVestingAccount(ctx)
-	genesis.VestingAccountCount = k.GetVestingAccountCount(ctx)
+	genesis.VestingAccountTraces = k.GetAllVestingAccountTrace(ctx)
+	genesis.VestingAccountTraceCount = k.GetVestingAccountTraceCount(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

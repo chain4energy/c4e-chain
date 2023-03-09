@@ -17,6 +17,9 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgWithdrawAllAvailable{}, "cfevesting/WithdrawAllAvailable")
 	legacy.RegisterAminoMsg(cdc, &MsgCreateVestingAccount{}, "cfevesting/CreateVestingAccount")
 	legacy.RegisterAminoMsg(cdc, &MsgSendToVestingAccount{}, "cfevesting/SendToVestingAccount")
+	legacy.RegisterAminoMsg(cdc, &MsgSplitVesting{}, "cfevesting/SplitVesting")
+	legacy.RegisterAminoMsg(cdc, &MsgMoveAvailableVesting{}, "cfevesting/MoveAvailableVesting")
+	legacy.RegisterAminoMsg(cdc, &MsgMoveAvailableVestingByDenoms{}, "cfevesting/MoveAvailableVestingByDenoms")
 
 }
 
@@ -32,6 +35,15 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSendToVestingAccount{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgSplitVesting{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgMoveAvailableVesting{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgMoveAvailableVestingByDenoms{},
 	)
 	// this line is used by starport scaffolding # 3
 

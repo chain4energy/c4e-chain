@@ -1,9 +1,10 @@
-package types
+package types_test
 
 import (
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
@@ -11,18 +12,18 @@ import (
 func TestMsgVest_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgCreateVestingPool
+		msg  types.MsgCreateVestingPool
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgCreateVestingPool{
+			msg: types.MsgCreateVestingPool{
 				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgCreateVestingPool{
+			msg: types.MsgCreateVestingPool{
 				Owner: sample.AccAddress(),
 			},
 		},

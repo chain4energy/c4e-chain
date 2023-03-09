@@ -1,12 +1,15 @@
 package v120_test
 
 import (
-	v110 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v110"
-	v120 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v120"
+	"encoding/binary"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"testing"
 	"time"
+
+	v110 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v110"
+	v120 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v120"
 
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
@@ -15,6 +18,7 @@ import (
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -67,6 +71,17 @@ func TestMigrationAccountVestingPools(t *testing.T) {
 	MigrateV110ToV120(t, testUtil, ctx)
 }
 
+func TestMigrationVestingAccountTraces(t *testing.T) {
+	oldTraces := generateOldVestingAccountTraces(10)
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
+	SetOldVestingAccountTraceCount(ctx, testUtil.StoreKey, testUtil.Cdc, uint64(len(oldTraces)))
+	for _, oldTrace := range oldTraces {
+		SetOldVestingTraceAccount(ctx, testUtil.StoreKey, testUtil.Cdc, oldTrace)
+	}
+
+	MigrateV110ToV120(t, testUtil, ctx)
+}
+
 func SetupOldAccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v110.AccountVestingPools {
 	accountVestingPools := generateOneOldAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
 	accountVestingPools.Address = address
@@ -82,6 +97,8 @@ func setOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cd
 
 func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context) {
 	oldAccPools := getAllOldAccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc)
+	oldVestingAccountTraces := GetAllOldVestingAccountTraces(ctx, testUtil.StoreKey, testUtil.Cdc)
+	oldVestingAccountTracesCount := GetOldVestingAccountTraceCount(ctx, testUtil.StoreKey, testUtil.Cdc)
 	err := v120.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)
 	require.NoError(t, err)
 
@@ -93,10 +110,37 @@ func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 		require.EqualValues(t, len(oldAccPools[i].VestingPools), len(newAccPools[i].VestingPools))
 		for j := 0; j < len(oldAccPools[i].VestingPools); j++ {
 			oldVestingPool := oldAccPools[i].VestingPools[j]
+			expectedVestingPool := types.VestingPool{
+				Name:            oldVestingPool.Name,
+				VestingType:     oldVestingPool.VestingType,
+				LockStart:       oldVestingPool.LockStart,
+				LockEnd:         oldVestingPool.LockEnd,
+				InitiallyLocked: oldVestingPool.InitiallyLocked,
+				Withdrawn:       oldVestingPool.Withdrawn,
+				Sent:            oldVestingPool.Sent,
+				GenesisPool:      false,
+			}
 			newVestingPool := newAccPools[i].VestingPools[j]
-			require.EqualValues(t, oldVestingPool, newVestingPool)
+			require.EqualValues(t, &expectedVestingPool, newVestingPool)
 		}
 	}
+
+	expected := []types.VestingAccountTrace{}
+	for _, oldVestingAccountTrace := range oldVestingAccountTraces {
+		expected = append(expected,
+			types.VestingAccountTrace{
+				Id:                 oldVestingAccountTrace.Id,
+				Address:            oldVestingAccountTrace.Address,
+				Genesis:            false,
+				FromGenesisPool:    false,
+				FromGenesisAccount: false,
+			},
+		)
+	}
+
+	require.Equal(t, oldVestingAccountTracesCount, testUtil.GetC4eVestingKeeper().GetVestingAccountTraceCount(ctx))
+	require.ElementsMatch(t, expected, testUtil.GetC4eVestingKeeper().GetAllVestingAccountTrace(ctx))
+
 }
 
 func getAllOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v110.AccountVestingPools) {
@@ -160,4 +204,61 @@ func generateRandomOldVestingPool(accuntId int, vestingId int) v110.VestingPool 
 		Withdrawn:       sdk.NewInt(int64(withdrawn)),
 		Sent:            sdk.NewInt(int64(sent)),
 	}
+}
+
+func generateOldVestingAccountTraces(amount int) []v110.VestingAccount {
+	traces := []v110.VestingAccount{}
+	for i := 0; i < amount; i++ {
+		traces = append(traces, v110.VestingAccount{Id: uint64(i), Address: fmt.Sprintf("Address-%d", i)})
+	}
+	return traces
+}
+
+func SetOldVestingAccountTraceCount(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, count uint64) {
+	store := prefix.NewStore(ctx.KVStore(storeKey), []byte{})
+	byteKey := []byte(v110.VestingAccountCountKey)
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	store.Set(byteKey, bz)
+}
+
+func SetOldVestingTraceAccount(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, vestingAccount v110.VestingAccount) {
+	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(v110.VestingAccountKey))
+	b := cdc.MustMarshal(&vestingAccount)
+	store.Set(GetOldVestingAccountTraceIDBytes(vestingAccount.Id), b)
+}
+
+func GetOldVestingAccountTraceIDBytes(id uint64) []byte {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, id)
+	return bz
+}
+
+func GetAllOldVestingAccountTraces(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v110.VestingAccount) {
+	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(v110.VestingAccountKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+	list = []v110.VestingAccount{}
+	for ; iterator.Valid(); iterator.Next() {
+		var val v110.VestingAccount
+		cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, val)
+	}
+
+	return
+}
+
+func GetOldVestingAccountTraceCount(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) uint64 {
+	store := prefix.NewStore(ctx.KVStore(storeKey), []byte{})
+	byteKey := types.KeyPrefix(v110.VestingAccountCountKey)
+	bz := store.Get(byteKey)
+
+	// Count doesn't exist: no element
+	if bz == nil {
+		return 0
+	}
+
+	// Parse bytes
+	return binary.BigEndian.Uint64(bz)
 }
