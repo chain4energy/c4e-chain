@@ -2,20 +2,25 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
 )
 
-func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateVestingPool{}, "cfevesting/CreateVestingPool", nil)
-	cdc.RegisterConcrete(&MsgWithdrawAllAvailable{}, "cfevesting/WithdrawAllAvailable", nil)
-	cdc.RegisterConcrete(&MsgCreateVestingAccount{}, "cfevesting/CreateVestingAccount", nil)
-	cdc.RegisterConcrete(&MsgSendToVestingAccount{}, "cfevesting/SendToVestingAccount", nil)
-	cdc.RegisterConcrete(&MsgSplitVesting{}, "cfevesting/SplitVesting", nil)
-	cdc.RegisterConcrete(&MsgMoveAvailableVesting{}, "cfevesting/MoveAvailableVesting", nil)
-	cdc.RegisterConcrete(&MsgMoveAvailableVestingByDenoms{}, "cfevesting/MoveAvailableVestingByDenoms", nil)
-	// this line is used by starport scaffolding # 2
+// RegisterLegacyAminoCodec registers the necessary x/bank interfaces and concrete types
+// on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	legacy.RegisterAminoMsg(cdc, &MsgCreateVestingPool{}, "cfevesting/CreateVestingPool")
+	legacy.RegisterAminoMsg(cdc, &MsgWithdrawAllAvailable{}, "cfevesting/WithdrawAllAvailable")
+	legacy.RegisterAminoMsg(cdc, &MsgCreateVestingAccount{}, "cfevesting/CreateVestingAccount")
+	legacy.RegisterAminoMsg(cdc, &MsgSendToVestingAccount{}, "cfevesting/SendToVestingAccount")
+	legacy.RegisterAminoMsg(cdc, &MsgSplitVesting{}, "cfevesting/SplitVesting")
+	legacy.RegisterAminoMsg(cdc, &MsgMoveAvailableVesting{}, "cfevesting/MoveAvailableVesting")
+	legacy.RegisterAminoMsg(cdc, &MsgMoveAvailableVestingByDenoms{}, "cfevesting/MoveAvailableVestingByDenoms")
+
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -51,6 +56,11 @@ var (
 )
 
 func init() {
-	RegisterCodec(Amino)
-	Amino.Seal()
+	RegisterLegacyAminoCodec(Amino)
+	cryptocodec.RegisterCrypto(Amino)
+	sdk.RegisterLegacyAminoCodec(Amino)
+
+	// Register all Amino interfaces and concrete types on the authz Amino codec so that this can later be
+	// used to properly serialize MsgGrant and MsgExec instances
+	RegisterLegacyAminoCodec(authzcodec.Amino)
 }
