@@ -1,24 +1,24 @@
 package types
 
 import (
-	"cosmossdk.io/errors"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-const TypeMsgUpdateDenom = "update_denom"
+const TypeMsgUpdateDenomParam = "update_denom_param"
 
-var _ sdk.Msg = &MsgUpdateDenom{}
+var _ sdk.Msg = &MsgUpdateDenomParam{}
 
-func (msg *MsgUpdateDenom) Route() string {
+func (msg *MsgUpdateDenomParam) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUpdateDenom) Type() string {
-	return TypeMsgUpdateDenom
+func (msg *MsgUpdateDenomParam) Type() string {
+	return TypeMsgUpdateDenomParam
 }
 
-func (msg *MsgUpdateDenom) GetSigners() []sdk.AccAddress {
+func (msg *MsgUpdateDenomParam) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -26,17 +26,16 @@ func (msg *MsgUpdateDenom) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgUpdateDenom) GetSignBytes() []byte {
+func (msg *MsgUpdateDenomParam) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgUpdateDenom) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Authority)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+func (msg *MsgUpdateDenomParam) ValidateBasic() error {
+	if msg.Authority != appparams.GetAuthority() {
+		return govtypes.ErrInvalidSigner
 	}
-	err = Params{Denom: msg.Denom}.Validate()
+	err := Params{Denom: msg.Denom}.Validate()
 	if err != nil {
 		return err
 	}

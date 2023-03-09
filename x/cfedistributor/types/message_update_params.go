@@ -2,12 +2,12 @@ package types
 
 import (
 	"cosmossdk.io/errors"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-const TypeMsgUpdateAllSubDistributors = "update_all_subdistributors"
+const TypeMsgUpdateAllSubDistributorsParams = "update_all_subdistributors_params"
 
 var _ sdk.Msg = &MsgUpdateAllSubDistributorsParams{}
 
@@ -16,7 +16,7 @@ func (msg *MsgUpdateAllSubDistributorsParams) Route() string {
 }
 
 func (msg *MsgUpdateAllSubDistributorsParams) Type() string {
-	return TypeMsgUpdateAllSubDistributors
+	return TypeMsgUpdateAllSubDistributorsParams
 }
 
 func (msg *MsgUpdateAllSubDistributorsParams) GetSigners() []sdk.AccAddress {
@@ -33,19 +33,17 @@ func (msg *MsgUpdateAllSubDistributorsParams) GetSignBytes() []byte {
 }
 
 func (msg *MsgUpdateAllSubDistributorsParams) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Authority)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	if msg.Authority != appparams.GetAuthority() {
+		return govtypes.ErrInvalidSigner
 	}
-
-	err = Params{SubDistributors: msg.SubDistributors}.Validate()
+	err := Params{SubDistributors: msg.SubDistributors}.Validate()
 	if err != nil {
-		errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
 	}
 	return nil
 }
 
-const TypeMsgUpdateSubDistributor = "update_single_subdistributor"
+const TypeMsgUpdateSubDistributorParam = "update_single_subdistributor_param"
 
 var _ sdk.Msg = &MsgUpdateSubDistributorParam{}
 
@@ -54,7 +52,7 @@ func (msg *MsgUpdateSubDistributorParam) Route() string {
 }
 
 func (msg *MsgUpdateSubDistributorParam) Type() string {
-	return TypeMsgUpdateSubDistributor
+	return TypeMsgUpdateSubDistributorParam
 }
 
 func (msg *MsgUpdateSubDistributorParam) GetSigners() []sdk.AccAddress {
@@ -71,19 +69,17 @@ func (msg *MsgUpdateSubDistributorParam) GetSignBytes() []byte {
 }
 
 func (msg *MsgUpdateSubDistributorParam) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Authority)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	if msg.Authority != appparams.GetAuthority() {
+		return govtypes.ErrInvalidSigner
 	}
 
-	err = msg.SubDistributor.Validate()
-	if err != nil {
-		errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
+	if err := msg.SubDistributor.Validate(); err != nil {
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
 	}
 	return nil
 }
 
-const TypeMsgUpdateSubDistributorBurnShare = "update_sub_distributor_burn_share"
+const TypeMsgUpdateSubDistributorBurnShareParam = "update_sub_distributor_burn_share_param"
 
 var _ sdk.Msg = &MsgUpdateSubDistributorBurnShareParam{}
 
@@ -92,7 +88,7 @@ func (msg *MsgUpdateSubDistributorBurnShareParam) Route() string {
 }
 
 func (msg *MsgUpdateSubDistributorBurnShareParam) Type() string {
-	return TypeMsgUpdateSubDistributorBurnShare
+	return TypeMsgUpdateSubDistributorBurnShareParam
 }
 
 func (msg *MsgUpdateSubDistributorBurnShareParam) GetSigners() []sdk.AccAddress {
@@ -109,23 +105,22 @@ func (msg *MsgUpdateSubDistributorBurnShareParam) GetSignBytes() []byte {
 }
 
 func (msg *MsgUpdateSubDistributorBurnShareParam) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Authority)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	if msg.Authority != appparams.GetAuthority() {
+		return govtypes.ErrInvalidSigner
 	}
 	if msg.SubDistributorName == "" {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "empty destination name")
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "empty sub distributor name")
 	}
 	if msg.BurnShare.IsNil() {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "burn share cannot be nil")
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "burn share cannot be nil")
 	}
 	if msg.BurnShare.GTE(sdk.NewDec(maxShare)) || msg.BurnShare.IsNegative() {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "burn share must be between 0 and 1")
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "burn share must be between 0 and 1")
 	}
 	return nil
 }
 
-const TypeMsgUpdateSubDistributorDestinationShare = "update_sub_distributor_destination_share"
+const TypeMsgUpdateSubDistributorDestinationShareParam = "update_sub_distributor_destination_share_param"
 
 var _ sdk.Msg = &MsgUpdateSubDistributorBurnShareParam{}
 
@@ -134,7 +129,7 @@ func (msg *MsgUpdateSubDistributorDestinationShareParam) Route() string {
 }
 
 func (msg *MsgUpdateSubDistributorDestinationShareParam) Type() string {
-	return TypeMsgUpdateSubDistributorDestinationShare
+	return TypeMsgUpdateSubDistributorDestinationShareParam
 }
 
 func (msg *MsgUpdateSubDistributorDestinationShareParam) GetSigners() []sdk.AccAddress {
@@ -151,21 +146,20 @@ func (msg *MsgUpdateSubDistributorDestinationShareParam) GetSignBytes() []byte {
 }
 
 func (msg *MsgUpdateSubDistributorDestinationShareParam) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Authority)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: (%s)", err)
+	if msg.Authority != appparams.GetAuthority() {
+		return govtypes.ErrInvalidSigner
+	}
+	if msg.SubDistributorName == "" {
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "empty sub distributor name")
 	}
 	if msg.DestinationName == "" {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "empty destination name")
-	}
-	if msg.DestinationName == "" {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "empty destination name")
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "empty destination name")
 	}
 	if msg.Share.IsNil() {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "share cannot be nil")
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "share cannot be nil")
 	}
 	if msg.Share.GTE(sdk.NewDec(maxShare)) || msg.Share.IsNegative() {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "share must be between 0 and 1")
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "share must be between 0 and 1")
 	}
 	return nil
 }

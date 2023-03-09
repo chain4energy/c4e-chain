@@ -21,7 +21,7 @@ service Msg {
   rpc SplitVesting(MsgSplitVesting) returns (MsgSplitVestingResponse);
   rpc MoveAvailableVesting(MsgMoveAvailableVesting) returns (MsgMoveAvailableVestingResponse);
   rpc MoveAvailableVestingByDenoms(MsgMoveAvailableVestingByDenoms) returns (MsgMoveAvailableVestingByDenomsResponse);
-  rpc UpdateDenom(MsgUpdateDenom) returns (MsgUpdateDenomResponse);
+  rpc UpdateDenomParam(MsgUpdateDenomParam) returns (MsgUpdateDenomParamResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -115,11 +115,11 @@ message MsgMoveAvailableVestingByDenomsResponse {
 
 // this line is used by starport scaffolding # proto/tx/message
 
-message MsgUpdateDenom {
+message MsgUpdateDenomParam {
   // authority is the address of the governance account.
   string authority = 1;
   string denom = 2;
 
 }
 
-message MsgUpdateDenomResponse {}
+message MsgUpdateDenomParamResponse {}

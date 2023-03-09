@@ -46039,7 +46039,7 @@ definitions:
     type: object
   chain4energy.c4echain.cfevesting.MsgSplitVestingResponse:
     type: object
-  chain4energy.c4echain.cfevesting.MsgUpdateDenomResponse:
+  chain4energy.c4echain.cfevesting.MsgUpdateDenomParamResponse:
     type: object
   chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
     type: object

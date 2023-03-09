@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) UpdateDenom(goCtx context.Context, msg *types.MsgUpdateDenom) (*types.MsgUpdateDenomResponse, error) {
+func (k msgServer) UpdateDenomParam(goCtx context.Context, msg *types.MsgUpdateDenomParam) (*types.MsgUpdateDenomParamResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "Update vesting denom")
 
 	if k.authority != msg.Authority {
@@ -28,5 +28,5 @@ func (k msgServer) UpdateDenom(goCtx context.Context, msg *types.MsgUpdateDenom)
 		return nil, errors.Wrap(govtypes.ErrInvalidProposalMsg, err.Error())
 	}
 
-	return &types.MsgUpdateDenomResponse{}, nil
+	return &types.MsgUpdateDenomParamResponse{}, nil
 }
