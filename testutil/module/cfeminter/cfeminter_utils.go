@@ -7,8 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
 
-	"testing"
-
 	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/chain4energy/c4e-chain/x/cfeminter"
 	cfemintermodulekeeper "github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
@@ -28,13 +26,13 @@ func NewC4eMinterKeeperUtils(t *testing.T, helperCfevestingKeeper *cfemintermodu
 }
 
 type C4eMinterUtils struct {
-	t                     *testing.T
+	t                     require.TestingT
 	helperCfeminterKeeper *cfemintermodulekeeper.Keeper
 	helperAccountKeeper   *authkeeper.AccountKeeper
 	bankUtils             *testcosmos.BankUtils
 }
 
-func NewC4eMinterUtils(t *testing.T, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
+func NewC4eMinterUtils(t require.TestingT, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *testcosmos.BankUtils) C4eMinterUtils {
 	return C4eMinterUtils{t: t, helperCfeminterKeeper: helperCfeminterKeeper, helperAccountKeeper: helperAccountKeeper,
@@ -144,7 +142,7 @@ type ContextC4eMinterUtils struct {
 	testContext testenv.TestContext
 }
 
-func NewContextC4eMinterUtils(t *testing.T, testContext testenv.TestContext, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
+func NewContextC4eMinterUtils(t require.TestingT, testContext testenv.TestContext, helperCfeminterKeeper *cfemintermodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *testcosmos.BankUtils) *ContextC4eMinterUtils {
 	c4eMinterUtils := NewC4eMinterUtils(t, helperCfeminterKeeper, helperAccountKeeper, bankUtils)

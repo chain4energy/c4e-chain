@@ -2,14 +2,14 @@ package cfevesting
 
 import (
 	// "math"
-	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	"github.com/stretchr/testify/require"
 	"math/rand"
 	"reflect"
 	"strconv"
-	"testing"
 	"time"
+
+	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/stretchr/testify/require"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -17,7 +17,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools, actual types.AccountVestingPools) {
+func AssertAccountVestingPools(t require.TestingT, expected types.AccountVestingPools, actual types.AccountVestingPools) {
 
 	numOfFields := reflect.TypeOf(types.AccountVestingPools{}).NumField()
 	j := 0
@@ -45,13 +45,15 @@ func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools,
 		j++
 		require.EqualValues(t, expectedVesting.Sent, actualVesting.Sent)
 		j++
+		require.EqualValues(t, expectedVesting.GenesisPool, actualVesting.GenesisPool)
+		j++
 		require.EqualValues(t, numOfFields, j)
 
 	}
 
 }
 
-func AssertAccountVestingPoolsArrays(t *testing.T, expected []*types.AccountVestingPools, actual []*types.AccountVestingPools) {
+func AssertAccountVestingPoolsArrays(t require.TestingT, expected []*types.AccountVestingPools, actual []*types.AccountVestingPools) {
 	require.EqualValues(t, len(expected), len(actual))
 
 	for _, accVest := range expected {
@@ -126,6 +128,7 @@ func generateRandomVestingPool(accuntId int, vestingId int) types.VestingPool {
 		InitiallyLocked: sdk.NewInt(int64(initiallyLocked)),
 		Withdrawn:       sdk.NewInt(int64(withdrawn)),
 		Sent:            sdk.NewInt(int64(sent)),
+		GenesisPool:      rgen.Int()%2 == 0,
 	}
 }
 
@@ -138,6 +141,7 @@ func generate10BasedVestingPool(accuntId int, vestingId int) types.VestingPool {
 		InitiallyLocked: sdk.NewInt(1000000),
 		Withdrawn:       sdk.ZeroInt(),
 		Sent:            sdk.ZeroInt(),
+		GenesisPool:      true,
 	}
 }
 

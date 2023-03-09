@@ -1,6 +1,7 @@
 syntax = "proto3";
 package chain4energy.c4echain.cfevesting;
 
+import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/duration.proto";
 import "c4echain/cfevesting/params.proto";
@@ -18,6 +19,9 @@ service Msg {
   rpc WithdrawAllAvailable(MsgWithdrawAllAvailable) returns (MsgWithdrawAllAvailableResponse);
   rpc CreateVestingAccount(MsgCreateVestingAccount) returns (MsgCreateVestingAccountResponse);
   rpc SendToVestingAccount(MsgSendToVestingAccount) returns (MsgSendToVestingAccountResponse);
+  rpc SplitVesting(MsgSplitVesting) returns (MsgSplitVestingResponse);
+  rpc MoveAvailableVesting(MsgMoveAvailableVesting) returns (MsgMoveAvailableVestingResponse);
+  rpc MoveAvailableVestingByDenoms(MsgMoveAvailableVestingByDenoms) returns (MsgMoveAvailableVestingByDenomsResponse);
   rpc UpdateDenom(MsgUpdateDenom) returns (MsgUpdateDenomResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
@@ -82,6 +86,33 @@ message MsgSendToVestingAccount {
 }
 
 message MsgSendToVestingAccountResponse {}
+
+message MsgSplitVesting {
+  string from_address = 1;
+  string to_address = 2;
+  repeated cosmos.base.v1beta1.Coin amount = 3
+  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+}
+
+message MsgSplitVestingResponse {
+}
+
+message MsgMoveAvailableVesting {
+  string from_address = 1;
+  string to_address = 2;
+}
+
+message MsgMoveAvailableVestingResponse {
+}
+
+message MsgMoveAvailableVestingByDenoms {
+  string from_address = 1;
+  string to_address = 2;
+  repeated string denoms = 3;
+}
+
+message MsgMoveAvailableVestingByDenomsResponse {
+}
 
 // this line is used by starport scaffolding # proto/tx/message
 

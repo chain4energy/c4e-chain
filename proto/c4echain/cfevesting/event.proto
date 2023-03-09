@@ -28,3 +28,8 @@ message WithdrawAvailable{
   string vesting_pool_name = 2;
   string amount = 3;
 }
+
+message VestingSplit {
+  string source = 1;
+  string destination = 2;
+}

@@ -211,7 +211,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title c4e-chain/cfeminter/event.proto
+ * @title c4echain/cfeminter/event.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {

@@ -7,7 +7,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (v VestingAccount) Validate() error {
+func (v VestingAccountTrace) Validate() error {
 	_, err := sdk.AccAddressFromBech32(v.Address)
 	return err
+}
+
+func (v VestingAccountTrace) IsGenesisOrFromGenesis() bool {
+	return v.Genesis || v.FromGenesisAccount || v.FromGenesisPool
 }

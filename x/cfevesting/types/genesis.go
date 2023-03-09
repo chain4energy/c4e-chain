@@ -3,6 +3,7 @@ package types
 import (
 	// this line is used by starport scaffolding # genesis/types/import
 	fmt "fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -12,7 +13,7 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		VestingAccountList: []VestingAccount{},
+		VestingAccountTraces: []VestingAccountTrace{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -23,8 +24,8 @@ func DefaultGenesis() *GenesisState {
 func (gs GenesisState) Validate() error {
 	// Check for duplicated ID in vestingAccount
 	vestingAccountIdMap := make(map[uint64]bool)
-	vestingAccountCount := gs.GetVestingAccountCount()
-	for _, elem := range gs.VestingAccountList {
+	vestingAccountCount := gs.GetVestingAccountTraceCount()
+	for _, elem := range gs.VestingAccountTraces {
 		if _, ok := vestingAccountIdMap[elem.Id]; ok {
 			return fmt.Errorf("duplicated id for vestingAccount")
 		}

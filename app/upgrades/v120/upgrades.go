@@ -42,6 +42,14 @@ func CreateUpgradeHandler(
 
 			}
 		}
-		return mm.RunMigrations(ctx, configurator, vm)
+		vmResult, err := mm.RunMigrations(ctx, configurator, vm)
+		if err != nil {
+			return vmResult, err
+		}
+		UpdateVestingAccountTraces(ctx, appKeepers)
+		if err := ModifyVestingPoolsState(ctx, appKeepers); err != nil {
+			return vmResult, err
+		}
+		return vmResult, ModifyVestingAccountsState(ctx, appKeepers)
 	}
 }

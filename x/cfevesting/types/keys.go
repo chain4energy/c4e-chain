@@ -28,6 +28,6 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	VestingAccountKey      = "VestingAccount-value-"
-	VestingAccountCountKey = "VestingAccount-count-"
+	VestingAccountTraceKey      = "VestingAccountTrace-value-"
+	VestingAccountTraceCountKey = "VestingAccountTrace-count-"
 )

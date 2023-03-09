@@ -2,7 +2,6 @@ package cosmossdk
 
 import (
 	"cosmossdk.io/math"
-	"testing"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,25 +24,26 @@ func AddHelperModuleAccountAddr(moduleAccAddrs map[string]bool) map[string]bool 
 }
 
 type BankUtils struct {
-	t                   *testing.T
+	t                   require.TestingT
 	helperAccountKeeper *authkeeper.AccountKeeper
 	helperBankKeeper    bankkeeper.Keeper
 }
 
-func NewBankUtils(t *testing.T, ctx sdk.Context, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) BankUtils {
+func NewBankUtils(t require.TestingT, ctx sdk.Context, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) BankUtils {
 	helperAccountKeeper.GetModuleAccount(ctx, helperModuleAccount)
 	return BankUtils{t: t, helperAccountKeeper: helperAccountKeeper, helperBankKeeper: helperBankKeeper}
 }
 
-func (bu *BankUtils) AddCoinsToAccount(ctx sdk.Context, coinsToMint sdk.Coin, toAddr sdk.AccAddress) {
-	mintedCoins := sdk.NewCoins(coinsToMint)
-	bu.helperBankKeeper.MintCoins(ctx, helperModuleAccount, mintedCoins)
-	bu.helperBankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, mintedCoins)
+func (bu *BankUtils) AddCoinsToAccount(ctx sdk.Context, coinsToMint sdk.Coins, toAddr sdk.AccAddress) {
+	// mintedCoins := sdk.NewCoins(coinsToMint)
+	bu.helperBankKeeper.MintCoins(ctx, helperModuleAccount, coinsToMint)
+	bu.helperBankKeeper.SendCoinsFromModuleToAccount(ctx, helperModuleAccount, toAddr, coinsToMint)
 }
 
 func (bu *BankUtils) AddDefaultDenomCoinsToAccount(ctx sdk.Context, amount math.Int, toAddr sdk.AccAddress) (denom string) {
 	coinsToMint := sdk.NewCoin(testenv.DefaultTestDenom, amount)
-	bu.AddCoinsToAccount(ctx, coinsToMint, toAddr)
+	mintedCoins := sdk.NewCoins(coinsToMint)
+	bu.AddCoinsToAccount(ctx, mintedCoins, toAddr)
 	return testenv.DefaultTestDenom
 }
 
@@ -74,7 +74,14 @@ func (bu *BankUtils) GetAccountBalanceByDenom(ctx sdk.Context, addr sdk.AccAddre
 
 func (bu *BankUtils) GetAccountDefultDenomBalance(ctx sdk.Context, addr sdk.AccAddress) math.Int {
 	return bu.GetAccountBalanceByDenom(ctx, addr, testenv.DefaultTestDenom)
+}
 
+func (bu *BankUtils) GetAccountAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins {
+	return bu.helperBankKeeper.GetAllBalances(ctx, addr)
+}
+
+func (bu *BankUtils) GetAccountLockedCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins {
+	return bu.helperBankKeeper.LockedCoins(ctx, addr)
 }
 
 func (bu *BankUtils) VerifyModuleAccountBalanceByDenom(ctx sdk.Context, accName string, denom string, expectedAmount math.Int) {
@@ -92,6 +99,30 @@ func (bu *BankUtils) VerifyAccountBalanceByDenom(ctx sdk.Context, addr sdk.AccAd
 	require.Truef(bu.t, expectedAmount.Equal(balance.Amount), "expectedAmount %s <> account balance %s", expectedAmount, balance.Amount)
 }
 
+func (bu *BankUtils) VerifyAccountBalances(ctx sdk.Context, addr sdk.AccAddress, expectedBalances sdk.Coins, isAllBalances bool) {
+	balances := bu.helperBankKeeper.GetAllBalances(ctx, addr)
+	if isAllBalances {
+		require.Truef(bu.t, expectedBalances.IsEqual(balances), "expectedBalances %s <> account balances %s", expectedBalances, balances)
+
+	} else {
+		for _, expectedBalance := range expectedBalances {
+			require.Truef(bu.t, expectedBalance.Amount.Equal(balances.AmountOf(expectedBalance.Denom)), "expectedBalance %s <> account balance %s for denom %s", expectedBalance.Amount, balances.AmountOf(expectedBalance.Denom), expectedBalance.Denom)
+		}
+	}
+}
+
+func (bu *BankUtils) VerifyLockedCoins(ctx sdk.Context, addr sdk.AccAddress, expectedLockedCoins sdk.Coins, isAllLocked bool) {
+	balances := bu.helperBankKeeper.LockedCoins(ctx, addr)
+	if isAllLocked {
+		require.Truef(bu.t, expectedLockedCoins.IsEqual(balances), "expectedLockedCoins %s <> account locked coins %s", expectedLockedCoins, balances)
+
+	} else {
+		for _, expectedLockedCoin := range expectedLockedCoins {
+			require.Truef(bu.t, expectedLockedCoin.Amount.Equal(balances.AmountOf(expectedLockedCoin.Denom)), "expectedLockedCoin %s <> account locked coins %s for denom %s", expectedLockedCoin.Amount, balances.AmountOf(expectedLockedCoin.Denom), expectedLockedCoin.Denom)
+		}
+	}
+}
+
 func (bu *BankUtils) VerifyAccountDefultDenomBalance(ctx sdk.Context, addr sdk.AccAddress, expectedAmount math.Int) {
 	bu.VerifyAccountBalanceByDenom(ctx, addr, testenv.DefaultTestDenom, expectedAmount)
 }
@@ -105,17 +136,23 @@ func (bu *BankUtils) VerifyDefultDenomTotalSupply(ctx sdk.Context, expectedAmoun
 	bu.VerifyTotalSupplyByDenom(ctx, testenv.DefaultTestDenom, expectedAmount)
 }
 
+func (bu *BankUtils) DisableSend(ctx sdk.Context) {
+	params := bu.helperBankKeeper.GetParams(ctx)
+	params.DefaultSendEnabled = false
+	bu.helperBankKeeper.SetParams(ctx, params)
+}
+
 type ContextBankUtils struct {
 	BankUtils
 	testContext testenv.TestContext
 }
 
-func NewContextBankUtils(t *testing.T, testContext testenv.TestContext, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) *ContextBankUtils {
+func NewContextBankUtils(t require.TestingT, testContext testenv.TestContext, helperAccountKeeper *authkeeper.AccountKeeper, helperBankKeeper bankkeeper.Keeper) *ContextBankUtils {
 	bankUtils := NewBankUtils(t, testContext.GetContext(), helperAccountKeeper, helperBankKeeper)
 	return &ContextBankUtils{BankUtils: bankUtils, testContext: testContext}
 }
 
-func (bu *ContextBankUtils) AddCoinsToAccount(coinsToMint sdk.Coin, toAddr sdk.AccAddress) {
+func (bu *ContextBankUtils) AddCoinsToAccount(coinsToMint sdk.Coins, toAddr sdk.AccAddress) {
 	bu.BankUtils.AddCoinsToAccount(bu.testContext.GetContext(), coinsToMint, toAddr)
 }
 
@@ -162,5 +199,26 @@ func (bu *ContextBankUtils) GetModuleAccountDefultDenomBalance(accName string) m
 
 func (bu *ContextBankUtils) GetAccountDefultDenomBalance(addr sdk.AccAddress) math.Int {
 	return bu.BankUtils.GetAccountDefultDenomBalance(bu.testContext.GetContext(), addr)
+
+}
+
+func (bu *ContextBankUtils) VerifyAccountBalances(addr sdk.AccAddress, expectedBalances sdk.Coins, isAllBalances bool) {
+	bu.BankUtils.VerifyAccountBalances(bu.testContext.GetContext(), addr, expectedBalances, isAllBalances)
+}
+
+func (bu *ContextBankUtils) VerifyLockedCoins(addr sdk.AccAddress, expectedLockedCoins sdk.Coins, isAllLocked bool) {
+	bu.BankUtils.VerifyLockedCoins(bu.testContext.GetContext(), addr, expectedLockedCoins, isAllLocked)
+}
+
+func (bu *ContextBankUtils) GetAccountAllBalances(addr sdk.AccAddress) sdk.Coins {
+	return bu.BankUtils.GetAccountAllBalances(bu.testContext.GetContext(), addr)
+}
+
+func (bu *ContextBankUtils) GetAccountLockedCoins(addr sdk.AccAddress) sdk.Coins {
+	return bu.BankUtils.GetAccountLockedCoins(bu.testContext.GetContext(), addr)
+}
+
+func (bu *ContextBankUtils) DisableSend() {
+	bu.BankUtils.DisableSend(bu.testContext.GetContext())
 
 }

@@ -34,6 +34,11 @@ service Query {
 	}
 
 // this line is used by starport scaffolding # 2
+
+  // Queries a list of GenesisVestingsSummary items.
+  rpc GenesisVestingsSummary(QueryGenesisVestingsSummaryRequest) returns (QueryGenesisVestingsSummaryResponse) {
+    option (google.api.http).get = "/c4e/vesting/v1beta1/genesis_summary";
+  }
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -99,4 +104,26 @@ message QueryVestingsSummaryResponse {
   ];
 }
 
+
 // this line is used by starport scaffolding # 3
+message QueryGenesisVestingsSummaryRequest {}
+
+message QueryGenesisVestingsSummaryResponse {
+  string vesting_all_amount = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string vesting_in_pools_amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string vesting_in_accounts_amount = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string delegated_vesting_amount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
