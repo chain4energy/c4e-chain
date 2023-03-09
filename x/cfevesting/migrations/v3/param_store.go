@@ -1,4 +1,4 @@
-package v4
+package v3
 
 import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
@@ -8,11 +8,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// MigrateStore migrates the x/bank module state from the consensus version 2 to
+// MigrateParams migrates the x/bank module state from the consensus version 2 to
 // version 3. Specifically, it takes the parameters that are currently stored
 // and managed by the x/params module and stores them directly into the x/bank
 // module state.
-func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace exported.Subspace, cdc codec.BinaryCodec) error {
+func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace exported.Subspace, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	var currParams types.Params
 	legacySubspace.GetParamSet(ctx, &currParams)
@@ -26,7 +26,7 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace 
 		return err
 	}
 
-	store.Set(ParamsKey, bz)
+	store.Set(types.ParamsKey, bz)
 
 	return nil
 }
