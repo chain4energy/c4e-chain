@@ -39,7 +39,7 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {
 	endTime := time.Now().Add(10 * time.Minute).UTC()
 	newMinter := cfemintertypes.MinterConfig{
 		StartTime: time.Now().UTC(),
-		Minters: []*cfemintertypes.Minter{
+		Minters: []*cfemintertypes.LegacyMinter{
 			{
 				SequenceId: 1,
 				Type:       cfemintertypes.LinearMintingType,
@@ -105,7 +105,7 @@ func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {
 
 	newMinter := cfemintertypes.MinterConfig{
 		StartTime: time.Now().UTC(),
-		Minters: []*cfemintertypes.Minter{
+		Minters: []*cfemintertypes.LegacyMinter{
 			{
 				SequenceId: 1,
 				Type:       cfemintertypes.NoMintingType,
@@ -278,7 +278,7 @@ func (s *ParamsSetupSuite) TestCfeminterEmptyDenom() {
 	endTime := time.Now().Add(10 * time.Minute).UTC()
 	newMinterConfig := cfemintertypes.MinterConfig{
 		StartTime: time.Now().UTC(),
-		Minters: []*cfemintertypes.Minter{
+		Minters: []*cfemintertypes.LegacyMinter{
 			{
 				SequenceId: 1,
 				Type:       cfemintertypes.LinearMintingType,
@@ -328,7 +328,7 @@ func (s *ParamsSetupSuite) TestCfeminterNoMinters() {
 	newMinterConfig := cfemintertypes.MinterConfig{
 		StartTime: time.Now().UTC(),
 	}
-	newMinterConfig.Minters = make([]*cfemintertypes.Minter, 1)
+	newMinterConfig.Minters = make([]*cfemintertypes.LegacyMinter, 1)
 
 	newDenomJSON, err := json.Marshal("newDenom")
 	newMinterJSON, err := json.Marshal(newMinterConfig)

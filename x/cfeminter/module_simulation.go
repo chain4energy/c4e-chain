@@ -1,9 +1,7 @@
 package cfeminter
 
 import (
-	"fmt"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -12,7 +10,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"math/rand"
-	"time"
 )
 
 // avoid unused import issue
@@ -30,33 +27,28 @@ const SecondsInYear = int32(3600 * 24 * 365)
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	randAmount := helpers.RandomInt(simState.Rand, 40000000000000)
-	randStepDuration := helpers.RandomInt(simState.Rand, int(31536000*time.Second*4))
-	randomIntBetween := helpers.RandIntBetween(simState.Rand, 1, 100)
-	amountMultiplierFloat := float64(randomIntBetween) / float64(100)
-	randAmountMultiplierFactor := fmt.Sprintf("%f", amountMultiplierFloat)
+	//randAmount := helpers.RandomInt(simState.Rand, 40000000000000)
+	//randStepDuration := helpers.RandomInt(simState.Rand, int(31536000*time.Second*4))
+	//randomIntBetween := helpers.RandIntBetween(simState.Rand, 1, 100)
+	//amountMultiplierFloat := float64(randomIntBetween) / float64(100)
+	//randAmountMultiplierFactor := fmt.Sprintf("%f", amountMultiplierFloat)
 	now := simState.GenTimestamp
 
-	prminter := types.ExponentialStepMinting{
-		Amount:           sdk.NewInt(randAmount),
-		StepDuration:     time.Duration(randStepDuration),
-		AmountMultiplier: sdk.MustNewDecFromStr(randAmountMultiplierFactor),
-	}
+	//prminter := types.ExponentialStepMinting{
+	//	Amount:           sdk.NewInt(randAmount),
+	//	StepDuration:     time.Duration(randStepDuration),
+	//	AmountMultiplier: sdk.MustNewDecFromStr(randAmountMultiplierFactor),
+	//}
 
 	minters := []*types.Minter{
 		{
-			SequenceId:             1,
-			Type:                   types.ExponentialStepMintingType,
-			ExponentialStepMinting: &prminter,
+			SequenceId: 1,
+			Config:     nil,
 		},
 	}
 
-	minterConfig := types.MinterConfig{
-		StartTime: now,
-		Minters:   minters,
-	}
 	genesisState := types.GenesisState{
-		Params: types.NewParams("stake", minterConfig),
+		Params: types.NewParams("stake", now, minters),
 		MinterState: types.MinterState{
 			SequenceId:   1,
 			AmountMinted: sdk.NewInt(0),

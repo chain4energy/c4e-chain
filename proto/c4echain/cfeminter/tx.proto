@@ -6,6 +6,7 @@ import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
 import "c4echain/cfeminter/params.proto";
 import "c4echain/cfeminter/minter.proto";
+import "google/protobuf/timestamp.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -14,22 +15,29 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 // Msg defines the Msg service.
 service Msg {
   // this line is used by starport scaffolding # proto/tx/rpc
-  rpc UpdateMinters(MsgUpdateMinters) returns (MsgUpdateMintersResponse);
-  rpc UpdateMintDenom(MsgUpdateMintDenom) returns (MsgUpdateMintDenomResponse);
+  rpc UpdateMintersParams(MsgUpdateMintersParams) returns (MsgUpdateMintersParamsResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
-message MsgUpdateMinters {
-  // authority is the address of the governance account.
-  string authority = 1;
-
-  repeated Minter minters = 2 [(gogoproto.nullable) = true];
-}
-
-message MsgUpdateMintDenom {
+message MsgUpdateParams {
   string authority = 1;
   string mint_denom = 2;
+  google.protobuf.Timestamp start_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  repeated Minter minters = 4;
 }
 
-message MsgUpdateMintersResponse {}
+message MsgUpdateParamsResponse {}
 
-message MsgUpdateMintDenomResponse{}
+message MsgUpdateMintersParams {
+  string authority = 1;
+  google.protobuf.Timestamp start_time = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  repeated Minter minters = 3;
+}
+
+message MsgUpdateMintersParamsResponse{}

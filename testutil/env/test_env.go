@@ -2,6 +2,8 @@ package env
 
 import (
 	"context"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"time"
@@ -23,3 +25,5 @@ const DefaultDistributionDestination = cfedistributortypes.GreenEnergyBoosterCol
 func GetAuthority() string {
 	return authtypes.NewModuleAddress(govtypes.ModuleName).String()
 }
+
+var NoMintingConfig, _ = codectypes.NewAnyWithValue(&types.NoMinting{})

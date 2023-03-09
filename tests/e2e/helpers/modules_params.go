@@ -88,7 +88,7 @@ var MainnetSubdistributors = []cfedistributortypes.SubDistributor{
 var minterConfigLongEndTime = time.Now().Add(16 * oneYearDuration).UTC()
 var MainnetMinterConfigLong = cfemintertypes.MinterConfig{
 	StartTime: time.Now().UTC(),
-	Minters: []*cfemintertypes.Minter{
+	Minters: []*cfemintertypes.LegacyMinter{
 		{
 			SequenceId: 1,
 			Type:       cfemintertypes.ExponentialStepMintingType,
@@ -105,7 +105,7 @@ var timeNow = time.Now()
 var minterConfigShortEndTime = timeNow.Add(time.Second * 48).UTC()
 var MainnetMinterConfigShort = cfemintertypes.MinterConfig{
 	StartTime: time.Now().UTC(),
-	Minters: []*cfemintertypes.Minter{
+	Minters: []*cfemintertypes.LegacyMinter{
 		{
 			SequenceId: 1,
 			Type:       cfemintertypes.ExponentialStepMintingType,

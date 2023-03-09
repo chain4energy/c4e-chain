@@ -309,11 +309,11 @@ func (m *MinterState) GetLastMintBlockTime() time.Time {
 }
 
 func init() {
-	proto.RegisterType((*Minter)(nil), "chain4energy.c4echain.cfeminter.v1.Minter")
-	proto.RegisterType((*MintingPeriod)(nil), "chain4energy.c4echain.cfeminter.v1.MintingPeriod")
-	proto.RegisterType((*TimeLinearMinter)(nil), "chain4energy.c4echain.cfeminter.v1.TimeLinearMinter")
-	proto.RegisterType((*PeriodicReductionMinter)(nil), "chain4energy.c4echain.cfeminter.v1.PeriodicReductionMinter")
-	proto.RegisterType((*MinterState)(nil), "chain4energy.c4echain.cfeminter.v1.MinterState")
+	proto.RegisterType((*Minter)(nil), "chain4energy.c4echain.cfeminter.v101.Minter")
+	proto.RegisterType((*MintingPeriod)(nil), "chain4energy.c4echain.cfeminter.v101.MintingPeriod")
+	proto.RegisterType((*TimeLinearMinter)(nil), "chain4energy.c4echain.cfeminter.v101.TimeLinearMinter")
+	proto.RegisterType((*PeriodicReductionMinter)(nil), "chain4energy.c4echain.cfeminter.v101.PeriodicReductionMinter")
+	proto.RegisterType((*MinterState)(nil), "chain4energy.c4echain.cfeminter.v101.MinterState")
 }
 
 func init() { proto.RegisterFile("cfeminter/minter.proto", fileDescriptor_1112145d4942e936) }

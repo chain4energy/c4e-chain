@@ -1,24 +1,24 @@
 package types
 
 import (
-	"cosmossdk.io/errors"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-const TypeMsgUpdateMinters = "update_minters"
+const TypeMsgUpdateMintersParams = "update_minters_params"
 
-var _ sdk.Msg = &MsgUpdateMinters{}
+var _ sdk.Msg = &MsgUpdateMintersParams{}
 
-func (msg *MsgUpdateMinters) Route() string {
+func (msg *MsgUpdateMintersParams) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUpdateMinters) Type() string {
-	return TypeMsgUpdateMinters
+func (msg *MsgUpdateMintersParams) Type() string {
+	return TypeMsgUpdateMintersParams
 }
 
-func (msg *MsgUpdateMinters) GetSigners() []sdk.AccAddress {
+func (msg *MsgUpdateMintersParams) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -26,33 +26,39 @@ func (msg *MsgUpdateMinters) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgUpdateMinters) GetSignBytes() []byte {
+func (msg *MsgUpdateMintersParams) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgUpdateMinters) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Authority)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+func (msg *MsgUpdateMintersParams) ValidateBasic() error {
+	if msg.Authority != appparams.GetAuthority() {
+		return govtypes.ErrInvalidSigner
 	}
 
+	params := Params{
+		StartTime: msg.StartTime,
+		Minters:   msg.Minters,
+	}
+	if err := params.ValidateParamsMinters(); err != nil {
+		return err
+	}
 	return nil
 }
 
-const TypeMsgUpdateMintDenom = "update_mint_denom"
+const TypeMsgUpdateParams = "update_params"
 
-var _ sdk.Msg = &MsgUpdateMintDenom{}
+var _ sdk.Msg = &MsgUpdateParams{}
 
-func (msg *MsgUpdateMintDenom) Route() string {
+func (msg *MsgUpdateParams) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUpdateMintDenom) Type() string {
-	return TypeMsgUpdateMintDenom
+func (msg *MsgUpdateParams) Type() string {
+	return TypeMsgUpdateParams
 }
 
-func (msg *MsgUpdateMintDenom) GetSigners() []sdk.AccAddress {
+func (msg *MsgUpdateParams) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -60,15 +66,23 @@ func (msg *MsgUpdateMintDenom) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgUpdateMintDenom) GetSignBytes() []byte {
+func (msg *MsgUpdateParams) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgUpdateMintDenom) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Authority)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+func (msg *MsgUpdateParams) ValidateBasic() error {
+	if msg.Authority != appparams.GetAuthority() {
+		return govtypes.ErrInvalidSigner
+	}
+
+	params := Params{
+		MintDenom: msg.MintDenom,
+		StartTime: msg.StartTime,
+		Minters:   msg.Minters,
+	}
+	if err := params.Validate(); err != nil {
+		return err
 	}
 	return nil
 }

@@ -143,15 +143,15 @@ genesis:
         sequence_id: 1
       params:
         mint_denom: uc4e
-        minter_config:
-          minters:
-          - exponential_step_minting:
-              amount: "160000000000000"
-              amount_multiplier: "0.5"
-              step_duration: 126144000s
-            sequence_id: 1
-            type: EXPONENTIAL_STEP_MINTING
-          start_time: "2022-07-05T00:00:00.00000000Z"
+        start_time: "2022-07-05T00:00:00.00000000Z"
+        minters:
+        - sequence_id: 1
+          config:
+            '@type': "/chain4energy.c4echain.cfeminter.ExponentialStepMinting"
+            amount: "160000000000000"
+            amount_multiplier: "0.5"
+            step_duration: 126144000s
+
     cfevesting:
       account_vesting_pools:
       - owner: c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm

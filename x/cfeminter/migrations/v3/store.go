@@ -1,4 +1,4 @@
-package v2
+package v3
 
 import (
 	"encoding/binary"
@@ -26,11 +26,11 @@ func getOldMinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMi
 }
 
 func setNewMinterState(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterState v1.MinterState) error {
-	newMinterState := types.LegacyMinterState{
+	newMinterState := types.MinterState{
 		SequenceId:                  uint32(oldMinterState.Position),
 		AmountMinted:                oldMinterState.AmountMinted,
 		LastMintBlockTime:           oldMinterState.LastMintBlockTime,
-		RemainderFromPreviousPeriod: oldMinterState.RemainderFromPreviousPeriod,
+		RemainderFromPreviousMinter: oldMinterState.RemainderFromPreviousPeriod,
 		RemainderToMint:             oldMinterState.RemainderToMint,
 	}
 	err := newMinterState.Validate()
@@ -72,11 +72,11 @@ func getOldMinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec)
 func setNewMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterStateHistory []*v1.MinterState) error {
 	prefixStore := prefix.NewStore(store, types.MinterStateHistoryKeyPrefix)
 	for _, oldMinterState := range oldMinterStateHistory {
-		newMinterState := types.LegacyMinterState{
+		newMinterState := types.MinterState{
 			SequenceId:                  uint32(oldMinterState.Position),
 			AmountMinted:                oldMinterState.AmountMinted,
 			LastMintBlockTime:           oldMinterState.LastMintBlockTime,
-			RemainderFromPreviousPeriod: oldMinterState.RemainderFromPreviousPeriod,
+			RemainderFromPreviousMinter: oldMinterState.RemainderFromPreviousPeriod,
 			RemainderToMint:             oldMinterState.RemainderToMint,
 		}
 		err := newMinterState.Validate()
@@ -103,11 +103,6 @@ func migrateMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return setNewMinterStateHistory(store, cdc, oldMinterState)
 }
 
-// MigrateStore performs in-place store migrations from v1.0.1 to v1.1.0
-// The migration includes:
-// - MinterState change type of Position from int32 to uint32.
-// - MinterState rename Position to SequenceId.
-// - History of minter states in KvStore is now identified by SequenceId and its key is set in different way
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	if err := migrateMinterStateHistory(store, cdc); err != nil {

@@ -60,9 +60,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO add unit tests
 	minterState := k.GetMinterState(ctx)
 	params := k.GetParams(ctx)
-
-	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.MinterConfig, &minterState)
-
+	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.Minters, &minterState)
 	if currentMinter == nil {
 		k.Logger(ctx).Error("minter current sequence id not found error", "SequenceId", minterState.SequenceId)
 		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.SequenceId)
@@ -70,14 +68,14 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO 
 
 	var startTime time.Time
 	if previousMinter == nil {
-		startTime = params.MinterConfig.StartTime
+		startTime = params.StartTime
 	} else {
 		startTime = *previousMinter.EndTime
 	}
 
 	supply := k.bankKeeper.GetSupply(ctx, params.MintDenom)
 	result := currentMinter.CalculateInflation(supply.Amount, startTime, ctx.BlockHeader().Time)
-	k.Logger(ctx).Debug("get current inflation", "currentMinter", currentMinter, "previousMinter", previousMinter, "startTime",
+	k.Logger(ctx).Debug("get current inflation", "currentMinter", currentMinter.GetMinterJSON(), "previousMinter", previousMinter.GetMinterJSON(), "startTime",
 		startTime, "supply", supply, "blockTime", ctx.BlockHeader().Time, "result", result)
 	return result, nil
 }

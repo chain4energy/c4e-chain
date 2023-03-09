@@ -292,7 +292,6 @@ func New(
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
-	authorityModuleAddress := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, stakingtypes.StoreKey,
 		distrtypes.StoreKey, slashingtypes.StoreKey,
@@ -513,7 +512,7 @@ func New(
 		app.AccountKeeper,
 		app.DistrKeeper,
 		app.GovKeeper,
-		authorityModuleAddress,
+		appparams.GetAuthority(),
 	)
 	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper,
 		app.StakingKeeper, app.GetSubspace(cfevestingmoduletypes.ModuleName))
@@ -536,9 +535,11 @@ func New(
 		app.BankKeeper,
 		app.StakingKeeper,
 		cfedistributormoduletypes.DistributorMainAccount,
-		authorityModuleAddress,
+		appparams.GetAuthority(),
 	)
-	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper)
+	cfeminterModule := cfemintermodule.NewAppModule(appCodec, app.CfeminterKeeper, app.AccountKeeper, app.BankKeeper,
+		app.GetSubspace(cfemintermoduletypes.ModuleName))
+
 	app.CfedistributorKeeper = *cfedistributormodulekeeper.NewKeeper(
 		appCodec,
 		keys[cfedistributormoduletypes.StoreKey],
@@ -546,7 +547,7 @@ func New(
 		app.GetSubspace(cfedistributormoduletypes.ModuleName),
 		app.BankKeeper,
 		app.AccountKeeper,
-		authorityModuleAddress,
+		appparams.GetAuthority(),
 	)
 	cfedistributorModule := cfedistributormodule.NewAppModule(appCodec, app.CfedistributorKeeper, app.AccountKeeper,
 		app.BankKeeper, app.GetSubspace(cfedistributormoduletypes.ModuleName))
