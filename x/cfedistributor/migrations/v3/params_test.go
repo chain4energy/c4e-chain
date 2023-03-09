@@ -28,16 +28,16 @@ func TestMigrate(t *testing.T) {
 	encCfg := app.MakeEncodingConfig()
 	cdc := encCfg.Marshaler
 
-	storeKey := sdk.NewKVStoreKey(v3.ModuleName)
+	storeKey := sdk.NewKVStoreKey(types.ModuleName)
 	tKey := sdk.NewTransientStoreKey("transient_test")
 	ctx := testutil.DefaultContext(storeKey, tKey)
 	store := ctx.KVStore(storeKey)
 
 	legacySubspace := newMockSubspace(types.DefaultParams())
-	require.NoError(t, v3.MigrateStore(ctx, storeKey, legacySubspace, cdc))
+	require.NoError(t, v3.MigrateParams(ctx, storeKey, legacySubspace, cdc))
 
 	var res types.Params
-	bz := store.Get(v3.ParamsKey)
+	bz := store.Get(types.ParamsKey)
 	require.NoError(t, cdc.Unmarshal(bz, &res))
 	require.Equal(t, legacySubspace.ps, res)
 }

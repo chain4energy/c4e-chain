@@ -29,5 +29,5 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 
 // Migrate2to3 migrates from version 2 to 3.
 func (m Migrator) Migrate2to3(ctx sdk.Context) error {
-	return v3.MigrateStore(ctx, m.keeper.storeKey, m.legacySubspace, m.keeper.cdc)
+	return v3.MigrateParams(ctx, m.keeper.storeKey, m.legacySubspace, m.keeper.cdc)
 }

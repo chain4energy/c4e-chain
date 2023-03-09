@@ -146,11 +146,13 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
 
 	mig := keeper.NewMigrator(am.keeper, am.legacySubspace)
-	err := cfg.RegisterMigration(types.ModuleName, 1, mig.Migrate1to2)
-	err = cfg.RegisterMigration(types.ModuleName, 2, mig.Migrate2to3)
-	if err != nil {
+	if err := cfg.RegisterMigration(types.ModuleName, 1, mig.Migrate1to2); err != nil {
+		panic(err)
+	}
+	if err := cfg.RegisterMigration(types.ModuleName, 2, mig.Migrate2to3); err != nil {
 		panic(err)
 	}
 }

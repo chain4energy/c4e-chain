@@ -9,6 +9,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// MigrateParams migrates the x/cfeminter module state from the consensus version 2 to
+// version 3. Specifically, it takes the parameters that are currently stored
+// and managed by the x/params module and stores them directly into the x/cfeminter
+// module state.
+// The migration also includes:
+// - cfeminter module refactoring
+// - delete type field from minterConfig
+// - minter config is now of type Any rather than using 2 fields (LinearMinting and ExponentialStepMinting)
+// - MinterConfig was deleted and minters and start-time was moved directly to cfeminter params
 func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace exported.Subspace, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	var oldParams types.LegacyParams
