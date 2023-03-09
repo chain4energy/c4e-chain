@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -50,7 +48,6 @@ func (msg *MsgMoveAvailableVestingByDenoms) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid toAddress address (%s)", err)
 	}
 	denomLen := len(msg.Denoms)
-	fmt.Printf("XXXXX: %d\n", denomLen)
 	if denomLen == 0 {
 		return sdkerrors.Wrap(ErrParam, "no denominations")
 	}

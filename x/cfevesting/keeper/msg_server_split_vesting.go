@@ -46,7 +46,7 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 	}
 
 	if err := k.bank.IsSendEnabledCoins(ctx, amount...); err != nil {
-		return err
+		return sdkerrors.Wrapf(types.ErrParam, "send is disabled")
 	}
 
 	to, err := sdk.AccAddressFromBech32(toAddress)
