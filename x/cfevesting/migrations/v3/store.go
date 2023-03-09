@@ -3,6 +3,7 @@ package v3
 import (
 	"encoding/binary"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
+
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"

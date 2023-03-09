@@ -1,13 +1,11 @@
 package cfeminter
 
 import (
-	"testing"
-
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/stretchr/testify/require"
 )
 
-func CompareCfeminterParams(t *testing.T, m1 types.Params, m2 types.Params) {
+func CompareCfeminterParams(t require.TestingT, m1 types.Params, m2 types.Params) {
 	require.True(t, m1.StartTime.Equal(m2.StartTime))
 	require.True(t, m1.MintDenom == m2.MintDenom)
 	for i, p1 := range m1.Minters {
@@ -28,7 +26,7 @@ func CompareCfeminterParams(t *testing.T, m1 types.Params, m2 types.Params) {
 	}
 }
 
-func CompareMinterStates(t *testing.T, expected types.MinterState, state types.MinterState) {
+func CompareMinterStates(t require.TestingT, expected types.MinterState, state types.MinterState) {
 	require.EqualValues(t, expected.SequenceId, state.SequenceId)
 	require.Truef(t, expected.AmountMinted.Equal(state.AmountMinted), "expected.AmountMinted %s <> state.AmountMinted %s", expected.AmountMinted, state.AmountMinted)
 	require.Truef(t, expected.RemainderToMint.Equal(state.RemainderToMint), "expected.RemainderToMint %s <> state.RemainderToMint %s", expected.RemainderToMint, state.RemainderToMint)

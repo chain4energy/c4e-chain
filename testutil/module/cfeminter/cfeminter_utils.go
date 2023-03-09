@@ -5,6 +5,7 @@ import (
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"testing"
 	"time"
 
 	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
