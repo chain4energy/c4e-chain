@@ -21,126 +21,126 @@ import (
 
 func TestMigrationLinearMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV101TimeLinearMinter(sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Hour)
-	V101MintingPeriods := []*v1.MintingPeriod{
+	V1MintingPeriods := []*v1.MintingPeriod{
 		createV100MinterPeriod(1, &endTime, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
 		createV100MinterPeriod(2, nil, "NO_MINTING", nil, nil),
 	}
-	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, false, "")
+	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
+	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, false, "")
 }
 
 func TestMigrationExponentialStepMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	periodicReductionMinter := createV101TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Hour)
-	V101MintingPeriods := []*v1.MintingPeriod{
+	V1MintingPeriods := []*v1.MintingPeriod{
 		createV100MinterPeriod(1, &endTime, "PERIODIC_REDUCTION_MINTER", periodicReductionMinter, nil),
 		createV100MinterPeriod(2, nil, "NO_MINTING", nil, nil),
 	}
-	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, false, "")
+	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
+	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, false, "")
 }
 
 func TestMigrationLinearMintingAndExponentialStepMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV101TimeLinearMinter(sdk.NewInt(10000))
-	periodicReductionMinter := createV101TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
 	endTime2 := endTime1.Add(time.Hour)
-	V101MintingPeriods := []*v1.MintingPeriod{
+	V1MintingPeriods := []*v1.MintingPeriod{
 		createV100MinterPeriod(1, &endTime1, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
 		createV100MinterPeriod(2, &endTime2, "PERIODIC_REDUCTION_MINTER", periodicReductionMinter, nil),
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
-	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, false, "")
+	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
+	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, false, "")
 }
 
 func TestMigrationNoMinters(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
 	startTime := time.Now()
-	V101MintingPeriods := []*v1.MintingPeriod{}
-	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "no minters defined")
+	V1MintingPeriods := []*v1.MintingPeriod{}
+	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
+	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "no minters defined")
 }
 
 func TestMigrationWrongMinterPosition(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV101TimeLinearMinter(sdk.NewInt(10000))
-	periodicReductionMinter := createV101TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
 	endTime2 := endTime1.Add(time.Hour)
-	V101MintingPeriods := []*v1.MintingPeriod{
+	V1MintingPeriods := []*v1.MintingPeriod{
 		createV100MinterPeriod(1, &endTime1, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
 		createV100MinterPeriod(1, &endTime2, "PERIODIC_REDUCTION_MINTER", periodicReductionMinter, nil),
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
-	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "missing minter with sequence id 2")
+	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
+	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "missing minter with sequence id 2")
 }
 
 func TestMigrationWrongMintingStartTime(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV101TimeLinearMinter(sdk.NewInt(10000))
-	periodicReductionMinter := createV101TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
 	endTime2 := endTime1.Add(time.Hour)
-	V101MintingPeriods := []*v1.MintingPeriod{
+	V1MintingPeriods := []*v1.MintingPeriod{
 		createV100MinterPeriod(1, &endTime1, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
 		createV100MinterPeriod(2, &endTime2, "PERIODIC_REDUCTION_MINTER", periodicReductionMinter, nil),
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
-	setV101MinterConfig(t, ctx, &keeperData, endTime2, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "first minter end must be bigger than minter start")
+	setV1MinterConfig(t, ctx, &keeperData, endTime2, V1MintingPeriods)
+	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "first minter end must be bigger than minter start")
 }
 
 func TestMigrationWrongMinterType(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV101TimeLinearMinter(sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
-	V101MintingPeriods := []*v1.MintingPeriod{
+	V1MintingPeriods := []*v1.MintingPeriod{
 		createV100MinterPeriod(1, &endTime1, "WRONG_MINTER_TYPE", nil, timeLinearMinter),
 	}
-	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "wrong minting period type")
+	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
+	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "wrong minting period type")
 }
 
 func TestMigrationWrongExponentialStepMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	periodicReductionMinter := createV101TimePeriodicReductionMinter(4, 0, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 0, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
-	V101MintingPeriods := []*v1.MintingPeriod{
+	V1MintingPeriods := []*v1.MintingPeriod{
 		createV100MinterPeriod(1, &endTime1, "PERIODIC_REDUCTION_MINTER", periodicReductionMinter, nil),
 		createV100MinterPeriod(2, nil, "NO_MINTING", nil, nil),
 	}
-	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: ExponentialStepMintingType error: stepDuration must be bigger than 0")
+	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
+	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: ExponentialStepMintingType error: stepDuration must be bigger than 0")
 }
 
 func TestMigrationWrongLinearMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV101TimeLinearMinter(sdk.NewInt(-10000))
+	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(-10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
-	V101MintingPeriods := []*v1.MintingPeriod{
+	V1MintingPeriods := []*v1.MintingPeriod{
 		createV100MinterPeriod(1, &endTime1, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
 		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
 	}
 
-	setV101MinterConfig(t, ctx, &keeperData, startTime, V101MintingPeriods)
-	MigrateParamsV100ToV101(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: LinearMintingType error: amount cannot be less than 0")
+	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
+	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: LinearMintingType error: amount cannot be less than 0")
 }
 
-func setV101MinterConfig(t *testing.T, ctx sdk.Context, keeperData *testenv.AdditionalKeeperData, startTime time.Time, mintingPeriods []*v1.MintingPeriod) {
+func setV1MinterConfig(t *testing.T, ctx sdk.Context, keeperData *testenv.AdditionalKeeperData, startTime time.Time, mintingPeriods []*v1.MintingPeriod) {
 	minter := v1.Minter{
 		Start:   startTime,
 		Periods: mintingPeriods,
@@ -155,7 +155,7 @@ func newStore(ctx sdk.Context, testUtil *testenv.AdditionalKeeperData) prefix.St
 	return prefix.NewStore(ctx.KVStore(testUtil.StoreKey), append([]byte((testUtil.Subspace.Name())), '/'))
 }
 
-func getV101MinterConfig(ctx sdk.Context, keeperData *testenv.AdditionalKeeperData) (oldMinterConfig v1.Minter) {
+func getV1MinterConfig(ctx sdk.Context, keeperData *testenv.AdditionalKeeperData) (oldMinterConfig v1.Minter) {
 	oldMinterConfigRaw := keeperData.Subspace.GetRaw(ctx, v1.KeyMinter)
 	if err := codec.NewLegacyAmino().UnmarshalJSON(oldMinterConfigRaw, &oldMinterConfig); err != nil {
 		panic(err)
@@ -163,14 +163,14 @@ func getV101MinterConfig(ctx sdk.Context, keeperData *testenv.AdditionalKeeperDa
 	return
 }
 
-func MigrateParamsV100ToV101(
+func MigrateParamsV100ToV1(
 	t *testing.T,
 	ctx sdk.Context,
 	keeper keeper.Keeper,
 	keeperData *testenv.AdditionalKeeperData,
 	expectError bool, errorMessage string,
 ) {
-	oldMinterConfig := getV101MinterConfig(ctx, keeperData)
+	oldMinterConfig := getV1MinterConfig(ctx, keeperData)
 	store := newStore(ctx, keeperData)
 	err := v2.MigrateParams(ctx, &keeperData.Subspace)
 	if expectError {
@@ -239,7 +239,7 @@ func createV100MinterPeriod(
 	}
 }
 
-func createV101TimeLinearMinter(
+func createV1TimeLinearMinter(
 	amount math.Int,
 ) *v1.TimeLinearMinter {
 	return &v1.TimeLinearMinter{
@@ -247,7 +247,7 @@ func createV101TimeLinearMinter(
 	}
 }
 
-func createV101TimePeriodicReductionMinter(
+func createV1TimePeriodicReductionMinter(
 	reductionPeriodLength int32,
 	mintPeriod int32,
 	reductionFactor sdk.Dec,

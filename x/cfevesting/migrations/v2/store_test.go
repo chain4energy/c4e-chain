@@ -30,12 +30,12 @@ func TestMigrationManyAccountVestingPoolsWithManyPools(t *testing.T) {
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[2].String(), 10)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
-	MigrateV101ToV110(t, testUtil, ctx)
+	MigrateV1ToV2(t, testUtil, ctx)
 }
 
 func TestMigrationNoAccountVestingPoolsAndNoVestingTypes(t *testing.T) {
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	MigrateV101ToV110(t, testUtil, ctx)
+	MigrateV1ToV2(t, testUtil, ctx)
 }
 
 func TestMigrationManyAccountVestingPoolsWithNoPools(t *testing.T) {
@@ -46,14 +46,14 @@ func TestMigrationManyAccountVestingPoolsWithNoPools(t *testing.T) {
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[2].String(), 0)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[3].String(), 0)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[4].String(), 0)
-	MigrateV101ToV110(t, testUtil, ctx)
+	MigrateV1ToV2(t, testUtil, ctx)
 }
 
 func TestMigrationOneAccountVestingPoolsWithOnePool(t *testing.T) {
 	accounts, _ := testcosmos.CreateAccounts(5, 0)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 1)
-	MigrateV101ToV110(t, testUtil, ctx)
+	MigrateV1ToV2(t, testUtil, ctx)
 
 }
 
@@ -61,14 +61,14 @@ func TestMigrationOneVestingType(t *testing.T) {
 	vts := testutils.GenerateVestingTypes(1, 1)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	setOldVestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
-	MigrateV101ToV110(t, testUtil, ctx)
+	MigrateV1ToV2(t, testUtil, ctx)
 }
 
 func TestMigrationManyVestingType(t *testing.T) {
 	vts := generateOldVestingTypes(10, 1)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	setOldVestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
-	MigrateV101ToV110(t, testUtil, ctx)
+	MigrateV1ToV2(t, testUtil, ctx)
 }
 
 func TestMigrationValidatorsVestingType(t *testing.T) {
@@ -76,7 +76,7 @@ func TestMigrationValidatorsVestingType(t *testing.T) {
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
 	vts[3].Name = "Validators"
 	setOldVestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
-	MigrateV101ToV110(t, testUtil, ctx)
+	MigrateV1ToV2(t, testUtil, ctx)
 }
 
 func TestMigrationAccountVestingPoolsAndVestingTypes(t *testing.T) {
@@ -89,7 +89,7 @@ func TestMigrationAccountVestingPoolsAndVestingTypes(t *testing.T) {
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
 	setOldVestingTypes(ctx, types.VestingTypes{VestingTypes: vts}, testUtil.StoreKey, testUtil.Cdc)
-	MigrateV101ToV110(t, testUtil, ctx)
+	MigrateV1ToV2(t, testUtil, ctx)
 }
 
 func TestMigrationWrongSentAmount(t *testing.T) {
@@ -100,7 +100,7 @@ func TestMigrationWrongSentAmount(t *testing.T) {
 	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[2].String(), 10)
 	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[3].String(), 10)
 	SetupOldAccountVestingPoolsWrongSent(testUtil, ctx, accounts[4].String(), 10)
-	MigrateV101ToV110(t, testUtil, ctx)
+	MigrateV1ToV2(t, testUtil, ctx)
 }
 
 func SetupOldAccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v1.AccountVestingPools {
@@ -126,7 +126,7 @@ func setOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cd
 	store.Set([]byte(accountVestingPools.Address), av)
 }
 
-func MigrateV101ToV110(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context) {
+func MigrateV1ToV2(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context) {
 	oldAccPools := getAllOldAccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc)
 	oldVestingTypes := getAllOldVestingType(ctx, testUtil.StoreKey, testUtil.Cdc)
 	err := v2.MigrateStore(ctx, testUtil.StoreKey, testUtil.Cdc)

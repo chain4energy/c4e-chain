@@ -32,8 +32,8 @@ func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
 		subDistributorShareMain,
 		subDistributorSourceMain,
 	}
-	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, false, "")
+	setV2Subdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV1ToV2(t, ctx, testUtil, false, "")
 }
 
 func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
@@ -43,8 +43,8 @@ func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
 		createOldSubDistributor(types.Main, types.InternalAccount, types.ModuleAccount, "CUSTOM_ID"),
 	}
 
-	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: MAIN")
+	setV2Subdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV1ToV2(t, ctx, testUtil, true, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: MAIN")
 }
 
 func TestMigrationSubDistributorsDuplicates(t *testing.T) {
@@ -54,8 +54,8 @@ func TestMigrationSubDistributorsDuplicates(t *testing.T) {
 		createOldSubDistributor(types.BaseAccount, types.InternalAccount, types.ModuleAccount, "CUSTOM_ID"),
 		createOldSubDistributor(types.BaseAccount, types.Main, types.BaseAccount, "CUSTOM_ID"),
 	}
-	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true, "same MAIN account cannot occur twice within one subdistributor, subdistributor name: "+oldSubDistributors[2].Name)
+	setV2Subdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV1ToV2(t, ctx, testUtil, true, "same MAIN account cannot occur twice within one subdistributor, subdistributor name: "+oldSubDistributors[2].Name)
 }
 
 func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
@@ -66,8 +66,8 @@ func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
 		createOldSubDistributor(types.BaseAccount, "WRONG_ACCOUNT_TYPE", types.ModuleAccount, "CUSTOM_ID"),
 	}
 
-	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[2].Name+" source with id \"CUSTOM_ID\" validation error: account \"CUSTOM_ID\" is of the wrong type: WRONG_ACCOUNT_TYPE")
+	setV2Subdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV1ToV2(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[2].Name+" source with id \"CUSTOM_ID\" validation error: account \"CUSTOM_ID\" is of the wrong type: WRONG_ACCOUNT_TYPE")
 }
 
 func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
@@ -76,11 +76,11 @@ func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
 		createOldSubDistributor(types.BaseAccount, types.Main, types.ModuleAccount, "WRONG_CUSTOM_ID"),
 	}
 
-	setV101Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV101ToV110(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[0].Name+" destinations validation error: destination share "+oldSubDistributors[0].Destination.Share[0].Name+" destination account validation error: module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
+	setV2Subdistributors(t, ctx, testUtil, oldSubDistributors)
+	MigrateParamsV1ToV2(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[0].Name+" destinations validation error: destination share "+oldSubDistributors[0].Destination.Share[0].Name+" destination account validation error: module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
 }
 
-func setV101Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v1.SubDistributor) {
+func setV2Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v1.SubDistributor) {
 	store := newStore(ctx, testUtil)
 	bz, err := codec.NewLegacyAmino().MarshalJSON(subdistributors)
 	require.NoError(t, err)
@@ -91,7 +91,7 @@ func newStore(ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeper
 	return prefix.NewStore(ctx.KVStore(testUtil.StoreKey), append([]byte((testUtil.Subspace.Name())), '/'))
 }
 
-func MigrateParamsV101ToV110(
+func MigrateParamsV1ToV2(
 	t *testing.T,
 	ctx sdk.Context,
 	testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils,

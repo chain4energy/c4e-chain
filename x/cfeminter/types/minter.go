@@ -146,9 +146,6 @@ func (m *LinearMinting) Validate() error {
 	if m.Amount.IsNegative() {
 		return fmt.Errorf("amount cannot be less than 0")
 	}
-	if !m.Amount.IsPositive() {
-		return fmt.Errorf("amount must be positive")
-	}
 	return nil
 }
 
@@ -168,12 +165,8 @@ func (m *ExponentialStepMinting) Validate() error {
 	if m.AmountMultiplier.IsNil() {
 		return fmt.Errorf("amountMultiplier cannot be nil")
 	}
-
 	if m.AmountMultiplier.IsNegative() {
 		return fmt.Errorf("amountMultiplier cannot be less than 0")
-	}
-	if !m.AmountMultiplier.IsPositive() {
-		return fmt.Errorf("amountMultiplier must be positive")
 	}
 	if m.StepDuration <= 0 {
 		return fmt.Errorf("stepDuration must be bigger than 0")

@@ -310,20 +310,6 @@ func TestValidateMinterTimeLineraMinterTypeWithNoEndTime(t *testing.T) {
 	require.EqualError(t, params.Validate(), "minter with id 2 validation error: for LinearMinting EndTime must be set")
 }
 
-func TestValidateLinearMintingAmountIsNil(t *testing.T) {
-	startTime := time.Now()
-	endTime1 := startTime.Add(PeriodDuration)
-
-	linearMinting1 := types.LinearMinting{Amount: sdk.Int{}}
-	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
-	minter2 := types.Minter{SequenceId: 2}
-	minters := []*types.Minter{&minter1, &minter2}
-
-	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
-	require.EqualError(t, params.Validate(), "minter with id 1 validation error: minter config validation error: amount must be positive")
-}
-
 func TestValidateExponentialStepMintingAmountIsNil(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(PeriodDuration)
@@ -337,21 +323,6 @@ func TestValidateExponentialStepMintingAmountIsNil(t *testing.T) {
 
 	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
 	require.EqualError(t, params.Validate(), "minter with id 1 validation error: minter config validation error: amount must be positive")
-}
-
-func TestValidateExponentialStepMintingAmountMultiplierIsNil(t *testing.T) {
-	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
-	endTime1 := startTime.Add(PeriodDuration)
-
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(1000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.Dec{}}
-	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
-
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
-	minter2 := types.Minter{SequenceId: 2}
-	minters := []*types.Minter{&minter1, &minter2}
-
-	params := types.Params{MintDenom: customDenom, StartTime: startTime, Minters: minters}
-	require.EqualError(t, params.Validate(), "minter with id 1 validation error: minter config validation error: amountMultiplier must be positive")
 }
 
 func TestValidateExponentialStepMintingAmountMultiplierIsLowerThan0(t *testing.T) {

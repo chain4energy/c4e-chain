@@ -56,7 +56,5 @@ func SetAddressPrefixes() {
 	})
 }
 
-// GetAuthority returns gov moduel authority address
-func GetAuthority() string {
-	return authtypes.NewModuleAddress(govtypes.ModuleName).String()
-}
+// AuthorityAddress is a gov module authority address
+var AuthorityAddress = authtypes.NewModuleAddress(govtypes.ModuleName).String()
