@@ -3,6 +3,7 @@ package v120_test
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
 	"math/rand"
 	"strconv"
 	"testing"
@@ -118,7 +119,7 @@ func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 				InitiallyLocked: oldVestingPool.InitiallyLocked,
 				Withdrawn:       oldVestingPool.Withdrawn,
 				Sent:            oldVestingPool.Sent,
-				GenesisPool:      false,
+				GenesisPool:     false,
 			}
 			newVestingPool := newAccPools[i].VestingPools[j]
 			require.EqualValues(t, &expectedVestingPool, newVestingPool)
