@@ -61,7 +61,10 @@ func getOldMinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec)
 
 	for ; iterator.Valid(); iterator.Next() {
 		var val v1.MinterState
-		cdc.MustUnmarshal(iterator.Value(), &val)
+		err := cdc.Unmarshal(iterator.Value(), &val)
+		if err != nil {
+			return nil, err
+		}
 		oldMinterStateHistoryList = append(oldMinterStateHistoryList, &val)
 		prefixStore.Delete(iterator.Key())
 	}
