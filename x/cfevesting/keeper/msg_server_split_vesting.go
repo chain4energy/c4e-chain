@@ -2,9 +2,7 @@ package keeper
 
 import (
 	"context"
-	"fmt"
-
-	metrics "github.com/armon/go-metrics"
+	"github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,14 +12,16 @@ import (
 func (k msgServer) SplitVesting(goCtx context.Context, msg *types.MsgSplitVesting) (*types.MsgSplitVestingResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "split vesting message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	from, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	fromAccAddress, toAccAddress, err := types.ValidateMsgSplitVesting(msg.FromAddress, msg.ToAddress, msg.Amount)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrParam, fmt.Errorf("split vesting - error parsing from address: %s: %w", msg.FromAddress, err).Error())
+		k.Logger(ctx).Debug("split vesting - validation error", "error", err)
+		return nil, err
 	}
 
-	if err := k.splitVestingCoins(ctx, from, msg.ToAddress, msg.Amount); err != nil {
+	if err = k.splitVestingCoins(ctx, fromAccAddress, toAccAddress, msg.Amount); err != nil {
 		return nil, sdkerrors.Wrap(err, "split vesting")
 	}
+
 	for _, a := range msg.Amount {
 		if a.Amount.IsInt64() {
 			telemetry.SetGaugeWithLabels(
@@ -34,7 +34,7 @@ func (k msgServer) SplitVesting(goCtx context.Context, msg *types.MsgSplitVestin
 	return &types.MsgSplitVestingResponse{}, nil
 }
 
-func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAddress string,
+func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAddress sdk.AccAddress,
 	amount sdk.Coins) error {
 
 	if len(amount) == 0 {
@@ -49,18 +49,13 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 		return sdkerrors.Wrapf(types.ErrParam, "send is disabled")
 	}
 
-	to, err := sdk.AccAddressFromBech32(toAddress)
-	if err != nil {
-		return sdkerrors.Wrapf(types.ErrParam, fmt.Errorf("split vesting coins - error parsing to address: %s: %w", toAddress, err).Error())
-	}
-
-	if k.bank.BlockedAddr(to) {
+	if k.bank.BlockedAddr(toAddress) {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", toAddress)
 	}
 
-	if acc := k.account.GetAccount(ctx, to); acc != nil {
-		k.Logger(ctx).Debug("split vesting coins - to account already exists error", "toAddress", to)
-		return sdkerrors.Wrapf(types.ErrAlreadyExists, "split vesting coins - account address: %s", to)
+	if acc := k.account.GetAccount(ctx, toAddress); acc != nil {
+		k.Logger(ctx).Debug("split vesting coins - to account already exists error", "toAddress", toAddress)
+		return sdkerrors.Wrapf(types.ErrAlreadyExists, "split vesting coins - account address: %s", toAddress)
 	}
 
 	vestingAcc, err := k.UnlockUnbondedContinuousVestingAccountCoins(ctx, from, amount)
@@ -75,24 +70,24 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 
 	event := &types.VestingSplit{
 		Source:      from.String(),
-		Destination: toAddress,
+		Destination: toAddress.String(),
 	}
 	err = ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
 		k.Logger(ctx).Error("vesting split emit event error", "event", event, "error", err.Error())
 	}
-	if _, err = k.newContinuousVestingAccount(ctx, to, amount, startTime, vestingAcc.EndTime); err != nil {
+	if _, err = k.newContinuousVestingAccount(ctx, toAddress, amount, startTime, vestingAcc.EndTime); err != nil {
 		return sdkerrors.Wrap(err, "split vesting coins")
 	}
 
-	if err = k.bank.SendCoins(ctx, from, to, amount); err != nil {
+	if err = k.bank.SendCoins(ctx, from, toAddress, amount); err != nil {
 		return sdkerrors.Wrap(err, "split vesting coins")
 	}
 
 	vAcc, found := k.GetVestingAccountTrace(ctx, from.String())
 	if found {
 		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
-			Address:            toAddress,
+			Address:            toAddress.String(),
 			Genesis:            false,
 			FromGenesisPool:    vAcc.FromGenesisPool,
 			FromGenesisAccount: vAcc.Genesis || vAcc.FromGenesisAccount,

@@ -1,8 +1,8 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const TypeMsgSplitVesting = "split_vesting"
@@ -39,17 +39,33 @@ func (msg *MsgSplitVesting) GetSignBytes() []byte {
 }
 
 func (msg *MsgSplitVesting) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	_, _, err := ValidateMsgSplitVesting(msg.FromAddress, msg.ToAddress, msg.Amount)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid fromAddress address (%s)", err)
-	}
-	_, err = sdk.AccAddressFromBech32(msg.ToAddress)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid toAddress address (%s)", err)
-	}
-	err = msg.Amount.Validate()
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid amount (%s)", err)
+		return err
 	}
 	return nil
+}
+
+func ValidateMsgSplitVesting(fromAddress string, toAddress string,
+	amount sdk.Coins) (fromAccAddress sdk.AccAddress, toAccAddress sdk.AccAddress, error error) {
+	if amount == nil {
+		return nil, nil, errors.Wrapf(ErrParam, "split vesting - amount cannot be nil")
+	}
+	if amount.IsAnyNil() {
+		return nil, nil, errors.Wrapf(ErrParam, "split vesting - amount cannot be nil")
+	}
+	err := amount.Validate()
+	if err != nil {
+		return nil, nil, errors.Wrapf(ErrParam, "split vesting - invalid amount (%s)", err)
+	}
+	fromAccAddress, err = sdk.AccAddressFromBech32(fromAddress)
+	if err != nil {
+		return nil, nil, errors.Wrap(ErrParsing, errors.Wrap(err, "split vesting - from acc address error").Error())
+	}
+	toAccAddress, err = sdk.AccAddressFromBech32(toAddress)
+	if err != nil {
+		return nil, nil, errors.Wrap(ErrParsing, errors.Wrap(err, "split vesting - to acc address error").Error())
+	}
+
+	return fromAccAddress, toAccAddress, nil
 }

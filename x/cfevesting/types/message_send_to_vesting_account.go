@@ -49,7 +49,7 @@ func (msg *MsgSendToVestingAccount) ValidateBasic() error {
 	return nil
 }
 
-func ValidateSendToVestingAccount(owner string, toAddr string, vestingPoolName string, amount math.Int) (toAccAddress sdk.AccAddress, ownerAccAddress sdk.AccAddress, error error) {
+func ValidateSendToVestingAccount(owner string, toAddr string, vestingPoolName string, amount math.Int) (ownerAccAddress sdk.AccAddress, toAccAddress sdk.AccAddress, error error) {
 	if vestingPoolName == "" {
 		return nil, nil, errors.Wrap(ErrParam, "send to new vesting account - empty name")
 	}

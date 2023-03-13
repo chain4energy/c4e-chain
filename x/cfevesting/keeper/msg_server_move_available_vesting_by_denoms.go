@@ -2,8 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
-
 	metrics "github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -15,11 +13,13 @@ func (k msgServer) MoveAvailableVestingByDenoms(goCtx context.Context, msg *type
 	defer telemetry.IncrCounter(1, types.ModuleName, "move available vesting by denoms message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	from, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	fromAccAddress, toAccAddress, err := types.ValidateMsgMoveAvailableVestingBeDenom(msg.FromAddress, msg.ToAddress)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrParam, fmt.Errorf("move available vesting by denoms - error parsing from address: %s: %w", msg.FromAddress, err).Error())
+		k.Logger(ctx).Debug("move available vesting by denoms - validation error", "error", err)
+		return nil, err
 	}
-	locked := k.bank.LockedCoins(ctx, from)
+
+	locked := k.bank.LockedCoins(ctx, fromAccAddress)
 	amount := sdk.NewCoins()
 	for _, denom := range msg.Denoms {
 		if len(denom) == 0 {
@@ -30,7 +30,7 @@ func (k msgServer) MoveAvailableVestingByDenoms(goCtx context.Context, msg *type
 			amount = amount.Add(sdk.NewCoin(denom, denAmount))
 		}
 	}
-	if err := k.splitVestingCoins(ctx, from, msg.ToAddress, amount); err != nil {
+	if err := k.splitVestingCoins(ctx, fromAccAddress, toAccAddress, amount); err != nil {
 		return nil, sdkerrors.Wrap(err, "move available vesting by denoms")
 	}
 	for _, a := range amount {

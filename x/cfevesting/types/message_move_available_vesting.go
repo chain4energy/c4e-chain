@@ -1,8 +1,8 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const TypeMsgMoveAvailableVesting = "move_available_vesting"
@@ -38,13 +38,22 @@ func (msg *MsgMoveAvailableVesting) GetSignBytes() []byte {
 }
 
 func (msg *MsgMoveAvailableVesting) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	_, _, err := ValidateMsgMoveAvailableVesting(msg.FromAddress, msg.ToAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid fromAddress address (%s)", err)
-	}
-	_, err = sdk.AccAddressFromBech32(msg.ToAddress)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid toAddress address (%s)", err)
+		return err
 	}
 	return nil
+}
+
+func ValidateMsgMoveAvailableVesting(fromAddress string, toAddress string) (fromAccAddress sdk.AccAddress, toAccAddress sdk.AccAddress, error error) {
+	fromAccAddress, err := sdk.AccAddressFromBech32(fromAddress)
+	if err != nil {
+		return nil, nil, errors.Wrap(ErrParsing, errors.Wrap(err, "move available vesting - from acc address error").Error())
+	}
+	toAccAddress, err = sdk.AccAddressFromBech32(toAddress)
+	if err != nil {
+		return nil, nil, errors.Wrap(ErrParsing, errors.Wrap(err, "move available vesting - to acc address error").Error())
+	}
+
+	return fromAccAddress, toAccAddress, nil
 }

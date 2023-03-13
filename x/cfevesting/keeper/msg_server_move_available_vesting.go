@@ -2,8 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
-
 	metrics "github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -15,13 +13,14 @@ func (k msgServer) MoveAvailableVesting(goCtx context.Context, msg *types.MsgMov
 	defer telemetry.IncrCounter(1, types.ModuleName, "move available vesting message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	from, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	fromAccAddress, toAccAddress, err := types.ValidateMsgMoveAvailableVesting(msg.FromAddress, msg.ToAddress)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrParam, fmt.Errorf("move available vesting - error parsing from address: %s: %w", msg.FromAddress, err).Error())
+		k.Logger(ctx).Debug("move available vesting - validation error", "error", err)
+		return nil, err
 	}
-	amount := k.bank.LockedCoins(ctx, from)
+	amount := k.bank.LockedCoins(ctx, fromAccAddress)
 
-	if err := k.splitVestingCoins(ctx, from, msg.ToAddress, amount); err != nil {
+	if err := k.splitVestingCoins(ctx, fromAccAddress, toAccAddress, amount); err != nil {
 		return nil, sdkerrors.Wrap(err, "move available vesting")
 	}
 	for _, a := range amount {

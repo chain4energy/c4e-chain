@@ -194,11 +194,3 @@ docker-build-old-chain:
 	@docker build -t chain4energy-old-dev:v1.1.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/old.Dockerfile .
 
 docker-build-all: docker-build-old-chain docker-build-debug
-
-
-VALIDATOR_HEX_ADDRESS=
-VALIDATOR_OPERATOR_ADDRESS=c4evaloper1psaq0n2lzh84lzgh39kghuy0n256xltlg6yh4a
-VALIDATOR_CONSENSUS_ADDRESS=c4evalcons154cssnwj85gkv6qgnje8hde89pgj90hukhu859
-VALIDATOR_PUBKEY='m5h8LuePuHcUiByS4w71mMPp4yQ1bjvwtSleI3OA3aQ='
-ACCOUNT_PUBKEY=
-ACCOUNT_ADDRESS=c4e1psaq0n2lzh84lzgh39kghuy0n256xltlcmea52
