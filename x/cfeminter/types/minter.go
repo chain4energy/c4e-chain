@@ -117,6 +117,17 @@ func (params Params) ContainsMinter(sequenceId uint32) bool {
 	return false
 }
 
+func (m *Minter) GetMinterConfig() (MinterConfigI, error) {
+	if m.Config == nil {
+		return nil, fmt.Errorf("minter config is nil")
+	}
+	minterConfigI, ok := m.Config.GetCachedValue().(MinterConfigI)
+	if !ok {
+		return nil, fmt.Errorf("expected %T, got %T", (MinterConfigI)(nil), m.Config.GetCachedValue())
+	}
+	return minterConfigI, nil
+}
+
 func (m *Minter) validate() error {
 	minterConfig, err := m.GetMinterConfig()
 	if err != nil {
@@ -134,6 +145,32 @@ func (m *Minter) validate() error {
 	}
 
 	return nil
+}
+
+type MinterJSON struct {
+	SequenceId uint32     `json:"sequence_id"`
+	EndTime    *time.Time `json:"end_time"`
+
+	// custom fields based on concrete vesting type which can be omitted
+	Config string `json:"config,omitempty"`
+	Type   string `json:"type,omitempty"`
+}
+
+func (m *Minter) GetMinterJSON() MinterJSON {
+	if m == nil {
+		return MinterJSON{}
+	}
+	minterConfig, _ := m.GetMinterConfig()
+	var config string
+	if minterConfig != nil {
+		config = minterConfig.String()
+	}
+	return MinterJSON{
+		SequenceId: m.SequenceId,
+		EndTime:    m.EndTime,
+		Type:       m.Config.GetTypeUrl(),
+		Config:     config,
+	}
 }
 
 func (m *LinearMinting) Validate() error {

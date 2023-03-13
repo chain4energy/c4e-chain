@@ -1,8 +1,9 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 )
 
 const TypeMsgCreateVestingAccount = "create_vesting_account"
@@ -41,9 +42,35 @@ func (msg *MsgCreateVestingAccount) GetSignBytes() []byte {
 }
 
 func (msg *MsgCreateVestingAccount) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	_, _, err := ValidateCreateVestingAccount(msg.FromAddress, msg.ToAddress, msg.Amount, msg.StartTime, msg.EndTime)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid fromAddress address (%s)", err)
+		return err
 	}
 	return nil
+}
+
+func ValidateCreateVestingAccount(fromAddress string, toAddress string, amount sdk.Coins, startTime int64,
+	endTime int64) (fromAccAddress sdk.AccAddress, toAccAddress sdk.AccAddress, err error) {
+	if amount == nil {
+		return nil, nil, errors.Wrap(ErrParam, "create vesting account - coin amount cannot be nil")
+	}
+	if amount.IsAnyNil() {
+		return nil, nil, errors.Wrap(ErrParam, "create vesting account - coin amount cannot be nil")
+	}
+	if amount.IsAnyNegative() {
+		return nil, nil, errors.Wrap(ErrParam, "create vesting account - negative coin amount")
+	}
+	if startTime > endTime {
+		return nil, nil, errors.Wrapf(ErrParam, "create vesting account - start time is after end time error (%s > %s)", time.Unix(startTime, 0).String(), time.Unix(endTime, 0).String())
+	}
+	fromAccAddress, err = sdk.AccAddressFromBech32(fromAddress)
+	if err != nil {
+		return nil, nil, errors.Wrap(ErrParsing, errors.Wrapf(err, "create vesting account - from-address parsing error: %s", fromAddress).Error())
+	}
+	toAccAddress, err = sdk.AccAddressFromBech32(toAddress)
+	if err != nil {
+		return nil, nil, errors.Wrap(ErrParsing, errors.Wrapf(err, "create vesting account - to-address parsing error: %s", toAddress).Error())
+	}
+
+	return fromAccAddress, toAccAddress, nil
 }

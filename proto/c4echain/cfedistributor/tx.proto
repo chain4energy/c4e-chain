@@ -12,10 +12,10 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 // Msg defines the Msg service.
 service Msg {
   // this line is used by starport scaffolding # proto/tx/rpc
-  rpc UpdateAllSubDistributorsParams(MsgUpdateAllSubDistributorsParams) returns (MsgUpdateAllSubDistributorsParamsResponse);
+  rpc UpdateAllSubDistributorsParams(MsgUpdateAllSubDistributorsParams) returns (MsgUpdateAllSubDistributorsParamsResponse); // update params
   rpc UpdateSubDistributorParam(MsgUpdateSubDistributorParam) returns (MsgUpdateSubDistributorParamResponse);
   rpc UpdateSubDistributorDestinationShareParam(MsgUpdateSubDistributorDestinationShareParam) returns (MsgUpdateSubDistributorDestinationShareParamResponse);
-  rpc UpdateMsgUpdateSubDistributorBurnShareParam(MsgUpdateSubDistributorBurnShareParam) returns (MsgUpdateSubDistributorBurnShareParamResponse);
+  rpc UpdateMsgUpdateSubDistributorBurnShareParam(MsgUpdateSubDistributorBurnShareParam) returns (MsgUpdateSubDistributorBurnShareParamResponse); // update fix
 }
 
 message MsgUpdateAllSubDistributorsParams {

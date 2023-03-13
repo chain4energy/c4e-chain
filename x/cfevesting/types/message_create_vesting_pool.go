@@ -1,11 +1,11 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const TypeMsgCreateVestingPool = "create_vesting_pool"
@@ -44,9 +44,30 @@ func (msg *MsgCreateVestingPool) GetSignBytes() []byte {
 }
 
 func (msg *MsgCreateVestingPool) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Owner)
+	_, err := ValidateCreateVestingPool(msg.Owner, msg.Name, msg.Amount, msg.Duration)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+		return err
 	}
 	return nil
+}
+
+func ValidateCreateVestingPool(address string, vestingPoolName string, amount math.Int, duration time.Duration) (accAddress sdk.AccAddress, error error) {
+	if vestingPoolName == "" {
+		return nil, errors.Wrap(ErrParam, "add vesting pool empty name")
+	}
+	if amount.IsNil() {
+		return nil, errors.Wrap(ErrAmount, "add vesting pool - amount cannot be nil")
+	}
+	if amount.IsNegative() {
+		return nil, errors.Wrap(ErrAmount, "add vesting pool - amount is <= 0")
+	}
+	if duration <= 0 {
+		return nil, errors.Wrap(ErrParam, "add vesting pool - duration is <= 0 or nil")
+	}
+	accAddress, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return nil, errors.Wrap(ErrParsing, errors.Wrap(err, "add vesting pool - vesting acc address error").Error())
+	}
+
+	return accAddress, nil
 }

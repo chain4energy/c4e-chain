@@ -1,9 +1,9 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const TypeMsgSendToVestingAccount = "send_to_vesting_account"
@@ -42,9 +42,34 @@ func (msg *MsgSendToVestingAccount) GetSignBytes() []byte {
 }
 
 func (msg *MsgSendToVestingAccount) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Owner)
+	_, _, err := ValidateSendToVestingAccount(msg.Owner, msg.ToAddress, msg.VestingPoolName, msg.Amount)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+		return err
 	}
 	return nil
+}
+
+func ValidateSendToVestingAccount(owner string, toAddr string, vestingPoolName string, amount math.Int) (toAccAddress sdk.AccAddress, ownerAccAddress sdk.AccAddress, error error) {
+	if vestingPoolName == "" {
+		return nil, nil, errors.Wrap(ErrParam, "send to new vesting account - empty name")
+	}
+	if amount.IsNil() {
+		return nil, nil, errors.Wrap(ErrAmount, "send to new vesting account - amount cannot be nil")
+	}
+	if amount.IsNegative() {
+		return nil, nil, errors.Wrap(ErrAmount, "send to new vesting account - amount is <= 0")
+	}
+	if owner == toAddr {
+		return nil, nil, errors.Wrapf(ErrIdenticalAccountsAddresses, "send to new vesting account - identical from address (%s) and to address (%s)", owner, toAddr)
+	}
+	ownerAccAddress, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		return nil, nil, errors.Wrap(ErrParsing, errors.Wrap(err, "send to new vesting account - owner acc address error").Error())
+	}
+	toAccAddress, err = sdk.AccAddressFromBech32(toAddr)
+	if err != nil {
+		return nil, nil, errors.Wrap(ErrParsing, errors.Wrap(err, "send to new vesting account - to acc address error").Error())
+	}
+
+	return ownerAccAddress, toAccAddress, nil
 }

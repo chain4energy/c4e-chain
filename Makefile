@@ -155,7 +155,7 @@ run-e2e-chain: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions -count=1
 
 test-e2e-ibc: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestIbcSuite
+	@VERSION=$(VERSION)  C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestIbcSuite
 
 test-e2e-vesting: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestVestingSuite
@@ -169,7 +169,7 @@ test-e2e-migration: e2e-setup
 SPECIFIC_TEST_NAME=TestMainnetVestingsMigration
 SPECIFIC_TESTING_SUITE_NAME=TestMainnetMigrationSuite
 test-e2e-run-specific-test: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=false go test -mod=readonly -timeout=25m -v $ -run $(SPECIFIC_TESTING_SUITE_NAME) $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
+	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=true go test -mod=readonly -timeout=25m -v $ -run $(SPECIFIC_TESTING_SUITE_NAME) $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 
 e2e-setup: e2e-cleanup
 	@echo Finished e2e environment setup, ready to start the test
@@ -194,3 +194,11 @@ docker-build-old-chain:
 	@docker build -t chain4energy-old-dev:v1.1.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/old.Dockerfile .
 
 docker-build-all: docker-build-old-chain docker-build-debug
+
+
+VALIDATOR_HEX_ADDRESS=
+VALIDATOR_OPERATOR_ADDRESS=c4evaloper1psaq0n2lzh84lzgh39kghuy0n256xltlg6yh4a
+VALIDATOR_CONSENSUS_ADDRESS=c4evalcons154cssnwj85gkv6qgnje8hde89pgj90hukhu859
+VALIDATOR_PUBKEY='m5h8LuePuHcUiByS4w71mMPp4yQ1bjvwtSleI3OA3aQ='
+ACCOUNT_PUBKEY=
+ACCOUNT_ADDRESS=c4e1psaq0n2lzh84lzgh39kghuy0n256xltlcmea52

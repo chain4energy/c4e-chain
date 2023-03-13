@@ -47,7 +47,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 9000000000000000000denom1,123125denom2,11denom3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 9000000000000000000denom1,123125denom2,11denom3: insufficient funds",
 		},
 		{
 			desc:            "first not enough to unlock - before start",
@@ -57,7 +57,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 9000000000000000000denom1,123124denom2,10denom3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 9000000000000000000denom1,123124denom2,10denom3: insufficient funds",
 		},
 		{
 			desc:            "second not enough to unlock - before start",
@@ -67,7 +67,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 8999999999999999999denom1,123125denom2,10denom3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 8999999999999999999denom1,123125denom2,10denom3: insufficient funds",
 		},
 		{
 			desc:            "thrid not enough to unlock - before start",
@@ -77,7 +77,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 8999999999999999999denom1,123124denom2,11denom3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 8999999999999999999denom1,123124denom2,11denom3: insufficient funds",
 		},
 		{
 			desc:            "unknown denom - not enough to unlock - before start",
@@ -87,7 +87,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 8999999999999999999denom1,123124denom2,10denom3,1denom4: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 8999999999999999999denom1,123124denom2,10denom3,1denom4: insufficient funds",
 		},
 		{
 			desc:            "unknown denom only - not enough to unlock - before start",
@@ -97,7 +97,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 1unknown: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 1unknown: insufficient funds",
 		},
 		{
 			desc:            "one denom - not enough to unlock - before start",
@@ -107,7 +107,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 123125denom2: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999denom1,123124denom2,10denom3, to unlock: 123125denom2: insufficient funds",
 		},
 
 		{
@@ -131,7 +131,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			blockTime:       startTime.Add(duration / 2),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
-			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 4499999999999999999denom1,61562denom2,5denom3, to unlock: 4499999999999999999denom1,61563denom2,5denom3: entity not exists",
+			expectedError:   "account " + accAddr.String() + ": not enough to unlock. locked: 4499999999999999999denom1,61562denom2,5denom3, to unlock: 4499999999999999999denom1,61563denom2,5denom3: insufficient funds",
 		},
 		{
 			desc:            "one coin is zore - before start",
@@ -276,19 +276,19 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsSingleDenomError(t *testing.
 		delegation      bool
 	}{
 		{desc: "before vesting start - not enought to unlock", initialAmount: initialAmount, lockedBefore: initialAmount, blockTime: startTime.Add(-time.Hour), toUnlock: initialAmount.AddRaw(1),
-			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999uc4e, to unlock: 9000000000000000000uc4e: entity not exists"},
+			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999uc4e, to unlock: 9000000000000000000uc4e: insufficient funds"},
 		{desc: "on vesting start - not enought to unlock", initialAmount: initialAmount, lockedBefore: initialAmount, blockTime: startTime, toUnlock: initialAmount.AddRaw(1),
-			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999uc4e, to unlock: 9000000000000000000uc4e: entity not exists"},
+			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: 8999999999999999999uc4e, to unlock: 9000000000000000000uc4e: insufficient funds"},
 		{desc: "on half vesting - not enought to unlock", initialAmount: initialAmount, lockedBefore: initialAmount.QuoRaw(2), blockTime: startTime.Add(duration / 2), toUnlock: initialAmount.QuoRaw(2).AddRaw(1),
-			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: 4499999999999999999uc4e, to unlock: 4500000000000000000uc4e: entity not exists"},
+			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: 4499999999999999999uc4e, to unlock: 4500000000000000000uc4e: insufficient funds"},
 		{desc: "on vesting end - not enought to unlock", initialAmount: initialAmount, lockedBefore: sdk.ZeroInt(), blockTime: startTime.Add(duration), toUnlock: sdk.NewInt(1),
-			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: , to unlock: 1uc4e: entity not exists"},
+			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: , to unlock: 1uc4e: insufficient funds"},
 		{desc: "no account", initialAmount: sdk.ZeroInt(), lockedBefore: sdk.ZeroInt(), blockTime: startTime, toUnlock: sdk.NewInt(1),
 			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + " doesn't exist: entity not exists", accountType: None},
 		{desc: "wrong account type", initialAmount: initialAmount, lockedBefore: sdk.ZeroInt(), blockTime: startTime.Add(duration), toUnlock: sdk.NewInt(1),
-			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + " is not ContinuousVestingAccount: entity not exists", accountType: Base},
+			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + " is not ContinuousVestingAccount: invalid type", accountType: Base},
 		{desc: "on half vesting - not enought to unlock with delegation", initialAmount: initialAmount, lockedBefore: initialAmount.QuoRaw(2), blockTime: startTime.Add(duration / 2), toUnlock: initialAmount.QuoRaw(4).AddRaw(2),
-			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: 2250000000000000000uc4e, to unlock: 2250000000000000001uc4e: entity not exists", delegation: true},
+			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: 2250000000000000000uc4e, to unlock: 2250000000000000001uc4e: insufficient funds", delegation: true},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			testHelper := testapp.SetupTestAppWithHeight(t, 1000)
