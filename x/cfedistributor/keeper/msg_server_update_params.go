@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) UpdateAllSubDistributorsParams(goCtx context.Context, msg *types.MsgUpdateAllSubDistributorsParams) (*types.MsgUpdateAllSubDistributorsParamsResponse, error) {
+func (k msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "Update all sub distributors")
 
 	if k.authority != msg.Authority {
@@ -22,7 +22,7 @@ func (k msgServer) UpdateAllSubDistributorsParams(goCtx context.Context, msg *ty
 		return nil, err
 	}
 
-	return &types.MsgUpdateAllSubDistributorsParamsResponse{}, nil
+	return &types.MsgUpdateParamsResponse{}, nil
 }
 
 func (k msgServer) UpdateSubDistributorParam(goCtx context.Context, distributor *types.MsgUpdateSubDistributorParam) (*types.MsgUpdateSubDistributorParamResponse, error) {
@@ -69,7 +69,7 @@ func (k msgServer) UpdateSubDistributorDestinationShareParam(goCtx context.Conte
 	return nil, errors.Wrapf(govtypes.ErrInvalidProposalMsg, "distributor not found")
 }
 
-func (k msgServer) UpdateMsgUpdateSubDistributorBurnShareParam(goCtx context.Context, msg *types.MsgUpdateSubDistributorBurnShareParam) (*types.MsgUpdateSubDistributorBurnShareParamResponse, error) {
+func (k msgServer) UpdateSubDistributorBurnShareParam(goCtx context.Context, msg *types.MsgUpdateSubDistributorBurnShareParam) (*types.MsgUpdateSubDistributorBurnShareParamResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "Update sub distributor burn share")
 
 	if k.authority != msg.Authority {

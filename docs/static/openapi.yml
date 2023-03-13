@@ -46149,7 +46149,7 @@ definitions:
                   type: string
                 type:
                   type: string
-  chain4energy.c4echain.cfedistributor.MsgUpdateAllSubDistributorsParamsResponse:
+  chain4energy.c4echain.cfedistributor.MsgUpdateParamsResponse:
     type: object
   chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareParamResponse:
     type: object

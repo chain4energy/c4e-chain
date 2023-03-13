@@ -14,16 +14,16 @@ var correctSubDistributors = []types.SubDistributor{
 	CreateSubDistributor(MAIN_SOURCE),
 }
 
-func TestMsgUpdateAllSubDistributorsParams_ValidateBasic(t *testing.T) {
+func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name         string
-		msg          types.MsgUpdateAllSubDistributorsParams
+		msg          types.MsgUpdateParams
 		expectError  bool
 		errorMessage string
 	}{
 		{
 			name: "invalid address",
-			msg: types.MsgUpdateAllSubDistributorsParams{
+			msg: types.MsgUpdateParams{
 				Authority: "abcd",
 			},
 			expectError:  true,
@@ -31,7 +31,7 @@ func TestMsgUpdateAllSubDistributorsParams_ValidateBasic(t *testing.T) {
 		},
 		{
 			name: "empty sub distributors",
-			msg: types.MsgUpdateAllSubDistributorsParams{
+			msg: types.MsgUpdateParams{
 				Authority: testenv.GetAuthority(),
 				SubDistributors: []types.SubDistributor{
 					{
@@ -46,7 +46,7 @@ func TestMsgUpdateAllSubDistributorsParams_ValidateBasic(t *testing.T) {
 		},
 		{
 			name: "correct denom",
-			msg: types.MsgUpdateAllSubDistributorsParams{
+			msg: types.MsgUpdateParams{
 				Authority:       testenv.GetAuthority(),
 				SubDistributors: correctSubDistributors,
 			},
