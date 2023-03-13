@@ -1,7 +1,7 @@
 package types_test
 
 import (
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -32,7 +32,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 		{
 			name: "empty sub distributors",
 			msg: types.MsgUpdateParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				SubDistributors: []types.SubDistributor{
 					{
 						Name:         "",
@@ -47,7 +47,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 		{
 			name: "correct denom",
 			msg: types.MsgUpdateParams{
-				Authority:       testenv.GetAuthority(),
+				Authority:       appparams.GetAuthority(),
 				SubDistributors: correctSubDistributors,
 			},
 			expectError: false,
@@ -83,7 +83,7 @@ func TestMsgUpdateSubDistributorParam_ValidateBasic(t *testing.T) {
 		{
 			name: "empty sub distributor",
 			msg: types.MsgUpdateSubDistributorParam{
-				Authority:      testenv.GetAuthority(),
+				Authority:      appparams.GetAuthority(),
 				SubDistributor: &types.SubDistributor{},
 			},
 			expectError:  true,
@@ -92,7 +92,7 @@ func TestMsgUpdateSubDistributorParam_ValidateBasic(t *testing.T) {
 		{
 			name: "correct sub distributor",
 			msg: types.MsgUpdateSubDistributorParam{
-				Authority:      testenv.GetAuthority(),
+				Authority:      appparams.GetAuthority(),
 				SubDistributor: &correctSubDistributor,
 			},
 			expectError: false,
@@ -128,7 +128,7 @@ func TestMsgUpdateSubDistributorBurnShareParam_ValidateBasic(t *testing.T) {
 		{
 			name: "empty sub distributor name",
 			msg: types.MsgUpdateSubDistributorBurnShareParam{
-				Authority:          testenv.GetAuthority(),
+				Authority:          appparams.GetAuthority(),
 				SubDistributorName: "",
 				BurnShare:          sdk.MustNewDecFromStr("0.5"),
 			},
@@ -138,7 +138,7 @@ func TestMsgUpdateSubDistributorBurnShareParam_ValidateBasic(t *testing.T) {
 		{
 			name: "negative burn share",
 			msg: types.MsgUpdateSubDistributorBurnShareParam{
-				Authority:          testenv.GetAuthority(),
+				Authority:          appparams.GetAuthority(),
 				SubDistributorName: "Abc",
 				BurnShare:          sdk.MustNewDecFromStr("-0.5"),
 			},
@@ -148,7 +148,7 @@ func TestMsgUpdateSubDistributorBurnShareParam_ValidateBasic(t *testing.T) {
 		{
 			name: "correct message",
 			msg: types.MsgUpdateSubDistributorBurnShareParam{
-				Authority:          testenv.GetAuthority(),
+				Authority:          appparams.GetAuthority(),
 				SubDistributorName: "Abc",
 				BurnShare:          sdk.MustNewDecFromStr("0.5"),
 			},
@@ -185,7 +185,7 @@ func TestMsgUpdateSubDistributorDestinationShareParam_ValidateBasic(t *testing.T
 		{
 			name: "empty sub distributor name",
 			msg: types.MsgUpdateSubDistributorDestinationShareParam{
-				Authority:          testenv.GetAuthority(),
+				Authority:          appparams.GetAuthority(),
 				SubDistributorName: "",
 				DestinationName:    "123",
 				Share:              sdk.MustNewDecFromStr("0.5"),
@@ -196,7 +196,7 @@ func TestMsgUpdateSubDistributorDestinationShareParam_ValidateBasic(t *testing.T
 		{
 			name: "empty destination name",
 			msg: types.MsgUpdateSubDistributorDestinationShareParam{
-				Authority:          testenv.GetAuthority(),
+				Authority:          appparams.GetAuthority(),
 				SubDistributorName: "Abc",
 				DestinationName:    "",
 				Share:              sdk.MustNewDecFromStr("0.5"),
@@ -207,7 +207,7 @@ func TestMsgUpdateSubDistributorDestinationShareParam_ValidateBasic(t *testing.T
 		{
 			name: "negative burn share",
 			msg: types.MsgUpdateSubDistributorDestinationShareParam{
-				Authority:          testenv.GetAuthority(),
+				Authority:          appparams.GetAuthority(),
 				SubDistributorName: "Abc",
 				DestinationName:    "Abc",
 				Share:              sdk.MustNewDecFromStr("-0.5"),
@@ -218,7 +218,7 @@ func TestMsgUpdateSubDistributorDestinationShareParam_ValidateBasic(t *testing.T
 		{
 			name: "correct message",
 			msg: types.MsgUpdateSubDistributorDestinationShareParam{
-				Authority:          testenv.GetAuthority(),
+				Authority:          appparams.GetAuthority(),
 				SubDistributorName: "Abc",
 				DestinationName:    "Abc",
 				Share:              sdk.MustNewDecFromStr("0.5"),

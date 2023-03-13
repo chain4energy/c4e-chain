@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	cfemintertestutils "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	"testing"
 
@@ -75,7 +76,7 @@ func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, testenv.Additio
 		nil,
 		nil,
 		"test",
-		testenv.GetAuthority(),
+		appparams.GetAuthority(),
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())

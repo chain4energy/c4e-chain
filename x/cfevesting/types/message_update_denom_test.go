@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
@@ -25,7 +26,7 @@ func TestMsgUpdateDenomParam_ValidateBasic(t *testing.T) {
 		{
 			name: "empty denom",
 			msg: types.MsgUpdateDenomParam{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				Denom:     "",
 			},
 			expectError:  true,
@@ -34,7 +35,7 @@ func TestMsgUpdateDenomParam_ValidateBasic(t *testing.T) {
 		{
 			name: "correct denom",
 			msg: types.MsgUpdateDenomParam{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				Denom:     testenv.DefaultTestDenom,
 			},
 			expectError: false,

@@ -1,7 +1,7 @@
 package types_test
 
 import (
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -25,7 +25,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 		{
 			name: "correct config",
 			msg: types.MsgUpdateParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				MintDenom: types.DefaultMintDenom,
 				StartTime: types.DefaultStartTime,
 				Minters:   types.DefaultMinters,
@@ -35,7 +35,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 		{
 			name: "wrong mint denom",
 			msg: types.MsgUpdateParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				MintDenom: "",
 				StartTime: types.DefaultStartTime,
 				Minters:   types.DefaultMinters,
@@ -46,7 +46,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 		{
 			name: "wrong minters",
 			msg: types.MsgUpdateParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				MintDenom: types.DefaultMintDenom,
 				StartTime: types.DefaultStartTime,
 				Minters:   WrongMinters(),
@@ -85,7 +85,7 @@ func TestMsgUpdateMinters_ValidateBasic(t *testing.T) {
 		{
 			name: "correct config",
 			msg: types.MsgUpdateMintersParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				StartTime: types.DefaultStartTime,
 				Minters:   types.DefaultMinters,
 			},
@@ -94,7 +94,7 @@ func TestMsgUpdateMinters_ValidateBasic(t *testing.T) {
 		{
 			name: "wrong minters",
 			msg: types.MsgUpdateMintersParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				StartTime: types.DefaultStartTime,
 				Minters:   WrongMinters(),
 			},

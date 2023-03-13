@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"testing"
 	"time"
@@ -19,7 +20,7 @@ func TestCorrectUpdateParams(t *testing.T) {
 		StartTime: testenv.TestEnvTime,
 		Minters:   createLinearMintings(testenv.TestEnvTime),
 	}
-	testHelper.C4eMinterUtils.UpdateParams(testenv.GetAuthority(), params)
+	testHelper.C4eMinterUtils.UpdateParams(appparams.GetAuthority(), params)
 }
 
 func TestUpdateParamsWrongMInter(t *testing.T) {
@@ -32,7 +33,7 @@ func TestUpdateParamsWrongMInter(t *testing.T) {
 		StartTime: testenv.TestEnvTime,
 		Minters:   []*types.Minter{},
 	}
-	testHelper.C4eMinterUtils.UpdateParamsError(testenv.GetAuthority(), params, "minter state sequence id 1 not found in minters: invalid proposal content")
+	testHelper.C4eMinterUtils.UpdateParamsError(appparams.GetAuthority(), params, "minter state sequence id 1 not found in minters: invalid proposal content")
 }
 
 func TestUpdateParamsWrongMinterSequenceId(t *testing.T) {
@@ -45,7 +46,7 @@ func TestUpdateParamsWrongMinterSequenceId(t *testing.T) {
 		StartTime: testenv.TestEnvTime,
 		Minters:   createLinearMintings(testenv.TestEnvTime),
 	}
-	testHelper.C4eMinterUtils.UpdateParamsError(testenv.GetAuthority(), params, "minter state sequence id 10 not found in minters: invalid proposal content")
+	testHelper.C4eMinterUtils.UpdateParamsError(appparams.GetAuthority(), params, "minter state sequence id 10 not found in minters: invalid proposal content")
 }
 
 func TestUpdateParamsWrongAuthority(t *testing.T) {
