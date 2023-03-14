@@ -43,10 +43,7 @@ func (msg *MsgSendToVestingAccount) GetSignBytes() []byte {
 
 func (msg *MsgSendToVestingAccount) ValidateBasic() error {
 	_, _, err := ValidateSendToVestingAccount(msg.Owner, msg.ToAddress, msg.VestingPoolName, msg.Amount)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func ValidateSendToVestingAccount(owner string, toAddr string, vestingPoolName string, amount math.Int) (ownerAccAddress sdk.AccAddress, toAccAddress sdk.AccAddress, error error) {

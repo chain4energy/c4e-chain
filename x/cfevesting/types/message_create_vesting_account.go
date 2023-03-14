@@ -43,10 +43,7 @@ func (msg *MsgCreateVestingAccount) GetSignBytes() []byte {
 
 func (msg *MsgCreateVestingAccount) ValidateBasic() error {
 	_, _, err := ValidateCreateVestingAccount(msg.FromAddress, msg.ToAddress, msg.Amount, msg.StartTime, msg.EndTime)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func ValidateCreateVestingAccount(fromAddress string, toAddress string, amount sdk.Coins, startTime int64,

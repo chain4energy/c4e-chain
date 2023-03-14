@@ -39,20 +39,13 @@ func (msg *MsgMoveAvailableVesting) GetSignBytes() []byte {
 
 func (msg *MsgMoveAvailableVesting) ValidateBasic() error {
 	_, _, err := ValidateMsgMoveAvailableVesting(msg.FromAddress, msg.ToAddress)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func ValidateMsgMoveAvailableVesting(fromAddress string, toAddress string) (fromAccAddress sdk.AccAddress, toAccAddress sdk.AccAddress, error error) {
-	fromAccAddress, err := sdk.AccAddressFromBech32(fromAddress)
+	fromAccAddress, toAccAddress, err := ValidateAccountAddresses(fromAddress, toAddress)
 	if err != nil {
-		return nil, nil, errors.Wrap(ErrParsing, errors.Wrap(err, "move available vesting - from acc address error").Error())
-	}
-	toAccAddress, err = sdk.AccAddressFromBech32(toAddress)
-	if err != nil {
-		return nil, nil, errors.Wrap(ErrParsing, errors.Wrap(err, "move available vesting - to acc address error").Error())
+		return nil, nil, errors.Wrap(err, "move available vesting")
 	}
 
 	return fromAccAddress, toAccAddress, nil

@@ -143,9 +143,9 @@ func TestSplitVestingError(t *testing.T) {
 		createToAddressAccountBeforeSplit bool
 	}{
 		{desc: "wrong src addr", srcAddr: "invalid", dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting - from acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting: from acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
 		{desc: "wrong dst addr", srcAddr: srcAccAddr.String(), dstAddr: "invalid", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.NewInt(300)}), blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting - to acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting: to acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
 		{desc: "wrong amount - single zero", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{sdk.ZeroInt()}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "split vesting - invalid amount (coin 0denom1 amount is not positive): wrong param value"},
 		{desc: "wrong amount - single nil", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), amountToSend: createDenomCoins([]sdk.Int{{}}), blockTime: startTime.Add(-duration),

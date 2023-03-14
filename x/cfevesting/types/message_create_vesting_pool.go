@@ -45,10 +45,7 @@ func (msg *MsgCreateVestingPool) GetSignBytes() []byte {
 
 func (msg *MsgCreateVestingPool) ValidateBasic() error {
 	_, err := ValidateCreateVestingPool(msg.Owner, msg.Name, msg.Amount, msg.Duration)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func ValidateCreateVestingPool(address string, vestingPoolName string, amount math.Int, duration time.Duration) (accAddress sdk.AccAddress, error error) {

@@ -25,7 +25,7 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
 			},
 			err:    types.ErrParsing,
-			errMsg: "split vesting - from acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
+			errMsg: "split vesting: from acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "invalid to address",
@@ -35,7 +35,7 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
 			},
 			err:    types.ErrParsing,
-			errMsg: "split vesting - to acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
+			errMsg: "split vesting: to acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "invalid Amount",

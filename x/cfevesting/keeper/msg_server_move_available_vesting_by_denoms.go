@@ -13,7 +13,7 @@ func (k msgServer) MoveAvailableVestingByDenoms(goCtx context.Context, msg *type
 	defer telemetry.IncrCounter(1, types.ModuleName, "move available vesting by denoms message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	fromAccAddress, toAccAddress, err := types.ValidateMsgMoveAvailableVestingBeDenom(msg.FromAddress, msg.ToAddress)
+	fromAccAddress, toAccAddress, err := types.ValidateMsgMoveAvailableVestingByDenom(msg.FromAddress, msg.ToAddress, msg.Denoms)
 	if err != nil {
 		k.Logger(ctx).Debug("move available vesting by denoms - validation error", "error", err)
 		return nil, err

@@ -22,7 +22,7 @@ func TestMsgMoveAvailableVesting_ValidateBasic(t *testing.T) {
 				ToAddress:   sample.AccAddress(),
 			},
 			err:    types.ErrParsing,
-			errMsg: "move available vesting - from acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
+			errMsg: "move available vesting: from acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "invalid address",
@@ -31,7 +31,7 @@ func TestMsgMoveAvailableVesting_ValidateBasic(t *testing.T) {
 				ToAddress:   "invalid_address",
 			},
 			err:    types.ErrParsing,
-			errMsg: "move available vesting - to acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
+			errMsg: "move available vesting: to acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "valid address",
