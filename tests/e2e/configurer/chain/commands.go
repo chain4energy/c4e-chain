@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
+	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"os"
 	"regexp"
 	"strings"
@@ -14,30 +15,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type Params struct {
-	Key      string `json:"key"`
-	Subspace string `json:"subspace"`
-	Value    string `json:"value"`
+type CfevestingParams struct {
+	Params cfevestingmoduletypes.Params `json:"params"`
 }
 
-// QueryParams extracts the params for a given subspace and key. This is done generically via json to avoid having to
-// specify the QueryParamResponse type (which may not exist for all params).
-func (n *NodeConfig) QueryParams(subspace, key string, moduleParams *Params) {
-	cmd := []string{"c4ed", "query", "params", "subspace", subspace, key, "--output=json"}
+func (n *NodeConfig) QueryCfevestingParams(moduleParams *CfevestingParams) {
+	cmd := []string{"c4ed", "query", "cfevesting", "params", "--output=json"}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
-
 	err = json.Unmarshal(out.Bytes(), &moduleParams)
-
 	require.NoError(n.t, err)
-}
-
-func (n *NodeConfig) ValidateParams(oldParams []byte, subspace, key string) bool {
-	var moduleParams Params
-	n.QueryParams(subspace, key, &moduleParams)
-
-	return moduleParams.Value == string(oldParams)
 }
 
 func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
@@ -50,7 +38,7 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", ".c4e-chain/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", ".c4e-chain/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
 	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
@@ -70,7 +58,7 @@ func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, error
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "param-change", ".c4e-chain/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", ".c4e-chain/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
 	_, _, err = n.containerManager.ExecTxCmdWithSuccessString(n.t, n.chainId, n.Name, cmd, errorMessage)
 	require.NoError(n.t, err)
