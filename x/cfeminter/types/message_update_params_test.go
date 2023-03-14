@@ -41,7 +41,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 				Minters:   types.DefaultMinters,
 			},
 			expectError:  true,
-			errorMessage: "denom cannot be empty",
+			errorMessage: "validation error: denom cannot be empty: invalid proposal content",
 		},
 		{
 			name: "wrong minters",
@@ -52,7 +52,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 				Minters:   WrongMinters(),
 			},
 			expectError:  true,
-			errorMessage: "minter with id 1 validation error: minter config is nil",
+			errorMessage: "validation error: minter with id 1 validation error: minter config is nil: invalid proposal content",
 		},
 	}
 	for _, tt := range tests {
@@ -99,7 +99,7 @@ func TestMsgUpdateMinters_ValidateBasic(t *testing.T) {
 				Minters:   WrongMinters(),
 			},
 			expectError:  true,
-			errorMessage: "minter with id 1 validation error: minter config is nil",
+			errorMessage: "validation error: minter with id 1 validation error: minter config is nil: invalid proposal content",
 		},
 	}
 	for _, tt := range tests {
