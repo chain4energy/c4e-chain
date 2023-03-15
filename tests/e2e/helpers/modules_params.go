@@ -1,8 +1,10 @@
 package helpers
 
 import (
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"time"
@@ -29,6 +31,7 @@ var MainnetSubdistributors = []cfedistributortypes.SubDistributor{
 				Type: cfedistributortypes.Main,
 			},
 			BurnShare: sdk.ZeroDec(),
+			Shares:    []*cfedistributortypes.DestinationShare{},
 		},
 	},
 	{
@@ -86,39 +89,41 @@ var MainnetSubdistributors = []cfedistributortypes.SubDistributor{
 }
 
 var minterConfigLongEndTime = time.Now().Add(16 * oneYearDuration).UTC()
-var MainnetMinterConfigLong = cfemintertypes.MinterConfig{
+var MainnetMinterConfigLong = cfemintertypes.Params{
+	MintDenom: testenv.DefaultTestDenom,
 	StartTime: time.Now().UTC(),
-	Minters: []*cfemintertypes.LegacyMinter{
+	Minters: []*cfemintertypes.Minter{
 		{
 			SequenceId: 1,
-			Type:       cfemintertypes.ExponentialStepMintingType,
-			ExponentialStepMinting: &cfemintertypes.ExponentialStepMinting{
-				Amount:           sdk.NewInt(32000000000000),
-				AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
-				StepDuration:     oneYearDuration * 4,
-			},
-			EndTime: &minterConfigLongEndTime,
+			Config:     exponentialStepMintingConfig,
+			EndTime:    &minterConfigLongEndTime,
 		},
 	},
 }
+var exponentialStepMintingConfig, _ = codectypes.NewAnyWithValue(
+	&cfemintertypes.ExponentialStepMinting{
+		Amount:           sdk.NewInt(160000000000000),
+		AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
+		StepDuration:     time.Second * 12,
+	},
+)
+var noMintingConfig, _ = codectypes.NewAnyWithValue(
+	&cfemintertypes.NoMinting{},
+)
 var timeNow = time.Now()
 var minterConfigShortEndTime = timeNow.Add(time.Second * 48).UTC()
-var MainnetMinterConfigShort = cfemintertypes.MinterConfig{
+var MainnetMinterConfigShort = cfemintertypes.Params{
+	MintDenom: testenv.DefaultTestDenom,
 	StartTime: time.Now().UTC(),
-	Minters: []*cfemintertypes.LegacyMinter{
+	Minters: []*cfemintertypes.Minter{
 		{
 			SequenceId: 1,
-			Type:       cfemintertypes.ExponentialStepMintingType,
-			ExponentialStepMinting: &cfemintertypes.ExponentialStepMinting{
-				Amount:           sdk.NewInt(160000000000000),
-				AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
-				StepDuration:     time.Second * 12,
-			},
-			EndTime: &minterConfigShortEndTime,
+			Config:     exponentialStepMintingConfig,
+			EndTime:    &minterConfigShortEndTime,
 		},
 		{
 			SequenceId: 2,
-			Type:       cfemintertypes.NoMintingType,
+			Config:     noMintingConfig,
 		},
 	},
 }

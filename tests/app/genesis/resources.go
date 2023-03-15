@@ -1,6 +1,7 @@
 package genesis
 
 import (
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"time"
 
@@ -113,7 +114,7 @@ func CfeMinterrParams() mintertypes.Params {
 	}
 	config, _ := codectypes.NewAnyWithValue(exponentialStepMinting)
 	return mintertypes.Params{
-		MintDenom: "uc4e",
+		MintDenom: testenv.DefaultTestDenom,
 		StartTime: time.Now(),
 		Minters: []*mintertypes.Minter{
 			{
