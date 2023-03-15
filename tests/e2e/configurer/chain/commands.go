@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
+	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"os"
 	"regexp"
@@ -19,6 +22,14 @@ type CfevestingParams struct {
 	Params cfevestingmoduletypes.Params `json:"params"`
 }
 
+type CfeminterParams struct {
+	Params cfemintermoduletypes.Params `json:"params"`
+}
+
+type CfedistributorParams struct {
+	Params cfedistributormoduletypes.Params `json:"params"`
+}
+
 func (n *NodeConfig) QueryCfevestingParams(moduleParams *CfevestingParams) {
 	cmd := []string{"c4ed", "query", "cfevesting", "params", "--output=json"}
 
@@ -26,6 +37,33 @@ func (n *NodeConfig) QueryCfevestingParams(moduleParams *CfevestingParams) {
 	require.NoError(n.t, err)
 	err = json.Unmarshal(out.Bytes(), &moduleParams)
 	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryCfeminterParams(moduleParams *CfeminterParams) {
+	cmd := []string{"c4ed", "query", "cfeminter", "params", "--output=json"}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryCfedistributorParams(moduleParams *CfedistributorParams) {
+	cmd := []string{"c4ed", "query", "cfedistributor", "params", "--output=json"}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) SubmitDepositAndVoteOnProposal(proposalJson, from string, chainConfig *Config) {
+	n.SubmitParamChangeProposal(proposalJson, from)
+	chainConfig.LatestProposalNumber += 1
+	n.DepositProposal(chainConfig.LatestProposalNumber)
+	for _, n := range chainConfig.NodeConfigs {
+		n.VoteYesProposal(initialization.ValidatorWalletName, chainConfig.LatestProposalNumber)
+	}
 }
 
 func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {

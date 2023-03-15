@@ -166,8 +166,8 @@ test-e2e-params-change: e2e-setup
 test-e2e-migration: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
 
-SPECIFIC_TEST_NAME=TestMainnetVestingsMigration
-SPECIFIC_TESTING_SUITE_NAME=TestMainnetMigrationSuite
+SPECIFIC_TEST_NAME=TestCfeminterParamsProposalNoMinting
+SPECIFIC_TESTING_SUITE_NAME=TestParamsChangeSuite
 test-e2e-run-specific-test: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=true go test -mod=readonly -timeout=25m -v $ -run $(SPECIFIC_TESTING_SUITE_NAME) $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 
