@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"cosmossdk.io/math"
-	"fmt"
-	c4eapp "github.com/chain4energy/c4e-chain/app"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
@@ -12,7 +10,6 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -30,15 +27,6 @@ func TestParamsChangeSuite(t *testing.T) {
 
 func (s *ParamsSetupSuite) SetupSuite() {
 	s.BaseSetupSuite.SetupSuite(false, false)
-}
-
-var (
-	cdc codec.Codec
-)
-
-func init() {
-	encodingConfig := c4eapp.MakeEncodingConfig()
-	cdc = encodingConfig.Marshaler
 }
 
 //	func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {
@@ -143,36 +131,6 @@ func init() {
 //			"C4e node failed to validate params",
 //		)
 //	}
-//func (s *ParamsSetupSuite) cfeminterParamsChange(node *chain.NodeConfig, chainConfig *chain.Config, newDenom string, newMinterConfig cfemintertypes.MinterConfig) {
-//	newMinterJSON, err := json.Marshal(newMinterConfig)
-//	s.NoError(err)
-//	// we need to add double quotes around step_duration value because json.Marshall convert time.Duration to int64 and
-//	// cosmos sdk AminoJSON requires time.Duration to be in double quotes (same thing happens for example with sdk.Dev type)
-//	stepDurationRegex := regexp.MustCompile(`(step_duration)":([^,]*)`)
-//	newMinterJSON = []byte(stepDurationRegex.ReplaceAllString(string(newMinterJSON), "$1\":\"$2\""))
-//
-//	node.SubmitParamChangeProposal(string(proposalJSON), initialization.ValidatorWalletName)
-//
-//	chainConfig.LatestProposalNumber += 1
-//	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&proposalMessage})
-//	s.NoError(err)
-//
-//	node.SubmitParamChangeProposal(proposalJSON, initialization.ValidatorWalletName)
-//	chainConfig.LatestProposalNumber += 1
-//	node.DepositProposal(chainConfig.LatestProposalNumber)
-//	for _, n := range chainConfig.NodeConfigs {
-//		n.VoteYesProposal(initialization.ValidatorWalletName, chainConfig.LatestProposalNumber)
-//	}
-//
-//	s.Eventually(
-//		func() bool {
-//			return true // TODO: add
-//		},
-//		time.Minute,
-//		time.Second*5,
-//		"C4e node failed to retrieve params",
-//	)
-//}
 
 func (s *ParamsSetupSuite) TestCfevestingEmptyDenom() {
 	chainA := s.configurer.GetChainConfig(0)
@@ -208,7 +166,7 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenom() {
 
 	s.Eventually(
 		func() bool {
-			var params chain.CfevestingParams
+			var params cfevestingtypes.QueryParamsResponse
 			node.QueryCfevestingParams(&params)
 			return s.Equal(params.Params.Denom, newVestingDenom)
 		},
@@ -290,48 +248,9 @@ func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {
 	s.NoError(err)
 	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
 
-	var params chain.CfeminterParams
+	var params cfemintertypes.QueryParamsResponse
 	node.QueryCfeminterParams(&params)
-	//s.validateTotalSupply(node, params.Params.MintDenom, false, 25)
-	s.Eventually(
-		func() bool {
-			node.QueryCfeminterParams(&params)
-			if !(len(updateMintersParams.Minters) == len(params.Params.Minters)) {
-				return false
-			}
-			if updateMintersParams.StartTime == params.Params.StartTime {
-				return false
-			}
-			paramsMinters := params.Params.Minters
-			for i, p1 := range updateMintersParams.Minters {
-				p2 := paramsMinters[i]
-				if p1.EndTime == nil {
-					if p2.EndTime != nil {
-						return false
-					}
-				} else {
-					if p1.EndTime == p2.EndTime {
-						return false
-					}
-				}
-				if p1.SequenceId != p2.SequenceId {
-					return false
-				}
-				minterConfig1, err1 := p1.GetMinterConfig()
-				s.NoError(err1)
-				minterConfig2, err2 := p2.GetMinterConfig()
-				s.NoError(err2)
-				if minterConfig1 != minterConfig2 {
-					fmt.Println("minter configs not euqal")
-					return false
-				}
-			}
-			return true
-		},
-		time.Minute,
-		time.Second*5,
-		"C4e node failed to validate params",
-	)
+	s.ValidateNewMinterParams(node, updateMintersParams.Minters, updateMintersParams.StartTime, params.Params.MintDenom)
 }
 
 func (s *ParamsSetupSuite) TestCfeminterEmptyDenom() {
@@ -363,7 +282,7 @@ func (s *ParamsSetupSuite) TestCfeminterEmptyDenom() {
 	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&proposalMessage})
 	s.NoError(err)
 
-	node.SubmitParamChangeNotValidProposal(proposalJSON, initialization.ValidatorWalletName, "denom cannot be empty: invalid proposal message")
+	node.SubmitParamChangeNotValidProposal(proposalJSON, initialization.ValidatorWalletName, "validation error: denom cannot be empty: invalid proposal content: invalid proposal message")
 	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
 }
 
@@ -384,7 +303,7 @@ func (s *ParamsSetupSuite) TestCfeminterNoMinters() {
 	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&proposalMessage})
 	s.NoError(err)
 
-	node.SubmitParamChangeNotValidProposal(proposalJSON, initialization.ValidatorWalletName, "denom cannot be empty: invalid proposal message")
+	node.SubmitParamChangeNotValidProposal(proposalJSON, initialization.ValidatorWalletName, "validation error: no minters defined: invalid proposal content: invalid proposal message")
 	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
 }
 
@@ -415,3 +334,43 @@ func (s *ParamsSetupSuite) TestCfeminterNoMinters() {
 //	node.SubmitParamChangeNotValidProposal(string(proposalJSON), initialization.ValidatorWalletName, "invalid parameter value: there must be at least one subdistributor with the source main type")
 //	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
 //}
+
+func (s *ParamsSetupSuite) ValidateNewMinterParams(node *chain.NodeConfig, minters []*cfemintertypes.Minter, startTime time.Time, mintingDenom string) {
+	var params cfemintertypes.QueryParamsResponse
+	s.validateTotalSupply(node, mintingDenom, false, 25)
+	s.Eventually(
+		func() bool {
+			node.QueryCfeminterParams(&params)
+			paramsMinters := params.Params.Minters
+			if !(len(minters) == len(paramsMinters)) {
+				return false
+			}
+			if !startTime.Equal(params.Params.StartTime) {
+				return false
+			}
+
+			for i, minter := range minters {
+				minterFromParams := paramsMinters[i]
+				if minter.EndTime == nil {
+					if minterFromParams.EndTime != nil {
+						return false
+					}
+				} else {
+					if !minter.EndTime.Equal(*minterFromParams.EndTime) {
+						return false
+					}
+				}
+				if minter.SequenceId != minterFromParams.SequenceId {
+					return false
+				}
+				if !minter.Config.Equal(minterFromParams.Config) {
+					return false
+				}
+			}
+			return true
+		},
+		time.Minute,
+		time.Second*5,
+		"C4e node failed to validate params",
+	)
+}

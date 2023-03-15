@@ -217,5 +217,4 @@ func UpdateVestingAccountTraces(ctx sdk.Context, appKeepers cfeupgradetypes.AppK
 	for _, trace := range traces {
 		appKeepers.GetC4eVestingKeeper().SetVestingAccountTrace(ctx, trace)
 	}
-
 }

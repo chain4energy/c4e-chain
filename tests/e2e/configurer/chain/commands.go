@@ -6,6 +6,7 @@ import (
 	"github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -18,19 +19,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type CfevestingParams struct {
-	Params cfevestingmoduletypes.Params `json:"params"`
-}
-
-type CfeminterParams struct {
-	Params cfemintermoduletypes.Params `json:"params"`
-}
-
-type CfedistributorParams struct {
-	Params cfedistributormoduletypes.Params `json:"params"`
-}
-
-func (n *NodeConfig) QueryCfevestingParams(moduleParams *CfevestingParams) {
+func (n *NodeConfig) QueryCfevestingParams(moduleParams *cfevestingmoduletypes.QueryParamsResponse) {
 	cmd := []string{"c4ed", "query", "cfevesting", "params", "--output=json"}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
@@ -39,16 +28,16 @@ func (n *NodeConfig) QueryCfevestingParams(moduleParams *CfevestingParams) {
 	require.NoError(n.t, err)
 }
 
-func (n *NodeConfig) QueryCfeminterParams(moduleParams *CfeminterParams) {
+func (n *NodeConfig) QueryCfeminterParams(moduleParams *cfemintermoduletypes.QueryParamsResponse) {
 	cmd := []string{"c4ed", "query", "cfeminter", "params", "--output=json"}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
-	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	err = util.Cdc.UnmarshalJSON(out.Bytes(), moduleParams)
 	require.NoError(n.t, err)
 }
 
-func (n *NodeConfig) QueryCfedistributorParams(moduleParams *CfedistributorParams) {
+func (n *NodeConfig) QueryCfedistributorParams(moduleParams *cfedistributormoduletypes.QueryParamsResponse) {
 	cmd := []string{"c4ed", "query", "cfedistributor", "params", "--output=json"}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
