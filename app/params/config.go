@@ -2,6 +2,8 @@ package params
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/address"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -23,6 +25,7 @@ var (
 func init() {
 	SetAddressPrefixes()
 	RegisterDenoms()
+	SetAuthorityAddress()
 }
 
 func RegisterDenoms() {
@@ -52,4 +55,16 @@ func SetAddressPrefixes() {
 
 		return nil
 	})
+}
+
+var authorityAddress string
+
+// GetAuthority returns gov module authority address
+func GetAuthority() string {
+	return authorityAddress
+}
+
+// SetAuthorityAddress set gov module authority address
+func SetAuthorityAddress() {
+	authorityAddress = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 }

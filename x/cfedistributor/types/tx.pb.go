@@ -6,10 +6,18 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	_ "github.com/cosmos/cosmos-proto"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
+	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
+	io "io"
 	math "math"
+	math_bits "math/bits"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -23,20 +31,434 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type MsgUpdateParams struct {
+	// authority is the address of the governance account.
+	Authority       string           `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	SubDistributors []SubDistributor `protobuf:"bytes,2,rep,name=sub_distributors,json=subDistributors,proto3" json:"sub_distributors"`
+}
+
+func (m *MsgUpdateParams) Reset()         { *m = MsgUpdateParams{} }
+func (m *MsgUpdateParams) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateParams) ProtoMessage()    {}
+func (*MsgUpdateParams) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{0}
+}
+func (m *MsgUpdateParams) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateParams.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateParams.Merge(m, src)
+}
+func (m *MsgUpdateParams) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateParams.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateParams proto.InternalMessageInfo
+
+func (m *MsgUpdateParams) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgUpdateParams) GetSubDistributors() []SubDistributor {
+	if m != nil {
+		return m.SubDistributors
+	}
+	return nil
+}
+
+type MsgUpdateParamsResponse struct {
+}
+
+func (m *MsgUpdateParamsResponse) Reset()         { *m = MsgUpdateParamsResponse{} }
+func (m *MsgUpdateParamsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateParamsResponse) ProtoMessage()    {}
+func (*MsgUpdateParamsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{1}
+}
+func (m *MsgUpdateParamsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateParamsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateParamsResponse.Merge(m, src)
+}
+func (m *MsgUpdateParamsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateParamsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateParamsResponse proto.InternalMessageInfo
+
+type MsgUpdateSubDistributorParam struct {
+	// authority is the address of the governance account.
+	Authority      string          `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	SubDistributor *SubDistributor `protobuf:"bytes,2,opt,name=sub_distributor,json=subDistributor,proto3" json:"sub_distributor,omitempty"`
+}
+
+func (m *MsgUpdateSubDistributorParam) Reset()         { *m = MsgUpdateSubDistributorParam{} }
+func (m *MsgUpdateSubDistributorParam) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSubDistributorParam) ProtoMessage()    {}
+func (*MsgUpdateSubDistributorParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{2}
+}
+func (m *MsgUpdateSubDistributorParam) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSubDistributorParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSubDistributorParam.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSubDistributorParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorParam.Merge(m, src)
+}
+func (m *MsgUpdateSubDistributorParam) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSubDistributorParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSubDistributorParam proto.InternalMessageInfo
+
+func (m *MsgUpdateSubDistributorParam) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgUpdateSubDistributorParam) GetSubDistributor() *SubDistributor {
+	if m != nil {
+		return m.SubDistributor
+	}
+	return nil
+}
+
+type MsgUpdateSubDistributorParamResponse struct {
+}
+
+func (m *MsgUpdateSubDistributorParamResponse) Reset()         { *m = MsgUpdateSubDistributorParamResponse{} }
+func (m *MsgUpdateSubDistributorParamResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSubDistributorParamResponse) ProtoMessage()    {}
+func (*MsgUpdateSubDistributorParamResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{3}
+}
+func (m *MsgUpdateSubDistributorParamResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSubDistributorParamResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSubDistributorParamResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSubDistributorParamResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorParamResponse.Merge(m, src)
+}
+func (m *MsgUpdateSubDistributorParamResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSubDistributorParamResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorParamResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSubDistributorParamResponse proto.InternalMessageInfo
+
+type MsgUpdateSubDistributorDestinationShareParam struct {
+	Authority          string                                 `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	SubDistributorName string                                 `protobuf:"bytes,2,opt,name=sub_distributor_name,json=subDistributorName,proto3" json:"sub_distributor_name,omitempty"`
+	DestinationName    string                                 `protobuf:"bytes,3,opt,name=destination_name,json=destinationName,proto3" json:"destination_name,omitempty"`
+	Share              github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=share,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"share" yaml:"share"`
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParam) Reset() {
+	*m = MsgUpdateSubDistributorDestinationShareParam{}
+}
+func (m *MsgUpdateSubDistributorDestinationShareParam) String() string {
+	return proto.CompactTextString(m)
+}
+func (*MsgUpdateSubDistributorDestinationShareParam) ProtoMessage() {}
+func (*MsgUpdateSubDistributorDestinationShareParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{4}
+}
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParam.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParam.Merge(m, src)
+}
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSubDistributorDestinationShareParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParam proto.InternalMessageInfo
+
+func (m *MsgUpdateSubDistributorDestinationShareParam) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParam) GetSubDistributorName() string {
+	if m != nil {
+		return m.SubDistributorName
+	}
+	return ""
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParam) GetDestinationName() string {
+	if m != nil {
+		return m.DestinationName
+	}
+	return ""
+}
+
+type MsgUpdateSubDistributorDestinationShareParamResponse struct {
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) Reset() {
+	*m = MsgUpdateSubDistributorDestinationShareParamResponse{}
+}
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*MsgUpdateSubDistributorDestinationShareParamResponse) ProtoMessage() {}
+func (*MsgUpdateSubDistributorDestinationShareParamResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{5}
+}
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParamResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParamResponse.Merge(m, src)
+}
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParamResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSubDistributorDestinationShareParamResponse proto.InternalMessageInfo
+
+type MsgUpdateSubDistributorBurnShareParam struct {
+	Authority          string                                 `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	SubDistributorName string                                 `protobuf:"bytes,2,opt,name=sub_distributor_name,json=subDistributorName,proto3" json:"sub_distributor_name,omitempty"`
+	BurnShare          github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=burn_share,json=burnShare,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"burn_share" yaml:"burn_share"`
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParam) Reset()         { *m = MsgUpdateSubDistributorBurnShareParam{} }
+func (m *MsgUpdateSubDistributorBurnShareParam) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSubDistributorBurnShareParam) ProtoMessage()    {}
+func (*MsgUpdateSubDistributorBurnShareParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{6}
+}
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSubDistributorBurnShareParam.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorBurnShareParam.Merge(m, src)
+}
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSubDistributorBurnShareParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorBurnShareParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSubDistributorBurnShareParam proto.InternalMessageInfo
+
+func (m *MsgUpdateSubDistributorBurnShareParam) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParam) GetSubDistributorName() string {
+	if m != nil {
+		return m.SubDistributorName
+	}
+	return ""
+}
+
+type MsgUpdateSubDistributorBurnShareParamResponse struct {
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) Reset() {
+	*m = MsgUpdateSubDistributorBurnShareParamResponse{}
+}
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*MsgUpdateSubDistributorBurnShareParamResponse) ProtoMessage() {}
+func (*MsgUpdateSubDistributorBurnShareParamResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_666a85c20069e03a, []int{7}
+}
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSubDistributorBurnShareParamResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSubDistributorBurnShareParamResponse.Merge(m, src)
+}
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSubDistributorBurnShareParamResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSubDistributorBurnShareParamResponse proto.InternalMessageInfo
+
+func init() {
+	proto.RegisterType((*MsgUpdateParams)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateParams")
+	proto.RegisterType((*MsgUpdateParamsResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateParamsResponse")
+	proto.RegisterType((*MsgUpdateSubDistributorParam)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorParam")
+	proto.RegisterType((*MsgUpdateSubDistributorParamResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorParamResponse")
+	proto.RegisterType((*MsgUpdateSubDistributorDestinationShareParam)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShareParam")
+	proto.RegisterType((*MsgUpdateSubDistributorDestinationShareParamResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShareParamResponse")
+	proto.RegisterType((*MsgUpdateSubDistributorBurnShareParam)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareParam")
+	proto.RegisterType((*MsgUpdateSubDistributorBurnShareParamResponse)(nil), "chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareParamResponse")
+}
+
 func init() { proto.RegisterFile("c4echain/cfedistributor/tx.proto", fileDescriptor_666a85c20069e03a) }
 
 var fileDescriptor_666a85c20069e03a = []byte{
-	// 145 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x48, 0x36, 0x49, 0x4d,
-	0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x4f, 0x4e, 0x4b, 0x4d, 0xc9, 0x2c, 0x2e, 0x29, 0xca, 0x4c, 0x2a,
-	0x2d, 0xc9, 0x2f, 0xd2, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x52, 0x01, 0x4b,
-	0x9b, 0xa4, 0xe6, 0xa5, 0x16, 0xa5, 0x57, 0xea, 0xc1, 0x94, 0xeb, 0xa1, 0x2a, 0x37, 0x62, 0xe5,
-	0x62, 0xf6, 0x2d, 0x4e, 0x77, 0x0a, 0x3a, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07,
-	0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86,
-	0x28, 0x8b, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0x64, 0x13, 0xf5,
-	0x93, 0x4d, 0x52, 0x75, 0x21, 0x2e, 0xa8, 0xc0, 0x70, 0x43, 0x65, 0x41, 0x6a, 0x71, 0x12, 0x1b,
-	0xd8, 0x1d, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x8a, 0x4e, 0x5f, 0x25, 0xab, 0x00, 0x00,
-	0x00,
+	// 579 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0x4d, 0x6e, 0xd3, 0x40,
+	0x18, 0xcd, 0x34, 0x2d, 0x52, 0x3e, 0x2a, 0x52, 0xac, 0x4a, 0x4d, 0xac, 0xca, 0x89, 0xac, 0x52,
+	0xb5, 0x12, 0xb1, 0xa1, 0x04, 0x84, 0x90, 0x60, 0x61, 0xb2, 0x02, 0x15, 0x21, 0x07, 0x36, 0x95,
+	0x50, 0x34, 0x76, 0x06, 0xc7, 0x02, 0x7b, 0x22, 0xcf, 0x18, 0x35, 0x7b, 0x0e, 0xc0, 0x8a, 0x0d,
+	0x47, 0xe0, 0x1e, 0xa8, 0xcb, 0x2e, 0x11, 0x95, 0x22, 0x48, 0x6e, 0xc0, 0x05, 0x40, 0xf6, 0xe4,
+	0xcf, 0xa6, 0x01, 0xa7, 0x29, 0x2b, 0x7b, 0xbe, 0xef, 0xcd, 0x9b, 0xf7, 0x9e, 0xfd, 0x69, 0xa0,
+	0x6a, 0xd7, 0x89, 0xdd, 0xc1, 0xae, 0xaf, 0xdb, 0xaf, 0x49, 0xdb, 0x65, 0x3c, 0x70, 0xad, 0x90,
+	0xd3, 0x40, 0xe7, 0xc7, 0x5a, 0x37, 0xa0, 0x9c, 0x4a, 0x3b, 0x71, 0xbb, 0x4e, 0x7c, 0x12, 0x38,
+	0x3d, 0x6d, 0x0c, 0xd7, 0x92, 0x70, 0x79, 0xcb, 0xa6, 0xcc, 0xa3, 0x4c, 0xf7, 0x98, 0xa3, 0xbf,
+	0xbb, 0x1d, 0x3d, 0xc4, 0x76, 0x79, 0xd3, 0xa1, 0x0e, 0x8d, 0x5f, 0xf5, 0xe8, 0x6d, 0x54, 0x2d,
+	0x0b, 0x78, 0x4b, 0x34, 0xc4, 0x62, 0xd4, 0xaa, 0xcd, 0x53, 0xc4, 0x42, 0xab, 0x35, 0xb3, 0x16,
+	0x70, 0xf5, 0x23, 0x82, 0xe2, 0x21, 0x73, 0x5e, 0x76, 0xdb, 0x98, 0x93, 0xe7, 0x38, 0xc0, 0x1e,
+	0x93, 0xb6, 0xa1, 0x80, 0x43, 0xde, 0xa1, 0x81, 0xcb, 0x7b, 0x25, 0x54, 0x45, 0x7b, 0x05, 0x73,
+	0x5a, 0x90, 0x08, 0x6c, 0xa4, 0xa8, 0x58, 0x69, 0xa5, 0x9a, 0xdf, 0xbb, 0x7a, 0x50, 0xd7, 0xb2,
+	0x78, 0xd5, 0x9a, 0xa1, 0xd5, 0x98, 0x2e, 0x8d, 0xd5, 0x93, 0x7e, 0x25, 0x67, 0x16, 0x59, 0xa2,
+	0xca, 0xd4, 0x32, 0x6c, 0xa5, 0x74, 0x99, 0x84, 0x75, 0xa9, 0xcf, 0x88, 0xfa, 0x09, 0xc1, 0xf6,
+	0xa4, 0x97, 0x64, 0x8b, 0x91, 0xff, 0x30, 0xf0, 0x0a, 0x8a, 0x29, 0x03, 0xa5, 0x95, 0x2a, 0xba,
+	0xa8, 0x7e, 0xf3, 0x5a, 0x52, 0xb9, 0xba, 0x0b, 0x3b, 0x7f, 0x13, 0x37, 0x71, 0xf1, 0x0b, 0xc1,
+	0xcd, 0x39, 0xc0, 0x06, 0x61, 0xdc, 0xf5, 0x31, 0x77, 0xa9, 0xdf, 0xec, 0xe0, 0x80, 0x64, 0x71,
+	0x75, 0x0b, 0x36, 0x53, 0xae, 0x5a, 0x3e, 0xf6, 0x48, 0x6c, 0xad, 0x60, 0x4a, 0x49, 0x91, 0xcf,
+	0xb0, 0x47, 0xa4, 0x7d, 0xd8, 0x68, 0x4f, 0x0f, 0x12, 0xe8, 0x7c, 0x8c, 0x2e, 0xce, 0xd4, 0x63,
+	0xe8, 0x0b, 0x58, 0x63, 0x91, 0x90, 0xd2, 0x6a, 0xd4, 0x37, 0x1e, 0x45, 0x9f, 0xec, 0x5b, 0xbf,
+	0xb2, 0xeb, 0xb8, 0xbc, 0x13, 0x5a, 0x9a, 0x4d, 0xbd, 0xd1, 0x4f, 0x38, 0x7a, 0xd4, 0x58, 0xfb,
+	0x8d, 0xce, 0x7b, 0x5d, 0xc2, 0xb4, 0x06, 0xb1, 0x7f, 0xf6, 0x2b, 0xeb, 0x3d, 0xec, 0xbd, 0x7d,
+	0xa0, 0xc6, 0x24, 0xaa, 0x29, 0xc8, 0xd4, 0x7b, 0x50, 0x5f, 0x24, 0x80, 0x49, 0x72, 0x67, 0x08,
+	0x6e, 0xcc, 0xd9, 0x68, 0x84, 0xc1, 0xff, 0x8c, 0xcc, 0x02, 0xb0, 0xc2, 0xc0, 0x6f, 0x89, 0x30,
+	0xe2, 0xb0, 0x8c, 0xc7, 0x0b, 0x87, 0x71, 0x5d, 0x84, 0x31, 0x65, 0x52, 0xcd, 0x82, 0x35, 0x16,
+	0xae, 0xea, 0x50, 0xcb, 0x64, 0x6e, 0x1c, 0xc7, 0xc1, 0x8f, 0x35, 0xc8, 0x1f, 0x32, 0x47, 0x7a,
+	0x8f, 0x60, 0x3d, 0x31, 0xc7, 0x77, 0xb3, 0xfd, 0xcf, 0xa9, 0x31, 0x93, 0x1f, 0x5e, 0x68, 0xdb,
+	0x58, 0x8e, 0xf4, 0x19, 0x41, 0x79, 0xfe, 0x68, 0x1a, 0x0b, 0x92, 0x9f, 0xc3, 0x21, 0x3f, 0x59,
+	0x9e, 0x63, 0xa2, 0xf6, 0x0c, 0xc1, 0x7e, 0xf6, 0x11, 0x34, 0x97, 0x3a, 0xf9, 0x5c, 0x4e, 0xf9,
+	0xe8, 0xf2, 0x39, 0x27, 0xee, 0xbe, 0x20, 0x50, 0x33, 0x8c, 0xc9, 0xd3, 0xa5, 0x24, 0x24, 0xc9,
+	0xe4, 0xe6, 0x25, 0x92, 0x8d, 0x8d, 0x18, 0xe6, 0xc9, 0x40, 0x41, 0xa7, 0x03, 0x05, 0x7d, 0x1f,
+	0x28, 0xe8, 0xc3, 0x50, 0xc9, 0x9d, 0x0e, 0x95, 0xdc, 0xd7, 0xa1, 0x92, 0x3b, 0xba, 0x3f, 0x3b,
+	0x76, 0x33, 0x07, 0xeb, 0x76, 0x9d, 0xd4, 0xc4, 0x45, 0x78, 0xfc, 0xc7, 0xe5, 0x1c, 0x0d, 0xa3,
+	0x75, 0x25, 0xbe, 0x01, 0xef, 0xfc, 0x0e, 0x00, 0x00, 0xff, 0xff, 0xc1, 0x59, 0x21, 0x98, 0xc4,
+	0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -51,6 +473,11 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	// this line is used by starport scaffolding # proto/tx/rpc
+	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
+	UpdateSubDistributorParam(ctx context.Context, in *MsgUpdateSubDistributorParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorParamResponse, error)
+	UpdateSubDistributorDestinationShareParam(ctx context.Context, in *MsgUpdateSubDistributorDestinationShareParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorDestinationShareParamResponse, error)
+	UpdateSubDistributorBurnShareParam(ctx context.Context, in *MsgUpdateSubDistributorBurnShareParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorBurnShareParamResponse, error)
 }
 
 type msgClient struct {
@@ -61,22 +488,1422 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
+func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error) {
+	out := new(MsgUpdateParamsResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateParams", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateSubDistributorParam(ctx context.Context, in *MsgUpdateSubDistributorParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorParamResponse, error) {
+	out := new(MsgUpdateSubDistributorParamResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorParam", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateSubDistributorDestinationShareParam(ctx context.Context, in *MsgUpdateSubDistributorDestinationShareParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorDestinationShareParamResponse, error) {
+	out := new(MsgUpdateSubDistributorDestinationShareParamResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorDestinationShareParam", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateSubDistributorBurnShareParam(ctx context.Context, in *MsgUpdateSubDistributorBurnShareParam, opts ...grpc.CallOption) (*MsgUpdateSubDistributorBurnShareParamResponse, error) {
+	out := new(MsgUpdateSubDistributorBurnShareParamResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorBurnShareParam", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	// this line is used by starport scaffolding # proto/tx/rpc
+	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
+	UpdateSubDistributorParam(context.Context, *MsgUpdateSubDistributorParam) (*MsgUpdateSubDistributorParamResponse, error)
+	UpdateSubDistributorDestinationShareParam(context.Context, *MsgUpdateSubDistributorDestinationShareParam) (*MsgUpdateSubDistributorDestinationShareParamResponse, error)
+	UpdateSubDistributorBurnShareParam(context.Context, *MsgUpdateSubDistributorBurnShareParam) (*MsgUpdateSubDistributorBurnShareParamResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
+func (*UnimplementedMsgServer) UpdateParams(ctx context.Context, req *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
+}
+func (*UnimplementedMsgServer) UpdateSubDistributorParam(ctx context.Context, req *MsgUpdateSubDistributorParam) (*MsgUpdateSubDistributorParamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubDistributorParam not implemented")
+}
+func (*UnimplementedMsgServer) UpdateSubDistributorDestinationShareParam(ctx context.Context, req *MsgUpdateSubDistributorDestinationShareParam) (*MsgUpdateSubDistributorDestinationShareParamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubDistributorDestinationShareParam not implemented")
+}
+func (*UnimplementedMsgServer) UpdateSubDistributorBurnShareParam(ctx context.Context, req *MsgUpdateSubDistributorBurnShareParam) (*MsgUpdateSubDistributorBurnShareParamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubDistributorBurnShareParam not implemented")
+}
+
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateParams(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateParams",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateParams(ctx, req.(*MsgUpdateParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateSubDistributorParam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateSubDistributorParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateSubDistributorParam(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorParam",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateSubDistributorParam(ctx, req.(*MsgUpdateSubDistributorParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateSubDistributorDestinationShareParam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateSubDistributorDestinationShareParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateSubDistributorDestinationShareParam(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorDestinationShareParam",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateSubDistributorDestinationShareParam(ctx, req.(*MsgUpdateSubDistributorDestinationShareParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateSubDistributorBurnShareParam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateSubDistributorBurnShareParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateSubDistributorBurnShareParam(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfedistributor.Msg/UpdateSubDistributorBurnShareParam",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateSubDistributorBurnShareParam(ctx, req.(*MsgUpdateSubDistributorBurnShareParam))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "chain4energy.c4echain.cfedistributor.Msg",
 	HandlerType: (*MsgServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "c4echain/cfedistributor/tx.proto",
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "UpdateParams",
+			Handler:    _Msg_UpdateParams_Handler,
+		},
+		{
+			MethodName: "UpdateSubDistributorParam",
+			Handler:    _Msg_UpdateSubDistributorParam_Handler,
+		},
+		{
+			MethodName: "UpdateSubDistributorDestinationShareParam",
+			Handler:    _Msg_UpdateSubDistributorDestinationShareParam_Handler,
+		},
+		{
+			MethodName: "UpdateSubDistributorBurnShareParam",
+			Handler:    _Msg_UpdateSubDistributorBurnShareParam_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "c4echain/cfedistributor/tx.proto",
 }
+
+func (m *MsgUpdateParams) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateParams) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubDistributors) > 0 {
+		for iNdEx := len(m.SubDistributors) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SubDistributors[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateParamsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateParamsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateSubDistributorParam) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSubDistributorParam) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSubDistributorParam) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.SubDistributor != nil {
+		{
+			size, err := m.SubDistributor.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateSubDistributorParamResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSubDistributorParamResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSubDistributorParamResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParam) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParam) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParam) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.Share.Size()
+		i -= size
+		if _, err := m.Share.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x22
+	if len(m.DestinationName) > 0 {
+		i -= len(m.DestinationName)
+		copy(dAtA[i:], m.DestinationName)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.DestinationName)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.SubDistributorName) > 0 {
+		i -= len(m.SubDistributorName)
+		copy(dAtA[i:], m.SubDistributorName)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.SubDistributorName)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParam) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParam) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParam) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.BurnShare.Size()
+		i -= size
+		if _, err := m.BurnShare.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	if len(m.SubDistributorName) > 0 {
+		i -= len(m.SubDistributorName)
+		copy(dAtA[i:], m.SubDistributorName)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.SubDistributorName)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
+	offset -= sovTx(v)
+	base := offset
+	for v >= 1<<7 {
+		dAtA[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	dAtA[offset] = uint8(v)
+	return base
+}
+func (m *MsgUpdateParams) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.SubDistributors) > 0 {
+		for _, e := range m.SubDistributors {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgUpdateParamsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateSubDistributorParam) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.SubDistributor != nil {
+		l = m.SubDistributor.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateSubDistributorParamResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParam) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.SubDistributorName)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.DestinationName)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = m.Share.Size()
+	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParam) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.SubDistributorName)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = m.BurnShare.Size()
+	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func sovTx(x uint64) (n int) {
+	return (math_bits.Len64(x|1) + 6) / 7
+}
+func sozTx(x uint64) (n int) {
+	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *MsgUpdateParams) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateParams: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateParams: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubDistributors", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubDistributors = append(m.SubDistributors, SubDistributor{})
+			if err := m.SubDistributors[len(m.SubDistributors)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateParamsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateParamsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSubDistributorParam) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorParam: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorParam: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubDistributor", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.SubDistributor == nil {
+				m.SubDistributor = &SubDistributor{}
+			}
+			if err := m.SubDistributor.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSubDistributorParamResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorParamResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorParamResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSubDistributorDestinationShareParam) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareParam: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareParam: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubDistributorName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubDistributorName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DestinationName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DestinationName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Share", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Share.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSubDistributorDestinationShareParamResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareParamResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorDestinationShareParamResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSubDistributorBurnShareParam) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareParam: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareParam: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubDistributorName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubDistributorName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BurnShare", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.BurnShare.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSubDistributorBurnShareParamResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareParamResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSubDistributorBurnShareParamResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipTx(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
+	iNdEx := 0
+	depth := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if dAtA[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+		case 1:
+			iNdEx += 8
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if length < 0 {
+				return 0, ErrInvalidLengthTx
+			}
+			iNdEx += length
+		case 3:
+			depth++
+		case 4:
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupTx
+			}
+			depth--
+		case 5:
+			iNdEx += 4
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthTx
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
+	}
+	return 0, io.ErrUnexpectedEOF
+}
+
+var (
+	ErrInvalidLengthTx        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowTx          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupTx = fmt.Errorf("proto: unexpected end of group")
+)

@@ -98,11 +98,11 @@ func TestMoveAvailableVestingError(t *testing.T) {
 		createToAddressAccountBeforeSplit bool
 	}{
 		{desc: "wrong src addr", srcAddr: "invalid", dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting - error parsing from address: invalid: decoding bech32 failed: invalid bech32 string length 7: wrong param value"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: from acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
 		{desc: "wrong dst addr", srcAddr: srcAccAddr.String(), dstAddr: "invalid", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: split vesting coins - error parsing to address: invalid: decoding bech32 failed: invalid bech32 string length 7: wrong param value"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: to acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
 		{desc: "send disabled", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: denom1 transfers are currently disabled: send transactions are disabled", disableSend: true},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: send is disabled: wrong param value", disableSend: true},
 		{desc: "destination not allowed to received funds", srcAddr: srcAccAddr.String(), dstAddr: blockedAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: " + blockedAddr.String() + " is not allowed to receive funds: unauthorized"},
 		{desc: "destination account already exists", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), blockTime: startTime.Add(-duration),

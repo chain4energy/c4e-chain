@@ -11,9 +11,10 @@ import (
 
 func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCreateVestingAccount) (*types.MsgCreateVestingAccountResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "create vesting account message")
-	if msg.Amount.IsAnyNil() {
+	if msg.Amount == nil || msg.Amount.IsAnyNil() {
 		return nil, sdkerrors.Wrap(types.ErrParam, "create vesting account - amount is nil")
 	}
+
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	defer func() {

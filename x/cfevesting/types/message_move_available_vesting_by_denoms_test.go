@@ -6,7 +6,6 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -24,8 +23,8 @@ func TestMsgMoveAvailableVestingByDenoms_ValidateBasic(t *testing.T) {
 				ToAddress:   sample.AccAddress(),
 				Denoms:      []string{"denom1", "denom2"},
 			},
-			err:    sdkerrors.ErrInvalidAddress,
-			errMsg: "invalid fromAddress address (decoding bech32 failed: invalid separator index -1): invalid address",
+			err:    types.ErrParsing,
+			errMsg: "move available vesting by denoms: from acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "invalid to address",
@@ -34,8 +33,8 @@ func TestMsgMoveAvailableVestingByDenoms_ValidateBasic(t *testing.T) {
 				ToAddress:   "invalid_address",
 				Denoms:      []string{"denom1", "denom2"},
 			},
-			err:    sdkerrors.ErrInvalidAddress,
-			errMsg: "invalid toAddress address (decoding bech32 failed: invalid separator index -1): invalid address",
+			err:    types.ErrParsing,
+			errMsg: "move available vesting by denoms: to acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "invalid denoms - no denoms",
@@ -44,7 +43,7 @@ func TestMsgMoveAvailableVestingByDenoms_ValidateBasic(t *testing.T) {
 				ToAddress:   sample.AccAddress(),
 			},
 			err:    types.ErrParam,
-			errMsg: "no denominations: wrong param value",
+			errMsg: "move available vesting by denoms - no denominations: wrong param value",
 		},
 		{
 			name: "invalid denoms - empty denoms",
@@ -54,7 +53,7 @@ func TestMsgMoveAvailableVestingByDenoms_ValidateBasic(t *testing.T) {
 				Denoms:      []string{},
 			},
 			err:    types.ErrParam,
-			errMsg: "no denominations: wrong param value",
+			errMsg: "move available vesting by denoms - no denominations: wrong param value",
 		},
 		{
 			name: "invalid denoms - empty denom only",
@@ -64,7 +63,7 @@ func TestMsgMoveAvailableVestingByDenoms_ValidateBasic(t *testing.T) {
 				Denoms:      []string{""},
 			},
 			err:    types.ErrParam,
-			errMsg: "empty denomination: wrong param value",
+			errMsg: "move available vesting by denoms - empty denomination at position 0: wrong param value",
 		},
 		{
 			name: "invalid denoms - empty denom at pos 0",
@@ -74,7 +73,7 @@ func TestMsgMoveAvailableVestingByDenoms_ValidateBasic(t *testing.T) {
 				Denoms:      []string{"", "denom"},
 			},
 			err:    types.ErrParam,
-			errMsg: "empty denomination at position 0: wrong param value",
+			errMsg: "move available vesting by denoms - empty denomination at position 0: wrong param value",
 		},
 		{
 			name: "invalid denoms - empty denom at pos 0",
@@ -84,7 +83,7 @@ func TestMsgMoveAvailableVestingByDenoms_ValidateBasic(t *testing.T) {
 				Denoms:      []string{"denom1", "denom2", "", "denom3"},
 			},
 			err:    types.ErrParam,
-			errMsg: "empty denomination at position 2: wrong param value",
+			errMsg: "move available vesting by denoms - empty denomination at position 2: wrong param value",
 		},
 		{
 			name: "invalid denoms - duplicated",
@@ -94,7 +93,7 @@ func TestMsgMoveAvailableVestingByDenoms_ValidateBasic(t *testing.T) {
 				Denoms:      []string{"denom1", "denom2", "denom2", "denom3"},
 			},
 			err:    types.ErrParam,
-			errMsg: "duplicate denomination denom2: wrong param value",
+			errMsg: "move available vesting by denoms - duplicate denomination denom2: wrong param value",
 		},
 		{
 			name: "invalid denoms - first duplicated",
@@ -104,7 +103,7 @@ func TestMsgMoveAvailableVestingByDenoms_ValidateBasic(t *testing.T) {
 				Denoms:      []string{"denom1", "denom2", "denom1", "denom3"},
 			},
 			err:    types.ErrParam,
-			errMsg: "duplicate denomination denom1: wrong param value",
+			errMsg: "move available vesting by denoms - duplicate denomination denom1: wrong param value",
 		},
 		{
 			name: "valid address",

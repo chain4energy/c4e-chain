@@ -115,22 +115,22 @@ func TestMoveAvailableVestingByDenomsError(t *testing.T) {
 		createToAddressAccountBeforeSplit bool
 	}{
 		{desc: "wrong src addr", srcAddr: "invalid", dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), denomsToSend: []string{TestDenomPrefix + "1"}, blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms - error parsing from address: invalid: decoding bech32 failed: invalid bech32 string length 7: wrong param value"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: from acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
 		{desc: "wrong dst addr", srcAddr: srcAccAddr.String(), dstAddr: "invalid", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), denomsToSend: []string{TestDenomPrefix + "1"}, blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: split vesting coins - error parsing to address: invalid: decoding bech32 failed: invalid bech32 string length 7: wrong param value"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: to acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
 
 		{desc: "wrong amount - empty among many", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), denomsToSend: []string{TestDenomPrefix + "1", "", TestDenomPrefix + "1"}, blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms - empty denom: wrong param value"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms - empty denomination at position 1: wrong param value"},
 		{desc: "wrong amount - all unknown", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), denomsToSend: []string{"unk1", "unk2", "unk3"}, blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: split vesting coins - no coins to split : wrong param value"},
 		{desc: "send disabled", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), denomsToSend: []string{TestDenomPrefix + "1"}, blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: denom1 transfers are currently disabled: send transactions are disabled", disableSend: true},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: send is disabled: wrong param value", disableSend: true},
 		{desc: "destination not allowed to received funds", srcAddr: srcAccAddr.String(), dstAddr: blockedAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), denomsToSend: []string{TestDenomPrefix + "1"}, blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: " + blockedAddr.String() + " is not allowed to receive funds: unauthorized"},
 		{desc: "destination account already exists", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), denomsToSend: []string{TestDenomPrefix + "1"}, blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: split vesting coins - account address: " + dstAccAddr.String() + ": entity already exists", createToAddressAccountBeforeSplit: true},
 		{desc: "no denoms to unlock", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), denomsToSend: []string{}, blockTime: startTime.Add(-duration),
-			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms: split vesting coins - no coins to split : wrong param value"},
+			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting by denoms - no denominations: wrong param value"},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			testHelper := testapp.SetupTestAppWithHeight(t, 1000)

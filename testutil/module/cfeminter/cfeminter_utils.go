@@ -5,6 +5,7 @@ import (
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"testing"
 	"time"
 
 	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
@@ -15,6 +16,15 @@ import (
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 )
+
+type C4eMinterKeeperUtils struct {
+	t                      *testing.T
+	helperCfevestingKeeper *cfemintermodulekeeper.Keeper
+}
+
+func NewC4eMinterKeeperUtils(t *testing.T, helperCfevestingKeeper *cfemintermodulekeeper.Keeper) C4eMinterKeeperUtils {
+	return C4eMinterKeeperUtils{t: t, helperCfevestingKeeper: helperCfevestingKeeper}
+}
 
 type C4eMinterUtils struct {
 	t                     require.TestingT
@@ -31,26 +41,26 @@ func NewC4eMinterUtils(t require.TestingT, helperCfeminterKeeper *cfemintermodul
 }
 
 func (m *C4eMinterUtils) SetMinterState(ctx sdk.Context, sequenceId uint32, amountMinted math.Int,
-	remainderToMint sdk.Dec, lastMintBlockTime time.Time, remainderFromPreviousPeriod sdk.Dec) {
+	remainderToMint sdk.Dec, lastMintBlockTime time.Time, remainderFromPreviousMinter sdk.Dec) {
 
 	minterState := cfemintertypes.MinterState{
 		SequenceId:                  sequenceId,
 		AmountMinted:                amountMinted,
 		RemainderToMint:             remainderToMint,
 		LastMintBlockTime:           lastMintBlockTime,
-		RemainderFromPreviousPeriod: remainderFromPreviousPeriod,
+		RemainderFromPreviousMinter: remainderFromPreviousMinter,
 	}
 	m.helperCfeminterKeeper.SetMinterState(ctx, minterState)
 }
 
 func (m *C4eMinterUtils) VerifyMinterState(ctx sdk.Context, expectedMinterStateSequenceId uint32, expectedMinterStateAmountMinted math.Int,
-	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousPeriod sdk.Dec) {
+	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousMinter sdk.Dec) {
 	expectedMinterState := cfemintertypes.MinterState{
 		SequenceId:                  expectedMinterStateSequenceId,
 		AmountMinted:                expectedMinterStateAmountMinted,
 		RemainderToMint:             expectedMinterStateRemainderToMint,
 		LastMintBlockTime:           expectedMinterStateLastMintBlockTime,
-		RemainderFromPreviousPeriod: expectedMinterStateRemainderFromPreviousPeriod,
+		RemainderFromPreviousMinter: expectedMinterStateRemainderFromPreviousMinter,
 	}
 	CompareMinterStates(m.t, expectedMinterState, m.helperCfeminterKeeper.GetMinterState(ctx))
 }
@@ -65,16 +75,29 @@ func (m *C4eMinterUtils) VerifyMinterHistory(ctx sdk.Context, expectedMinterStat
 }
 
 func (m *C4eMinterUtils) Mint(ctx sdk.Context, expectedMintedAmount math.Int, expectedMinterStateSequenceId uint32, expectedMinterStateAmountMinted math.Int,
-	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousPeriod sdk.Dec,
+	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousMinter sdk.Dec,
 	expectedMintingReceiverAmount math.Int, expectedMinterStateHistory ...cfemintertypes.MinterState) {
 	amount, err := m.helperCfeminterKeeper.Mint(ctx)
 	require.NoError(m.t, err)
 	require.Truef(m.t, expectedMintedAmount.Equal(amount), "expectedMintedAmount %s <> mintedAmount %s", expectedMintedAmount, amount)
 	m.VerifyMinterState(ctx, expectedMinterStateSequenceId, expectedMinterStateAmountMinted, expectedMinterStateRemainderToMint, expectedMinterStateLastMintBlockTime,
-		expectedMinterStateRemainderFromPreviousPeriod)
+		expectedMinterStateRemainderFromPreviousMinter)
 	m.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, routingdistributortypes.DistributorMainAccount, expectedMintingReceiverAmount)
 
 	m.VerifyMinterHistory(ctx, expectedMinterStateHistory...)
+}
+
+func (m *C4eMinterUtils) UpdateParams(ctx sdk.Context, authority string, params cfemintertypes.Params) {
+	require.NoError(m.t, m.helperCfeminterKeeper.UpdateParams(ctx, authority, params))
+	newParams := m.helperCfeminterKeeper.GetParams(ctx)
+	CompareCfeminterParams(m.t, params, newParams)
+}
+
+func (m *C4eMinterUtils) UpdateParamsError(ctx sdk.Context, authority string, params cfemintertypes.Params, error string) {
+	previousParams := m.helperCfeminterKeeper.GetParams(ctx)
+	require.EqualError(m.t, m.helperCfeminterKeeper.UpdateParams(ctx, authority, params), error)
+	newParams := m.helperCfeminterKeeper.GetParams(ctx)
+	CompareCfeminterParams(m.t, previousParams, newParams)
 }
 
 func (m *C4eMinterUtils) MintError(ctx sdk.Context, errorMessage string) {
@@ -90,8 +113,7 @@ func (m *C4eMinterUtils) ExportGenesis(ctx sdk.Context, expected cfemintertypes.
 	got := cfeminter.ExportGenesis(ctx, *m.helperCfeminterKeeper)
 	require.NotNil(m.t, got)
 
-	require.EqualValues(m.t, expected.Params.MintDenom, got.Params.MintDenom)
-	CompareMinterConfigs(m.t, expected.Params.MinterConfig, got.Params.MinterConfig)
+	CompareCfeminterParams(m.t, expected.Params, got.Params)
 	CompareMinterStates(m.t, expected.MinterState, got.MinterState)
 	require.EqualValues(m.t, len(expected.StateHistory), len(got.StateHistory))
 
@@ -129,16 +151,24 @@ func NewContextC4eMinterUtils(t require.TestingT, testContext testenv.TestContex
 }
 
 func (m *ContextC4eMinterUtils) SetMinterState(sequenceId uint32, amountMinted math.Int,
-	remainderToMint sdk.Dec, lastMintBlockTime time.Time, remainderFromPreviousPeriod sdk.Dec) {
-	m.C4eMinterUtils.SetMinterState(m.testContext.GetContext(), sequenceId, amountMinted, remainderToMint, lastMintBlockTime, remainderFromPreviousPeriod)
+	remainderToMint sdk.Dec, lastMintBlockTime time.Time, remainderFromPreviousMinter sdk.Dec) {
+	m.C4eMinterUtils.SetMinterState(m.testContext.GetContext(), sequenceId, amountMinted, remainderToMint, lastMintBlockTime, remainderFromPreviousMinter)
+}
+
+func (m *ContextC4eMinterUtils) UpdateParams(authority string, params cfemintertypes.Params) {
+	m.C4eMinterUtils.UpdateParams(m.testContext.GetContext(), authority, params)
+}
+
+func (m *ContextC4eMinterUtils) UpdateParamsError(authority string, params cfemintertypes.Params, error string) {
+	m.C4eMinterUtils.UpdateParamsError(m.testContext.GetContext(), authority, params, error)
 }
 
 func (m *ContextC4eMinterUtils) Mint(expectedMintedAmount math.Int, expectedMinterStateSequenceId uint32, expectedMinterStateAmountMinted math.Int,
-	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousPeriod sdk.Dec,
+	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousMinter sdk.Dec,
 	expectedMintingReceiverAmount math.Int, expectedMinterStateHistory ...cfemintertypes.MinterState) {
 
 	m.C4eMinterUtils.Mint(m.testContext.GetContext(), expectedMintedAmount, expectedMinterStateSequenceId, expectedMinterStateAmountMinted, expectedMinterStateRemainderToMint, expectedMinterStateLastMintBlockTime,
-		expectedMinterStateRemainderFromPreviousPeriod, expectedMintingReceiverAmount, expectedMinterStateHistory...)
+		expectedMinterStateRemainderFromPreviousMinter, expectedMintingReceiverAmount, expectedMinterStateHistory...)
 
 }
 
@@ -159,9 +189,9 @@ func (m *ContextC4eMinterUtils) ExportGenesisAndValidate() {
 }
 
 func (m *ContextC4eMinterUtils) VerifyMinterState(expectedMinterStateSequenceId uint32, expectedMinterStateAmountMinted math.Int,
-	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousPeriod sdk.Dec) {
+	expectedMinterStateRemainderToMint sdk.Dec, expectedMinterStateLastMintBlockTime time.Time, expectedMinterStateRemainderFromPreviousMinter sdk.Dec) {
 	m.C4eMinterUtils.VerifyMinterState(m.testContext.GetContext(), expectedMinterStateSequenceId, expectedMinterStateAmountMinted, expectedMinterStateRemainderToMint, expectedMinterStateLastMintBlockTime,
-		expectedMinterStateRemainderFromPreviousPeriod)
+		expectedMinterStateRemainderFromPreviousMinter)
 
 }
 

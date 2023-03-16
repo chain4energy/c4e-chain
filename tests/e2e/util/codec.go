@@ -3,6 +3,7 @@ package util
 import (
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	"github.com/chain4energy/c4e-chain/app/params"
+	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -18,6 +19,7 @@ var (
 
 func init() {
 	EncodingConfig, Cdc = initEncodingConfigAndCdc()
+	_ = cfemintermoduletypes.Amino
 }
 
 func initEncodingConfigAndCdc() (params.EncodingConfig, codec.Codec) {

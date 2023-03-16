@@ -13,7 +13,7 @@ message State {
   ];
   bool burn = 2;
   repeated cosmos.base.v1beta1.DecCoin remains = 3 [
-    (gogoproto.moretags) = "yaml:\"coin_state\"",
+    (gogoproto.moretags) = "yaml:\"remains\"",
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
     (gogoproto.nullable) = false
   ];
@@ -32,7 +32,7 @@ message Destinations {
     (gogoproto.nullable) = false
   ];
   string burn_share = 2 [
-    (gogoproto.moretags)   = "yaml:\"percent\"",
+    (gogoproto.moretags)   = "yaml:\"burn_share\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
@@ -44,7 +44,7 @@ message Destinations {
 message DestinationShare {
   string name = 1;
   string share = 2 [
-    (gogoproto.moretags)   = "yaml:\"percent\"",
+    (gogoproto.moretags)   = "yaml:\"share\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];

@@ -2,6 +2,8 @@ package cfeminter_test
 
 import (
 	"github.com/chain4energy/c4e-chain/testutil/app"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"testing"
 	"time"
 
@@ -18,17 +20,14 @@ func TestGenesis(t *testing.T) {
 	layout := "2006-01-02T15:04:05.000Z"
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
-	minterConfig := types.MinterConfig{
-		StartTime: time.Now(),
-		Minters:   createMinter(time.Now()),
-	}
+
 	genesisState := types.GenesisState{
-		Params: types.NewParams("myc4e", minterConfig),
+		Params: types.NewParams(testenv.DefaultTestDenom, time.Now(), createMinter(time.Now())),
 		MinterState: types.MinterState{
 			SequenceId:                  9,
 			AmountMinted:                sdk.NewInt(12312),
 			RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
-			RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("7654.423"),
+			RemainderFromPreviousMinter: sdk.MustNewDecFromStr("7654.423"),
 			LastMintBlockTime:           mintTime,
 		},
 
@@ -45,17 +44,14 @@ func TestGenesisWithHistory(t *testing.T) {
 	layout := "2006-01-02T15:04:05.000Z"
 	str := "2014-11-12T11:45:26.371Z"
 	mintTime, _ := time.Parse(layout, str)
-	minterConfig := types.MinterConfig{
-		StartTime: time.Now(),
-		Minters:   createMinter(time.Now()),
-	}
+
 	genesisState := types.GenesisState{
-		Params: types.NewParams("myc4e", minterConfig),
+		Params: types.NewParams(testenv.DefaultTestDenom, time.Now(), createMinter(time.Now())),
 		MinterState: types.MinterState{
 			SequenceId:                  9,
 			AmountMinted:                sdk.NewInt(12312),
 			RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
-			RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("7654.423"),
+			RemainderFromPreviousMinter: sdk.MustNewDecFromStr("7654.423"),
 			LastMintBlockTime:           mintTime,
 		},
 		StateHistory: createHistory(),
@@ -78,7 +74,7 @@ func createHistory() []*types.MinterState {
 		AmountMinted:                sdk.NewInt(324),
 		RemainderToMint:             sdk.MustNewDecFromStr("1243.221"),
 		LastMintBlockTime:           mintTime,
-		RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("3124.543"),
+		RemainderFromPreviousMinter: sdk.MustNewDecFromStr("3124.543"),
 	}
 
 	str = "2016-06-12T11:35:46.371Z"
@@ -88,7 +84,7 @@ func createHistory() []*types.MinterState {
 		AmountMinted:                sdk.NewInt(432),
 		RemainderToMint:             sdk.MustNewDecFromStr("12433.221"),
 		LastMintBlockTime:           mintTime,
-		RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("3284.543"),
+		RemainderFromPreviousMinter: sdk.MustNewDecFromStr("3284.543"),
 	}
 
 	return append(history, &state1, &state2)
@@ -98,12 +94,14 @@ func createMinter(startTime time.Time) []*types.Minter {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
+	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
-	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
+	minter3 := types.Minter{SequenceId: 3, Config: testenv.NoMintingConfig}
 
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }
