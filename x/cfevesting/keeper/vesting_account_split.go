@@ -7,6 +7,8 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
+const bankersRoundingCompensation = 1
+
 func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Coins) (*vestingtypes.ContinuousVestingAccount, error) {
 	k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins", "ownerAddress", ownerAddress, "amountToUnlock", amountToUnlock)
 	if err := amountToUnlock.Validate(); err != nil {
@@ -45,8 +47,87 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 			originalVestingDiff := originalVestingDiffDec.TruncateInt()
 			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoin(coin.Denom, originalVestingDiff))
 			if vestingCoin.Sub(vestingAcc.GetVestingCoins(ctx.BlockTime()).AmountOf(coin.Denom)).LT(coin.Amount) {
-				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoin(coin.Denom, sdk.NewInt(1)))
-				// This is to compensate bankers rounding of vesting coins calculation nad truncating of original vesting difference.
+				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoin(coin.Denom, sdk.NewInt(bankersRoundingCompensation)))
+				// Subtracting 1 is done to compensate bankers rounding of vesting coins calculation nad truncating of original vesting difference.
+				// TODO Some better explanation maybe?
+				// Variables used in the calculations are:
+				// OV - Oryginal Vesting
+				// U - the amount of time left until unlocking
+				// VgC - the Vesting Amount that corresponds to the current moment before unlocking
+				// OVnew - the newly calculated OV that allows for unlocking U
+				// a - a factor indicating what percentage of OV is currently in vesting (VgC/OV)
+				//
+				// Expected value of OVnew:
+				// OVnew = OV - (U * OV / VgC)
+				//
+				// However, since bankers rounding and truncation are used when calculating VgC, we have:
+				//
+				// OVnew = OV - truncate(U * OV / (VgC ± 0.5))
+				//
+				// Vesting Amount value before unlocking:
+				// VgC = a*OV
+				//
+				// Vesting Amount value after unlocking::
+				// VgC-after = a*OVnew
+				// VgC-after = a*(OV - truncate(U * OV / (VgC ± 0.5)))
+				//
+				// The difference between the old and new VgC is equal to amount unlocked.
+				// Unlocked = a*OV - a*(OV - truncate(U * OV / (VgC ± 0.5))) = a* truncate(U * OV / (VgC ± 0.5))
+				//
+				// Continuing by substituting
+				// Unlocked = a*truncate(U * OV / (a*OV ± 0.5))
+				//
+				// The calculation error Δ can be represented by U - Unlocked.
+				// Δ = U - a*truncate(U * OV / (a*OV ± 0.5))
+				//
+				// We must further take into account the following constraints:
+				// OV is positive integer
+				// 1 <= toUnlock <= a*OV
+				// 0 < a <=1
+				// a*OV >= 1
+				// OV >= 1
+				//
+				// Let us consider extreme cases:
+				//
+				// 1. a = 1, U = OV
+				//
+				// Δ = OV - truncate(OV * OV / (OV ± 0.5))
+				// For OV >= 1 Δ ∈ <-1 ; 0.333333> when truncate is not used
+				//
+				// -1 can only occur when OV = 1, which is an extreme case where bankers rounding does nothing (there is no really rounding and we can skip ± 0.5). Therefore, -1 will not actually occur. We have a range of (-1; 0.333333>. For truncated values <OV-0.33333; OV+1), the result after truncation is <OV-1; OV>, so:
+				// Δ ∈ <0; 1>
+				//
+				// 2. a = 1, U = 1
+				// Δ = 1 - truncate(OV / (OV ± 0.5))
+				// For OV >= 1 Δ ∈ <-1 ; 0.333333> when truncate is not used
+				// Continuing identically to case 1.
+				// Δ ∈ <0; 1>
+				//
+				// 3. a = 1/OV, U = 1
+				// This is specific case where bankers rounding return original value, because OV*a = 1 and bankers rounding of 1 is 1
+				//
+				// Δ = 1 - truncate(OV / (1))/OV = 0
+				//
+				// 4. a > 1/OV, U = 1
+				//
+				// Δ = 1 - truncate(OV / (a*OV ± 0.5))/OV
+				//
+				// a*OV > 1 => OV / (a*OV ± 0.5) < 2 *OV => truncate(OV / (a*OV ± 0.5))/OV < 2
+				// Δ > -1, OV is positive =>
+				// Δ ∈ (-1 ; 1>
+				//
+				// But for a*V ≈ 1 rounding is to 1 so truncate(OV / (a*OV ± 0.5))/OV = truncate(OV / 1)/OV = 1
+				// for a*V ≈ 1.5 rounding is to 2 so truncate(OV / (a*OV ± 0.5))/OV = truncate(OV / 2)/OV < 1
+				// For a*V ≈ 2 rounding is to 2 so truncate(OV / (a*OV ± 0.5))/OV = truncate(OV / 2)/OV < 1
+				// And farther truncate(OV / n)/OV  < 1
+				// Δ = 1 - truncate(OV / n)/OV => 0 and OV is positive integer => Δ ∈ <0 ;1>
+				//
+				// So finally:
+				// Δ ∈ <0 ;1>, as Δ can be integer only then there are only 2 possible values 0 and 1.
+				//
+				// To additionally unlock missing 1 we need to subtract it from OVnew
+
+				// Examples:
 				// VgC - vesting coins, VdC - vested coins, OV - original vesting, bt - block time
 				// VdCdec - decimal vested coins amount
 				// VgC(bt) = OV - VdC(bt) where VdC(bt) = bankersRound(VdCdec(bt))
@@ -119,43 +200,7 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 				// unlocked = VgC(half vesting time) - New VgC(half vesting time) =
 				//            999 - 501 = 498, 1 is missing
 
-				// OV = 1997
-				// VdC(half vesting time) = 998.5
-				// VgC(half vesting time) = 998.5
-				// unlocking = 499
-				// OVnew = 1997 - 499 * 1997 / 998.5) =
-				//         1997 - 998 =
-				//         999
-				// New VgC(half vesting time) = 999 - 999 / 2 =
-				//                              499.5
-				// unlocked = VgC(half vesting time) - New VgC(half vesting time) =
-				//            998.5 - 499.5 = 499
-
-				// OV = 1997
-				// VdC(half vesting time) = bankers-round(998.5) = 998
-				// VgC(half vesting time) = 1997 - 998 = 999
-				// unlocking = 499
-				// OVnew = 1997 - trunc(499 * 1997 / 999) =
-				//         1997 - trunc(997.500500501) =
-				//         1000
-				// New VgC(half vesting time) = 1000 - bankers-round(1000 / 2) =
-				//                              1000 - bankers-round(500) =
-				//                              500
-				// unlocked = VgC(half vesting time) - New VgC(half vesting time) =
-				//            999 - 500 = 499
-
 				// example: OV = 8999999999999999999, 1 hour after half of vesting time (vesting time = 1000h) passed and we want to unlock 1.
-				// VdC(half vesting time + 1h) = 8999999999999999999 * 501/1000 = 4508999999999999999.499
-				// VgC(half vesting time + 1h) = 4490999999999999999.501
-				// unlocking = 1
-				// OVnew = 8999999999999999999 - 1 * 8999999999999999999 / 4490999999999999999.501
-				//         8999999999999999999 - 2.004008016032064128 = 8999999999999999996.995991983967935872
-				// New VdC(half vesting time + 1h) = 8999999999999999996.995991983967935872 * 501/1000 = 4508999999999999998.494991983967935872
-				// New VgC(half vesting time + 1h) = 8999999999999999996.995991983967935872 - 4508999999999999998.494991983967935872 =
-				//                                   4490999999999999998.501
-				// unlocked = VgC(half vesting time + 1h) - New VgC(half vesting time) =
-				//            4490999999999999999.501 - 4490999999999999998.501 = 1, 1 is unlocked
-
 				// bankers rounding:
 				// VdC(half vesting time + 1h) = bankers-round(8999999999999999999 * 501/1000) = bankers-round(4508999999999999999.499)
 				//                               4508999999999999999
