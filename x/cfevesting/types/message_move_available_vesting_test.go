@@ -5,7 +5,6 @@ import (
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -22,8 +21,8 @@ func TestMsgMoveAvailableVesting_ValidateBasic(t *testing.T) {
 				FromAddress: "invalid_address",
 				ToAddress:   sample.AccAddress(),
 			},
-			err:    sdkerrors.ErrInvalidAddress,
-			errMsg: "invalid fromAddress address (decoding bech32 failed: invalid separator index -1): invalid address",
+			err:    types.ErrParsing,
+			errMsg: "move available vesting: from acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "invalid address",
@@ -31,8 +30,8 @@ func TestMsgMoveAvailableVesting_ValidateBasic(t *testing.T) {
 				FromAddress: sample.AccAddress(),
 				ToAddress:   "invalid_address",
 			},
-			err:    sdkerrors.ErrInvalidAddress,
-			errMsg: "invalid toAddress address (decoding bech32 failed: invalid separator index -1): invalid address",
+			err:    types.ErrParsing,
+			errMsg: "move available vesting: to acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "valid address",

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -41,7 +42,7 @@ func (msg *MsgUpdateMintersParams) ValidateBasic() error {
 		Minters:   msg.Minters,
 	}
 	if err := params.ValidateParamsMinters(); err != nil {
-		return err
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
 	}
 	return nil
 }
@@ -82,7 +83,7 @@ func (msg *MsgUpdateParams) ValidateBasic() error {
 		Minters:   msg.Minters,
 	}
 	if err := params.Validate(); err != nil {
-		return err
+		return errors.Wrapf(govtypes.ErrInvalidProposalContent, "validation error: %s", err)
 	}
 	return nil
 }

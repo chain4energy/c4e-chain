@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"testing"
 
 	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
@@ -73,7 +73,7 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, Additional
 		paramsStore,
 		nil,
 		nil,
-		testenv.GetAuthority(),
+		appparams.GetAuthority(),
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())

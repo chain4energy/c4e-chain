@@ -1,7 +1,7 @@
 package types_test
 
 import (
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -25,7 +25,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 		{
 			name: "correct config",
 			msg: types.MsgUpdateParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				MintDenom: types.DefaultMintDenom,
 				StartTime: types.DefaultStartTime,
 				Minters:   types.DefaultMinters,
@@ -35,24 +35,24 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 		{
 			name: "wrong mint denom",
 			msg: types.MsgUpdateParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				MintDenom: "",
 				StartTime: types.DefaultStartTime,
 				Minters:   types.DefaultMinters,
 			},
 			expectError:  true,
-			errorMessage: "denom cannot be empty",
+			errorMessage: "validation error: denom cannot be empty: invalid proposal content",
 		},
 		{
 			name: "wrong minters",
 			msg: types.MsgUpdateParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				MintDenom: types.DefaultMintDenom,
 				StartTime: types.DefaultStartTime,
 				Minters:   WrongMinters(),
 			},
 			expectError:  true,
-			errorMessage: "minter with id 1 validation error: minter config is nil",
+			errorMessage: "validation error: minter with id 1 validation error: minter config is nil: invalid proposal content",
 		},
 	}
 	for _, tt := range tests {
@@ -85,7 +85,7 @@ func TestMsgUpdateMinters_ValidateBasic(t *testing.T) {
 		{
 			name: "correct config",
 			msg: types.MsgUpdateMintersParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				StartTime: types.DefaultStartTime,
 				Minters:   types.DefaultMinters,
 			},
@@ -94,12 +94,12 @@ func TestMsgUpdateMinters_ValidateBasic(t *testing.T) {
 		{
 			name: "wrong minters",
 			msg: types.MsgUpdateMintersParams{
-				Authority: testenv.GetAuthority(),
+				Authority: appparams.GetAuthority(),
 				StartTime: types.DefaultStartTime,
 				Minters:   WrongMinters(),
 			},
 			expectError:  true,
-			errorMessage: "minter with id 1 validation error: minter config is nil",
+			errorMessage: "validation error: minter with id 1 validation error: minter config is nil: invalid proposal content",
 		},
 	}
 	for _, tt := range tests {

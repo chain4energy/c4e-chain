@@ -7,19 +7,19 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-const TypeMsgUpdateAllSubDistributorsParams = "update_all_subdistributors_params"
+const TypeMsgUpdateParams = "update_params"
 
-var _ sdk.Msg = &MsgUpdateAllSubDistributorsParams{}
+var _ sdk.Msg = &MsgUpdateParams{}
 
-func (msg *MsgUpdateAllSubDistributorsParams) Route() string {
+func (msg *MsgUpdateParams) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUpdateAllSubDistributorsParams) Type() string {
-	return TypeMsgUpdateAllSubDistributorsParams
+func (msg *MsgUpdateParams) Type() string {
+	return TypeMsgUpdateParams
 }
 
-func (msg *MsgUpdateAllSubDistributorsParams) GetSigners() []sdk.AccAddress {
+func (msg *MsgUpdateParams) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		panic(err)
@@ -27,12 +27,12 @@ func (msg *MsgUpdateAllSubDistributorsParams) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgUpdateAllSubDistributorsParams) GetSignBytes() []byte {
+func (msg *MsgUpdateParams) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgUpdateAllSubDistributorsParams) ValidateBasic() error {
+func (msg *MsgUpdateParams) ValidateBasic() error {
 	if msg.Authority != appparams.GetAuthority() {
 		return govtypes.ErrInvalidSigner
 	}

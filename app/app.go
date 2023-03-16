@@ -268,10 +268,6 @@ type App struct {
 	sm *module.SimulationManager
 }
 
-func (app *App) GetParamKeeper() *paramskeeper.Keeper {
-	return &app.ParamsKeeper
-}
-
 // New returns a reference to an initialized blockchain app
 func New(
 	logger log.Logger,

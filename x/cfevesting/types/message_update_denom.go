@@ -35,9 +35,5 @@ func (msg *MsgUpdateDenomParam) ValidateBasic() error {
 	if msg.Authority != appparams.GetAuthority() {
 		return govtypes.ErrInvalidSigner
 	}
-	err := Params{Denom: msg.Denom}.Validate()
-	if err != nil {
-		return err
-	}
-	return nil
+	return Params{Denom: msg.Denom}.Validate()
 }

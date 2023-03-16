@@ -7,7 +7,6 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -25,8 +24,8 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 				ToAddress:   sample.AccAddress(),
 				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
 			},
-			err:    sdkerrors.ErrInvalidAddress,
-			errMsg: "invalid fromAddress address (decoding bech32 failed: invalid separator index -1): invalid address",
+			err:    types.ErrParsing,
+			errMsg: "split vesting: from acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "invalid to address",
@@ -35,8 +34,8 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 				ToAddress:   "invalid_address",
 				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
 			},
-			err:    sdkerrors.ErrInvalidAddress,
-			errMsg: "invalid toAddress address (decoding bech32 failed: invalid separator index -1): invalid address",
+			err:    types.ErrParsing,
+			errMsg: "split vesting: to acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
 		},
 		{
 			name: "invalid Amount",
@@ -45,8 +44,8 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 				ToAddress:   sample.AccAddress(),
 				Amount:      sdk.Coins{sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2)), sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))},
 			},
-			err:    sdkerrors.ErrInvalidAddress,
-			errMsg: "invalid amount (duplicate denomination uc4e): invalid address",
+			err:    types.ErrParam,
+			errMsg: "split vesting - invalid amount (duplicate denomination uc4e): wrong param value",
 		},
 		{
 			name: "valid address",

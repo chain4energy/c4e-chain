@@ -12,13 +12,13 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 // Msg defines the Msg service.
 service Msg {
   // this line is used by starport scaffolding # proto/tx/rpc
-  rpc UpdateAllSubDistributorsParams(MsgUpdateAllSubDistributorsParams) returns (MsgUpdateAllSubDistributorsParamsResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
   rpc UpdateSubDistributorParam(MsgUpdateSubDistributorParam) returns (MsgUpdateSubDistributorParamResponse);
   rpc UpdateSubDistributorDestinationShareParam(MsgUpdateSubDistributorDestinationShareParam) returns (MsgUpdateSubDistributorDestinationShareParamResponse);
-  rpc UpdateMsgUpdateSubDistributorBurnShareParam(MsgUpdateSubDistributorBurnShareParam) returns (MsgUpdateSubDistributorBurnShareParamResponse);
+  rpc UpdateSubDistributorBurnShareParam(MsgUpdateSubDistributorBurnShareParam) returns (MsgUpdateSubDistributorBurnShareParamResponse);
 }
 
-message MsgUpdateAllSubDistributorsParams {
+message MsgUpdateParams {
   // authority is the address of the governance account.
   string authority = 1;
 
@@ -27,7 +27,7 @@ message MsgUpdateAllSubDistributorsParams {
   ];
 }
 
-message MsgUpdateAllSubDistributorsParamsResponse {}
+message MsgUpdateParamsResponse {}
 
 message MsgUpdateSubDistributorParam {
   // authority is the address of the governance account.

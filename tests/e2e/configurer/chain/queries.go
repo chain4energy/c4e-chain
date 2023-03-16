@@ -111,7 +111,7 @@ func (n *NodeConfig) QueryPropTally(proposalNumber int) (sdk.Int, sdk.Int, sdk.I
 }
 
 func (n *NodeConfig) QueryPropStatus(proposalNumber int) (string, error) {
-	path := fmt.Sprintf("cosmos/gov/v1beta1/proposals/%d", proposalNumber)
+	path := fmt.Sprintf("cosmos/gov/v1/proposals/%d", proposalNumber)
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)
 

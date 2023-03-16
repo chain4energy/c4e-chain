@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"testing"
 	"time"
 
@@ -63,7 +64,7 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight in
 		nil,
 		nil,
 		nil,
-		testenv.GetAuthority(),
+		appparams.GetAuthority(),
 	)
 
 	header := tmproto.Header{}
