@@ -125,34 +125,19 @@ func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.Weig
 		cfevestingpoolsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgSplitVesting = 10
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSplitVesting, &weightMsgSplitVesting, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgSplitVesting = defaultWeightMsgSplitVesting
-	// 	},
-	// )
+	var weightMsgSplitVesting = 50
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgSplitVesting,
 		cfevestingpoolsimulation.SimulateMsgSplitVesting(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgMoveAvailableVesting = 10
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgMoveAvailableVesting, &weightMsgMoveAvailableVesting, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgMoveAvailableVesting = defaultWeightMsgMoveAvailableVesting
-	// 	},
-	// )
+	var weightMsgMoveAvailableVesting = 50
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgMoveAvailableVesting,
 		cfevestingpoolsimulation.SimulateMsgMoveAvailableVesting(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgMoveAvailableVestingByDenoms = 10
-	// simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgMoveAvailableVestingByDenoms, &weightMsgMoveAvailableVestingByDenoms, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgMoveAvailableVestingByDenoms = defaultWeightMsgMoveAvailableVestingByDenoms
-	// 	},
-	// )
+	var weightMsgMoveAvailableVestingByDenoms = 50
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgMoveAvailableVestingByDenoms,
 		cfevestingpoolsimulation.SimulateMsgMoveAvailableVestingByDenoms(am.accountKeeper, am.bankKeeper, am.keeper),
