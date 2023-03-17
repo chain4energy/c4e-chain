@@ -25,7 +25,7 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 
 	vestingAcc, ok := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
 	if !ok {
-		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - account is not ContinuousVestingAccount", "account", ownerAccount)
+		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - account is not ContinuousVestingAccount", "ownerAddress", ownerAddress)
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "account %s is not ContinuousVestingAccount", ownerAddress)
 	}
 
