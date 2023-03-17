@@ -2,9 +2,9 @@ package simulation
 
 import (
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -20,31 +20,56 @@ func SimulateMsgMoveAvailableVestingByDenoms(
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		allVestingAccounts := k.GetAllAccountVestingPools(ctx)
-		if len(allVestingAccounts) == 0 {
-			return simtypes.NewOperationMsg(&types.MsgMoveAvailableVestingByDenoms{}, false, "", nil), nil, nil
-		}
-		randInt := helpers.RandomInt(r, len(allVestingAccounts))
-		accAddress := allVestingAccounts[randInt].Owner
-		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
-		msgSplitVesting := &types.MsgMoveAvailableVestingByDenoms{
-			FromAddress: accAddress,
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(helpers.RandomInt(r, 100000))
+		simAccount3Address := testcosmos.CreateRandomAccAddressNoBalance(helpers.RandomInt(r, 10000000))
+
+		randCoinsAmount := sdk.NewInt(helpers.RandomInt(r, 100000000000))
+		coin := sdk.NewCoin(sdk.DefaultBondDenom, randCoinsAmount)
+		coins := sdk.NewCoins(coin)
+
+		randomEndDurationToAdd := time.Duration(helpers.RandomInt(r, 10000000000))
+		randomStartDurationToSub := time.Duration(helpers.RandomInt(r, 1000000000000))
+		startTime := ctx.BlockTime()
+		msg := &types.MsgCreateVestingAccount{
+			FromAddress: simAccount.Address.String(),
 			ToAddress:   simAccount2Address,
-			Denoms:      []string{testenv.DefaultTestDenom},
+			StartTime:   startTime.Add(-randomStartDurationToSub).Unix(),
+			EndTime:     startTime.Add(randomEndDurationToAdd).Unix(),
+			Amount:      coins,
 		}
 
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		_, err := msgServer.MoveAvailableVestingByDenoms(msgServerCtx, msgSplitVesting)
+		_, err := msgServer.CreateVestingAccount(msgServerCtx, msg)
+		if err != nil {
+			k.Logger(ctx).Error("SIMULATION: Create vesting account error", err.Error())
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), ""), nil, nil
+		}
 
+		msgSplitVesting := &types.MsgMoveAvailableVestingByDenoms{
+			FromAddress: simAccount2Address,
+			ToAddress:   simAccount3Address,
+			Denoms: []string{
+				GetRandomDenom(helpers.RandomInt(r, 2)),
+			},
+		}
+
+		_, err = msgServer.MoveAvailableVestingByDenoms(msgServerCtx, msgSplitVesting)
 		if err != nil {
 			if err != nil {
 				k.Logger(ctx).Error("SIMULATION: Move available vesting be denoms error", err.Error())
 			}
-
 			return simtypes.NewOperationMsg(msgSplitVesting, false, "", nil), nil, nil
 		}
 
 		k.Logger(ctx).Debug("SIMULATION: Move available vesting be denoms - FINISHED")
 		return simtypes.NewOperationMsg(msgSplitVesting, true, "", nil), nil, nil
 	}
+}
+
+func GetRandomDenom(n int64) string {
+	if n == 0 {
+		return sdk.DefaultBondDenom
+	}
+	return "abcd"
 }
