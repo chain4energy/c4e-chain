@@ -22,6 +22,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
+	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -61,6 +63,7 @@ func BenchmarkSimTest(b *testing.B) {
 	fmt.Printf("importing genesis...\n")
 
 	var genesisState GenesisState
+	fmt.Println(genesisState)
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(b, err)
 
@@ -89,8 +92,14 @@ func BenchmarkSimTest(b *testing.B) {
 		{c4eapp1.keys[evidencetypes.StoreKey], c4eapp2.keys[evidencetypes.StoreKey], [][]byte{}},
 		{c4eapp1.keys[capabilitytypes.StoreKey], c4eapp2.keys[capabilitytypes.StoreKey], [][]byte{}},
 		{c4eapp1.keys[authzkeeper.StoreKey], c4eapp2.keys[authzkeeper.StoreKey], [][]byte{}},
+
+		// IBC
+		{c4eapp1.keys[ibchost.StoreKey], c4eapp2.keys[ibchost.StoreKey], [][]byte{}},
+		{c4eapp1.keys[ibctransfertypes.StoreKey], c4eapp2.keys[ibctransfertypes.StoreKey], [][]byte{}},
+
+		// OUR MODULES
 		{c4eapp1.keys[cfevestingtypes.StoreKey], c4eapp2.keys[cfevestingtypes.StoreKey], [][]byte{
-			cfevestingtypes.AccountVestingPoolsKeyPrefix, cfevestingtypes.VestingTypesKeyPrefix,
+			cfevestingtypes.AccountVestingPoolsKeyPrefix, cfevestingtypes.VestingTypesKeyPrefix, cfevestingtypes.ParamsKey,
 		}},
 		{c4eapp1.keys[cfedistributortypes.StoreKey], c4eapp2.keys[cfedistributortypes.StoreKey], [][]byte{
 			cfedistributortypes.StateKeyPrefix,
@@ -163,7 +172,7 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 		true,
 		map[int64]bool{},
 		DefaultNodeHome,
-		0,
+		20,
 		encoding,
 		simapp.EmptyAppOptions{},
 	)

@@ -4,6 +4,7 @@ import (
 	"github.com/chain4energy/c4e-chain/app/upgrades"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
+	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
 )
 
@@ -13,7 +14,7 @@ var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: store.StoreUpgrades{
-		Added:   []string{group.ModuleName, icahosttypes.StoreKey},
+		Added:   []string{group.ModuleName, icahosttypes.StoreKey, icacontrollertypes.StoreKey},
 		Deleted: []string{"monitoringp"},
 	},
 }

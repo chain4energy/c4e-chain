@@ -108,7 +108,7 @@ release:
 SIM_NUM_BLOCKS = 100
 SIM_BLOCK_SIZE = 200
 SIM_COMMIT = true
-SIM_SEED = 3274
+SIM_SEED = 1234
 SIMAPP = ./app
 
 test-simulation-benchmark:
