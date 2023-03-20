@@ -42,6 +42,7 @@ func CreateUpgradeHandler(
 
 			}
 		}
+
 		vmResult, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
 			return vmResult, err

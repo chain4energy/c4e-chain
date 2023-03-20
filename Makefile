@@ -105,10 +105,10 @@ release:
 
 # blockchain simulation tests
 
-SIM_NUM_BLOCKS = 528
-SIM_BLOCK_SIZE = 277
+SIM_NUM_BLOCKS = 100
+SIM_BLOCK_SIZE = 200
 SIM_COMMIT = true
-SIM_SEED = 3274
+SIM_SEED = 1234
 SIMAPP = ./app
 
 test-simulation-benchmark:
@@ -194,3 +194,4 @@ docker-build-old-chain:
 	@docker build -t chain4energy-old-dev:v1.1.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/old.Dockerfile .
 
 docker-build-all: docker-build-old-chain docker-build-debug
+
