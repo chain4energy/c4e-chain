@@ -87,7 +87,7 @@ func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, error
 
 	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", ".c4e-chain/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
 
-	_, _, err = n.containerManager.ExecTxCmdWithSuccessString(n.t, n.chainId, n.Name, cmd, errorMessage)
+	_, _, err = n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorMessage)
 	require.NoError(n.t, err)
 	err = os.Remove(localProposalFile)
 	require.NoError(n.t, err)
@@ -98,7 +98,7 @@ func (n *NodeConfig) FailIBCTransfer(from, recipient, amount string) {
 
 	cmd := []string{"c4ed", "tx", "ibc-transfer", "transfer", "transfer", "channel-0", recipient, amount, fmt.Sprintf("--from=%s", from)}
 
-	_, _, err := n.containerManager.ExecTxCmdWithSuccessString(n.t, n.chainId, n.Name, cmd, "rate limit exceeded")
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, "rate limit exceeded")
 	require.NoError(n.t, err)
 
 	n.LogActionF("Failed to send IBC transfer (as expected)")
@@ -224,4 +224,67 @@ func (n *NodeConfig) WithdrawAllAvailable(from string) {
 	require.NoError(n.t, err)
 
 	n.LogActionF("successfully withdrew all avaliable vestings")
+}
+
+func (n *NodeConfig) CreateVestingAccount(toAddress string, amount string, startTime, endTime, from string) {
+	n.LogActionF("creating vesting account")
+	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-account", toAddress, amount, startTime, endTime, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully created vesting account %s", toAddress)
+}
+
+func (n *NodeConfig) SplitVesting(toAddress string, amount string, from string) {
+	n.LogActionF("split vesting")
+	cmd := []string{"c4ed", "tx", "cfevesting", "split-vesting", toAddress, amount, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully splitted vesting to account %s", toAddress)
+}
+
+func (n *NodeConfig) SplitVestingError(toAddress string, amount string, from, errorString string) {
+	n.LogActionF("split vesting")
+	cmd := []string{"c4ed", "tx", "cfevesting", "split-vesting", toAddress, amount, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully splitted vesting to account %s", toAddress)
+}
+
+func (n *NodeConfig) MoveAvailableVesting(toAddress string, from string) {
+	n.LogActionF("creating vesting account")
+	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting", toAddress, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully moved all available vesting to account %s", toAddress)
+}
+
+func (n *NodeConfig) MoveAvailableVestingError(toAddress, from, errorString string) {
+	n.LogActionF("creating vesting account")
+	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting", toAddress, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully moved all available vesting to account %s", toAddress)
+}
+
+func (n *NodeConfig) MoveAvailableVestingByDenoms(toAddress string, denoms string, from string) {
+	n.LogActionF("move available vesting by denoms")
+	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting-by-denoms", toAddress, denoms, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully moved all available vesting by denoms to account %s", toAddress)
+}
+
+func (n *NodeConfig) MoveAvailableVestingByDenomsError(toAddress string, denoms string, from, errorString string) {
+	n.LogActionF("move available vesting by denoms")
+	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting-by-denoms", toAddress, denoms, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully moved all available vesting by denoms to account %s", toAddress)
 }

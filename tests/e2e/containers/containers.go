@@ -53,15 +53,15 @@ func NewManager(isUpgrade bool, isDebugLogEnabled bool) (docker *Manager, err er
 	return docker, nil
 }
 
-// ExecTxCmd Runs ExecTxCmdWithSuccessString searching for `code: 0`
+// ExecTxCmd Runs ExecCmdWithResponseString searching for `code: 0`
 func (m *Manager) ExecTxCmd(t *testing.T, chainId string, containerName string, command []string) (outBuff bytes.Buffer, errBuff bytes.Buffer, err error) {
-	return m.ExecTxCmdWithSuccessString(t, chainId, containerName, command, "code: 0")
+	return m.ExecCmdWithResponseString(t, chainId, containerName, command, "code: 0")
 }
 
-// ExecTxCmdWithSuccessString Runs ExecCmd, with flags for txs added.
+// ExecCmdWithResponseString Runs ExecCmd, with flags for txs added.
 // namely adding flags `--chain-id={chain-id} -b=block --yes --keyring-backend=test "--log_format=json"`,
 // and searching for `successStr`
-func (m *Manager) ExecTxCmdWithSuccessString(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
+func (m *Manager) ExecCmdWithResponseString(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
 	allTxArgs := []string{"--gas=auto", fmt.Sprintf("--chain-id=%s", chainId), "-b=block", "--yes", "--keyring-backend=test", "--log_format=json"}
 	txCommand := append(command, allTxArgs...)
 	return m.ExecCmd(t, containerName, txCommand, successStr)
