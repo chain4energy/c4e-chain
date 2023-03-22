@@ -26,7 +26,7 @@ func TestVestingSuite(t *testing.T) {
 }
 
 func (s *VestingSetupSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(false, false)
+	s.BaseSetupSuite.SetupSuite(true, false)
 }
 
 func (s *VestingSetupSuite) TestSendToVestingAccount() {
