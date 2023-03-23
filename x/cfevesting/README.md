@@ -66,24 +66,24 @@ The Chain4Energy vesting module contains the following configurations parameters
 
 Chain4Energy vesting module state contains vesting pools lists per owner.
 
-#### AccountVestingPool type
+#### AccountVestingPools type
 
 | Key           | Type                      | Description                |
 |---------------|---------------------------|----------------------------|
-| address       | string                    | Owner address              |
+| owner         | string                    | Owner address              |
 | vesting_pools | List of VestingPool types | Vesting pools of the owner |
 
 #### VestingPool type
 
-| Key              | Type          | Description                                                                        |
-|------------------|---------------|------------------------------------------------------------------------------------|
-| name             | string        | unique name per owner                                                              |
-| vesting_type     | string        | vesting type used by vesting pool (see **[Vesting Type](#vesting-type)**)          |
-| lock_start       | time.Duration | time of pool creation                                                              |
-| lock_end         | time.Duration | unlocking time (end of lock period)                                                |
-| initially_locked | math.Int       | amount of tokens locked initially in the pool                                      |
-| withdrawn        | math.Int       | amount of tokens that were already withdrawn from the pool                         |
-| sent             | math.Int       | amount of tokens that were already sent to vesting accounts from the vesting pool  |
+| Key              | Type            | Description                                                                         |
+|------------------|-----------------|-------------------------------------------------------------------------------------|
+| name             | string          | unique name per owner                                                               |
+| vesting_type     | string          | vesting type used by vesting pool (see **[Vesting Type](#vesting-type)**)           |
+| lock_start       | time.Duration   | time of pool creation                                                               |
+| lock_end         | time.Duration   | unlocking time (end of lock period)                                                 |
+| initially_locked | math.Int        | amount of tokens locked initially in the pool                                       |
+| withdrawn        | math.Int        | amount of tokens that were already withdrawn from the pool                          |
+| sent             | math.Int        | amount of tokens that were already sent to vesting accounts from the vesting pool   |
 
 ### Vesting types data dictionary
 
@@ -184,13 +184,13 @@ Withdraws all available (unlocked) tokens from the vesting pool back to the owne
 
 ``` {.go}
 type MsgWithdrawAllAvailable struct {
-	Creator string
+	Owner string
 }
 ```
 
-| Param   | Description                |
-|---------|----------------------------|
-| Creator | Vesting pool owner address |   // TODO change to owner
+| Param | Description                |
+|-------|----------------------------|
+| Owner | Vesting pool owner address |
 
 **State modifications:**
 
@@ -238,68 +238,61 @@ Chain4Energy distributor module emits the following events:
 
 #### MsgCreateVestingPool
 
-| Type            | Attribute Key       | Attribute Value         |
-|-----------------|---------------------|-------------------------|
-| NewVestingPool  | creator             | {creator_owner_address} |
-| NewVestingPool  | name                | {vesting_pool_name}     |
-| NewVestingPool  | amount              | {vesting_pool_amount}   |
-| NewVestingPool  | duration            | {lock_duration}         |
-| NewVestingPool  | vesting\_type       | {vesting\_type\_name}   |
-| message         | action              | ??                      |
-| message         | sender              | ??                      |
-| transfer        | recipient           | {moduleAccount}         |
-| transfer        | sender              | {creator}               |
-| transfer        | amount              | {amount}                |
-
-// TODO verify
+| Type            | Attribute Key | Attribute Value                                        |
+|-----------------|---------------|--------------------------------------------------------|
+| NewVestingPool  | owner         | {owner_address}                                        |
+| NewVestingPool  | name          | {vesting_pool_name}                                    |
+| NewVestingPool  | amount        | {vesting_pool_amount}                                  |
+| NewVestingPool  | duration      | {lock_duration}                                        |
+| NewVestingPool  | vesting_type  | {vesting\_type\_name}                                  |
+| message         | action        | /chain4energy.c4echain.cfevesting.MsgCreateVestingPool |
+| message         | sender        | {sender_address}                                       |
+| transfer        | recipient     | {moduleAccount}                                        |
+| transfer        | sender        | {owner_address}                                        |
+| transfer        | amount        | {amount}                                               |
 
 #### MsgSendToVestingAccount
 
 | Type                             | Attribute Key       | Attribute Value                                                                |
 |----------------------------------|---------------------|--------------------------------------------------------------------------------|
-| WithdrawAvailable                | owner\_address      | {owner_address}                                                                |
+| WithdrawAvailable                | owner               | {owner_address}                                                                |
 | WithdrawAvailable                | vesting\_pool\_name | {source\_vesting_pool_name}                                                    |
 | WithdrawAvailable                | amount              | {withdrawn_amount}                                                             |
-| NewVestingAccountFromVestingPool | owner\_address      | {owner_address}                                                                |
+| NewVestingAccount                | address             | {new\_vesting\_account\_address}                                               |
+| NewVestingAccountFromVestingPool | owner               | {owner_address}                                                                |
 | NewVestingAccountFromVestingPool | address             | {new\_vesting\_account\_address}                                               |
 | NewVestingAccountFromVestingPool | vesting\_pool\_name | {source\_vesting_pool_name}                                                    |
 | NewVestingAccountFromVestingPool | amount              | {amount_to_send_to_new\_vesting\_account}                                      |
 | NewVestingAccountFromVestingPool | restart_vesting     | {restart_vesting} see  **[Send To Vesting Account](#send-to-vesting-account)** |
-| message                          | action              | ??                                                                             |
-| message                          | sender              | ??                                                                             |
-| transfer                         | recipient           | {moduleAccount}                                                                |
+| message                          | action              | /chain4energy.c4echain.cfevesting.MsgSendToVestingAccount                      |
+| message                          | sender              | {sender_address}                                                               |
+| transfer                         | recipient           | {module_account}                                                               |
 | transfer                         | sender              | {creator}                                                                      |
 | transfer                         | amount              | {amount}                                                                       |
 
-// TODO verify
-
 #### MsgWithdrawAllAvailable
 
-| Type              | Attribute Key       | Attribute Value             |
-|-------------------|---------------------|-----------------------------|
-| WithdrawAvailable | owner\_address      | {owner_address}             |
-| WithdrawAvailable | vesting\_pool\_name | {source\_vesting_pool_name} |
-| WithdrawAvailable | amount              | {withdrawn_amount}          |
-| message           | action              | ??                          |
-| message           | sender              | ??                          |
-| transfer          | recipient           | {moduleAccount}             |
-| transfer          | sender              | {creator}                   |
-| transfer          | amount              | {amount}                    |
-
-// TODO verify
+| Type              | Attribute Key       | Attribute Value                                           |
+|-------------------|---------------------|-----------------------------------------------------------|
+| WithdrawAvailable | owner               | {owner_address}                                           |
+| WithdrawAvailable | vesting\_pool\_name | {source\_vesting_pool_name}                               |
+| WithdrawAvailable | amount              | {withdrawn_amount}                                        |
+| message           | action              | /chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailable |
+| message           | sender              | {sender_address}                                          |
+| transfer          | recipient           | {module_account}                                          |
+| transfer          | sender              | {creator}                                                 |
+| transfer          | amount              | {amount}                                                  |
 
 #### MsgCreateVestingAccount
 
-| Type                 | Attribute Key       | Attribute Value                  |
-|----------------------|---------------------|----------------------------------|
-| NewVestingAccount    | address             | {new\_vesting\_account\_address} |
-| message              | action              | ??                               |
-| message              | sender              | ??                               |
-| transfer             | recipient           | {moduleAccount}                  |
-| transfer             | sender              | {creator}                        |
-| transfer             | amount              | {amount}                         |
-
-// TODO verify - some more params
+| Type                 | Attribute Key       | Attribute Value                                           |
+|----------------------|---------------------|-----------------------------------------------------------|
+| NewVestingAccount    | address             | {new\_vesting\_account\_address}                          |
+| message              | action              | /chain4energy.c4echain.cfevesting.MsgCreateVestingAccount |
+| message              | sender              | {sender_address}                                          |
+| transfer             | recipient           | {module_account}                                          |
+| transfer             | sender              | {creator}                                                 |
+| transfer             | amount              | {amount}                                                  |
 
 ## Queries
 
@@ -413,4 +406,4 @@ Invariant validates vesting pools state. Checks if sum of all amounts locked in 
 
 ## Genesis validations
 
-TODO
+[//]: # (TODO)
