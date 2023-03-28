@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"cosmossdk.io/math"
+	"fmt"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
 	"github.com/chain4energy/c4e-chain/tests/e2e/helpers"
@@ -287,6 +288,38 @@ func (s *ParamsSetupSuite) TestCfeminterEmptyDenom() {
 	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
 }
 
+func (s *ParamsSetupSuite) TestCfeminterMinterSequenceIdNotInStateState() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
+	noMintingConfig, _ := codectypes.NewAnyWithValue(&cfemintertypes.NoMinting{})
+	linearMintingConfig, _ := codectypes.NewAnyWithValue(&cfemintertypes.LinearMinting{Amount: math.NewInt(100000)})
+	endTime := time.Now().Add(10 * time.Minute).UTC()
+	startTime := time.Now().UTC()
+	minters := []*cfemintertypes.Minter{
+		{
+			SequenceId: 50,
+			Config:     linearMintingConfig,
+			EndTime:    &endTime,
+		},
+		{
+			SequenceId: 51,
+			Config:     noMintingConfig,
+		},
+	}
+
+	proposalMessage := cfemintertypes.MsgUpdateMintersParams{
+		Authority: appparams.GetAuthority(),
+		StartTime: startTime,
+		Minters:   minters,
+	}
+	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&proposalMessage})
+	s.NoError(err)
+
+	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
+	s.ValidateProposalStatusFailed(node, chainA.LatestProposalNumber)
+}
+
 func (s *ParamsSetupSuite) TestCfeminterNoMinters() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
@@ -306,6 +339,212 @@ func (s *ParamsSetupSuite) TestCfeminterNoMinters() {
 
 	node.SubmitParamChangeNotValidProposal(proposalJSON, initialization.ValidatorWalletName, "validation error: no minters defined: invalid proposal content: invalid proposal message")
 	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
+}
+
+func (s *ParamsSetupSuite) TestCfedistributorMsgUpdateSubdistributor() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
+
+	// Set mainnet subdistributors
+	updateSubdistributors := cfedistributortypes.MsgUpdateParams{
+		Authority:       appparams.GetAuthority(),
+		SubDistributors: helpers.MainnetSubdistributors,
+	}
+
+	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&updateSubdistributors})
+	s.NoError(err)
+	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
+	s.ValidateSubdistributorParams(node, updateSubdistributors.SubDistributors)
+
+	wrongMsgUpdateSubDistributor := cfedistributortypes.MsgUpdateSubDistributorParam{
+		Authority: appparams.GetAuthority(),
+		SubDistributor: &cfedistributortypes.SubDistributor{
+			Name: "tx_fee_distributor-5",
+			Sources: []*cfedistributortypes.Account{
+				{
+					Id:   cfedistributortypes.ValidatorsRewardsCollector,
+					Type: cfedistributortypes.Main,
+				},
+			},
+			Destinations: cfedistributortypes.Destinations{
+				PrimaryShare: cfedistributortypes.Account{
+					Id:   cfedistributortypes.ValidatorsRewardsCollector,
+					Type: cfedistributortypes.Main,
+				},
+				BurnShare: sdk.ZeroDec(),
+				Shares:    nil,
+			},
+		},
+	}
+
+	proposalJSON2, err := util.NewProposalJSON([]sdk.Msg{&wrongMsgUpdateSubDistributor})
+	s.NoError(err)
+
+	node.SubmitDepositAndVoteOnProposal(proposalJSON2, initialization.ValidatorWalletName, chainA)
+	s.ValidateProposalStatusFailed(node, chainA.LatestProposalNumber)
+
+	correctMsgUpdateSubdistributor := cfedistributortypes.MsgUpdateSubDistributorParam{
+		Authority: appparams.GetAuthority(),
+		SubDistributor: &cfedistributortypes.SubDistributor{
+			Name: "tx_fee_distributor",
+			Sources: []*cfedistributortypes.Account{
+				{
+					Id:   "fee_collector",
+					Type: cfedistributortypes.ModuleAccount,
+				},
+			},
+			Destinations: cfedistributortypes.Destinations{
+				PrimaryShare: cfedistributortypes.Account{
+					Id:   "c4e_distributor",
+					Type: cfedistributortypes.Main,
+				},
+				BurnShare: sdk.MustNewDecFromStr("0.05"),
+				Shares:    []*cfedistributortypes.DestinationShare{},
+			},
+		},
+	}
+
+	proposalJSON3, err := util.NewProposalJSON([]sdk.Msg{&correctMsgUpdateSubdistributor})
+	s.NoError(err)
+
+	node.SubmitDepositAndVoteOnProposal(proposalJSON3, initialization.ValidatorWalletName, chainA)
+	var params cfedistributortypes.QueryParamsResponse
+	s.Eventually(
+		func() bool {
+			node.QueryCfedistributorParams(&params)
+			if correctMsgUpdateSubdistributor.SubDistributor.Name != params.Params.SubDistributors[0].Name {
+				return false
+			}
+			if !assert.ObjectsAreEqualValues(correctMsgUpdateSubdistributor.SubDistributor.Sources, params.Params.SubDistributors[0].Sources) {
+				return false
+			}
+			if !assert.ObjectsAreEqualValues(correctMsgUpdateSubdistributor.SubDistributor.Destinations, params.Params.SubDistributors[0].Destinations) {
+				return false
+			}
+
+			return true
+		},
+		time.Minute,
+		time.Second*5,
+		"C4e node failed to validate params",
+	)
+}
+
+func (s *ParamsSetupSuite) TestCfedistributorMsgUpdateBurnShare() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
+
+	// Set mainnet subdistributors
+	updateSubdistributors := cfedistributortypes.MsgUpdateParams{
+		Authority:       appparams.GetAuthority(),
+		SubDistributors: helpers.MainnetSubdistributors,
+	}
+
+	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&updateSubdistributors})
+	s.NoError(err)
+	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
+	s.ValidateSubdistributorParams(node, updateSubdistributors.SubDistributors)
+
+	wrongMsgUpdateSubdistributorBurnShare := cfedistributortypes.MsgUpdateSubDistributorBurnShareParam{
+		Authority:          appparams.GetAuthority(),
+		SubDistributorName: helpers.MainnetSubdistributors[0].Name + "wrongName",
+		BurnShare:          sdk.MustNewDecFromStr("0.123"),
+	}
+
+	proposalJSON2, err := util.NewProposalJSON([]sdk.Msg{&wrongMsgUpdateSubdistributorBurnShare})
+	s.NoError(err)
+
+	node.SubmitDepositAndVoteOnProposal(proposalJSON2, initialization.ValidatorWalletName, chainA)
+	s.ValidateProposalStatusFailed(node, chainA.LatestProposalNumber)
+
+	correctMsgUpdateSubdistributorBurnShare := cfedistributortypes.MsgUpdateSubDistributorBurnShareParam{
+		Authority:          appparams.GetAuthority(),
+		SubDistributorName: helpers.MainnetSubdistributors[0].Name,
+		BurnShare:          sdk.MustNewDecFromStr("0.123"),
+	}
+
+	proposalJSON3, err := util.NewProposalJSON([]sdk.Msg{&correctMsgUpdateSubdistributorBurnShare})
+	s.NoError(err)
+
+	node.SubmitDepositAndVoteOnProposal(proposalJSON3, initialization.ValidatorWalletName, chainA)
+	var params cfedistributortypes.QueryParamsResponse
+	s.Eventually(
+		func() bool {
+			node.QueryCfedistributorParams(&params)
+			if correctMsgUpdateSubdistributorBurnShare.SubDistributorName != params.Params.SubDistributors[0].Name {
+				return false
+			}
+			if !correctMsgUpdateSubdistributorBurnShare.BurnShare.Equal(params.Params.SubDistributors[0].Destinations.BurnShare) {
+				return false
+			}
+
+			return true
+		},
+		time.Minute,
+		time.Second*5,
+		"C4e node failed to validate params",
+	)
+}
+
+func (s *ParamsSetupSuite) TestCfedistributorMsgUpdateSubDistributorDestinationShareParam() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
+
+	// Set mainnet subdistributors
+	updateSubdistributors := cfedistributortypes.MsgUpdateParams{
+		Authority:       appparams.GetAuthority(),
+		SubDistributors: helpers.MainnetSubdistributors,
+	}
+
+	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&updateSubdistributors})
+	s.NoError(err)
+	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
+	s.ValidateSubdistributorParams(node, updateSubdistributors.SubDistributors)
+
+	wrongMsgUpdateSubDistributorDestinationShareParam := cfedistributortypes.MsgUpdateSubDistributorDestinationShareParam{
+		Authority:          appparams.GetAuthority(),
+		SubDistributorName: helpers.MainnetSubdistributors[1].Name,
+		DestinationName:    helpers.MainnetSubdistributors[1].Destinations.Shares[0].Name + "wrongName",
+		Share:              sdk.MustNewDecFromStr("0.123"),
+	}
+
+	proposalJSON2, err := util.NewProposalJSON([]sdk.Msg{&wrongMsgUpdateSubDistributorDestinationShareParam})
+	s.NoError(err)
+
+	node.SubmitDepositAndVoteOnProposal(proposalJSON2, initialization.ValidatorWalletName, chainA)
+	s.ValidateProposalStatusFailed(node, chainA.LatestProposalNumber)
+
+	correctMsgUpdateSubdistributorBurnShare := cfedistributortypes.MsgUpdateSubDistributorDestinationShareParam{
+		Authority:          appparams.GetAuthority(),
+		SubDistributorName: helpers.MainnetSubdistributors[1].Name,
+		DestinationName:    helpers.MainnetSubdistributors[1].Destinations.Shares[0].Name,
+		Share:              sdk.MustNewDecFromStr("0.123"),
+	}
+
+	proposalJSON3, err := util.NewProposalJSON([]sdk.Msg{&correctMsgUpdateSubdistributorBurnShare})
+	s.NoError(err)
+
+	node.SubmitDepositAndVoteOnProposal(proposalJSON3, initialization.ValidatorWalletName, chainA)
+	var params cfedistributortypes.QueryParamsResponse
+	s.Eventually(
+		func() bool {
+			node.QueryCfedistributorParams(&params)
+			if correctMsgUpdateSubdistributorBurnShare.SubDistributorName != params.Params.SubDistributors[1].Name {
+				return false
+			}
+			if !correctMsgUpdateSubdistributorBurnShare.Share.Equal(params.Params.SubDistributors[1].Destinations.Shares[0].Share) {
+				return false
+			}
+
+			return true
+		},
+		time.Minute,
+		time.Second*5,
+		"C4e node failed to validate params",
+	)
 }
 
 func (s *ParamsSetupSuite) TestCfedistributorNoSubdistributors() {
@@ -377,5 +616,21 @@ func (s *ParamsSetupSuite) ValidateSubdistributorParams(node *chain.NodeConfig, 
 		time.Minute,
 		time.Second*5,
 		"C4e node failed to validate params",
+	)
+}
+
+func (s *ParamsSetupSuite) ValidateProposalStatusFailed(node *chain.NodeConfig, proposalId int) {
+	s.Eventually(
+		func() bool {
+			status, err := node.QueryPropStatus(proposalId)
+			fmt.Println(status)
+			if err != nil || status != "PROPOSAL_STATUS_FAILED" {
+				return false
+			}
+			return true
+		},
+		time.Minute,
+		time.Second*5,
+		"C4e node failed to validate proposal status",
 	)
 }

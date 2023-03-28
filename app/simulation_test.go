@@ -67,7 +67,7 @@ func BenchmarkSimTest(b *testing.B) {
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(b, err)
 
-	c4eapp2, _, _, _ := BaseSimulationSetup(b, "goleveldb-app-sim-2", "Simulation-2")
+	c4eapp2, _, _, _, _ := BaseSimulationSetup(b, "goleveldb-app-sim-2", "Simulation-2")
 	ctxA := c4eapp1.NewContext(true, tmproto.Header{Height: c4eapp1.LastBlockHeight()})
 	ctxB := c4eapp2.NewContext(true, tmproto.Header{Height: c4eapp1.LastBlockHeight()})
 	c4eapp2.mm.InitGenesis(ctxB, c4eapp1.AppCodec(), genesisState)
@@ -123,7 +123,15 @@ func BenchmarkSimTest(b *testing.B) {
 }
 
 func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *App, simParams simulation.Params) {
-	app, _, config, db := BaseSimulationSetup(tb, dirPrevix, dbName)
+	app, _, config, db, dir := BaseSimulationSetup(tb, dirPrevix, dbName)
+
+	defer func() {
+		err := db.Close()
+		require.NoError(tb, err)
+		err = os.RemoveAll(dir)
+		require.NoError(tb, err)
+	}()
+
 	weightedOperations := simapp.SimulationOperations(app, app.AppCodec(), config)
 
 	for i, operation := range weightedOperations {
@@ -155,14 +163,9 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 	return app, simParams
 }
 
-func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, GenesisState, simulationtypes.Config, dbm.DB) {
+func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, GenesisState, simulationtypes.Config, dbm.DB, string) {
 	config, db, dir, _, _, err := simapp.SetupSimulation(dirPrevix, dbName)
 	require.NoError(tb, err, "simulation setup failed")
-	tb.Cleanup(func() {
-		db.Close()
-		err = os.RemoveAll(dir)
-		require.NoError(tb, err)
-	})
 
 	encoding := MakeEncodingConfig()
 	app := New(
@@ -178,5 +181,6 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 	)
 	genesisState := NewDefaultGenesisState(encoding.Marshaler)
 
-	return app, genesisState, config, db
+	return app, genesisState, config, db, dir
+
 }
