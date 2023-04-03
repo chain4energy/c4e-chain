@@ -1,8 +1,9 @@
 package cfevesting
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
+
+	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
@@ -24,7 +25,19 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgSplitVesting = "op_weight_msg_split_vesting"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSplitVesting int = 100
+
+	opWeightMsgMoveAvailableVesting = "op_weight_msg_move_available_vesting"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgMoveAvailableVesting int = 100
+
+	opWeightMsgMoveAvailableVestingByDenoms = "op_weight_msg_move_available_vesting_by_denoms"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgMoveAvailableVestingByDenoms int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -110,6 +123,24 @@ func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.Weig
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateWithdrawAllAvailable,
 		cfevestingpoolsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSplitVesting = 50
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSplitVesting,
+		cfevestingpoolsimulation.SimulateMsgSplitVesting(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgMoveAvailableVesting = 50
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgMoveAvailableVesting,
+		cfevestingpoolsimulation.SimulateMsgMoveAvailableVesting(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgMoveAvailableVestingByDenoms = 50
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgMoveAvailableVestingByDenoms,
+		cfevestingpoolsimulation.SimulateMsgMoveAvailableVestingByDenoms(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

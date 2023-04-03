@@ -25,7 +25,7 @@ func SimulateMsgCreateVestingAccount(
 		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
 
 		randCoinsAmount := sdk.NewInt(helpers.RandomInt(r, 1000))
-		coin := sdk.NewCoin("stake", randCoinsAmount)
+		coin := sdk.NewCoin(sdk.DefaultBondDenom, randCoinsAmount)
 		coins := sdk.NewCoins(coin)
 		randomStartDurationAdd := time.Duration(helpers.RandomInt(r, 1000000))
 		randomStartDurationEnd := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
@@ -33,8 +33,8 @@ func SimulateMsgCreateVestingAccount(
 		msg := &types.MsgCreateVestingAccount{
 			FromAddress: simAccount.Address.String(),
 			ToAddress:   simAccount2Address,
-			EndTime:     time.Now().Add(randomStartDurationAdd).Unix(),
-			StartTime:   time.Now().Add(randomStartDurationEnd).Unix(),
+			StartTime:   time.Now().Add(randomStartDurationAdd).Unix(),
+			EndTime:     time.Now().Add(randomStartDurationEnd).Unix(),
 			Amount:      coins,
 		}
 

@@ -1,19 +1,19 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 )
 
 func TestCreateVestingPool(t *testing.T) {
 	vested := sdk.NewInt(1000)
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
@@ -28,18 +28,18 @@ func TestCreateVestingPool(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
-	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []sdk.Int{vested}, []sdk.Int{sdk.ZeroInt()})
+	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []math.Int{vested}, []math.Int{sdk.ZeroInt()})
 
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, true, true, vPool2, 1200, *usedVestingType, vested, accInitBalance.Sub(vested) /*0,*/, vested, accInitBalance.Sub(vested.MulRaw(2)) /*0,*/, vested.MulRaw(2))
 
-	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1, vPool2}, []time.Duration{1000, 1200}, []types.VestingType{*usedVestingType, *usedVestingType}, []sdk.Int{vested, vested}, []sdk.Int{sdk.ZeroInt(), sdk.ZeroInt()})
+	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1, vPool2}, []time.Duration{1000, 1200}, []types.VestingType{*usedVestingType, *usedVestingType}, []math.Int{vested, vested}, []math.Int{sdk.ZeroInt(), sdk.ZeroInt()})
 
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
 func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 	vested := sdk.NewInt(1000)
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
@@ -57,7 +57,7 @@ func TestCreateVestingPoolUnknownVestingType(t *testing.T) {
 
 func TestCreateVestingPoolNameDuplication(t *testing.T) {
 	vested := sdk.NewInt(1000)
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
@@ -72,7 +72,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 
-	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []sdk.Int{vested}, []sdk.Int{sdk.ZeroInt()})
+	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*usedVestingType}, []math.Int{vested}, []math.Int{sdk.ZeroInt()})
 
 	testHelper.C4eVestingUtils.MessageCreateVestingPoolError(accAddr, vPool1, 1000, *usedVestingType, vested, "add vesting pool - vesting pool name: "+vPool1+": entity already exists")
 
@@ -81,7 +81,7 @@ func TestCreateVestingPoolNameDuplication(t *testing.T) {
 
 func TestCreateVestingPoolEmptyName(t *testing.T) {
 	vested := sdk.NewInt(1000)
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 

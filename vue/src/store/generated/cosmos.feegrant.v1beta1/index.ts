@@ -200,10 +200,11 @@ export default {
 		},
 		
 		
-		async sendMsgRevokeAllowance({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgRevokeAllowance({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.CosmosFeegrantV1Beta1.tx.sendMsgRevokeAllowance({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.CosmosFeegrantV1Beta1.tx.sendMsgRevokeAllowance({ value, fee: fullFee, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -213,10 +214,11 @@ export default {
 				}
 			}
 		},
-		async sendMsgGrantAllowance({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgGrantAllowance({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.CosmosFeegrantV1Beta1.tx.sendMsgGrantAllowance({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.CosmosFeegrantV1Beta1.tx.sendMsgGrantAllowance({ value, fee: fullFee, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {

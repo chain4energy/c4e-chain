@@ -1,0 +1,131 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfesignature;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "c4echain/cfesignature/params.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfesignature/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/c4e/signature/v1beta1/params";
+  }
+  // Queries a list of CreateReferenceId items.
+	rpc CreateReferenceId(QueryCreateReferenceIdRequest) returns (QueryCreateReferenceIdResponse) {
+		option (google.api.http).get = "/c4e/signature/v1beta1/create_reference_id/{creator}";
+	}
+
+// Queries a list of CreateStorageKey items.
+	rpc CreateStorageKey(QueryCreateStorageKeyRequest) returns (QueryCreateStorageKeyResponse) {
+		option (google.api.http).get = "/c4e/signature/v1beta1/create_storage_key/{targetAccAddress}/{referenceId}";
+	}
+
+// Queries a list of CreateReferencePayloadLink items.
+	rpc CreateReferencePayloadLink(QueryCreateReferencePayloadLinkRequest) returns (QueryCreateReferencePayloadLinkResponse) {
+		option (google.api.http).get = "/c4e/signature/v1beta1/create_reference_payload_link/{referenceId}/{payloadHash}";
+	}
+
+// Queries a list of VerifySignature items.
+	rpc VerifySignature(QueryVerifySignatureRequest) returns (QueryVerifySignatureResponse) {
+		option (google.api.http).get = "/c4e/signature/v1beta1/verify_signature/{referenceId}/{targetAccAddress}";
+	}
+
+// Queries a list of GetAccountInfo items.
+	rpc GetAccountInfo(QueryGetAccountInfoRequest) returns (QueryGetAccountInfoResponse) {
+		option (google.api.http).get = "/c4e/signature/v1beta1/get_account_info/{accAddressString}";
+	}
+
+// Queries a list of VerifyReferencePayloadLink items.
+	rpc VerifyReferencePayloadLink(QueryVerifyReferencePayloadLinkRequest) returns (QueryVerifyReferencePayloadLinkResponse) {
+		option (google.api.http).get = "/c4e/signature/v1beta1/verify_reference_payload_link/{referenceId}/{payloadHash}";
+	}
+
+// Queries a list of GetReferencePayloadLink items.
+	rpc GetReferencePayloadLink(QueryGetReferencePayloadLinkRequest) returns (QueryGetReferencePayloadLinkResponse) {
+		option (google.api.http).get = "/c4e/signature/v1beta1/get_reference_payload_link/{referenceId}";
+	}
+
+// this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCreateReferenceIdRequest {
+  string creator = 1;
+}
+
+message QueryCreateReferenceIdResponse {
+  string referenceId = 1;
+}
+
+message QueryCreateStorageKeyRequest {
+  string targetAccAddress = 1;
+  string referenceId = 2;
+}
+
+message QueryCreateStorageKeyResponse {
+  string storageKey = 1;
+}
+
+message QueryCreateReferencePayloadLinkRequest {
+  string referenceId = 1;
+  string payloadHash = 2;
+}
+
+message QueryCreateReferencePayloadLinkResponse {
+  string referenceKey = 1;
+  string referenceValue = 2;
+}
+
+message QueryVerifySignatureRequest {
+  string referenceId = 1;
+  string targetAccAddress = 2;
+}
+
+message QueryVerifySignatureResponse {
+  string signature = 1;
+  string algorithm = 2;
+  string certificate = 3;
+  string timestamp = 4;
+  string valid = 5;
+}
+
+message QueryGetAccountInfoRequest {
+  string accAddressString = 1;
+}
+
+message QueryGetAccountInfoResponse {
+  string accAddress = 1;
+  string pubKey = 2;
+}
+
+message QueryVerifyReferencePayloadLinkRequest {
+  string referenceId = 1;
+  string payloadHash = 2;
+}
+
+message QueryVerifyReferencePayloadLinkResponse {
+  bool isValid = 1;
+}
+
+message QueryGetReferencePayloadLinkRequest {
+  string referenceId = 1;
+}
+
+message QueryGetReferencePayloadLinkResponse {
+  string referencePayloadLinkValue = 1;
+}
+
+// this line is used by starport scaffolding # 3

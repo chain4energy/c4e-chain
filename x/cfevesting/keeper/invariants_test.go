@@ -2,11 +2,11 @@ package keeper_test
 
 import (
 	"fmt"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -142,7 +142,7 @@ func TestVestingPoolConsistentDataInvariantWrongWithdrawnPlusSent(t *testing.T) 
 
 func TestCheckModuleAccountInvariantCorrect(t *testing.T) {
 	accounts, _ := testcosmos.CreateAccounts(1, 0)
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(30))
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(70), types.ModuleName)
 	testHelper.C4eVestingUtils.CheckModuleAccountInvariant(false,
@@ -152,7 +152,7 @@ func TestCheckModuleAccountInvariantCorrect(t *testing.T) {
 
 func TestCheckModuleAccountInvariantMamyAccountVestingPoolsCorrect(t *testing.T) {
 	accounts, _ := testcosmos.CreateAccounts(3, 0)
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 10, sdk.NewInt(100), sdk.NewInt(30))
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[1].String(), 10, sdk.NewInt(50), sdk.NewInt(20))
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[2].String(), 10, sdk.NewInt(80), sdk.NewInt(54))
@@ -165,7 +165,7 @@ func TestCheckModuleAccountInvariantMamyAccountVestingPoolsCorrect(t *testing.T)
 
 func TestCheckModuleAccountInvariantNoModuleAccount(t *testing.T) {
 	accounts, _ := testcosmos.CreateAccounts(1, 0)
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(50))
 
 	testHelper.C4eVestingUtils.CheckModuleAccountInvariant(true,
@@ -175,7 +175,7 @@ func TestCheckModuleAccountInvariantNoModuleAccount(t *testing.T) {
 
 func TestCheckModuleAccountInvariantWrongBalance(t *testing.T) {
 	accounts, _ := testcosmos.CreateAccounts(1, 0)
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eVestingUtils.SetupAccountVestingPools(accounts[0].String(), 1, sdk.NewInt(100), sdk.NewInt(30))
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(71), types.ModuleName)
 	testHelper.C4eVestingUtils.CheckModuleAccountInvariant(true,

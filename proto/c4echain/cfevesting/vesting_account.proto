@@ -1,0 +1,12 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfevesting;
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
+
+message VestingAccountTrace {
+  uint64 id = 1;
+  string address = 2;
+  bool genesis = 3;
+  bool from_genesis_pool = 4;
+  bool from_genesis_account = 5;
+}

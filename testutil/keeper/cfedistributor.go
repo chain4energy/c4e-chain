@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"testing"
 
 	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
@@ -52,8 +53,8 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, Additional
 
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
 	require.NoError(t, stateStore.LoadLatestVersion())
 
 	registry := codectypes.NewInterfaceRegistry()
@@ -72,6 +73,7 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, Additional
 		paramsStore,
 		nil,
 		nil,
+		appparams.GetAuthority(),
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
@@ -102,5 +104,8 @@ func CfedistributorKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eDistributorK
 		subDistributorKeeperData.KVStoreKey,
 		subDistributorKeeperData.Subspace,
 	)
+	keyTable := types.ParamKeyTable() //nolint:staticcheck
+	utils.Subspace.WithKeyTable(keyTable)
+
 	return &utils, ctx
 }

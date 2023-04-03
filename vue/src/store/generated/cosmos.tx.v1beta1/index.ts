@@ -3,6 +3,7 @@ import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-cli
 import { Tx } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
 import { TxRaw } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
 import { SignDoc } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
+import { SignDocDirectAux } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
 import { TxBody } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
 import { AuthInfo } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
 import { SignerInfo } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
@@ -10,9 +11,11 @@ import { ModeInfo } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/typ
 import { ModeInfo_Single } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
 import { ModeInfo_Multi } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
 import { Fee } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
+import { Tip } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
+import { AuxSignerData } from "chain4energy-c4e-chain-client-ts/cosmos.tx.v1beta1/types"
 
 
-export { Tx, TxRaw, SignDoc, TxBody, AuthInfo, SignerInfo, ModeInfo, ModeInfo_Single, ModeInfo_Multi, Fee };
+export { Tx, TxRaw, SignDoc, SignDocDirectAux, TxBody, AuthInfo, SignerInfo, ModeInfo, ModeInfo_Single, ModeInfo_Multi, Fee, Tip, AuxSignerData };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -53,6 +56,7 @@ const getDefaultState = () => {
 						Tx: getStructure(Tx.fromPartial({})),
 						TxRaw: getStructure(TxRaw.fromPartial({})),
 						SignDoc: getStructure(SignDoc.fromPartial({})),
+						SignDocDirectAux: getStructure(SignDocDirectAux.fromPartial({})),
 						TxBody: getStructure(TxBody.fromPartial({})),
 						AuthInfo: getStructure(AuthInfo.fromPartial({})),
 						SignerInfo: getStructure(SignerInfo.fromPartial({})),
@@ -60,6 +64,8 @@ const getDefaultState = () => {
 						ModeInfo_Single: getStructure(ModeInfo_Single.fromPartial({})),
 						ModeInfo_Multi: getStructure(ModeInfo_Multi.fromPartial({})),
 						Fee: getStructure(Fee.fromPartial({})),
+						Tip: getStructure(Tip.fromPartial({})),
+						AuxSignerData: getStructure(AuxSignerData.fromPartial({})),
 						
 		},
 		_Registry: registry,

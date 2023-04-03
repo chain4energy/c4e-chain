@@ -2,9 +2,10 @@ import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-cli
 
 import { ParameterChangeProposal } from "chain4energy-c4e-chain-client-ts/cosmos.params.v1beta1/types"
 import { ParamChange } from "chain4energy-c4e-chain-client-ts/cosmos.params.v1beta1/types"
+import { Subspace } from "chain4energy-c4e-chain-client-ts/cosmos.params.v1beta1/types"
 
 
-export { ParameterChangeProposal, ParamChange };
+export { ParameterChangeProposal, ParamChange, Subspace };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -36,10 +37,12 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				Subspaces: {},
 				
 				_Structure: {
 						ParameterChangeProposal: getStructure(ParameterChangeProposal.fromPartial({})),
 						ParamChange: getStructure(ParamChange.fromPartial({})),
+						Subspace: getStructure(Subspace.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -73,6 +76,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getSubspaces: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Subspaces[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -129,6 +138,28 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QuerySubspaces({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosParamsV1Beta1.query.querySubspaces()).data
+				
+					
+				commit('QUERY', { query: 'Subspaces', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QuerySubspaces', payload: { options: { all }, params: {...key},query }})
+				return getters['getSubspaces']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QuerySubspaces API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

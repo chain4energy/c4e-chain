@@ -22,9 +22,9 @@ func SimulateWithdrawAllAvailable(
 			return simtypes.NewOperationMsg(&types.MsgWithdrawAllAvailable{}, false, "", nil), nil, nil
 		}
 		randInt := helpers.RandomInt(r, len(allVestingAccounts))
-		accAddress := allVestingAccounts[randInt].Address
+		accAddress := allVestingAccounts[randInt].Owner
 		msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
-			Creator: accAddress,
+			Owner: accAddress,
 		}
 
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)

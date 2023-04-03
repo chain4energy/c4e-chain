@@ -38,7 +38,13 @@ const getDefaultState = () => {
 	return {
 				Accounts: {},
 				Account: {},
+				AccountAddressByID: {},
 				Params: {},
+				ModuleAccounts: {},
+				ModuleAccountByName: {},
+				Bech32Prefix: {},
+				AddressBytesToString: {},
+				AddressStringToBytes: {},
 				
 				_Structure: {
 						BaseAccount: getStructure(BaseAccount.fromPartial({})),
@@ -84,11 +90,47 @@ export default {
 					}
 			return state.Account[JSON.stringify(params)] ?? {}
 		},
+				getAccountAddressByID: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.AccountAddressByID[JSON.stringify(params)] ?? {}
+		},
 				getParams: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getModuleAccounts: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ModuleAccounts[JSON.stringify(params)] ?? {}
+		},
+				getModuleAccountByName: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ModuleAccountByName[JSON.stringify(params)] ?? {}
+		},
+				getBech32Prefix: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Bech32Prefix[JSON.stringify(params)] ?? {}
+		},
+				getAddressBytesToString: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.AddressBytesToString[JSON.stringify(params)] ?? {}
+		},
+				getAddressStringToBytes: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.AddressStringToBytes[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -177,6 +219,28 @@ export default {
 		 		
 		
 		
+		async QueryAccountAddressByID({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosAuthV1Beta1.query.queryAccountAddressByID( key.id)).data
+				
+					
+				commit('QUERY', { query: 'AccountAddressByID', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAccountAddressByID', payload: { options: { all }, params: {...key},query }})
+				return getters['getAccountAddressByID']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryAccountAddressByID API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
 		async QueryParams({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
@@ -189,6 +253,116 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryModuleAccounts({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosAuthV1Beta1.query.queryModuleAccounts()).data
+				
+					
+				commit('QUERY', { query: 'ModuleAccounts', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryModuleAccounts', payload: { options: { all }, params: {...key},query }})
+				return getters['getModuleAccounts']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryModuleAccounts API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryModuleAccountByName({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosAuthV1Beta1.query.queryModuleAccountByName( key.name)).data
+				
+					
+				commit('QUERY', { query: 'ModuleAccountByName', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryModuleAccountByName', payload: { options: { all }, params: {...key},query }})
+				return getters['getModuleAccountByName']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryModuleAccountByName API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryBech32Prefix({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosAuthV1Beta1.query.queryBech32Prefix()).data
+				
+					
+				commit('QUERY', { query: 'Bech32Prefix', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryBech32Prefix', payload: { options: { all }, params: {...key},query }})
+				return getters['getBech32Prefix']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryBech32Prefix API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryAddressBytesToString({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosAuthV1Beta1.query.queryAddressBytesToString( key.address_bytes)).data
+				
+					
+				commit('QUERY', { query: 'AddressBytesToString', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAddressBytesToString', payload: { options: { all }, params: {...key},query }})
+				return getters['getAddressBytesToString']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryAddressBytesToString API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryAddressStringToBytes({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosAuthV1Beta1.query.queryAddressStringToBytes( key.address_string)).data
+				
+					
+				commit('QUERY', { query: 'AddressStringToBytes', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAddressStringToBytes', payload: { options: { all }, params: {...key},query }})
+				return getters['getAddressStringToBytes']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryAddressStringToBytes API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

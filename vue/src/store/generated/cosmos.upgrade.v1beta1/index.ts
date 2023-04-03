@@ -41,6 +41,7 @@ const getDefaultState = () => {
 				AppliedPlan: {},
 				UpgradedConsensusState: {},
 				ModuleVersions: {},
+				Authority: {},
 				
 				_Structure: {
 						Plan: getStructure(Plan.fromPartial({})),
@@ -98,6 +99,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.ModuleVersions[JSON.stringify(params)] ?? {}
+		},
+				getAuthority: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Authority[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -226,6 +233,82 @@ export default {
 		
 		
 		
+		
+		 		
+		
+		
+		async QueryAuthority({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.CosmosUpgradeV1Beta1.query.queryAuthority()).data
+				
+					
+				commit('QUERY', { query: 'Authority', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAuthority', payload: { options: { all }, params: {...key},query }})
+				return getters['getAuthority']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryAuthority API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		async sendMsgSoftwareUpgrade({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.CosmosUpgradeV1Beta1.tx.sendMsgSoftwareUpgrade({ value, fee: fullFee, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgSoftwareUpgrade:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgSoftwareUpgrade:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgCancelUpgrade({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.CosmosUpgradeV1Beta1.tx.sendMsgCancelUpgrade({ value, fee: fullFee, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCancelUpgrade:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgCancelUpgrade:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		
+		async MsgSoftwareUpgrade({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.CosmosUpgradeV1Beta1.tx.msgSoftwareUpgrade({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgSoftwareUpgrade:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgSoftwareUpgrade:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgCancelUpgrade({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.CosmosUpgradeV1Beta1.tx.msgCancelUpgrade({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCancelUpgrade:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCancelUpgrade:Create Could not create message: ' + e.message)
+				}
+			}
+		},
 		
 	}
 }

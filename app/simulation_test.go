@@ -8,6 +8,7 @@ import (
 	cfesignaturetypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -21,7 +22,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
+	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
+	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -38,8 +40,8 @@ func init() {
 }
 
 type StoreKeysPrefixes struct {
-	A        sdk.StoreKey
-	B        sdk.StoreKey
+	A        storetypes.StoreKey
+	B        storetypes.StoreKey
 	Prefixes [][]byte
 }
 
@@ -61,10 +63,11 @@ func BenchmarkSimTest(b *testing.B) {
 	fmt.Printf("importing genesis...\n")
 
 	var genesisState GenesisState
+	fmt.Println(genesisState)
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(b, err)
 
-	c4eapp2, _, _, _ := BaseSimulationSetup(b, "goleveldb-app-sim-2", "Simulation-2")
+	c4eapp2, _, _, _, _ := BaseSimulationSetup(b, "goleveldb-app-sim-2", "Simulation-2")
 	ctxA := c4eapp1.NewContext(true, tmproto.Header{Height: c4eapp1.LastBlockHeight()})
 	ctxB := c4eapp2.NewContext(true, tmproto.Header{Height: c4eapp1.LastBlockHeight()})
 	c4eapp2.mm.InitGenesis(ctxB, c4eapp1.AppCodec(), genesisState)
@@ -89,8 +92,14 @@ func BenchmarkSimTest(b *testing.B) {
 		{c4eapp1.keys[evidencetypes.StoreKey], c4eapp2.keys[evidencetypes.StoreKey], [][]byte{}},
 		{c4eapp1.keys[capabilitytypes.StoreKey], c4eapp2.keys[capabilitytypes.StoreKey], [][]byte{}},
 		{c4eapp1.keys[authzkeeper.StoreKey], c4eapp2.keys[authzkeeper.StoreKey], [][]byte{}},
+
+		// IBC
+		{c4eapp1.keys[ibchost.StoreKey], c4eapp2.keys[ibchost.StoreKey], [][]byte{}},
+		{c4eapp1.keys[ibctransfertypes.StoreKey], c4eapp2.keys[ibctransfertypes.StoreKey], [][]byte{}},
+
+		// OUR MODULES
 		{c4eapp1.keys[cfevestingtypes.StoreKey], c4eapp2.keys[cfevestingtypes.StoreKey], [][]byte{
-			cfevestingtypes.AccountVestingPoolsKeyPrefix, cfevestingtypes.VestingTypesKeyPrefix,
+			cfevestingtypes.AccountVestingPoolsKeyPrefix, cfevestingtypes.VestingTypesKeyPrefix, cfevestingtypes.ParamsKey,
 		}},
 		{c4eapp1.keys[cfedistributortypes.StoreKey], c4eapp2.keys[cfedistributortypes.StoreKey], [][]byte{
 			cfedistributortypes.StateKeyPrefix,
@@ -114,7 +123,15 @@ func BenchmarkSimTest(b *testing.B) {
 }
 
 func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *App, simParams simulation.Params) {
-	app, _, config, db := BaseSimulationSetup(tb, dirPrevix, dbName)
+	app, _, config, db, dir := BaseSimulationSetup(tb, dirPrevix, dbName)
+
+	defer func() {
+		err := db.Close()
+		require.NoError(tb, err)
+		err = os.RemoveAll(dir)
+		require.NoError(tb, err)
+	}()
+
 	weightedOperations := simapp.SimulationOperations(app, app.AppCodec(), config)
 
 	for i, operation := range weightedOperations {
@@ -128,7 +145,7 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		tb,
 		os.Stdout,
-		app.GetBaseApp(),
+		app.BaseApp,
 		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
 		simulationtypes.RandomAccounts,
 		weightedOperations,
@@ -146,16 +163,11 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 	return app, simParams
 }
 
-func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, GenesisState, simulationtypes.Config, dbm.DB) {
+func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, GenesisState, simulationtypes.Config, dbm.DB, string) {
 	config, db, dir, _, _, err := simapp.SetupSimulation(dirPrevix, dbName)
 	require.NoError(tb, err, "simulation setup failed")
-	tb.Cleanup(func() {
-		db.Close()
-		err = os.RemoveAll(dir)
-		require.NoError(tb, err)
-	})
 
-	encoding := cosmoscmd.MakeEncodingConfig(ModuleBasics)
+	encoding := MakeEncodingConfig()
 	app := New(
 		log.TestingLogger(),
 		db,
@@ -163,11 +175,12 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 		true,
 		map[int64]bool{},
 		DefaultNodeHome,
-		0,
+		20,
 		encoding,
 		simapp.EmptyAppOptions{},
 	)
 	genesisState := NewDefaultGenesisState(encoding.Marshaler)
 
-	return app.(*App), genesisState, config, db
+	return app, genesisState, config, db, dir
+
 }

@@ -8,10 +8,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// GetVestingAccountCount get the total number of vestingAccount
-func (k Keeper) GetVestingAccountCount(ctx sdk.Context) uint64 {
+// GetVestingAccountTraceCount get the total number of vestingAccount
+func (k Keeper) GetVestingAccountTraceCount(ctx sdk.Context) uint64 {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.VestingAccountCountKey)
+	byteKey := types.KeyPrefix(types.VestingAccountTraceCountKey)
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
@@ -23,69 +23,69 @@ func (k Keeper) GetVestingAccountCount(ctx sdk.Context) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
 
-// SetVestingAccountCount set the total number of vestingAccount
-func (k Keeper) SetVestingAccountCount(ctx sdk.Context, count uint64) {
+// SetVestingAccountTraceCount set the total number of vestingAccount
+func (k Keeper) SetVestingAccountTraceCount(ctx sdk.Context, count uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.VestingAccountCountKey)
+	byteKey := types.KeyPrefix(types.VestingAccountTraceCountKey)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
 	store.Set(byteKey, bz)
 }
 
-// AppendVestingAccount appends a vestingAccount in the store with a new id and update the count
-func (k Keeper) AppendVestingAccount(
+// AppendVestingAccountTrace appends a vestingAccount in the store with a new id and update the count
+func (k Keeper) AppendVestingAccountTrace(
 	ctx sdk.Context,
-	vestingAccount types.VestingAccount,
+	vestingAccountTrace types.VestingAccountTrace,
 ) uint64 {
-	// Create the vestingAccount
-	count := k.GetVestingAccountCount(ctx)
+	// Create the vestingAccountTrace
+	count := k.GetVestingAccountTraceCount(ctx)
 
 	// Set the ID of the appended value
-	vestingAccount.Id = count
+	vestingAccountTrace.Id = count
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountKey))
-	appendedValue := k.cdc.MustMarshal(&vestingAccount)
-	store.Set(GetVestingAccountIDBytes(vestingAccount.Id), appendedValue)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountTraceKey))
+	appendedValue := k.cdc.MustMarshal(&vestingAccountTrace)
+	store.Set([]byte(vestingAccountTrace.Address), appendedValue)
 
 	// Update vestingAccount count
-	k.SetVestingAccountCount(ctx, count+1)
+	k.SetVestingAccountTraceCount(ctx, count+1)
 
 	return count
 }
 
-// SetVestingAccount set a specific vestingAccount in the store
-func (k Keeper) SetVestingAccount(ctx sdk.Context, vestingAccount types.VestingAccount) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountKey))
-	b := k.cdc.MustMarshal(&vestingAccount)
-	store.Set(GetVestingAccountIDBytes(vestingAccount.Id), b)
+// SetVestingAccountTrace set a specific vestingAccount in the store
+func (k Keeper) SetVestingAccountTrace(ctx sdk.Context, vestingAccountTrace types.VestingAccountTrace) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountTraceKey))
+	b := k.cdc.MustMarshal(&vestingAccountTrace)
+	store.Set([]byte(vestingAccountTrace.Address), b)
 }
 
-// GetVestingAccount returns a vestingAccount from its id
-func (k Keeper) GetVestingAccount(ctx sdk.Context, id uint64) (val types.VestingAccount, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountKey))
-	b := store.Get(GetVestingAccountIDBytes(id))
-	if b == nil {
-		return val, false
+// GetVestingAccountTraceById returns a vestingAccount from its id
+func (k Keeper) GetVestingAccountTraceById(ctx sdk.Context, id uint64) (val types.VestingAccountTrace, found bool) {
+	list := k.GetAllVestingAccountTrace(ctx)
+	for _, acc := range list {
+		if id == acc.Id {
+			return acc, true
+		}
 	}
-	k.cdc.MustUnmarshal(b, &val)
-	return val, true
+	return val, false
 }
 
-// RemoveVestingAccount removes a vestingAccount from the store
-func (k Keeper) RemoveVestingAccount(ctx sdk.Context, id uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountKey))
-	store.Delete(GetVestingAccountIDBytes(id))
+// RemoveVestingAccountTrace removes a vestingAccount from the store
+func (k Keeper) RemoveVestingAccountTrace(ctx sdk.Context, address string) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountTraceKey))
+	store.Delete([]byte(address))
 }
 
-// GetAllVestingAccount returns all vestingAccount
-func (k Keeper) GetAllVestingAccount(ctx sdk.Context) (list []types.VestingAccount) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountKey))
+// GetAllVestingAccountTrace returns all vestingAccount
+func (k Keeper) GetAllVestingAccountTrace(ctx sdk.Context) (list []types.VestingAccountTrace) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountTraceKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
-	list = []types.VestingAccount{}
+	list = []types.VestingAccountTrace{}
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.VestingAccount
+		var val types.VestingAccountTrace
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}
@@ -93,14 +93,25 @@ func (k Keeper) GetAllVestingAccount(ctx sdk.Context) (list []types.VestingAccou
 	return
 }
 
-// GetVestingAccountIDBytes returns the byte representation of the ID
-func GetVestingAccountIDBytes(id uint64) []byte {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, id)
-	return bz
-}
+// GetVestingAccountTraceIDBytes returns the byte representation of the ID
+// func GetVestingAccountTraceAdressBytes(address string) []byte {
+// 	bz := make([]byte, 8)
+// 	binary.BigEndian.PutUint64(bz, id)
+// 	return bz
+// }
 
-// GetVestingAccountIDFromBytes returns ID in uint64 format from a byte array
-func GetVestingAccountIDFromBytes(bz []byte) uint64 {
-	return binary.BigEndian.Uint64(bz)
+// GetVestingAccountTraceIDFromBytes returns ID in uint64 format from a byte array
+// func GetVestingAccountTraceAddressFromBytes(bz []byte) string {
+// 	return binary.BigEndian.Uint64(bz)
+// }
+
+// GetVestingAccountById returns a vestingAccount from its id
+func (k Keeper) GetVestingAccountTrace(ctx sdk.Context, address string) (val types.VestingAccountTrace, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.VestingAccountTraceKey))
+	b := store.Get([]byte(address))
+	if b == nil {
+		return val, false
+	}
+	k.cdc.MustUnmarshal(b, &val)
+	return val, true
 }

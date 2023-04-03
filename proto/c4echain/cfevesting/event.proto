@@ -1,0 +1,35 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfevesting;
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
+
+message NewVestingAccount {
+  string address = 1;
+}
+
+message NewVestingPool {
+  string owner = 1;
+  string name = 2;
+  string amount = 3;
+  string duration = 4;
+  string vestingType = 5;
+}
+
+message NewVestingAccountFromVestingPool {
+  string owner = 1;
+  string address = 2;
+  string vesting_pool_name = 3;
+  string amount = 4;
+  string restart_vesting = 5;
+}
+
+message WithdrawAvailable{
+  string owner = 1;
+  string vesting_pool_name = 2;
+  string amount = 3;
+}
+
+message VestingSplit {
+  string source = 1;
+  string destination = 2;
+}

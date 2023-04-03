@@ -6,6 +6,7 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -37,26 +38,21 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	randAmountMultiplierFactor := fmt.Sprintf("%f", amountMultiplierFloat)
 	now := simState.GenTimestamp
 
-	prminter := types.ExponentialStepMinting{
+	exponentialStepMinting := types.ExponentialStepMinting{
 		Amount:           sdk.NewInt(randAmount),
 		StepDuration:     time.Duration(randStepDuration),
 		AmountMultiplier: sdk.MustNewDecFromStr(randAmountMultiplierFactor),
 	}
-
+	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
 	minters := []*types.Minter{
 		{
-			SequenceId:             1,
-			Type:                   types.ExponentialStepMintingType,
-			ExponentialStepMinting: &prminter,
+			SequenceId: 1,
+			Config:     config,
 		},
 	}
 
-	minterConfig := types.MinterConfig{
-		StartTime: now,
-		Minters:   minters,
-	}
 	genesisState := types.GenesisState{
-		Params: types.NewParams("stake", minterConfig),
+		Params: types.NewParams("stake", now, minters),
 		MinterState: types.MinterState{
 			SequenceId:   1,
 			AmountMinted: sdk.NewInt(0),

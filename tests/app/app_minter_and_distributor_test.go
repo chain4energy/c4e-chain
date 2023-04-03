@@ -1,24 +1,24 @@
-package e2e
+package app
 
 import (
+	"cosmossdk.io/math"
 	testgenesis "github.com/chain4energy/c4e-chain/tests/app/genesis"
-	"testing"
-	"time"
-
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"testing"
+	"time"
 )
 
 const oneYearDuration = time.Hour * 24 * 365
 
 type testResult struct {
-	developmentFundCoinsInt   sdk.Int
-	governanceBoosterCoinInt  sdk.Int
-	greenEnergyBoosterCoinInt sdk.Int
-	lpProviders               sdk.Int
-	totalSupply               sdk.Int
+	developmentFundCoinsInt   math.Int
+	governanceBoosterCoinInt  math.Int
+	greenEnergyBoosterCoinInt math.Int
+	lpProviders               math.Int
+	totalSupply               math.Int
 }
 
 func TestMinterWithDistributor(t *testing.T) {
@@ -57,9 +57,9 @@ func TestMinterWithDistributor(t *testing.T) {
 
 func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults testResult) {
 	var distributorParams = testgenesis.CfeDistributorParams
-	var minterParams = testgenesis.CfeMinterrParams
+	var minterParams = testgenesis.CfeMinterrParams()
 
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1, minterParams.MinterConfig.StartTime)
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 1, minterParams.StartTime)
 	testHelper.C4eMinterUtils.SetParams(minterParams)
 	testHelper.C4eDistributorUtils.SetParams(distributorParams)
 

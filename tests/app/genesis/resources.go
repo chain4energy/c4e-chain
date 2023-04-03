@@ -1,6 +1,8 @@
 package genesis
 
 import (
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"time"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
@@ -104,20 +106,21 @@ var CfeDistributorParams = distributortypes.Params{
 	},
 }
 
-var CfeMinterrParams = mintertypes.Params{
-	MintDenom: "uc4e",
-	MinterConfig: mintertypes.MinterConfig{
+func CfeMinterrParams() mintertypes.Params {
+	exponentialStepMinting := &mintertypes.ExponentialStepMinting{
+		StepDuration:     time.Hour * 24 * 365 * 4, // 4 years
+		Amount:           sdk.NewInt(160000000000000),
+		AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
+	}
+	config, _ := codectypes.NewAnyWithValue(exponentialStepMinting)
+	return mintertypes.Params{
+		MintDenom: testenv.DefaultTestDenom,
 		StartTime: time.Now(),
 		Minters: []*mintertypes.Minter{
 			{
 				SequenceId: 1,
-				Type:       mintertypes.ExponentialStepMintingType,
-				ExponentialStepMinting: &mintertypes.ExponentialStepMinting{
-					StepDuration:     time.Hour * 24 * 365 * 4, // 4 years
-					Amount:           sdk.NewInt(160000000000000),
-					AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
-				},
+				Config:     config,
 			},
 		},
-	},
+	}
 }

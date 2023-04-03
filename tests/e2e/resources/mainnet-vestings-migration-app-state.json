@@ -1,0 +1,511 @@
+{
+  "auth": {
+    "params": {
+      "max_memo_characters": "256",
+      "tx_sig_limit": "7",
+      "tx_size_cost_per_byte": "10",
+      "sig_verify_cost_ed25519": "590",
+      "sig_verify_cost_secp256k1": "1000"
+    },
+    "accounts": [
+      {
+        "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+        "base_vesting_account": {
+          "base_account": {
+            "address": "c4e10wjj2qmn4zjg2sdxq9mfyj5v4yukwyhzdtf2zp",
+            "pub_key": null,
+            "account_number": "16",
+            "sequence": "0"
+          },
+          "original_vesting": [
+            {
+              "denom": "uc4e",
+              "amount": "6574990000000"
+            }
+          ],
+          "delegated_free": [],
+          "delegated_vesting": [],
+          "end_time": "1758758400"
+        },
+        "start_time": "1695686400"
+      },
+      {
+        "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+        "base_vesting_account": {
+          "base_account": {
+            "address": "c4e1zrd0783g8qa5659apw5tpuqmz2ct6j20t4ymx3",
+            "pub_key": null,
+            "account_number": "17",
+            "sequence": "1"
+          },
+          "original_vesting": [
+            {
+              "denom": "uc4e",
+              "amount": "6574990000000"
+            }
+          ],
+          "delegated_free": [],
+          "delegated_vesting": [
+            {
+              "denom": "uc4e",
+              "amount": "100000000"
+            }
+          ],
+          "end_time": "1758758400"
+        },
+        "start_time": "1695686400"
+      },
+      {
+        "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+        "base_vesting_account": {
+          "base_account": {
+            "address": "c4e1y8lndj6jz5z93g4xd05nmwyc3wtn39dfgfx7r7",
+            "pub_key": null,
+            "account_number": "18",
+            "sequence": "0"
+          },
+          "original_vesting": [
+            {
+              "denom": "uc4e",
+              "amount": "2949990000000"
+            }
+          ],
+          "delegated_free": [],
+          "delegated_vesting": [],
+          "end_time": "1758758400"
+        },
+        "start_time": "1695686400"
+      },
+      {
+        "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+        "base_vesting_account": {
+          "base_account": {
+            "address": "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8",
+            "pub_key": null,
+            "account_number": "15",
+            "sequence": "0"
+          },
+          "original_vesting": [
+            {
+              "denom": "uc4e",
+              "amount": "8899990000000"
+            }
+          ],
+          "delegated_free": [],
+          "delegated_vesting": [],
+          "end_time": "1758758400"
+        },
+        "start_time": "1695686400"
+      }
+    ]
+  },
+  "authz": {
+    "authorization": []
+  },
+  "bank": {
+    "params": {
+      "send_enabled": [],
+      "default_send_enabled": true
+    },
+    "balances": [
+      {
+        "address": "c4e10wjj2qmn4zjg2sdxq9mfyj5v4yukwyhzdtf2zp",
+        "coins": [
+          {
+            "denom": "uc4e",
+            "amount": "6575000000000"
+          }
+        ]
+      },
+      {
+        "address": "c4e1zrd0783g8qa5659apw5tpuqmz2ct6j20t4ymx3",
+        "coins": [
+          {
+            "denom": "uc4e",
+            "amount": "6574899993750"
+          }
+        ]
+      },
+      {
+        "address": "c4e1y8lndj6jz5z93g4xd05nmwyc3wtn39dfgfx7r7",
+        "coins": [
+          {
+            "denom": "uc4e",
+            "amount": "2950000000000"
+          }
+        ]
+      },
+      {
+        "address": "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8",
+        "coins": [
+          {
+            "denom": "uc4e",
+            "amount": "8900000000000"
+          }
+        ]
+      },
+      {
+        "address": "c4e17yryahw88nkwsaphuywhv7ap8ty7zwgunjsple",
+        "coins": [
+          {
+            "denom": "uc4e",
+            "amount": "91991190000000"
+          }
+        ]
+      }
+    ],
+    "supply": [],
+    "denom_metadata": []
+  },
+  "capability": {
+    "index": "1",
+    "owners": []
+  },
+  "cfedistributor": {
+    "params": {
+      "sub_distributors": [
+        {
+          "name": "default_distributor",
+          "sources": [
+            {
+              "id": "",
+              "type": "MAIN"
+            }
+          ],
+          "destinations": {
+            "primary_share": {
+              "id": "validators_rewards_collector",
+              "type": "MODULE_ACCOUNT"
+            },
+            "burn_share": "0.000000000000000000",
+            "shares": []
+          }
+        }
+      ]
+    },
+    "states": []
+  },
+  "cfeminter": {
+    "params": {
+      "mint_denom": "uc4e",
+      "minter_config": {
+        "start_time": "2023-02-23T03:57:04.498843Z",
+        "minters": [
+          {
+            "sequence_id": 1,
+            "end_time": null,
+            "type": "NO_MINTING",
+            "linear_minting": null,
+            "exponential_step_minting": null
+          }
+        ]
+      }
+    },
+    "minter_state": {
+      "sequence_id": 1,
+      "amount_minted": "0",
+      "remainder_to_mint": "0.000000000000000000",
+      "last_mint_block_time": "2023-02-23T03:57:04.500368Z",
+      "remainder_from_previous_period": "0.000000000000000000"
+    },
+    "state_history": []
+  },
+  "cfesignature": {
+    "params": {}
+  },
+  "cfevesting": {
+    "params": {
+      "denom": "uc4e"
+    },
+    "vesting_types": [
+      {
+        "name": "Advisors",
+        "lockup_period": "365",
+        "lockup_period_unit": "day",
+        "vesting_period": "730",
+        "vesting_period_unit": "day",
+        "free": "0.000000000000000000"
+      },
+      {
+        "name": "Validators",
+        "lockup_period": "274",
+        "lockup_period_unit": "day",
+        "vesting_period": "548",
+        "vesting_period_unit": "day",
+        "free": "0.050000000000000000"
+      }
+    ],
+
+    "account_vesting_pools": [
+      {
+        "address": "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54",
+        "vesting_pools": [
+          {
+            "initially_locked": "12087500000000",
+            "lock_end": "2025-09-25T00:00:00.00000000Z",
+            "lock_start": "2022-09-22T14:00:00.00000000Z",
+            "name": "Advisors pool",
+            "sent": "500000000000",
+            "vesting_type": "Advisors",
+            "withdrawn": "0"
+          },
+          {
+            "initially_locked": "80498690000000",
+            "lock_end": "2024-12-26T00:00:00.00000000Z",
+            "lock_start": "2022-09-22T14:00:00.00000000Z",
+            "name": "Validators pool",
+            "sent": "95000000000",
+            "vesting_type": "Validators",
+            "withdrawn": "0"
+          }
+        ]
+      }
+    ],
+    "vesting_account_list": [
+      {
+        "address": "c4e1z5h0squtynr8rhwl0mzqdcd0wgmfyvpqmx3y2r",
+        "id": "0"
+      },
+      {
+        "address": "c4e1x6umuffxgcrgqqqdncwn2t8qdnc2muvultxmza",
+        "id": "1"
+      },
+      {
+        "address": "c4e1wrhuuwjjmkjx3lxs08ych9ddgdzvujgdr6hnwv",
+        "id": "2"
+      },
+      {
+        "address": "c4e12rxujjj4th90t8z30gnre5tv4zmguuqvtn2u02",
+        "id": "3"
+      },
+      {
+        "address": "c4e1zvkxuvk8t6wju76pxkp3f4kk447sjm2kdsgvwy",
+        "id": "4"
+      },
+      {
+        "address": "c4e13qamrx863pa72ku88d3ykypdh0ar6rjycnpkl2",
+        "id": "5"
+      },
+      {
+        "address": "c4e1f57wax48ttw068e6lgag9fse62d4m3e24u0sph",
+        "id": "6"
+      },
+      {
+        "address": "c4e1jxlv64qf8rvy8zayl7m2m8a0jzhxkfj9aw96f3",
+        "id": "7"
+      },
+      {
+        "address": "c4e1cpnh73765mx3q87lxacqwvwxn4s8ppry458xp4",
+        "id": "8"
+      },
+      {
+        "address": "c4e1argfhnzzxjft426tnj4crjsu8lqp0av3x8gjey",
+        "id": "9"
+      },
+      {
+        "address": "c4e1w8hdxd6g7vzupll9ynmenjkln9rs4kcq0mdesf",
+        "id": "10"
+      },
+      {
+        "address": "c4e12znccp5u8zx9qy4u9gmpxjge9reaxy80qfm295",
+        "id": "11"
+      },
+      {
+        "address": "c4e1t45l2pnk5uwj2qqjw4f6rcy6jw5f9lkplmp49e",
+        "id": "12"
+      },
+      {
+        "address": "c4e1nmfgexjj3yvvrnc2n7yyahgxsm0vqcm57dqx5f",
+        "id": "13"
+      },
+      {
+        "address": "c4e1ej2es5fjztqjcd4pwa0zyvaevtjd2y5wq2vaaq",
+        "id": "14"
+      },
+      {
+        "address": "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8",
+        "id": "15"
+      },
+      {
+        "address": "c4e10wjj2qmn4zjg2sdxq9mfyj5v4yukwyhzdtf2zp",
+        "id": "16"
+      },
+      {
+        "address": "c4e1zrd0783g8qa5659apw5tpuqmz2ct6j20t4ymx3",
+        "id": "17"
+      },
+      {
+        "address": "c4e1y8lndj6jz5z93g4xd05nmwyc3wtn39dfgfx7r7",
+        "id": "18"
+      },
+      {
+        "address": "c4e12845qa79cwlvf3jdcnfq2jy2jfmzslcg52lv3g",
+        "id": "19"
+      },
+      {
+        "address": "c4e19je7lmu4yzrpzh7gksj3uhku4as8at6lk36qe7",
+        "id": "20"
+      },
+      {
+        "address": "c4e1nm50zycnm9yf33rv8n6lpks24usxzahk5usl7e",
+        "id": "21"
+      },
+      {
+        "address": "c4e13e303u43k7mng4927axuhve0plgsyxc4xky63k",
+        "id": "22"
+      },
+      {
+        "address": "c4e1twh6302lzcvn7lr3x0fjwfkgryn9ac5c6v2zaj",
+        "id": "23"
+      }
+    ],
+    "vesting_account_count": "24"
+  },
+  "crisis": {
+    "constant_fee": {
+      "denom": "stake",
+      "amount": "1000"
+    }
+  },
+  "distribution": {
+    "params": {
+      "community_tax": "0.020000000000000000",
+      "base_proposer_reward": "0.010000000000000000",
+      "bonus_proposer_reward": "0.040000000000000000",
+      "withdraw_addr_enabled": true
+    },
+    "fee_pool": {
+      "community_pool": []
+    },
+    "delegator_withdraw_infos": [],
+    "previous_proposer": "",
+    "outstanding_rewards": [],
+    "validator_accumulated_commissions": [],
+    "validator_historical_rewards": [],
+    "validator_current_rewards": [],
+    "delegator_starting_infos": [],
+    "validator_slash_events": []
+  },
+  "evidence": {
+    "evidence": []
+  },
+  "feegrant": {
+    "allowances": []
+  },
+  "genutil": {
+    "gen_txs": []
+  },
+  "gov": {
+    "starting_proposal_id": "1",
+    "deposits": [],
+    "votes": [],
+    "proposals": [],
+    "deposit_params": {
+      "min_deposit": [
+        {
+          "denom": "stake",
+          "amount": "10000000"
+        }
+      ],
+      "max_deposit_period": "172800s"
+    },
+    "voting_params": {
+      "voting_period": "172800s"
+    },
+    "tally_params": {
+      "quorum": "0.334000000000000000",
+      "threshold": "0.500000000000000000",
+      "veto_threshold": "0.334000000000000000"
+    }
+  },
+  "ibc": {
+    "client_genesis": {
+      "clients": [],
+      "clients_consensus": [],
+      "clients_metadata": [],
+      "params": {
+        "allowed_clients": [
+          "06-solomachine",
+          "07-tendermint"
+        ]
+      },
+      "create_localhost": false,
+      "next_client_sequence": "0"
+    },
+    "connection_genesis": {
+      "connections": [],
+      "client_connection_paths": [],
+      "next_connection_sequence": "0",
+      "params": {
+        "max_expected_time_per_block": "30000000000"
+      }
+    },
+    "channel_genesis": {
+      "channels": [],
+      "acknowledgements": [],
+      "commitments": [],
+      "receipts": [],
+      "send_sequences": [],
+      "recv_sequences": [],
+      "ack_sequences": [],
+      "next_channel_sequence": "0"
+    }
+  },
+  "monitoringp": {
+    "port_id": "monitoringp",
+    "consumerClientID": null,
+    "connectionChannelID": null,
+    "monitoringInfo": null,
+    "params": {
+      "lastBlockHeight": "1",
+      "consumerChainID": "spn-1",
+      "consumerConsensusState": {
+        "nextValidatorsHash": "",
+        "timestamp": "",
+        "root": {
+          "hash": ""
+        }
+      },
+      "consumerUnbondingPeriod": "1814400",
+      "consumerRevisionHeight": "1"
+    }
+  },
+  "params": null,
+  "slashing": {
+    "params": {
+      "signed_blocks_window": "100",
+      "min_signed_per_window": "0.500000000000000000",
+      "downtime_jail_duration": "600s",
+      "slash_fraction_double_sign": "0.050000000000000000",
+      "slash_fraction_downtime": "0.010000000000000000"
+    },
+    "signing_infos": [],
+    "missed_blocks": []
+  },
+  "staking": {
+    "params": {
+      "unbonding_time": "1814400s",
+      "max_validators": 100,
+      "max_entries": 7,
+      "historical_entries": 10000,
+      "bond_denom": "stake"
+    },
+    "last_total_power": "0",
+    "last_validator_powers": [],
+    "validators": [],
+    "delegations": [],
+    "unbonding_delegations": [],
+    "redelegations": [],
+    "exported": false
+  },
+  "transfer": {
+    "port_id": "transfer",
+    "denom_traces": [],
+    "params": {
+      "send_enabled": true,
+      "receive_enabled": true
+    }
+  },
+  "upgrade": {},
+  "vesting": {}
+}

@@ -22,7 +22,7 @@ The purpose of `cfeminter` module is to provide token emission mechanism.
 Token emission mechanism mints calculated amount of tokens per each block. 
 Token amount is calculated accordingly to cfeminter module configuration params.
 Tokens minting process is divided into separate minters where each minter has
-different minting rules. Those minting rules are defined within cfeminter 
+different minting configuration. Token emission mechanism rules are defined within cfeminter 
 module configuration params.
 Simply, minting process configuration is a list of ordered minters,
 where each minter has its own start and end time. Last minter cannot have end time because it
@@ -32,36 +32,36 @@ must be defined to work infinitely.
 
 Ordered list of minters defines whole token emission process.
 End time of one minter is a start time of the next minter in the minters list.
-Each minter has its own type assigned.
+Each minter has its own minting configuration assigned.
 
-### Minting type
+### Minting configuration
 
-Minting type defines general rules of token emission. Each minter has its
-specific minting type. Currently, cfeminter module supports following minting types:
+Each minter has its specific minting configuration which defines general rules of token emission. 
+Currently, cfeminter module supports following minting configs:
 - no minting
 - linear minting
 - exponential step minting
 
-Each minting type has its own specific set of parameters modifying token emission.
+Each minting configuration has its own specific set of parameters modifying token emission.
 
 #### No minting
 
-No minting is a simple minting type that mints nothing.
-This minting type has no parameters.
+No minting is a simple minting configuration that mints nothing.
+This minting configuration has no parameters.
 
 #### Linear minting
 
-Linear minting is block time based minting type. It mints configured amount of 
-tokens within minter linearly. This minting type requires minter with end time 
+Linear minting is block time based minting configuration. It mints predetermined amount of 
+tokens within minter linearly. This minting configuration requires minter with end time 
 since given amount of token needs to be minted in finite time period. So this 
-minting type cannot be configured as a type of last period.
+minting configuration cannot be set in the last minter.
 
-Minter type parameters:
+Linear minting configuration parameters:
 * amount - amount of tokens to mint within minter period
 
 #### Exponential step minting
 
-Exponential step minting is block time based minting type. It mints configured amount
+Exponential step minting is block time based minting configuration. It mints predetermined amount
 of tokens within minter, where it divides this minter into smaller subminters of 
 equal length. Then within each subminter expected amount is minted, linearly. Expected 
 amount of subminter minted tokens is equal to tokens minted by previous subminter 
@@ -75,7 +75,7 @@ and so on.
 
 This minter can mint infinitely.
 
-Minter type parameters: 
+Exponential step minting configuration parameters: 
 * step duration - period of time mint amount is emitted
 * amount - amount to mint for the first period
 * amount multiplier - amount multiplying factor
@@ -89,11 +89,11 @@ Minter configuration:
 * Amount of minter Minters: 1
 * Minter 1:
     * end time: null
-    * type: exponential step minting
-    * exponential step minting parameters:
-        * step duration: 4 years
-        * amount: 40 millions
-        * amount multiplier: 0.5
+    * config: 
+      * type: exponential step minting
+      * step duration: 4 years
+      * amount: 40 millions
+      * amount multiplier: 0.5
 
 Result:
 * first 4 years mints 40 millions 
@@ -109,12 +109,13 @@ Minter configuration:
 * Amount of minter Minters: 2
 * Minter 1:
     * end time: 10 years from now
-    * type: linear minting
-    * linear minting parameters:
-        * amount: 100 millions
+    * config:
+      * type: linear minting
+      * amount: 100 millions
 * Minter 2:
     * end time: null
-    * type: no minting
+  * config:
+      * type: no minting
 
 Result:
 * 10 millions yearly for 10 years
@@ -123,41 +124,41 @@ Result:
 
 The Chain4Energy minter module contains the following configurations parameters:
 
-| Key           | Type         | Description                  |
-|---------------|--------------|------------------------------|
-| mint_denom    | string       | Denom of minting token       |
-| minter_config | MinterConfig | Token emission configuration |
-
-### MinterConfig type
-
-| Param      | Type            | Description               |
-|------------|-----------------|---------------------------|
-| start_time | Time            | Token emission start time |
-| minters    | List of Minters | list of minters           |
+| Key         | Type            | Description                 |
+|-------------|-----------------|-----------------------------|
+| mint_denom  | string          | Denom of minting token      |
+| start_time  | Time            | Token emission start time   |
+| minters     | List of Minters | list of minters             |
 
 ### Minter type
 
-| Param                    | Type                   | Description                                                                                             |
-|--------------------------|------------------------|---------------------------------------------------------------------------------------------------------|
-| sequence_id              | uint32                 | Minter ordering id                                                                                      |
-| end_time                 | Time                   | Minter end time                                                                                         |
-| type                     | Enum string            | Minter period type. Allowed values:<br>- NO_MINTING<br>- LINEAR_MINTING <br>- EXPONENTIAL_STEP_MINTING; |
-| linear_minting           | LinearMinting          | Linear minting configuration                                                                            |
-| exponential_step_minting | ExponentialStepMinting | Exponential step minting configuration                                                                  |
+| Param                    | Type          | Description                                                                                                                                                    |
+|--------------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| sequence_id              | uint32        | Minter ordering id                                                                                                                                             |
+| end_time                 | Time          | Minter end time                                                                                                                                                |
+| config                   | MinterConfigI | Minter configuration type that implements MinterConfigI interface. Allowed configuration types:<br>- NoMinting<br>- LinearMinting <br>- ExponentialStepMinting |                                                                 |
 
-### LinearMinting type
+### NoMinting configuration
 
-| Param    | Type          | Description                                  |
-|----------|---------------|----------------------------------------------|
-| amount   | sdk.Int       | An amount to mint linearly during the period |
+| Param  | Type      | Description                                  |
+|--------|-----------|----------------------------------------------|
+| type   | NoMinting | Minter configuration type                    |
 
-### ExponentialStepMinting type
+### LinearMinting configuration
 
-| Param             | Type      | Description                          |
-|-------------------|-----------|--------------------------------------|
-| step_duration     | uint32    | period of time of token emission     |
-| amount            | sdk.Int   | amount to mint during "stepDuration" |
-| amount_multiplier | sdk.Dec   | amount multiplying factor            |
+| Param  | Type          | Description                                  |
+|--------|---------------|----------------------------------------------|
+| type   | LinearMinting | Minter configuration type                    |
+| amount | math.Int      | An amount to mint linearly during the period |
+
+### ExponentialStepMinting configuration
+
+| Param             | Type                     | Description                           |
+|-------------------|--------------------------|---------------------------------------|
+| type              | ExponentialStepMinting   | Minter configuration type             |
+| step_duration     | uint32                   | period of time of token emission      |
+| amount            | math.Int                 | amount to mint during "stepDuration"  |
+| amount_multiplier | sdk.Dec                  | amount multiplying factor             |
 
 ### Example params
 
@@ -167,22 +168,19 @@ The Chain4Energy minter module contains the following configurations parameters:
 {
   "params": {
     "mint_denom": "uc4e",
-    "minter_config": {
-      "start_time": "2022-07-05T00:00:00Z",
-      "minters": [
-        {
-          "sequenceId": 1,
-          "end_time": null,
-          "type": "EXPONENTIAL_STEP_MINTING",
-          "linear_minting": null,
-          "exponential_step_minting": {
-            "step_duration": "126144000s",
-            "amount": 40000000000000,
-            "amount_multiplier": "0.500000000000000000"
-          }
+    "start_time": "2022-07-05T00:00:00Z",
+    "minters": [
+      {
+        "sequenceId": 1,
+        "end_time": null,
+        "config": {
+          "@type": "/chain4energy.c4echain.cfeminter.ExponentialStepMinting",
+          "step_duration": "126144000s",
+          "amount": 40000000000000,
+          "amount_multiplier": "0.500000000000000000"
         }
-      ]
-    }
+      }
+    ]
   }
 }
 ```
@@ -193,27 +191,24 @@ The Chain4Energy minter module contains the following configurations parameters:
 {
   "params": {
     "mint_denom": "uc4e",
-    "minter_config": {
-      "start_time": "2022-07-05T00:00:00Z",
-      "minters": [
-        {
-          "sequenceId": 1,
-          "end_time": "2023-07-05T00:00:00Z",
-          "type": "LINEAR_MINTING",
-          "linear_minting": {
-            "amount": 100000000000000
-          },
-          "exponential_step_minting": null
-        },
-        {
-          "sequenceId": 2,
-          "end_time": null,
-          "type": "NO_MINTING",
-          "linear_minting": null,
-          "exponential_step_minting": null
-        }
-      ]
+    "start_time": "2022-07-05T00:00:00Z",
+    "minters": [
+    {
+      "sequenceId": 1,
+      "end_time": "2023-07-05T00:00:00Z",
+      "config": {
+        "@type": "/chain4energy.c4echain.cfeminter.LinearMinting",
+        "amount": 100000000000000
+      }
+    },
+    {
+      "sequenceId": 2,
+      "end_time": null,
+      "config": {
+        "@type": "/chain4energy.c4echain.cfeminter.NoMinting"
+      }
     }
+    ]
   }
 }
 ```
@@ -230,13 +225,13 @@ Module state contains following data:
 
 ### MinterState
 
-| Key                            | Type     | Description                                                        |
-|--------------------------------|----------|--------------------------------------------------------------------|
-| sequence_id                    | uint32   | current minter sequenceId                                          |
-| amount_minted                  | sdk.Int  | amount minted by current minter                                    |
-| remainder_to_mint              | sdk.Dec  | amount that should have been minted in previous block but was not  |
-| last_mint_block_time           | sdk.Time | Time of last mint                                                  |
-| remainder_from_previous_period | sdk.Dec  | amount that should have been minted in previous minter but was not | // TODO: rename to remainder_from_previous_minter
+| Key                            | Type       | Description                                                        |
+|--------------------------------|------------|--------------------------------------------------------------------|
+| sequence_id                    | uint32     | current minter sequenceId                                          |
+| amount_minted                  | math.Int   | amount minted by current minter                                    |
+| remainder_to_mint              | sdk.Dec    | amount that should have been minted in previous block but was not  |
+| last_mint_block_time           | sdk.Time   | Time of last mint                                                  |
+| remainder_from_previous_period | sdk.Dec    | amount that should have been minted in previous minter but was not | // TODO: rename to remainder_from_previous_minter
 
 ### Example state
 
@@ -261,14 +256,14 @@ Chain4Energy minter module emits the following events:
 
 #### Mint
 
-| Type         | Attribute Key | Attribute Value               |
-|--------------|---------------|-------------------------------|
-| bonded_ratio | Dec           |                               |
-| inflation    | sdk.Dec       | Minting block inflation level |
-| amount       | sdk.Int       | Amount minted in block        |
+| Type           | Attribute Key | Attribute Value               |
+|----------------|---------------|-------------------------------|
+| bonded_ratio   | Dec           |                               |
+| inflation      | sdk.Dec       | Minting block inflation level |
+| amount         | math.Int      | Amount minted in block        |
 
-TODO remove bonded_ratio 
-TODO add minter period id
+[//]: # (TODO remove bonded_ratio )
+[//]: # (TODO add minter period id)
 
 ## Queries
 
@@ -282,22 +277,19 @@ See example response:
 {
   "params": {
     "mint_denom": "uc4e",
-    "minter_config": {
-      "start_time": "2022-07-05T00:00:00Z",
-      "minters": [
-        {
-          "sequence_id": 1,
-          "end_time": null,
-          "type": "EXPONENTIAL_STEP_MINTING",
-          "linear_minting": null,
-          "exponential_step_minting": {
-            "step_duration": "31536000s",
-            "amount": "40000000000000",
-            "amount_multiplier": "0.500000000000000000"
-          }
+    "start_time": "2022-07-05T00:00:00Z",
+    "minters": [
+      {
+        "sequenceId": 1,
+        "end_time": null,
+        "config": {
+          "@type": "/chain4energy.c4echain.cfeminter.ExponentialStepMinting",
+          "step_duration": "126144000s",
+          "amount": 40000000000000,
+          "amount_multiplier": "0.500000000000000000"
         }
-      ]
-    }
+      }
+    ]
   }
 }
 ```
@@ -334,4 +326,4 @@ See example response:
 
 ## Genesis validations
 
-TODO
+[//]: # (TODO)

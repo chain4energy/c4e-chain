@@ -1,8 +1,6 @@
 package cfedistributorutils
 
 import (
-	"testing"
-
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -18,11 +16,11 @@ import (
 )
 
 type C4eDistributorKeeperUtils struct {
-	t                          *testing.T
+	t                          require.TestingT
 	helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper
 }
 
-func NewC4eDistributorKeeperUtils(t *testing.T, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper) C4eDistributorKeeperUtils {
+func NewC4eDistributorKeeperUtils(t require.TestingT, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper) C4eDistributorKeeperUtils {
 	return C4eDistributorKeeperUtils{t: t, helperCfedistributorKeeper: helperCfedistributorKeeper}
 }
 
@@ -53,7 +51,7 @@ type C4eDistributorUtils struct {
 	helperAccountKeeper *authkeeper.AccountKeeper
 }
 
-func NewC4eDistributorUtils(t *testing.T, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
+func NewC4eDistributorUtils(t require.TestingT, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *testcosmos.BankUtils) C4eDistributorUtils {
 	return C4eDistributorUtils{C4eDistributorKeeperUtils: NewC4eDistributorKeeperUtils(t, helperCfedistributorKeeper), helperAccountKeeper: helperAccountKeeper}
@@ -118,7 +116,7 @@ type ContextC4eDistributorUtils struct {
 	testContext testenv.TestContext
 }
 
-func NewContextC4eDistributorUtils(t *testing.T, testContext testenv.TestContext, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
+func NewContextC4eDistributorUtils(t require.TestingT, testContext testenv.TestContext, helperCfedistributorKeeper *cfedistributormodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *testcosmos.BankUtils) *ContextC4eDistributorUtils {
 	c4eDistributorUtils := NewC4eDistributorUtils(t, helperCfedistributorKeeper, helperAccountKeeper, bankUtils)

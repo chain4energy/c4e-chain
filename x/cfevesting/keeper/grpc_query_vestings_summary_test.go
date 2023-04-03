@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"testing"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -32,7 +32,7 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 		Sent:            sdk.ZeroInt(),
 	}
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
@@ -45,7 +45,7 @@ func TestVestingsAmountPoolsOnly(t *testing.T) {
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
@@ -77,7 +77,7 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 	}
 
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
@@ -85,18 +85,18 @@ func TestVestingsAmountPoolsAndAccount(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 1,
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingPools: accountVestingPoolsArray,
+		VestingAccountTraceCount: 1,
+		VestingTypes:             []types.GenesisVestingType{},
+		AccountVestingPools:      accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
 	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
@@ -150,7 +150,7 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 	}
 
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
@@ -158,18 +158,18 @@ func TestVestingsAmountPoolsAndAccountWithDelegations(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 1,
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingPools: accountVestingPoolsArray,
+		VestingAccountTraceCount: 1,
+		VestingTypes:             []types.GenesisVestingType{},
+		AccountVestingPools:      accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.StakingUtils.SetupValidators(validatorsAddresses, sdk.NewInt(100))
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
@@ -236,7 +236,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 	}
 
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
@@ -244,18 +244,18 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegations(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 1,
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingPools: accountVestingPoolsArray,
+		VestingAccountTraceCount: 1,
+		VestingTypes:             []types.GenesisVestingType{},
+		AccountVestingPools:      accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.StakingUtils.SetupValidators(validatorsAddresses, sdk.NewInt(100))
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
@@ -329,7 +329,7 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 	}
 
 	accVestingPools := types.AccountVestingPools{
-		Address:      acountsAddresses[0].String(),
+		Owner:        acountsAddresses[0].String(),
 		VestingPools: []*types.VestingPool{&vestingPool},
 	}
 
@@ -337,18 +337,18 @@ func TestVestingsAmountPoolsAndAccountWithUnbondingDelegationsEnded(t *testing.T
 
 	genesisState := types.GenesisState{
 		Params: types.NewParams(testenv.DefaultTestDenom),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 1,
-		VestingTypes:        []types.GenesisVestingType{},
-		AccountVestingPools: accountVestingPoolsArray,
+		VestingAccountTraceCount: 1,
+		VestingTypes:             []types.GenesisVestingType{},
+		AccountVestingPools:      accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.StakingUtils.SetupValidators(validatorsAddresses, sdk.NewInt(100))
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)

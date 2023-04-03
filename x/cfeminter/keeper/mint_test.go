@@ -1,12 +1,12 @@
 package keeper_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/app"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"testing"
 	"time"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -38,7 +38,7 @@ func TestMintFirstPeriod(t *testing.T) {
 		AmountMinted:                sdk.NewInt(1000000),
 		RemainderToMint:             sdk.ZeroDec(),
 		LastMintBlockTime:           newTime,
-		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+		RemainderFromPreviousMinter: sdk.ZeroDec(),
 	}
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(250000), 2, sdk.ZeroInt(), sdk.ZeroDec(), newTime, sdk.ZeroDec(), sdk.NewInt(1000000), expectedHist)
 }
@@ -70,7 +70,7 @@ func TestMintSecondPeriod(t *testing.T) {
 		AmountMinted:                sdk.NewInt(100000),
 		RemainderToMint:             sdk.ZeroDec(),
 		LastMintBlockTime:           newTime,
-		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+		RemainderFromPreviousMinter: sdk.ZeroDec(),
 	}
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(25000), 3, sdk.ZeroInt(), sdk.ZeroDec(), newTime, sdk.ZeroDec(), sdk.NewInt(100000), expectedHist)
 }
@@ -89,7 +89,7 @@ func TestMintBetweenFirstAndSecondMinters(t *testing.T) {
 		AmountMinted:                sdk.NewInt(1000000),
 		RemainderToMint:             sdk.ZeroDec(),
 		LastMintBlockTime:           newTime,
-		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+		RemainderFromPreviousMinter: sdk.ZeroDec(),
 	}
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(275000), 2, sdk.NewInt(25000), sdk.ZeroDec(), newTime, sdk.ZeroDec(), sdk.NewInt(275000), expectedHist)
 }
@@ -108,7 +108,7 @@ func TestMintBetweenSecondAndThirdMinters(t *testing.T) {
 		AmountMinted:                sdk.NewInt(100000),
 		RemainderToMint:             sdk.ZeroDec(),
 		LastMintBlockTime:           newTime,
-		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+		RemainderFromPreviousMinter: sdk.ZeroDec(),
 	}
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(25000), 3, sdk.NewInt(0), sdk.ZeroDec(), newTime, sdk.ZeroDec(), sdk.NewInt(25000), expectedHist)
 }
@@ -151,7 +151,7 @@ func TestMintSecondPeriodWithRemaining(t *testing.T) {
 		AmountMinted:                sdk.NewInt(100000),
 		RemainderToMint:             sdk.MustNewDecFromStr("0.5"),
 		LastMintBlockTime:           newTime,
-		RemainderFromPreviousPeriod: sdk.MustNewDecFromStr("0.5"),
+		RemainderFromPreviousMinter: sdk.MustNewDecFromStr("0.5"),
 	}
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(33333), 3, sdk.ZeroInt(), sdk.MustNewDecFromStr("0.5"), newTime, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(100000), expectedHist)
 }
@@ -181,7 +181,7 @@ func TestMintFirstPeriodWithRemaining(t *testing.T) {
 		AmountMinted:                sdk.NewInt(2739726 + 3315068 + 684932),
 		RemainderToMint:             sdk.MustNewDecFromStr("0.027397260273972602"),
 		LastMintBlockTime:           newTime,
-		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+		RemainderFromPreviousMinter: sdk.ZeroDec(),
 	}
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(684932), 2, sdk.ZeroInt(), sdk.MustNewDecFromStr("0.027397260273972602"), newTime, sdk.MustNewDecFromStr("0.027397260273972602"), sdk.NewInt(2739726+3315068+684932), expectedHist)
 }
@@ -199,7 +199,7 @@ func TestMintBetweenFirstAndSecondMintersWithRemaining(t *testing.T) {
 		AmountMinted:                sdk.NewInt(6014726 - 25000 + 750000),
 		RemainderToMint:             sdk.MustNewDecFromStr("0.027397260273972602"),
 		LastMintBlockTime:           newTime,
-		RemainderFromPreviousPeriod: sdk.ZeroDec(),
+		RemainderFromPreviousMinter: sdk.ZeroDec(),
 	}
 	testHelper.C4eMinterUtils.Mint(sdk.NewInt(6014726), 2, sdk.NewInt(25000), sdk.MustNewDecFromStr("0.027397260273972602"), newTime, sdk.MustNewDecFromStr("0.027397260273972602"), sdk.NewInt(6014726), expectedHist)
 }
@@ -233,12 +233,13 @@ func TestMintWithExponentialStepMintingMinterStateAmountTooBig(t *testing.T) {
 	testHelper.C4eMinterUtils.Mint(sdk.ZeroInt(), 1, sdk.NewInt(1000000), sdk.ZeroDec(), startTime, sdk.ZeroDec(), sdk.ZeroInt())
 }
 
-func prepareApp(t *testing.T, initialBlockTime time.Time, mintingStartTime time.Time, minters []*types.Minter) *testapp.TestHelper {
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, initialBlockTime)
-	params := types.DefaultParams()
-	params.MintDenom = testenv.DefaultTestDenom
-	params.MinterConfig.StartTime = mintingStartTime
-	params.MinterConfig.Minters = minters
+func prepareApp(t *testing.T, initialBlockTime time.Time, mintingStartTime time.Time, minters []*types.Minter) *app.TestHelper {
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 1000, initialBlockTime)
+	params := types.Params{
+		MintDenom: testenv.DefaultTestDenom,
+		StartTime: mintingStartTime,
+		Minters:   minters,
+	}
 
 	k := testHelper.App.CfeminterKeeper
 	k.SetParams(testHelper.Context, params)
@@ -249,12 +250,14 @@ func createLinearMintings(startTime time.Time) []*types.Minter {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	LinearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	LinearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
+	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.LinearMintingType, LinearMinting: &LinearMinting1}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &LinearMinting2}
-	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
+	minter3 := types.Minter{SequenceId: 3, Config: testenv.NoMintingConfig}
 
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }
@@ -267,16 +270,20 @@ func createExponentialStepMintingWithRemainingPassing(startTime time.Time) []*ty
 
 	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(4000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	linearMinting := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
+	config2, _ := codectypes.NewAnyWithValue(&linearMinting)
 
-	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Type: types.ExponentialStepMintingType, ExponentialStepMinting: &exponentialStepMinting}
-	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Type: types.LinearMintingType, LinearMinting: &linearMinting}
-	minter3 := types.Minter{SequenceId: 3, Type: types.NoMintingType}
+	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
+	minter2 := types.Minter{SequenceId: 2, EndTime: &endTime2, Config: config2}
+	minter3 := types.Minter{SequenceId: 3, Config: testenv.NoMintingConfig}
 
 	return []*types.Minter{&minter1, &minter2, &minter3}
 }
 
 func createExponentialStepMinting() []*types.Minter {
 	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(1000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
-	minter1 := types.Minter{SequenceId: 1, Type: types.ExponentialStepMintingType, ExponentialStepMinting: &exponentialStepMinting}
-	return []*types.Minter{&minter1}
+	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
+
+	minter := types.Minter{SequenceId: 1, Config: config}
+	return []*types.Minter{&minter}
 }

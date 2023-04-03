@@ -34,6 +34,7 @@ function getStructure(template) {
 }
 const getDefaultState = () => {
 	return {
+				InterchainAccount: {},
 				Params: {},
 				
 				_Structure: {
@@ -66,6 +67,12 @@ export default {
 		}
 	},
 	getters: {
+				getInterchainAccount: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.InterchainAccount[JSON.stringify(params)] ?? {}
+		},
 				getParams: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
@@ -105,6 +112,28 @@ export default {
 				}
 			})
 		},
+		
+		
+		
+		 		
+		
+		
+		async QueryInterchainAccount({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.IbcApplicationsInterchainAccountsControllerV1.query.queryInterchainAccount( key.owner,  key.connection_id)).data
+				
+					
+				commit('QUERY', { query: 'InterchainAccount', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryInterchainAccount', payload: { options: { all }, params: {...key},query }})
+				return getters['getInterchainAccount']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryInterchainAccount API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
 		
 		
 		

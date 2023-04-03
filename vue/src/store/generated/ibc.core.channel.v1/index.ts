@@ -5,11 +5,12 @@ import { IdentifiedChannel } from "chain4energy-c4e-chain-client-ts/ibc.core.cha
 import { Counterparty } from "chain4energy-c4e-chain-client-ts/ibc.core.channel.v1/types"
 import { Packet } from "chain4energy-c4e-chain-client-ts/ibc.core.channel.v1/types"
 import { PacketState } from "chain4energy-c4e-chain-client-ts/ibc.core.channel.v1/types"
+import { PacketId } from "chain4energy-c4e-chain-client-ts/ibc.core.channel.v1/types"
 import { Acknowledgement } from "chain4energy-c4e-chain-client-ts/ibc.core.channel.v1/types"
 import { PacketSequence } from "chain4energy-c4e-chain-client-ts/ibc.core.channel.v1/types"
 
 
-export { Channel, IdentifiedChannel, Counterparty, Packet, PacketState, Acknowledgement, PacketSequence };
+export { Channel, IdentifiedChannel, Counterparty, Packet, PacketState, PacketId, Acknowledgement, PacketSequence };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -60,6 +61,7 @@ const getDefaultState = () => {
 						Counterparty: getStructure(Counterparty.fromPartial({})),
 						Packet: getStructure(Packet.fromPartial({})),
 						PacketState: getStructure(PacketState.fromPartial({})),
+						PacketId: getStructure(PacketId.fromPartial({})),
 						Acknowledgement: getStructure(Acknowledgement.fromPartial({})),
 						PacketSequence: getStructure(PacketSequence.fromPartial({})),
 						

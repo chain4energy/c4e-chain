@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -17,14 +17,14 @@ import (
 
 func TestGenesisWholeApp(t *testing.T) {
 	genesisState := types.GenesisState{
-		Params:              types.NewParams("uc4e"),
-		VestingAccountList:  []types.VestingAccount{},
-		VestingAccountCount: 0,
+		Params:                   types.NewParams("uc4e"),
+		VestingAccountTraces:     []types.VestingAccountTrace{},
+		VestingAccountTraceCount: 0,
 		// this line is used by starport scaffolding # genesis/test/state
 		VestingTypes: []types.GenesisVestingType{},
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 }
@@ -34,7 +34,7 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 	vestingTypesArray := testutils.GenerateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
 		Params: types.NewParams("uc4e"),
-		VestingAccountList: []types.VestingAccount{
+		VestingAccountTraces: []types.VestingAccountTrace{
 			{
 				Id:      0,
 				Address: acountsAddresses[0].String(),
@@ -44,11 +44,11 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 				Address: acountsAddresses[1].String(),
 			},
 		},
-		VestingAccountCount: 2,
-		VestingTypes:        vestingTypesArray,
+		VestingAccountTraceCount: 2,
+		VestingTypes:             vestingTypesArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
@@ -57,13 +57,13 @@ func TestGenesisVestingTypesAndAccounts(t *testing.T) {
 func TestGenesisVestingTypes(t *testing.T) {
 	vestingTypesArray := testutils.GenerateGenesisVestingTypes(10, 1)
 	genesisState := types.GenesisState{
-		Params:              types.NewParams("uc4e"),
-		VestingAccountList:  []types.VestingAccount{},
-		VestingAccountCount: 0,
-		VestingTypes:        vestingTypesArray,
+		Params:                   types.NewParams("uc4e"),
+		VestingAccountTraces:     []types.VestingAccountTrace{},
+		VestingAccountTraceCount: 0,
+		VestingTypes:             vestingTypesArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
@@ -118,13 +118,13 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	vestingTypesArray[0].VestingPeriodUnit = srcUnits
 	vestingTypesArray[0].Free = sdk.ZeroDec()
 	genesisState := types.GenesisState{
-		Params:              types.NewParams("uc4e"),
-		VestingAccountList:  []types.VestingAccount{},
-		VestingAccountCount: 0,
-		VestingTypes:        vestingTypesArray,
+		Params:                   types.NewParams("uc4e"),
+		VestingAccountTraces:     []types.VestingAccountTrace{},
+		VestingAccountTraceCount: 0,
+		VestingTypes:             vestingTypesArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
@@ -137,7 +137,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 	testHelper.C4eVestingUtils.ExportGenesis(genesisState)
 }
 
-func getVestingPoolsAmount(accVestingPools []*types.AccountVestingPools) sdk.Int {
+func getVestingPoolsAmount(accVestingPools []*types.AccountVestingPools) math.Int {
 	result := sdk.ZeroInt()
 	for _, accV := range accVestingPools {
 		for _, v := range accV.VestingPools {
@@ -157,7 +157,7 @@ func TestGenesisAccountVestingPools(t *testing.T) {
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	mintUndelegableCoinsToModule(testHelper, genesisState, getVestingPoolsAmount(accountVestingPoolsArray))
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
@@ -174,7 +174,7 @@ func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {
 		AccountVestingPools: accountVestingPoolsArray,
 	}
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	VestingPoolsAmount := getVestingPoolsAmount(accountVestingPoolsArray)
 	wrongAcountAmount := getVestingPoolsAmount(accountVestingPoolsArray).SubRaw(10)
@@ -183,7 +183,7 @@ func TestGenesisAccountVestingPoolsWrongAmountInModuleAccount(t *testing.T) {
 
 }
 
-func mintUndelegableCoinsToModule(testHelper *testapp.TestHelper, genesisState types.GenesisState, amount sdk.Int) {
+func mintUndelegableCoinsToModule(testHelper *app.TestHelper, genesisState types.GenesisState, amount math.Int) {
 	mintedCoin := sdk.NewCoin(genesisState.Params.Denom, amount)
 	testHelper.BankUtils.AddCoinsToModule(mintedCoin, types.ModuleName)
 }

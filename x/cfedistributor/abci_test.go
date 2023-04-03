@@ -1,9 +1,8 @@
 package cfedistributor_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
-
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 
 	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
 
@@ -33,7 +32,7 @@ func TestBurningDistributorBaseAccountDest(t *testing.T) {
 func BurningDistributorTest(t *testing.T, destinationType subdistributortestutils.DestinationType) {
 	senderCoin := sdk.NewInt(1017)
 
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(senderCoin, authtypes.FeeCollectorName)
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(testHelper.InitialValidatorsCoin.AddAmount(senderCoin).Amount)
@@ -116,7 +115,7 @@ func TestBurningWithInflationDistributorPassBaseAccountAccountNoValidators(t *te
 }
 
 func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType subdistributortestutils.DestinationType, toValidators bool) {
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	//prepare module account with coin to distribute fee_collector 1017
 	cointToMint := sdk.NewInt(1017)
@@ -199,7 +198,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType sub
 }
 
 func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
-	testHelper := testapp.SetupTestApp(t)
+	testHelper := app.SetupTestApp(t)
 
 	var subdistributors []types.SubDistributor
 	subdistributors = append(subdistributors, subdistributortestutils.PrepareBurningDistributor(subdistributortestutils.MainCollector))

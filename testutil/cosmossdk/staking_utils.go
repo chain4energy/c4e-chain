@@ -1,7 +1,7 @@
 package cosmossdk
 
 import (
-	"testing"
+	"cosmossdk.io/math"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -14,12 +14,12 @@ import (
 )
 
 type StakingUtils struct {
-	t                   *testing.T
+	t                   require.TestingT
 	helperStakingkeeper stakingkeeper.Keeper
 	bankUtils           *BankUtils
 }
 
-func NewStakingUtils(t *testing.T, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) StakingUtils {
+func NewStakingUtils(t require.TestingT, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) StakingUtils {
 	return StakingUtils{t: t, helperStakingkeeper: helperStakingkeeper, bankUtils: bankUtils}
 }
 
@@ -32,12 +32,12 @@ func (su *StakingUtils) CreateValidator(ctx sdk.Context, addr sdk.ValAddress, pk
 	require.NotNil(su.t, res)
 }
 
-func (su *StakingUtils) SetupValidators(ctx sdk.Context, validators []sdk.ValAddress, delegatePerValidator sdk.Int) {
+func (su *StakingUtils) SetupValidators(ctx sdk.Context, validators []sdk.ValAddress, delegatePerValidator math.Int) {
 	PKs := CreateTestPubKeys(len(validators))
 	commission := stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(0, 1), sdk.NewDecWithPrec(0, 1), sdk.NewDec(0))
 	delCoin := sdk.NewCoin(testenv.DefaultTestDenom, delegatePerValidator)
 	for i, valAddr := range validators {
-		su.bankUtils.AddCoinsToAccount(ctx, delCoin, valAddr.Bytes())
+		su.bankUtils.AddCoinsToAccount(ctx, sdk.NewCoins(delCoin), valAddr.Bytes())
 		su.CreateValidator(ctx, valAddr, PKs[i], delCoin, commission)
 	}
 	require.EqualValues(su.t, len(validators)+1, len(su.helperStakingkeeper.GetAllValidators(ctx)))
@@ -47,7 +47,7 @@ func (su *StakingUtils) GetValidator(ctx sdk.Context, addr sdk.ValAddress) (vali
 	return su.helperStakingkeeper.GetValidator(ctx, addr)
 }
 
-func (su *StakingUtils) MessageDelegate(ctx sdk.Context, expectedCurrentAmountOfDelegations int, expectedCurrentAmountOfUnbondingDelegations int, validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, bondAmount sdk.Int) {
+func (su *StakingUtils) MessageDelegate(ctx sdk.Context, expectedCurrentAmountOfDelegations int, expectedCurrentAmountOfUnbondingDelegations int, validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, bondAmount math.Int) {
 	validator, found := su.GetValidator(ctx, validatorAddress)
 	require.True(su.t, found, "validator not found")
 	require.Equal(su.t, expectedCurrentAmountOfDelegations, len(su.helperStakingkeeper.GetAllDelegations(ctx)))
@@ -61,7 +61,7 @@ func (su *StakingUtils) MessageDelegate(ctx sdk.Context, expectedCurrentAmountOf
 	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations, len(su.helperStakingkeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
 }
 
-func (su *StakingUtils) MessageUndelegate(ctx sdk.Context, expectedCurrentAmountOfDelegations int, expectedCurrentAmountOfUnbondingDelegations int, validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, unbondAmount sdk.Int) {
+func (su *StakingUtils) MessageUndelegate(ctx sdk.Context, expectedCurrentAmountOfDelegations int, expectedCurrentAmountOfUnbondingDelegations int, validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, unbondAmount math.Int) {
 
 	require.Equal(su.t, expectedCurrentAmountOfDelegations, len(su.helperStakingkeeper.GetAllDelegations(ctx)))
 	require.Equal(su.t, expectedCurrentAmountOfUnbondingDelegations, len(su.helperStakingkeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
@@ -81,7 +81,7 @@ type ContextStakingUtils struct {
 	testContext testenv.TestContext
 }
 
-func NewContextStakingUtils(t *testing.T, testContext testenv.TestContext, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) *ContextStakingUtils {
+func NewContextStakingUtils(t require.TestingT, testContext testenv.TestContext, helperStakingkeeper stakingkeeper.Keeper, bankUtils *BankUtils) *ContextStakingUtils {
 	stakingUtils := NewStakingUtils(t, helperStakingkeeper, bankUtils)
 	return &ContextStakingUtils{StakingUtils: stakingUtils, testContext: testContext}
 }
@@ -90,7 +90,7 @@ func (su *ContextStakingUtils) CreateValidator(addr sdk.ValAddress, pk cryptotyp
 	su.StakingUtils.CreateValidator(su.testContext.GetContext(), addr, pk, coin, commisions)
 }
 
-func (su *ContextStakingUtils) SetupValidators(validators []sdk.ValAddress, delegatePerValidator sdk.Int) {
+func (su *ContextStakingUtils) SetupValidators(validators []sdk.ValAddress, delegatePerValidator math.Int) {
 	su.StakingUtils.SetupValidators(su.testContext.GetContext(), validators, delegatePerValidator)
 }
 
@@ -99,13 +99,13 @@ func (su *ContextStakingUtils) GetValidator(addr sdk.ValAddress) (validator stak
 }
 
 func (su *ContextStakingUtils) MessageDelegate(expectedCurrentAmountOfDelegations int, expectedCurrentAmountOfUnbondingDelegations int,
-	validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, bondAmount sdk.Int) {
+	validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, bondAmount math.Int) {
 	su.StakingUtils.MessageDelegate(su.testContext.GetContext(), expectedCurrentAmountOfDelegations, expectedCurrentAmountOfUnbondingDelegations,
 		validatorAddress, delegatorAddress, bondAmount)
 
 }
 
-func (su *ContextStakingUtils) MessageUndelegate(expectedCurrentAmountOfDelegations int, expectedCurrentAmountOfUnbondingDelegations int, validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, unbondAmount sdk.Int) {
+func (su *ContextStakingUtils) MessageUndelegate(expectedCurrentAmountOfDelegations int, expectedCurrentAmountOfUnbondingDelegations int, validatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, unbondAmount math.Int) {
 	su.StakingUtils.MessageUndelegate(su.testContext.GetContext(), expectedCurrentAmountOfDelegations, expectedCurrentAmountOfUnbondingDelegations,
 		validatorAddress, delegatorAddress, unbondAmount)
 }

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -14,33 +15,30 @@ import (
 type (
 	Keeper struct {
 		cdc          codec.BinaryCodec
-		storeKey     sdk.StoreKey
-		memKey       sdk.StoreKey
+		storeKey     storetypes.StoreKey
+		memKey       storetypes.StoreKey
 		paramstore   paramtypes.Subspace
 		bank         types.BankKeeper
 		staking      types.StakingKeeper
 		account      types.AccountKeeper
 		distribution types.DistributionKeeper
 		gov          types.GovKeeper
+		authority    string
 	}
 )
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
-	memKey sdk.StoreKey,
+	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 	bank types.BankKeeper,
 	staking types.StakingKeeper,
 	account types.AccountKeeper,
 	distribution types.DistributionKeeper,
 	gov types.GovKeeper,
+	authority string,
 ) *Keeper {
-	// set KeyTable if it has not already been set
-	if !ps.HasKeyTable() {
-		ps = ps.WithKeyTable(types.ParamKeyTable())
-	}
-
 	return &Keeper{
 
 		cdc:          cdc,
@@ -52,6 +50,7 @@ func NewKeeper(
 		account:      account,
 		distribution: distribution,
 		gov:          gov,
+		authority:    authority,
 	}
 }
 

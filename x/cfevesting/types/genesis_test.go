@@ -76,7 +76,7 @@ func validVestingAccountsTest(acountsAddresses []sdk.AccAddress) TcData {
 		desc: "valid vesting accounts",
 		genState: &types.GenesisState{
 
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountTraces: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),
@@ -86,8 +86,8 @@ func validVestingAccountsTest(acountsAddresses []sdk.AccAddress) TcData {
 					Address: acountsAddresses[1].String(),
 				},
 			},
-			VestingAccountCount: 2,
-			Params:              types.Params{Denom: "uc4e"},
+			VestingAccountTraceCount: 2,
+			Params:                   types.Params{Denom: "uc4e"},
 			// this line is used by starport scaffolding # types/genesis/validField
 		},
 		valid: true,
@@ -99,7 +99,7 @@ func emptyDenomTest(acountsAddresses []sdk.AccAddress) TcData {
 		desc: "empty denom",
 		genState: &types.GenesisState{
 
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountTraces: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),
@@ -109,7 +109,7 @@ func emptyDenomTest(acountsAddresses []sdk.AccAddress) TcData {
 					Address: acountsAddresses[1].String(),
 				},
 			},
-			VestingAccountCount: 2,
+			VestingAccountTraceCount: 2,
 			// this line is used by starport scaffolding # types/genesis/validField
 		},
 		valid:        false,
@@ -121,7 +121,7 @@ func duplicatedVestingAccountTest(acountsAddresses []sdk.AccAddress) TcData {
 	return TcData{
 		desc: "duplicated vestingAccount",
 		genState: &types.GenesisState{
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountTraces: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),
@@ -131,7 +131,7 @@ func duplicatedVestingAccountTest(acountsAddresses []sdk.AccAddress) TcData {
 					Address: acountsAddresses[0].String(),
 				},
 			},
-			VestingAccountCount: 2,
+			VestingAccountTraceCount: 2,
 		},
 		valid:        false,
 		errorMassage: "duplicated id for vestingAccount",
@@ -142,13 +142,13 @@ func invalidVestingAccountCountTest(acountsAddresses []sdk.AccAddress) TcData {
 	return TcData{
 		desc: "invalid vestingAccount count",
 		genState: &types.GenesisState{
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountTraces: []types.VestingAccountTrace{
 				{
 					Id:      1,
 					Address: acountsAddresses[0].String(),
 				},
 			},
-			VestingAccountCount: 0,
+			VestingAccountTraceCount: 0,
 		},
 		valid:        false,
 		errorMassage: "vestingAccount id should be lower or equal than the last id",
@@ -171,7 +171,7 @@ func validVestingAccountsWithVestingTypesTest(acountsAddresses []sdk.AccAddress)
 		desc: "Valid VestingAccounts",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountTraces: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),
@@ -181,8 +181,8 @@ func validVestingAccountsWithVestingTypesTest(acountsAddresses []sdk.AccAddress)
 					Address: acountsAddresses[1].String(),
 				},
 			},
-			VestingAccountCount: 2,
-			VestingTypes:        testutils.GenerateGenesisVestingTypes(10, 1),
+			VestingAccountTraceCount: 2,
+			VestingTypes:             testutils.GenerateGenesisVestingTypes(10, 1),
 		},
 		valid: true,
 	}
@@ -207,7 +207,7 @@ func invalidVestingAccountsWrongIdTest(acountsAddresses []sdk.AccAddress) TcData
 		desc: "invalid VestingAccounts wrong id",
 		genState: &types.GenesisState{
 			Params: types.NewParams("test_denom"),
-			VestingAccountList: []types.VestingAccount{
+			VestingAccountTraces: []types.VestingAccountTrace{
 				{
 					Id:      0,
 					Address: acountsAddresses[0].String(),
@@ -217,8 +217,8 @@ func invalidVestingAccountsWrongIdTest(acountsAddresses []sdk.AccAddress) TcData
 					Address: acountsAddresses[1].String(),
 				},
 			},
-			VestingAccountCount: 1,
-			VestingTypes:        testutils.GenerateGenesisVestingTypes(10, 1),
+			VestingAccountTraceCount: 1,
+			VestingTypes:             testutils.GenerateGenesisVestingTypes(10, 1),
 		},
 		valid:        false,
 		errorMassage: "vestingAccount id should be lower or equal than the last id",
@@ -253,7 +253,7 @@ func invalidVestingPoolsNoVestingTypes() TcData {
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting pool with name: test-vesting-account-name1-1 defined for account: " + accountVestingPoolsArray[0].Address + " - vesting type not found: test-vesting-account-1-1",
+		errorMassage: "vesting pool with name: test-vesting-account-name1-1 defined for account: " + accountVestingPoolsArray[0].Owner + " - vesting type not found: test-vesting-account-1-1",
 	}
 
 }
@@ -272,7 +272,7 @@ func invalidVestingPoolsVestingTypeNotFound() TcData {
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting pool with name: test-vesting-account-name5-8 defined for account: " + accountVestingPoolsArray[4].Address + " - vesting type not found: " + accountVestingPoolsArray[4].VestingPools[7].VestingType,
+		errorMassage: "vesting pool with name: test-vesting-account-name5-8 defined for account: " + accountVestingPoolsArray[4].Owner + " - vesting type not found: " + accountVestingPoolsArray[4].VestingPools[7].VestingType,
 	}
 
 }
@@ -291,13 +291,13 @@ func invalidVestingPoolsOneNameMoreThanOnceError() TcData {
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined more than once for account: " + accountVestingPoolsArray[4].Address,
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined more than once for account: " + accountVestingPoolsArray[4].Owner,
 	}
 }
 
 func invalidVestingPoolsMoreThanOneAddressError() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
-	accountVestingPoolsArray[3].Address = accountVestingPoolsArray[7].Address
+	accountVestingPoolsArray[3].Owner = accountVestingPoolsArray[7].Owner
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
 
 	return TcData{
@@ -309,7 +309,7 @@ func invalidVestingPoolsMoreThanOneAddressError() TcData {
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "account vesting pools with address: " + accountVestingPoolsArray[3].Address + " defined more than once",
+		errorMassage: "account vesting pools with address: " + accountVestingPoolsArray[3].Owner + " defined more than once",
 	}
 
 }
@@ -328,7 +328,7 @@ func invalidVestingPoolsEmptyName() TcData {
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting pool defined for account: " + accountVestingPoolsArray[4].Address + " has no name",
+		errorMassage: "vesting pool defined for account: " + accountVestingPoolsArray[4].Owner + " has no name",
 	}
 
 }
@@ -347,7 +347,7 @@ func invalidVestingPoolsNegativeInitiallyLocked() TcData {
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Address + " has InitiallyLocked value negative -1",
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Owner + " has InitiallyLocked value negative -1",
 	}
 
 }
@@ -366,7 +366,7 @@ func invalidVestingPoolsNegativeWithdrawn() TcData {
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Address + " has Withdrawn value negative -1",
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Owner + " has Withdrawn value negative -1",
 	}
 
 }
@@ -385,7 +385,7 @@ func invalidVestingPoolsNegativeSent() TcData {
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Address + " has Sent value negative -1",
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Owner + " has Sent value negative -1",
 	}
 
 }
@@ -406,7 +406,7 @@ func invalidVestingPoolsNegativeCurrentlyLocked() TcData {
 			AccountVestingPools: accountVestingPoolsArray,
 		},
 		valid:        false,
-		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Address + " has InitiallyLocked (100) < Withdrawn (50) + Sent (51)",
+		errorMassage: "vesting pool with name: " + accountVestingPoolsArray[4].VestingPools[3].Name + " defined for account: " + accountVestingPoolsArray[4].Owner + " has InitiallyLocked (100) < Withdrawn (50) + Sent (51)",
 	}
 
 }

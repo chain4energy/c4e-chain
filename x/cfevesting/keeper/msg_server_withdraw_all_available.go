@@ -13,7 +13,7 @@ func (k msgServer) WithdrawAllAvailable(goCtx context.Context, msg *types.MsgWit
 	defer telemetry.IncrCounter(1, types.ModuleName, "withdraw all available message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
-	withdrawn, err := keeper.WithdrawAllAvailable(ctx, msg.Creator)
+	withdrawn, err := keeper.WithdrawAllAvailable(ctx, msg.Owner)
 	if err != nil {
 		return nil, err
 	}

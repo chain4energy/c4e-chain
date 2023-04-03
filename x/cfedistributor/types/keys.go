@@ -1,6 +1,9 @@
 package types
 
-var StateKeyPrefix = []byte{0x04}
+var (
+	ParamsKey      = []byte{0x00}
+	StateKeyPrefix = []byte{0x04}
+)
 
 const (
 	// ModuleName defines the module name

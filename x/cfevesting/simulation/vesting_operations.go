@@ -33,7 +33,7 @@ func SimulateVestingOperations(
 		randomVestingType := "New vesting" + strconv.Itoa(int(randVesingId))
 
 		msgCreateVestingPool := &types.MsgCreateVestingPool{
-			Creator:     simAccount1.Address.String(),
+			Owner:       simAccount1.Address.String(),
 			Name:        randVestingPoolName,
 			Amount:      randVestingAmount,
 			VestingType: randomVestingType,
@@ -49,7 +49,7 @@ func SimulateVestingOperations(
 
 		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10000000))
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
-			FromAddress:     simAccount1.Address.String(),
+			Owner:           simAccount1.Address.String(),
 			ToAddress:       simAccount2Address,
 			VestingPoolName: randVestingPoolName,
 			Amount:          randMsgSendToVestinAccAmount,
@@ -62,7 +62,7 @@ func SimulateVestingOperations(
 		}
 
 		msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
-			Creator: simAccount1.Address.String(),
+			Owner: simAccount1.Address.String(),
 		}
 		_, err = msgServer.WithdrawAllAvailable(msgServerCtx, msgWithdrawAllAvailable)
 		if err != nil {

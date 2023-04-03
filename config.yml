@@ -1,256 +1,243 @@
+version: 1
+build:
+  binary: "c4ed"
+  main: "./cmd/c4ed"
+  proto:
+    path: proto
+    third_party_paths:
+    - third_party/proto
+    - proto_vendor
 accounts:
-  - name: alice
-    coins: ["120000000000uc4e"]
-    mnemonic: "cabin gun luggage green fever either engage nest arrow sure record physical palace dutch clap vocal north snack birth exhibit either ancient sniff settle"
-  - name: bob
-    coins: ["4000000000uc4e"]
-    mnemonic: "genuine author egg good melt obey omit antique flight fade midnight funny security budget inquiry animal unfold film soft midnight company rack kitchen monitor"
-  - name: vesting_pools_owner
-    coins: ["15000000000000uc4e"]
-    mnemonic: "radar there legend edge jar across night figure dog oval clump endorse garage office upon square worth harvest twelve trust menu mother gossip simple"
-  - name: validators_pool_owner
-    coins: ["15000000uc4e"]
-    mnemonic: "forget mesh pet uphold prison daughter surround drop fire surface nurse swing long black hockey hover bulb reform female prefer aim ten category rhythm"
-validator:
-  name: alice
-  staked: "100000000uc4e"
-client:
-  openapi:
-    path: "docs/static/openapi.yml"
-  vuex:
-    path: "vue/src/store"
+- name: alice
+  coins:
+  - 120000000000uc4e
+  mnemonic: cabin gun luggage green fever either engage nest arrow sure record physical palace dutch clap vocal north snack birth exhibit either ancient sniff settle
+- name: bob
+  coins:
+  - 4000000000uc4e
+  mnemonic: genuine author egg good melt obey omit antique flight fade midnight funny security budget inquiry animal unfold film soft midnight company rack kitchen monitor
+- name: vesting_pools_owner
+  coins:
+  - 15000000000000uc4e
+  mnemonic: radar there legend edge jar across night figure dog oval clump endorse garage office upon square worth harvest twelve trust menu mother gossip simple
+- name: validators_pool_owner
+  coins:
+  - 15000000uc4e
+  mnemonic: forget mesh pet uphold prison daughter surround drop fire surface nurse swing long black hockey hover bulb reform female prefer aim ten category rhythm
 faucet:
   name: bob
-  coins: ["100000uc4e"]
-init:
-  home: "./.data"
-  app:
-    telemetry:
-      enabled: true
-      prometheus-retention-time: "60"
-
-  #      enable-hostname-label: true
-  #      enable-hostname: true
-  config:
-    log_level: "debug"
-    log_format: "plain"
-    metrics:
-      prometheusEnabledz
-    instrumentation:
-      prometheus: true
+  coins:
+  - 100000uc4e
+  host: 0.0.0.0:4500
+client:
+  vuex:
+    path: vue/src/store
+  openapi:
+    path: docs/static/openapi.yml
 genesis:
   app_state:
     auth:
       accounts:
-        - "@type": "/cosmos.auth.v1beta1.ModuleAccount"
+      - '@type': /cosmos.auth.v1beta1.ModuleAccount
+        base_account:
+          account_number: "9"
+          address: c4e1yl6hdjhmkf37639730gffanpzndzdpmhd80ywa
+          pub_key: null
+          sequence: "0"
+        name: transfer
+        permissions:
+        - minter
+        - burner
+      - '@type': /cosmos.vesting.v1beta1.ContinuousVestingAccount
+        base_vesting_account:
           base_account:
-            account_number: "9"
-            address: "c4e1yl6hdjhmkf37639730gffanpzndzdpmhd80ywa"
+            account_number: "11"
+            address: c4e1xe3x4w0ma4dv805q0rhe0c7xk3mv24vatg7pm3
             pub_key: null
             sequence: "0"
-          name: "transfer"
-          permissions:
-            - minter
-            - burner
-        - "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount"
-          base_vesting_account:
-            base_account:
-              account_number: "11"
-              address: "c4e1xe3x4w0ma4dv805q0rhe0c7xk3mv24vatg7pm3"
-              # mnemonic: pyramid jump crumble supply fall april more inner jacket news clutch sustain century vendor observe carpet coach early grief very beauty solution orphan cattle
-              pub_key: null
-              sequence: "0"
-            delegated_free:
-            delegated_vesting:
-            end_time: "1770000000"
-            original_vesting:
-              - amount: "5000000000000"
-                denom: "uc4e"
-          start_time: "1670429736"
-
+          delegated_free: null
+          delegated_vesting: null
+          end_time: "1770000000"
+          original_vesting:
+          - amount: "5000000000000"
+            denom: uc4e
+        start_time: "1670429736"
     bank:
-      denom_metadata:
-        - description: "Chain4Energy Token"
-          denom_units:
-            - denom: "uc4e"
-              exponent: 0
-              aliases:
-                - microc4e
-            - denom: "c4e"
-              exponent: 6
-          base: "uc4e"
-          display: "c4e"
-          name: "Chain4Energy Coin"
-          symbol: "C4E"
       balances:
-        # cfevesting module account
-        - address: "c4e17yryahw88nkwsaphuywhv7ap8ty7zwgunjsple"
-          coins:
-            - denom: "uc4e"
-              amount: "32500000000000"
-        - address: "c4e1xe3x4w0ma4dv805q0rhe0c7xk3mv24vatg7pm3"
-          coins:
-            - denom: "uc4e"
-              amount: "5000100000000"
-    staking:
-      params:
-        bond_denom: "uc4e"
-        unbonding_time: "100s"
-
-    gov:
-      deposit_params:
-        max_deposit_period: "50s"
-        min_deposit:
-          - denom: "uc4e"
-            amount: "10000000"
-      voting_params:
-        voting_period: "10s"
-
-    cfeminter:
-      params:
-        mint_denom: "uc4e"
-        minter_config:
-          start_time: "2022-07-05T00:00:00.00000000Z"
-          minters:
-          - sequence_id: 1
-            type: "EXPONENTIAL_STEP_MINTING"
-            exponential_step_minting:
-              step_duration: "126144000s" # 4 years - 365*24*3600*4
-              amount: "160000000000000"
-              amount_multiplier: "0.5"
-            # - SequenceId: 1
-            #   period_end: "2024-03-30T00:00:00.00000000Z"
-            #   type: "TIME_LINEAR_MINTER"
-            #   time_linear_minter:
-            #     amount: "40000000000000"
-            # - SequenceId: 2
-            #   type: "NO_MINTING"
-
-      minter_state:
-        sequence_id: 1
-        amount_minted: "0"
+      - address: c4e17yryahw88nkwsaphuywhv7ap8ty7zwgunjsple
+        coins:
+        - amount: "32500000000000"
+          denom: uc4e
+      - address: c4e1xe3x4w0ma4dv805q0rhe0c7xk3mv24vatg7pm3
+        coins:
+        - amount: "5000100000000"
+          denom: uc4e
+      denom_metadata:
+      - base: uc4e
+        denom_units:
+        - aliases:
+          - microc4e
+          denom: uc4e
+          exponent: 0
+        - denom: c4e
+          exponent: 6
+        description: Chain4Energy Token
+        display: c4e
+        name: Chain4Energy Coin
+        symbol: C4E
     cfedistributor:
       params:
         sub_distributors:
-        - name: tx_fee_distributor
-          sources:
-            - id: fee_collector
-              type: MODULE_ACCOUNT
-          destinations:
-            primary_share:
-              id: "c4e_distributor"
-              type: MAIN
+        - destinations:
             burn_share: "0"
-
-        - name: inflation_and_fee_distributor
-          sources:
-            - id: c4e_distributor
-              type: MAIN
-          destinations:
             primary_share:
-              id: "validators_rewards_collector"
-              type: MODULE_ACCOUNT
+              id: c4e_distributor
+              type: MAIN
+          name: tx_fee_distributor
+          sources:
+          - id: fee_collector
+            type: MODULE_ACCOUNT
+        - destinations:
             burn_share: "0.05"
+            primary_share:
+              id: validators_rewards_collector
+              type: MODULE_ACCOUNT
             shares:
-              - name: development_fund
-                share: "0.05"
-                destination:
-                  #Proper development fund account
-                  id: "c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl"
-                  type: BASE_ACCOUNT
-              - name: usage_incentives
-                share: "0.35"
-                destination:
-                  id: "usage_incentives_collector" #c4e17uu8ruy0jc3rjdypdeq6c8uqzv9jqgzvx292ra
-                  type: INTERNAL_ACCOUNT
-        - name: usage_incentives_distributor
+            - destination:
+                id: c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl
+                type: BASE_ACCOUNT
+              name: development_fund
+              share: "0.05"
+            - destination:
+                id: usage_incentives_collector
+                type: INTERNAL_ACCOUNT
+              name: usage_incentives
+              share: "0.35"
+          name: inflation_and_fee_distributor
           sources:
-            - id: usage_incentives_collector #c4e17uu8ruy0jc3rjdypdeq6c8uqzv9jqgzvx292ra
-              type: INTERNAL_ACCOUNT
-          destinations:
+          - id: c4e_distributor
+            type: MAIN
+        - destinations:
             burn_share: "0"
             primary_share:
-              #LP Providers proper address
-              id: "c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph"
+              id: c4e1q5vgy0r3w9q4cclucr2kl8nwmfe2mgr6g0jlph
               type: BASE_ACCOUNT
             shares:
-              - name: green_energy_booster
-                share: "0.34"
-                destination:
-                  id: "green_energy_booster_collector" #c4e16r2tvpquak29tq3jpc5872upz9mvtr8aal58zk
-                  type: MODULE_ACCOUNT
-              - name: governance_booster
-                share: "0.33"
-                destination:
-                  id: "governance_booster_collector" #c4e17hjqm36lerxsgvz6a0e6r08yjl2e9fdr059nw2
-                  type: MODULE_ACCOUNT
-    cfevesting:
+            - destination:
+                id: green_energy_booster_collector
+                type: MODULE_ACCOUNT
+              name: green_energy_booster
+              share: "0.34"
+            - destination:
+                id: governance_booster_collector
+                type: MODULE_ACCOUNT
+              name: governance_booster
+              share: "0.33"
+          name: usage_incentives_distributor
+          sources:
+          - id: usage_incentives_collector
+            type: INTERNAL_ACCOUNT
+    cfeminter:
+      minter_state:
+        amount_minted: "0"
+        sequence_id: 1
       params:
-        denom: "uc4e"
-      vesting_types:
-        - name: "Short vesting with lockup"
-          lockup_period: 1
-          lockup_period_unit: "minute"
-          vesting_period: 10
-          vesting_period_unit: "minute"
-          free: "0"
-        - name: "Mid vesting with lockup"
-          lockup_period: 150
-          lockup_period_unit: "minute"
-          vesting_period: 150
-          vesting_period_unit: "hour"
-          free: "0"
-        - name: "Long vesting with lockup"
-          lockup_period: 600
-          lockup_period_unit: "hour"
-          vesting_period: 70
-          vesting_period_unit: "day"
-          free: "0"
-        - name: "Mid vesting delegable"
-          lockup_period: 0
-          lockup_period_unit: "minute"
-          vesting_period: 200
-          vesting_period_unit: "hour"
-          free: "0"
-        - name: "Long vesting delegable"
-          lockup_period: 0
-          lockup_period_unit: "minute"
-          vesting_period: 100
-          vesting_period_unit: "day"
-          free: "0"
-        - name: "Advisors pool"
-          lockup_period: 5
-          lockup_period_unit: "minute"
-          vesting_period: 5
-          vesting_period_unit: "day"
-          free: "0"
-        - name: "Validators pool"
-          lockup_period: 10
-          lockup_period_unit: "minute"
-          vesting_period: 10
-          vesting_period_unit: "day"
-          free: "0.05"
-      account_vesting_pools:
-        - address: "c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm"
-          # delegable_address: ""
-          vesting_pools:
-            - name: "Advisors pool"
-              sent: "0"
-              initially_locked: "15000000000000"
-              lock_end: "2025-03-30T00:00:00.00000000Z"
-              lock_start: "2022-03-30T00:00:00.00000000Z"
-              vesting_type: "Advisors pool"
-              withdrawn: "0"
-            - name: "Validators pool"
-              sent: "0"
-              initially_locked: "17500000000000"
-              lock_end: "2024-03-30T00:00:00.00000000Z"
-              lock_start: "2022-03-30T00:00:00.00000000Z"
-              vesting_type: "Validators pool"
-              withdrawn: "0"
+        mint_denom: uc4e
+        start_time: "2022-07-05T00:00:00.00000000Z"
+        minters:
+        - sequence_id: 1
+          config:
+            '@type': "/chain4energy.c4echain.cfeminter.ExponentialStepMinting"
+            amount: "160000000000000"
+            amount_multiplier: "0.5"
+            step_duration: 126144000s
 
-    # genutil:
-    #   gen_txs:
-    #     messages:
-    #       value:
-    #         denom: "c4e",
+    cfevesting:
+      account_vesting_pools:
+      - owner: c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm
+        vesting_pools:
+        - initially_locked: "15000000000000"
+          lock_end: "2025-03-30T00:00:00.00000000Z"
+          lock_start: "2022-03-30T00:00:00.00000000Z"
+          name: Advisors pool
+          sent: "0"
+          vesting_type: Advisors pool
+          withdrawn: "0"
+        - initially_locked: "17500000000000"
+          lock_end: "2024-03-30T00:00:00.00000000Z"
+          lock_start: "2022-03-30T00:00:00.00000000Z"
+          name: Validators pool
+          sent: "0"
+          vesting_type: Validators pool
+          withdrawn: "0"
+      params:
+        denom: uc4e
+      vesting_types:
+      - free: "0"
+        lockup_period: 1
+        lockup_period_unit: minute
+        name: Short vesting with lockup
+        vesting_period: 10
+        vesting_period_unit: minute
+      - free: "0"
+        lockup_period: 150
+        lockup_period_unit: minute
+        name: Mid vesting with lockup
+        vesting_period: 150
+        vesting_period_unit: hour
+      - free: "0"
+        lockup_period: 600
+        lockup_period_unit: hour
+        name: Long vesting with lockup
+        vesting_period: 70
+        vesting_period_unit: day
+      - free: "0"
+        lockup_period: 0
+        lockup_period_unit: minute
+        name: Mid vesting delegable
+        vesting_period: 200
+        vesting_period_unit: hour
+      - free: "0"
+        lockup_period: 0
+        lockup_period_unit: minute
+        name: Long vesting delegable
+        vesting_period: 100
+        vesting_period_unit: day
+      - free: "0"
+        lockup_period: 5
+        lockup_period_unit: minute
+        name: Advisors pool
+        vesting_period: 5
+        vesting_period_unit: day
+      - free: "0.05"
+        lockup_period: 10
+        lockup_period_unit: minute
+        name: Validators pool
+        vesting_period: 10
+        vesting_period_unit: day
+    gov:
+      deposit_params:
+        max_deposit_period: 50s
+        min_deposit:
+        - amount: "10000000"
+          denom: uc4e
+      voting_params:
+        voting_period: 10s
+    staking:
+      params:
+        bond_denom: uc4e
+        unbonding_time: 100s
+validators:
+- name: alice
+  bonded: 100000000uc4e
+  app:
+    telemetry:
+      enabled: true
+      prometheus-retention-time: "60"
+  config:
+    instrumentation:
+      prometheus: true
+    log_format: plain
+    log_level: debug
+    metrics: prometheusEnabledz
+  home: ./.data

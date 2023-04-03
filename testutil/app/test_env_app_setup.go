@@ -2,8 +2,9 @@ package app
 
 import (
 	"context"
-	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
@@ -44,15 +45,15 @@ func SetupAppWithTime(initBlock int64, initTime time.Time, balances ...banktypes
 	return app, ctx, coins
 }
 
-func SetupTestApp(t *testing.T) *TestHelper {
+func SetupTestApp(t require.TestingT) *TestHelper {
 	return SetupTestAppWithHeightAndTime(t, 1, testenv.TestEnvTime)
 }
 
-func SetupTestAppWithHeight(t *testing.T, initBlock int64) *TestHelper {
+func SetupTestAppWithHeight(t require.TestingT, initBlock int64) *TestHelper {
 	return SetupTestAppWithHeightAndTime(t, initBlock, testenv.TestEnvTime)
 }
 
-func SetupTestAppWithHeightAndTime(t *testing.T, initBlock int64, initTime time.Time, balances ...banktypes.Balance) *TestHelper {
+func SetupTestAppWithHeightAndTime(t require.TestingT, initBlock int64, initTime time.Time, balances ...banktypes.Balance) *TestHelper {
 	app, ctx, coins := SetupAppWithTime(initBlock, initTime, balances...)
 	testHelper := newTestHelper(t, ctx, app, initTime, coins)
 	return testHelper
@@ -72,11 +73,11 @@ type TestHelper struct {
 	C4eDistributorUtils   *testcfedistributor.ContextC4eDistributorUtils
 }
 
-func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time.Time, initialValidatorsCoin sdk.Coin) *TestHelper {
+func newTestHelper(t require.TestingT, ctx sdk.Context, app *c4eapp.App, initTime time.Time, initialValidatorsCoin sdk.Coin) *TestHelper {
 	maccPerms := testcosmos.AddHelperModuleAccountPermissions(c4eapp.GetMaccPerms())
 
 	helperAk := authkeeper.NewAccountKeeper(
-		app.AppCodec(), app.GetKey(authtypes.StoreKey), app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
+		app.AppCodec(), app.GetKey(authtypes.StoreKey), app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms, c4eapp.AccountAddressPrefix,
 	)
 
 	moduleAccAddrs := testcosmos.AddHelperModuleAccountAddr(app.ModuleAccountAddrs())
@@ -95,11 +96,11 @@ func newTestHelper(t *testing.T, ctx sdk.Context, app *c4eapp.App, initTime time
 
 	var testHelperP testenv.TestContext = &testHelper
 
-	bankUtils := testcosmos.NewContextBankUtils(t, testHelper, &helperAk, helperBk)
+	bankUtils := testcosmos.NewContextBankUtils(t, testHelperP, &helperAk, helperBk)
 
 	testHelper.BankUtils = bankUtils
-	testHelper.AuthUtils = testcosmos.NewContextAuthUtils(t, testHelper, &helperAk, &bankUtils.BankUtils)
-	testHelper.StakingUtils = testcosmos.NewContextStakingUtils(t, testHelper, app.StakingKeeper, &bankUtils.BankUtils)
+	testHelper.AuthUtils = testcosmos.NewContextAuthUtils(t, testHelperP, &helperAk, &bankUtils.BankUtils)
+	testHelper.StakingUtils = testcosmos.NewContextStakingUtils(t, testHelperP, app.StakingKeeper, &bankUtils.BankUtils)
 	testHelper.C4eVestingUtils = testcfevesting.NewContextC4eVestingUtils(t, testHelperP, &app.CfevestingKeeper, &app.AccountKeeper, &app.BankKeeper, &app.StakingKeeper, &bankUtils.BankUtils, &testHelper.AuthUtils.AuthUtils)
 	testHelper.C4eMinterUtils = testcfeminter.NewContextC4eMinterUtils(t, testHelperP, &app.CfeminterKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
 	testHelper.C4eDistributorUtils = testcfedistributor.NewContextC4eDistributorUtils(t, testHelperP, &app.CfedistributorKeeper, &app.AccountKeeper, &bankUtils.BankUtils)

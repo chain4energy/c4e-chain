@@ -5,9 +5,9 @@ import (
 	"math/rand"
 	"reflect"
 	"strconv"
-	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
 
@@ -17,13 +17,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools, actual types.AccountVestingPools) {
+func AssertAccountVestingPools(t require.TestingT, expected types.AccountVestingPools, actual types.AccountVestingPools) {
 
 	numOfFields := reflect.TypeOf(types.AccountVestingPools{}).NumField()
 	j := 0
 	require.EqualValues(t, len(expected.VestingPools), len(actual.VestingPools))
 	j++
-	require.EqualValues(t, expected.Address, actual.Address)
+	require.EqualValues(t, expected.Owner, actual.Owner)
 	j++
 	require.EqualValues(t, numOfFields, j)
 
@@ -45,24 +45,26 @@ func AssertAccountVestingPools(t *testing.T, expected types.AccountVestingPools,
 		j++
 		require.EqualValues(t, expectedVesting.Sent, actualVesting.Sent)
 		j++
+		require.EqualValues(t, expectedVesting.GenesisPool, actualVesting.GenesisPool)
+		j++
 		require.EqualValues(t, numOfFields, j)
 
 	}
 
 }
 
-func AssertAccountVestingPoolsArrays(t *testing.T, expected []*types.AccountVestingPools, actual []*types.AccountVestingPools) {
+func AssertAccountVestingPoolsArrays(t require.TestingT, expected []*types.AccountVestingPools, actual []*types.AccountVestingPools) {
 	require.EqualValues(t, len(expected), len(actual))
 
 	for _, accVest := range expected {
 		found := false
 		for _, accVestExp := range actual {
-			if accVest.Address == accVestExp.Address {
+			if accVest.Owner == accVestExp.Owner {
 				AssertAccountVestingPools(t, *accVest, *accVestExp)
 				found = true
 			}
 		}
-		require.True(t, found, "not found: "+accVest.Address)
+		require.True(t, found, "not found: "+accVest.Owner)
 
 	}
 }
@@ -96,9 +98,9 @@ func generateAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPerAc
 
 	for i := 0; i < numberOfAccounts; i++ {
 		accountVestingPools := types.AccountVestingPools{}
-		accountVestingPools.Address = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
+		accountVestingPools.Owner = "test-vesting-account-addr-" + strconv.Itoa(i+accountStartId)
 
-		accountVestingPools.Address = accountsAddresses[i].String()
+		accountVestingPools.Owner = accountsAddresses[i].String()
 
 		var vestingPools []*types.VestingPool
 		for j := 0; j < numberOfVestingPoolsPerAccount; j++ {
@@ -126,6 +128,7 @@ func generateRandomVestingPool(accuntId int, vestingId int) types.VestingPool {
 		InitiallyLocked: sdk.NewInt(int64(initiallyLocked)),
 		Withdrawn:       sdk.NewInt(int64(withdrawn)),
 		Sent:            sdk.NewInt(int64(sent)),
+		GenesisPool:      rgen.Int()%2 == 0,
 	}
 }
 
@@ -138,6 +141,7 @@ func generate10BasedVestingPool(accuntId int, vestingId int) types.VestingPool {
 		InitiallyLocked: sdk.NewInt(1000000),
 		Withdrawn:       sdk.ZeroInt(),
 		Sent:            sdk.ZeroInt(),
+		GenesisPool:      true,
 	}
 }
 
@@ -149,7 +153,7 @@ func ToAccountVestingPoolsPointersArray(src []types.AccountVestingPools) []*type
 	return result
 }
 
-func GetExpectedWithdrawableForVesting(vestingPool types.VestingPool, current time.Time) sdk.Int {
+func GetExpectedWithdrawableForVesting(vestingPool types.VestingPool, current time.Time) math.Int {
 	result := GetExpectedWithdrawable(vestingPool.LockEnd, current, vestingPool.InitiallyLocked.Sub(vestingPool.Sent).Sub(vestingPool.Withdrawn))
 	if result.LT(sdk.ZeroInt()) {
 		return sdk.ZeroInt()
@@ -157,7 +161,7 @@ func GetExpectedWithdrawableForVesting(vestingPool types.VestingPool, current ti
 	return result
 }
 
-func GetExpectedWithdrawable(lockEnd time.Time, current time.Time, amount sdk.Int) sdk.Int {
+func GetExpectedWithdrawable(lockEnd time.Time, current time.Time, amount math.Int) math.Int {
 	if current.Equal(lockEnd) || current.After(lockEnd) {
 		return amount
 	}

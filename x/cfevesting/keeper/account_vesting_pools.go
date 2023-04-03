@@ -24,7 +24,7 @@ func (k Keeper) GetAccountVestingPools(ctx sdk.Context, accountAddress string) (
 func (k Keeper) SetAccountVestingPools(ctx sdk.Context, accountVestingPools types.AccountVestingPools) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 	av := k.cdc.MustMarshal(&accountVestingPools)
-	store.Set([]byte(accountVestingPools.Address), av)
+	store.Set([]byte(accountVestingPools.Owner), av)
 }
 
 // get the vesting types
@@ -42,7 +42,7 @@ func (k Keeper) DeleteAccountVestingPools(ctx sdk.Context, accountAddress string
 }
 
 // GetAllAccountVestingPools returns all AccountVestingPools
-func (k Keeper) GetAllAccountVestingPools(ctx sdk.Context) (list []types.AccountVestingPools) {
+func (k Keeper) GetAllAccountVestingPools(ctx sdk.Context) (list types.AccountVestingPoolsList) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 

@@ -198,10 +198,11 @@ export default {
 		},
 		
 		
-		async sendMsgUnjail({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgUnjail({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.CosmosSlashingV1Beta1.tx.sendMsgUnjail({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.CosmosSlashingV1Beta1.tx.sendMsgUnjail({ value, fee: fullFee, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {

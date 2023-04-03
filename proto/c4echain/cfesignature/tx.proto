@@ -1,0 +1,50 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfesignature;
+
+import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "c4echain/cfesignature/params.proto";
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfesignature/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc StoreSignature(MsgStoreSignature) returns (MsgStoreSignatureResponse);
+  rpc PublishReferencePayloadLink(MsgPublishReferencePayloadLink) returns (MsgPublishReferencePayloadLinkResponse);
+  rpc CreateAccount(MsgCreateAccount) returns (MsgCreateAccountResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgStoreSignature {
+  string creator = 1;
+  string storageKey = 2;
+  string signatureJSON = 3;
+}
+
+message MsgStoreSignatureResponse {
+  string txId = 1;
+  string txTimestamp = 2;
+}
+
+message MsgPublishReferencePayloadLink {
+  string creator = 1;
+  string key = 2;
+  string value = 3;
+}
+
+message MsgPublishReferencePayloadLinkResponse {
+  string txTimestamp = 1;
+}
+
+message MsgCreateAccount {
+  string creator = 1;
+  string accAddressString = 2;
+  string pubKeyString = 3;
+}
+
+message MsgCreateAccountResponse {
+  string accountNumber = 1;
+}
+

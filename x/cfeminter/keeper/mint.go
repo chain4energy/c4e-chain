@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/math"
 	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
@@ -8,13 +9,13 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
+func (k Keeper) Mint(ctx sdk.Context) (math.Int, error) {
 	lastBlockTimeForMinter := k.GetMinterState(ctx).LastMintBlockTime
 	lastBlockTime := ctx.BlockTime()
 	params := k.GetParams(ctx)
 
-	if lastBlockTime.Before(params.MinterConfig.StartTime) {
-		k.Logger(ctx).Info("minter start in the future", "minterStart", params.MinterConfig.StartTime, "currentBlockTime", lastBlockTime)
+	if lastBlockTime.Before(params.StartTime) {
+		k.Logger(ctx).Info("minter start in the future", "minterStart", params.StartTime, "currentBlockTime", lastBlockTime)
 		return sdk.ZeroInt(), nil
 	}
 	if lastBlockTimeForMinter.After(lastBlockTime) || lastBlockTimeForMinter.Equal(lastBlockTime) {
@@ -25,10 +26,9 @@ func (k Keeper) Mint(ctx sdk.Context) (sdk.Int, error) {
 	return k.mint(ctx, &params, 0)
 }
 
-func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int, error) {
+func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int, error) {
 	minterState := k.GetMinterState(ctx)
-
-	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.MinterConfig, &minterState)
+	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.Minters, &minterState)
 
 	if currentMinter == nil {
 		k.Logger(ctx).Error("mint - current minter not found error", "lev", level, "SequenceId", minterState.SequenceId)
@@ -37,22 +37,22 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 
 	var startTime time.Time
 	if previousMinter == nil {
-		startTime = params.MinterConfig.StartTime
+		startTime = params.StartTime
 	} else {
 		startTime = *previousMinter.EndTime
 	}
 
-	expectedAmountToMint := currentMinter.AmountToMint(k.Logger(ctx), &minterState, startTime, ctx.BlockTime())
-	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousPeriod)
+	expectedAmountToMint := currentMinter.AmountToMint(k.Logger(ctx), startTime, ctx.BlockTime())
+	expectedAmountToMint = expectedAmountToMint.Add(minterState.RemainderFromPreviousMinter)
 
 	amount := expectedAmountToMint.TruncateInt().Sub(minterState.AmountMinted)
 	if amount.IsNegative() {
-		k.Logger(ctx).Error("mint negative amount", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter,
-			"previousMinter", previousMinter, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
+		k.Logger(ctx).Error("mint negative amount", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter.GetMinterJSON(),
+			"previousMinter", previousMinter.GetMinterJSON(), "expectedAmountToMint", expectedAmountToMint, "amount", amount)
 		return sdk.ZeroInt(), nil
 	}
-	k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter,
-		"previousMinter", previousMinter, "expectedAmountToMint", expectedAmountToMint, "amount", amount)
+	k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter.GetMinterJSON(),
+		"previousMinter", previousMinter.GetMinterJSON(), "expectedAmountToMint", expectedAmountToMint, "amount", amount)
 
 	remainder := expectedAmountToMint.Sub(expectedAmountToMint.TruncateDec())
 
@@ -75,7 +75,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 	minterState.LastMintBlockTime = ctx.BlockTime()
 	minterState.RemainderToMint = remainder
 
-	var result sdk.Int
+	var result math.Int
 	if currentMinter.EndTime == nil || ctx.BlockTime().Before(*currentMinter.EndTime) {
 		k.SetMinterState(ctx, minterState)
 		result = amount
@@ -86,7 +86,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 			SequenceId:                  minterState.SequenceId + 1,
 			AmountMinted:                sdk.ZeroInt(),
 			RemainderToMint:             sdk.ZeroDec(),
-			RemainderFromPreviousPeriod: remainder,
+			RemainderFromPreviousMinter: remainder,
 			LastMintBlockTime:           ctx.BlockTime(),
 		}
 		k.SetMinterState(ctx, minterState)
@@ -102,9 +102,9 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (sdk.Int,
 	return result, nil
 }
 
-func getCurrentAndPreviousMinter(minterConfig types.MinterConfig, state *types.MinterState) (currentMinter *types.Minter, previousMinter *types.Minter) {
+func getCurrentAndPreviousMinter(minters []*types.Minter, state *types.MinterState) (currentMinter *types.Minter, previousMinter *types.Minter) {
 	currentId := state.SequenceId
-	for _, minter := range minterConfig.Minters {
+	for _, minter := range minters {
 		if minter.SequenceId == currentId {
 			currentMinter = minter
 		}
