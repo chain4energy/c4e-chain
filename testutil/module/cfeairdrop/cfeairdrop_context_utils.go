@@ -8,7 +8,7 @@ import (
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	"testing"
+	"github.com/stretchr/testify/require"
 )
 
 type ContextC4eAirdropUtils struct {
@@ -16,7 +16,7 @@ type ContextC4eAirdropUtils struct {
 	testContext testenv.TestContext
 }
 
-func NewContextC4eAirdropUtils(t *testing.T, testContext testenv.TestContext, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
+func NewContextC4eAirdropUtils(t require.TestingT, testContext testenv.TestContext, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils, feegrantUtils *testcosmos.FeegrantUtils, distributionUtils *testcosmos.DistributionUtils) *ContextC4eAirdropUtils {
 	c4eAirdropUtils := NewC4eAirdropUtils(t, helpeCfeairdropmodulekeeper, helperAccountKeeper, bankUtils, stakingUtils, govUtils, feegrantUtils, distributionUtils)

@@ -1,19 +1,17 @@
 package cfeairdrop
 
 import (
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	"testing"
-	"time"
-
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfeairdropmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	cfeairdroptypes "github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/stretchr/testify/require"
+	"time"
 )
 
 type C4eAirdropUtils struct {
@@ -27,7 +25,7 @@ type C4eAirdropUtils struct {
 	DistributionUtils   *testcosmos.DistributionUtils
 }
 
-func NewC4eAirdropUtils(t *testing.T, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
+func NewC4eAirdropUtils(t require.TestingT, helpeCfeairdropmodulekeeper *cfeairdropmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils, feegrantUtils *testcosmos.FeegrantUtils, distributionUtils *testcosmos.DistributionUtils) C4eAirdropUtils {
 	return C4eAirdropUtils{C4eAirdropKeeperUtils: NewC4eAirdropKeeperUtils(t, helpeCfeairdropmodulekeeper),
@@ -270,7 +268,7 @@ func (h *C4eAirdropUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claim
 	require.Error(h.t, err)
 	require.Nil(h.t, allowance)
 	airdropClaimsLeftAfter, ok := h.helpeCfeairdropkeeper.GetCampaignAmountLeft(ctx, campaignId)
-	airdropClaimsLeftBefore.Amount = airdropClaimsLeftBefore.Amount.Sub(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(expectedAmount))))
+	airdropClaimsLeftBefore.Amount = airdropClaimsLeftBefore.Amount.Sub(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(expectedAmount)))...)
 
 	require.EqualValues(h.t, airdropClaimsLeftBefore, airdropClaimsLeftAfter)
 
@@ -348,7 +346,7 @@ func (h *C4eAirdropUtils) SetUsersEntries(
 
 func (h *C4eAirdropUtils) CompleteDelegationMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
 	action := func() error {
-		validators := h.StakingUtils.StakingKeeper.GetValidators(ctx, 1)
+		validators := h.StakingUtils.GetValidators(ctx)
 		valAddr, err := sdk.ValAddressFromBech32(validators[0].OperatorAddress)
 		if err != nil {
 			return err
@@ -374,15 +372,19 @@ func (h *C4eAirdropUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64
 		depositAmount := depParams.MinDeposit
 		h.BankUtils.AddCoinsToAccount(ctx, depositAmount, claimer)
 
-		testProposal := &govtypes.TextProposal{Title: "Title", Description: "Description"}
-		proposal, err := h.GovUtils.GovKeeper.SubmitProposal(ctx, testProposal)
+		testProposal := &cfevestingtypes.MsgUpdateDenomParam{Denom: testenv.DefaultTestDenom}
+		proposal, err := h.GovUtils.GovKeeper.SubmitProposal(ctx, []sdk.Msg{testProposal}, "=abc")
 		if err != nil {
 			return err
 		}
-		h.GovUtils.GovKeeper.AddDeposit(ctx, proposal.ProposalId, claimer, depositAmount)
 
-		return h.GovUtils.GovKeeper.AddVote(ctx, proposal.ProposalId,
-			claimer, []govtypes.WeightedVoteOption{{Option: govtypes.OptionAbstain, Weight: sdk.NewDec(1)}})
+		_, err = h.GovUtils.GovKeeper.AddDeposit(ctx, proposal.Id, claimer, depositAmount)
+		if err != nil {
+			return err
+		}
+
+		return h.GovUtils.GovKeeper.AddVote(ctx, proposal.Id, claimer,
+			govv1types.WeightedVoteOptions{{Option: govv1types.OptionAbstain, Weight: "1"}}, "=abc")
 	}
 	h.completeAnyMission(ctx, campaignId, missionId, claimer, action, nil)
 }

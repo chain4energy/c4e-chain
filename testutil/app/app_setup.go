@@ -26,6 +26,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -181,8 +182,8 @@ func genesisStateWithValSet(
 	distributorGenesis.Params.SubDistributors[0].Destinations.PrimaryShare.Id = testenv.DefaultDistributionDestination
 	genesisState[cfedistributortypes.ModuleName] = app.AppCodec().MustMarshalJSON(distributorGenesis)
 
-	govGenesis := govtypes.DefaultGenesisState()
-	govGenesis.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, govtypes.DefaultMinDepositTokens))
+	govGenesis := govv1types.DefaultGenesisState()
+	govGenesis.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, govv1types.DefaultMinDepositTokens))
 	genesisState[govtypes.ModuleName] = app.AppCodec().MustMarshalJSON(govGenesis)
 
 	return genesisState, delegationsSum

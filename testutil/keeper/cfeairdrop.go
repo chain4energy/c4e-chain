@@ -70,12 +70,12 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
-	stateStore.MountStoreWithDB(authStoreKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(bankStoreKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(feegrantStoreKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(stakingStoreKey, sdk.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
+	stateStore.MountStoreWithDB(authStoreKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(bankStoreKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(feegrantStoreKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(stakingStoreKey, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, stateStore.LoadLatestVersion())
 
 	registry := codectypes.NewInterfaceRegistry()
@@ -104,7 +104,7 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 	)
 
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authStoreKey, accParamsSubspace, authtypes.ProtoBaseAccount, commontestutils.AddHelperModuleAccountPermissions(map[string][]string{types.ModuleName: nil}),
+		cdc, authStoreKey, accParamsSubspace, authtypes.ProtoBaseAccount, commontestutils.AddHelperModuleAccountPermissions(map[string][]string{types.ModuleName: nil}), testenv.DefaultBechPrefix,
 	)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(
