@@ -113,3 +113,7 @@ func (su *ContextStakingUtils) MessageUndelegate(expectedCurrentAmountOfDelegati
 func (su *ContextStakingUtils) VerifyNumberOfUnbondingDelegations(expectedNumberOfUnbondingDelegations int, delegatorAddress sdk.AccAddress) {
 	su.StakingUtils.VerifyNumberOfUnbondingDelegations(su.testContext.GetContext(), expectedNumberOfUnbondingDelegations, delegatorAddress)
 }
+
+func (su *ContextStakingUtils) GetValidators() []stakingtypes.Validator {
+	return su.StakingUtils.GetValidators(su.testContext.GetContext())
+}

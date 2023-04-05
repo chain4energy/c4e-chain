@@ -30,13 +30,6 @@ export interface V1Params {
 }
 
 /**
- * QueryInterchainAccountResponse the response type for the Query/InterchainAccount RPC method.
- */
-export interface V1QueryInterchainAccountResponse {
-  address?: string;
-}
-
-/**
  * QueryParamsResponse is the response type for the Query/Params RPC method.
  */
 export interface V1QueryParamsResponse {
@@ -169,22 +162,6 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  /**
-   * No description
-   *
-   * @tags Query
-   * @name QueryInterchainAccount
-   * @summary InterchainAccount returns the interchain account address for a given owner address on a given connection
-   * @request GET:/ibc/apps/interchain_accounts/controller/v1/owners/{owner}/connections/{connection_id}
-   */
-  queryInterchainAccount = (owner: string, connectionId: string, params: RequestParams = {}) =>
-    this.request<V1QueryInterchainAccountResponse, RpcStatus>({
-      path: `/ibc/apps/interchain_accounts/controller/v1/owners/${owner}/connections/${connectionId}`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
   /**
    * No description
    *

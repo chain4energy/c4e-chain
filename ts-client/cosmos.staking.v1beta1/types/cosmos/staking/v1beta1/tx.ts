@@ -1,5 +1,4 @@
 /* eslint-disable */
-import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Any } from "../../../google/protobuf/any";
 import { Timestamp } from "../../../google/protobuf/timestamp";
@@ -84,30 +83,6 @@ export interface MsgUndelegate {
 /** MsgUndelegateResponse defines the Msg/Undelegate response type. */
 export interface MsgUndelegateResponse {
   completionTime: Date | undefined;
-}
-
-/**
- * MsgCancelUnbondingDelegation defines the SDK message for performing a cancel unbonding delegation for delegator
- *
- * Since: cosmos-sdk 0.46
- */
-export interface MsgCancelUnbondingDelegation {
-  delegatorAddress: string;
-  validatorAddress: string;
-  /** amount is always less than or equal to unbonding delegation entry balance */
-  amount:
-    | Coin
-    | undefined;
-  /** creation_height is the height which the unbonding took place. */
-  creationHeight: number;
-}
-
-/**
- * MsgCancelUnbondingDelegationResponse
- *
- * Since: cosmos-sdk 0.46
- */
-export interface MsgCancelUnbondingDelegationResponse {
 }
 
 function createBaseMsgCreateValidator(): MsgCreateValidator {
@@ -735,125 +710,6 @@ export const MsgUndelegateResponse = {
   },
 };
 
-function createBaseMsgCancelUnbondingDelegation(): MsgCancelUnbondingDelegation {
-  return { delegatorAddress: "", validatorAddress: "", amount: undefined, creationHeight: 0 };
-}
-
-export const MsgCancelUnbondingDelegation = {
-  encode(message: MsgCancelUnbondingDelegation, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.delegatorAddress !== "") {
-      writer.uint32(10).string(message.delegatorAddress);
-    }
-    if (message.validatorAddress !== "") {
-      writer.uint32(18).string(message.validatorAddress);
-    }
-    if (message.amount !== undefined) {
-      Coin.encode(message.amount, writer.uint32(26).fork()).ldelim();
-    }
-    if (message.creationHeight !== 0) {
-      writer.uint32(32).int64(message.creationHeight);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCancelUnbondingDelegation {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCancelUnbondingDelegation();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.delegatorAddress = reader.string();
-          break;
-        case 2:
-          message.validatorAddress = reader.string();
-          break;
-        case 3:
-          message.amount = Coin.decode(reader, reader.uint32());
-          break;
-        case 4:
-          message.creationHeight = longToNumber(reader.int64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgCancelUnbondingDelegation {
-    return {
-      delegatorAddress: isSet(object.delegatorAddress) ? String(object.delegatorAddress) : "",
-      validatorAddress: isSet(object.validatorAddress) ? String(object.validatorAddress) : "",
-      amount: isSet(object.amount) ? Coin.fromJSON(object.amount) : undefined,
-      creationHeight: isSet(object.creationHeight) ? Number(object.creationHeight) : 0,
-    };
-  },
-
-  toJSON(message: MsgCancelUnbondingDelegation): unknown {
-    const obj: any = {};
-    message.delegatorAddress !== undefined && (obj.delegatorAddress = message.delegatorAddress);
-    message.validatorAddress !== undefined && (obj.validatorAddress = message.validatorAddress);
-    message.amount !== undefined && (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
-    message.creationHeight !== undefined && (obj.creationHeight = Math.round(message.creationHeight));
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgCancelUnbondingDelegation>, I>>(object: I): MsgCancelUnbondingDelegation {
-    const message = createBaseMsgCancelUnbondingDelegation();
-    message.delegatorAddress = object.delegatorAddress ?? "";
-    message.validatorAddress = object.validatorAddress ?? "";
-    message.amount = (object.amount !== undefined && object.amount !== null)
-      ? Coin.fromPartial(object.amount)
-      : undefined;
-    message.creationHeight = object.creationHeight ?? 0;
-    return message;
-  },
-};
-
-function createBaseMsgCancelUnbondingDelegationResponse(): MsgCancelUnbondingDelegationResponse {
-  return {};
-}
-
-export const MsgCancelUnbondingDelegationResponse = {
-  encode(_: MsgCancelUnbondingDelegationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCancelUnbondingDelegationResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCancelUnbondingDelegationResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(_: any): MsgCancelUnbondingDelegationResponse {
-    return {};
-  },
-
-  toJSON(_: MsgCancelUnbondingDelegationResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgCancelUnbondingDelegationResponse>, I>>(
-    _: I,
-  ): MsgCancelUnbondingDelegationResponse {
-    const message = createBaseMsgCancelUnbondingDelegationResponse();
-    return message;
-  },
-};
-
 /** Msg defines the staking Msg service. */
 export interface Msg {
   /** CreateValidator defines a method for creating a new validator. */
@@ -875,13 +731,6 @@ export interface Msg {
    * delegate and a validator.
    */
   Undelegate(request: MsgUndelegate): Promise<MsgUndelegateResponse>;
-  /**
-   * CancelUnbondingDelegation defines a method for performing canceling the unbonding delegation
-   * and delegate back to previous validator.
-   *
-   * Since: cosmos-sdk 0.46
-   */
-  CancelUnbondingDelegation(request: MsgCancelUnbondingDelegation): Promise<MsgCancelUnbondingDelegationResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -893,7 +742,6 @@ export class MsgClientImpl implements Msg {
     this.Delegate = this.Delegate.bind(this);
     this.BeginRedelegate = this.BeginRedelegate.bind(this);
     this.Undelegate = this.Undelegate.bind(this);
-    this.CancelUnbondingDelegation = this.CancelUnbondingDelegation.bind(this);
   }
   CreateValidator(request: MsgCreateValidator): Promise<MsgCreateValidatorResponse> {
     const data = MsgCreateValidator.encode(request).finish();
@@ -924,36 +772,11 @@ export class MsgClientImpl implements Msg {
     const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "Undelegate", data);
     return promise.then((data) => MsgUndelegateResponse.decode(new _m0.Reader(data)));
   }
-
-  CancelUnbondingDelegation(request: MsgCancelUnbondingDelegation): Promise<MsgCancelUnbondingDelegationResponse> {
-    const data = MsgCancelUnbondingDelegation.encode(request).finish();
-    const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "CancelUnbondingDelegation", data);
-    return promise.then((data) => MsgCancelUnbondingDelegationResponse.decode(new _m0.Reader(data)));
-  }
 }
 
 interface Rpc {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
 }
-
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") {
-    return globalThis;
-  }
-  if (typeof self !== "undefined") {
-    return self;
-  }
-  if (typeof window !== "undefined") {
-    return window;
-  }
-  if (typeof global !== "undefined") {
-    return global;
-  }
-  throw "Unable to locate global object";
-})();
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
@@ -986,18 +809,6 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
-}
-
-function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  return long.toNumber();
-}
-
-if (_m0.util.Long !== Long) {
-  _m0.util.Long = Long as any;
-  _m0.configure();
 }
 
 function isSet(value: any): boolean {

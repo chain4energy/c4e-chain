@@ -7,7 +7,6 @@ import { Supply } from "./types/cosmos/bank/v1beta1/bank"
 import { DenomUnit } from "./types/cosmos/bank/v1beta1/bank"
 import { Metadata } from "./types/cosmos/bank/v1beta1/bank"
 import { Balance } from "./types/cosmos/bank/v1beta1/genesis"
-import { DenomOwner } from "./types/cosmos/bank/v1beta1/query"
 
 
 export {     
@@ -20,6 +19,5 @@ export {
     DenomUnit,
     Metadata,
     Balance,
-    DenomOwner,
     
  }

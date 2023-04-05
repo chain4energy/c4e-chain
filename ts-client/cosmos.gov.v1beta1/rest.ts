@@ -249,8 +249,7 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently. It will be empty if
-   * there are no more results.
+   * query the next page most efficiently
    * @format byte
    */
   next_key?: string;
@@ -333,7 +332,7 @@ export interface V1Beta1Proposal {
   /**
    * ProposalStatus enumerates the valid statuses of a proposal.
    *
-   *  - PROPOSAL_STATUS_UNSPECIFIED: PROPOSAL_STATUS_UNSPECIFIED defines the default proposal status.
+   *  - PROPOSAL_STATUS_UNSPECIFIED: PROPOSAL_STATUS_UNSPECIFIED defines the default propopsal status.
    *  - PROPOSAL_STATUS_DEPOSIT_PERIOD: PROPOSAL_STATUS_DEPOSIT_PERIOD defines a proposal status during the deposit
    * period.
    *  - PROPOSAL_STATUS_VOTING_PERIOD: PROPOSAL_STATUS_VOTING_PERIOD defines a proposal status during the voting
@@ -346,11 +345,7 @@ export interface V1Beta1Proposal {
    */
   status?: V1Beta1ProposalStatus;
 
-  /**
-   * final_tally_result is the final tally result of the proposal. When
-   * querying a proposal via gRPC, this field is not populated until the
-   * proposal's voting period has ended.
-   */
+  /** TallyResult defines a standard tally for a governance proposal. */
   final_tally_result?: V1Beta1TallyResult;
 
   /** @format date-time */
@@ -370,7 +365,7 @@ export interface V1Beta1Proposal {
 /**
 * ProposalStatus enumerates the valid statuses of a proposal.
 
- - PROPOSAL_STATUS_UNSPECIFIED: PROPOSAL_STATUS_UNSPECIFIED defines the default proposal status.
+ - PROPOSAL_STATUS_UNSPECIFIED: PROPOSAL_STATUS_UNSPECIFIED defines the default propopsal status.
  - PROPOSAL_STATUS_DEPOSIT_PERIOD: PROPOSAL_STATUS_DEPOSIT_PERIOD defines a proposal status during the deposit
 period.
  - PROPOSAL_STATUS_VOTING_PERIOD: PROPOSAL_STATUS_VOTING_PERIOD defines a proposal status during the voting

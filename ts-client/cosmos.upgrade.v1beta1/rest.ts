@@ -147,20 +147,6 @@ export interface V1Beta1ModuleVersion {
 }
 
 /**
-* MsgCancelUpgradeResponse is the Msg/CancelUpgrade response type.
-
-Since: cosmos-sdk 0.46
-*/
-export type V1Beta1MsgCancelUpgradeResponse = object;
-
-/**
-* MsgSoftwareUpgradeResponse is the Msg/SoftwareUpgrade response type.
-
-Since: cosmos-sdk 0.46
-*/
-export type V1Beta1MsgSoftwareUpgradeResponse = object;
-
-/**
  * Plan specifies information about a planned upgrade and when it should occur.
  */
 export interface V1Beta1Plan {
@@ -214,13 +200,6 @@ export interface V1Beta1QueryAppliedPlanResponse {
    * @format int64
    */
   height?: string;
-}
-
-/**
- * Since: cosmos-sdk 0.46
- */
-export interface V1Beta1QueryAuthorityResponse {
-  address?: string;
 }
 
 /**
@@ -391,22 +370,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryAppliedPlan = (name: string, params: RequestParams = {}) =>
     this.request<V1Beta1QueryAppliedPlanResponse, RpcStatus>({
       path: `/cosmos/upgrade/v1beta1/applied_plan/${name}`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
-
-  /**
-   * @description Since: cosmos-sdk 0.46
-   *
-   * @tags Query
-   * @name QueryAuthority
-   * @summary Returns the account with authority to conduct upgrades
-   * @request GET:/cosmos/upgrade/v1beta1/authority
-   */
-  queryAuthority = (params: RequestParams = {}) =>
-    this.request<V1Beta1QueryAuthorityResponse, RpcStatus>({
-      path: `/cosmos/upgrade/v1beta1/authority`,
       method: "GET",
       format: "json",
       ...params,

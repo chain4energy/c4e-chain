@@ -333,11 +333,10 @@ export default {
 		},
 		
 		
-		async sendMsgStoreSignature({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+		async sendMsgStoreSignature({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfesignature.tx.sendMsgStoreSignature({ value, fee: fullFee, memo })
+				const result = await client.Chain4EnergyC4EchainCfesignature.tx.sendMsgStoreSignature({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -347,11 +346,10 @@ export default {
 				}
 			}
 		},
-		async sendMsgCreateAccount({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+		async sendMsgCreateAccount({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfesignature.tx.sendMsgCreateAccount({ value, fee: fullFee, memo })
+				const result = await client.Chain4EnergyC4EchainCfesignature.tx.sendMsgCreateAccount({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -361,11 +359,10 @@ export default {
 				}
 			}
 		},
-		async sendMsgPublishReferencePayloadLink({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+		async sendMsgPublishReferencePayloadLink({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfesignature.tx.sendMsgPublishReferencePayloadLink({ value, fee: fullFee, memo })
+				const result = await client.Chain4EnergyC4EchainCfesignature.tx.sendMsgPublishReferencePayloadLink({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {

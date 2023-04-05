@@ -33,7 +33,7 @@ const (
 
 	BurnDestination = "burn_destination"
 
-	DenomToTrace = "uc4e"
+	DenomToTrace = "uc4e" // TODO should be in module params
 )
 
 func KeyPrefix(p string) []byte {

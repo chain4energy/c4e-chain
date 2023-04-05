@@ -28,8 +28,6 @@ export interface MsgWithdrawDelegatorReward {
 
 /** MsgWithdrawDelegatorRewardResponse defines the Msg/WithdrawDelegatorReward response type. */
 export interface MsgWithdrawDelegatorRewardResponse {
-  /** Since: cosmos-sdk 0.46 */
-  amount: Coin[];
 }
 
 /**
@@ -42,8 +40,6 @@ export interface MsgWithdrawValidatorCommission {
 
 /** MsgWithdrawValidatorCommissionResponse defines the Msg/WithdrawValidatorCommission response type. */
 export interface MsgWithdrawValidatorCommissionResponse {
-  /** Since: cosmos-sdk 0.46 */
-  amount: Coin[];
 }
 
 /**
@@ -215,14 +211,11 @@ export const MsgWithdrawDelegatorReward = {
 };
 
 function createBaseMsgWithdrawDelegatorRewardResponse(): MsgWithdrawDelegatorRewardResponse {
-  return { amount: [] };
+  return {};
 }
 
 export const MsgWithdrawDelegatorRewardResponse = {
-  encode(message: MsgWithdrawDelegatorRewardResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.amount) {
-      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
+  encode(_: MsgWithdrawDelegatorRewardResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
@@ -233,9 +226,6 @@ export const MsgWithdrawDelegatorRewardResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.amount.push(Coin.decode(reader, reader.uint32()));
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -244,25 +234,19 @@ export const MsgWithdrawDelegatorRewardResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgWithdrawDelegatorRewardResponse {
-    return { amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [] };
+  fromJSON(_: any): MsgWithdrawDelegatorRewardResponse {
+    return {};
   },
 
-  toJSON(message: MsgWithdrawDelegatorRewardResponse): unknown {
+  toJSON(_: MsgWithdrawDelegatorRewardResponse): unknown {
     const obj: any = {};
-    if (message.amount) {
-      obj.amount = message.amount.map((e) => e ? Coin.toJSON(e) : undefined);
-    } else {
-      obj.amount = [];
-    }
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgWithdrawDelegatorRewardResponse>, I>>(
-    object: I,
+    _: I,
   ): MsgWithdrawDelegatorRewardResponse {
     const message = createBaseMsgWithdrawDelegatorRewardResponse();
-    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
 };
@@ -317,14 +301,11 @@ export const MsgWithdrawValidatorCommission = {
 };
 
 function createBaseMsgWithdrawValidatorCommissionResponse(): MsgWithdrawValidatorCommissionResponse {
-  return { amount: [] };
+  return {};
 }
 
 export const MsgWithdrawValidatorCommissionResponse = {
-  encode(message: MsgWithdrawValidatorCommissionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.amount) {
-      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
+  encode(_: MsgWithdrawValidatorCommissionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
@@ -335,9 +316,6 @@ export const MsgWithdrawValidatorCommissionResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.amount.push(Coin.decode(reader, reader.uint32()));
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -346,25 +324,19 @@ export const MsgWithdrawValidatorCommissionResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgWithdrawValidatorCommissionResponse {
-    return { amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [] };
+  fromJSON(_: any): MsgWithdrawValidatorCommissionResponse {
+    return {};
   },
 
-  toJSON(message: MsgWithdrawValidatorCommissionResponse): unknown {
+  toJSON(_: MsgWithdrawValidatorCommissionResponse): unknown {
     const obj: any = {};
-    if (message.amount) {
-      obj.amount = message.amount.map((e) => e ? Coin.toJSON(e) : undefined);
-    } else {
-      obj.amount = [];
-    }
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgWithdrawValidatorCommissionResponse>, I>>(
-    object: I,
+    _: I,
   ): MsgWithdrawValidatorCommissionResponse {
     const message = createBaseMsgWithdrawValidatorCommissionResponse();
-    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
 };

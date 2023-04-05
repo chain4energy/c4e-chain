@@ -39,6 +39,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
@@ -117,6 +118,8 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+
+	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
 )
 
 const (
@@ -175,6 +178,7 @@ var (
 		cfesignaturemodule.AppModuleBasic{},
 		cfemintermodule.AppModuleBasic{},
 		cfedistributormodule.AppModuleBasic{},
+		cfeairdropmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -189,6 +193,7 @@ var (
 		ibctransfertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		cfevestingmoduletypes.ModuleName: nil,
 		cfemintermoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		cfeairdropmoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 		cfedistributormoduletypes.DistributorMainAccount:      {authtypes.Burner},
 		cfedistributormoduletypes.ValidatorsRewardsCollector:  nil,
@@ -198,10 +203,11 @@ var (
 )
 
 var (
+	_ cosmoscmd.App           = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade}
+	Upgrades = []upgrades.Upgrade{v200.Upgrade}
 )
 
 func init() {
@@ -261,6 +267,8 @@ type App struct {
 	CfesignatureKeeper   cfesignaturemodulekeeper.Keeper
 	CfeminterKeeper      cfemintermodulekeeper.Keeper
 	CfedistributorKeeper cfedistributormodulekeeper.Keeper
+
+	CfeairdropKeeper cfeairdropmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 	configurator module.Configurator
 
@@ -292,6 +300,7 @@ func New(
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
+
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, stakingtypes.StoreKey,
 		distrtypes.StoreKey, slashingtypes.StoreKey,
@@ -303,6 +312,7 @@ func New(
 		cfesignaturemoduletypes.StoreKey,
 		cfemintermoduletypes.StoreKey,
 		cfedistributormoduletypes.StoreKey,
+		cfeairdropmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -430,10 +440,25 @@ func New(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	app.CfeairdropKeeper = *cfeairdropmodulekeeper.NewKeeper(
+		appCodec,
+		keys[cfeairdropmoduletypes.StoreKey],
+		keys[cfeairdropmoduletypes.MemStoreKey],
+		app.GetSubspace(cfeairdropmoduletypes.ModuleName),
+
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.FeeGrantKeeper,
+		stakingKeeper,
+		distributionKeeper,
+	)
+
+	cfeairdropModule := cfeairdropmodule.NewAppModule(appCodec, app.CfeairdropKeeper, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper)
+
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.StakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
+		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(), app.CfeairdropKeeper.NewMissionDelegationHooks()),
 	)
 
 	// ... other modules keepers
@@ -446,6 +471,14 @@ func New(
 		app.UpgradeKeeper,
 		app.ScopedIBCKeeper,
 	)
+
+	// register the proposal types
+	govRouter := govtypes.NewRouter()
+	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
+		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
+		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
@@ -616,6 +649,7 @@ func New(
 		cfesignatureModule,
 		cfeminterModule,
 		cfedistributorModule,
+		cfeairdropModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -645,6 +679,7 @@ func New(
 		group.ModuleName,
 		paramstypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
+		cfeairdropmoduletypes.ModuleName,
 
 		// ibc modules
 		ibchost.ModuleName,
@@ -674,6 +709,7 @@ func New(
 		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
 		cfedistributormoduletypes.ModuleName,
+		cfeairdropmoduletypes.ModuleName,
 
 		// ibc modules
 		ibchost.ModuleName,
@@ -708,6 +744,7 @@ func New(
 		upgradetypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
+		cfeairdropmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 
 		// ibc modules
@@ -747,6 +784,7 @@ func New(
 		cfesignatureModule, // - no simulations yey
 		cfeminterModule,
 		cfedistributorModule,
+		cfeairdropModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -945,6 +983,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(cfesignaturemoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfemintermoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfedistributormoduletypes.ModuleName)
+	paramsKeeper.Subspace(cfeairdropmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

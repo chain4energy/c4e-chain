@@ -6,9 +6,14 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	cfeairdropkeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 )
 
 var _ cfeupgradetypes.AppKeepers = (*App)(nil)
+
+func (app *App) GetKeeper() *cfeairdropkeeper.Keeper {
+	return &app.CfeairdropKeeper
+}
 
 func (app *App) GetAccountKeeper() *authkeeper.AccountKeeper {
 	return &app.AccountKeeper

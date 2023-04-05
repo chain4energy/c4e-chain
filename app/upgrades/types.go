@@ -1,10 +1,13 @@
 package upgrades
 
 import (
+	cfeairdropkeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramsKeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
@@ -24,6 +27,12 @@ type AppKeepers interface {
 type BaseAppParamManager interface {
 	GetConsensusParams(ctx sdk.Context) *abci.ConsensusParams
 	StoreConsensusParams(ctx sdk.Context, cp *abci.ConsensusParams)
+}
+
+type AppKeepers interface {
+	GetKeeper() *cfeairdropkeeper.Keeper
+	GetAccountKeeper() *authkeeper.AccountKeeper
+	GetBankKeeper() *bankkeeper.Keeper
 }
 
 // Upgrade defines a struct containing necessary fields that a SoftwareUpgradeProposal

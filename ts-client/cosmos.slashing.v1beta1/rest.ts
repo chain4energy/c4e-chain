@@ -80,8 +80,7 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently. It will be empty if
-   * there are no more results.
+   * query the next page most efficiently
    * @format byte
    */
   next_key?: string;

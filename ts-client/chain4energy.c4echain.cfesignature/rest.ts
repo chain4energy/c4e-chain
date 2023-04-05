@@ -201,7 +201,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title c4echain/cfesignature/genesis.proto
+ * @title cfesignature/genesis.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -211,11 +211,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCreateReferenceId
    * @summary Queries a list of CreateReferenceId items.
-   * @request GET:/c4e/signature/v1beta1/create_reference_id/{creator}
+   * @request GET:/c4e/signature/create_reference_id/{creator}
    */
   queryCreateReferenceId = (creator: string, params: RequestParams = {}) =>
     this.request<CfesignatureQueryCreateReferenceIdResponse, RpcStatus>({
-      path: `/c4e/signature/v1beta1/create_reference_id/${creator}`,
+      path: `/c4e/signature/create_reference_id/${creator}`,
       method: "GET",
       format: "json",
       ...params,
@@ -227,11 +227,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCreateReferencePayloadLink
    * @summary Queries a list of CreateReferencePayloadLink items.
-   * @request GET:/c4e/signature/v1beta1/create_reference_payload_link/{referenceId}/{payloadHash}
+   * @request GET:/c4e/signature/create_reference_payload_link/{referenceId}/{payloadHash}
    */
   queryCreateReferencePayloadLink = (referenceId: string, payloadHash: string, params: RequestParams = {}) =>
     this.request<CfesignatureQueryCreateReferencePayloadLinkResponse, RpcStatus>({
-      path: `/c4e/signature/v1beta1/create_reference_payload_link/${referenceId}/${payloadHash}`,
+      path: `/c4e/signature/create_reference_payload_link/${referenceId}/${payloadHash}`,
       method: "GET",
       format: "json",
       ...params,
@@ -243,11 +243,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCreateStorageKey
    * @summary Queries a list of CreateStorageKey items.
-   * @request GET:/c4e/signature/v1beta1/create_storage_key/{targetAccAddress}/{referenceId}
+   * @request GET:/c4e/signature/create_storage_key/{targetAccAddress}/{referenceId}
    */
   queryCreateStorageKey = (targetAccAddress: string, referenceId: string, params: RequestParams = {}) =>
     this.request<CfesignatureQueryCreateStorageKeyResponse, RpcStatus>({
-      path: `/c4e/signature/v1beta1/create_storage_key/${targetAccAddress}/${referenceId}`,
+      path: `/c4e/signature/create_storage_key/${targetAccAddress}/${referenceId}`,
       method: "GET",
       format: "json",
       ...params,
@@ -259,11 +259,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryGetAccountInfo
    * @summary Queries a list of GetAccountInfo items.
-   * @request GET:/c4e/signature/v1beta1/get_account_info/{accAddressString}
+   * @request GET:/c4e/signature/get_account_info/{accAddressString}
    */
   queryGetAccountInfo = (accAddressString: string, params: RequestParams = {}) =>
     this.request<CfesignatureQueryGetAccountInfoResponse, RpcStatus>({
-      path: `/c4e/signature/v1beta1/get_account_info/${accAddressString}`,
+      path: `/c4e/signature/get_account_info/${accAddressString}`,
       method: "GET",
       format: "json",
       ...params,
@@ -275,11 +275,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryGetReferencePayloadLink
    * @summary Queries a list of GetReferencePayloadLink items.
-   * @request GET:/c4e/signature/v1beta1/get_reference_payload_link/{referenceId}
+   * @request GET:/c4e/signature/get_reference_payload_link/{referenceId}
    */
   queryGetReferencePayloadLink = (referenceId: string, params: RequestParams = {}) =>
     this.request<CfesignatureQueryGetReferencePayloadLinkResponse, RpcStatus>({
-      path: `/c4e/signature/v1beta1/get_reference_payload_link/${referenceId}`,
+      path: `/c4e/signature/get_reference_payload_link/${referenceId}`,
       method: "GET",
       format: "json",
       ...params,
@@ -291,11 +291,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/signature/v1beta1/params
+   * @request GET:/c4e/signature/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfesignatureQueryParamsResponse, RpcStatus>({
-      path: `/c4e/signature/v1beta1/params`,
+      path: `/c4e/signature/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -307,11 +307,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVerifyReferencePayloadLink
    * @summary Queries a list of VerifyReferencePayloadLink items.
-   * @request GET:/c4e/signature/v1beta1/verify_reference_payload_link/{referenceId}/{payloadHash}
+   * @request GET:/c4e/signature/verify_reference_payload_link/{referenceId}/{payloadHash}
    */
   queryVerifyReferencePayloadLink = (referenceId: string, payloadHash: string, params: RequestParams = {}) =>
     this.request<CfesignatureQueryVerifyReferencePayloadLinkResponse, RpcStatus>({
-      path: `/c4e/signature/v1beta1/verify_reference_payload_link/${referenceId}/${payloadHash}`,
+      path: `/c4e/signature/verify_reference_payload_link/${referenceId}/${payloadHash}`,
       method: "GET",
       format: "json",
       ...params,
@@ -323,11 +323,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVerifySignature
    * @summary Queries a list of VerifySignature items.
-   * @request GET:/c4e/signature/v1beta1/verify_signature/{referenceId}/{targetAccAddress}
+   * @request GET:/c4e/signature/verify_signature/{referenceId}/{targetAccAddress}
    */
   queryVerifySignature = (referenceId: string, targetAccAddress: string, params: RequestParams = {}) =>
     this.request<CfesignatureQueryVerifySignatureResponse, RpcStatus>({
-      path: `/c4e/signature/v1beta1/verify_signature/${referenceId}/${targetAccAddress}`,
+      path: `/c4e/signature/verify_signature/${referenceId}/${targetAccAddress}`,
       method: "GET",
       format: "json",
       ...params,

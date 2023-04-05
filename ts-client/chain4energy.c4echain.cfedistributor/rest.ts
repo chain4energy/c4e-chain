@@ -212,7 +212,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title c4echain/cfedistributor/events.proto
+ * @title cfedistributor/events.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -222,11 +222,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/distributor/v1beta1/params
+   * @request GET:/c4e/distributor/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfedistributorQueryParamsResponse, RpcStatus>({
-      path: `/c4e/distributor/v1beta1/params`,
+      path: `/c4e/distributor/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -238,11 +238,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryStates
    * @summary Queries a list of States items.
-   * @request GET:/c4e/distributor/v1beta1/states
+   * @request GET:/c4e/distributor/states
    */
   queryStates = (params: RequestParams = {}) =>
     this.request<CfedistributorQueryStatesResponse, RpcStatus>({
-      path: `/c4e/distributor/v1beta1/states`,
+      path: `/c4e/distributor/states`,
       method: "GET",
       format: "json",
       ...params,

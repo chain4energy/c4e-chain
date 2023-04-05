@@ -8,14 +8,6 @@ import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 
-import { Distribution as typeDistribution} from "./types"
-import { DistributionBurn as typeDistributionBurn} from "./types"
-import { Params as typeParams} from "./types"
-import { State as typeState} from "./types"
-import { SubDistributor as typeSubDistributor} from "./types"
-import { Destinations as typeDestinations} from "./types"
-import { DestinationShare as typeDestinationShare} from "./types"
-import { Account as typeAccount} from "./types"
 
 export {  };
 
@@ -23,18 +15,6 @@ export {  };
 
 export const registry = new Registry(msgTypes);
 
-type Field = {
-	name: string;
-	type: unknown;
-}
-function getStructure(template) {
-	const structure: {fields: Field[]} = { fields: [] }
-	for (let [key, value] of Object.entries(template)) {
-		let field = { name: key, type: typeof value }
-		structure.fields.push(field)
-	}
-	return structure
-}
 const defaultFee = {
   amount: [],
   gas: "200000",
@@ -65,24 +45,13 @@ export const queryClient = ({ addr: addr }: QueryClientOptions = { addr: "http:/
 class SDKModule {
 	public query: ReturnType<typeof queryClient>;
 	public tx: ReturnType<typeof txClient>;
-	public structure: Record<string,unknown>;
+	
 	public registry: Array<[string, GeneratedType]> = [];
 
 	constructor(client: IgniteClient) {		
 	
 		this.query = queryClient({ addr: client.env.apiURL });		
 		this.updateTX(client);
-		this.structure =  {
-						Distribution: getStructure(typeDistribution.fromPartial({})),
-						DistributionBurn: getStructure(typeDistributionBurn.fromPartial({})),
-						Params: getStructure(typeParams.fromPartial({})),
-						State: getStructure(typeState.fromPartial({})),
-						SubDistributor: getStructure(typeSubDistributor.fromPartial({})),
-						Destinations: getStructure(typeDestinations.fromPartial({})),
-						DestinationShare: getStructure(typeDestinationShare.fromPartial({})),
-						Account: getStructure(typeAccount.fromPartial({})),
-						
-		};
 		client.on('signer-changed',(signer) => {			
 		 this.updateTX(client);
 		})

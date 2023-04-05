@@ -177,11 +177,7 @@ export interface Stakingv1Beta1Validator {
   /** commission defines the commission parameters. */
   commission?: V1Beta1Commission;
 
-  /**
-   * min_self_delegation is the validator's self declared minimum self delegation.
-   *
-   * Since: cosmos-sdk 0.46
-   */
+  /** min_self_delegation is the validator's self declared minimum self delegation. */
   min_self_delegation?: string;
 }
 
@@ -412,11 +408,6 @@ export interface V1Beta1MsgBeginRedelegateResponse {
 }
 
 /**
- * Since: cosmos-sdk 0.46
- */
-export type V1Beta1MsgCancelUnbondingDelegationResponse = object;
-
-/**
  * MsgCreateValidatorResponse defines the Msg/CreateValidator response type.
  */
 export type V1Beta1MsgCreateValidatorResponse = object;
@@ -497,8 +488,7 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently. It will be empty if
-   * there are no more results.
+   * query the next page most efficiently
    * @format byte
    */
   next_key?: string;
@@ -538,9 +528,6 @@ export interface V1Beta1Params {
 
   /** bond_denom defines the bondable coin denomination. */
   bond_denom?: string;
-
-  /** min_commission_rate is the chain-wide minimum commission rate that a validator can charge their delegators */
-  min_commission_rate?: string;
 }
 
 /**
@@ -588,7 +575,7 @@ export interface V1Beta1QueryDelegatorUnbondingDelegationsResponse {
 Query/DelegatorValidator RPC method.
 */
 export interface V1Beta1QueryDelegatorValidatorResponse {
-  /** validator defines the validator info. */
+  /** validator defines the the validator info. */
   validator?: Stakingv1Beta1Validator;
 }
 
@@ -597,7 +584,7 @@ export interface V1Beta1QueryDelegatorValidatorResponse {
 Query/DelegatorValidators RPC method.
 */
 export interface V1Beta1QueryDelegatorValidatorsResponse {
-  /** validators defines the validators' info of a delegator. */
+  /** validators defines the the validators' info of a delegator. */
   validators?: Stakingv1Beta1Validator[];
 
   /** pagination defines the pagination in the response. */
@@ -657,7 +644,7 @@ export interface V1Beta1QueryValidatorDelegationsResponse {
 }
 
 export interface V1Beta1QueryValidatorResponse {
-  /** validator defines the validator info. */
+  /** validator defines the the validator info. */
   validator?: Stakingv1Beta1Validator;
 }
 
