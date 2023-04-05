@@ -146,7 +146,11 @@ export interface Validator {
   commission:
     | Commission
     | undefined;
-  /** min_self_delegation is the validator's self declared minimum self delegation. */
+  /**
+   * min_self_delegation is the validator's self declared minimum self delegation.
+   *
+   * Since: cosmos-sdk 0.46
+   */
   minSelfDelegation: string;
 }
 
@@ -271,6 +275,8 @@ export interface Params {
   historicalEntries: number;
   /** bond_denom defines the bondable coin denomination. */
   bondDenom: string;
+  /** min_commission_rate is the chain-wide minimum commission rate that a validator can charge their delegators */
+  minCommissionRate: string;
 }
 
 /**
@@ -1399,7 +1405,14 @@ export const Redelegation = {
 };
 
 function createBaseParams(): Params {
-  return { unbondingTime: undefined, maxValidators: 0, maxEntries: 0, historicalEntries: 0, bondDenom: "" };
+  return {
+    unbondingTime: undefined,
+    maxValidators: 0,
+    maxEntries: 0,
+    historicalEntries: 0,
+    bondDenom: "",
+    minCommissionRate: "",
+  };
 }
 
 export const Params = {
@@ -1418,6 +1431,9 @@ export const Params = {
     }
     if (message.bondDenom !== "") {
       writer.uint32(42).string(message.bondDenom);
+    }
+    if (message.minCommissionRate !== "") {
+      writer.uint32(50).string(message.minCommissionRate);
     }
     return writer;
   },
@@ -1444,6 +1460,9 @@ export const Params = {
         case 5:
           message.bondDenom = reader.string();
           break;
+        case 6:
+          message.minCommissionRate = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1459,6 +1478,7 @@ export const Params = {
       maxEntries: isSet(object.maxEntries) ? Number(object.maxEntries) : 0,
       historicalEntries: isSet(object.historicalEntries) ? Number(object.historicalEntries) : 0,
       bondDenom: isSet(object.bondDenom) ? String(object.bondDenom) : "",
+      minCommissionRate: isSet(object.minCommissionRate) ? String(object.minCommissionRate) : "",
     };
   },
 
@@ -1470,6 +1490,7 @@ export const Params = {
     message.maxEntries !== undefined && (obj.maxEntries = Math.round(message.maxEntries));
     message.historicalEntries !== undefined && (obj.historicalEntries = Math.round(message.historicalEntries));
     message.bondDenom !== undefined && (obj.bondDenom = message.bondDenom);
+    message.minCommissionRate !== undefined && (obj.minCommissionRate = message.minCommissionRate);
     return obj;
   },
 
@@ -1482,6 +1503,7 @@ export const Params = {
     message.maxEntries = object.maxEntries ?? 0;
     message.historicalEntries = object.historicalEntries ?? 0;
     message.bondDenom = object.bondDenom ?? "";
+    message.minCommissionRate = object.minCommissionRate ?? "";
     return message;
   },
 };

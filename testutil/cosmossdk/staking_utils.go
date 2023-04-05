@@ -117,3 +117,7 @@ func (su *ContextStakingUtils) VerifyNumberOfUnbondingDelegations(expectedNumber
 func (su *ContextStakingUtils) GetValidators() []stakingtypes.Validator {
 	return su.StakingUtils.GetValidators(su.testContext.GetContext())
 }
+
+func (su *StakingUtils) GetValidators(ctx sdk.Context) []stakingtypes.Validator {
+	return su.helperStakingkeeper.GetValidators(ctx, 100)
+}

@@ -182,7 +182,7 @@ func (k Keeper) DecrementCampaignTotalAmount(
 		return val
 	}
 	k.cdc.MustUnmarshal(b, &val)
-	val.Amount = val.Amount.Sub(amount)
+	val.Amount = val.Amount.Sub(amount...)
 
 	appendedValue := k.cdc.MustMarshal(&val)
 	store.Set(types.CampaignTotalAmountKey(
@@ -266,7 +266,7 @@ func (k Keeper) DecrementCampaignAmountLeft(
 		return val
 	}
 	k.cdc.MustUnmarshal(b, &val)
-	val.Amount = val.Amount.Sub(amount)
+	val.Amount = val.Amount.Sub(amount...)
 
 	appendedValue := k.cdc.MustMarshal(&val)
 	store.Set(types.CampaignAmountLeftKey(

@@ -40,6 +40,8 @@ export interface Abciv1Beta1Result {
   /**
    * Data is any data returned from message or handler execution. It MUST be
    * length prefixed in order to separate data from multiple message executions.
+   * Deprecated. This field is still populated, but prefer msg_response instead
+   * because it also contains the Msg response typeURL.
    * @format byte
    */
   data?: string;
@@ -52,6 +54,13 @@ export interface Abciv1Beta1Result {
    * or handler execution.
    */
   events?: AbciEvent[];
+
+  /**
+   * msg_responses contains the Msg handler responses type packed in Anys.
+   *
+   * Since: cosmos-sdk 0.46
+   */
+  msg_responses?: ProtobufAny[];
 }
 
 export interface CryptoPublicKey {
@@ -512,6 +521,15 @@ export interface V1Beta1AuthInfo {
    * of the signers. This can be estimated via simulation.
    */
   fee?: V1Beta1Fee;
+
+  /**
+   * Tip is the optional tip used for transactions fees paid in another denom.
+   *
+   * This field is ignored if the chain didn't enable tips, i.e. didn't add the
+   * `TipDecorator` in its posthandler.
+   * Since: cosmos-sdk 0.46
+   */
+  tip?: V1Beta1Tip;
 }
 
 /**
@@ -676,8 +694,17 @@ export interface V1Beta1GetTxsEventResponse {
   /** tx_responses is the list of queried TxResponses. */
   tx_responses?: V1Beta1TxResponse[];
 
-  /** pagination defines a pagination for the response. */
+  /**
+   * pagination defines a pagination for the response.
+   * Deprecated post v0.46.x: use total instead.
+   */
   pagination?: V1Beta1PageResponse;
+
+  /**
+   * total is total number of results available
+   * @format uint64
+   */
+  total?: string;
 }
 
 /**
@@ -713,15 +740,26 @@ export interface V1Beta1ModeInfoSingle {
    * mode is the signing mode of the single signer
    * SignMode represents a signing mode with its own security guarantees.
    *
+   * This enum should be considered a registry of all known sign modes
+   * in the Cosmos ecosystem. Apps are not expected to support all known
+   * sign modes. Apps that would like to support custom  sign modes are
+   * encouraged to open a small PR against this file to add a new case
+   * to this SignMode enum describing their sign mode so that different
+   * apps have a consistent version of this enum.
    *  - SIGN_MODE_UNSPECIFIED: SIGN_MODE_UNSPECIFIED specifies an unknown signing mode and will be
-   * rejected
+   * rejected.
    *  - SIGN_MODE_DIRECT: SIGN_MODE_DIRECT specifies a signing mode which uses SignDoc and is
-   * verified with raw bytes from Tx
+   * verified with raw bytes from Tx.
    *  - SIGN_MODE_TEXTUAL: SIGN_MODE_TEXTUAL is a future signing mode that will verify some
    * human-readable textual representation on top of the binary representation
-   * from SIGN_MODE_DIRECT
+   * from SIGN_MODE_DIRECT. It is currently not supported.
+   *  - SIGN_MODE_DIRECT_AUX: SIGN_MODE_DIRECT_AUX specifies a signing mode which uses
+   * SignDocDirectAux. As opposed to SIGN_MODE_DIRECT, this sign mode does not
+   * require signers signing over other signers' `signer_info`. It also allows
+   * for adding Tips in transactions.
+   * Since: cosmos-sdk 0.46
    *  - SIGN_MODE_LEGACY_AMINO_JSON: SIGN_MODE_LEGACY_AMINO_JSON is a backwards compatibility mode which uses
-   * Amino JSON and will be removed in the future
+   * Amino JSON and will be removed in the future.
    *  - SIGN_MODE_EIP_191: SIGN_MODE_EIP_191 specifies the sign mode for EIP 191 signing on the Cosmos
    * SDK. Ref: https://eips.ethereum.org/EIPS/eip-191
    * Currently, SIGN_MODE_EIP_191 is registered as a SignMode enum variant,
@@ -803,7 +841,8 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
    * @format byte
    */
   next_key?: string;
@@ -819,15 +858,28 @@ export interface V1Beta1PageResponse {
 /**
 * SignMode represents a signing mode with its own security guarantees.
 
+This enum should be considered a registry of all known sign modes
+in the Cosmos ecosystem. Apps are not expected to support all known
+sign modes. Apps that would like to support custom  sign modes are
+encouraged to open a small PR against this file to add a new case
+to this SignMode enum describing their sign mode so that different
+apps have a consistent version of this enum.
+
  - SIGN_MODE_UNSPECIFIED: SIGN_MODE_UNSPECIFIED specifies an unknown signing mode and will be
-rejected
+rejected.
  - SIGN_MODE_DIRECT: SIGN_MODE_DIRECT specifies a signing mode which uses SignDoc and is
-verified with raw bytes from Tx
+verified with raw bytes from Tx.
  - SIGN_MODE_TEXTUAL: SIGN_MODE_TEXTUAL is a future signing mode that will verify some
 human-readable textual representation on top of the binary representation
-from SIGN_MODE_DIRECT
+from SIGN_MODE_DIRECT. It is currently not supported.
+ - SIGN_MODE_DIRECT_AUX: SIGN_MODE_DIRECT_AUX specifies a signing mode which uses
+SignDocDirectAux. As opposed to SIGN_MODE_DIRECT, this sign mode does not
+require signers signing over other signers' `signer_info`. It also allows
+for adding Tips in transactions.
+
+Since: cosmos-sdk 0.46
  - SIGN_MODE_LEGACY_AMINO_JSON: SIGN_MODE_LEGACY_AMINO_JSON is a backwards compatibility mode which uses
-Amino JSON and will be removed in the future
+Amino JSON and will be removed in the future.
  - SIGN_MODE_EIP_191: SIGN_MODE_EIP_191 specifies the sign mode for EIP 191 signing on the Cosmos
 SDK. Ref: https://eips.ethereum.org/EIPS/eip-191
 
@@ -843,6 +895,7 @@ export enum V1Beta1SignMode {
   SIGN_MODE_UNSPECIFIED = "SIGN_MODE_UNSPECIFIED",
   SIGN_MODE_DIRECT = "SIGN_MODE_DIRECT",
   SIGN_MODE_TEXTUAL = "SIGN_MODE_TEXTUAL",
+  SIGN_MODE_DIRECT_AUX = "SIGN_MODE_DIRECT_AUX",
   SIGN_MODE_LEGACY_AMINO_JSON = "SIGN_MODE_LEGACY_AMINO_JSON",
   SIGNMODEEIP191 = "SIGN_MODE_EIP_191",
 }
@@ -914,6 +967,19 @@ contain key/value pairs that are strings instead of raw bytes.
 export interface V1Beta1StringEvent {
   type?: string;
   attributes?: V1Beta1Attribute[];
+}
+
+/**
+* Tip is the tip used for meta-transactions.
+
+Since: cosmos-sdk 0.46
+*/
+export interface V1Beta1Tip {
+  /** amount is the amount of the tip */
+  amount?: V1Beta1Coin[];
+
+  /** tipper is the address of the account paying for the tip */
+  tipper?: string;
 }
 
 /**
@@ -1049,7 +1115,7 @@ export interface V1Beta1TxResponse {
   /**
    * Events defines all the events emitted by processing a transaction. Note,
    * these events include those emitted by processing all the messages and those
-   * emitted from the ante handler. Whereas Logs contains the events, with
+   * emitted from the ante. Whereas Logs contains the events, with
    * additional metadata, emitted only by processing the messages.
    *
    * Since: cosmos-sdk 0.42.11, 0.44.5, 0.45
@@ -1230,6 +1296,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.count_total"?: boolean;
       "pagination.reverse"?: boolean;
       order_by?: "ORDER_BY_UNSPECIFIED" | "ORDER_BY_ASC" | "ORDER_BY_DESC";
+      page?: string;
+      limit?: string;
     },
     params: RequestParams = {},
   ) =>

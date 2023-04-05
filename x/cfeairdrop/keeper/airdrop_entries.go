@@ -179,7 +179,7 @@ func (k Keeper) validateInitialClaimFreeAmount(logger log.Logger, initialClaimFr
 			allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
 		}
 	}
-	initialClaimAmount := claimRecord.Amount.Sub(allMissionsAmountSum)
+	initialClaimAmount := claimRecord.Amount.Sub(allMissionsAmountSum...)
 
 	for _, coin := range claimRecord.Amount {
 		if initialClaimAmount.AmountOf(coin.Denom).LT(initialClaimFreeAmount) {
@@ -314,18 +314,18 @@ func (k Keeper) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, ow
 
 	balance := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
 	if balance.IsAllGT(vestingAcc.OriginalVesting) {
-		balanceWithoutOriginalVesting := balance.Sub(vestingAcc.OriginalVesting)
-		amount = amount.Sub(balanceWithoutOriginalVesting)
+		balanceWithoutOriginalVesting := balance.Sub(vestingAcc.OriginalVesting...)
+		amount = amount.Sub(balanceWithoutOriginalVesting...)
 	}
 
 	lockedCoins := vestingAcc.LockedCoins(ctx.BlockTime()).Add(vestingAcc.DelegatedVesting...)
-	spendableFromVesting := vestingAcc.OriginalVesting.Sub(lockedCoins)
-	amountDiffFree := amount.Sub(spendableFromVesting)
+	spendableFromVesting := vestingAcc.OriginalVesting.Sub(lockedCoins...)
+	amountDiffFree := amount.Sub(spendableFromVesting...)
 
 	for _, coin := range amount {
-		lockedPercentage := vestingAcc.OriginalVesting.AmountOf(coin.Denom).ToDec().Quo(lockedCoins.AmountOf(coin.Denom).ToDec())
-		originalVestingDiff := amountDiffFree.AmountOf(coin.Denom).ToDec().Mul(lockedPercentage).TruncateInt()
-		vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(coin.Denom, originalVestingDiff)))
+		lockedPercentage := sdk.NewDecFromInt(vestingAcc.OriginalVesting.AmountOf(coin.Denom)).Quo(sdk.NewDecFromInt(lockedCoins.AmountOf(coin.Denom)))
+		originalVestingDiff := sdk.NewDecFromInt(amountDiffFree.AmountOf(coin.Denom)).Mul(lockedPercentage).TruncateInt()
+		vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoins(sdk.NewCoin(coin.Denom, originalVestingDiff))...)
 	}
 
 	k.accountKeeper.SetAccount(ctx, vestingAcc)

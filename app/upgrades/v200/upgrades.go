@@ -1,4 +1,4 @@
-package v2
+package v200
 
 import (
 	"github.com/chain4energy/c4e-chain/app/upgrades"
@@ -16,7 +16,7 @@ func CreateUpgradeHandler(
 	appKeepers cfeupgradetypes.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		if err := airdrop.Creates(ctx, appKeepers.GetKeeper(), appKeepers.GetAccountKeeper(), appKeepers.GetBankKeeper()); err != nil {
+		if err := airdrop.Creates(ctx, appKeepers.GetC4eAirdropKeeper(), appKeepers.GetAccountKeeper(), appKeepers.GetBankKeeper()); err != nil {
 			return nil, err
 		}
 		return mm.RunMigrations(ctx, configurator, vm)

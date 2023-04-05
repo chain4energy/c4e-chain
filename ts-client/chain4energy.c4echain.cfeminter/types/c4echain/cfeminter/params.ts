@@ -1,17 +1,19 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { MinterConfig } from "./minter";
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { Minter } from "./minter";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
 
 /** Params defines the parameters for the module. */
 export interface Params {
   mintDenom: string;
-  minterConfig: MinterConfig | undefined;
+  startTime: Date | undefined;
+  minters: Minter[];
 }
 
 function createBaseParams(): Params {
-  return { mintDenom: "", minterConfig: undefined };
+  return { mintDenom: "", startTime: undefined, minters: [] };
 }
 
 export const Params = {
@@ -19,8 +21,11 @@ export const Params = {
     if (message.mintDenom !== "") {
       writer.uint32(10).string(message.mintDenom);
     }
-    if (message.minterConfig !== undefined) {
-      MinterConfig.encode(message.minterConfig, writer.uint32(18).fork()).ldelim();
+    if (message.startTime !== undefined) {
+      Timestamp.encode(toTimestamp(message.startTime), writer.uint32(18).fork()).ldelim();
+    }
+    for (const v of message.minters) {
+      Minter.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -36,7 +41,10 @@ export const Params = {
           message.mintDenom = reader.string();
           break;
         case 2:
-          message.minterConfig = MinterConfig.decode(reader, reader.uint32());
+          message.startTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          break;
+        case 3:
+          message.minters.push(Minter.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -49,24 +57,28 @@ export const Params = {
   fromJSON(object: any): Params {
     return {
       mintDenom: isSet(object.mintDenom) ? String(object.mintDenom) : "",
-      minterConfig: isSet(object.minterConfig) ? MinterConfig.fromJSON(object.minterConfig) : undefined,
+      startTime: isSet(object.startTime) ? fromJsonTimestamp(object.startTime) : undefined,
+      minters: Array.isArray(object?.minters) ? object.minters.map((e: any) => Minter.fromJSON(e)) : [],
     };
   },
 
   toJSON(message: Params): unknown {
     const obj: any = {};
     message.mintDenom !== undefined && (obj.mintDenom = message.mintDenom);
-    message.minterConfig !== undefined
-      && (obj.minterConfig = message.minterConfig ? MinterConfig.toJSON(message.minterConfig) : undefined);
+    message.startTime !== undefined && (obj.startTime = message.startTime.toISOString());
+    if (message.minters) {
+      obj.minters = message.minters.map((e) => e ? Minter.toJSON(e) : undefined);
+    } else {
+      obj.minters = [];
+    }
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
     const message = createBaseParams();
     message.mintDenom = object.mintDenom ?? "";
-    message.minterConfig = (object.minterConfig !== undefined && object.minterConfig !== null)
-      ? MinterConfig.fromPartial(object.minterConfig)
-      : undefined;
+    message.startTime = object.startTime ?? undefined;
+    message.minters = object.minters?.map((e) => Minter.fromPartial(e)) || [];
     return message;
   },
 };
@@ -81,6 +93,28 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = date.getTime() / 1_000;
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = t.seconds * 1_000;
+  millis += t.nanos / 1_000_000;
+  return new Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

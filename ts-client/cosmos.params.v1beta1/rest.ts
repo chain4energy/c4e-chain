@@ -38,6 +38,27 @@ export interface V1Beta1QueryParamsResponse {
   param?: V1Beta1ParamChange;
 }
 
+/**
+* QuerySubspacesResponse defines the response types for querying for all
+registered subspaces and all keys for a subspace.
+
+Since: cosmos-sdk 0.46
+*/
+export interface V1Beta1QuerySubspacesResponse {
+  subspaces?: V1Beta1Subspace[];
+}
+
+/**
+* Subspace defines a parameter subspace name and all the keys that exist for
+the subspace.
+
+Since: cosmos-sdk 0.46
+*/
+export interface V1Beta1Subspace {
+  subspace?: string;
+  keys?: string[];
+}
+
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from "axios";
 
 export type QueryParamsType = Record<string | number, any>;
@@ -177,6 +198,22 @@ key.
       path: `/cosmos/params/v1beta1/params`,
       method: "GET",
       query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * @description Since: cosmos-sdk 0.46
+   *
+   * @tags Query
+   * @name QuerySubspaces
+   * @summary Subspaces queries for all registered subspaces and all keys for a subspace.
+   * @request GET:/cosmos/params/v1beta1/subspaces
+   */
+  querySubspaces = (params: RequestParams = {}) =>
+    this.request<V1Beta1QuerySubspacesResponse, RpcStatus>({
+      path: `/cosmos/params/v1beta1/subspaces`,
+      method: "GET",
       format: "json",
       ...params,
     });

@@ -190,7 +190,13 @@ export interface V1Height {
 /**
  * MsgTransferResponse defines the Msg/Transfer response type.
  */
-export type V1MsgTransferResponse = object;
+export interface V1MsgTransferResponse {
+  /**
+   * sequence number of the transfer packet sent
+   * @format uint64
+   */
+  sequence?: string;
+}
 
 /**
 * QueryDenomHashResponse is the response type for the Query/DenomHash RPC
@@ -220,6 +226,14 @@ export interface V1QueryDenomTracesResponse {
 
   /** pagination defines the pagination in the response. */
   pagination?: V1Beta1PageResponse;
+}
+
+/**
+ * QueryEscrowAddressResponse is the response type of the EscrowAddress RPC method.
+ */
+export interface V1QueryEscrowAddressResponse {
+  /** the escrow account address */
+  escrow_address?: string;
 }
 
 /**
@@ -278,6 +292,13 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
+
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse?: boolean;
 }
 
 /**
@@ -292,7 +313,8 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
    * @format byte
    */
   next_key?: string;
@@ -434,6 +456,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
+   * @name QueryEscrowAddress
+   * @summary EscrowAddress returns the escrow address for a particular port and channel id.
+   * @request GET:/ibc/apps/transfer/v1/channels/{channel_id}/ports/{port_id}/escrow_address
+   */
+  queryEscrowAddress = (channelId: string, portId: string, params: RequestParams = {}) =>
+    this.request<V1QueryEscrowAddressResponse, RpcStatus>({
+      path: `/ibc/apps/transfer/v1/channels/${channelId}/ports/${portId}/escrow_address`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryDenomHash
    * @summary DenomHash queries a denomination hash information.
    * @request GET:/ibc/apps/transfer/v1/denom_hashes/{trace}
@@ -460,6 +498,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>

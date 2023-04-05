@@ -2,16 +2,16 @@ package app
 
 import (
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
+	cfeairdropkeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
-	cfeairdropkeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
 )
 
 var _ cfeupgradetypes.AppKeepers = (*App)(nil)
 
-func (app *App) GetKeeper() *cfeairdropkeeper.Keeper {
+func (app *App) GetC4eAirdropKeeper() *cfeairdropkeeper.Keeper {
 	return &app.CfeairdropKeeper
 }
 

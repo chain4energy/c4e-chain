@@ -2,10 +2,10 @@ syntax = "proto3";
 package chain4energy.c4echain.cfeairdrop;
 
 import "gogoproto/gogo.proto";
-import "cfeairdrop/params.proto";
-import "cfeairdrop/campaign.proto";
-import "cfeairdrop/mission.proto";
-import "cfeairdrop/claim_record.proto";
+import "c4echain/cfeairdrop/params.proto";
+import "c4echain/cfeairdrop/campaign.proto";
+import "c4echain/cfeairdrop/mission.proto";
+import "c4echain/cfeairdrop/claim_record.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";
 

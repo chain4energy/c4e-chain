@@ -64,12 +64,18 @@ export type V1Beta1MsgSetWithdrawAddressResponse = object;
 /**
  * MsgWithdrawDelegatorRewardResponse defines the Msg/WithdrawDelegatorReward response type.
  */
-export type V1Beta1MsgWithdrawDelegatorRewardResponse = object;
+export interface V1Beta1MsgWithdrawDelegatorRewardResponse {
+  /** Since: cosmos-sdk 0.46 */
+  amount?: V1Beta1Coin[];
+}
 
 /**
  * MsgWithdrawValidatorCommissionResponse defines the Msg/WithdrawValidatorCommission response type.
  */
-export type V1Beta1MsgWithdrawValidatorCommissionResponse = object;
+export interface V1Beta1MsgWithdrawValidatorCommissionResponse {
+  /** Since: cosmos-sdk 0.46 */
+  amount?: V1Beta1Coin[];
+}
 
 /**
 * message SomeRequest {
@@ -129,7 +135,8 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
    * @format byte
    */
   next_key?: string;

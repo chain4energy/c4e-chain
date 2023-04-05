@@ -7,33 +7,34 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
-import { MsgStartCampaign } from "./types/cfeairdrop/tx";
-import { MsgAddMissionToAidropCampaign } from "./types/cfeairdrop/tx";
-import { MsgCreateCampaign } from "./types/cfeairdrop/tx";
-import { MsgInitialClaim } from "./types/cfeairdrop/tx";
-import { MsgEditCampaign } from "./types/cfeairdrop/tx";
-import { MsgAddClaimRecords } from "./types/cfeairdrop/tx";
-import { MsgDeleteClaimRecord } from "./types/cfeairdrop/tx";
-import { MsgCloseCampaign } from "./types/cfeairdrop/tx";
-import { MsgClaim } from "./types/cfeairdrop/tx";
+import { MsgClaim } from "./types/c4echain/cfeairdrop/tx";
+import { MsgCreateCampaign } from "./types/c4echain/cfeairdrop/tx";
+import { MsgDeleteClaimRecord } from "./types/c4echain/cfeairdrop/tx";
+import { MsgInitialClaim } from "./types/c4echain/cfeairdrop/tx";
+import { MsgEditCampaign } from "./types/c4echain/cfeairdrop/tx";
+import { MsgRemoveCampaign } from "./types/c4echain/cfeairdrop/tx";
+import { MsgCloseCampaign } from "./types/c4echain/cfeairdrop/tx";
+import { MsgAddClaimRecords } from "./types/c4echain/cfeairdrop/tx";
+import { MsgAddMissionToCampaign } from "./types/c4echain/cfeairdrop/tx";
+import { MsgStartCampaign } from "./types/c4echain/cfeairdrop/tx";
 
 
-export { MsgStartCampaign, MsgAddMissionToAidropCampaign, MsgCreateCampaign, MsgInitialClaim, MsgEditCampaign, MsgAddClaimRecords, MsgDeleteClaimRecord, MsgCloseCampaign, MsgClaim };
+export { MsgClaim, MsgCreateCampaign, MsgDeleteClaimRecord, MsgInitialClaim, MsgEditCampaign, MsgRemoveCampaign, MsgCloseCampaign, MsgAddClaimRecords, MsgAddMissionToCampaign, MsgStartCampaign };
 
-type sendMsgStartCampaignParams = {
-  value: MsgStartCampaign,
-  fee?: StdFee,
-  memo?: string
-};
-
-type sendMsgAddMissionToAidropCampaignParams = {
-  value: MsgAddMissionToAidropCampaign,
+type sendMsgClaimParams = {
+  value: MsgClaim,
   fee?: StdFee,
   memo?: string
 };
 
 type sendMsgCreateCampaignParams = {
   value: MsgCreateCampaign,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgDeleteClaimRecordParams = {
+  value: MsgDeleteClaimRecord,
   fee?: StdFee,
   memo?: string
 };
@@ -50,14 +51,8 @@ type sendMsgEditCampaignParams = {
   memo?: string
 };
 
-type sendMsgAddClaimRecordsParams = {
-  value: MsgAddClaimRecords,
-  fee?: StdFee,
-  memo?: string
-};
-
-type sendMsgDeleteClaimRecordParams = {
-  value: MsgDeleteClaimRecord,
+type sendMsgRemoveCampaignParams = {
+  value: MsgRemoveCampaign,
   fee?: StdFee,
   memo?: string
 };
@@ -68,23 +63,35 @@ type sendMsgCloseCampaignParams = {
   memo?: string
 };
 
-type sendMsgClaimParams = {
-  value: MsgClaim,
+type sendMsgAddClaimRecordsParams = {
+  value: MsgAddClaimRecords,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgAddMissionToCampaignParams = {
+  value: MsgAddMissionToCampaign,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgStartCampaignParams = {
+  value: MsgStartCampaign,
   fee?: StdFee,
   memo?: string
 };
 
 
-type msgStartCampaignParams = {
-  value: MsgStartCampaign,
-};
-
-type msgAddMissionToAidropCampaignParams = {
-  value: MsgAddMissionToAidropCampaign,
+type msgClaimParams = {
+  value: MsgClaim,
 };
 
 type msgCreateCampaignParams = {
   value: MsgCreateCampaign,
+};
+
+type msgDeleteClaimRecordParams = {
+  value: MsgDeleteClaimRecord,
 };
 
 type msgInitialClaimParams = {
@@ -95,20 +102,24 @@ type msgEditCampaignParams = {
   value: MsgEditCampaign,
 };
 
-type msgAddClaimRecordsParams = {
-  value: MsgAddClaimRecords,
-};
-
-type msgDeleteClaimRecordParams = {
-  value: MsgDeleteClaimRecord,
+type msgRemoveCampaignParams = {
+  value: MsgRemoveCampaign,
 };
 
 type msgCloseCampaignParams = {
   value: MsgCloseCampaign,
 };
 
-type msgClaimParams = {
-  value: MsgClaim,
+type msgAddClaimRecordsParams = {
+  value: MsgAddClaimRecords,
+};
+
+type msgAddMissionToCampaignParams = {
+  value: MsgAddMissionToCampaign,
+};
+
+type msgStartCampaignParams = {
+  value: MsgStartCampaign,
 };
 
 
@@ -129,31 +140,17 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
-		async sendMsgStartCampaign({ value, fee, memo }: sendMsgStartCampaignParams): Promise<DeliverTxResponse> {
+		async sendMsgClaim({ value, fee, memo }: sendMsgClaimParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgStartCampaign: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgClaim: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgStartCampaign({ value: MsgStartCampaign.fromPartial(value) })
+				let msg = this.msgClaim({ value: MsgClaim.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgStartCampaign: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
-		async sendMsgAddMissionToAidropCampaign({ value, fee, memo }: sendMsgAddMissionToAidropCampaignParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgAddMissionToAidropCampaign: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgAddMissionToAidropCampaign({ value: MsgAddMissionToAidropCampaign.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgAddMissionToAidropCampaign: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgClaim: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -168,6 +165,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
 				throw new Error('TxClient:sendMsgCreateCampaign: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgDeleteClaimRecord({ value, fee, memo }: sendMsgDeleteClaimRecordParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgDeleteClaimRecord: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgDeleteClaimRecord({ value: MsgDeleteClaimRecord.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgDeleteClaimRecord: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -199,31 +210,17 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgAddClaimRecords({ value, fee, memo }: sendMsgAddClaimRecordsParams): Promise<DeliverTxResponse> {
+		async sendMsgRemoveCampaign({ value, fee, memo }: sendMsgRemoveCampaignParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgAddClaimRecords: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgRemoveCampaign: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgAddClaimRecords({ value: MsgAddClaimRecords.fromPartial(value) })
+				let msg = this.msgRemoveCampaign({ value: MsgRemoveCampaign.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgAddClaimRecords: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
-		async sendMsgDeleteClaimRecord({ value, fee, memo }: sendMsgDeleteClaimRecordParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgDeleteClaimRecord: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgDeleteClaimRecord({ value: MsgDeleteClaimRecord.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgDeleteClaimRecord: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgRemoveCampaign: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -241,34 +238,54 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgClaim({ value, fee, memo }: sendMsgClaimParams): Promise<DeliverTxResponse> {
+		async sendMsgAddClaimRecords({ value, fee, memo }: sendMsgAddClaimRecordsParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgClaim: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgAddClaimRecords: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgClaim({ value: MsgClaim.fromPartial(value) })
+				let msg = this.msgAddClaimRecords({ value: MsgAddClaimRecords.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgClaim: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgAddClaimRecords: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgAddMissionToCampaign({ value, fee, memo }: sendMsgAddMissionToCampaignParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgAddMissionToCampaign: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgAddMissionToCampaign({ value: MsgAddMissionToCampaign.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgAddMissionToCampaign: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgStartCampaign({ value, fee, memo }: sendMsgStartCampaignParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgStartCampaign: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgStartCampaign({ value: MsgStartCampaign.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgStartCampaign: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
 		
-		msgStartCampaign({ value }: msgStartCampaignParams): EncodeObject {
+		msgClaim({ value }: msgClaimParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgStartCampaign", value: MsgStartCampaign.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgClaim", value: MsgClaim.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgStartCampaign: Could not create message: ' + e.message)
-			}
-		},
-		
-		msgAddMissionToAidropCampaign({ value }: msgAddMissionToAidropCampaignParams): EncodeObject {
-			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddMissionToAidropCampaign", value: MsgAddMissionToAidropCampaign.fromPartial( value ) }  
-			} catch (e: any) {
-				throw new Error('TxClient:MsgAddMissionToAidropCampaign: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgClaim: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -277,6 +294,14 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCreateCampaign", value: MsgCreateCampaign.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgCreateCampaign: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgDeleteClaimRecord({ value }: msgDeleteClaimRecordParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgDeleteClaimRecord", value: MsgDeleteClaimRecord.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgDeleteClaimRecord: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -296,19 +321,11 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgAddClaimRecords({ value }: msgAddClaimRecordsParams): EncodeObject {
+		msgRemoveCampaign({ value }: msgRemoveCampaignParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddClaimRecords", value: MsgAddClaimRecords.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgRemoveCampaign", value: MsgRemoveCampaign.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgAddClaimRecords: Could not create message: ' + e.message)
-			}
-		},
-		
-		msgDeleteClaimRecord({ value }: msgDeleteClaimRecordParams): EncodeObject {
-			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgDeleteClaimRecord", value: MsgDeleteClaimRecord.fromPartial( value ) }  
-			} catch (e: any) {
-				throw new Error('TxClient:MsgDeleteClaimRecord: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgRemoveCampaign: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -320,11 +337,27 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgClaim({ value }: msgClaimParams): EncodeObject {
+		msgAddClaimRecords({ value }: msgAddClaimRecordsParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgClaim", value: MsgClaim.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddClaimRecords", value: MsgAddClaimRecords.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgClaim: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgAddClaimRecords: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgAddMissionToCampaign({ value }: msgAddMissionToCampaignParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddMissionToCampaign", value: MsgAddMissionToCampaign.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgAddMissionToCampaign: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgStartCampaign({ value }: msgStartCampaignParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgStartCampaign", value: MsgStartCampaign.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgStartCampaign: Could not create message: ' + e.message)
 			}
 		},
 		

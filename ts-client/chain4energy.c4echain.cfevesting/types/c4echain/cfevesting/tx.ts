@@ -73,6 +73,15 @@ export interface MsgMoveAvailableVestingByDenoms {
 export interface MsgMoveAvailableVestingByDenomsResponse {
 }
 
+export interface MsgUpdateDenomParam {
+  /** authority is the address of the governance account. */
+  authority: string;
+  denom: string;
+}
+
+export interface MsgUpdateDenomParamResponse {
+}
+
 function createBaseMsgCreateVestingPool(): MsgCreateVestingPool {
   return { owner: "", name: "", amount: "", duration: undefined, vestingType: "" };
 }
@@ -868,6 +877,103 @@ export const MsgMoveAvailableVestingByDenomsResponse = {
   },
 };
 
+function createBaseMsgUpdateDenomParam(): MsgUpdateDenomParam {
+  return { authority: "", denom: "" };
+}
+
+export const MsgUpdateDenomParam = {
+  encode(message: MsgUpdateDenomParam, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.authority !== "") {
+      writer.uint32(10).string(message.authority);
+    }
+    if (message.denom !== "") {
+      writer.uint32(18).string(message.denom);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateDenomParam {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateDenomParam();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.authority = reader.string();
+          break;
+        case 2:
+          message.denom = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdateDenomParam {
+    return {
+      authority: isSet(object.authority) ? String(object.authority) : "",
+      denom: isSet(object.denom) ? String(object.denom) : "",
+    };
+  },
+
+  toJSON(message: MsgUpdateDenomParam): unknown {
+    const obj: any = {};
+    message.authority !== undefined && (obj.authority = message.authority);
+    message.denom !== undefined && (obj.denom = message.denom);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateDenomParam>, I>>(object: I): MsgUpdateDenomParam {
+    const message = createBaseMsgUpdateDenomParam();
+    message.authority = object.authority ?? "";
+    message.denom = object.denom ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgUpdateDenomParamResponse(): MsgUpdateDenomParamResponse {
+  return {};
+}
+
+export const MsgUpdateDenomParamResponse = {
+  encode(_: MsgUpdateDenomParamResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateDenomParamResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateDenomParamResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdateDenomParamResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdateDenomParamResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateDenomParamResponse>, I>>(_: I): MsgUpdateDenomParamResponse {
+    const message = createBaseMsgUpdateDenomParamResponse();
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   CreateVestingPool(request: MsgCreateVestingPool): Promise<MsgCreateVestingPoolResponse>;
@@ -876,10 +982,11 @@ export interface Msg {
   SendToVestingAccount(request: MsgSendToVestingAccount): Promise<MsgSendToVestingAccountResponse>;
   SplitVesting(request: MsgSplitVesting): Promise<MsgSplitVestingResponse>;
   MoveAvailableVesting(request: MsgMoveAvailableVesting): Promise<MsgMoveAvailableVestingResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   MoveAvailableVestingByDenoms(
     request: MsgMoveAvailableVestingByDenoms,
   ): Promise<MsgMoveAvailableVestingByDenomsResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  UpdateDenomParam(request: MsgUpdateDenomParam): Promise<MsgUpdateDenomParamResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -893,6 +1000,7 @@ export class MsgClientImpl implements Msg {
     this.SplitVesting = this.SplitVesting.bind(this);
     this.MoveAvailableVesting = this.MoveAvailableVesting.bind(this);
     this.MoveAvailableVestingByDenoms = this.MoveAvailableVestingByDenoms.bind(this);
+    this.UpdateDenomParam = this.UpdateDenomParam.bind(this);
   }
   CreateVestingPool(request: MsgCreateVestingPool): Promise<MsgCreateVestingPoolResponse> {
     const data = MsgCreateVestingPool.encode(request).finish();
@@ -936,6 +1044,12 @@ export class MsgClientImpl implements Msg {
     const data = MsgMoveAvailableVestingByDenoms.encode(request).finish();
     const promise = this.rpc.request("chain4energy.c4echain.cfevesting.Msg", "MoveAvailableVestingByDenoms", data);
     return promise.then((data) => MsgMoveAvailableVestingByDenomsResponse.decode(new _m0.Reader(data)));
+  }
+
+  UpdateDenomParam(request: MsgUpdateDenomParam): Promise<MsgUpdateDenomParamResponse> {
+    const data = MsgUpdateDenomParam.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfevesting.Msg", "UpdateDenomParam", data);
+    return promise.then((data) => MsgUpdateDenomParamResponse.decode(new _m0.Reader(data)));
   }
 }
 

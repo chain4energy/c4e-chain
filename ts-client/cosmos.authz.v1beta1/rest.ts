@@ -195,13 +195,15 @@ export interface V1Beta1Grant {
    */
   authorization?: ProtobufAny;
 
-  /** @format date-time */
+  /**
+   * time when the grant will expire and will be pruned. If null, then the grant
+   * doesn't have a time expiration (other conditions  in `authorization`
+   * may apply to invalidate the grant)
+   * @format date-time
+   */
   expiration?: string;
 }
 
-/**
- * Since: cosmos-sdk 0.45.2
- */
 export interface V1Beta1GrantAuthorization {
   granter?: string;
   grantee?: string;
@@ -345,7 +347,8 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
    * @format byte
    */
   next_key?: string;
@@ -546,7 +549,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     });
 
   /**
-   * @description Since: cosmos-sdk 0.45.2
+   * @description Since: cosmos-sdk 0.46
    *
    * @tags Query
    * @name QueryGranteeGrants
@@ -573,7 +576,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     });
 
   /**
-   * @description Since: cosmos-sdk 0.45.2
+   * @description Since: cosmos-sdk 0.46
    *
    * @tags Query
    * @name QueryGranterGrants

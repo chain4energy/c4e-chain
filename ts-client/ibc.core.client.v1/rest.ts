@@ -452,6 +452,23 @@ export interface V1QueryClientStatusResponse {
   status?: string;
 }
 
+export interface V1QueryConsensusStateHeightsResponse {
+  /** consensus state heights */
+  consensus_state_heights?: V1Height[];
+
+  /**
+   * pagination response
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
 export interface V1QueryConsensusStateResponse {
   /**
    * consensus state associated with the client identifier at the given height
@@ -720,6 +737,13 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   count_total?: boolean;
+
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse?: boolean;
 }
 
 /**
@@ -734,7 +758,8 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
    * @format byte
    */
   next_key?: string;
@@ -902,6 +927,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -961,11 +987,39 @@ client.
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
     this.request<V1QueryConsensusStatesResponse, RpcStatus>({
       path: `/ibc/core/client/v1/consensus_states/${clientId}`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryConsensusStateHeights
+   * @summary ConsensusStateHeights queries the height of every consensus states associated with a given client.
+   * @request GET:/ibc/core/client/v1/consensus_states/{client_id}/heights
+   */
+  queryConsensusStateHeights = (
+    clientId: string,
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<V1QueryConsensusStateHeightsResponse, RpcStatus>({
+      path: `/ibc/core/client/v1/consensus_states/${clientId}/heights`,
       method: "GET",
       query: query,
       format: "json",

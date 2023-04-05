@@ -167,6 +167,96 @@ export interface RpcStatus {
   details?: ProtobufAny[];
 }
 
+export interface TenderminttypesBlock {
+  /** Header defines the structure of a Tendermint block header. */
+  header?: TenderminttypesHeader;
+  data?: TypesData;
+  evidence?: TypesEvidenceList;
+
+  /** Commit contains the evidence that a block was committed by a set of validators. */
+  last_commit?: TypesCommit;
+}
+
+/**
+ * Header defines the structure of a Tendermint block header.
+ */
+export interface TenderminttypesHeader {
+  /**
+   * basic block info
+   * Consensus captures the consensus rules for processing a block in the blockchain,
+   * including all blockchain data structures and the rules of the application's
+   * state transition machine.
+   */
+  version?: VersionConsensus;
+  chain_id?: string;
+
+  /** @format int64 */
+  height?: string;
+
+  /** @format date-time */
+  time?: string;
+
+  /** prev block info */
+  last_block_id?: TypesBlockID;
+
+  /**
+   * hashes of block data
+   * commit from validators from the last block
+   * @format byte
+   */
+  last_commit_hash?: string;
+
+  /**
+   * transactions
+   * @format byte
+   */
+  data_hash?: string;
+
+  /**
+   * hashes from the app output from the prev block
+   * validators for the current block
+   * @format byte
+   */
+  validators_hash?: string;
+
+  /**
+   * validators for the next block
+   * @format byte
+   */
+  next_validators_hash?: string;
+
+  /**
+   * consensus params for current block
+   * @format byte
+   */
+  consensus_hash?: string;
+
+  /**
+   * state after txs from the previous block
+   * @format byte
+   */
+  app_hash?: string;
+
+  /**
+   * root hash of all results from the txs from the previous block
+   * @format byte
+   */
+  last_results_hash?: string;
+
+  /**
+   * consensus info
+   * evidence included in the block
+   * @format byte
+   */
+  evidence_hash?: string;
+
+  /**
+   * original proposer of the block
+   * @format byte
+   */
+  proposer_address?: string;
+}
+
 export interface TenderminttypesValidator {
   /** @format byte */
   address?: string;
@@ -177,6 +267,131 @@ export interface TenderminttypesValidator {
 
   /** @format int64 */
   proposer_priority?: string;
+}
+
+/**
+* Block is tendermint type Block, with the Header proposer address
+field converted to bech32 string.
+*/
+export interface Tendermintv1Beta1Block {
+  /** Header defines the structure of a Tendermint block header. */
+  header?: Tendermintv1Beta1Header;
+  data?: TypesData;
+  evidence?: TypesEvidenceList;
+
+  /** Commit contains the evidence that a block was committed by a set of validators. */
+  last_commit?: TypesCommit;
+}
+
+/**
+ * Header defines the structure of a Tendermint block header.
+ */
+export interface Tendermintv1Beta1Header {
+  /**
+   * basic block info
+   * Consensus captures the consensus rules for processing a block in the blockchain,
+   * including all blockchain data structures and the rules of the application's
+   * state transition machine.
+   */
+  version?: VersionConsensus;
+  chain_id?: string;
+
+  /** @format int64 */
+  height?: string;
+
+  /** @format date-time */
+  time?: string;
+
+  /** prev block info */
+  last_block_id?: TypesBlockID;
+
+  /**
+   * hashes of block data
+   * commit from validators from the last block
+   * @format byte
+   */
+  last_commit_hash?: string;
+
+  /**
+   * transactions
+   * @format byte
+   */
+  data_hash?: string;
+
+  /**
+   * hashes from the app output from the prev block
+   * validators for the current block
+   * @format byte
+   */
+  validators_hash?: string;
+
+  /**
+   * validators for the next block
+   * @format byte
+   */
+  next_validators_hash?: string;
+
+  /**
+   * consensus params for current block
+   * @format byte
+   */
+  consensus_hash?: string;
+
+  /**
+   * state after txs from the previous block
+   * @format byte
+   */
+  app_hash?: string;
+
+  /**
+   * root hash of all results from the txs from the previous block
+   * @format byte
+   */
+  last_results_hash?: string;
+
+  /**
+   * consensus info
+   * evidence included in the block
+   * @format byte
+   */
+  evidence_hash?: string;
+
+  /**
+   * proposer_address is the original block proposer address, formatted as a Bech32 string.
+   * In Tendermint, this type is `bytes`, but in the SDK, we convert it to a Bech32 string
+   * for better UX.
+   *
+   * original proposer of the block
+   */
+  proposer_address?: string;
+}
+
+/**
+* ProofOp defines an operation used for calculating Merkle root. The data could
+be arbitrary format, providing nessecary data for example neighbouring node
+hash.
+
+Note: This type is a duplicate of the ProofOp proto type defined in
+Tendermint.
+*/
+export interface Tendermintv1Beta1ProofOp {
+  type?: string;
+
+  /** @format byte */
+  key?: string;
+
+  /** @format byte */
+  data?: string;
+}
+
+/**
+* ProofOps is Merkle proof defined by the list of ProofOps.
+
+Note: This type is a duplicate of the ProofOps proto type defined in
+Tendermint.
+*/
+export interface Tendermintv1Beta1ProofOps {
+  ops?: Tendermintv1Beta1ProofOp[];
 }
 
 /**
@@ -250,16 +465,6 @@ export interface Tendermintv1Beta1Validator {
 
   /** @format int64 */
   proposer_priority?: string;
-}
-
-export interface TypesBlock {
-  /** Header defines the structure of a Tendermint block header. */
-  header?: TypesHeader;
-  data?: TypesData;
-  evidence?: TypesEvidenceList;
-
-  /** Commit contains the evidence that a block was committed by a set of validators. */
-  last_commit?: TypesCommit;
 }
 
 export interface TypesBlockID {
@@ -351,86 +556,6 @@ export interface TypesEvidenceList {
   evidence?: TypesEvidence[];
 }
 
-/**
- * Header defines the structure of a Tendermint block header.
- */
-export interface TypesHeader {
-  /**
-   * basic block info
-   * Consensus captures the consensus rules for processing a block in the blockchain,
-   * including all blockchain data structures and the rules of the application's
-   * state transition machine.
-   */
-  version?: VersionConsensus;
-  chain_id?: string;
-
-  /** @format int64 */
-  height?: string;
-
-  /** @format date-time */
-  time?: string;
-
-  /** prev block info */
-  last_block_id?: TypesBlockID;
-
-  /**
-   * hashes of block data
-   * commit from validators from the last block
-   * @format byte
-   */
-  last_commit_hash?: string;
-
-  /**
-   * transactions
-   * @format byte
-   */
-  data_hash?: string;
-
-  /**
-   * hashes from the app output from the prev block
-   * validators for the current block
-   * @format byte
-   */
-  validators_hash?: string;
-
-  /**
-   * validators for the next block
-   * @format byte
-   */
-  next_validators_hash?: string;
-
-  /**
-   * consensus params for current block
-   * @format byte
-   */
-  consensus_hash?: string;
-
-  /**
-   * state after txs from the previous block
-   * @format byte
-   */
-  app_hash?: string;
-
-  /**
-   * root hash of all results from the txs from the previous block
-   * @format byte
-   */
-  last_results_hash?: string;
-
-  /**
-   * consensus info
-   * evidence included in the block
-   * @format byte
-   */
-  evidence_hash?: string;
-
-  /**
-   * original proposer of the block
-   * @format byte
-   */
-  proposer_address?: string;
-}
-
 export interface TypesLightBlock {
   signed_header?: TypesSignedHeader;
   validator_set?: TypesValidatorSet;
@@ -463,7 +588,7 @@ export interface TypesPartSetHeader {
 
 export interface TypesSignedHeader {
   /** Header defines the structure of a Tendermint block header. */
-  header?: TypesHeader;
+  header?: TenderminttypesHeader;
 
   /** Commit contains the evidence that a block was committed by a set of validators. */
   commit?: TypesCommit;
@@ -526,24 +651,84 @@ export interface TypesVote {
 }
 
 /**
- * GetBlockByHeightResponse is the response type for the Query/GetBlockByHeight RPC method.
- */
+* ABCIQueryResponse defines the response structure for the ABCIQuery gRPC
+query.
+
+Note: This type is a duplicate of the ResponseQuery proto type defined in
+Tendermint.
+*/
+export interface V1Beta1ABCIQueryResponse {
+  /** @format int64 */
+  code?: number;
+
+  /** nondeterministic */
+  log?: string;
+
+  /** nondeterministic */
+  info?: string;
+
+  /** @format int64 */
+  index?: string;
+
+  /** @format byte */
+  key?: string;
+
+  /** @format byte */
+  value?: string;
+
+  /**
+   * ProofOps is Merkle proof defined by the list of ProofOps.
+   *
+   * Note: This type is a duplicate of the ProofOps proto type defined in
+   * Tendermint.
+   */
+  proof_ops?: Tendermintv1Beta1ProofOps;
+
+  /** @format int64 */
+  height?: string;
+  codespace?: string;
+}
+
+/**
+* GetBlockByHeightResponse is the response type for the Query/GetBlockByHeight
+RPC method.
+*/
 export interface V1Beta1GetBlockByHeightResponse {
   block_id?: TypesBlockID;
-  block?: TypesBlock;
+
+  /** Deprecated: please use `sdk_block` instead */
+  block?: TenderminttypesBlock;
+
+  /**
+   * Since: cosmos-sdk 0.47
+   * Block is tendermint type Block, with the Header proposer address
+   * field converted to bech32 string.
+   */
+  sdk_block?: Tendermintv1Beta1Block;
 }
 
 /**
- * GetLatestBlockResponse is the response type for the Query/GetLatestBlock RPC method.
- */
+* GetLatestBlockResponse is the response type for the Query/GetLatestBlock RPC
+method.
+*/
 export interface V1Beta1GetLatestBlockResponse {
   block_id?: TypesBlockID;
-  block?: TypesBlock;
+
+  /** Deprecated: please use `sdk_block` instead */
+  block?: TenderminttypesBlock;
+
+  /**
+   * Since: cosmos-sdk 0.47
+   * Block is tendermint type Block, with the Header proposer address
+   * field converted to bech32 string.
+   */
+  sdk_block?: Tendermintv1Beta1Block;
 }
 
 /**
- * GetLatestValidatorSetResponse is the response type for the Query/GetValidatorSetByHeight RPC method.
- */
+* GetLatestValidatorSetResponse is the response type for the
+Query/GetValidatorSetByHeight RPC method.
+*/
 export interface V1Beta1GetLatestValidatorSetResponse {
   /** @format int64 */
   block_height?: string;
@@ -554,8 +739,9 @@ export interface V1Beta1GetLatestValidatorSetResponse {
 }
 
 /**
- * GetNodeInfoResponse is the request type for the Query/GetNodeInfo RPC method.
- */
+* GetNodeInfoResponse is the response type for the Query/GetNodeInfo RPC
+method.
+*/
 export interface V1Beta1GetNodeInfoResponse {
   default_node_info?: P2PDefaultNodeInfo;
 
@@ -571,8 +757,9 @@ export interface V1Beta1GetSyncingResponse {
 }
 
 /**
- * GetValidatorSetByHeightResponse is the response type for the Query/GetValidatorSetByHeight RPC method.
- */
+* GetValidatorSetByHeightResponse is the response type for the
+Query/GetValidatorSetByHeight RPC method.
+*/
 export interface V1Beta1GetValidatorSetByHeightResponse {
   /** @format int64 */
   block_height?: string;
@@ -651,7 +838,8 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
    * @format byte
    */
   next_key?: string;
@@ -818,6 +1006,28 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+ * @description Since: cosmos-sdk 0.46
+ * 
+ * @tags Service
+ * @name ServiceAbciQuery
+ * @summary ABCIQuery defines a query handler that supports ABCI queries directly to
+the application, bypassing Tendermint completely. The ABCI query must
+contain a valid and supported path, including app, custom, p2p, and store.
+ * @request GET:/cosmos/base/tendermint/v1beta1/abci_query
+ */
+  serviceAbciQuery = (
+    query?: { data?: string; path?: string; height?: string; prove?: boolean },
+    params: RequestParams = {},
+  ) =>
+    this.request<V1Beta1ABCIQueryResponse, RpcStatus>({
+      path: `/cosmos/base/tendermint/v1beta1/abci_query`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *

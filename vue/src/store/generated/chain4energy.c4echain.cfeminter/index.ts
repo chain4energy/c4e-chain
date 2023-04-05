@@ -1,15 +1,15 @@
 import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-client-ts'
 
 import { Mint } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
-import { MinterConfig } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 import { Minter } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
+import { NoMinting } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 import { LinearMinting } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 import { ExponentialStepMinting } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 import { MinterState } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeminter/types"
 
 
-export { Mint, MinterConfig, Minter, LinearMinting, ExponentialStepMinting, MinterState, Params };
+export { Mint, Minter, NoMinting, LinearMinting, ExponentialStepMinting, MinterState, Params };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -46,8 +46,8 @@ const getDefaultState = () => {
 				
 				_Structure: {
 						Mint: getStructure(Mint.fromPartial({})),
-						MinterConfig: getStructure(MinterConfig.fromPartial({})),
 						Minter: getStructure(Minter.fromPartial({})),
+						NoMinting: getStructure(NoMinting.fromPartial({})),
 						LinearMinting: getStructure(LinearMinting.fromPartial({})),
 						ExponentialStepMinting: getStructure(ExponentialStepMinting.fromPartial({})),
 						MinterState: getStructure(MinterState.fromPartial({})),
@@ -198,7 +198,59 @@ export default {
 		},
 		
 		
+		async sendMsgUpdateMintersParams({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.Chain4EnergyC4EchainCfeminter.tx.sendMsgUpdateMintersParams({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgUpdateMintersParams:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgUpdateMintersParams:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgUpdateParams({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.Chain4EnergyC4EchainCfeminter.tx.sendMsgUpdateParams({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgUpdateParams:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgUpdateParams:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		
+		async MsgUpdateMintersParams({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfeminter.tx.msgUpdateMintersParams({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgUpdateMintersParams:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgUpdateMintersParams:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgUpdateParams({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfeminter.tx.msgUpdateParams({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgUpdateParams:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgUpdateParams:Create Could not create message: ' + e.message)
+				}
+			}
+		},
 		
 	}
 }

@@ -38,6 +38,12 @@ export interface PageRequest {
    * is set.
    */
   countTotal: boolean;
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse: boolean;
 }
 
 /**
@@ -52,7 +58,8 @@ export interface PageRequest {
 export interface PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
    */
   nextKey: Uint8Array;
   /**
@@ -63,7 +70,7 @@ export interface PageResponse {
 }
 
 function createBasePageRequest(): PageRequest {
-  return { key: new Uint8Array(), offset: 0, limit: 0, countTotal: false };
+  return { key: new Uint8Array(), offset: 0, limit: 0, countTotal: false, reverse: false };
 }
 
 export const PageRequest = {
@@ -79,6 +86,9 @@ export const PageRequest = {
     }
     if (message.countTotal === true) {
       writer.uint32(32).bool(message.countTotal);
+    }
+    if (message.reverse === true) {
+      writer.uint32(40).bool(message.reverse);
     }
     return writer;
   },
@@ -102,6 +112,9 @@ export const PageRequest = {
         case 4:
           message.countTotal = reader.bool();
           break;
+        case 5:
+          message.reverse = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -116,6 +129,7 @@ export const PageRequest = {
       offset: isSet(object.offset) ? Number(object.offset) : 0,
       limit: isSet(object.limit) ? Number(object.limit) : 0,
       countTotal: isSet(object.countTotal) ? Boolean(object.countTotal) : false,
+      reverse: isSet(object.reverse) ? Boolean(object.reverse) : false,
     };
   },
 
@@ -126,6 +140,7 @@ export const PageRequest = {
     message.offset !== undefined && (obj.offset = Math.round(message.offset));
     message.limit !== undefined && (obj.limit = Math.round(message.limit));
     message.countTotal !== undefined && (obj.countTotal = message.countTotal);
+    message.reverse !== undefined && (obj.reverse = message.reverse);
     return obj;
   },
 
@@ -135,6 +150,7 @@ export const PageRequest = {
     message.offset = object.offset ?? 0;
     message.limit = object.limit ?? 0;
     message.countTotal = object.countTotal ?? false;
+    message.reverse = object.reverse ?? false;
     return message;
   },
 };

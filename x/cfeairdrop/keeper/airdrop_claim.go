@@ -216,7 +216,7 @@ func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId
 			allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
 		}
 	}
-	return claimRecord.Amount.Sub(allMissionsAmountSum)
+	return claimRecord.Amount.Sub(allMissionsAmountSum...)
 }
 
 func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaignId uint64, userEntry *types.UserEntry, claimableAmount sdk.Coins, initialClaimFreeAmount sdk.Int) (sdk.Coins, error) {
@@ -239,7 +239,7 @@ func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaign
 		freeVestingAmount = freeVestingAmount.Add(coin...)
 
 	}
-	claimableAmount = claimableAmount.Sub(freeVestingAmount)
+	claimableAmount = claimableAmount.Sub(freeVestingAmount...)
 
 	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userMainAddress, freeVestingAmount); err != nil {
 		k.Logger(ctx).Debug("send to airdrop account send coins to vesting account error", "toAddress", userMainAddress,

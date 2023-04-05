@@ -137,7 +137,7 @@ export interface V1Beta1Grant {
   /** grantee is the address of the user being granted an allowance of another user's funds. */
   grantee?: string;
 
-  /** allowance can be any of basic and filtered fee allowance. */
+  /** allowance can be any of basic, periodic, allowed fee allowance. */
   allowance?: ProtobufAny;
 }
 
@@ -209,7 +209,8 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
    * @format byte
    */
   next_key?: string;
@@ -231,8 +232,10 @@ export interface V1Beta1QueryAllowanceResponse {
 }
 
 /**
- * QueryAllowancesByGranterResponse is the response type for the Query/AllowancesByGranter RPC method.
- */
+* QueryAllowancesByGranterResponse is the response type for the Query/AllowancesByGranter RPC method.
+
+Since: cosmos-sdk 0.46
+*/
 export interface V1Beta1QueryAllowancesByGranterResponse {
   /** allowances that have been issued by the granter. */
   allowances?: V1Beta1Grant[];
@@ -421,14 +424,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     });
 
   /**
- * No description
- * 
- * @tags Query
- * @name QueryAllowancesByGranter
- * @summary AllowancesByGranter returns all the grants given by an address
-Since v0.46
- * @request GET:/cosmos/feegrant/v1beta1/issued/{granter}
- */
+   * @description Since: cosmos-sdk 0.46
+   *
+   * @tags Query
+   * @name QueryAllowancesByGranter
+   * @summary AllowancesByGranter returns all the grants given by an address
+   * @request GET:/cosmos/feegrant/v1beta1/issued/{granter}
+   */
   queryAllowancesByGranter = (
     granter: string,
     query?: {

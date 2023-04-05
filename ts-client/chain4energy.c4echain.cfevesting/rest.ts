@@ -9,13 +9,6 @@
  * ---------------------------------------------------------------
  */
 
-/**
- * Params defines the parameters for the module.
- */
-export interface C4EchaincfevestingParams {
-  denom?: string;
-}
-
 export interface CfevestingGenesisVestingType {
   /** vesting type name */
   name?: string;
@@ -33,16 +26,47 @@ export interface CfevestingGenesisVestingType {
    */
   vesting_period?: string;
   vesting_period_unit?: string;
+
+  /**
+   * units to select:
+   *  days
+   *  hours
+   *  minutes
+   *  seconds
+   */
+  free?: string;
 }
 
 export type CfevestingMsgCreateVestingAccountResponse = object;
 
 export type CfevestingMsgCreateVestingPoolResponse = object;
 
+export type CfevestingMsgMoveAvailableVestingByDenomsResponse = object;
+
+export type CfevestingMsgMoveAvailableVestingResponse = object;
+
 export type CfevestingMsgSendToVestingAccountResponse = object;
+
+export type CfevestingMsgSplitVestingResponse = object;
+
+export type CfevestingMsgUpdateDenomParamResponse = object;
 
 export interface CfevestingMsgWithdrawAllAvailableResponse {
   withdrawn?: string;
+}
+
+/**
+ * Params defines the parameters for the module.
+ */
+export interface CfevestingParams {
+  denom?: string;
+}
+
+export interface CfevestingQueryGenesisVestingsSummaryResponse {
+  vesting_all_amount?: string;
+  vesting_in_pools_amount?: string;
+  vesting_in_accounts_amount?: string;
+  delegated_vesting_amount?: string;
 }
 
 /**
@@ -50,11 +74,10 @@ export interface CfevestingMsgWithdrawAllAvailableResponse {
  */
 export interface CfevestingQueryParamsResponse {
   /** params holds all the parameters of this module. */
-  params?: C4EchaincfevestingParams;
+  params?: CfevestingParams;
 }
 
 export interface CfevestingQueryVestingPoolsResponse {
-  delegable_address?: string;
   vesting_pools?: CfevestingVestingPoolInfo[];
 }
 
@@ -344,7 +367,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title cfevesting/account_vesting_pool.proto
+ * @title c4echain/cfevesting/account_vesting_pool.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -352,13 +375,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
+   * @name QueryGenesisVestingsSummary
+   * @summary Queries a list of GenesisVestingsSummary items.
+   * @request GET:/c4e/vesting/v1beta1/genesis_summary
+   */
+  queryGenesisVestingsSummary = (params: RequestParams = {}) =>
+    this.request<CfevestingQueryGenesisVestingsSummaryResponse, RpcStatus>({
+      path: `/c4e/vesting/v1beta1/genesis_summary`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/vesting/params
+   * @request GET:/c4e/vesting/v1beta1/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfevestingQueryParamsResponse, RpcStatus>({
-      path: `/c4e/vesting/params`,
+      path: `/c4e/vesting/v1beta1/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -370,11 +409,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVestingsSummary
    * @summary Queries a summary of the entire vesting.
-   * @request GET:/c4e/vesting/summary
+   * @request GET:/c4e/vesting/v1beta1/summary
    */
   queryVestingsSummary = (params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingsSummaryResponse, RpcStatus>({
-      path: `/c4e/vesting/summary`,
+      path: `/c4e/vesting/v1beta1/summary`,
       method: "GET",
       format: "json",
       ...params,
@@ -386,11 +425,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVestingPools
    * @summary Queries a list of Vesting items.
-   * @request GET:/c4e/vesting/vesting_pools/{address}
+   * @request GET:/c4e/vesting/v1beta1/vesting_pools/{owner}
    */
-  queryVestingPools = (address: string, params: RequestParams = {}) =>
+  queryVestingPools = (owner: string, params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingPoolsResponse, RpcStatus>({
-      path: `/c4e/vesting/vesting_pools/${address}`,
+      path: `/c4e/vesting/v1beta1/vesting_pools/${owner}`,
       method: "GET",
       format: "json",
       ...params,
@@ -402,11 +441,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryVestingType
    * @summary Queries a list of VestingType items.
-   * @request GET:/c4e/vesting/vesting_type
+   * @request GET:/c4e/vesting/v1beta1/vesting_type
    */
   queryVestingType = (params: RequestParams = {}) =>
     this.request<CfevestingQueryVestingTypeResponse, RpcStatus>({
-      path: `/c4e/vesting/vesting_type`,
+      path: `/c4e/vesting/v1beta1/vesting_type`,
       method: "GET",
       format: "json",
       ...params,

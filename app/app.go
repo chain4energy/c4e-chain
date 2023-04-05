@@ -2,16 +2,20 @@ package app
 
 import (
 	"fmt"
+	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
+	v120 "github.com/chain4energy/c4e-chain/app/upgrades/v120"
+	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
+
 	"io"
 	"os"
 	"path/filepath"
 
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/app/upgrades"
-	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
-	v120 "github.com/chain4energy/c4e-chain/app/upgrades/v120"
-
 	"github.com/chain4energy/c4e-chain/docs"
+	cfeairdropmodule "github.com/chain4energy/c4e-chain/x/cfeairdrop"
+	cfeairdropmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
+	cfeairdropmoduletypes "github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
 	cfedistributormodule "github.com/chain4energy/c4e-chain/x/cfedistributor"
 	cfedistributormodulekeeper "github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
@@ -39,7 +43,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
@@ -118,8 +121,6 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-
-	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
 )
 
 const (
@@ -203,11 +204,10 @@ var (
 )
 
 var (
-	_ cosmoscmd.App           = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v200.Upgrade}
+	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v200.Upgrade}
 )
 
 func init() {
@@ -450,7 +450,7 @@ func New(
 		app.BankKeeper,
 		app.FeeGrantKeeper,
 		stakingKeeper,
-		distributionKeeper,
+		app.DistrKeeper,
 	)
 
 	cfeairdropModule := cfeairdropmodule.NewAppModule(appCodec, app.CfeairdropKeeper, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper)
@@ -471,14 +471,6 @@ func New(
 		app.UpgradeKeeper,
 		app.ScopedIBCKeeper,
 	)
-
-	// register the proposal types
-	govRouter := govtypes.NewRouter()
-	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
-		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(

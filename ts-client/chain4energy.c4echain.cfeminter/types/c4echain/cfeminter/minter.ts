@@ -1,29 +1,18 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
+import { Any } from "../../google/protobuf/any";
 import { Duration } from "../../google/protobuf/duration";
 import { Timestamp } from "../../google/protobuf/timestamp";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
 
-export interface MinterConfig {
-  startTime: Date | undefined;
-  minters: Minter[];
-}
-
 export interface Minter {
   sequenceId: number;
-  endTime:
-    | Date
-    | undefined;
-  /**
-   * types:
-   *   NO_MINTING;
-   *   LINEAR_MINTING;
-   *   EXPONENTIAL_STEP_MINTING;
-   */
-  type: string;
-  linearMinting: LinearMinting | undefined;
-  exponentialStepMinting: ExponentialStepMinting | undefined;
+  endTime: Date | undefined;
+  config: Any | undefined;
+}
+
+export interface NoMinting {
 }
 
 export interface LinearMinting {
@@ -31,8 +20,8 @@ export interface LinearMinting {
 }
 
 export interface ExponentialStepMinting {
-  amount: string;
   stepDuration: Duration | undefined;
+  amount: string;
   amountMultiplier: string;
 }
 
@@ -44,70 +33,8 @@ export interface MinterState {
   remainderFromPreviousMinter: string;
 }
 
-function createBaseMinterConfig(): MinterConfig {
-  return { startTime: undefined, minters: [] };
-}
-
-export const MinterConfig = {
-  encode(message: MinterConfig, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.startTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.startTime), writer.uint32(18).fork()).ldelim();
-    }
-    for (const v of message.minters) {
-      Minter.encode(v!, writer.uint32(26).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MinterConfig {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMinterConfig();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 2:
-          message.startTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          break;
-        case 3:
-          message.minters.push(Minter.decode(reader, reader.uint32()));
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MinterConfig {
-    return {
-      startTime: isSet(object.startTime) ? fromJsonTimestamp(object.startTime) : undefined,
-      minters: Array.isArray(object?.minters) ? object.minters.map((e: any) => Minter.fromJSON(e)) : [],
-    };
-  },
-
-  toJSON(message: MinterConfig): unknown {
-    const obj: any = {};
-    message.startTime !== undefined && (obj.startTime = message.startTime.toISOString());
-    if (message.minters) {
-      obj.minters = message.minters.map((e) => e ? Minter.toJSON(e) : undefined);
-    } else {
-      obj.minters = [];
-    }
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MinterConfig>, I>>(object: I): MinterConfig {
-    const message = createBaseMinterConfig();
-    message.startTime = object.startTime ?? undefined;
-    message.minters = object.minters?.map((e) => Minter.fromPartial(e)) || [];
-    return message;
-  },
-};
-
 function createBaseMinter(): Minter {
-  return { sequenceId: 0, endTime: undefined, type: "", linearMinting: undefined, exponentialStepMinting: undefined };
+  return { sequenceId: 0, endTime: undefined, config: undefined };
 }
 
 export const Minter = {
@@ -118,14 +45,8 @@ export const Minter = {
     if (message.endTime !== undefined) {
       Timestamp.encode(toTimestamp(message.endTime), writer.uint32(18).fork()).ldelim();
     }
-    if (message.type !== "") {
-      writer.uint32(26).string(message.type);
-    }
-    if (message.linearMinting !== undefined) {
-      LinearMinting.encode(message.linearMinting, writer.uint32(34).fork()).ldelim();
-    }
-    if (message.exponentialStepMinting !== undefined) {
-      ExponentialStepMinting.encode(message.exponentialStepMinting, writer.uint32(42).fork()).ldelim();
+    if (message.config !== undefined) {
+      Any.encode(message.config, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -144,13 +65,7 @@ export const Minter = {
           message.endTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 3:
-          message.type = reader.string();
-          break;
-        case 4:
-          message.linearMinting = LinearMinting.decode(reader, reader.uint32());
-          break;
-        case 5:
-          message.exponentialStepMinting = ExponentialStepMinting.decode(reader, reader.uint32());
+          message.config = Any.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -164,11 +79,7 @@ export const Minter = {
     return {
       sequenceId: isSet(object.sequenceId) ? Number(object.sequenceId) : 0,
       endTime: isSet(object.endTime) ? fromJsonTimestamp(object.endTime) : undefined,
-      type: isSet(object.type) ? String(object.type) : "",
-      linearMinting: isSet(object.linearMinting) ? LinearMinting.fromJSON(object.linearMinting) : undefined,
-      exponentialStepMinting: isSet(object.exponentialStepMinting)
-        ? ExponentialStepMinting.fromJSON(object.exponentialStepMinting)
-        : undefined,
+      config: isSet(object.config) ? Any.fromJSON(object.config) : undefined,
     };
   },
 
@@ -176,12 +87,7 @@ export const Minter = {
     const obj: any = {};
     message.sequenceId !== undefined && (obj.sequenceId = Math.round(message.sequenceId));
     message.endTime !== undefined && (obj.endTime = message.endTime.toISOString());
-    message.type !== undefined && (obj.type = message.type);
-    message.linearMinting !== undefined
-      && (obj.linearMinting = message.linearMinting ? LinearMinting.toJSON(message.linearMinting) : undefined);
-    message.exponentialStepMinting !== undefined && (obj.exponentialStepMinting = message.exponentialStepMinting
-      ? ExponentialStepMinting.toJSON(message.exponentialStepMinting)
-      : undefined);
+    message.config !== undefined && (obj.config = message.config ? Any.toJSON(message.config) : undefined);
     return obj;
   },
 
@@ -189,14 +95,48 @@ export const Minter = {
     const message = createBaseMinter();
     message.sequenceId = object.sequenceId ?? 0;
     message.endTime = object.endTime ?? undefined;
-    message.type = object.type ?? "";
-    message.linearMinting = (object.linearMinting !== undefined && object.linearMinting !== null)
-      ? LinearMinting.fromPartial(object.linearMinting)
+    message.config = (object.config !== undefined && object.config !== null)
+      ? Any.fromPartial(object.config)
       : undefined;
-    message.exponentialStepMinting =
-      (object.exponentialStepMinting !== undefined && object.exponentialStepMinting !== null)
-        ? ExponentialStepMinting.fromPartial(object.exponentialStepMinting)
-        : undefined;
+    return message;
+  },
+};
+
+function createBaseNoMinting(): NoMinting {
+  return {};
+}
+
+export const NoMinting = {
+  encode(_: NoMinting, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): NoMinting {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNoMinting();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): NoMinting {
+    return {};
+  },
+
+  toJSON(_: NoMinting): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<NoMinting>, I>>(_: I): NoMinting {
+    const message = createBaseNoMinting();
     return message;
   },
 };
@@ -249,19 +189,19 @@ export const LinearMinting = {
 };
 
 function createBaseExponentialStepMinting(): ExponentialStepMinting {
-  return { amount: "", stepDuration: undefined, amountMultiplier: "" };
+  return { stepDuration: undefined, amount: "", amountMultiplier: "" };
 }
 
 export const ExponentialStepMinting = {
   encode(message: ExponentialStepMinting, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.amount !== "") {
-      writer.uint32(18).string(message.amount);
-    }
     if (message.stepDuration !== undefined) {
       Duration.encode(message.stepDuration, writer.uint32(10).fork()).ldelim();
     }
+    if (message.amount !== "") {
+      writer.uint32(18).string(message.amount);
+    }
     if (message.amountMultiplier !== "") {
-      writer.uint32(34).string(message.amountMultiplier);
+      writer.uint32(26).string(message.amountMultiplier);
     }
     return writer;
   },
@@ -273,13 +213,13 @@ export const ExponentialStepMinting = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 2:
-          message.amount = reader.string();
-          break;
         case 1:
           message.stepDuration = Duration.decode(reader, reader.uint32());
           break;
-        case 4:
+        case 2:
+          message.amount = reader.string();
+          break;
+        case 3:
           message.amountMultiplier = reader.string();
           break;
         default:
@@ -292,27 +232,27 @@ export const ExponentialStepMinting = {
 
   fromJSON(object: any): ExponentialStepMinting {
     return {
-      amount: isSet(object.amount) ? String(object.amount) : "",
       stepDuration: isSet(object.stepDuration) ? Duration.fromJSON(object.stepDuration) : undefined,
+      amount: isSet(object.amount) ? String(object.amount) : "",
       amountMultiplier: isSet(object.amountMultiplier) ? String(object.amountMultiplier) : "",
     };
   },
 
   toJSON(message: ExponentialStepMinting): unknown {
     const obj: any = {};
-    message.amount !== undefined && (obj.amount = message.amount);
     message.stepDuration !== undefined
       && (obj.stepDuration = message.stepDuration ? Duration.toJSON(message.stepDuration) : undefined);
+    message.amount !== undefined && (obj.amount = message.amount);
     message.amountMultiplier !== undefined && (obj.amountMultiplier = message.amountMultiplier);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<ExponentialStepMinting>, I>>(object: I): ExponentialStepMinting {
     const message = createBaseExponentialStepMinting();
-    message.amount = object.amount ?? "";
     message.stepDuration = (object.stepDuration !== undefined && object.stepDuration !== null)
       ? Duration.fromPartial(object.stepDuration)
       : undefined;
+    message.amount = object.amount ?? "";
     message.amountMultiplier = object.amountMultiplier ?? "";
     return message;
   },

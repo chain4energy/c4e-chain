@@ -1,6 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
+import { Any } from "../../../google/protobuf/any";
 import { Timestamp } from "../../../google/protobuf/timestamp";
 
 export const protobufPackage = "cosmos.upgrade.v1beta1";
@@ -18,8 +19,11 @@ export interface Plan {
    */
   name: string;
   /**
-   * The time after which the upgrade must be performed.
-   * Leave set to its zero value to use a pre-defined Height instead.
+   * Deprecated: Time based upgrades have been deprecated. Time based upgrade logic
+   * has been removed from the SDK.
+   * If this field is not empty, an error will be thrown.
+   *
+   * @deprecated
    */
   time:
     | Date
@@ -34,11 +38,23 @@ export interface Plan {
    * such as a git commit that validators could automatically upgrade to
    */
   info: string;
+  /**
+   * Deprecated: UpgradedClientState field has been deprecated. IBC upgrade logic has been
+   * moved to the IBC module in the sub module 02-client.
+   * If this field is not empty, an error will be thrown.
+   *
+   * @deprecated
+   */
+  upgradedClientState: Any | undefined;
 }
 
 /**
  * SoftwareUpgradeProposal is a gov Content type for initiating a software
  * upgrade.
+ * Deprecated: This legacy proposal is deprecated in favor of Msg-based gov
+ * proposals, see MsgSoftwareUpgrade.
+ *
+ * @deprecated
  */
 export interface SoftwareUpgradeProposal {
   title: string;
@@ -49,14 +65,30 @@ export interface SoftwareUpgradeProposal {
 /**
  * CancelSoftwareUpgradeProposal is a gov Content type for cancelling a software
  * upgrade.
+ * Deprecated: This legacy proposal is deprecated in favor of Msg-based gov
+ * proposals, see MsgCancelUpgrade.
+ *
+ * @deprecated
  */
 export interface CancelSoftwareUpgradeProposal {
   title: string;
   description: string;
 }
 
+/**
+ * ModuleVersion specifies a module and its consensus version.
+ *
+ * Since: cosmos-sdk 0.43
+ */
+export interface ModuleVersion {
+  /** name of the app module */
+  name: string;
+  /** consensus version of the app module */
+  version: number;
+}
+
 function createBasePlan(): Plan {
-  return { name: "", time: undefined, height: 0, info: "" };
+  return { name: "", time: undefined, height: 0, info: "", upgradedClientState: undefined };
 }
 
 export const Plan = {
@@ -72,6 +104,9 @@ export const Plan = {
     }
     if (message.info !== "") {
       writer.uint32(34).string(message.info);
+    }
+    if (message.upgradedClientState !== undefined) {
+      Any.encode(message.upgradedClientState, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -95,6 +130,9 @@ export const Plan = {
         case 4:
           message.info = reader.string();
           break;
+        case 5:
+          message.upgradedClientState = Any.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -109,6 +147,7 @@ export const Plan = {
       time: isSet(object.time) ? fromJsonTimestamp(object.time) : undefined,
       height: isSet(object.height) ? Number(object.height) : 0,
       info: isSet(object.info) ? String(object.info) : "",
+      upgradedClientState: isSet(object.upgradedClientState) ? Any.fromJSON(object.upgradedClientState) : undefined,
     };
   },
 
@@ -118,6 +157,8 @@ export const Plan = {
     message.time !== undefined && (obj.time = message.time.toISOString());
     message.height !== undefined && (obj.height = Math.round(message.height));
     message.info !== undefined && (obj.info = message.info);
+    message.upgradedClientState !== undefined
+      && (obj.upgradedClientState = message.upgradedClientState ? Any.toJSON(message.upgradedClientState) : undefined);
     return obj;
   },
 
@@ -127,6 +168,9 @@ export const Plan = {
     message.time = object.time ?? undefined;
     message.height = object.height ?? 0;
     message.info = object.info ?? "";
+    message.upgradedClientState = (object.upgradedClientState !== undefined && object.upgradedClientState !== null)
+      ? Any.fromPartial(object.upgradedClientState)
+      : undefined;
     return message;
   },
 };
@@ -254,6 +298,64 @@ export const CancelSoftwareUpgradeProposal = {
     const message = createBaseCancelSoftwareUpgradeProposal();
     message.title = object.title ?? "";
     message.description = object.description ?? "";
+    return message;
+  },
+};
+
+function createBaseModuleVersion(): ModuleVersion {
+  return { name: "", version: 0 };
+}
+
+export const ModuleVersion = {
+  encode(message: ModuleVersion, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.version !== 0) {
+      writer.uint32(16).uint64(message.version);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ModuleVersion {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseModuleVersion();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.name = reader.string();
+          break;
+        case 2:
+          message.version = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ModuleVersion {
+    return {
+      name: isSet(object.name) ? String(object.name) : "",
+      version: isSet(object.version) ? Number(object.version) : 0,
+    };
+  },
+
+  toJSON(message: ModuleVersion): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    message.version !== undefined && (obj.version = Math.round(message.version));
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ModuleVersion>, I>>(object: I): ModuleVersion {
+    const message = createBaseModuleVersion();
+    message.name = object.name ?? "";
+    message.version = object.version ?? 0;
     return message;
   },
 };

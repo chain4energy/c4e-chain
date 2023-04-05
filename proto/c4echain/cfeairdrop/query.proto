@@ -5,10 +5,11 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos/base/v1beta1/coin.proto";
-import "cfeairdrop/params.proto";
-import "cfeairdrop/campaign.proto";
-import "cfeairdrop/mission.proto";
-import "cfeairdrop/claim_record.proto";
+import "c4echain/cfeairdrop/params.proto";
+import "c4echain/cfeairdrop/campaign.proto";
+import "c4echain/cfeairdrop/mission.proto";
+import "c4echain/cfeairdrop/claim_record.proto";
+
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeairdrop/types";

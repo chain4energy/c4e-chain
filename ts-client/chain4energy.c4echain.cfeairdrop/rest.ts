@@ -9,29 +9,14 @@
  * ---------------------------------------------------------------
  */
 
-export enum CfeairdropCampaignCloseAction {
-  CLOSE_ACTION_UNSPECIFIED = "CLOSE_ACTION_UNSPECIFIED",
-  SEND_TO_COMMUNITY_POOL = "SEND_TO_COMMUNITY_POOL",
-  BURN = "BURN",
-  SEND_TO_OWNER = "SEND_TO_OWNER",
-}
-
-export interface CfeairdropclaimRecord {
-  /** @format uint64 */
-  campaign_id?: string;
-  address?: string;
-  airdrop_coins?: V1Beta1Coin[];
-  completedMissions?: string[];
-  claimedMissions?: string[];
-}
-
 export interface CfeairdropCampaign {
   /** @format uint64 */
   id?: string;
   owner?: string;
   name?: string;
   description?: string;
-  allow_feegrant?: boolean;
+  campaignType?: CfeairdropCampaignType;
+  feegrant_amount?: string;
   initial_claim_free_amount?: string;
   enabled?: boolean;
 
@@ -46,6 +31,32 @@ export interface CfeairdropCampaign {
 
   /** period of vesting coins after lockup period */
   vesting_period?: string;
+}
+
+/**
+ * - CLOSE_ACTION_UNSPECIFIED: Campaign close action
+ */
+export enum CfeairdropCampaignCloseAction {
+  CLOSE_ACTION_UNSPECIFIED = "CLOSE_ACTION_UNSPECIFIED",
+  SEND_TO_COMMUNITY_POOL = "SEND_TO_COMMUNITY_POOL",
+  BURN = "BURN",
+  SEND_TO_OWNER = "SEND_TO_OWNER",
+}
+
+export enum CfeairdropCampaignType {
+  CAMPAIGN_TYPE_UNSPECIFIED = "CAMPAIGN_TYPE_UNSPECIFIED",
+  TEAMDROP = "TEAMDROP",
+  DEFAULT = "DEFAULT",
+  SALE = "SALE",
+}
+
+export interface CfeairdropClaimRecord {
+  /** @format uint64 */
+  campaign_id?: string;
+  address?: string;
+  amount?: V1Beta1Coin[];
+  completedMissions?: string[];
+  claimedMissions?: string[];
 }
 
 export interface CfeairdropMission {
@@ -73,7 +84,7 @@ export enum CfeairdropMissionType {
 
 export type CfeairdropMsgAddClaimRecordsResponse = object;
 
-export type CfeairdropMsgAddMissionToAidropCampaignResponse = object;
+export type CfeairdropMsgAddMissionToCampaignResponse = object;
 
 export type CfeairdropMsgClaimResponse = object;
 
@@ -87,6 +98,8 @@ export type CfeairdropMsgEditCampaignResponse = object;
 
 export type CfeairdropMsgInitialClaimResponse = object;
 
+export type CfeairdropMsgRemoveCampaignResponse = object;
+
 export type CfeairdropMsgStartCampaignResponse = object;
 
 /**
@@ -95,15 +108,15 @@ export type CfeairdropMsgStartCampaignResponse = object;
 export type CfeairdropParams = object;
 
 export interface CfeairdropQueryCampaignAmountLeftResponse {
-  airdrop_coins?: V1Beta1Coin[];
-}
-
-export interface CfeairdropQueryCampaignTotalAmountResponse {
-  airdrop_coins?: V1Beta1Coin[];
+  amount?: V1Beta1Coin[];
 }
 
 export interface CfeairdropQueryCampaignResponse {
   campaign?: CfeairdropCampaign;
+}
+
+export interface CfeairdropQueryCampaignTotalAmountResponse {
+  amount?: V1Beta1Coin[];
 }
 
 export interface CfeairdropQueryCampaignsResponse {
@@ -148,12 +161,12 @@ export interface CfeairdropQueryParamsResponse {
   params?: CfeairdropParams;
 }
 
-export interface CfeairdropQueryUsersEntriesResponse {
-  userEntry?: CfeairdropUsersEntries;
+export interface CfeairdropQueryUserEntryResponse {
+  user_entry?: CfeairdropUserEntry;
 }
 
 export interface CfeairdropQueryUsersEntriesResponse {
-  usersEntries?: CfeairdropUsersEntries[];
+  users_entries?: CfeairdropUserEntry[];
 
   /**
    * PageResponse is to be embedded in gRPC response messages where the
@@ -167,10 +180,10 @@ export interface CfeairdropQueryUsersEntriesResponse {
   pagination?: V1Beta1PageResponse;
 }
 
-export interface CfeairdropUsersEntries {
+export interface CfeairdropUserEntry {
   address?: string;
   claim_address?: string;
-  airdrop_entries?: CfeairdropclaimRecord[];
+  claim_records?: CfeairdropClaimRecord[];
 }
 
 export interface ProtobufAny {
@@ -253,7 +266,8 @@ corresponding request message has used PageRequest.
 export interface V1Beta1PageResponse {
   /**
    * next_key is the key to be passed to PageRequest.key to
-   * query the next page most efficiently
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
    * @format byte
    */
   next_key?: string;
@@ -387,7 +401,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title cfeairdrop/airdrop.proto
+ * @title c4echain/cfeairdrop/campaign.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -527,13 +541,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryUsersEntries
+   * @name QueryUserEntry
    * @summary Queries a UserEntry by index.
-   * @request GET:/c4e/airdrop/v1beta1/user_airdrop_entries/{address}
+   * @request GET:/c4e/airdrop/v1beta1/user_entry/{address}
    */
-  queryUsersEntries = (address: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryUsersEntriesResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/user_airdrop_entries/${address}`,
+  queryUserEntry = (address: string, params: RequestParams = {}) =>
+    this.request<CfeairdropQueryUserEntryResponse, RpcStatus>({
+      path: `/c4e/airdrop/v1beta1/user_entry/${address}`,
       method: "GET",
       format: "json",
       ...params,
@@ -545,7 +559,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryUsersEntries
    * @summary Queries a list of UserEntry items.
-   * @request GET:/c4e/airdrop/v1beta1/users_airdrop_entries
+   * @request GET:/c4e/airdrop/v1beta1/users_entries
    */
   queryUsersEntries = (
     query?: {
@@ -558,7 +572,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<CfeairdropQueryUsersEntriesResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/users_airdrop_entries`,
+      path: `/c4e/airdrop/v1beta1/users_entries`,
       method: "GET",
       query: query,
       format: "json",
