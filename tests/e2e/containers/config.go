@@ -24,10 +24,10 @@ const (
 	// It must be built from previous branch.  startUpgrade in test suite should be unset
 	// for this functionality to be used.
 	previousVersionC4eRepository = "chain4energy-old-dev"
-	previousVersionC4eTag        = "v1.1.0"
+	previousVersionC4eTag        = "v1.2.0"
 	// Pre-upgrade repo/tag for c4e-chain initialization (this should be one version below upgradeVersion)
 	previousVersionInitRepository = "chain4energy-old-chain-init"
-	previousVersionInitTag        = "v1.1.0"
+	previousVersionInitTag        = "v1.2.0"
 	// Hermes repo/version for relayer
 	relayerRepository = "osmolabs/hermes"
 	relayerTag        = "0.13.0"
