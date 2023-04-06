@@ -40,7 +40,8 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper 
 	if err != nil {
 		return err
 	}
-	err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", types.CampaignTeamdrop, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	// TODO: change campaign type to teamdrop
+	err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
 	if err != nil {
 		return err
 	}
