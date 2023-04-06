@@ -1,7 +1,7 @@
 package upgrades
 
 import (
-	cfeairdropkeeper "github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
+	cfeclaimkeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,7 +15,7 @@ import (
 
 type AppKeepers interface {
 	GetAccountKeeper() *authkeeper.AccountKeeper
-	GetC4eAirdropKeeper() *cfeairdropkeeper.Keeper
+	GetC4eClaimKeeper() *cfeclaimkeeper.Keeper
 	GetBankKeeper() *bankkeeper.Keeper
 	GetParamKeeper() *paramsKeeper.Keeper
 	GetC4eVestingKeeper() *cfevestingkeeper.Keeper

@@ -5,7 +5,7 @@ import { Coin } from "../cosmos/base/v1beta1/coin";
 import { Duration } from "../google/protobuf/duration";
 import { Timestamp } from "../google/protobuf/timestamp";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 export enum MissionType {
   MISSION_TYPE_UNSPECIFIED = 0,
@@ -106,7 +106,7 @@ export function campaignCloseActionToJSON(object: CampaignCloseAction): string {
 export interface UserEntry {
   address: string;
   claimAddress: string;
-  airdropEntries: ClaimRecord[];
+  claimEntries: ClaimRecord[];
 }
 
 export interface ClaimRecord {
@@ -118,7 +118,7 @@ export interface ClaimRecord {
 }
 
 export interface ClaimRecords {
-  airdropEntries: ClaimRecord[];
+  claimEntries: ClaimRecord[];
 }
 
 export interface CampaignTotalAmount {
@@ -162,7 +162,7 @@ export interface Mission {
 }
 
 function createBaseUsersEntries(): UserEntry {
-  return { address: "", claimAddress: "", airdropEntries: [] };
+  return { address: "", claimAddress: "", claimEntries: [] };
 }
 
 export const UserEntry = {
@@ -173,7 +173,7 @@ export const UserEntry = {
     if (message.claimAddress !== "") {
       writer.uint32(18).string(message.claimAddress);
     }
-    for (const v of message.airdropEntries) {
+    for (const v of message.claimEntries) {
       ClaimRecord.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
@@ -193,7 +193,7 @@ export const UserEntry = {
           message.claimAddress = reader.string();
           break;
         case 3:
-          message.airdropEntries.push(ClaimRecord.decode(reader, reader.uint32()));
+          message.claimEntries.push(ClaimRecord.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -207,8 +207,8 @@ export const UserEntry = {
     return {
       address: isSet(object.address) ? String(object.address) : "",
       claimAddress: isSet(object.claimAddress) ? String(object.claimAddress) : "",
-      airdropEntries: Array.isArray(object?.airdropEntries)
-        ? object.airdropEntries.map((e: any) => ClaimRecord.fromJSON(e))
+      claimEntries: Array.isArray(object?.claimEntries)
+        ? object.claimEntries.map((e: any) => ClaimRecord.fromJSON(e))
         : [],
     };
   },
@@ -217,10 +217,10 @@ export const UserEntry = {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
     message.claimAddress !== undefined && (obj.claimAddress = message.claimAddress);
-    if (message.airdropEntries) {
-      obj.airdropEntries = message.airdropEntries.map((e) => e ? ClaimRecord.toJSON(e) : undefined);
+    if (message.claimEntries) {
+      obj.claimEntries = message.claimEntries.map((e) => e ? ClaimRecord.toJSON(e) : undefined);
     } else {
-      obj.airdropEntries = [];
+      obj.claimEntries = [];
     }
     return obj;
   },
@@ -229,7 +229,7 @@ export const UserEntry = {
     const message = createBaseUsersEntries();
     message.address = object.address ?? "";
     message.claimAddress = object.claimAddress ?? "";
-    message.airdropEntries = object.airdropEntries?.map((e) => ClaimRecord.fromPartial(e)) || [];
+    message.claimEntries = object.claimEntries?.map((e) => ClaimRecord.fromPartial(e)) || [];
     return message;
   },
 };
@@ -351,13 +351,13 @@ export const ClaimRecord = {
   },
 };
 
-function createBaseAirdropEntries(): ClaimRecords {
-  return { airdropEntries: [] };
+function createBaseClaimEntries(): ClaimRecords {
+  return { claimEntries: [] };
 }
 
 export const ClaimRecords = {
   encode(message: ClaimRecords, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.airdropEntries) {
+    for (const v of message.claimEntries) {
       ClaimRecord.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
@@ -366,12 +366,12 @@ export const ClaimRecords = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ClaimRecords {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAirdropEntries();
+    const message = createBaseClaimEntries();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.airdropEntries.push(ClaimRecord.decode(reader, reader.uint32()));
+          message.claimEntries.push(ClaimRecord.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -383,25 +383,25 @@ export const ClaimRecords = {
 
   fromJSON(object: any): ClaimRecords {
     return {
-      airdropEntries: Array.isArray(object?.airdropEntries)
-        ? object.airdropEntries.map((e: any) => ClaimRecord.fromJSON(e))
+      claimEntries: Array.isArray(object?.claimEntries)
+        ? object.claimEntries.map((e: any) => ClaimRecord.fromJSON(e))
         : [],
     };
   },
 
   toJSON(message: ClaimRecords): unknown {
     const obj: any = {};
-    if (message.airdropEntries) {
-      obj.airdropEntries = message.airdropEntries.map((e) => e ? ClaimRecord.toJSON(e) : undefined);
+    if (message.claimEntries) {
+      obj.claimEntries = message.claimEntries.map((e) => e ? ClaimRecord.toJSON(e) : undefined);
     } else {
-      obj.airdropEntries = [];
+      obj.claimEntries = [];
     }
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<ClaimRecords>, I>>(object: I): ClaimRecords {
-    const message = createBaseAirdropEntries();
-    message.airdropEntries = object.airdropEntries?.map((e) => ClaimRecord.fromPartial(e)) || [];
+    const message = createBaseClaimEntries();
+    message.claimEntries = object.claimEntries?.map((e) => ClaimRecord.fromPartial(e)) || [];
     return message;
   },
 };

@@ -4,116 +4,10 @@ info:
   name: ''
   description: ''
 paths:
-  /c4e/airdrop/v1beta1/airdrop_claims_left/{campaign_id}:
-    get:
-      summary: Queries a CampaignTotalAmount by campaignId.
-      operationId: Chain4EnergyC4EchainCfeairdropCampaignAmountLeft
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              amount:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /c4e/airdrop/v1beta1/airdrop_distributions/{campaign_id}:
-    get:
-      summary: Queries a CampaignTotalAmount by campaignId.
-      operationId: Chain4EnergyC4EchainCfeairdropCampaignTotalAmount
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              amount:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /c4e/airdrop/v1beta1/campaign/{campaign_id}:
+  /c4e/claim/v1beta1/campaign/{campaign_id}:
     get:
       summary: Queries a list of Campaigns items.
-      operationId: Chain4EnergyC4EchainCfeairdropCampaign
+      operationId: Chain4EnergyC4EchainCfeclaimCampaign
       responses:
         '200':
           description: A successful response.
@@ -184,10 +78,10 @@ paths:
           format: uint64
       tags:
         - Query
-  /c4e/airdrop/v1beta1/campaigns:
+  /c4e/claim/v1beta1/campaigns:
     get:
       summary: Queries a list of Campaigns items.
-      operationId: Chain4EnergyC4EchainCfeairdropCampaigns
+      operationId: Chain4EnergyC4EchainCfeclaimCampaigns
       responses:
         '200':
           description: A successful response.
@@ -339,10 +233,116 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4e/airdrop/v1beta1/mission:
+  /c4e/claim/v1beta1/claim_claims_left/{campaign_id}:
+    get:
+      summary: Queries a CampaignTotalAmount by campaignId.
+      operationId: Chain4EnergyC4EchainCfeclaimCampaignAmountLeft
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /c4e/claim/v1beta1/claim_distributions/{campaign_id}:
+    get:
+      summary: Queries a CampaignTotalAmount by campaignId.
+      operationId: Chain4EnergyC4EchainCfeclaimCampaignTotalAmount
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /c4e/claim/v1beta1/mission:
     get:
       summary: Queries a list of Mission items.
-      operationId: Chain4EnergyC4EchainCfeairdropMissionAll
+      operationId: Chain4EnergyC4EchainCfeclaimMissionAll
       responses:
         '200':
           description: A successful response.
@@ -483,10 +483,10 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4e/airdrop/v1beta1/mission/{campaign_id}/{mission_id}:
+  /c4e/claim/v1beta1/mission/{campaign_id}/{mission_id}:
     get:
       summary: Queries a Mission by index.
-      operationId: Chain4EnergyC4EchainCfeairdropMission
+      operationId: Chain4EnergyC4EchainCfeclaimMission
       responses:
         '200':
           description: A successful response.
@@ -551,10 +551,10 @@ paths:
           format: uint64
       tags:
         - Query
-  /c4e/airdrop/v1beta1/params:
+  /c4e/claim/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCfeairdropParams
+      operationId: Chain4EnergyC4EchainCfeclaimParams
       responses:
         '200':
           description: A successful response.
@@ -587,10 +587,10 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4e/airdrop/v1beta1/user_entry/{address}:
+  /c4e/claim/v1beta1/user_entry/{address}:
     get:
       summary: Queries a UserEntry by index.
-      operationId: Chain4EnergyC4EchainCfeairdropUserEntry
+      operationId: Chain4EnergyC4EchainCfeclaimUserEntry
       responses:
         '200':
           description: A successful response.
@@ -667,10 +667,10 @@ paths:
           type: string
       tags:
         - Query
-  /c4e/airdrop/v1beta1/users_entries:
+  /c4e/claim/v1beta1/users_entries:
     get:
       summary: Queries a list of UserEntry items.
-      operationId: Chain4EnergyC4EchainCfeairdropUsersEntries
+      operationId: Chain4EnergyC4EchainCfeclaimUsersEntries
       responses:
         '200':
           description: A successful response.
@@ -47760,7 +47760,7 @@ paths:
       tags:
         - Query
 definitions:
-  chain4energy.c4echain.cfeairdrop.Campaign:
+  chain4energy.c4echain.cfeclaim.Campaign:
     type: object
     properties:
       id:
@@ -47798,7 +47798,7 @@ definitions:
       vesting_period:
         type: string
         title: period of vesting coins after lockup period
-  chain4energy.c4echain.cfeairdrop.CampaignCloseAction:
+  chain4energy.c4echain.cfeclaim.CampaignCloseAction:
     type: string
     enum:
       - CLOSE_ACTION_UNSPECIFIED
@@ -47808,7 +47808,7 @@ definitions:
     default: CLOSE_ACTION_UNSPECIFIED
     description: '- CLOSE_ACTION_UNSPECIFIED: Campaign close action'
     title: Campaign close action
-  chain4energy.c4echain.cfeairdrop.CampaignType:
+  chain4energy.c4echain.cfeclaim.CampaignType:
     type: string
     enum:
       - CAMPAIGN_TYPE_UNSPECIFIED
@@ -47816,7 +47816,7 @@ definitions:
       - DEFAULT
       - SALE
     default: CAMPAIGN_TYPE_UNSPECIFIED
-  chain4energy.c4echain.cfeairdrop.ClaimRecord:
+  chain4energy.c4echain.cfeclaim.ClaimRecord:
     type: object
     properties:
       campaign_id:
@@ -47848,7 +47848,7 @@ definitions:
         items:
           type: string
           format: uint64
-  chain4energy.c4echain.cfeairdrop.Mission:
+  chain4energy.c4echain.cfeclaim.Mission:
     type: object
     properties:
       id:
@@ -47875,7 +47875,7 @@ definitions:
       claim_start_date:
         type: string
         format: date-time
-  chain4energy.c4echain.cfeairdrop.MissionType:
+  chain4energy.c4echain.cfeclaim.MissionType:
     type: string
     enum:
       - MISSION_TYPE_UNSPECIFIED
@@ -47884,30 +47884,30 @@ definitions:
       - VOTE
       - CLAIM
     default: MISSION_TYPE_UNSPECIFIED
-  chain4energy.c4echain.cfeairdrop.MsgAddClaimRecordsResponse:
+  chain4energy.c4echain.cfeclaim.MsgAddClaimRecordsResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgAddMissionToCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgAddMissionToCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgClaimResponse:
+  chain4energy.c4echain.cfeclaim.MsgClaimResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgCloseCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgCloseCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgCreateCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgCreateCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgDeleteClaimRecordResponse:
+  chain4energy.c4echain.cfeclaim.MsgDeleteClaimRecordResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgEditCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgEditCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgInitialClaimResponse:
+  chain4energy.c4echain.cfeclaim.MsgInitialClaimResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgRemoveCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgRemoveCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.MsgStartCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgStartCampaignResponse:
     type: object
-  chain4energy.c4echain.cfeairdrop.Params:
+  chain4energy.c4echain.cfeclaim.Params:
     type: object
     description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeairdrop.QueryCampaignAmountLeftResponse:
+  chain4energy.c4echain.cfeclaim.QueryCampaignAmountLeftResponse:
     type: object
     properties:
       amount:
@@ -47924,7 +47924,7 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-  chain4energy.c4echain.cfeairdrop.QueryCampaignResponse:
+  chain4energy.c4echain.cfeclaim.QueryCampaignResponse:
     type: object
     properties:
       campaign:
@@ -47965,7 +47965,7 @@ definitions:
           vesting_period:
             type: string
             title: period of vesting coins after lockup period
-  chain4energy.c4echain.cfeairdrop.QueryCampaignTotalAmountResponse:
+  chain4energy.c4echain.cfeclaim.QueryCampaignTotalAmountResponse:
     type: object
     properties:
       amount:
@@ -47982,7 +47982,7 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-  chain4energy.c4echain.cfeairdrop.QueryCampaignsResponse:
+  chain4energy.c4echain.cfeclaim.QueryCampaignsResponse:
     type: object
     properties:
       campaign:
@@ -48051,7 +48051,7 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  chain4energy.c4echain.cfeairdrop.QueryMissionResponse:
+  chain4energy.c4echain.cfeclaim.QueryMissionResponse:
     type: object
     properties:
       mission:
@@ -48081,7 +48081,7 @@ definitions:
           claim_start_date:
             type: string
             format: date-time
-  chain4energy.c4echain.cfeairdrop.QueryMissionsResponse:
+  chain4energy.c4echain.cfeclaim.QueryMissionsResponse:
     type: object
     properties:
       mission:
@@ -48139,14 +48139,14 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  chain4energy.c4echain.cfeairdrop.QueryParamsResponse:
+  chain4energy.c4echain.cfeclaim.QueryParamsResponse:
     type: object
     properties:
       params:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfeairdrop.QueryUserEntryResponse:
+  chain4energy.c4echain.cfeclaim.QueryUserEntryResponse:
     type: object
     properties:
       user_entry:
@@ -48193,7 +48193,7 @@ definitions:
                   items:
                     type: string
                     format: uint64
-  chain4energy.c4echain.cfeairdrop.QueryUsersEntriesResponse:
+  chain4energy.c4echain.cfeclaim.QueryUsersEntriesResponse:
     type: object
     properties:
       users_entries:
@@ -48268,7 +48268,7 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  chain4energy.c4echain.cfeairdrop.UserEntry:
+  chain4energy.c4echain.cfeclaim.UserEntry:
     type: object
     properties:
       address:

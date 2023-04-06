@@ -1,7 +1,7 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 /** Params defines the parameters for the module. */
 export interface Params {

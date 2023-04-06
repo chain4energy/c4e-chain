@@ -1,19 +1,19 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { CampaignAmountLeft, CampaignTotalAmount, Campaign, Mission, UserEntry } from "./airdrop";
+import { CampaignAmountLeft, CampaignTotalAmount, Campaign, Mission, UserEntry } from "./claim";
 import { Params } from "./params";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
-/** GenesisState defines the cfeairdrop module's genesis state. */
+/** GenesisState defines the cfeclaim module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
   campaigns: Campaign[];
   userEntry: UserEntry[];
   missions: Mission[];
-  airdropClaimsLeft: CampaignAmountLeft[];
+  claimClaimsLeft: CampaignAmountLeft[];
   /** this line is used by starport scaffolding # genesis/proto/state */
-  airdropDistrubitions: CampaignTotalAmount[];
+  claimDistrubitions: CampaignTotalAmount[];
 }
 
 function createBaseGenesisState(): GenesisState {
@@ -22,8 +22,8 @@ function createBaseGenesisState(): GenesisState {
     campaigns: [],
     userEntry: [],
     missions: [],
-    airdropClaimsLeft: [],
-    airdropDistrubitions: [],
+    claimClaimsLeft: [],
+    claimDistrubitions: [],
   };
 }
 
@@ -41,10 +41,10 @@ export const GenesisState = {
     for (const v of message.missions) {
       Mission.encode(v!, writer.uint32(42).fork()).ldelim();
     }
-    for (const v of message.airdropClaimsLeft) {
+    for (const v of message.claimClaimsLeft) {
       CampaignAmountLeft.encode(v!, writer.uint32(50).fork()).ldelim();
     }
-    for (const v of message.airdropDistrubitions) {
+    for (const v of message.claimDistrubitions) {
       CampaignTotalAmount.encode(v!, writer.uint32(58).fork()).ldelim();
     }
     return writer;
@@ -70,10 +70,10 @@ export const GenesisState = {
           message.missions.push(Mission.decode(reader, reader.uint32()));
           break;
         case 6:
-          message.airdropClaimsLeft.push(CampaignAmountLeft.decode(reader, reader.uint32()));
+          message.claimClaimsLeft.push(CampaignAmountLeft.decode(reader, reader.uint32()));
           break;
         case 7:
-          message.airdropDistrubitions.push(CampaignTotalAmount.decode(reader, reader.uint32()));
+          message.claimDistrubitions.push(CampaignTotalAmount.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -91,11 +91,11 @@ export const GenesisState = {
         ? object.userEntry.map((e: any) => UserEntry.fromJSON(e))
         : [],
       missions: Array.isArray(object?.missions) ? object.missions.map((e: any) => Mission.fromJSON(e)) : [],
-      airdropClaimsLeft: Array.isArray(object?.airdropClaimsLeft)
-        ? object.airdropClaimsLeft.map((e: any) => CampaignAmountLeft.fromJSON(e))
+      claimClaimsLeft: Array.isArray(object?.claimClaimsLeft)
+        ? object.claimClaimsLeft.map((e: any) => CampaignAmountLeft.fromJSON(e))
         : [],
-      airdropDistrubitions: Array.isArray(object?.airdropDistrubitions)
-        ? object.airdropDistrubitions.map((e: any) => CampaignTotalAmount.fromJSON(e))
+      claimDistrubitions: Array.isArray(object?.claimDistrubitions)
+        ? object.claimDistrubitions.map((e: any) => CampaignTotalAmount.fromJSON(e))
         : [],
     };
   },
@@ -118,17 +118,17 @@ export const GenesisState = {
     } else {
       obj.missions = [];
     }
-    if (message.airdropClaimsLeft) {
-      obj.airdropClaimsLeft = message.airdropClaimsLeft.map((e) => e ? CampaignAmountLeft.toJSON(e) : undefined);
+    if (message.claimClaimsLeft) {
+      obj.claimClaimsLeft = message.claimClaimsLeft.map((e) => e ? CampaignAmountLeft.toJSON(e) : undefined);
     } else {
-      obj.airdropClaimsLeft = [];
+      obj.claimClaimsLeft = [];
     }
-    if (message.airdropDistrubitions) {
-      obj.airdropDistrubitions = message.airdropDistrubitions.map((e) =>
+    if (message.claimDistrubitions) {
+      obj.claimDistrubitions = message.claimDistrubitions.map((e) =>
         e ? CampaignTotalAmount.toJSON(e) : undefined
       );
     } else {
-      obj.airdropDistrubitions = [];
+      obj.claimDistrubitions = [];
     }
     return obj;
   },
@@ -141,8 +141,8 @@ export const GenesisState = {
     message.campaigns = object.campaigns?.map((e) => Campaign.fromPartial(e)) || [];
     message.userEntry = object.userEntry?.map((e) => UserEntry.fromPartial(e)) || [];
     message.missions = object.missions?.map((e) => Mission.fromPartial(e)) || [];
-    message.airdropClaimsLeft = object.airdropClaimsLeft?.map((e) => CampaignAmountLeft.fromPartial(e)) || [];
-    message.airdropDistrubitions = object.airdropDistrubitions?.map((e) => CampaignTotalAmount.fromPartial(e)) || [];
+    message.claimClaimsLeft = object.claimClaimsLeft?.map((e) => CampaignAmountLeft.fromPartial(e)) || [];
+    message.claimDistrubitions = object.claimDistrubitions?.map((e) => CampaignTotalAmount.fromPartial(e)) || [];
     return message;
   },
 };

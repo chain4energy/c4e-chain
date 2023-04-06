@@ -1,0 +1,160 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfeclaim;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "c4echain/cfeclaim/params.proto";
+import "c4echain/cfeclaim/campaign.proto";
+import "c4echain/cfeclaim/mission.proto";
+import "c4echain/cfeclaim/claim_record.proto";
+
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/c4e/claim/v1beta1/params";
+  }
+  // Queries a UserEntry by index.
+	rpc UserEntry(QueryUserEntryRequest) returns (QueryUserEntryResponse) {
+		option (google.api.http).get = "/c4e/claim/v1beta1/user_entry/{address}";
+	}
+
+	// Queries a list of UserEntry items.
+	rpc UsersEntries(QueryUsersEntriesRequest) returns (QueryUsersEntriesResponse) {
+		option (google.api.http).get = "/c4e/claim/v1beta1/users_entries";
+	}
+
+	// Queries a Mission by index.
+	rpc Mission(QueryMissionRequest) returns (QueryMissionResponse) {
+		option (google.api.http).get = "/c4e/claim/v1beta1/mission/{campaign_id}/{mission_id}";
+	}
+
+	// Queries a list of Mission items.
+	rpc MissionAll(QueryMissionsRequest) returns (QueryMissionsResponse) {
+		option (google.api.http).get = "/c4e/claim/v1beta1/mission";
+	}
+
+	// Queries a list of Campaigns items.
+	rpc Campaigns(QueryCampaignsRequest) returns (QueryCampaignsResponse) {
+		option (google.api.http).get = "/c4e/claim/v1beta1/campaigns";
+	}
+	// Queries a list of Campaigns items.
+	rpc Campaign(QueryCampaignRequest) returns (QueryCampaignResponse) {
+		option (google.api.http).get = "/c4e/claim/v1beta1/campaign/{campaign_id}";
+	}
+	// Queries a CampaignTotalAmount by campaignId.
+	rpc CampaignTotalAmount(QueryCampaignTotalAmountRequest) returns (QueryCampaignTotalAmountResponse) {
+		option (google.api.http).get = "/c4e/claim/v1beta1/claim_distributions/{campaign_id}";
+	}
+	// Queries a CampaignTotalAmount by campaignId.
+	rpc CampaignAmountLeft(QueryCampaignAmountLeftRequest) returns (QueryCampaignAmountLeftResponse) {
+		option (google.api.http).get = "/c4e/claim/v1beta1/claim_claims_left/{campaign_id}";
+	}
+
+// this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [
+		(gogoproto.nullable) = false
+	];
+}
+
+message QueryUserEntryRequest {
+	  string address = 1;
+}
+
+message QueryUserEntryResponse {
+	UserEntry user_entry = 1 [
+		(gogoproto.nullable) = false
+	];
+}
+
+message QueryCampaignTotalAmountRequest {
+	uint64 campaign_id = 1;
+}
+
+message QueryCampaignTotalAmountResponse {
+	repeated cosmos.base.v1beta1.Coin amount = 1 [
+		(gogoproto.nullable) = false,
+		(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+	];
+}
+
+message QueryCampaignAmountLeftRequest {
+	uint64 campaign_id = 1;
+}
+
+message QueryCampaignAmountLeftResponse {
+	repeated cosmos.base.v1beta1.Coin amount = 1 [
+		(gogoproto.nullable) = false,
+		(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+	];
+}
+
+message QueryUsersEntriesRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryUsersEntriesResponse {
+	repeated UserEntry users_entries = 1 [
+		(gogoproto.nullable) = false
+	];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryMissionRequest {
+	uint64 campaign_id = 1;
+	uint64 mission_id = 2;
+}
+
+message QueryMissionResponse {
+	Mission mission = 1 [
+		(gogoproto.nullable) = false
+	];
+}
+
+message QueryMissionsRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryMissionsResponse {
+	repeated Mission mission = 1 [
+		(gogoproto.nullable) = false
+	];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryCampaignsRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryCampaignsResponse {
+	repeated Campaign campaign = 1 [
+		(gogoproto.nullable) = false
+	];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryCampaignRequest {
+	uint64 campaign_id = 1;
+}
+
+message QueryCampaignResponse {
+	Campaign campaign = 1 [
+		(gogoproto.nullable) = false
+	];
+}
+
+// this line is used by starport scaffolding # 3

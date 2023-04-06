@@ -1,17 +1,17 @@
 /* eslint-disable */
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
-import { Params } from "../cfeairdrop/params";
-import { UserEntry } from "../cfeairdrop/claim_record";
+import { Params } from "../cfeclaim/params";
+import { UserEntry } from "../cfeclaim/claim_record";
 import { Coin } from "../cosmos/base/v1beta1/coin";
 import {
   PageRequest,
   PageResponse,
 } from "../cosmos/base/query/v1beta1/pagination";
-import { Mission } from "../cfeairdrop/mission";
-import { Campaign } from "../cfeairdrop/campaign";
+import { Mission } from "../cfeclaim/mission";
+import { Campaign } from "../cfeclaim/campaign";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 /** QueryParamsRequest is request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
@@ -1378,7 +1378,7 @@ export class QueryClientImpl implements Query {
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
+      "chain4energy.c4echain.cfeclaim.Query",
       "Params",
       data
     );
@@ -1388,7 +1388,7 @@ export class QueryClientImpl implements Query {
   UserEntry(request: QueryUserEntryRequest): Promise<QueryUserEntryResponse> {
     const data = QueryUserEntryRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
+      "chain4energy.c4echain.cfeclaim.Query",
       "UserEntry",
       data
     );
@@ -1402,7 +1402,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryUsersEntriesResponse> {
     const data = QueryUsersEntriesRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
+      "chain4energy.c4echain.cfeclaim.Query",
       "UsersEntries",
       data
     );
@@ -1414,7 +1414,7 @@ export class QueryClientImpl implements Query {
   Mission(request: QueryMissionRequest): Promise<QueryMissionResponse> {
     const data = QueryMissionRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
+      "chain4energy.c4echain.cfeclaim.Query",
       "Mission",
       data
     );
@@ -1426,7 +1426,7 @@ export class QueryClientImpl implements Query {
   MissionAll(request: QueryMissionsRequest): Promise<QueryMissionsResponse> {
     const data = QueryMissionsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
+      "chain4energy.c4echain.cfeclaim.Query",
       "MissionAll",
       data
     );
@@ -1438,7 +1438,7 @@ export class QueryClientImpl implements Query {
   Campaigns(request: QueryCampaignsRequest): Promise<QueryCampaignsResponse> {
     const data = QueryCampaignsRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
+      "chain4energy.c4echain.cfeclaim.Query",
       "Campaigns",
       data
     );
@@ -1450,7 +1450,7 @@ export class QueryClientImpl implements Query {
   Campaign(request: QueryCampaignRequest): Promise<QueryCampaignResponse> {
     const data = QueryCampaignRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
+      "chain4energy.c4echain.cfeclaim.Query",
       "Campaign",
       data
     );
@@ -1464,7 +1464,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryCampaignTotalAmountResponse> {
     const data = QueryCampaignTotalAmountRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
+      "chain4energy.c4echain.cfeclaim.Query",
       "CampaignTotalAmount",
       data
     );
@@ -1478,7 +1478,7 @@ export class QueryClientImpl implements Query {
   ): Promise<QueryCampaignAmountLeftResponse> {
     const data = QueryCampaignAmountLeftRequest.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Query",
+      "chain4energy.c4echain.cfeclaim.Query",
       "CampaignAmountLeft",
       data
     );

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Writer, Reader } from "protobufjs/minimal";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 export interface InitialClaim {
   campaignId: string;

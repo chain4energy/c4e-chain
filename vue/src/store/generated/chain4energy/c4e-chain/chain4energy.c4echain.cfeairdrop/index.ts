@@ -1,23 +1,23 @@
 import { txClient, queryClient, MissingWalletError , registry} from './module'
 
-import { Campaign } from "./module/types/cfeairdrop/campaign"
-import { CampaignTotalAmount } from "./module/types/cfeairdrop/campaign"
-import { CampaignAmountLeft } from "./module/types/cfeairdrop/campaign"
-import { UserEntry } from "./module/types/cfeairdrop/claim_record"
-import { ClaimRecord } from "./module/types/cfeairdrop/claim_record"
-import { NewCampaign } from "./module/types/cfeairdrop/event"
-import { EditCampaign } from "./module/types/cfeairdrop/event"
-import { CloseCampaign } from "./module/types/cfeairdrop/event"
-import { RemoveCampaign } from "./module/types/cfeairdrop/event"
-import { StartCampaign } from "./module/types/cfeairdrop/event"
-import { AddMissionToCampaign } from "./module/types/cfeairdrop/event"
-import { Claim } from "./module/types/cfeairdrop/event"
-import { InitialClaim } from "./module/types/cfeairdrop/event"
-import { AddClaimRecords } from "./module/types/cfeairdrop/event"
-import { DeleteClaimRecord } from "./module/types/cfeairdrop/event"
-import { CompleteMissionFromHook } from "./module/types/cfeairdrop/event"
-import { Mission } from "./module/types/cfeairdrop/mission"
-import { Params } from "./module/types/cfeairdrop/params"
+import { Campaign } from "./module/types/cfeclaim/campaign"
+import { CampaignTotalAmount } from "./module/types/cfeclaim/campaign"
+import { CampaignAmountLeft } from "./module/types/cfeclaim/campaign"
+import { UserEntry } from "./module/types/cfeclaim/claim_record"
+import { ClaimRecord } from "./module/types/cfeclaim/claim_record"
+import { NewCampaign } from "./module/types/cfeclaim/event"
+import { EditCampaign } from "./module/types/cfeclaim/event"
+import { CloseCampaign } from "./module/types/cfeclaim/event"
+import { RemoveCampaign } from "./module/types/cfeclaim/event"
+import { StartCampaign } from "./module/types/cfeclaim/event"
+import { AddMissionToCampaign } from "./module/types/cfeclaim/event"
+import { Claim } from "./module/types/cfeclaim/event"
+import { InitialClaim } from "./module/types/cfeclaim/event"
+import { AddClaimRecords } from "./module/types/cfeclaim/event"
+import { DeleteClaimRecord } from "./module/types/cfeclaim/event"
+import { CompleteMissionFromHook } from "./module/types/cfeclaim/event"
+import { Mission } from "./module/types/cfeclaim/mission"
+import { Params } from "./module/types/cfeclaim/params"
 
 
 export { Campaign, CampaignTotalAmount, CampaignAmountLeft, UserEntry, ClaimRecord, NewCampaign, EditCampaign, CloseCampaign, RemoveCampaign, StartCampaign, AddMissionToCampaign, Claim, InitialClaim, AddClaimRecords, DeleteClaimRecord, CompleteMissionFromHook, Mission, Params };
@@ -179,7 +179,7 @@ export default {
 	},
 	actions: {
 		init({ dispatch, rootGetters }) {
-			console.log('Vuex module: chain4energy.c4echain.cfeairdrop initialized!')
+			console.log('Vuex module: chain4energy.c4echain.cfeclaim initialized!')
 			if (rootGetters['common/env/client']) {
 				rootGetters['common/env/client'].on('newblock', () => {
 					dispatch('StoreUpdate')

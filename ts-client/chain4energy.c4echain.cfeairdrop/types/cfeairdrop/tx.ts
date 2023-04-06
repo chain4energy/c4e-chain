@@ -11,9 +11,9 @@ import {
   MissionType,
   missionTypeFromJSON,
   missionTypeToJSON,
-} from "./airdrop";
+} from "./claim";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 export interface MsgClaim {
   claimer: string;
@@ -64,7 +64,7 @@ export interface MsgAddMissionToAidropCampaignResponse {
 export interface MsgAddClaimRecords {
   owner: string;
   campaignId: number;
-  airdropEntries: ClaimRecord[];
+  claimEntries: ClaimRecord[];
 }
 
 export interface MsgAddClaimRecordsResponse {
@@ -650,7 +650,7 @@ export const MsgAddMissionToAidropCampaignResponse = {
 };
 
 function createBaseMsgAddClaimRecords(): MsgAddClaimRecords {
-  return { owner: "", campaignId: 0, airdropEntries: [] };
+  return { owner: "", campaignId: 0, claimEntries: [] };
 }
 
 export const MsgAddClaimRecords = {
@@ -661,7 +661,7 @@ export const MsgAddClaimRecords = {
     if (message.campaignId !== 0) {
       writer.uint32(16).uint64(message.campaignId);
     }
-    for (const v of message.airdropEntries) {
+    for (const v of message.claimEntries) {
       ClaimRecord.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
@@ -681,7 +681,7 @@ export const MsgAddClaimRecords = {
           message.campaignId = longToNumber(reader.uint64() as Long);
           break;
         case 3:
-          message.airdropEntries.push(ClaimRecord.decode(reader, reader.uint32()));
+          message.claimEntries.push(ClaimRecord.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -695,8 +695,8 @@ export const MsgAddClaimRecords = {
     return {
       owner: isSet(object.owner) ? String(object.owner) : "",
       campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
-      airdropEntries: Array.isArray(object?.airdropEntries)
-        ? object.airdropEntries.map((e: any) => ClaimRecord.fromJSON(e))
+      claimEntries: Array.isArray(object?.claimEntries)
+        ? object.claimEntries.map((e: any) => ClaimRecord.fromJSON(e))
         : [],
     };
   },
@@ -705,10 +705,10 @@ export const MsgAddClaimRecords = {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
-    if (message.airdropEntries) {
-      obj.airdropEntries = message.airdropEntries.map((e) => e ? ClaimRecord.toJSON(e) : undefined);
+    if (message.claimEntries) {
+      obj.claimEntries = message.claimEntries.map((e) => e ? ClaimRecord.toJSON(e) : undefined);
     } else {
-      obj.airdropEntries = [];
+      obj.claimEntries = [];
     }
     return obj;
   },
@@ -717,7 +717,7 @@ export const MsgAddClaimRecords = {
     const message = createBaseMsgAddClaimRecords();
     message.owner = object.owner ?? "";
     message.campaignId = object.campaignId ?? 0;
-    message.airdropEntries = object.airdropEntries?.map((e) => ClaimRecord.fromPartial(e)) || [];
+    message.claimEntries = object.claimEntries?.map((e) => ClaimRecord.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1297,55 +1297,55 @@ export class MsgClientImpl implements Msg {
   }
   Claim(request: MsgClaim): Promise<MsgClaimResponse> {
     const data = MsgClaim.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "Claim", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Msg", "Claim", data);
     return promise.then((data) => MsgClaimResponse.decode(new _m0.Reader(data)));
   }
 
   InitialClaim(request: MsgInitialClaim): Promise<MsgInitialClaimResponse> {
     const data = MsgInitialClaim.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "InitialClaim", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Msg", "InitialClaim", data);
     return promise.then((data) => MsgInitialClaimResponse.decode(new _m0.Reader(data)));
   }
 
   CreateCampaign(request: MsgCreateCampaign): Promise<MsgCreateCampaignResponse> {
     const data = MsgCreateCampaign.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "CreateCampaign", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Msg", "CreateCampaign", data);
     return promise.then((data) => MsgCreateCampaignResponse.decode(new _m0.Reader(data)));
   }
 
   EditCampaign(request: MsgEditCampaign): Promise<MsgEditCampaignResponse> {
     const data = MsgEditCampaign.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "EditCampaign", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Msg", "EditCampaign", data);
     return promise.then((data) => MsgEditCampaignResponse.decode(new _m0.Reader(data)));
   }
 
   AddMissionToAidropCampaign(request: MsgAddMissionToAidropCampaign): Promise<MsgAddMissionToAidropCampaignResponse> {
     const data = MsgAddMissionToAidropCampaign.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "AddMissionToAidropCampaign", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Msg", "AddMissionToAidropCampaign", data);
     return promise.then((data) => MsgAddMissionToAidropCampaignResponse.decode(new _m0.Reader(data)));
   }
 
   AddClaimRecords(request: MsgAddClaimRecords): Promise<MsgAddClaimRecordsResponse> {
     const data = MsgAddClaimRecords.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "AddClaimRecords", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Msg", "AddClaimRecords", data);
     return promise.then((data) => MsgAddClaimRecordsResponse.decode(new _m0.Reader(data)));
   }
 
   DeleteClaimRecord(request: MsgDeleteClaimRecord): Promise<MsgDeleteClaimRecordResponse> {
     const data = MsgDeleteClaimRecord.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "DeleteClaimRecord", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Msg", "DeleteClaimRecord", data);
     return promise.then((data) => MsgDeleteClaimRecordResponse.decode(new _m0.Reader(data)));
   }
 
   CloseCampaign(request: MsgCloseCampaign): Promise<MsgCloseCampaignResponse> {
     const data = MsgCloseCampaign.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "CloseCampaign", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Msg", "CloseCampaign", data);
     return promise.then((data) => MsgCloseCampaignResponse.decode(new _m0.Reader(data)));
   }
 
   StartCampaign(request: MsgStartCampaign): Promise<MsgStartCampaignResponse> {
     const data = MsgStartCampaign.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Msg", "StartCampaign", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Msg", "StartCampaign", data);
     return promise.then((data) => MsgStartCampaignResponse.decode(new _m0.Reader(data)));
   }
 }

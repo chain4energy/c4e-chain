@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfeairdrop/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfeairdrop/types"
+	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -24,42 +24,42 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	cfeairdroptestutils "github.com/chain4energy/c4e-chain/testutil/module/cfeairdrop"
+	cfeclaimtestutils "github.com/chain4energy/c4e-chain/testutil/module/cfeclaim"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
-// type ExtendedC4eAirdropKeeperUtils struct {
-// 	cfeairdroptestutils.C4eAirdropKeeperUtils
+// type ExtendedC4eClaimKeeperUtils struct {
+// 	cfeclaimtestutils.C4eClaimKeeperUtils
 // 	BankUtils *commontestutils.BankUtils
 // 	Cdc      *codec.ProtoCodec
 // 	StoreKey *storetypes.KVStoreKey
 // }
 
-// func NewExtendedC4eAirdropKeeperUtils(t *testing.T, helperCfeairdropKeeper *keeper.Keeper,
+// func NewExtendedC4eClaimKeeperUtils(t *testing.T, helperCfeclaimKeeper *keeper.Keeper,
 // 	bankUtils *commontestutils.BankUtils,
 // 	cdc *codec.ProtoCodec,
-// 	storeKey *storetypes.KVStoreKey) ExtendedC4eAirdropKeeperUtils {
-// 	return ExtendedC4eAirdropKeeperUtils{C4eAirdropKeeperUtils: cfeairdroptestutils.NewC4eAirdropKeeperUtils(t, helperCfeairdropKeeper),
+// 	storeKey *storetypes.KVStoreKey) ExtendedC4eClaimKeeperUtils {
+// 	return ExtendedC4eClaimKeeperUtils{C4eClaimKeeperUtils: cfeclaimtestutils.NewC4eClaimKeeperUtils(t, helperCfeclaimKeeper),
 // 		BankUtils: bankUtils,
 // 		Cdc:      cdc,
 // 		StoreKey: storeKey}
 // }
 
-// func CfeairdropKeeperTestUtil(t *testing.T) (*cfeairdroptestutils.C4eAirdropKeeperUtils, *keeper.Keeper, sdk.Context) {
-// 	k, ctx := CfeairdropKeeper(t)
-// 	utils := cfeairdroptestutils.NewC4eAirdropKeeperUtils(t, k)
+// func CfeclaimKeeperTestUtil(t *testing.T) (*cfeclaimtestutils.C4eClaimKeeperUtils, *keeper.Keeper, sdk.Context) {
+// 	k, ctx := CfeclaimKeeper(t)
+// 	utils := cfeclaimtestutils.NewC4eClaimKeeperUtils(t, k)
 // 	return &utils, k, ctx
 // }
 
-func CfeairdropKeeperTestUtilWithCdc(t *testing.T) (*cfeairdroptestutils.C4eAirdropUtils, *keeper.Keeper, sdk.Context) {
-	k, ak, bk, ctx, _, _ := cfeairdropKeeperWithBlockHeightAndTime(t, 0, testenv.TestEnvTime)
+func CfeclaimKeeperTestUtilWithCdc(t *testing.T) (*cfeclaimtestutils.C4eClaimUtils, *keeper.Keeper, sdk.Context) {
+	k, ak, bk, ctx, _, _ := cfeclaimKeeperWithBlockHeightAndTime(t, 0, testenv.TestEnvTime)
 	bankUtils := commontestutils.NewBankUtils(t, ctx, ak, bk)
-	utils := cfeairdroptestutils.NewC4eAirdropUtils(t, k, ak, &bankUtils, nil, nil, nil, nil)
+	utils := cfeclaimtestutils.NewC4eClaimUtils(t, k, ak, &bankUtils, nil, nil, nil, nil)
 	return &utils, k, ctx
 }
 
-func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blockTime time.Time) (*keeper.Keeper, *authkeeper.AccountKeeper, bankkeeper.Keeper, sdk.Context, *codec.ProtoCodec, *storetypes.KVStoreKey) {
+func cfeclaimKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blockTime time.Time) (*keeper.Keeper, *authkeeper.AccountKeeper, bankkeeper.Keeper, sdk.Context, *codec.ProtoCodec, *storetypes.KVStoreKey) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -86,7 +86,7 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 		types.Amino,
 		storeKey,
 		memStoreKey,
-		"CfeairdropParams",
+		"CfeclaimParams",
 	)
 
 	accParamsSubspace := typesparams.NewSubspace(cdc,
@@ -138,8 +138,8 @@ func cfeairdropKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, blo
 	return k, &accountKeeper, &bankKeeper, ctx, cdc, storeKey
 }
 
-func CfeairdropKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
-	k, _, _, ctx, _, _ := cfeairdropKeeperWithBlockHeightAndTime(t, 0, time.Now())
+func CfeclaimKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+	k, _, _, ctx, _, _ := cfeclaimKeeperWithBlockHeightAndTime(t, 0, time.Now())
 	return k, ctx
 
 }

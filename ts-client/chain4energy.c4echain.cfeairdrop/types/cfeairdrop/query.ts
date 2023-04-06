@@ -3,10 +3,10 @@ import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { PageRequest, PageResponse } from "../cosmos/base/query/v1beta1/pagination";
 import { Coin } from "../cosmos/base/v1beta1/coin";
-import { Campaign, Mission, UserEntry } from "./airdrop";
+import { Campaign, Mission, UserEntry } from "./claim";
 import { Params } from "./params";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 /** QueryParamsRequest is request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {
@@ -1080,55 +1080,55 @@ export class QueryClientImpl implements Query {
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "Params", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "Params", data);
     return promise.then((data) => QueryParamsResponse.decode(new _m0.Reader(data)));
   }
 
   UserEntry(request: QueryUsersEntriesRequest): Promise<QueryUsersEntriesResponse> {
     const data = QueryUsersEntriesRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "UserEntry", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "UserEntry", data);
     return promise.then((data) => QueryUsersEntriesResponse.decode(new _m0.Reader(data)));
   }
 
   UsersEntries(request: QueryUsersEntriesRequest): Promise<QueryUsersEntriesResponse> {
     const data = QueryUsersEntriesRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "UsersEntries", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "UsersEntries", data);
     return promise.then((data) => QueryUsersEntriesResponse.decode(new _m0.Reader(data)));
   }
 
   Mission(request: QueryMissionRequest): Promise<QueryMissionResponse> {
     const data = QueryMissionRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "Mission", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "Mission", data);
     return promise.then((data) => QueryMissionResponse.decode(new _m0.Reader(data)));
   }
 
   MissionAll(request: QueryMissionsRequest): Promise<QueryMissionsResponse> {
     const data = QueryMissionsRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "MissionAll", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "MissionAll", data);
     return promise.then((data) => QueryMissionsResponse.decode(new _m0.Reader(data)));
   }
 
   Campaigns(request: QueryCampaignsRequest): Promise<QueryCampaignsResponse> {
     const data = QueryCampaignsRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "Campaigns", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "Campaigns", data);
     return promise.then((data) => QueryCampaignsResponse.decode(new _m0.Reader(data)));
   }
 
   Campaign(request: QueryCampaignRequest): Promise<QueryCampaignResponse> {
     const data = QueryCampaignRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "Campaign", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "Campaign", data);
     return promise.then((data) => QueryCampaignResponse.decode(new _m0.Reader(data)));
   }
 
   CampaignTotalAmount(request: QueryCampaignTotalAmountRequest): Promise<QueryCampaignTotalAmountResponse> {
     const data = QueryCampaignTotalAmountRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "CampaignTotalAmount", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "CampaignTotalAmount", data);
     return promise.then((data) => QueryCampaignTotalAmountResponse.decode(new _m0.Reader(data)));
   }
 
   CampaignAmountLeft(request: QueryCampaignAmountLeftRequest): Promise<QueryCampaignAmountLeftResponse> {
     const data = QueryCampaignAmountLeftRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeairdrop.Query", "CampaignAmountLeft", data);
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "CampaignAmountLeft", data);
     return promise.then((data) => QueryCampaignAmountLeftResponse.decode(new _m0.Reader(data)));
   }
 }

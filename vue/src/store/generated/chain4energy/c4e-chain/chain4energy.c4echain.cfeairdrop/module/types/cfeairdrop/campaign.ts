@@ -5,7 +5,7 @@ import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import { Duration } from "../google/protobuf/duration";
 import { Coin } from "../cosmos/base/v1beta1/coin";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 export enum CampaignType {
   CAMPAIGN_TYPE_UNSPECIFIED = 0,

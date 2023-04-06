@@ -1,17 +1,17 @@
 /* eslint-disable */
-import { Params } from "../cfeairdrop/params";
+import { Params } from "../cfeclaim/params";
 import {
   Campaign,
   CampaignAmountLeft,
   CampaignTotalAmount,
-} from "../cfeairdrop/campaign";
-import { UserEntry } from "../cfeairdrop/claim_record";
-import { Mission } from "../cfeairdrop/mission";
+} from "../cfeclaim/campaign";
+import { UserEntry } from "../cfeclaim/claim_record";
+import { Mission } from "../cfeclaim/mission";
 import { Writer, Reader } from "protobufjs/minimal";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
-/** GenesisState defines the cfeairdrop module's genesis state. */
+/** GenesisState defines the cfeclaim module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
   campaigns: Campaign[];

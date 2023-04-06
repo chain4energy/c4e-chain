@@ -1,23 +1,23 @@
 import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-client-ts'
 
-import { Campaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { CampaignTotalAmount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { CampaignAmountLeft } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { UserEntry } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { ClaimRecord } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { NewCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { EditCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { CloseCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { RemoveCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { StartCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { AddMissionToCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { Claim } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { InitialClaim } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { AddClaimRecords } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { DeleteClaimRecord } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { CompleteMissionFromHook } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { Mission } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
-import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeairdrop/types"
+import { Campaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { CampaignTotalAmount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { CampaignAmountLeft } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { UserEntry } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { ClaimRecord } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { NewCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { EditCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { CloseCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { RemoveCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { StartCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { AddMissionToCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { Claim } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { InitialClaim } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { AddClaimRecords } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { DeleteClaimRecord } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { CompleteMissionFromHook } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { Mission } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
 
 
 export { Campaign, CampaignTotalAmount, CampaignAmountLeft, UserEntry, ClaimRecord, NewCampaign, EditCampaign, CloseCampaign, RemoveCampaign, StartCampaign, AddMissionToCampaign, Claim, InitialClaim, AddClaimRecords, DeleteClaimRecord, CompleteMissionFromHook, Mission, Params };
@@ -172,7 +172,7 @@ export default {
 	},
 	actions: {
 		init({ dispatch, rootGetters }) {
-			console.log('Vuex module: chain4energy.c4echain.cfeairdrop initialized!')
+			console.log('Vuex module: chain4energy.c4echain.cfeclaim initialized!')
 			if (rootGetters['common/env/client']) {
 				rootGetters['common/env/client'].on('newblock', () => {
 					dispatch('StoreUpdate')
@@ -205,7 +205,7 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryParams()).data
+				let value= (await client.Chain4EnergyC4EchainCfeclaim.query.queryParams()).data
 				
 					
 				commit('QUERY', { query: 'Params', key: { params: {...key}, query}, value })
@@ -227,7 +227,7 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryUserEntry( key.address)).data
+				let value= (await client.Chain4EnergyC4EchainCfeclaim.query.queryUserEntry( key.address)).data
 				
 					
 				commit('QUERY', { query: 'UserEntry', key: { params: {...key}, query}, value })
@@ -249,11 +249,11 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryUsersEntries(query ?? undefined)).data
+				let value= (await client.Chain4EnergyC4EchainCfeclaim.query.queryUsersEntries(query ?? undefined)).data
 				
 					
 				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await client.Chain4EnergyC4EchainCfeairdrop.query.queryUsersEntries({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					let next_values=(await client.Chain4EnergyC4EchainCfeclaim.query.queryUsersEntries({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
 					value = mergeResults(value, next_values);
 				}
 				commit('QUERY', { query: 'UsersEntries', key: { params: {...key}, query}, value })
@@ -275,7 +275,7 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryMission( key.campaign_id,  key.mission_id)).data
+				let value= (await client.Chain4EnergyC4EchainCfeclaim.query.queryMission( key.campaign_id,  key.mission_id)).data
 				
 					
 				commit('QUERY', { query: 'Mission', key: { params: {...key}, query}, value })
@@ -297,11 +297,11 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryMissionAll(query ?? undefined)).data
+				let value= (await client.Chain4EnergyC4EchainCfeclaim.query.queryMissionAll(query ?? undefined)).data
 				
 					
 				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await client.Chain4EnergyC4EchainCfeairdrop.query.queryMissionAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					let next_values=(await client.Chain4EnergyC4EchainCfeclaim.query.queryMissionAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
 					value = mergeResults(value, next_values);
 				}
 				commit('QUERY', { query: 'MissionAll', key: { params: {...key}, query}, value })
@@ -323,11 +323,11 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryCampaigns(query ?? undefined)).data
+				let value= (await client.Chain4EnergyC4EchainCfeclaim.query.queryCampaigns(query ?? undefined)).data
 				
 					
 				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await client.Chain4EnergyC4EchainCfeairdrop.query.queryCampaigns({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					let next_values=(await client.Chain4EnergyC4EchainCfeclaim.query.queryCampaigns({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
 					value = mergeResults(value, next_values);
 				}
 				commit('QUERY', { query: 'Campaigns', key: { params: {...key}, query}, value })
@@ -349,7 +349,7 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryCampaign( key.campaign_id)).data
+				let value= (await client.Chain4EnergyC4EchainCfeclaim.query.queryCampaign( key.campaign_id)).data
 				
 					
 				commit('QUERY', { query: 'Campaign', key: { params: {...key}, query}, value })
@@ -371,7 +371,7 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryCampaignTotalAmount( key.campaign_id)).data
+				let value= (await client.Chain4EnergyC4EchainCfeclaim.query.queryCampaignTotalAmount( key.campaign_id)).data
 				
 					
 				commit('QUERY', { query: 'CampaignTotalAmount', key: { params: {...key}, query}, value })
@@ -393,7 +393,7 @@ export default {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.Chain4EnergyC4EchainCfeairdrop.query.queryCampaignAmountLeft( key.campaign_id)).data
+				let value= (await client.Chain4EnergyC4EchainCfeclaim.query.queryCampaignAmountLeft( key.campaign_id)).data
 				
 					
 				commit('QUERY', { query: 'CampaignAmountLeft', key: { params: {...key}, query}, value })
@@ -409,7 +409,7 @@ export default {
 		async sendMsgClaim({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgClaim({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgClaim({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -422,7 +422,7 @@ export default {
 		async sendMsgCreateCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgCreateCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgCreateCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -435,7 +435,7 @@ export default {
 		async sendMsgDeleteClaimRecord({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgDeleteClaimRecord({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgDeleteClaimRecord({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -448,7 +448,7 @@ export default {
 		async sendMsgInitialClaim({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgInitialClaim({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgInitialClaim({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -461,7 +461,7 @@ export default {
 		async sendMsgEditCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgEditCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgEditCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -474,7 +474,7 @@ export default {
 		async sendMsgRemoveCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgRemoveCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgRemoveCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -487,7 +487,7 @@ export default {
 		async sendMsgCloseCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgCloseCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgCloseCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -500,7 +500,7 @@ export default {
 		async sendMsgAddClaimRecords({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgAddClaimRecords({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgAddClaimRecords({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -513,7 +513,7 @@ export default {
 		async sendMsgAddMissionToCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgAddMissionToCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgAddMissionToCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -526,7 +526,7 @@ export default {
 		async sendMsgStartCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeairdrop.tx.sendMsgStartCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgStartCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -540,7 +540,7 @@ export default {
 		async MsgClaim({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgClaim({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgClaim({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -553,7 +553,7 @@ export default {
 		async MsgCreateCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgCreateCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgCreateCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -566,7 +566,7 @@ export default {
 		async MsgDeleteClaimRecord({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgDeleteClaimRecord({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgDeleteClaimRecord({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -579,7 +579,7 @@ export default {
 		async MsgInitialClaim({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgInitialClaim({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgInitialClaim({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -592,7 +592,7 @@ export default {
 		async MsgEditCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgEditCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgEditCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -605,7 +605,7 @@ export default {
 		async MsgRemoveCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgRemoveCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgRemoveCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -618,7 +618,7 @@ export default {
 		async MsgCloseCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgCloseCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgCloseCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -631,7 +631,7 @@ export default {
 		async MsgAddClaimRecords({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgAddClaimRecords({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgAddClaimRecords({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -644,7 +644,7 @@ export default {
 		async MsgAddMissionToCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgAddMissionToCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgAddMissionToCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
@@ -657,7 +657,7 @@ export default {
 		async MsgStartCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeairdrop.tx.msgStartCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgStartCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {

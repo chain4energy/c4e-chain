@@ -9,13 +9,13 @@
  * ---------------------------------------------------------------
  */
 
-export interface CfeairdropCampaign {
+export interface CfeclaimCampaign {
   /** @format uint64 */
   id?: string;
   owner?: string;
   name?: string;
   description?: string;
-  campaignType?: CfeairdropCampaignType;
+  campaignType?: CfeclaimCampaignType;
   feegrant_amount?: string;
   initial_claim_free_amount?: string;
   enabled?: boolean;
@@ -36,21 +36,21 @@ export interface CfeairdropCampaign {
 /**
  * - CLOSE_ACTION_UNSPECIFIED: Campaign close action
  */
-export enum CfeairdropCampaignCloseAction {
+export enum CfeclaimCampaignCloseAction {
   CLOSE_ACTION_UNSPECIFIED = "CLOSE_ACTION_UNSPECIFIED",
   SEND_TO_COMMUNITY_POOL = "SEND_TO_COMMUNITY_POOL",
   BURN = "BURN",
   SEND_TO_OWNER = "SEND_TO_OWNER",
 }
 
-export enum CfeairdropCampaignType {
+export enum CfeclaimCampaignType {
   CAMPAIGN_TYPE_UNSPECIFIED = "CAMPAIGN_TYPE_UNSPECIFIED",
   TEAMDROP = "TEAMDROP",
   DEFAULT = "DEFAULT",
   SALE = "SALE",
 }
 
-export interface CfeairdropClaimRecord {
+export interface CfeclaimClaimRecord {
   /** @format uint64 */
   campaign_id?: string;
   address?: string;
@@ -59,7 +59,7 @@ export interface CfeairdropClaimRecord {
   claimedMissions?: string[];
 }
 
-export interface CfeairdropMission {
+export interface CfeclaimMission {
   /** @format uint64 */
   id?: string;
 
@@ -67,14 +67,14 @@ export interface CfeairdropMission {
   campaign_id?: string;
   name?: string;
   description?: string;
-  missionType?: CfeairdropMissionType;
+  missionType?: CfeclaimMissionType;
   weight?: string;
 
   /** @format date-time */
   claim_start_date?: string;
 }
 
-export enum CfeairdropMissionType {
+export enum CfeclaimMissionType {
   MISSION_TYPE_UNSPECIFIED = "MISSION_TYPE_UNSPECIFIED",
   INITIAL_CLAIM = "INITIAL_CLAIM",
   DELEGATION = "DELEGATION",
@@ -82,45 +82,45 @@ export enum CfeairdropMissionType {
   CLAIM = "CLAIM",
 }
 
-export type CfeairdropMsgAddClaimRecordsResponse = object;
+export type CfeclaimMsgAddClaimRecordsResponse = object;
 
-export type CfeairdropMsgAddMissionToCampaignResponse = object;
+export type CfeclaimMsgAddMissionToCampaignResponse = object;
 
-export type CfeairdropMsgClaimResponse = object;
+export type CfeclaimMsgClaimResponse = object;
 
-export type CfeairdropMsgCloseCampaignResponse = object;
+export type CfeclaimMsgCloseCampaignResponse = object;
 
-export type CfeairdropMsgCreateCampaignResponse = object;
+export type CfeclaimMsgCreateCampaignResponse = object;
 
-export type CfeairdropMsgDeleteClaimRecordResponse = object;
+export type CfeclaimMsgDeleteClaimRecordResponse = object;
 
-export type CfeairdropMsgEditCampaignResponse = object;
+export type CfeclaimMsgEditCampaignResponse = object;
 
-export type CfeairdropMsgInitialClaimResponse = object;
+export type CfeclaimMsgInitialClaimResponse = object;
 
-export type CfeairdropMsgRemoveCampaignResponse = object;
+export type CfeclaimMsgRemoveCampaignResponse = object;
 
-export type CfeairdropMsgStartCampaignResponse = object;
+export type CfeclaimMsgStartCampaignResponse = object;
 
 /**
  * Params defines the parameters for the module.
  */
-export type CfeairdropParams = object;
+export type CfeclaimParams = object;
 
-export interface CfeairdropQueryCampaignAmountLeftResponse {
+export interface CfeclaimQueryCampaignAmountLeftResponse {
   amount?: V1Beta1Coin[];
 }
 
-export interface CfeairdropQueryCampaignResponse {
-  campaign?: CfeairdropCampaign;
+export interface CfeclaimQueryCampaignResponse {
+  campaign?: CfeclaimCampaign;
 }
 
-export interface CfeairdropQueryCampaignTotalAmountResponse {
+export interface CfeclaimQueryCampaignTotalAmountResponse {
   amount?: V1Beta1Coin[];
 }
 
-export interface CfeairdropQueryCampaignsResponse {
-  campaign?: CfeairdropCampaign[];
+export interface CfeclaimQueryCampaignsResponse {
+  campaign?: CfeclaimCampaign[];
 
   /**
    * PageResponse is to be embedded in gRPC response messages where the
@@ -134,12 +134,12 @@ export interface CfeairdropQueryCampaignsResponse {
   pagination?: V1Beta1PageResponse;
 }
 
-export interface CfeairdropQueryMissionResponse {
-  mission?: CfeairdropMission;
+export interface CfeclaimQueryMissionResponse {
+  mission?: CfeclaimMission;
 }
 
-export interface CfeairdropQueryMissionsResponse {
-  mission?: CfeairdropMission[];
+export interface CfeclaimQueryMissionsResponse {
+  mission?: CfeclaimMission[];
 
   /**
    * PageResponse is to be embedded in gRPC response messages where the
@@ -156,17 +156,17 @@ export interface CfeairdropQueryMissionsResponse {
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
-export interface CfeairdropQueryParamsResponse {
+export interface CfeclaimQueryParamsResponse {
   /** params holds all the parameters of this module. */
-  params?: CfeairdropParams;
+  params?: CfeclaimParams;
 }
 
-export interface CfeairdropQueryUserEntryResponse {
-  user_entry?: CfeairdropUserEntry;
+export interface CfeclaimQueryUserEntryResponse {
+  user_entry?: CfeclaimUserEntry;
 }
 
-export interface CfeairdropQueryUsersEntriesResponse {
-  users_entries?: CfeairdropUserEntry[];
+export interface CfeclaimQueryUsersEntriesResponse {
+  users_entries?: CfeclaimUserEntry[];
 
   /**
    * PageResponse is to be embedded in gRPC response messages where the
@@ -180,10 +180,10 @@ export interface CfeairdropQueryUsersEntriesResponse {
   pagination?: V1Beta1PageResponse;
 }
 
-export interface CfeairdropUserEntry {
+export interface CfeclaimUserEntry {
   address?: string;
   claim_address?: string;
-  claim_records?: CfeairdropClaimRecord[];
+  claim_records?: CfeclaimClaimRecord[];
 }
 
 export interface ProtobufAny {
@@ -401,7 +401,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title c4echain/cfeairdrop/campaign.proto
+ * @title c4echain/cfeclaim/campaign.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -411,11 +411,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCampaignAmountLeft
    * @summary Queries a CampaignTotalAmount by campaignId.
-   * @request GET:/c4e/airdrop/v1beta1/airdrop_claims_left/{campaign_id}
+   * @request GET:/c4e/claim/v1beta1/claim_claims_left/{campaign_id}
    */
   queryCampaignAmountLeft = (campaignId: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryCampaignAmountLeftResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/airdrop_claims_left/${campaignId}`,
+    this.request<CfeclaimQueryCampaignAmountLeftResponse, RpcStatus>({
+      path: `/c4e/claim/v1beta1/claim_claims_left/${campaignId}`,
       method: "GET",
       format: "json",
       ...params,
@@ -427,11 +427,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCampaignTotalAmount
    * @summary Queries a CampaignTotalAmount by campaignId.
-   * @request GET:/c4e/airdrop/v1beta1/airdrop_distributions/{campaign_id}
+   * @request GET:/c4e/claim/v1beta1/claim_distributions/{campaign_id}
    */
   queryCampaignTotalAmount = (campaignId: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryCampaignTotalAmountResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/airdrop_distributions/${campaignId}`,
+    this.request<CfeclaimQueryCampaignTotalAmountResponse, RpcStatus>({
+      path: `/c4e/claim/v1beta1/claim_distributions/${campaignId}`,
       method: "GET",
       format: "json",
       ...params,
@@ -443,11 +443,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCampaign
    * @summary Queries a list of Campaigns items.
-   * @request GET:/c4e/airdrop/v1beta1/campaign/{campaign_id}
+   * @request GET:/c4e/claim/v1beta1/campaign/{campaign_id}
    */
   queryCampaign = (campaignId: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryCampaignResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/campaign/${campaignId}`,
+    this.request<CfeclaimQueryCampaignResponse, RpcStatus>({
+      path: `/c4e/claim/v1beta1/campaign/${campaignId}`,
       method: "GET",
       format: "json",
       ...params,
@@ -459,7 +459,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCampaigns
    * @summary Queries a list of Campaigns items.
-   * @request GET:/c4e/airdrop/v1beta1/campaigns
+   * @request GET:/c4e/claim/v1beta1/campaigns
    */
   queryCampaigns = (
     query?: {
@@ -471,8 +471,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     },
     params: RequestParams = {},
   ) =>
-    this.request<CfeairdropQueryCampaignsResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/campaigns`,
+    this.request<CfeclaimQueryCampaignsResponse, RpcStatus>({
+      path: `/c4e/claim/v1beta1/campaigns`,
       method: "GET",
       query: query,
       format: "json",
@@ -485,7 +485,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryMissionAll
    * @summary Queries a list of Mission items.
-   * @request GET:/c4e/airdrop/v1beta1/mission
+   * @request GET:/c4e/claim/v1beta1/mission
    */
   queryMissionAll = (
     query?: {
@@ -497,8 +497,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     },
     params: RequestParams = {},
   ) =>
-    this.request<CfeairdropQueryMissionsResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/mission`,
+    this.request<CfeclaimQueryMissionsResponse, RpcStatus>({
+      path: `/c4e/claim/v1beta1/mission`,
       method: "GET",
       query: query,
       format: "json",
@@ -511,11 +511,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryMission
    * @summary Queries a Mission by index.
-   * @request GET:/c4e/airdrop/v1beta1/mission/{campaign_id}/{mission_id}
+   * @request GET:/c4e/claim/v1beta1/mission/{campaign_id}/{mission_id}
    */
   queryMission = (campaignId: string, missionId: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryMissionResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/mission/${campaignId}/${missionId}`,
+    this.request<CfeclaimQueryMissionResponse, RpcStatus>({
+      path: `/c4e/claim/v1beta1/mission/${campaignId}/${missionId}`,
       method: "GET",
       format: "json",
       ...params,
@@ -527,11 +527,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/c4e/airdrop/v1beta1/params
+   * @request GET:/c4e/claim/v1beta1/params
    */
   queryParams = (params: RequestParams = {}) =>
-    this.request<CfeairdropQueryParamsResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/params`,
+    this.request<CfeclaimQueryParamsResponse, RpcStatus>({
+      path: `/c4e/claim/v1beta1/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -543,11 +543,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryUserEntry
    * @summary Queries a UserEntry by index.
-   * @request GET:/c4e/airdrop/v1beta1/user_entry/{address}
+   * @request GET:/c4e/claim/v1beta1/user_entry/{address}
    */
   queryUserEntry = (address: string, params: RequestParams = {}) =>
-    this.request<CfeairdropQueryUserEntryResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/user_entry/${address}`,
+    this.request<CfeclaimQueryUserEntryResponse, RpcStatus>({
+      path: `/c4e/claim/v1beta1/user_entry/${address}`,
       method: "GET",
       format: "json",
       ...params,
@@ -559,7 +559,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryUsersEntries
    * @summary Queries a list of UserEntry items.
-   * @request GET:/c4e/airdrop/v1beta1/users_entries
+   * @request GET:/c4e/claim/v1beta1/users_entries
    */
   queryUsersEntries = (
     query?: {
@@ -571,8 +571,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     },
     params: RequestParams = {},
   ) =>
-    this.request<CfeairdropQueryUsersEntriesResponse, RpcStatus>({
-      path: `/c4e/airdrop/v1beta1/users_entries`,
+    this.request<CfeclaimQueryUsersEntriesResponse, RpcStatus>({
+      path: `/c4e/claim/v1beta1/users_entries`,
       method: "GET",
       query: query,
       format: "json",

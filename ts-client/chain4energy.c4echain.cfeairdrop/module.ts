@@ -7,16 +7,16 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
-import { MsgClaim } from "./types/c4echain/cfeairdrop/tx";
-import { MsgCreateCampaign } from "./types/c4echain/cfeairdrop/tx";
-import { MsgDeleteClaimRecord } from "./types/c4echain/cfeairdrop/tx";
-import { MsgInitialClaim } from "./types/c4echain/cfeairdrop/tx";
-import { MsgEditCampaign } from "./types/c4echain/cfeairdrop/tx";
-import { MsgRemoveCampaign } from "./types/c4echain/cfeairdrop/tx";
-import { MsgCloseCampaign } from "./types/c4echain/cfeairdrop/tx";
-import { MsgAddClaimRecords } from "./types/c4echain/cfeairdrop/tx";
-import { MsgAddMissionToCampaign } from "./types/c4echain/cfeairdrop/tx";
-import { MsgStartCampaign } from "./types/c4echain/cfeairdrop/tx";
+import { MsgClaim } from "./types/c4echain/cfeclaim/tx";
+import { MsgCreateCampaign } from "./types/c4echain/cfeclaim/tx";
+import { MsgDeleteClaimRecord } from "./types/c4echain/cfeclaim/tx";
+import { MsgInitialClaim } from "./types/c4echain/cfeclaim/tx";
+import { MsgEditCampaign } from "./types/c4echain/cfeclaim/tx";
+import { MsgRemoveCampaign } from "./types/c4echain/cfeclaim/tx";
+import { MsgCloseCampaign } from "./types/c4echain/cfeclaim/tx";
+import { MsgAddClaimRecords } from "./types/c4echain/cfeclaim/tx";
+import { MsgAddMissionToCampaign } from "./types/c4echain/cfeclaim/tx";
+import { MsgStartCampaign } from "./types/c4echain/cfeclaim/tx";
 
 
 export { MsgClaim, MsgCreateCampaign, MsgDeleteClaimRecord, MsgInitialClaim, MsgEditCampaign, MsgRemoveCampaign, MsgCloseCampaign, MsgAddClaimRecords, MsgAddMissionToCampaign, MsgStartCampaign };
@@ -283,7 +283,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgClaim({ value }: msgClaimParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgClaim", value: MsgClaim.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgClaim", value: MsgClaim.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgClaim: Could not create message: ' + e.message)
 			}
@@ -291,7 +291,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgCreateCampaign({ value }: msgCreateCampaignParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCreateCampaign", value: MsgCreateCampaign.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgCreateCampaign", value: MsgCreateCampaign.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgCreateCampaign: Could not create message: ' + e.message)
 			}
@@ -299,7 +299,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgDeleteClaimRecord({ value }: msgDeleteClaimRecordParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgDeleteClaimRecord", value: MsgDeleteClaimRecord.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgDeleteClaimRecord", value: MsgDeleteClaimRecord.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgDeleteClaimRecord: Could not create message: ' + e.message)
 			}
@@ -307,7 +307,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgInitialClaim({ value }: msgInitialClaimParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgInitialClaim", value: MsgInitialClaim.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgInitialClaim", value: MsgInitialClaim.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgInitialClaim: Could not create message: ' + e.message)
 			}
@@ -315,7 +315,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgEditCampaign({ value }: msgEditCampaignParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgEditCampaign", value: MsgEditCampaign.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgEditCampaign", value: MsgEditCampaign.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgEditCampaign: Could not create message: ' + e.message)
 			}
@@ -323,7 +323,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgRemoveCampaign({ value }: msgRemoveCampaignParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgRemoveCampaign", value: MsgRemoveCampaign.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgRemoveCampaign", value: MsgRemoveCampaign.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgRemoveCampaign: Could not create message: ' + e.message)
 			}
@@ -331,7 +331,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgCloseCampaign({ value }: msgCloseCampaignParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgCloseCampaign", value: MsgCloseCampaign.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgCloseCampaign", value: MsgCloseCampaign.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgCloseCampaign: Could not create message: ' + e.message)
 			}
@@ -339,7 +339,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgAddClaimRecords({ value }: msgAddClaimRecordsParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddClaimRecords", value: MsgAddClaimRecords.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgAddClaimRecords", value: MsgAddClaimRecords.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgAddClaimRecords: Could not create message: ' + e.message)
 			}
@@ -347,7 +347,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgAddMissionToCampaign({ value }: msgAddMissionToCampaignParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgAddMissionToCampaign", value: MsgAddMissionToCampaign.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgAddMissionToCampaign", value: MsgAddMissionToCampaign.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgAddMissionToCampaign: Could not create message: ' + e.message)
 			}
@@ -355,7 +355,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgStartCampaign({ value }: msgStartCampaignParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeairdrop.MsgStartCampaign", value: MsgStartCampaign.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgStartCampaign", value: MsgStartCampaign.fromPartial( value ) }
 			} catch (e: any) {
 				throw new Error('TxClient:MsgStartCampaign: Could not create message: ' + e.message)
 			}
@@ -403,7 +403,7 @@ class SDKModule {
 const Module = (test: IgniteClient) => {
 	return {
 		module: {
-			Chain4EnergyC4EchainCfeairdrop: new SDKModule(test)
+			Chain4EnergyC4EchainCfeclaim: new SDKModule(test)
 		},
 		registry: msgTypes
   }

@@ -6,19 +6,19 @@ import {
   campaignTypeToJSON,
   campaignCloseActionFromJSON,
   campaignCloseActionToJSON,
-} from "../cfeairdrop/campaign";
+} from "../cfeclaim/campaign";
 import {
   MissionType,
   missionTypeFromJSON,
   missionTypeToJSON,
-} from "../cfeairdrop/mission";
+} from "../cfeclaim/mission";
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import { Timestamp } from "../google/protobuf/timestamp";
 import * as Long from "long";
 import { Duration } from "../google/protobuf/duration";
-import { ClaimRecord } from "../cfeairdrop/claim_record";
+import { ClaimRecord } from "../cfeclaim/claim_record";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 export interface MsgClaim {
   claimer: string;
@@ -1985,7 +1985,7 @@ export class MsgClientImpl implements Msg {
   Claim(request: MsgClaim): Promise<MsgClaimResponse> {
     const data = MsgClaim.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "Claim",
       data
     );
@@ -1995,7 +1995,7 @@ export class MsgClientImpl implements Msg {
   InitialClaim(request: MsgInitialClaim): Promise<MsgInitialClaimResponse> {
     const data = MsgInitialClaim.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "InitialClaim",
       data
     );
@@ -2009,7 +2009,7 @@ export class MsgClientImpl implements Msg {
   ): Promise<MsgCreateCampaignResponse> {
     const data = MsgCreateCampaign.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "CreateCampaign",
       data
     );
@@ -2021,7 +2021,7 @@ export class MsgClientImpl implements Msg {
   EditCampaign(request: MsgEditCampaign): Promise<MsgEditCampaignResponse> {
     const data = MsgEditCampaign.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "EditCampaign",
       data
     );
@@ -2035,7 +2035,7 @@ export class MsgClientImpl implements Msg {
   ): Promise<MsgAddMissionToCampaignResponse> {
     const data = MsgAddMissionToCampaign.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "AddMissionToCampaign",
       data
     );
@@ -2049,7 +2049,7 @@ export class MsgClientImpl implements Msg {
   ): Promise<MsgAddClaimRecordsResponse> {
     const data = MsgAddClaimRecords.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "AddClaimRecords",
       data
     );
@@ -2063,7 +2063,7 @@ export class MsgClientImpl implements Msg {
   ): Promise<MsgDeleteClaimRecordResponse> {
     const data = MsgDeleteClaimRecord.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "DeleteClaimRecord",
       data
     );
@@ -2075,7 +2075,7 @@ export class MsgClientImpl implements Msg {
   CloseCampaign(request: MsgCloseCampaign): Promise<MsgCloseCampaignResponse> {
     const data = MsgCloseCampaign.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "CloseCampaign",
       data
     );
@@ -2087,7 +2087,7 @@ export class MsgClientImpl implements Msg {
   StartCampaign(request: MsgStartCampaign): Promise<MsgStartCampaignResponse> {
     const data = MsgStartCampaign.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "StartCampaign",
       data
     );
@@ -2101,7 +2101,7 @@ export class MsgClientImpl implements Msg {
   ): Promise<MsgRemoveCampaignResponse> {
     const data = MsgRemoveCampaign.encode(request).finish();
     const promise = this.rpc.request(
-      "chain4energy.c4echain.cfeairdrop.Msg",
+      "chain4energy.c4echain.cfeclaim.Msg",
       "RemoveCampaign",
       data
     );

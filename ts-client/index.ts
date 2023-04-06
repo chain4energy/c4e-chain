@@ -2,7 +2,7 @@
 import { Registry } from '@cosmjs/proto-signing'
 import { IgniteClient } from "./client";
 import { MissingWalletError } from "./helpers";
-import { Module as Chain4EnergyC4EchainCfeairdrop, msgTypes as Chain4EnergyC4EchainCfeairdropMsgTypes } from './chain4energy.c4echain.cfeairdrop'
+import { Module as Chain4EnergyC4EchainCfeclaim, msgTypes as Chain4EnergyC4EchainCfeclaimMsgTypes } from './chain4energy.c4echain.cfeclaim'
 import { Module as Chain4EnergyC4EchainCfedistributor, msgTypes as Chain4EnergyC4EchainCfedistributorMsgTypes } from './chain4energy.c4echain.cfedistributor'
 import { Module as Chain4EnergyC4EchainCfeminter, msgTypes as Chain4EnergyC4EchainCfeminterMsgTypes } from './chain4energy.c4echain.cfeminter'
 import { Module as Chain4EnergyC4EchainCfesignature, msgTypes as Chain4EnergyC4EchainCfesignatureMsgTypes } from './chain4energy.c4echain.cfesignature'
@@ -34,11 +34,11 @@ import { Module as IbcCoreConnectionV1, msgTypes as IbcCoreConnectionV1MsgTypes 
 
 
 const Client = IgniteClient.plugin([
-    Chain4EnergyC4EchainCfeairdrop, Chain4EnergyC4EchainCfedistributor, Chain4EnergyC4EchainCfeminter, Chain4EnergyC4EchainCfesignature, Chain4EnergyC4EchainCfevesting, CosmosAuthV1Beta1, CosmosAuthzV1Beta1, CosmosBankV1Beta1, CosmosBaseTendermintV1Beta1, CosmosCrisisV1Beta1, CosmosDistributionV1Beta1, CosmosEvidenceV1Beta1, CosmosFeegrantV1Beta1, CosmosGovV1, CosmosGovV1Beta1, CosmosGroupV1, CosmosNftV1Beta1, CosmosParamsV1Beta1, CosmosSlashingV1Beta1, CosmosStakingV1Beta1, CosmosTxV1Beta1, CosmosUpgradeV1Beta1, CosmosVestingV1Beta1, IbcApplicationsInterchainAccountsControllerV1, IbcApplicationsInterchainAccountsHostV1, IbcApplicationsTransferV1, IbcCoreChannelV1, IbcCoreClientV1, IbcCoreConnectionV1
+    Chain4EnergyC4EchainCfeclaim, Chain4EnergyC4EchainCfedistributor, Chain4EnergyC4EchainCfeminter, Chain4EnergyC4EchainCfesignature, Chain4EnergyC4EchainCfevesting, CosmosAuthV1Beta1, CosmosAuthzV1Beta1, CosmosBankV1Beta1, CosmosBaseTendermintV1Beta1, CosmosCrisisV1Beta1, CosmosDistributionV1Beta1, CosmosEvidenceV1Beta1, CosmosFeegrantV1Beta1, CosmosGovV1, CosmosGovV1Beta1, CosmosGroupV1, CosmosNftV1Beta1, CosmosParamsV1Beta1, CosmosSlashingV1Beta1, CosmosStakingV1Beta1, CosmosTxV1Beta1, CosmosUpgradeV1Beta1, CosmosVestingV1Beta1, IbcApplicationsInterchainAccountsControllerV1, IbcApplicationsInterchainAccountsHostV1, IbcApplicationsTransferV1, IbcCoreChannelV1, IbcCoreClientV1, IbcCoreConnectionV1
 ]);
 
 const registry = new Registry([
-  ...Chain4EnergyC4EchainCfeairdropMsgTypes,
+  ...Chain4EnergyC4EchainCfeclaimMsgTypes,
   ...Chain4EnergyC4EchainCfedistributorMsgTypes,
   ...Chain4EnergyC4EchainCfeminterMsgTypes,
   ...Chain4EnergyC4EchainCfesignatureMsgTypes,

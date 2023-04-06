@@ -25,7 +25,7 @@ func TestSinglePeriod(t *testing.T) {
 		},
 	}
 	sum := periodsSum(&periods)
-	acc := createAirdropAccout(sum, periods[0].StartTime, periods[0].EndTime, periods)
+	acc := createClaimAccout(sum, periods[0].StartTime, periods[0].EndTime, periods)
 
 	for i := -10; i <= 150; i++ {
 		var checkTime time.Time
@@ -107,7 +107,7 @@ func TestMultiplePeriods(t *testing.T) {
 		},
 	}
 	sum := periodsSum(&periods)
-	acc := createAirdropAccout(sum, periods[0].StartTime, periods[0].EndTime, periods)
+	acc := createClaimAccout(sum, periods[0].StartTime, periods[0].EndTime, periods)
 
 	for i := -10; i <= 150; i++ {
 		var checkTime time.Time
@@ -145,14 +145,14 @@ func TestMultiplePeriods(t *testing.T) {
 	}
 }
 
-func TestValidateAirdropAccount(t *testing.T) {
-	for _, tc := range []AirdropAccountTc{
-		correctAirdropVestingAccount(),
-		wrongOriginalVestingAirdropVestingAccount(),
-		wrongStartTimeAirdropVestingAccount(),
-		wrongEndTimeAirdropVestingAccount(),
-		endLessThanStartAirdropVestingAccount(),
-		periodEndLessThanStartAirdropVestingAccount(),
+func TestValidateClaimAccount(t *testing.T) {
+	for _, tc := range []ClaimAccountTc{
+		correctClaimVestingAccount(),
+		wrongOriginalVestingClaimVestingAccount(),
+		wrongStartTimeClaimVestingAccount(),
+		wrongEndTimeClaimVestingAccount(),
+		endLessThanStartClaimVestingAccount(),
+		periodEndLessThanStartClaimVestingAccount(),
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -166,71 +166,71 @@ func TestValidateAirdropAccount(t *testing.T) {
 	}
 }
 
-func correctAirdropVestingAccount() AirdropAccountTc {
-	return AirdropAccountTc{
+func correctClaimVestingAccount() ClaimAccountTc {
+	return ClaimAccountTc{
 		desc:    "valid account",
-		account: createCorrectAirdropAccout(),
+		account: createCorrectClaimAccout(),
 		valid:   true,
 	}
 }
 
-func wrongOriginalVestingAirdropVestingAccount() AirdropAccountTc {
-	acc := createCorrectAirdropAccout()
+func wrongOriginalVestingClaimVestingAccount() ClaimAccountTc {
+	acc := createCorrectClaimAccout()
 	acc.OriginalVesting[0].Amount = acc.OriginalVesting[0].Amount.Add(sdk.NewInt(300))
-	return AirdropAccountTc{
-		desc:    "wrong original vesting airdrop account",
+	return ClaimAccountTc{
+		desc:    "wrong original vesting claim account",
 		account: acc,
 		valid:   false,
 		message: "original vesting (922100uc4e) not equal to sum of periods (921800uc4e)",
 	}
 }
 
-func wrongStartTimeAirdropVestingAccount() AirdropAccountTc {
-	acc := createCorrectAirdropAccout()
+func wrongStartTimeClaimVestingAccount() ClaimAccountTc {
+	acc := createCorrectClaimAccout()
 	acc.StartTime = acc.StartTime - 100
-	return AirdropAccountTc{
-		desc:    "wrong start time airdrop account",
+	return ClaimAccountTc{
+		desc:    "wrong start time claim account",
 		account: acc,
 		valid:   false,
 		message: fmt.Sprintf("vesting start-time (%d) not eqaul to earliest period start time (%d)", acc.StartTime, acc.VestingPeriods[1].StartTime),
 	}
 }
 
-func wrongEndTimeAirdropVestingAccount() AirdropAccountTc {
-	acc := createCorrectAirdropAccout()
+func wrongEndTimeClaimVestingAccount() ClaimAccountTc {
+	acc := createCorrectClaimAccout()
 	acc.EndTime = acc.EndTime - 100
-	return AirdropAccountTc{
-		desc:    "wrong end time airdrop account",
+	return ClaimAccountTc{
+		desc:    "wrong end time claim account",
 		account: acc,
 		valid:   false,
 		message: fmt.Sprintf("vesting end-time (%d) not eqaul to lastest period end time (%d)", acc.EndTime, acc.VestingPeriods[2].EndTime),
 	}
 }
 
-func endLessThanStartAirdropVestingAccount() AirdropAccountTc {
-	acc := createCorrectAirdropAccout()
+func endLessThanStartClaimVestingAccount() ClaimAccountTc {
+	acc := createCorrectClaimAccout()
 	acc.EndTime = acc.StartTime - 100
-	return AirdropAccountTc{
-		desc:    "wrong end time airdrop account",
+	return ClaimAccountTc{
+		desc:    "wrong end time claim account",
 		account: acc,
 		valid:   false,
 		message: fmt.Sprintf("vesting end-time (%d) cannot be before start-time (%d)", acc.EndTime, acc.StartTime),
 	}
 }
 
-func periodEndLessThanStartAirdropVestingAccount() AirdropAccountTc {
-	acc := createCorrectAirdropAccout()
+func periodEndLessThanStartClaimVestingAccount() ClaimAccountTc {
+	acc := createCorrectClaimAccout()
 
 	acc.VestingPeriods[3].EndTime = acc.VestingPeriods[3].StartTime - 100
-	return AirdropAccountTc{
-		desc:    "wrong end time airdrop account",
+	return ClaimAccountTc{
+		desc:    "wrong end time claim account",
 		account: acc,
 		valid:   false,
 		message: fmt.Sprintf("vesting period end-time (%d) cannot be before start-time (%d)", acc.VestingPeriods[3].EndTime, acc.VestingPeriods[3].StartTime),
 	}
 }
 
-func createCorrectAirdropAccout() *types.RepeatedContinuousVestingAccount {
+func createCorrectClaimAccout() *types.RepeatedContinuousVestingAccount {
 	periods := types.ContinuousVestingPeriods{
 		{
 			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1000))),
@@ -254,15 +254,15 @@ func createCorrectAirdropAccout() *types.RepeatedContinuousVestingAccount {
 		},
 	}
 	sum := periodsSum(&periods)
-	return createAirdropAccout(sum, periods[1].StartTime, periods[2].EndTime, periods)
+	return createClaimAccout(sum, periods[1].StartTime, periods[2].EndTime, periods)
 
 }
 
-func createAirdropAccout(originalVesting sdk.Coins, startTime int64, endTime int64, periods types.ContinuousVestingPeriods) *types.RepeatedContinuousVestingAccount {
+func createClaimAccout(originalVesting sdk.Coins, startTime int64, endTime int64, periods types.ContinuousVestingPeriods) *types.RepeatedContinuousVestingAccount {
 	return types.NewRepeatedContinuousVestingAccount(&authtypes.BaseAccount{}, originalVesting, startTime, endTime, periods)
 }
 
-type AirdropAccountTc struct {
+type ClaimAccountTc struct {
 	desc    string
 	account *types.RepeatedContinuousVestingAccount
 	valid   bool

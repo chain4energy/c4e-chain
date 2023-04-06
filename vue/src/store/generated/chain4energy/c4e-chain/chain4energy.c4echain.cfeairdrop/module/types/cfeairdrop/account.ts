@@ -4,7 +4,7 @@ import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import { Coin } from "../cosmos/base/v1beta1/coin";
 import { BaseVestingAccount } from "../cosmos/vesting/v1beta1/vesting";
 
-export const protobufPackage = "chain4energy.c4echain.cfeairdrop";
+export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 /** ContinuousVestingPeriod defines a length of time and amount of coins that will vest. */
 export interface ContinuousVestingPeriod {
@@ -130,7 +130,7 @@ export const ContinuousVestingPeriod = {
   },
 };
 
-const baseAirdropVestingAccount: object = { start_time: 0 };
+const baseClaimVestingAccount: object = { start_time: 0 };
 
 export const RepeatedContinuousVestingAccount = {
   encode(
@@ -155,7 +155,7 @@ export const RepeatedContinuousVestingAccount = {
   decode(input: Reader | Uint8Array, length?: number): RepeatedContinuousVestingAccount {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAirdropVestingAccount } as RepeatedContinuousVestingAccount;
+    const message = { ...baseClaimVestingAccount } as RepeatedContinuousVestingAccount;
     message.vesting_periods = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -183,7 +183,7 @@ export const RepeatedContinuousVestingAccount = {
   },
 
   fromJSON(object: any): RepeatedContinuousVestingAccount {
-    const message = { ...baseAirdropVestingAccount } as RepeatedContinuousVestingAccount;
+    const message = { ...baseClaimVestingAccount } as RepeatedContinuousVestingAccount;
     message.vesting_periods = [];
     if (
       object.base_vesting_account !== undefined &&
@@ -231,7 +231,7 @@ export const RepeatedContinuousVestingAccount = {
   fromPartial(
     object: DeepPartial<RepeatedContinuousVestingAccount>
   ): RepeatedContinuousVestingAccount {
-    const message = { ...baseAirdropVestingAccount } as RepeatedContinuousVestingAccount;
+    const message = { ...baseClaimVestingAccount } as RepeatedContinuousVestingAccount;
     message.vesting_periods = [];
     if (
       object.base_vesting_account !== undefined &&
