@@ -273,25 +273,25 @@ func (k Keeper) ValidateCloseCampaignParams(logger log.Logger, campaignId uint64
 		return types.Campaign{}, err
 	}
 
-	if err = ValidateCampaignEnd(ctx, campaign, logger); err != nil {
+	if err = ValidateCampaignEnded(logger, ctx, campaign); err != nil {
 		return types.Campaign{}, err
 	}
 
 	return campaign, nil
 }
 
-func ValidateCampaignEnd(ctx sdk.Context, campaign types.Campaign, logger log.Logger) error {
-	if campaign.EndTime.After(ctx.BlockTime()) {
+func ValidateCampaignNotEnded(logger log.Logger, ctx sdk.Context, campaign types.Campaign) error {
+	if ctx.BlockTime().After(campaign.EndTime) {
 		logger.Debug("close claim campaign campaign is not over yet", "startTime", campaign.StartTime)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close claim campaign - campaign with id %d campaign is over (endtime - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "campaign with id %d campaign is over (end time - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
 	}
 	return nil
 }
 
 func ValidateCampaignEnded(logger log.Logger, ctx sdk.Context, campaign types.Campaign) error {
-	if !campaign.EndTime.After(ctx.BlockTime()) {
+	if ctx.BlockTime().Before(campaign.EndTime) {
 		logger.Debug("campaign is over", "startTime", campaign.StartTime)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close claim campaign - campaign with id %d campaign is not over yet (endtime - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "campaign with id %d campaign is not over yet (endtime - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
 	}
 	return nil
 }

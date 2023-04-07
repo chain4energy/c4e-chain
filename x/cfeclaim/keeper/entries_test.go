@@ -194,7 +194,7 @@ func TestAddUsersEntriesCampaignIsOver(t *testing.T) {
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, fmt.Sprintf("campaign 0 is disabled (end time %s < %s): campaign is disabled", campaign.EndTime, blockTime))
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, fmt.Sprintf("campaign with id 0 campaign is over (end time - %s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 
 func TestAddUsersEntriesclaimRecordExist(t *testing.T) {

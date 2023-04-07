@@ -107,7 +107,7 @@ func (k Keeper) ValidateAddUsersEntries(logger log.Logger, ctx sdk.Context, owne
 		return nil, err
 	}
 
-	if err = ValidateCampaignEnded(logger, ctx, campaign); err != nil {
+	if err = ValidateCampaignNotEnded(logger, ctx, campaign); err != nil {
 		return nil, err
 	}
 	return &campaign, nil
@@ -184,7 +184,7 @@ func (k Keeper) validateInitialClaimFreeAmount(logger log.Logger, initialClaimFr
 	for _, coin := range claimRecord.Amount {
 		if initialClaimAmount.AmountOf(coin.Denom).LT(initialClaimFreeAmount) {
 			logger.Debug("claim entry amount < campaign initial claim free amount", "amount", coin.Amount, "initialClaimFreeAmount", initialClaimFreeAmount)
-			return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim amount %s < campaign initial claim free amount (%s)", initialClaimAmount.AmountOf(coin.Denom), initialClaimFreeAmount.String())
+			return sdkerrors.Wrapf(c4eerrors.ErrParam, "claim amount %s < campaign initial claim free amount (%s)", initialClaimAmount.AmountOf(coin.Denom), initialClaimFreeAmount.String())
 		}
 	}
 

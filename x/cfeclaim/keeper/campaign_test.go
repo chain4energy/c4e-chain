@@ -272,7 +272,7 @@ func TestCreateCampaignCloseCampaignCampaignNotOverYetError(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
-	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseBurn, fmt.Sprintf("close claim campaign - campaign with id %d campaign is not over yet (endtime - %s < %s): wrong param value", 0, campaign.EndTime, testHelper.Context.BlockTime()))
+	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseBurn, fmt.Sprintf("campaign with id %d campaign is not over yet (endtime - %s < %s): wrong param value", 0, campaign.EndTime, testHelper.Context.BlockTime()))
 }
 
 func TestCreateCampaignCloseCampaignCampaigDoesntExistError(t *testing.T) {

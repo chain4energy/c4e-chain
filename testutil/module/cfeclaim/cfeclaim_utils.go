@@ -386,7 +386,7 @@ func (h *C4eClaimUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64, 
 		}
 
 		return h.GovUtils.GovKeeper.AddVote(ctx, proposal.Id, claimer,
-			govv1types.WeightedVoteOptions{{Option: govv1types.OptionAbstain, Weight: "1"}}, "=abc")
+			govv1types.WeightedVoteOptions{{Option: govv1types.VoteOption_VOTE_OPTION_YES, Weight: "1"}}, "=abc")
 	}
 	h.completeAnyMission(ctx, campaignId, missionId, claimer, action, nil)
 }
