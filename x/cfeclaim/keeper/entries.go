@@ -116,11 +116,11 @@ func (k Keeper) ValidateAddUsersEntries(logger log.Logger, ctx sdk.Context, owne
 func validateClaimRecord(logger log.Logger, claimRecord *types.ClaimRecord) error {
 	if claimRecord.Address == "" {
 		logger.Debug("claim record empty address")
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim record empty address")
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "claim record empty address")
 	}
 	if !claimRecord.Amount.IsAllPositive() {
 		logger.Debug("claim record must has at least one coin and all amounts must be positive")
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add campaign entries - claim record must has at least one coin and all amounts must be positive")
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "claim record must has at least one coin and all amounts must be positive")
 	}
 	return nil
 }

@@ -283,7 +283,7 @@ func (k Keeper) ValidateCloseCampaignParams(logger log.Logger, campaignId uint64
 func ValidateCampaignEnd(ctx sdk.Context, campaign types.Campaign, logger log.Logger) error {
 	if campaign.EndTime.After(ctx.BlockTime()) {
 		logger.Debug("close claim campaign campaign is not over yet", "startTime", campaign.StartTime)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close claim campaign - campaign with id %d campaign is not over yet (endtime - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close claim campaign - campaign with id %d campaign is over (endtime - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
 	}
 	return nil
 }
@@ -292,6 +292,13 @@ func ValidateCampaignEnded(logger log.Logger, ctx sdk.Context, campaign types.Ca
 	if !campaign.EndTime.After(ctx.BlockTime()) {
 		logger.Debug("campaign is over", "startTime", campaign.StartTime)
 		return sdkerrors.Wrapf(c4eerrors.ErrParam, "close claim campaign - campaign with id %d campaign is not over yet (endtime - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
+	}
+	return nil
+}
+
+func ValidateCampaignStarted(logger log.Logger, ctx sdk.Context, campaign types.Campaign) error {
+	if !campaign.EndTime.After(ctx.BlockTime()) {
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "campaign with id %d has not started yet (startTime - %s < %s)", campaign.Id, campaign.StartTime, ctx.BlockTime())
 	}
 	return nil
 }
@@ -449,7 +456,7 @@ func ValidateCampaignType(log log.Logger, campaignType types.CampaignType, owner
 func ValidateCampaignStart(ctx sdk.Context, campaign types.Campaign, logger log.Logger) error {
 	if campaign.StartTime.Before(ctx.BlockTime()) {
 		logger.Debug("Campaign start time in the past", "startTime", campaign.StartTime)
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "Campaign with id %d start time in the past error (%s < %s)", campaign.Id, campaign.StartTime, ctx.BlockTime())
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "campaign with id %d start time in the past error (%s < %s)", campaign.Id, campaign.StartTime, ctx.BlockTime())
 	}
 	return nil
 }

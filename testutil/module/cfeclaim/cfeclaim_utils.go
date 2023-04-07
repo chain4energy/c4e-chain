@@ -1,6 +1,8 @@
 package cfeclaim
 
 import (
+	"cosmossdk.io/math"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
@@ -372,7 +374,7 @@ func (h *C4eClaimUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64, 
 		depositAmount := depParams.MinDeposit
 		h.BankUtils.AddCoinsToAccount(ctx, depositAmount, claimer)
 
-		testProposal := &cfevestingtypes.MsgUpdateDenomParam{Denom: testenv.DefaultTestDenom}
+		testProposal := &cfevestingtypes.MsgUpdateDenomParam{Authority: appparams.GetAuthority(), Denom: testenv.DefaultTestDenom}
 		proposal, err := h.GovUtils.GovKeeper.SubmitProposal(ctx, []sdk.Msg{testProposal}, "=abc")
 		if err != nil {
 			return err
@@ -572,7 +574,7 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 	cfeclaimModuleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
 	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	_, feegrantAccountAddress := cfeclaimmodulekeeper.FeegrantAccountAddress(campaign.Id)
-	var feegrantAmountLefBefore sdk.Int
+	feegrantAmountLefBefore := math.ZeroInt()
 	if campaign.FeegrantAmount.IsPositive() {
 		feegrantAmountLefBefore = h.BankUtils.GetAccountDefultDenomBalance(ctx, feegrantAccountAddress)
 	}

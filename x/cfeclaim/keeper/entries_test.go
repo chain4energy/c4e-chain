@@ -123,7 +123,7 @@ func TestAddUsersEntriesEmptyAmount(t *testing.T) {
 	claimEntries[0].Amount = sdk.NewCoins()
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "add campaign entries - claim entry at index 0 claim entry must has at least one coin: wrong param value")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim record must has at least one coin and all amounts must be positive: wrong param value")
 }
 
 func TestAddUsersEntriesZeroAmount(t *testing.T) {
@@ -134,7 +134,7 @@ func TestAddUsersEntriesZeroAmount(t *testing.T) {
 	claimEntries[0].Amount[0].Amount = sdk.ZeroInt()
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "add campaign entries - claim entry at index 0 amount is 0: wrong param value")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim record must has at least one coin and all amounts must be positive: wrong param value")
 }
 
 func TestAddUsersEntriesEmptyAddress(t *testing.T) {
@@ -145,7 +145,7 @@ func TestAddUsersEntriesEmptyAddress(t *testing.T) {
 	claimEntries[0].Address = ""
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "add campaign entries - claim entry empty address on index 0: wrong param value")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim record empty address: wrong param value")
 }
 
 func TestAddUsersEntriesWrongOwner(t *testing.T) {
@@ -155,7 +155,7 @@ func TestAddUsersEntriesWrongOwner(t *testing.T) {
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[1], 0, claimEntries, "add campaign entries - you are not the owner of campaign with id 0: tx intended signer does not match the given signer")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[1], 0, claimEntries, "you are not the campaign owner: tx intended signer does not match the given signer")
 }
 
 func TestAddUsersEntriesCampaignDoesntExist(t *testing.T) {
@@ -165,7 +165,7 @@ func TestAddUsersEntriesCampaignDoesntExist(t *testing.T) {
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 1, claimEntries, "add campaign entries -  campaign with id 1 doesn't exist: entity does not exist")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 1, claimEntries, "campaign with id 1 not found: entity does not exist")
 }
 
 func TestAddUsersEntriesCampaignNotEnabled(t *testing.T) {
@@ -178,7 +178,7 @@ func TestAddUsersEntriesCampaignNotEnabled(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "add campaign entries - campaign 0 is disabled: campaign is disabled")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "campaign is disabled: entity already exists")
 }
 
 func TestAddUsersEntriesCampaignIsOver(t *testing.T) {
@@ -194,7 +194,7 @@ func TestAddUsersEntriesCampaignIsOver(t *testing.T) {
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, fmt.Sprintf("add campaign entries - campaign 0 is disabled (end time %s < %s): campaign is disabled", campaign.EndTime, blockTime))
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, fmt.Sprintf("campaign 0 is disabled (end time %s < %s): campaign is disabled", campaign.EndTime, blockTime))
 }
 
 func TestAddUsersEntriesclaimRecordExist(t *testing.T) {
@@ -205,7 +205,7 @@ func TestAddUsersEntriesclaimRecordExist(t *testing.T) {
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, fmt.Sprintf("campaignId 0 already exists for address: %s: entity already exists", claimEntries[0].Address))
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, fmt.Sprintf("claim records index 0: campaignId 0 already exists for address: %s: entity already exists", claimEntries[0].Address))
 }
 
 func TestAddUsersEntriesInitialClaimAmountError(t *testing.T) {
@@ -221,7 +221,7 @@ func TestAddUsersEntriesInitialClaimAmountError(t *testing.T) {
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "add campaign entries - claim entry at index 0 initial claim amount 80000000 < campaign initial claim free amount (100000000000000000): wrong param value")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim amount 80000000 < campaign initial claim free amount (100000000000000000): wrong param value")
 }
 
 func TestAddUsersEntriesInitialClaimAmount(t *testing.T) {
@@ -270,7 +270,7 @@ func TestAddUsersEntriesWrongSrcAccountBalanceFeegrant(t *testing.T) {
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "add campaign entries - owner balance is too small (1000000045uc4e < 1025000045uc4e): insufficient funds")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "owner balance is too small (1000000045uc4e < 1025000045uc4e): insufficient funds")
 }
 
 func createTestClaimRecords(addresses []sdk.AccAddress, startAmount int) (claimEntries []*types.ClaimRecord, amountSum sdk.Int) {
