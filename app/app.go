@@ -513,14 +513,13 @@ func New(
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
-	evidenceKeeper := evidencekeeper.NewKeeper(
+	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
 		appCodec,
 		keys[evidencetypes.StoreKey],
 		&app.StakingKeeper,
 		app.SlashingKeeper,
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
-	app.EvidenceKeeper = *evidenceKeeper
 
 	govRouter := govv1beta1.NewRouter()
 	govRouter.
@@ -541,6 +540,12 @@ func New(
 		govRouter,
 		app.MsgServiceRouter(),
 		govConfig,
+	)
+
+	app.GovKeeper = *app.GovKeeper.SetHooks(
+		govtypes.NewMultiGovHooks(
+			app.CfeclaimKeeper.NewMissionVoteHooks(),
+		),
 	)
 
 	app.CfevestingKeeper = *cfevestingmodulekeeper.NewKeeper(

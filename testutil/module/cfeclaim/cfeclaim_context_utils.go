@@ -1,6 +1,7 @@
 package cfeclaim
 
 import (
+	"cosmossdk.io/math"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
@@ -136,8 +137,8 @@ func (h *ContextC4eClaimUtils) CreateRepeatedContinuousVestingAccount(address sd
 }
 
 func (h *ContextC4eClaimUtils) CompleteDelegationMission(campaignId uint64, missionId uint64,
-	claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
-	h.C4eClaimUtils.CompleteDelegationMission(h.testContext.GetContext(), campaignId, missionId, claimer, deleagtionAmount)
+	claimer sdk.AccAddress, deleagtionAmount math.Int, valAddress sdk.ValAddress) {
+	h.C4eClaimUtils.CompleteDelegationMission(h.testContext.GetContext(), campaignId, missionId, claimer, deleagtionAmount, valAddress)
 }
 
 func (h *ContextC4eClaimUtils) CompleteVoteMission(campaignId uint64, missionId uint64, claimer sdk.AccAddress) {

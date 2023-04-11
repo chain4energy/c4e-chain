@@ -346,14 +346,10 @@ func (h *C4eClaimUtils) SetUsersEntries(
 	h.helpeCfeclaimkeeper.SetUserEntry(ctx, *userEntry)
 }
 
-func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, deleagtionAmount sdk.Int) {
+func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, deleagtionAmount math.Int, valAddress sdk.ValAddress) {
 	action := func() error {
-		validators := h.StakingUtils.GetValidators(ctx)
-		valAddr, err := sdk.ValAddressFromBech32(validators[0].OperatorAddress)
-		if err != nil {
-			return err
-		}
-		h.StakingUtils.MessageDelegate(ctx, 1, 0, valAddr, claimer, deleagtionAmount)
+		h.StakingUtils.SetupValidators(ctx, []sdk.ValAddress{valAddress}, sdk.NewInt(1))
+		h.StakingUtils.MessageDelegate(ctx, 2, 0, valAddress, claimer, deleagtionAmount)
 		return nil
 	}
 	beforeCheck := func(accBefore authtypes.AccountI, accAfter authtypes.AccountI, claimerAmountBefore sdk.Int) (authtypes.AccountI, sdk.Int) {

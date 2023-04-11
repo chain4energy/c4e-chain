@@ -76,7 +76,7 @@ func GetWhitelistedVestingAccounts() []string {
 	return []string{"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj"}
 }
 
-func GetTeamdropAccounts() []string {
+func GetWhitelistedTeamdropAccounts() []string {
 	return []string{"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj"}
 }
 

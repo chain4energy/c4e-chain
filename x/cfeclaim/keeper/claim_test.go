@@ -12,7 +12,7 @@ import (
 
 func TestCompleteDelegationMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
+	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
@@ -28,7 +28,7 @@ func TestCompleteDelegationMission(t *testing.T) {
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
-	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount)
+	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
 }
 
@@ -115,7 +115,7 @@ func TestClaimNoInitialClaimError(t *testing.T) {
 
 func TestClaimMissionCampaignHasEnded(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
+	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
@@ -131,7 +131,7 @@ func TestClaimMissionCampaignHasEnded(t *testing.T) {
 	delagationAmount := sdk.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
-	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount)
+	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1], fmt.Sprintf("campaign 0 has already ended (%s > endTime %s) error: campaign is disabled", testHelper.Context.BlockTime(), campaign.EndTime))
@@ -182,7 +182,7 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 
 func TestFullCampaign(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
+	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
@@ -201,7 +201,7 @@ func TestFullCampaign(t *testing.T) {
 	delagationAmount := sdk.NewInt(1000000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
-	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount)
+	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
 
 	testHelper.C4eClaimUtils.CompleteVoteMission(0, 2, acountsAddresses[1])
 

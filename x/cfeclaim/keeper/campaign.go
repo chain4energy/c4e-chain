@@ -444,7 +444,7 @@ func ValidateCampaignEndTime(log log.Logger, startTime *time.Time, endTime *time
 
 func ValidateCampaignType(log log.Logger, campaignType types.CampaignType, owner string) error {
 	if campaignType == types.CampaignTeamdrop {
-		if !slices.Contains(types.GetTeamdropAccounts(), owner) {
+		if !slices.Contains(types.GetWhitelistedTeamdropAccounts(), owner) {
 			log.Debug("param err, this campaign type can be created only by specific accounts", "owner", owner)
 			return sdkerrors.Wrap(sdkerrors.ErrorInvalidSigner, "TeamDrop campaigns can be created only by specific accounts")
 		}
