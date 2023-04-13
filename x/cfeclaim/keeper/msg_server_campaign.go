@@ -26,6 +26,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		msg.LockupPeriod,
 		msg.VestingPeriod,
 	); err != nil {
+		k.Logger(ctx).Debug("create campaign", "err", err.Error())
 		return nil, err
 	}
 

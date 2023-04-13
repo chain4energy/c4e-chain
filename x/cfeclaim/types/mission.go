@@ -22,13 +22,12 @@ func MissionTypeFromString(str string) (MissionType, error) {
 	return MissionType(option), nil
 }
 
-// NormalizeVoteOption - normalize user specified vote option
 func NormalizeMissionType(option string) string {
 	switch option {
 	case "InitialClaim", "initial_claim", "INITIAL_CLAIM":
 		return MissionInitialClaim.String()
 
-	case "Delegation", "delegation", "DELEGATIOn":
+	case "Delegation", "delegation", "DELEGATION":
 		return MissionDelegation.String()
 
 	case "Vote", "vote", "VOTE":

@@ -17,6 +17,7 @@ func (k msgServer) AddClaimRecords(goCtx context.Context, msg *types.MsgAddClaim
 		msg.CampaignId,
 		msg.ClaimRecords,
 	); err != nil {
+		k.Logger(ctx).Debug("add user entries", "err", err.Error())
 		return nil, err
 	}
 
@@ -33,6 +34,7 @@ func (k msgServer) DeleteClaimRecord(goCtx context.Context, msg *types.MsgDelete
 		msg.CampaignId,
 		msg.UserAddress,
 	); err != nil {
+		k.Logger(ctx).Debug("delete claim record", "err", err.Error())
 		return nil, err
 	}
 

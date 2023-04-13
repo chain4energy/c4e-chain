@@ -1,6 +1,9 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
+	"fmt"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -44,9 +47,9 @@ func (msg *MsgAddClaimRecords) GetSignBytes() []byte {
 func (msg *MsgAddClaimRecords) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	return nil
+	return ValidateClaimRecords(msg.ClaimRecords)
 }
 
 var _ sdk.Msg = &MsgDeleteClaimRecord{}
@@ -82,7 +85,30 @@ func (msg *MsgDeleteClaimRecord) GetSignBytes() []byte {
 func (msg *MsgDeleteClaimRecord) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 	return nil
+}
+
+func ValidateClaimRecords(claimRecords []*ClaimRecord) error {
+	for i, claimRecord := range claimRecords {
+		if err := ValidateClaimRecord(claimRecord); err != nil {
+			return WrapClaimRecordIndex(err, i)
+		}
+	}
+	return nil
+}
+
+func ValidateClaimRecord(claimRecord *ClaimRecord) error {
+	if claimRecord.Address == "" {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record empty address")
+	}
+	if !claimRecord.Amount.IsAllPositive() {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record must has at least one coin and all amounts must be positive")
+	}
+	return nil
+}
+
+func WrapClaimRecordIndex(err error, index int) error {
+	return errors.Wrap(err, fmt.Sprintf("claim records index %d", index))
 }

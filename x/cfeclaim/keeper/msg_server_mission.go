@@ -13,6 +13,7 @@ func (k msgServer) AddMissionToCampaign(goCtx context.Context, msg *types.MsgAdd
 	keeper := k.Keeper
 
 	if err := keeper.AddMissionToCampaign(ctx, msg.Owner, msg.CampaignId, msg.Name, msg.Description, msg.MissionType, *msg.Weight, msg.ClaimStartDate); err != nil {
+		k.Logger(ctx).Debug("add mission to claim campaign", "err", err.Error())
 		return nil, err
 	}
 

@@ -1,9 +1,11 @@
 package types
 
 import (
-	errortypes "github.com/chain4energy/c4e-chain/types/errors"
+	"cosmossdk.io/errors"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"golang.org/x/exp/slices"
 	"time"
 )
 
@@ -49,21 +51,65 @@ func (msg *MsgCreateCampaign) GetSignBytes() []byte {
 }
 
 func (msg *MsgCreateCampaign) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	return ValidateCampaignCreateParams(msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.CampaignType, msg.Owner)
+}
+
+func ValidateCampaignCreateParams(name string, description string, startTime *time.Time, endTime *time.Time, campaignType CampaignType, owner string) error {
+	if err := ValidateCampaignName(name); err != nil {
+		return err
 	}
-	if msg.Name == "" {
-		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to claim campaign empty name")
+	if err := ValidateCampaignDescription(description); err != nil {
+		return err
 	}
-	if msg.Description == "" {
-		return sdkerrors.Wrap(errortypes.ErrParam, "add mission to claim campaign empty description")
+	if err := ValidateCampaignEndTimeAfterStartTime(startTime, endTime); err != nil {
+		return err
 	}
-	if msg.StartTime.Before(time.Now()) {
-		return sdkerrors.Wrapf(errortypes.ErrParam, "create claim campaign - start time in the past error  (%s < %s)", msg.StartTime, time.Now())
+	if err := ValidateCampaignType(campaignType, owner); err != nil {
+		return err
 	}
-	if msg.StartTime.After(*msg.EndTime) {
-		return sdkerrors.Wrapf(errortypes.ErrParam, "create claim campaign - start time is after end time error (%s > %s)", msg.StartTime, msg.EndTime)
+	return ValidateCampaignTypeTeamdrop(campaignType, owner)
+}
+
+func ValidateCampaignName(name string) error {
+	if name == "" {
+		return errors.Wrap(c4eerrors.ErrParam, "campaign name is empty")
 	}
+	return nil
+}
+
+func ValidateCampaignDescription(description string) error {
+	if description == "" {
+		return errors.Wrap(c4eerrors.ErrParam, "description is empty")
+	}
+	return nil
+}
+
+func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.Time) error {
+	if endTime == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "end time is nil error")
+	}
+	if startTime.After(*endTime) {
+		return errors.Wrapf(c4eerrors.ErrParam, "start time is after end time error (%s > %s)", startTime, endTime)
+	}
+
+	return nil
+}
+
+func ValidateCampaignType(campaignType CampaignType, owner string) error {
+	switch campaignType {
+	case CampaignDefault, CampaignSale, CampaignTeamdrop:
+		return nil
+	}
+
+	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
+}
+
+func ValidateCampaignTypeTeamdrop(campaignType CampaignType, owner string) error {
+	if campaignType == CampaignTeamdrop {
+		if !slices.Contains(GetWhitelistedTeamdropAccounts(), owner) {
+			return errors.Wrap(sdkerrors.ErrorInvalidSigner, "TeamDrop campaigns can be created only by specific accounts")
+		}
+	}
+
 	return nil
 }

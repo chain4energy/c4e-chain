@@ -1,6 +1,8 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
@@ -54,9 +56,58 @@ func (msg *MsgAddMissionToCampaign) GetSignBytes() []byte {
 }
 
 func (msg *MsgAddMissionToCampaign) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Owner)
+	return ValidateAddMissionToCampaign(msg.Owner, msg.Name, msg.Description, msg.MissionType, msg.Weight)
+}
+
+func ValidateAddMissionToCampaign(owner string, name string, description string, missionType MissionType,
+	weight *sdk.Dec) error {
+	_, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "add mission to claim campaign - owner parsing error: %s", owner).Error())
+	}
+
+	if err = ValidateMissionWeight(weight); err != nil {
+		return err
+	}
+	if err = ValidateMissionName(name); err != nil {
+		return err
+	}
+	if err = ValidateMissionType(missionType); err != nil {
+		return err
+	}
+	return ValidateMissionDescription(description)
+}
+
+func ValidateMissionWeight(weight *sdk.Dec) error {
+	if weight.IsNil() {
+		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
+	}
+	if weight.GT(sdk.NewDec(1)) || weight.LT(sdk.ZeroDec()) {
+		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign - weight (%s) is not between 0 and 1 error", weight.String())
+	}
+
+	return nil
+}
+
+func ValidateMissionName(name string) error {
+	if name == "" {
+		return sdkerrors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - empty name error")
 	}
 	return nil
+}
+
+func ValidateMissionDescription(description string) error {
+	if description == "" {
+		return sdkerrors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - mission empty description error")
+	}
+	return nil
+}
+
+func ValidateMissionType(missionType MissionType) error {
+	switch missionType {
+	case MissionClaim, MissionInitialClaim, MissionDelegation, MissionVote:
+		return nil
+	}
+
+	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong mission type")
 }

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -41,7 +42,16 @@ func (msg *MsgCloseCampaign) GetSignBytes() []byte {
 func (msg *MsgCloseCampaign) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	return nil
+	return ValidateCampaignCloseAction(msg.CampaignCloseAction)
+}
+
+func ValidateCampaignCloseAction(action CampaignCloseAction) error {
+	switch action {
+	case CampaignCloseBurn, CampaignCloseSendToOwner, CampaignCloseSendToCommunityPool:
+		return nil
+	}
+
+	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
 }
