@@ -52,6 +52,8 @@ paths:
                   vesting_period:
                     type: string
                     title: period of vesting coins after lockup period
+                  vestingPoolName:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -128,6 +130,8 @@ paths:
                     vesting_period:
                       type: string
                       title: period of vesting coins after lockup period
+                    vestingPoolName:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -47798,6 +47802,8 @@ definitions:
       vesting_period:
         type: string
         title: period of vesting coins after lockup period
+      vestingPoolName:
+        type: string
   chain4energy.c4echain.cfeclaim.CampaignCloseAction:
     type: string
     enum:
@@ -47965,6 +47971,8 @@ definitions:
           vesting_period:
             type: string
             title: period of vesting coins after lockup period
+          vestingPoolName:
+            type: string
   chain4energy.c4echain.cfeclaim.QueryCampaignTotalAmountResponse:
     type: object
     properties:
@@ -48025,6 +48033,8 @@ definitions:
             vesting_period:
               type: string
               title: period of vesting coins after lockup period
+            vestingPoolName:
+              type: string
       pagination:
         type: object
         properties:

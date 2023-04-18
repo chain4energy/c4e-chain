@@ -13,15 +13,11 @@ import (
 )
 
 func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feeGrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
+	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string) error {
 	k.Logger(ctx).Debug("create campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
 
-	if err := types.ValidateCampaignCreateParams(name, description, startTime, endTime, campaignType, owner); err != nil {
-		return err
-	}
-
-	if err := ValidateCampaignStartTimeInTheFuture(ctx, startTime); err != nil {
+	if err := k.ValidateCampaignParams(ctx, name, description, startTime, endTime, campaignType, owner, vestingPoolName); err != nil {
 		return err
 	}
 
@@ -87,8 +83,8 @@ func getFeeGrantAmount(feeGrantAmount *sdk.Int) (*sdk.Int, error) {
 	return feeGrantAmount, nil
 }
 
-func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
+func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, campaignType types.CampaignType, startTime *time.Time,
+	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string, newOwner string) error {
 	k.Logger(ctx).Debug("edit claim campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
 
@@ -103,7 +99,7 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 		return err
 	}
 
-	campaign, err = updateCampaignWithNewParams(name, description, startTime, endTime, lockupPeriod, vestingPeriod, campaign, ctx)
+	campaign, err = k.updateCampaignWithNewParams(name, description, campaignType, startTime, endTime, lockupPeriod, vestingPeriod, vestingPoolName, newOwner, campaign, ctx)
 	k.SetCampaign(ctx, campaign)
 
 	event := &types.EditCampaign{
@@ -118,6 +114,7 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 		EndTime:                campaign.EndTime.String(),
 		LockupPeriod:           campaign.LockupPeriod.String(),
 		VestingPeriod:          campaign.VestingPeriod.String(),
+		VestingPoolName:        campaign.VestingPoolName,
 	}
 	err = ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
@@ -126,8 +123,8 @@ func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, n
 	return nil
 }
 
-func updateCampaignWithNewParams(name string, description string, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration,
+func (k Keeper) updateCampaignWithNewParams(name string, description string, campaignType types.CampaignType, startTime *time.Time,
+	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string, newOwner string,
 	campaign types.Campaign, ctx sdk.Context) (types.Campaign, error) {
 
 	if name != "" {
@@ -154,15 +151,21 @@ func updateCampaignWithNewParams(name string, description string, startTime *tim
 		campaign.LockupPeriod = *lockupPeriod
 	}
 
-	if err := types.ValidateCampaignCreateParams(name, description, startTime, endTime,
-		campaign.CampaignType, campaign.Owner); err != nil {
-		return types.Campaign{}, err
+	if vestingPoolName != "" {
+		campaign.VestingPoolName = vestingPoolName
 	}
 
-	if err := ValidateCampaignStartTimeInTheFuture(ctx, &campaign.StartTime); err != nil {
-		return types.Campaign{}, err
+	if newOwner != "" {
+		campaign.Owner = newOwner
 	}
 
+	if err := types.ValidateCampaignType(campaignType, campaign.Owner, vestingPoolName); err == nil {
+		campaign.CampaignType = campaignType
+	}
+
+	if err := k.ValidateCampaignParams(ctx, campaign.Name, campaign.Description, &campaign.StartTime, &campaign.EndTime, campaign.CampaignType, campaign.Owner, campaign.VestingPoolName); err != nil {
+		return types.Campaign{}, err
+	}
 	return campaign, nil
 }
 
@@ -273,7 +276,17 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 	k.RemoveAllMissionForCampaign(ctx, campaignId)
 	return nil
 }
+func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description string, startTime *time.Time, endTime *time.Time, campaignType types.CampaignType, owner string, vestingPoolName string) error {
+	if err := types.ValidateCampaignCreateParams(name, description, startTime, endTime, campaignType, owner, vestingPoolName); err != nil {
+		return err
+	}
 
+	if err := ValidateCampaignStartTimeInTheFuture(ctx, startTime); err != nil {
+		return err
+	}
+
+	return k.ValidateVestingPool(ctx, owner, vestingPoolName)
+}
 func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, action types.CampaignCloseAction, campaignId uint64, owner string) (types.Campaign, error) {
 	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
 	if err != nil {
@@ -350,10 +363,18 @@ func ValidateCampaignIsNotDisabled(campaign types.Campaign) error {
 
 func ValidateCampaignStartTimeInTheFuture(ctx sdk.Context, startTime *time.Time) error {
 	if startTime == nil {
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "create claim campaign - start time is nil error")
+		return errors.Wrapf(c4eerrors.ErrParam, "create claim campaign - start time is nil error")
 	}
 	if startTime.Before(ctx.BlockTime()) {
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "start time in the past error (%s < %s)", startTime, ctx.BlockTime())
+		return errors.Wrapf(c4eerrors.ErrParam, "start time in the past error (%s < %s)", startTime, ctx.BlockTime())
+	}
+	return nil
+}
+
+func (k Keeper) ValidateVestingPool(ctx sdk.Context, owner string, vestingPoolName string) error {
+	vestingPool, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
+	if !found {
+		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, vestingPool)
 	}
 	return nil
 }

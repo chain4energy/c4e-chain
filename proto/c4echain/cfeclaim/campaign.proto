@@ -41,6 +41,7 @@ message Campaign {
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
+  string vestingPoolName = 13;
 }
 
 message CampaignTotalAmount {

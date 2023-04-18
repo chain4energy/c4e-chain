@@ -440,6 +440,19 @@ func New(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	app.CfevestingKeeper = *cfevestingmodulekeeper.NewKeeper(
+		appCodec,
+		keys[cfevestingmoduletypes.StoreKey],
+		keys[cfevestingmoduletypes.MemStoreKey],
+		app.GetSubspace(cfevestingmoduletypes.ModuleName),
+		app.BankKeeper,
+		app.StakingKeeper,
+		app.AccountKeeper,
+		app.DistrKeeper,
+		app.GovKeeper,
+		appparams.GetAuthority(),
+	)
+
 	app.CfeclaimKeeper = *cfeclaimmodulekeeper.NewKeeper(
 		appCodec,
 		keys[cfeclaimmoduletypes.StoreKey],
@@ -451,6 +464,7 @@ func New(
 		app.FeeGrantKeeper,
 		stakingKeeper,
 		app.DistrKeeper,
+		app.CfevestingKeeper,
 	)
 
 	cfeclaimModule := cfeclaimmodule.NewAppModule(appCodec, app.CfeclaimKeeper, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper)
@@ -548,18 +562,6 @@ func New(
 		),
 	)
 
-	app.CfevestingKeeper = *cfevestingmodulekeeper.NewKeeper(
-		appCodec,
-		keys[cfevestingmoduletypes.StoreKey],
-		keys[cfevestingmoduletypes.MemStoreKey],
-		app.GetSubspace(cfevestingmoduletypes.ModuleName),
-		app.BankKeeper,
-		app.StakingKeeper,
-		app.AccountKeeper,
-		app.DistrKeeper,
-		app.GovKeeper,
-		appparams.GetAuthority(),
-	)
 	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper,
 		app.StakingKeeper, app.GetSubspace(cfevestingmoduletypes.ModuleName))
 

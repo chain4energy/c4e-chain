@@ -24,6 +24,7 @@ type (
 		feeGrantKeeper     types.FeeGrantKeeper
 		stakingKeeper      types.StakingKeeper
 		distributionKeeper types.DistributionKeeper
+		vestingKeeper      types.VestingKeeper
 	}
 )
 
@@ -38,6 +39,7 @@ func NewKeeper(
 	feeGrantKeeper types.FeeGrantKeeper,
 	stakingKeeper types.StakingKeeper,
 	distributionKeeper types.DistributionKeeper,
+	vestingKeeper types.VestingKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -45,7 +47,6 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-
 		cdc:                cdc,
 		storeKey:           storeKey,
 		memKey:             memKey,
@@ -55,6 +56,7 @@ func NewKeeper(
 		feeGrantKeeper:     feeGrantKeeper,
 		stakingKeeper:      stakingKeeper,
 		distributionKeeper: distributionKeeper,
+		vestingKeeper:      vestingKeeper,
 	}
 }
 

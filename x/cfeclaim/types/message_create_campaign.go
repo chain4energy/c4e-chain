@@ -55,10 +55,10 @@ func (msg *MsgCreateCampaign) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-	return ValidateCampaignCreateParams(msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.CampaignType, msg.Owner)
+	return ValidateCampaignCreateParams(msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.CampaignType, msg.Owner, msg.VestingPoolName)
 }
 
-func ValidateCampaignCreateParams(name string, description string, startTime *time.Time, endTime *time.Time, campaignType CampaignType, owner string) error {
+func ValidateCampaignCreateParams(name string, description string, startTime *time.Time, endTime *time.Time, campaignType CampaignType, owner string, vestingPoolName string) error {
 	if err := ValidateCampaignName(name); err != nil {
 		return err
 	}
@@ -68,10 +68,7 @@ func ValidateCampaignCreateParams(name string, description string, startTime *ti
 	if err := ValidateCampaignEndTimeAfterStartTime(startTime, endTime); err != nil {
 		return err
 	}
-	if err := ValidateCampaignType(campaignType, owner); err != nil {
-		return err
-	}
-	return ValidateCampaignTypeTeamdrop(campaignType, owner)
+	return ValidateCampaignType(campaignType, owner, vestingPoolName)
 }
 
 func ValidateCampaignName(name string) error {
@@ -101,10 +98,18 @@ func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.T
 	return nil
 }
 
-func ValidateCampaignType(campaignType CampaignType, owner string) error {
+func ValidateCampaignType(campaignType CampaignType, owner string, vestingPoolName string) error {
 	switch campaignType {
-	case CampaignDefault, CampaignSale, CampaignTeamdrop:
+	case CampaignDefault:
 		return nil
+	case CampaignSale:
+		if vestingPoolName == "" {
+			return errors.Wrap(c4eerrors.ErrParam, "for SALE type campaigns, the vesting pool name must be provided")
+		}
+	case CampaignTeamdrop:
+		if !slices.Contains(GetWhitelistedTeamdropAccounts(), owner) {
+			return errors.Wrap(sdkerrors.ErrorInvalidSigner, "TeamDrop campaigns can be created only by specific accounts")
+		}
 	}
 
 	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")

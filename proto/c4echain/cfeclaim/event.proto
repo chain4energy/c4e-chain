@@ -9,7 +9,7 @@ message NewCampaign {
     string owner = 2;
     string name = 3;
     string description = 4;
-    string campaignType = 5;
+    string campaign_type = 5;
     string feegrant_amount = 6;
     string initial_claim_free_amount = 7;
     string enabled = 8;
@@ -17,13 +17,14 @@ message NewCampaign {
     string end_time = 10;
     string lockup_period = 11;
     string vesting_period = 12;
+    string vesting_poolName = 13;
 }
 
 message EditCampaign {
     string owner = 2;
     string name = 3;
     string description = 4;
-    string campaignType = 5;
+    string campaign_type = 5;
     string feegrant_amount = 6;
     string initial_claim_free_amount = 7;
     string enabled = 8;
@@ -31,6 +32,7 @@ message EditCampaign {
     string end_time = 10;
     string lockup_period = 11;
     string vesting_period = 12;
+    string vesting_poolName = 13;
 }
 
 message CloseCampaign {

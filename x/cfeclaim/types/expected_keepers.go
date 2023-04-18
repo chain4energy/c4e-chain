@@ -1,6 +1,7 @@
 package types
 
 import (
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
@@ -44,4 +45,9 @@ type StakingKeeper interface {
 // DistributionKeeper defines the expected feegrant keeper interface
 type DistributionKeeper interface {
 	FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error
+}
+
+// VestingKeeper defines the expected feegrant keeper interface
+type VestingKeeper interface {
+	GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (vestingPool cfevestingtypes.VestingPool, found bool)
 }

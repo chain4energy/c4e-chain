@@ -25,6 +25,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		msg.EndTime,
 		msg.LockupPeriod,
 		msg.VestingPeriod,
+		msg.VestingPoolName,
 	); err != nil {
 		k.Logger(ctx).Debug("create campaign", "err", err.Error())
 		return nil, err
@@ -42,6 +43,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		EndTime:                msg.EndTime.String(),
 		LockupPeriod:           msg.LockupPeriod.String(),
 		VestingPeriod:          msg.VestingPeriod.String(),
+		VestingPoolName:        msg.VestingPoolName,
 	}
 	err := ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
@@ -62,10 +64,13 @@ func (k msgServer) EditCampaign(goCtx context.Context, msg *types.MsgEditCampaig
 		msg.CampaignId,
 		msg.Name,
 		msg.Description,
+		msg.CampaignType,
 		msg.StartTime,
 		msg.EndTime,
 		msg.LockupPeriod,
 		msg.VestingPeriod,
+		msg.VestingPoolName,
+		msg.NewOwner,
 	); err != nil {
 		return nil, err
 	}

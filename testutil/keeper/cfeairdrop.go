@@ -124,6 +124,7 @@ func cfeclaimKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, block
 		feegrantKeeper,
 		nil,
 		nil,
+		nil,
 	)
 
 	header := tmproto.Header{}

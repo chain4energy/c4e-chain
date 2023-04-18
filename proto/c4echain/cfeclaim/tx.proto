@@ -71,6 +71,7 @@ message MsgCreateCampaign {
     (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
+  string vestingPoolName = 11;
 }
 
 message MsgCreateCampaignResponse {}
@@ -136,30 +137,33 @@ message MsgEditCampaign {
   uint64 campaignId = 2;
   string name = 3;
   string description = 4;
-  string feegrant_amount = 5 [
+  CampaignType campaignType = 5;
+  string feegrant_amount = 6 [
     (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  string initial_claim_free_amount = 6 [
+  string initial_claim_free_amount = 7 [
     (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  google.protobuf.Timestamp start_time = 7 [
+  google.protobuf.Timestamp start_time = 8 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Timestamp end_time = 8 [
+  google.protobuf.Timestamp end_time = 9 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Duration lockup_period = 9 [
+  google.protobuf.Duration lockup_period = 10 [
     (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
-  google.protobuf.Duration vesting_period = 10 [
+  google.protobuf.Duration vesting_period = 11 [
     (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
+  string vesting_poolName = 12;
+  string newOwner = 13;
 }
 
 message MsgEditCampaignResponse {}
