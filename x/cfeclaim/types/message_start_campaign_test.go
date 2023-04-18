@@ -1,6 +1,7 @@
-package types
+package types_test
 
 import (
+	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
@@ -11,18 +12,18 @@ import (
 func TestMsgStartCampaign_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgStartCampaign
+		msg  types.MsgStartCampaign
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgStartCampaign{
+			msg: types.MsgStartCampaign{
 				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgStartCampaign{
+			msg: types.MsgStartCampaign{
 				Owner: sample.AccAddress(),
 			},
 		},

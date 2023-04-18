@@ -53,7 +53,7 @@ func TestCreateCampaignStartTimeAfterEndTime(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	startTimeAfterEndTime := campaign.EndTime.Add(time.Hour)
 	campaign.StartTime = startTimeAfterEndTime
-	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("start time is after end time error (%s > %s): wrong param value", campaign.StartTime, campaign.EndTime))
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("start time is after end time (%s > %s): wrong param value", campaign.StartTime, campaign.EndTime))
 }
 
 func TestCreateCampaignStartTimeInThePast(t *testing.T) {
@@ -112,7 +112,7 @@ func TestCreateCampaignAndStartTimeAfterTimeNowError(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	blockTime := campaign.StartTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, fmt.Sprintf("campaign with id 0 start time in the past error (%s < %s): wrong param value", campaign.StartTime, blockTime))
+	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, fmt.Sprintf("start time in the past error (%s < %s): wrong param value", campaign.StartTime, blockTime))
 }
 
 func TestCreateCampaignAndStartOwnerNotValidError(t *testing.T) {
@@ -140,7 +140,7 @@ func TestCreateCampaignCampaignEnabledError(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
-	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, "campaign is enabled: entity already exists")
+	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, "campaign is enabled")
 }
 
 func TestCreateCampaignCloseCampaignCloseActionBurn(t *testing.T) {
@@ -320,5 +320,6 @@ func prepareTestCampaign(ctx sdk.Context) types.Campaign {
 		EndTime:       end,
 		LockupPeriod:  lockupPeriod,
 		VestingPeriod: vestingPeriod,
+		CampaignType:  types.CampaignDefault,
 	}
 }

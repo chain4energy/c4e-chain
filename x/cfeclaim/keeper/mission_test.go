@@ -83,7 +83,7 @@ func TestAddMissionToCampaignDoesntExist(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 1, mission, "add mission to claim campaign - campaign with id 1 not found error: entity does not exist")
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 1, mission, "campaign with id 1 not found: entity does not exist")
 }
 
 func TestAddMissionToCampaignWrongWeightError(t *testing.T) {
@@ -132,7 +132,7 @@ func TestAddMissionToCampaignWrongOwner(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[1].String(), 0, mission, "add mission to claim campaign - you are not the owner of the campaign with id 0: tx intended signer does not match the given signer")
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[1].String(), 0, mission, "you are not the campaign owner: tx intended signer does not match the given signer")
 }
 
 func TestAddMissionToCampaignAlreadyEnabled(t *testing.T) {
@@ -143,7 +143,7 @@ func TestAddMissionToCampaignAlreadyEnabled(t *testing.T) {
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "add mission to claim - campaign 0 is already enabled error: campaign is disabled")
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "campaign is enabled")
 }
 
 func TestAddMissionToCampaignAlreadyOver(t *testing.T) {
@@ -157,7 +157,7 @@ func TestAddMissionToCampaignAlreadyOver(t *testing.T) {
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseBurn)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "add mission to claim - campaign 0 is already disabled error: campaign is disabled")
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("campaign with id 0 campaign is over (end time - %s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 
 func createAndSaveNTestMissions(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Mission {

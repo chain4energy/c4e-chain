@@ -120,10 +120,10 @@ func ValidateMissionClaimStartDate(campaign types.Campaign, claimStartDate *time
 		return nil
 	}
 	if claimStartDate.After(campaign.EndTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "mission claim start date after campaign end time (end time - %s < %s)", campaign.Id, campaign.EndTime, claimStartDate)
+		return errors.Wrapf(c4eerrors.ErrParam, "mission claim start date after campaign end time (end time - %s < %s)", campaign.EndTime, claimStartDate)
 	}
 	if claimStartDate.Before(campaign.StartTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "mission claim start date before campaign start time (start time - %s > %s)", campaign.Id, campaign.StartTime, claimStartDate)
+		return errors.Wrapf(c4eerrors.ErrParam, "mission claim start date before campaign start time (start time - %s > %s)", campaign.StartTime, claimStartDate)
 	}
 	return nil
 }

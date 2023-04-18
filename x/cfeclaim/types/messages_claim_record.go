@@ -47,7 +47,7 @@ func (msg *MsgAddClaimRecords) GetSignBytes() []byte {
 func (msg *MsgAddClaimRecords) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 	return ValidateClaimRecords(msg.ClaimRecords)
 }
@@ -85,7 +85,7 @@ func (msg *MsgDeleteClaimRecord) GetSignBytes() []byte {
 func (msg *MsgDeleteClaimRecord) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 	return nil
 }

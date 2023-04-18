@@ -51,6 +51,10 @@ func (msg *MsgCreateCampaign) GetSignBytes() []byte {
 }
 
 func (msg *MsgCreateCampaign) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+	}
 	return ValidateCampaignCreateParams(msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.CampaignType, msg.Owner)
 }
 
@@ -89,9 +93,11 @@ func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.T
 		return errors.Wrapf(c4eerrors.ErrParam, "end time is nil error")
 	}
 	if startTime.After(*endTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "start time is after end time error (%s > %s)", startTime, endTime)
+		return errors.Wrapf(c4eerrors.ErrParam, "start time is after end time (%s > %s)", startTime, endTime)
 	}
-
+	if startTime.Equal(*endTime) {
+		return errors.Wrapf(c4eerrors.ErrParam, "start time is equal to end time (%s = %s)", startTime, endTime)
+	}
 	return nil
 }
 

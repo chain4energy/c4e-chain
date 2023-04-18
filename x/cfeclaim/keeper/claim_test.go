@@ -177,7 +177,7 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
-	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1], fmt.Sprintf("mission already completed: address %s, campaignId: 0, missionId: 1: mission already completed", acountsAddresses[1].String()))
+	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1], fmt.Sprintf("address %s, campaignId: 0, missionId: 1: mission already completed", acountsAddresses[1].String()))
 }
 
 func TestFullCampaign(t *testing.T) {

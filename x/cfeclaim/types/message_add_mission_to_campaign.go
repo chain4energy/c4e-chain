@@ -63,7 +63,7 @@ func ValidateAddMissionToCampaign(owner string, name string, description string,
 	weight *sdk.Dec) error {
 	_, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
-		return sdkerrors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "add mission to claim campaign - owner parsing error: %s", owner).Error())
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 
 	if err = ValidateMissionWeight(weight); err != nil {
@@ -79,6 +79,9 @@ func ValidateAddMissionToCampaign(owner string, name string, description string,
 }
 
 func ValidateMissionWeight(weight *sdk.Dec) error {
+	if weight == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
+	}
 	if weight.IsNil() {
 		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
 	}
@@ -91,14 +94,14 @@ func ValidateMissionWeight(weight *sdk.Dec) error {
 
 func ValidateMissionName(name string) error {
 	if name == "" {
-		return sdkerrors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - empty name error")
+		return errors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - empty name error")
 	}
 	return nil
 }
 
 func ValidateMissionDescription(description string) error {
 	if description == "" {
-		return sdkerrors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - mission empty description error")
+		return errors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - mission empty description error")
 	}
 	return nil
 }

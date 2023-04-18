@@ -71,7 +71,7 @@ func TestInitialClaimAlreadyClaimed(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("mission already completed: address %s, campaignId: 0, missionId: 0: mission already completed", acountsAddresses[1].String()))
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("address %s, campaignId: 0, missionId: 0: mission already completed", acountsAddresses[1].String()))
 }
 
 func TestInitialClaimRecordDosentExist(t *testing.T) {

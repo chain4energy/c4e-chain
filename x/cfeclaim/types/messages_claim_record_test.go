@@ -1,6 +1,9 @@
-package types
+package types_test
 
 import (
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
@@ -8,23 +11,46 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgCreateEntry_ValidateBasic(t *testing.T) {
+func TestMsgAddClaimRecords_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		name string
-		msg  MsgAddClaimRecords
-		err  error
+		name   string
+		msg    types.MsgAddClaimRecords
+		err    error
+		errMsg string
 	}{
 		{
-			name: "invalid address",
-			msg: MsgAddClaimRecords{
-				Owner: "invalid_address",
+			name: "Valid MsgAddClaimRecords",
+			msg: types.MsgAddClaimRecords{
+				Owner:        sample.AccAddress(),
+				ClaimRecords: []*types.ClaimRecord{{Address: sample.AccAddress(), Amount: sample.Coins()}},
 			},
-			err: sdkerrors.ErrInvalidAddress,
-		}, {
-			name: "valid address",
-			msg: MsgAddClaimRecords{
-				Owner: sample.AccAddress(),
+		},
+		{
+			name: "Invalid Owner",
+			msg: types.MsgAddClaimRecords{
+				Owner:        "invalid_address",
+				ClaimRecords: []*types.ClaimRecord{{Address: sample.AccAddress(), Amount: sample.Coins()}},
 			},
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid owner address (decoding bech32 failed: invalid separator index -1): invalid address",
+		},
+		{
+			name: "Invalid ClaimRecord Address",
+			msg: types.MsgAddClaimRecords{
+				Owner:        sample.AccAddress(),
+				ClaimRecords: []*types.ClaimRecord{{Address: "", Amount: sample.Coins()}},
+			},
+			err:    c4eerrors.ErrParam,
+			errMsg: "claim records index 0: claim record empty address: wrong param value",
+		},
+		{
+			name: "Invalid ClaimRecord Amount",
+			msg: types.MsgAddClaimRecords{
+				Owner:        sample.AccAddress(),
+				ClaimRecords: []*types.ClaimRecord{{Address: sample.AccAddress(), Amount: sdk.Coins{}}},
+			},
+			err:    c4eerrors.ErrParam,
+			errMsg: "claim records index 0: claim record must has at least one coin and all amounts must be positive: wrong param value",
 		},
 	}
 	for _, tt := range tests {
@@ -32,6 +58,7 @@ func TestMsgCreateEntry_ValidateBasic(t *testing.T) {
 			err := tt.msg.ValidateBasic()
 			if tt.err != nil {
 				require.ErrorIs(t, err, tt.err)
+				require.EqualError(t, err, tt.errMsg)
 				return
 			}
 			require.NoError(t, err)
@@ -41,19 +68,21 @@ func TestMsgCreateEntry_ValidateBasic(t *testing.T) {
 
 func TestMsgDeleteClaimRecord_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		name string
-		msg  MsgDeleteClaimRecord
-		err  error
+		name   string
+		msg    types.MsgDeleteClaimRecord
+		err    error
+		errMsg string
 	}{
 		{
 			name: "invalid address",
-			msg: MsgDeleteClaimRecord{
+			msg: types.MsgDeleteClaimRecord{
 				Owner: "invalid_address",
 			},
-			err: sdkerrors.ErrInvalidAddress,
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid owner address (decoding bech32 failed: invalid separator index -1): invalid address",
 		}, {
 			name: "valid address",
-			msg: MsgDeleteClaimRecord{
+			msg: types.MsgDeleteClaimRecord{
 				Owner: sample.AccAddress(),
 			},
 		},
@@ -63,6 +92,7 @@ func TestMsgDeleteClaimRecord_ValidateBasic(t *testing.T) {
 			err := tt.msg.ValidateBasic()
 			if tt.err != nil {
 				require.ErrorIs(t, err, tt.err)
+				require.EqualError(t, err, tt.errMsg)
 				return
 			}
 			require.NoError(t, err)
