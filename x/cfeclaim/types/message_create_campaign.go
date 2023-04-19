@@ -99,6 +99,10 @@ func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.T
 }
 
 func ValidateCampaignType(campaignType CampaignType, owner string, vestingPoolName string) error {
+	if campaignType != CampaignSale && vestingPoolName != "" {
+		return errors.Wrap(c4eerrors.ErrParam, "vesting pool name can be set only for SALE type campaigns")
+	}
+
 	switch campaignType {
 	case CampaignDefault:
 		return nil
@@ -106,21 +110,13 @@ func ValidateCampaignType(campaignType CampaignType, owner string, vestingPoolNa
 		if vestingPoolName == "" {
 			return errors.Wrap(c4eerrors.ErrParam, "for SALE type campaigns, the vesting pool name must be provided")
 		}
+		return nil
 	case CampaignTeamdrop:
 		if !slices.Contains(GetWhitelistedTeamdropAccounts(), owner) {
 			return errors.Wrap(sdkerrors.ErrorInvalidSigner, "TeamDrop campaigns can be created only by specific accounts")
 		}
+		return nil
 	}
 
 	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
-}
-
-func ValidateCampaignTypeTeamdrop(campaignType CampaignType, owner string) error {
-	if campaignType == CampaignTeamdrop {
-		if !slices.Contains(GetWhitelistedTeamdropAccounts(), owner) {
-			return errors.Wrap(sdkerrors.ErrorInvalidSigner, "TeamDrop campaigns can be created only by specific accounts")
-		}
-	}
-
-	return nil
 }

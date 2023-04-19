@@ -1,9 +1,10 @@
 package types
 
 var (
-	ParamsKey                    = []byte{0x00}
-	VestingTypesKeyPrefix        = []byte{0x01}
-	AccountVestingPoolsKeyPrefix = []byte{0x02}
+	ParamsKey                        = []byte{0x00}
+	VestingTypesKeyPrefix            = []byte{0x01}
+	AccountVestingPoolsKeyPrefix     = []byte{0x02}
+	VestingPoolReservationsKeyPrefix = []byte{0x03}
 )
 
 const (
@@ -31,3 +32,7 @@ const (
 	VestingAccountTraceKey      = "VestingAccountTrace-value-"
 	VestingAccountTraceCountKey = "VestingAccountTrace-count-"
 )
+
+type VestingPoolReservations struct {
+	VestingPoolReservations []VestingPoolReservation
+}

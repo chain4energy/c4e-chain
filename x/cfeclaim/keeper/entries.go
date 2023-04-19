@@ -12,7 +12,6 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	"golang.org/x/exp/slices"
 	"strconv"
 )
 
@@ -40,8 +39,7 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 	if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
 		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum)
 	}
-
-	if slices.Contains(types.GetWhitelistedVestingAccounts(), owner) {
+	if campaign.CampaignType == types.CampaignTeamdrop {
 		if err = k.ValidateCampaignWhenAddedFromVestingAccount(ctx, ownerAddress, campaign); err != nil {
 			return err
 		}
@@ -83,6 +81,14 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 	}
 
 	return nil
+}
+
+func AddUserEntriesSaleCampaign() {
+
+}
+
+func AddUserEntriesStandardCampaign() {
+
 }
 
 func calculateFeegrantFeesSum(feegrantAmount sdk.Int, claimRecordsNumber int64, feegrantDenom string) (feesSum sdk.Coins) {

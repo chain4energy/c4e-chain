@@ -6,7 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// get the vesting types
 func (k Keeper) GetAccountVestingPools(ctx sdk.Context, accountAddress string) (accountVestingPools types.AccountVestingPools, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 
@@ -20,7 +19,6 @@ func (k Keeper) GetAccountVestingPools(ctx sdk.Context, accountAddress string) (
 	return
 }
 
-// get the vesting types
 func (k Keeper) GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (vestingPool types.VestingPool, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 	var accountVestingPools types.AccountVestingPools
@@ -40,14 +38,12 @@ func (k Keeper) GetAccountVestingPool(ctx sdk.Context, accountAddress string, na
 	return
 }
 
-// set the vesting types
 func (k Keeper) SetAccountVestingPools(ctx sdk.Context, accountVestingPools types.AccountVestingPools) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 	av := k.cdc.MustMarshal(&accountVestingPools)
 	store.Set([]byte(accountVestingPools.Owner), av)
 }
 
-// get the vesting types
 func (k Keeper) DeleteAccountVestingPools(ctx sdk.Context, accountAddress string) (accountVestingPools types.AccountVestingPools) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 	key := []byte(accountAddress)
@@ -61,7 +57,6 @@ func (k Keeper) DeleteAccountVestingPools(ctx sdk.Context, accountAddress string
 	return
 }
 
-// GetAllAccountVestingPools returns all AccountVestingPools
 func (k Keeper) GetAllAccountVestingPools(ctx sdk.Context) (list types.AccountVestingPoolsList) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
