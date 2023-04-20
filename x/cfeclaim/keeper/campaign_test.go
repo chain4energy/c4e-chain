@@ -90,7 +90,7 @@ func TestCreateCampaignAndStart(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 }
 
 func TestCreateManyCampaignsAndStart(t *testing.T) {
@@ -100,7 +100,7 @@ func TestCreateManyCampaignsAndStart(t *testing.T) {
 	campaigns := prepareNTestCampaigns(testHelper.Context, 10)
 	for i, campaign := range campaigns {
 		testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-		testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), uint64(i))
+		testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), uint64(i), nil, nil)
 	}
 }
 
@@ -112,7 +112,7 @@ func TestCreateCampaignAndStartTimeAfterTimeNowError(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	blockTime := campaign.StartTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, fmt.Sprintf("start time in the past error (%s < %s): wrong param value", campaign.StartTime, blockTime))
+	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, nil, nil, fmt.Sprintf("start time in the past error (%s < %s): wrong param value", campaign.StartTime, blockTime))
 }
 
 func TestCreateCampaignAndStartOwnerNotValidError(t *testing.T) {
@@ -121,7 +121,7 @@ func TestCreateCampaignAndStartOwnerNotValidError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[1].String(), 0, "you are not the campaign owner: tx intended signer does not match the given signer")
+	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[1].String(), 0, nil, nil, "you are not the campaign owner: tx intended signer does not match the given signer")
 }
 
 func TestCreateCampaignCampaignDoesntExistError(t *testing.T) {
@@ -130,7 +130,7 @@ func TestCreateCampaignCampaignDoesntExistError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 1, "campaign with id 1 not found: entity does not exist")
+	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 1, nil, nil, "campaign with id 1 not found: entity does not exist")
 }
 
 func TestCreateCampaignCampaignEnabledError(t *testing.T) {
@@ -139,8 +139,8 @@ func TestCreateCampaignCampaignEnabledError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
-	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, "campaign is enabled")
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
+	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, nil, nil, "campaign is enabled")
 }
 
 func TestCreateCampaignCloseCloseActionBurn(t *testing.T) {
@@ -149,7 +149,7 @@ func TestCreateCampaignCloseCloseActionBurn(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -163,7 +163,7 @@ func TestCreateCampaignCloseCloseActionSendToOwner(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -178,7 +178,7 @@ func TestCreateCampaignCloseCloseActionSendToCommunityPool(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -194,7 +194,7 @@ func TestCreateCampaignCloseCloseActionBurnAndFeegrant(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.FeegrantAmount = sdk.NewInt(1000)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimEntries)))))
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -209,7 +209,7 @@ func TestCreateCampaignCloseCloseActionSendToOwnerAndFeegrant(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.FeegrantAmount = sdk.NewInt(1000)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimEntries)))))
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -225,7 +225,7 @@ func TestCreateCampaignCloseCloseActionSendToCommunityPoolAndFeegrant(t *testing
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.FeegrantAmount = sdk.NewInt(1000)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimEntries)))))
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -240,7 +240,7 @@ func TestCreateCampaignCloseCampaignWrongCloseAction(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -258,7 +258,7 @@ func TestCreateManyCampaignsAndClose(t *testing.T) {
 	for i, campaign := range campaigns {
 		testHelper.SetContextBlockTime(contextNow)
 		testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-		testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), uint64(i))
+		testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), uint64(i), nil, nil)
 		blockTime := campaign.EndTime.Add(time.Minute)
 		testHelper.SetContextBlockTime(blockTime)
 		testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), uint64(i), types.CampaignCloseBurn)
@@ -271,7 +271,7 @@ func TestCreateCampaignCloseCampaignCampaignNotOverYetError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseBurn, fmt.Sprintf("campaign with id %d campaign is not over yet (endtime - %s < %s): wrong param value", 0, campaign.EndTime, testHelper.Context.BlockTime()))
 }
 
@@ -292,7 +292,7 @@ func TestCreateCampaignCloseCampaignYouAreNotTheOwnerErrror(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[1].String(), 0, types.CloseAction_CLOSE_ACTION_UNSPECIFIED, "you are not the campaign owner: tx intended signer does not match the given signer")

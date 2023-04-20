@@ -54,16 +54,16 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper 
 		return err
 	}
 
-	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 0); err != nil {
+	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 0, nil, nil); err != nil {
 		return err
 	}
-	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 1); err != nil {
+	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 1, nil, nil); err != nil {
 		return err
 	}
-	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 2); err != nil {
+	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 2, nil, nil); err != nil {
 		return err
 	}
-	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 3); err != nil {
+	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 3, nil, nil); err != nil {
 		return err
 	}
 

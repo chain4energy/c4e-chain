@@ -517,10 +517,10 @@ func (h *C4eClaimUtils) CreateRepeatedContinuousVestingAccount(ctx sdk.Context, 
 }
 
 func (h *C4eClaimUtils) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType cfeclaimtypes.CampaignType, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
-	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
+	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string) {
 
 	campaignCountBefore := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
-	err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignCountBefore)
 	require.NoError(h.t, err)
 	campaignCountAfter := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
@@ -532,10 +532,10 @@ func (h *C4eClaimUtils) CreateCampaign(ctx sdk.Context, owner string, name strin
 }
 
 func (h *C4eClaimUtils) CreateCampaignError(ctx sdk.Context, owner string, name string, description string, campaignType cfeclaimtypes.CampaignType, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
-	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, errorMessage string) {
+	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string, errorMessage string) {
 
 	campaignCountBefore := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
-	err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod)
+	err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
 	require.EqualError(h.t, err, errorMessage)
 	campaignCountAfter := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignCountBefore)
@@ -545,18 +545,18 @@ func (h *C4eClaimUtils) CreateCampaignError(ctx sdk.Context, owner string, name 
 	require.False(h.t, ok)
 }
 
-func (h *C4eClaimUtils) StartCampaign(ctx sdk.Context, owner string, campaignId uint64) {
-	err := h.helpeCfeclaimkeeper.StartCampaign(ctx, owner, campaignId)
+func (h *C4eClaimUtils) StartCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) {
+	err := h.helpeCfeclaimkeeper.StartCampaign(ctx, owner, campaignId, startTime, endTime)
 	require.NoError(h.t, err)
 	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.True(h.t, ok)
 	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, true, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
 }
 
-func (h *C4eClaimUtils) StartCampaignError(ctx sdk.Context, owner string, campaignId uint64, errorString string) {
+func (h *C4eClaimUtils) StartCampaignError(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time, errorString string) {
 	campaignBefore, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 
-	err := h.helpeCfeclaimkeeper.StartCampaign(ctx, owner, campaignId)
+	err := h.helpeCfeclaimkeeper.StartCampaign(ctx, owner, campaignId, startTime, endTime)
 	require.EqualError(h.t, err, errorString)
 	if !ok {
 		return

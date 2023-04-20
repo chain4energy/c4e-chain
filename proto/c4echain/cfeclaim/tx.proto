@@ -121,6 +121,14 @@ message MsgCloseCampaignResponse {}
 message MsgStartCampaign {
   string owner = 1;
   uint64 campaignId = 2;
+  google.protobuf.Timestamp start_time = 3 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp end_time = 4 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
 }
 
 message MsgStartCampaignResponse {}

@@ -19,7 +19,7 @@ func TestCompleteDelegationMission(t *testing.T) {
 
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
@@ -41,7 +41,7 @@ func TestCompleteVoteMission(t *testing.T) {
 	mission.MissionType = cfeclaimtypes.MissionVote
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
@@ -62,7 +62,7 @@ func TestClaimMissionDoesntExist(t *testing.T) {
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
@@ -82,7 +82,7 @@ func TestClaimCampaignDoesntExist(t *testing.T) {
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
@@ -102,7 +102,7 @@ func TestClaimNoInitialClaimError(t *testing.T) {
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
@@ -122,7 +122,7 @@ func TestClaimMissionCampaignHasEnded(t *testing.T) {
 
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
@@ -146,7 +146,7 @@ func TestClaimMissionWithTypeClaim(t *testing.T) {
 	mission.MissionType = cfeclaimtypes.MissionClaim
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
@@ -167,7 +167,7 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 	mission.MissionType = cfeclaimtypes.MissionClaim
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
@@ -191,7 +191,7 @@ func TestFullCampaign(t *testing.T) {
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
 	mission.MissionType = cfeclaimtypes.MissionVote
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
@@ -218,7 +218,7 @@ func TestClaimMissionWithTypeClaimRecordNotFound(t *testing.T) {
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
+	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 

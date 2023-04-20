@@ -10,6 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/stretchr/testify/require"
+	"time"
 )
 
 type ContextC4eClaimUtils struct {
@@ -25,11 +26,11 @@ func NewContextC4eClaimUtils(t require.TestingT, testContext testenv.TestContext
 }
 
 func (h *ContextC4eClaimUtils) CreateCampaign(owner string, campaign cfeclaimtypes.Campaign) {
-	h.C4eClaimUtils.CreateCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	h.C4eClaimUtils.CreateCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
 }
 
 func (h *ContextC4eClaimUtils) CreateCampaignError(owner string, campaign cfeclaimtypes.Campaign, errorMessage string) {
-	h.C4eClaimUtils.CreateCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, errorMessage)
+	h.C4eClaimUtils.CreateCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName, errorMessage)
 }
 
 func (h *ContextC4eClaimUtils) AddMissionToCampaign(owner string, campaignId uint64, mission cfeclaimtypes.Mission) {
@@ -40,12 +41,12 @@ func (h *ContextC4eClaimUtils) AddMissionToCampaignError(owner string, campaignI
 	h.C4eClaimUtils.AddMissionToCampaignError(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate, errorString)
 }
 
-func (h *ContextC4eClaimUtils) StartCampaign(owner string, campaignId uint64) {
-	h.C4eClaimUtils.StartCampaign(h.testContext.GetContext(), owner, campaignId)
+func (h *ContextC4eClaimUtils) StartCampaign(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) {
+	h.C4eClaimUtils.StartCampaign(h.testContext.GetContext(), owner, campaignId, startTime, endTime)
 }
 
-func (h *ContextC4eClaimUtils) StartCampaignError(owner string, campaignId uint64, errorString string) {
-	h.C4eClaimUtils.StartCampaignError(h.testContext.GetContext(), owner, campaignId, errorString)
+func (h *ContextC4eClaimUtils) StartCampaignError(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time, errorString string) {
+	h.C4eClaimUtils.StartCampaignError(h.testContext.GetContext(), owner, campaignId, startTime, endTime, errorString)
 }
 
 func (h *ContextC4eClaimUtils) CloseCampaign(owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction) {

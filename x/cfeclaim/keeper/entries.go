@@ -156,8 +156,10 @@ func (k Keeper) ValidateAddUsersEntries(ctx sdk.Context, owner string, campaignI
 		return nil, err
 	}
 
-	if err = ValidateCampaignIsNotDisabled(campaign); err != nil {
-		return nil, err
+	if campaign.CampaignType != types.CampaignSale {
+		if err = ValidateCampaignIsNotDisabled(campaign); err != nil {
+			return nil, err
+		}
 	}
 
 	if err = ValidateCampaignNotEnded(ctx, campaign); err != nil {
