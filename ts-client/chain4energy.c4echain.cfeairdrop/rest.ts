@@ -36,7 +36,7 @@ export interface CfeclaimCampaign {
 /**
  * - CLOSE_ACTION_UNSPECIFIED: Campaign close action
  */
-export enum CfeclaimCampaignCloseAction {
+export enum CfeclaimCloseAction {
   CLOSE_ACTION_UNSPECIFIED = "CLOSE_ACTION_UNSPECIFIED",
   SEND_TO_COMMUNITY_POOL = "SEND_TO_COMMUNITY_POOL",
   BURN = "BURN",

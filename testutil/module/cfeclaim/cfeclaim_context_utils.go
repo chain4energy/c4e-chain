@@ -48,12 +48,12 @@ func (h *ContextC4eClaimUtils) StartCampaignError(owner string, campaignId uint6
 	h.C4eClaimUtils.StartCampaignError(h.testContext.GetContext(), owner, campaignId, errorString)
 }
 
-func (h *ContextC4eClaimUtils) CloseCampaign(owner string, campaignId uint64, campaignCloseAction cfeclaimtypes.CampaignCloseAction) {
-	h.C4eClaimUtils.CloseCampaign(h.testContext.GetContext(), owner, campaignId, campaignCloseAction)
+func (h *ContextC4eClaimUtils) CloseCampaign(owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction) {
+	h.C4eClaimUtils.CloseCampaign(h.testContext.GetContext(), owner, campaignId, CloseAction)
 }
 
-func (h *ContextC4eClaimUtils) CloseCampaignError(owner string, campaignId uint64, campaignCloseAction cfeclaimtypes.CampaignCloseAction, errorString string) {
-	h.C4eClaimUtils.CloseCampaignError(h.testContext.GetContext(), owner, campaignId, campaignCloseAction, errorString)
+func (h *ContextC4eClaimUtils) CloseCampaignError(owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction, errorString string) {
+	h.C4eClaimUtils.CloseCampaignError(h.testContext.GetContext(), owner, campaignId, CloseAction, errorString)
 }
 
 func (h *ContextC4eClaimUtils) SendToRepeatedContinuousVestingAccount(toAddress sdk.AccAddress,

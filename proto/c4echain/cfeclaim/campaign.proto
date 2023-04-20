@@ -67,7 +67,7 @@ enum CampaignType {
   SALE = 3;
 }
 
-enum CampaignCloseAction { //Campaign close action
+enum CloseAction { //Campaign close action
   CLOSE_ACTION_UNSPECIFIED = 0; //Campaign close action
   SEND_TO_COMMUNITY_POOL = 1;
   BURN = 2;

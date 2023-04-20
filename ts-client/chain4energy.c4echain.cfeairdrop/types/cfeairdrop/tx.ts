@@ -4,9 +4,9 @@ import _m0 from "protobufjs/minimal";
 import { Duration } from "../google/protobuf/duration";
 import { Timestamp } from "../google/protobuf/timestamp";
 import {
-  CampaignCloseAction,
-  campaignCloseActionFromJSON,
-  campaignCloseActionToJSON,
+  CloseAction,
+  CloseActionFromJSON,
+  CloseActionToJSON,
   ClaimRecord,
   MissionType,
   missionTypeFromJSON,
@@ -82,7 +82,7 @@ export interface MsgDeleteClaimRecordResponse {
 export interface MsgCloseCampaign {
   owner: string;
   campaignId: number;
-  campaignCloseAction: CampaignCloseAction;
+  CloseAction: CloseAction;
 }
 
 export interface MsgCloseCampaignResponse {
@@ -868,7 +868,7 @@ export const MsgDeleteClaimRecordResponse = {
 };
 
 function createBaseMsgCloseCampaign(): MsgCloseCampaign {
-  return { owner: "", campaignId: 0, campaignCloseAction: 0 };
+  return { owner: "", campaignId: 0, CloseAction: 0 };
 }
 
 export const MsgCloseCampaign = {
@@ -879,8 +879,8 @@ export const MsgCloseCampaign = {
     if (message.campaignId !== 0) {
       writer.uint32(16).uint64(message.campaignId);
     }
-    if (message.campaignCloseAction !== 0) {
-      writer.uint32(24).int32(message.campaignCloseAction);
+    if (message.CloseAction !== 0) {
+      writer.uint32(24).int32(message.CloseAction);
     }
     return writer;
   },
@@ -899,7 +899,7 @@ export const MsgCloseCampaign = {
           message.campaignId = longToNumber(reader.uint64() as Long);
           break;
         case 3:
-          message.campaignCloseAction = reader.int32() as any;
+          message.CloseAction = reader.int32() as any;
           break;
         default:
           reader.skipType(tag & 7);
@@ -913,7 +913,7 @@ export const MsgCloseCampaign = {
     return {
       owner: isSet(object.owner) ? String(object.owner) : "",
       campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
-      campaignCloseAction: isSet(object.campaignCloseAction) ? campaignCloseActionFromJSON(object.campaignCloseAction) : 0,
+      CloseAction: isSet(object.CloseAction) ? CloseActionFromJSON(object.CloseAction) : 0,
     };
   },
 
@@ -921,8 +921,8 @@ export const MsgCloseCampaign = {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
-    message.campaignCloseAction !== undefined
-      && (obj.campaignCloseAction = campaignCloseActionToJSON(message.campaignCloseAction));
+    message.CloseAction !== undefined
+      && (obj.CloseAction = CloseActionToJSON(message.CloseAction));
     return obj;
   },
 
@@ -930,7 +930,7 @@ export const MsgCloseCampaign = {
     const message = createBaseMsgCloseCampaign();
     message.owner = object.owner ?? "";
     message.campaignId = object.campaignId ?? 0;
-    message.campaignCloseAction = object.campaignCloseAction ?? 0;
+    message.CloseAction = object.CloseAction ?? 0;
     return message;
   },
 };

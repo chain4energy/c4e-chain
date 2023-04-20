@@ -130,7 +130,7 @@ func TestInitialClaimCampaignNotEnabled(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseAction_BURN)
+	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CloseAction_BURN)
 	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, "campaign 0 error: campaign is disabled")
 }
 

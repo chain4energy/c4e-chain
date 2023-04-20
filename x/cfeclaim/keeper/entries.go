@@ -5,6 +5,7 @@ import (
 	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -32,29 +33,55 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 	feegrantFeesSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecords)), feegrantDenom)
 	feesAndClaimRecordsAmountSum := claimRecordsAmountSum.Add(feegrantFeesSum...)
 
-	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
-	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-	ctx.Logger().Debug("add user entries", "feegrantFeesSum", feegrantFeesSum, "allBalances", allBalances)
+	if campaign.CampaignType != types.CampaignSale {
+		ownerAddress, _ := sdk.AccAddressFromBech32(owner)
+		allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
+		ctx.Logger().Debug("add user entries", "feegrantFeesSum", feegrantFeesSum, "allBalances", allBalances)
 
-	if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
-		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum)
-	}
-	if campaign.CampaignType == types.CampaignTeamdrop {
-		if err = k.ValidateCampaignWhenAddedFromVestingAccount(ctx, ownerAddress, campaign); err != nil {
+		if campaign.CampaignType == types.CampaignTeamdrop {
+			if err = k.ValidateCampaignWhenAddedFromVestingAccount(ctx, ownerAddress, campaign); err != nil {
+				return err
+			}
+			if err = k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, ownerAddress, feesAndClaimRecordsAmountSum); err != nil {
+				return err
+			}
+		}
+
+		if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
+			return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum)
+		}
+
+		err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
+		if err != nil {
 			return err
 		}
-		if err = k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, ownerAddress, feesAndClaimRecordsAmountSum); err != nil {
+
+		if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, claimRecordsAmountSum); err != nil {
 			return err
 		}
-	}
+	} else if campaign.CampaignType == types.CampaignSale {
+		accountVestingPools, err := k.ValidateCampaignWhenAddedFromVestingPool(ctx, campaign)
+		if err != nil {
+			return err
+		}
 
-	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
-	if err != nil {
-		return err
-	}
+		err = k.setupAndSendFeegrantForVestingPool(ctx, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
+		if err != nil {
+			return err
+		}
 
-	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, claimRecordsAmountSum); err != nil {
-		return err
+		if err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, cfevestingtypes.ModuleName, types.ModuleName, claimRecordsAmountSum); err != nil {
+			return err
+		}
+
+		for _, vestPool := range accountVestingPools.VestingPools {
+			if vestPool.Name == campaign.VestingPoolName {
+				vestPool.Sent = vestPool.Sent.Add(feesAndClaimRecordsAmountSum.AmountOf(feegrantDenom))
+				break
+			}
+		}
+
+		k.vestingKeeper.SetAccountVestingPools(ctx, *accountVestingPools)
 	}
 
 	k.IncrementCampaignTotalAmount(ctx, types.CampaignTotalAmount{
@@ -75,20 +102,13 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 		ClaimRecordsTotalAmount: claimRecordsAmountSum.String(),
 		ClaimRecordsNumber:      strconv.FormatInt(int64(len(claimRecords)), 10),
 	}
+
 	err = ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
 		k.Logger(ctx).Debug("add claim records emit event error", "event", event, "error", err.Error())
 	}
 
 	return nil
-}
-
-func AddUserEntriesSaleCampaign() {
-
-}
-
-func AddUserEntriesStandardCampaign() {
-
 }
 
 func calculateFeegrantFeesSum(feegrantAmount sdk.Int, claimRecordsNumber int64, feegrantDenom string) (feesSum sdk.Coins) {
@@ -149,16 +169,43 @@ func (k Keeper) ValidateAddUsersEntries(ctx sdk.Context, owner string, campaignI
 func (k Keeper) ValidateCampaignWhenAddedFromVestingAccount(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign) error {
 	ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAcc)
 	if ownerAccount == nil {
-		return sdkerrors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAcc)
+		return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAcc)
 	}
 	vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
 	vestingAccTimeDiff := vestingAcc.EndTime - vestingAcc.StartTime
 	campaignLockupAndVestingSum := int64(campaign.VestingPeriod.Seconds() + campaign.LockupPeriod.Seconds())
 	if campaignLockupAndVestingSum < vestingAccTimeDiff {
-		return sdkerrors.Wrapf(c4eerrors.ErrParam,
+		return errors.Wrapf(c4eerrors.ErrParam,
 			fmt.Sprintf("the duration of vesting and lockup must be equal to or greater than the remaining vesting time of the vesting account (%d < %d)", campaignLockupAndVestingSum, vestingAccTimeDiff))
 	}
 	return nil
+}
+
+func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, campaign *types.Campaign) (*cfevestingtypes.AccountVestingPools, error) {
+	accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
+	var vestingPool *cfevestingtypes.VestingPool
+	for _, vestPool := range accountVestingPools.VestingPools {
+		if vestPool.Name == campaign.VestingPoolName {
+			vestingPool = vestPool
+			break
+		}
+	}
+
+	vestingType, err := k.vestingKeeper.GetVestingType(ctx, vestingPool.VestingType)
+	if err != nil {
+		return nil, err
+	}
+
+	if vestingType.LockupPeriod > campaign.LockupPeriod {
+		return nil, errors.Wrapf(c4eerrors.ErrParam,
+			fmt.Sprintf("the duration of campaign lockup period must be equal to or greater than the vesting type lockup period (%d > %d)", vestingType.LockupPeriod, campaign.LockupPeriod))
+	}
+
+	if vestingType.VestingPeriod > campaign.VestingPeriod {
+		return nil, errors.Wrapf(c4eerrors.ErrParam,
+			fmt.Sprintf("the duration of campaign vesting period must be equal to or greater than the vesting type vesting period (%d > %d)", vestingType.VestingPeriod, campaign.VestingPeriod))
+	}
+	return &accountVestingPools, nil
 }
 
 func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, claimRecords []*types.ClaimRecord) (usersEntries []*types.UserEntry, entriesAmountSum sdk.Coins, err error) {
@@ -214,6 +261,20 @@ func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, c
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
 		acc := k.NewModuleAccountSet(ctx, campaign.Id)
 		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc.GetAddress(), feegrantFeesSum); err != nil {
+			return err
+		}
+		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc.GetAddress(), claimRecords, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (k Keeper) setupAndSendFeegrantForVestingPool(ctx sdk.Context, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecords []*types.ClaimRecord, feegrantDenom string) error {
+	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+		acc := k.NewModuleAccountSet(ctx, campaign.Id)
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, cfevestingtypes.ModuleName, acc.GetAddress(), feegrantFeesSum); err != nil {
 			return err
 		}
 		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc.GetAddress(), claimRecords, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {

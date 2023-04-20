@@ -58,7 +58,7 @@ export function missionTypeToJSON(object: MissionType): string {
 }
 
 /** Campaign close action */
-export enum CampaignCloseAction {
+export enum CloseAction {
   /** CLOSE_ACTION_UNSPECIFIED - Campaign close action */
   CLOSE_ACTION_UNSPECIFIED = 0,
   SEND_TO_COMMUNITY_POOL = 1,
@@ -67,36 +67,36 @@ export enum CampaignCloseAction {
   UNRECOGNIZED = -1,
 }
 
-export function campaignCloseActionFromJSON(object: any): CampaignCloseAction {
+export function CloseActionFromJSON(object: any): CloseAction {
   switch (object) {
     case 0:
     case "CLOSE_ACTION_UNSPECIFIED":
-      return CampaignCloseAction.CLOSE_ACTION_UNSPECIFIED;
+      return CloseAction.CLOSE_ACTION_UNSPECIFIED;
     case 1:
     case "SEND_TO_COMMUNITY_POOL":
-      return CampaignCloseAction.SEND_TO_COMMUNITY_POOL;
+      return CloseAction.SEND_TO_COMMUNITY_POOL;
     case 2:
     case "BURN":
-      return CampaignCloseAction.BURN;
+      return CloseAction.BURN;
     case 3:
     case "SEND_TO_OWNER":
-      return CampaignCloseAction.SEND_TO_OWNER;
+      return CloseAction.SEND_TO_OWNER;
     case -1:
     case "UNRECOGNIZED":
     default:
-      return CampaignCloseAction.UNRECOGNIZED;
+      return CloseAction.UNRECOGNIZED;
   }
 }
 
-export function campaignCloseActionToJSON(object: CampaignCloseAction): string {
+export function CloseActionToJSON(object: CloseAction): string {
   switch (object) {
-    case CampaignCloseAction.CLOSE_ACTION_UNSPECIFIED:
+    case CloseAction.CLOSE_ACTION_UNSPECIFIED:
       return "CLOSE_ACTION_UNSPECIFIED";
-    case CampaignCloseAction.SEND_TO_COMMUNITY_POOL:
+    case CloseAction.SEND_TO_COMMUNITY_POOL:
       return "SEND_TO_COMMUNITY_POOL";
-    case CampaignCloseAction.BURN:
+    case CloseAction.BURN:
       return "BURN";
-    case CampaignCloseAction.SEND_TO_OWNER:
+    case CloseAction.SEND_TO_OWNER:
       return "SEND_TO_OWNER";
     default:
       return "UNKNOWN";

@@ -10,7 +10,7 @@ const TypeMsgCloseCampaign = "close_claim_campaign"
 
 var _ sdk.Msg = &MsgCloseCampaign{}
 
-func NewMsgCloseCampaign(owner string, campaignId uint64, campaignCloseAction CampaignCloseAction) *MsgCloseCampaign {
+func NewMsgCloseCampaign(owner string, campaignId uint64, campaignCloseAction CloseAction) *MsgCloseCampaign {
 	return &MsgCloseCampaign{
 		Owner:               owner,
 		CampaignId:          campaignId,
@@ -44,12 +44,12 @@ func (msg *MsgCloseCampaign) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	return ValidateCampaignCloseAction(msg.CampaignCloseAction)
+	return ValidateCloseAction(msg.CampaignCloseAction)
 }
 
-func ValidateCampaignCloseAction(action CampaignCloseAction) error {
+func ValidateCloseAction(action CloseAction) error {
 	switch action {
-	case CampaignCloseBurn, CampaignCloseSendToOwner, CampaignCloseSendToCommunityPool:
+	case CampaignCloseBurn, CampaignCloseSendToOwner, CloseSendToCommunityPool:
 		return nil
 	}
 

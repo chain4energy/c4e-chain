@@ -29,7 +29,7 @@ func TestMsgCloseCampaign_ValidateBasic(t *testing.T) {
 			name: "invalid campaign close action",
 			msg: types.MsgCloseCampaign{
 				Owner:               sample.AccAddress(),
-				CampaignCloseAction: types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED,
+				CampaignCloseAction: types.CloseAction_CLOSE_ACTION_UNSPECIFIED,
 			},
 			err:    sdkerrors.ErrInvalidType,
 			errMsg: "wrong campaign close action type: invalid type",

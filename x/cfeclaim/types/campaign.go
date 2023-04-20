@@ -16,10 +16,10 @@ const (
 
 // Campaign close action types
 const (
-	CampaignCloseActionUnspecified   = CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED
-	CampaignCloseSendToCommunityPool = CampaignCloseAction_SEND_TO_COMMUNITY_POOL
-	CampaignCloseBurn                = CampaignCloseAction_BURN
-	CampaignCloseSendToOwner         = CampaignCloseAction_SEND_TO_OWNER
+	CloseActionUnspecified   = CloseAction_CLOSE_ACTION_UNSPECIFIED
+	CloseSendToCommunityPool = CloseAction_SEND_TO_COMMUNITY_POOL
+	CampaignCloseBurn        = CloseAction_BURN
+	CampaignCloseSendToOwner = CloseAction_SEND_TO_OWNER
 )
 
 func CampaignTypeFromString(str string) (CampaignType, error) {
@@ -47,11 +47,11 @@ func NormalizeCampaignType(option string) string {
 	}
 }
 
-// NormalizeCampaignCloseAction - normalize user specified vote option
-func NormalizeCampaignCloseAction(option string) string {
+// NormalizeCloseAction - normalize user specified vote option
+func NormalizeCloseAction(option string) string {
 	switch option {
 	case "SendToCommunityPool", "sendtocommunitypool":
-		return CampaignCloseSendToCommunityPool.String()
+		return CloseSendToCommunityPool.String()
 
 	case "Burn", "burn":
 		return CampaignCloseBurn.String()
@@ -64,12 +64,12 @@ func NormalizeCampaignCloseAction(option string) string {
 	}
 }
 
-func CampaignCloseActionFromString(str string) (CampaignCloseAction, error) {
-	option, ok := CampaignCloseAction_value[str]
+func CloseActionFromString(str string) (CloseAction, error) {
+	option, ok := CloseAction_value[str]
 	if !ok {
-		return CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, fmt.Errorf("'%s' is not a valid mission type, available options: initial_claim/vote/delegation", str)
+		return CloseAction_CLOSE_ACTION_UNSPECIFIED, fmt.Errorf("'%s' is not a valid mission type, available options: initial_claim/vote/delegation", str)
 	}
-	return CampaignCloseAction(option), nil
+	return CloseAction(option), nil
 }
 
 func GetWhitelistedVestingAccounts() []string {

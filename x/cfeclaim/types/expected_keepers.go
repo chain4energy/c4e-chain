@@ -26,6 +26,7 @@ type BankKeeper interface {
 	BlockedAddr(addr sdk.AccAddress) bool
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins) error
 	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Coins) error
@@ -50,4 +51,7 @@ type DistributionKeeper interface {
 // VestingKeeper defines the expected feegrant keeper interface
 type VestingKeeper interface {
 	GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (vestingPool cfevestingtypes.VestingPool, found bool)
+	GetVestingType(ctx sdk.Context, name string) (vestingType cfevestingtypes.VestingType, err error)
+	SetAccountVestingPools(ctx sdk.Context, accountVestingPools cfevestingtypes.AccountVestingPools)
+	GetAccountVestingPools(ctx sdk.Context, accountAddress string) (accountVestingPools cfevestingtypes.AccountVestingPools, found bool)
 }

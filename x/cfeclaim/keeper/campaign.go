@@ -169,10 +169,10 @@ func (k Keeper) updateCampaignWithNewParams(name string, description string, cam
 	return campaign, nil
 }
 
-func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, campaignCloseAction types.CampaignCloseAction) error {
-	k.Logger(ctx).Debug("close campaign", "owner", owner, "campaignId", campaignId, "campaignCloseAction", campaignCloseAction)
+func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, CloseAction types.CloseAction) error {
+	k.Logger(ctx).Debug("close campaign", "owner", owner, "campaignId", campaignId, "CloseAction", CloseAction)
 
-	campaign, err := k.ValidateCloseCampaignParams(ctx, campaignCloseAction, campaignId, owner)
+	campaign, err := k.ValidateCloseCampaignParams(ctx, CloseAction, campaignId, owner)
 	if err != nil {
 		k.Logger(ctx).Debug("close campaign", "err", err.Error())
 		return err
@@ -180,7 +180,7 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 
 	campaignAmountLeft, _ := k.GetCampaignAmountLeft(ctx, campaign.Id)
 
-	if err = k.campaignCloseActionSwitch(ctx, campaignCloseAction, &campaign, campaignAmountLeft.Amount); err != nil {
+	if err = k.CloseActionSwitch(ctx, CloseAction, &campaign, campaignAmountLeft.Amount); err != nil {
 		k.Logger(ctx).Debug("close campaign", "err", err.Error())
 		return err
 	}
@@ -191,9 +191,9 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 	return nil
 }
 
-func (k Keeper) campaignCloseActionSwitch(ctx sdk.Context, campaignCloseAction types.CampaignCloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
-	switch campaignCloseAction {
-	case types.CampaignCloseSendToCommunityPool:
+func (k Keeper) CloseActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+	switch CloseAction {
+	case types.CloseSendToCommunityPool:
 		return k.campaignCloseSendToCommunityPool(ctx, campaign, campaignAmountLeft)
 	case types.CampaignCloseBurn:
 		return k.campaignCloseBurn(ctx, campaign, campaignAmountLeft)
@@ -287,7 +287,7 @@ func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description
 
 	return k.ValidateVestingPool(ctx, owner, vestingPoolName)
 }
-func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, action types.CampaignCloseAction, campaignId uint64, owner string) (types.Campaign, error) {
+func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, action types.CloseAction, campaignId uint64, owner string) (types.Campaign, error) {
 	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
 	if err != nil {
 		return types.Campaign{}, err
@@ -298,7 +298,7 @@ func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, action types.Campai
 	if err = ValidateCampaignEnded(ctx, campaign); err != nil {
 		return types.Campaign{}, err
 	}
-	if err = types.ValidateCampaignCloseAction(action); err != nil {
+	if err = types.ValidateCloseAction(action); err != nil {
 		return types.Campaign{}, err
 	}
 

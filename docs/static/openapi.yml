@@ -47804,16 +47804,6 @@ definitions:
         title: period of vesting coins after lockup period
       vestingPoolName:
         type: string
-  chain4energy.c4echain.cfeclaim.CampaignCloseAction:
-    type: string
-    enum:
-      - CLOSE_ACTION_UNSPECIFIED
-      - SEND_TO_COMMUNITY_POOL
-      - BURN
-      - SEND_TO_OWNER
-    default: CLOSE_ACTION_UNSPECIFIED
-    description: '- CLOSE_ACTION_UNSPECIFIED: Campaign close action'
-    title: Campaign close action
   chain4energy.c4echain.cfeclaim.CampaignType:
     type: string
     enum:
@@ -47854,6 +47844,16 @@ definitions:
         items:
           type: string
           format: uint64
+  chain4energy.c4echain.cfeclaim.CloseAction:
+    type: string
+    enum:
+      - CLOSE_ACTION_UNSPECIFIED
+      - SEND_TO_COMMUNITY_POOL
+      - BURN
+      - SEND_TO_OWNER
+    default: CLOSE_ACTION_UNSPECIFIED
+    description: '- CLOSE_ACTION_UNSPECIFIED: Campaign close action'
+    title: Campaign close action
   chain4energy.c4echain.cfeclaim.Mission:
     type: object
     properties:

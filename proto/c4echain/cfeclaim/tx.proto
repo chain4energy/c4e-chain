@@ -113,7 +113,7 @@ message MsgDeleteClaimRecordResponse {}
 message MsgCloseCampaign {
   string owner = 1;
   uint64 campaign_id = 2;
-  CampaignCloseAction campaign_close_action = 3;
+  CloseAction campaign_close_action = 3;
 }
 
 message MsgCloseCampaignResponse {}

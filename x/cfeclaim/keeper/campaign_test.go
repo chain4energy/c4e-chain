@@ -143,7 +143,7 @@ func TestCreateCampaignCampaignEnabledError(t *testing.T) {
 	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, "campaign is enabled")
 }
 
-func TestCreateCampaignCloseCampaignCloseActionBurn(t *testing.T) {
+func TestCreateCampaignCloseCloseActionBurn(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -158,7 +158,7 @@ func TestCreateCampaignCloseCampaignCloseActionBurn(t *testing.T) {
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseBurn)
 }
 
-func TestCreateCampaignCloseCampaignCloseActionSendToOwner(t *testing.T) {
+func TestCreateCampaignCloseCloseActionSendToOwner(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
@@ -172,7 +172,7 @@ func TestCreateCampaignCloseCampaignCloseActionSendToOwner(t *testing.T) {
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToOwner)
 }
 
-func TestCreateCampaignCloseCampaignCloseActionSendToCommunityPool(t *testing.T) {
+func TestCreateCampaignCloseCloseActionSendToCommunityPool(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -184,10 +184,10 @@ func TestCreateCampaignCloseCampaignCloseActionSendToCommunityPool(t *testing.T)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToCommunityPool)
+	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CloseSendToCommunityPool)
 }
 
-func TestCreateCampaignCloseCampaignCloseActionBurnAndFeegrant(t *testing.T) {
+func TestCreateCampaignCloseCloseActionBurnAndFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -203,7 +203,7 @@ func TestCreateCampaignCloseCampaignCloseActionBurnAndFeegrant(t *testing.T) {
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseBurn)
 }
 
-func TestCreateCampaignCloseCampaignCloseActionSendToOwnerAndFeegrant(t *testing.T) {
+func TestCreateCampaignCloseCloseActionSendToOwnerAndFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
@@ -218,7 +218,7 @@ func TestCreateCampaignCloseCampaignCloseActionSendToOwnerAndFeegrant(t *testing
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToOwner)
 }
 
-func TestCreateCampaignCloseCampaignCloseActionSendToCommunityPoolAndFeegrant(t *testing.T) {
+func TestCreateCampaignCloseCloseActionSendToCommunityPoolAndFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -231,7 +231,7 @@ func TestCreateCampaignCloseCampaignCloseActionSendToCommunityPoolAndFeegrant(t 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToCommunityPool)
+	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CloseSendToCommunityPool)
 }
 
 func TestCreateCampaignCloseCampaignWrongCloseAction(t *testing.T) {
@@ -246,7 +246,7 @@ func TestCreateCampaignCloseCampaignWrongCloseAction(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseActionUnspecified, "wrong campaign close action type: invalid type")
+	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CloseActionUnspecified, "wrong campaign close action type: invalid type")
 }
 
 func TestCreateManyCampaignsAndClose(t *testing.T) {
@@ -283,7 +283,7 @@ func TestCreateCampaignCloseCampaignCampaigDoesntExistError(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 1, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, "campaign with id 1 not found: entity does not exist")
+	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 1, types.CloseAction_CLOSE_ACTION_UNSPECIFIED, "campaign with id 1 not found: entity does not exist")
 }
 
 func TestCreateCampaignCloseCampaignYouAreNotTheOwnerErrror(t *testing.T) {
@@ -295,7 +295,7 @@ func TestCreateCampaignCloseCampaignYouAreNotTheOwnerErrror(t *testing.T) {
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[1].String(), 0, types.CampaignCloseAction_CLOSE_ACTION_UNSPECIFIED, "you are not the campaign owner: tx intended signer does not match the given signer")
+	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[1].String(), 0, types.CloseAction_CLOSE_ACTION_UNSPECIFIED, "you are not the campaign owner: tx intended signer does not match the given signer")
 }
 
 func prepareNTestCampaigns(ctx sdk.Context, n int) []types.Campaign {

@@ -1,11 +1,11 @@
 /* eslint-disable */
 import {
   CampaignType,
-  CampaignCloseAction,
+  CloseAction,
   campaignTypeFromJSON,
   campaignTypeToJSON,
-  campaignCloseActionFromJSON,
-  campaignCloseActionToJSON,
+  CloseActionFromJSON,
+  CloseActionToJSON,
 } from "../cfeclaim/campaign";
 import {
   MissionType,
@@ -82,7 +82,7 @@ export interface MsgDeleteClaimRecordResponse {}
 export interface MsgCloseCampaign {
   owner: string;
   campaign_id: number;
-  campaign_close_action: CampaignCloseAction;
+  campaign_close_action: CloseAction;
 }
 
 export interface MsgCloseCampaignResponse {}
@@ -1304,7 +1304,7 @@ export const MsgCloseCampaign = {
       object.campaign_close_action !== undefined &&
       object.campaign_close_action !== null
     ) {
-      message.campaign_close_action = campaignCloseActionFromJSON(
+      message.campaign_close_action = CloseActionFromJSON(
         object.campaign_close_action
       );
     } else {
@@ -1319,7 +1319,7 @@ export const MsgCloseCampaign = {
     message.campaign_id !== undefined &&
       (obj.campaign_id = message.campaign_id);
     message.campaign_close_action !== undefined &&
-      (obj.campaign_close_action = campaignCloseActionToJSON(
+      (obj.campaign_close_action = CloseActionToJSON(
         message.campaign_close_action
       ));
     return obj;
