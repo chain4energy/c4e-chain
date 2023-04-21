@@ -5,6 +5,7 @@ import (
 	"cosmossdk.io/math"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -169,19 +170,16 @@ func (k Keeper) updateCampaignWithNewParams(name string, description string, cam
 	return campaign, nil
 }
 
-func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, CloseAction types.CloseAction) error {
-	k.Logger(ctx).Debug("close campaign", "owner", owner, "campaignId", campaignId, "CloseAction", CloseAction)
-
-	campaign, err := k.ValidateCloseCampaignParams(ctx, CloseAction, campaignId, owner)
+func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, closeAction types.CloseAction) error {
+	k.Logger(ctx).Debug("close campaign", "owner", owner, "campaignId", campaignId, "CloseAction", closeAction)
+	campaign, err := k.ValidateCloseCampaignParams(ctx, closeAction, campaignId, owner)
 	if err != nil {
-		k.Logger(ctx).Debug("close campaign", "err", err.Error())
+
 		return err
 	}
 
 	campaignAmountLeft, _ := k.GetCampaignAmountLeft(ctx, campaign.Id)
-
-	if err = k.CloseActionSwitch(ctx, CloseAction, &campaign, campaignAmountLeft.Amount); err != nil {
-		k.Logger(ctx).Debug("close campaign", "err", err.Error())
+	if err = k.closeActionSwitch(ctx, closeAction, &campaign, campaignAmountLeft.Amount); err != nil {
 		return err
 	}
 
@@ -191,7 +189,7 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 	return nil
 }
 
-func (k Keeper) CloseActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+func (k Keeper) closeActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
 	switch CloseAction {
 	case types.CloseSendToCommunityPool:
 		return k.campaignCloseSendToCommunityPool(ctx, campaign, campaignAmountLeft)
@@ -215,6 +213,7 @@ func (k Keeper) campaignCloseSendToCommunityPool(ctx sdk.Context, campaign *type
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -230,21 +229,48 @@ func (k Keeper) campaignCloseBurn(ctx sdk.Context, campaign *types.Campaign, coi
 	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, coinsToBurn); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
-	ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
-	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft); err != nil {
-		return err
-	}
-	if campaign.FeegrantAmount.IsPositive() {
-		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-		feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
-		if err := k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, feegrantTotalAmount); err != nil {
+	if campaign.CampaignType != types.CampaignSale {
+		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft); err != nil {
 			return err
 		}
+		if campaign.FeegrantAmount.IsPositive() {
+			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+			feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
+			if err := k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, feegrantTotalAmount); err != nil {
+				return err
+			}
+		}
+	} else {
+		vestingDenom := k.vestingKeeper.Denom(ctx)
+		accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
+		var vestingPool *cfevestingtypes.VestingPool
+		for _, vestPool := range accountVestingPools.VestingPools {
+			if vestPool.Name == campaign.VestingPoolName {
+				vestingPool = vestPool
+				break
+			}
+		}
+
+		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft); err != nil {
+			return err
+		}
+		vestingPool.Sent = vestingPool.Sent.Add(campaignAmountLeft.AmountOf(vestingDenom))
+
+		if campaign.FeegrantAmount.IsPositive() {
+			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+			feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
+			if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, cfevestingtypes.ModuleName, feegrantTotalAmount); err != nil {
+				return err
+			}
+			vestingPool.Sent = vestingPool.Sent.Add(feegrantTotalAmount.AmountOf(vestingDenom))
+		}
+
+		k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
 	}
 	return nil
 }

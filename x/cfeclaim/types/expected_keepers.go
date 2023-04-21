@@ -4,6 +4,7 @@ import (
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 )
 
@@ -54,4 +55,6 @@ type VestingKeeper interface {
 	GetVestingType(ctx sdk.Context, name string) (vestingType cfevestingtypes.VestingType, err error)
 	SetAccountVestingPools(ctx sdk.Context, accountVestingPools cfevestingtypes.AccountVestingPools)
 	GetAccountVestingPools(ctx sdk.Context, accountAddress string) (accountVestingPools cfevestingtypes.AccountVestingPools, found bool)
+	Denom(ctx sdk.Context) (res string)
+	UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Coins) (*vestingtypes.ContinuousVestingAccount, error)
 }

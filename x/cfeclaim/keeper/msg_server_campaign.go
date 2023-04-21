@@ -137,6 +137,7 @@ func (k msgServer) CloseCampaign(goCtx context.Context, msg *types.MsgCloseCampa
 		msg.CampaignId,
 		msg.CampaignCloseAction,
 	); err != nil {
+		k.Logger(ctx).Debug("close campaign", "err", err.Error())
 		return nil, err
 	}
 

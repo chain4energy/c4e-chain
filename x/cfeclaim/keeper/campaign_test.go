@@ -275,7 +275,7 @@ func TestCreateCampaignCloseCampaignCampaignNotOverYetError(t *testing.T) {
 	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 0, types.CampaignCloseBurn, fmt.Sprintf("campaign with id %d campaign is not over yet (endtime - %s < %s): wrong param value", 0, campaign.EndTime, testHelper.Context.BlockTime()))
 }
 
-func TestCreateCampaignCloseCampaignCampaigDoesntExistError(t *testing.T) {
+func TestCreateCampaignCloseCampaignCampaignDoesntExistError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -286,7 +286,7 @@ func TestCreateCampaignCloseCampaignCampaigDoesntExistError(t *testing.T) {
 	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 1, types.CloseAction_CLOSE_ACTION_UNSPECIFIED, "campaign with id 1 not found: entity does not exist")
 }
 
-func TestCreateCampaignCloseCampaignYouAreNotTheOwnerErrror(t *testing.T) {
+func TestCreateCampaignCloseCampaignYouAreNotTheOwnerError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)

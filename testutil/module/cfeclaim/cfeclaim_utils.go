@@ -218,8 +218,8 @@ func (h *C4eClaimUtils) AddClaimRecordsError(ctx sdk.Context, srcAddress sdk.Acc
 
 func (h *C4eClaimUtils) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, from sdk.AccAddress, amountToSend sdk.Coins, unlockedAmount sdk.Coins) {
 	err := h.helpeCfeclaimkeeper.AddClaimRecordsFromWhitelistedVestingAccount(ctx, from, amountToSend)
-	h.BankUtils.VerifyAccountDefultDenomSpendableCoins(ctx, from, unlockedAmount.AmountOf(testenv.DefaultTestDenom))
 	require.NoError(h.t, err)
+	h.BankUtils.VerifyAccountDefultDenomSpendableCoins(ctx, from, unlockedAmount.AmountOf(testenv.DefaultTestDenom))
 }
 
 func (h *C4eClaimUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord, errorMessage string, addRequiredCoinsToSrc bool) {

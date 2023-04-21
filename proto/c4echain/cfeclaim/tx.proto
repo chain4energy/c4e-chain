@@ -106,6 +106,7 @@ message MsgDeleteClaimRecord {
   string owner = 1;
   uint64 campaignId = 2;
   string userAddress = 3;
+  CloseAction delete_claim_record_action = 4;
 }
 
 message MsgDeleteClaimRecordResponse {}
