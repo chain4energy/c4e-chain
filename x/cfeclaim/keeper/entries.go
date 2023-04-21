@@ -16,6 +16,8 @@ import (
 	"strconv"
 )
 
+const MsgInitialClaimUrl = "/chain4energy.c4echain.cfeclaim.MsgInitialClaim"
+
 func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) error {
 	ctx.Logger().Debug("add user entries", "owner", owner, "campaignId", campaignId, "claimRecordsLength", len(claimRecords))
 	feegrantDenom := k.stakingKeeper.BondDenom(ctx)
@@ -124,6 +126,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	if err != nil {
 		return err
 	}
+
 	userEntry, claimRecordAmount, err := k.validateDeleteClaimRecord(ctx, owner, campaign, userAddress)
 	if err != nil {
 		return err
@@ -134,14 +137,26 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	}
 
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
-		granteeAddr, err := sdk.AccAddressFromBech32(userEntry.Address)
+		granteeAddr, _ := sdk.AccAddressFromBech32(userEntry.Address)
+		_, feegrantAccountAddress := FeegrantAccountAddress(campaignId)
+		allowance, err := k.feeGrantKeeper.GetAllowance(ctx, feegrantAccountAddress, granteeAddr)
+
 		if err != nil {
-			return err
-		}
-		_, accountAddr := FeegrantAccountAddress(campaignId)
-		_, err = k.feeGrantKeeper.GetAllowance(ctx, accountAddr, granteeAddr)
-		if err != nil {
-			k.revokeFeeAllowance(ctx, accountAddr, granteeAddr)
+			x, ok := allowance.(*feegranttypes.AllowedMsgAllowance)
+			if ok {
+				for _, msg := range x.AllowedMessages {
+					if msg == MsgInitialClaimUrl {
+						k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddr)
+						ownerAddress, _ := sdk.AccAddressFromBech32(owner)
+						basicAllowance := x.Allowance.GetCachedValue().(feegranttypes.BasicAllowance)
+						err = k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, basicAllowance.SpendLimit)
+						if err != nil {
+							return err
+						}
+					}
+				}
+
+			}
 		}
 	}
 
@@ -362,7 +377,7 @@ func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddres
 
 	allowedMsgAllowance := feegranttypes.AllowedMsgAllowance{
 		Allowance:       basicAllowance,
-		AllowedMessages: []string{"/chain4energy.c4echain.cfeclaim.MsgInitialClaim"},
+		AllowedMessages: []string{MsgInitialClaimUrl},
 	}
 
 	for _, claimRecord := range claimEntries {
