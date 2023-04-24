@@ -9,6 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	"golang.org/x/exp/slices"
 	"strconv"
 	"time"
 )
@@ -236,6 +238,30 @@ func (k Keeper) campaignCloseBurn(ctx sdk.Context, campaign *types.Campaign, coi
 func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
 	if campaign.CampaignType != types.CampaignSale {
 		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
+		if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
+			ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
+			if ownerAccount == nil {
+				return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
+			}
+			vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
+			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(campaignAmountLeft...)
+
+			if campaign.FeegrantAmount.IsPositive() {
+				_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+				feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
+				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(feegrantTotalAmount...)
+				if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, types.ModuleName, feegrantTotalAmount); err != nil {
+					return err
+				}
+				err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, feegrantTotalAmount)
+				if err != nil {
+					return err
+				}
+			}
+			k.accountKeeper.SetAccount(ctx, vestingAcc)
+			return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
+		}
+
 		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft); err != nil {
 			return err
 		}

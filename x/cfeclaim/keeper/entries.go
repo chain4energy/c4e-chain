@@ -13,6 +13,7 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	"golang.org/x/exp/slices"
 	"strconv"
 	"time"
 )
@@ -41,7 +42,7 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 		allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
 		ctx.Logger().Debug("add user entries", "feegrantFeesSum", feegrantFeesSum, "allBalances", allBalances)
 
-		if campaign.CampaignType == types.CampaignTeamdrop {
+		if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
 			if err = k.ValidateCampaignWhenAddedFromVestingAccount(ctx, ownerAddress, campaign); err != nil {
 				return err
 			}
@@ -215,6 +216,33 @@ func (k Keeper) delteClaimRecordCloseBurn(ctx sdk.Context, campaign *types.Campa
 func (k Keeper) delteClaimRecordCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
 	if campaign.CampaignType != types.CampaignSale {
 		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
+		if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
+			ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
+			if ownerAccount == nil {
+				return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
+			}
+			vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
+			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(campaignAmountLeft...)
+
+			if campaign.FeegrantAmount.IsPositive() {
+				_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+				granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
+				feegrantAmount, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
+				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(*feegrantAmount...)
+				k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
+				if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, types.ModuleName, *feegrantAmount); err != nil {
+					return err
+				}
+				if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, *feegrantAmount); err != nil {
+					return err
+				}
+			}
+			k.accountKeeper.SetAccount(ctx, vestingAcc)
+			if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft); err != nil {
+				return err
+			}
+			return nil
+		}
 		if campaign.FeegrantAmount.IsPositive() {
 			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
 			granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
