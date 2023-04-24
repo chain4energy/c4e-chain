@@ -256,6 +256,25 @@ func TestCreateCampaignCloseCloseActionSendToOwner(t *testing.T) {
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseSendToOwner)
 }
 
+func TestCreateCampaignSaleCloseCloseActionSendToOwner(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	ownerAddress := acountsAddresses[0]
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.CampaignSale
+	campaign.VestingPoolName = vPool1
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+
+	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
+	testHelper.C4eClaimUtils.StartCampaign(ownerAddress.String(), 0, nil, nil)
+	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 300)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eClaimUtils.CloseCampaign(ownerAddress.String(), 0, types.CampaignCloseSendToOwner)
+}
+
 func TestCreateCampaignCloseCloseActionSendToCommunityPool(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 

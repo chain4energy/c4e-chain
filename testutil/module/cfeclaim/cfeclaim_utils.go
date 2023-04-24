@@ -592,6 +592,11 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 	}
 	ownerAccAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
 	ownerBalanceBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, ownerAccAddress)
+	var vestingPoolBefore cfevestingtypes.VestingPool
+
+	if campaign.CampaignType == cfeclaimtypes.CampaignSale {
+		vestingPoolBefore, _ = h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaign.VestingPoolName)
+	}
 
 	err := h.helpeCfeclaimkeeper.CloseCampaign(ctx, owner, campaignId, CloseAction)
 	require.NoError(h.t, err)
@@ -611,7 +616,18 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 		expectedAmount := sdk.NewDecFromInt(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom).Add(feegrantAmountLefBefore))
 		require.True(h.t, feePoolAmount.Equal(expectedAmount))
 	case cfeclaimtypes.CampaignCloseSendToOwner:
-		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom).Add(feegrantAmountLefBefore)))
+		if campaign.CampaignType == cfeclaimtypes.CampaignSale {
+			vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaign.VestingPoolName)
+			if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+				require.True(h.t, vestingPoolBefore.Sent.
+					Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)).Sub(feegrantAmountLefBefore).Equal(vestingPool.Sent))
+			} else {
+				require.True(h.t, vestingPoolBefore.Sent.Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)).Equal(vestingPool.Sent))
+			}
+
+		} else {
+			h.BankUtils.VerifyAccountDefultDenomBalance(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom).Add(feegrantAmountLefBefore)))
+		}
 	}
 
 	require.True(h.t, ok)
