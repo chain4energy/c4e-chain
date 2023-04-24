@@ -31,7 +31,9 @@ func (k Keeper) GetAccountVestingPool(ctx sdk.Context, accountAddress string, na
 	k.cdc.MustUnmarshal(b, &accountVestingPools)
 	for _, vestPool := range accountVestingPools.VestingPools {
 		if vestPool.Name == name {
-			return vestingPool, true
+			vestingPool = *vestPool
+			found = true
+			return
 		}
 	}
 

@@ -14,6 +14,7 @@ import (
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	"strconv"
+	"time"
 )
 
 const MsgInitialClaimUrl = "/chain4energy.c4echain.cfeclaim.MsgInitialClaim"
@@ -62,9 +63,9 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 			return err
 		}
 	} else if campaign.CampaignType == types.CampaignSale {
-		accountVestingPools, err := k.ValidateCampaignWhenAddedFromVestingPool(ctx, campaign)
-		if err != nil {
-			return err
+		accountVestingPools, found := k.vestingKeeper.GetAccountVestingPools(ctx, owner)
+		if !found {
+			return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
 		}
 
 		err = k.setupAndSendFeegrantForVestingPool(ctx, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
@@ -83,7 +84,7 @@ func (k Keeper) AddUsersEntries(ctx sdk.Context, owner string, campaignId uint64
 			}
 		}
 
-		k.vestingKeeper.SetAccountVestingPools(ctx, *accountVestingPools)
+		k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
 	}
 
 	k.IncrementCampaignTotalAmount(ctx, types.CampaignTotalAmount{
@@ -263,31 +264,39 @@ func (k Keeper) ValidateCampaignWhenAddedFromVestingAccount(ctx sdk.Context, own
 	return nil
 }
 
-func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, campaign *types.Campaign) (*cfevestingtypes.AccountVestingPools, error) {
-	accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
+func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string,
+	campaignLockupPeriod *time.Duration, campaignVestingPeriod *time.Duration) error {
+	accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, owner)
 	var vestingPool *cfevestingtypes.VestingPool
 	for _, vestPool := range accountVestingPools.VestingPools {
-		if vestPool.Name == campaign.VestingPoolName {
+		if vestPool.Name == vestingPoolName {
 			vestingPool = vestPool
 			break
 		}
 	}
+	if vestingPool == nil {
+		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
+	}
 
 	vestingType, err := k.vestingKeeper.GetVestingType(ctx, vestingPool.VestingType)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if vestingType.LockupPeriod > campaign.LockupPeriod {
-		return nil, errors.Wrapf(c4eerrors.ErrParam,
-			fmt.Sprintf("the duration of campaign lockup period must be equal to or greater than the vesting type lockup period (%d > %d)", vestingType.LockupPeriod, campaign.LockupPeriod))
+	return validateVestingTimesForCampaign(vestingType, campaignLockupPeriod, campaignVestingPeriod)
+}
+
+func validateVestingTimesForCampaign(vestingType cfevestingtypes.VestingType, campaignLockupPeriod *time.Duration, campaignVestingPeriod *time.Duration) error {
+	if vestingType.LockupPeriod > *campaignLockupPeriod {
+		return errors.Wrapf(c4eerrors.ErrParam,
+			fmt.Sprintf("the duration of campaign lockup period must be equal to or greater than the vesting type lockup period (%s > %s)", vestingType.LockupPeriod.String(), campaignLockupPeriod.String()))
 	}
 
-	if vestingType.VestingPeriod > campaign.VestingPeriod {
-		return nil, errors.Wrapf(c4eerrors.ErrParam,
-			fmt.Sprintf("the duration of campaign vesting period must be equal to or greater than the vesting type vesting period (%d > %d)", vestingType.VestingPeriod, campaign.VestingPeriod))
+	if vestingType.VestingPeriod > *campaignVestingPeriod {
+		return errors.Wrapf(c4eerrors.ErrParam,
+			fmt.Sprintf("the duration of campaign vesting period must be equal to or greater than the vesting type vesting period (%s > %s)", vestingType.VestingPeriod.String(), campaignVestingPeriod.String()))
 	}
-	return &accountVestingPools, nil
+	return nil
 }
 
 func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, claimRecords []*types.ClaimRecord) (usersEntries []*types.UserEntry, entriesAmountSum sdk.Coins, err error) {

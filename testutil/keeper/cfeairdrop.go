@@ -55,7 +55,7 @@ import (
 func CfeclaimKeeperTestUtilWithCdc(t *testing.T) (*cfeclaimtestutils.C4eClaimUtils, *keeper.Keeper, sdk.Context) {
 	k, ak, bk, ctx, _, _ := cfeclaimKeeperWithBlockHeightAndTime(t, 0, testenv.TestEnvTime)
 	bankUtils := commontestutils.NewBankUtils(t, ctx, ak, bk)
-	utils := cfeclaimtestutils.NewC4eClaimUtils(t, k, ak, &bankUtils, nil, nil, nil, nil)
+	utils := cfeclaimtestutils.NewC4eClaimUtils(t, k, nil, ak, &bankUtils, nil, nil, nil, nil)
 	return &utils, k, ctx
 }
 

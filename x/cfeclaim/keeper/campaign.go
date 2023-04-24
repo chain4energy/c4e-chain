@@ -18,7 +18,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 	k.Logger(ctx).Debug("create campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
 
-	if err := k.ValidateCampaignParams(ctx, name, description, startTime, endTime, campaignType, owner, vestingPoolName); err != nil {
+	if err := k.ValidateCampaignParams(ctx, name, description, startTime, endTime, campaignType, owner, vestingPoolName, lockupPeriod, vestingPeriod); err != nil {
 		return err
 	}
 
@@ -44,6 +44,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 		EndTime:                *endTime,
 		LockupPeriod:           *lockupPeriod,
 		VestingPeriod:          *vestingPeriod,
+		VestingPoolName:        vestingPoolName,
 	}
 
 	campaignId := k.AppendNewCampaign(ctx, campaign)
@@ -164,7 +165,7 @@ func (k Keeper) updateCampaignWithNewParams(name string, description string, cam
 		campaign.CampaignType = campaignType
 	}
 
-	if err := k.ValidateCampaignParams(ctx, campaign.Name, campaign.Description, &campaign.StartTime, &campaign.EndTime, campaign.CampaignType, campaign.Owner, campaign.VestingPoolName); err != nil {
+	if err := k.ValidateCampaignParams(ctx, campaign.Name, campaign.Description, &campaign.StartTime, &campaign.EndTime, campaign.CampaignType, campaign.Owner, campaign.VestingPoolName, &campaign.LockupPeriod, &campaign.VestingPeriod); err != nil {
 		return types.Campaign{}, err
 	}
 	return campaign, nil
@@ -283,8 +284,12 @@ func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 		return err
 	}
 	if campaign.CampaignType == types.CampaignSale {
-		campaign.StartTime = *startTime
-		campaign.EndTime = *endTime
+		if startTime != nil {
+			campaign.StartTime = *startTime
+		}
+		if endTime != nil {
+			campaign.EndTime = *endTime
+		}
 	}
 
 	err = k.ValidateStartCampaignParams(ctx, campaign, owner)
@@ -310,7 +315,8 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 	k.RemoveAllMissionForCampaign(ctx, campaignId)
 	return nil
 }
-func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description string, startTime *time.Time, endTime *time.Time, campaignType types.CampaignType, owner string, vestingPoolName string) error {
+func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description string, startTime *time.Time, endTime *time.Time,
+	campaignType types.CampaignType, owner string, vestingPoolName string, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
 	if err := types.ValidateCampaignCreateParams(name, description, startTime, endTime, campaignType, owner, vestingPoolName); err != nil {
 		return err
 	}
@@ -321,7 +327,7 @@ func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description
 		}
 	}
 	if campaignType == types.CampaignSale {
-		return k.ValidateVestingPool(ctx, owner, vestingPoolName)
+		return k.ValidateCampaignWhenAddedFromVestingPool(ctx, owner, vestingPoolName, lockupPeriod, vestingPeriod)
 	}
 	return nil
 }

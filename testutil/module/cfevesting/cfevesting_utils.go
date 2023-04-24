@@ -493,6 +493,22 @@ func (h *ContextC4eVestingUtils) MessageCreateVestingPool(address sdk.AccAddress
 		vestingType, amountToVest, accAmountBefore, moduleAmountBefore, accAmountAfter, moduleAmountAfter)
 }
 
+func (h *ContextC4eVestingUtils) AddTestVestingPool(address sdk.AccAddress, vestingPoolName string, vested math.Int, lockupPeriodInHours int64, vestingPeriodInHours int64) {
+	accInitBalance := sdk.NewInt(10000)
+	h.bankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), accInitBalance, address)
+
+	vestingType := cfevestingtypes.VestingType{
+		Name:          "test-vesting-type",
+		LockupPeriod:  CreateDurationFromNumOfHours(lockupPeriodInHours),
+		VestingPeriod: CreateDurationFromNumOfHours(vestingPeriodInHours),
+		Free:          sdk.MustNewDecFromStr("0.05"),
+	}
+	h.helperCfevestingKeeper.SetVestingType(h.testContext.GetContext(), vestingType)
+
+	h.C4eVestingUtils.MessageCreateVestingPool(h.testContext.GetContext(), address, false, true, vestingPoolName, 1000,
+		vestingType, vested, accInitBalance, math.ZeroInt(), accInitBalance.Sub(vested), vested)
+}
+
 func (h *ContextC4eVestingUtils) MessageCreateGenesisVestingPool(address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
 	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int, accAmountBefore math.Int, moduleAmountBefore math.Int,
 	accAmountAfter math.Int, moduleAmountAfter math.Int) {

@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
@@ -8,6 +9,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"
+)
+
+const (
+	vPool1 = "v-pool-1"
+	vPool2 = "v-pool-2"
 )
 
 func TestCreateCampaign(t *testing.T) {
@@ -141,6 +147,84 @@ func TestCreateCampaignCampaignEnabledError(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	testHelper.C4eClaimUtils.StartCampaignError(acountsAddresses[0].String(), 0, nil, nil, "campaign is enabled")
+}
+
+func TestCreateSaleCampaign(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	ownerAddress := acountsAddresses[0]
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.CampaignSale
+	campaign.VestingPoolName = vPool1
+	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
+	testHelper.C4eClaimUtils.StartCampaign(ownerAddress.String(), 0, nil, nil)
+}
+
+func TestCreateSaleCampaignWrongPoolName(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	ownerAddress := acountsAddresses[0]
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.CampaignSale
+	campaign.VestingPoolName = vPool2
+
+	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: entity does not exist", vPool2, acountsAddresses[0]))
+}
+
+func TestCreateSaleCampaignWrongVestingPeriod(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	ownerAddress := acountsAddresses[0]
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.CampaignSale
+	campaign.VestingPoolName = vPool1
+	campaign.VestingPeriod = time.Minute
+	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("the duration of campaign vesting period must be equal to or greater than the vesting type vesting period (%s > %s): wrong param value",
+		(time.Hour*100).String(), campaign.VestingPeriod.String()))
+}
+
+func TestCreateSaleCampaignWrongLockupPeriod(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	ownerAddress := acountsAddresses[0]
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.CampaignSale
+	campaign.VestingPoolName = vPool1
+	campaign.LockupPeriod = time.Minute
+	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("the duration of campaign lockup period must be equal to or greater than the vesting type lockup period (%s > %s): wrong param value",
+		(time.Hour*100).String(), campaign.LockupPeriod.String()))
+}
+
+func TestCreateSaleCampaignWrongOwner(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	ownerAddress := acountsAddresses[0]
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.CampaignSale
+	campaign.VestingPoolName = vPool1
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[1].String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: entity does not exist", vPool1, acountsAddresses[1]))
+}
+
+func TestCreateSaleCampaignWrongType(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	ownerAddress := acountsAddresses[0]
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.CampaignTeamdrop
+	campaign.VestingPoolName = vPool1
+	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, "vesting pool name can be set only for SALE type campaigns: wrong param value")
 }
 
 func TestCreateCampaignCloseCloseActionBurn(t *testing.T) {
@@ -309,8 +393,8 @@ func prepareNTestCampaigns(ctx sdk.Context, n int) []types.Campaign {
 func prepareTestCampaign(ctx sdk.Context) types.Campaign {
 	start := ctx.BlockTime()
 	end := ctx.BlockTime().Add(time.Second * 10)
-	lockupPeriod := time.Hour
-	vestingPeriod := 3 * time.Hour
+	lockupPeriod := time.Hour * 10000
+	vestingPeriod := 3 * time.Hour * 10000
 	return types.Campaign{
 		Id:            0,
 		Name:          "Name",

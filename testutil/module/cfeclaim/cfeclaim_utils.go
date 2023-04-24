@@ -7,6 +7,7 @@ import (
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -18,20 +19,22 @@ import (
 
 type C4eClaimUtils struct {
 	C4eClaimKeeperUtils
-	helperAccountKeeper *authkeeper.AccountKeeper
-	BankUtils           *testcosmos.BankUtils
-	DistrUtils          *testcosmos.DistributionUtils
-	FeegrantUtils       *testcosmos.FeegrantUtils
-	StakingUtils        *testcosmos.StakingUtils
-	GovUtils            *testcosmos.GovUtils
-	DistributionUtils   *testcosmos.DistributionUtils
+	helperAccountKeeper    *authkeeper.AccountKeeper
+	BankUtils              *testcosmos.BankUtils
+	DistrUtils             *testcosmos.DistributionUtils
+	FeegrantUtils          *testcosmos.FeegrantUtils
+	StakingUtils           *testcosmos.StakingUtils
+	GovUtils               *testcosmos.GovUtils
+	DistributionUtils      *testcosmos.DistributionUtils
+	helperCfevestingKeeper *cfevestingmodulekeeper.Keeper
 }
 
-func NewC4eClaimUtils(t require.TestingT, helpeCfeclaimmodulekeeper *cfeclaimmodulekeeper.Keeper,
+func NewC4eClaimUtils(t require.TestingT, helpeCfeclaimmodulekeeper *cfeclaimmodulekeeper.Keeper, helperCfevestingKeeper *cfevestingmodulekeeper.Keeper,
 	helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils, feegrantUtils *testcosmos.FeegrantUtils, distributionUtils *testcosmos.DistributionUtils) C4eClaimUtils {
 	return C4eClaimUtils{C4eClaimKeeperUtils: NewC4eClaimKeeperUtils(t, helpeCfeclaimmodulekeeper),
-		helperAccountKeeper: helperAccountKeeper, BankUtils: bankUtils, StakingUtils: stakingUtils, GovUtils: govUtils, FeegrantUtils: feegrantUtils, DistributionUtils: distributionUtils}
+		helperAccountKeeper: helperAccountKeeper, BankUtils: bankUtils, StakingUtils: stakingUtils, GovUtils: govUtils,
+		FeegrantUtils: feegrantUtils, DistributionUtils: distributionUtils, helperCfevestingKeeper: helperCfevestingKeeper}
 }
 
 func (h *C4eClaimUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context, toAddress sdk.AccAddress,
@@ -154,6 +157,13 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 	srcBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, srcAddress)
 
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
+	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
+	var vestingPoolBefore cfevestingtypes.VestingPool
+	if campaign.CampaignType == cfeclaimtypes.CampaignSale {
+		var accFound bool
+		vestingPoolBefore, accFound = h.helperCfevestingKeeper.GetAccountVestingPool(ctx, srcAddress.String(), campaign.VestingPoolName)
+		require.True(h.t, accFound)
+	}
 
 	require.NoError(h.t, h.helpeCfeclaimkeeper.AddUsersEntries(ctx, srcAddress.String(), campaignId, claimEntries))
 	claimClaimsLeftAfter, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
@@ -192,7 +202,6 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 		}
 
 	}
-	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
 		_, feegrandModuleAddress := cfeclaimmodulekeeper.FeegrantAccountAddress(campaignId)
@@ -202,7 +211,14 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(feegrantSum).Sub(amountSum.AmountOf(testenv.DefaultTestDenom)))
 	} else {
 		h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBalance.Add(amountSum.AmountOf(testenv.DefaultTestDenom)))
-		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(amountSum.AmountOf(testenv.DefaultTestDenom)))
+		if campaign.CampaignType == cfeclaimtypes.CampaignSale {
+			vestingPool, accFound := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, srcAddress.String(), campaign.VestingPoolName)
+			require.True(h.t, accFound)
+			require.EqualValues(h.t, vestingPoolBefore.Sent.Add(amountSum.AmountOf(testenv.DefaultTestDenom)), vestingPool.Sent)
+		} else {
+			h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(amountSum.AmountOf(testenv.DefaultTestDenom)))
+		}
+
 	}
 }
 
@@ -527,7 +543,7 @@ func (h *C4eClaimUtils) CreateCampaign(ctx sdk.Context, owner string, name strin
 	require.Equal(h.t, campaignCountBefore+1, campaignCountAfter)
 	require.Equal(h.t, uint64(1), missionCountAfter)
 
-	h.VerifyCampaign(ctx, campaignCountBefore, true, owner, name, description, false, &feegrantAmount, &initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod)
+	h.VerifyCampaign(ctx, campaignCountBefore, true, owner, name, description, false, &feegrantAmount, &initialClaimFreeAmount, startTime, endTime, lockupPeriod, vestingPeriod, vestingPoolName)
 	h.VerifyMission(ctx, true, campaignCountBefore, 0, "Initial mission", "Initial mission - basic mission that must be claimed first", cfeclaimtypes.MissionInitialClaim, sdk.ZeroDec(), nil)
 }
 
@@ -550,7 +566,7 @@ func (h *C4eClaimUtils) StartCampaign(ctx sdk.Context, owner string, campaignId 
 	require.NoError(h.t, err)
 	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.True(h.t, ok)
-	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, true, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, true, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
 }
 
 func (h *C4eClaimUtils) StartCampaignError(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time, errorString string) {
@@ -562,7 +578,7 @@ func (h *C4eClaimUtils) StartCampaignError(ctx sdk.Context, owner string, campai
 		return
 	}
 	enabled := campaignBefore.Enabled
-	h.VerifyCampaign(ctx, campaignBefore.Id, true, campaignBefore.Owner, campaignBefore.Name, campaignBefore.Description, enabled, &campaignBefore.FeegrantAmount, &campaignBefore.InitialClaimFreeAmount, campaignBefore.StartTime, campaignBefore.EndTime, campaignBefore.LockupPeriod, campaignBefore.VestingPeriod)
+	h.VerifyCampaign(ctx, campaignBefore.Id, true, campaignBefore.Owner, campaignBefore.Name, campaignBefore.Description, enabled, &campaignBefore.FeegrantAmount, &campaignBefore.InitialClaimFreeAmount, campaignBefore.StartTime, campaignBefore.EndTime, campaignBefore.LockupPeriod, campaignBefore.VestingPeriod, campaignBefore.VestingPoolName)
 }
 
 func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction) {
@@ -601,7 +617,7 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 	require.True(h.t, ok)
 	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, cfeclaimModuleBalance.Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)))
 	h.VerifyCloseAction(ctx, campaignId, CloseAction, campaignAmoutLeftBefore.Amount)
-	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, false, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod)
+	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, false, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
 }
 
 func (h *C4eClaimUtils) CloseCampaignError(ctx sdk.Context, owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction, errorString string) {
@@ -613,7 +629,7 @@ func (h *C4eClaimUtils) CloseCampaignError(ctx sdk.Context, owner string, campai
 		return
 	}
 	enabled := campaignBefore.Enabled
-	h.VerifyCampaign(ctx, campaignBefore.Id, true, campaignBefore.Owner, campaignBefore.Name, campaignBefore.Description, enabled, &campaignBefore.FeegrantAmount, &campaignBefore.InitialClaimFreeAmount, campaignBefore.StartTime, campaignBefore.EndTime, campaignBefore.LockupPeriod, campaignBefore.VestingPeriod)
+	h.VerifyCampaign(ctx, campaignBefore.Id, true, campaignBefore.Owner, campaignBefore.Name, campaignBefore.Description, enabled, &campaignBefore.FeegrantAmount, &campaignBefore.InitialClaimFreeAmount, campaignBefore.StartTime, campaignBefore.EndTime, campaignBefore.LockupPeriod, campaignBefore.VestingPeriod, campaignBefore.VestingPoolName)
 }
 
 func (h *C4eClaimUtils) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeclaimtypes.MissionType,
@@ -636,7 +652,7 @@ func (h *C4eClaimUtils) AddMissionToCampaignError(ctx sdk.Context, owner string,
 }
 
 func (h *C4eClaimUtils) VerifyCampaign(ctx sdk.Context, campaignId uint64, mustExist bool, owner string, name string, description string, enabled bool, feegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime time.Time,
-	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration) {
+	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string) {
 
 	claimCampaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 
@@ -649,6 +665,7 @@ func (h *C4eClaimUtils) VerifyCampaign(ctx sdk.Context, campaignId uint64, mustE
 	require.EqualValues(h.t, claimCampaign.Owner, owner)
 	require.EqualValues(h.t, claimCampaign.Name, name)
 	require.EqualValues(h.t, claimCampaign.Description, description)
+	require.EqualValues(h.t, claimCampaign.VestingPoolName, vestingPoolName)
 
 	if feegrantAmount.IsNil() {
 		require.EqualValues(h.t, claimCampaign.FeegrantAmount, sdk.ZeroInt())

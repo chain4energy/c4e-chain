@@ -6,6 +6,7 @@ import (
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -19,9 +20,9 @@ type ContextC4eClaimUtils struct {
 }
 
 func NewContextC4eClaimUtils(t require.TestingT, testContext testenv.TestContext, helpeCfeclaimmodulekeeper *cfeclaimmodulekeeper.Keeper,
-	helperAccountKeeper *authkeeper.AccountKeeper,
+	helperCfevestingKeeper *cfevestingmodulekeeper.Keeper, helperAccountKeeper *authkeeper.AccountKeeper,
 	bankUtils *testcosmos.BankUtils, stakingUtils *testcosmos.StakingUtils, govUtils *testcosmos.GovUtils, feegrantUtils *testcosmos.FeegrantUtils, distributionUtils *testcosmos.DistributionUtils) *ContextC4eClaimUtils {
-	c4eClaimUtils := NewC4eClaimUtils(t, helpeCfeclaimmodulekeeper, helperAccountKeeper, bankUtils, stakingUtils, govUtils, feegrantUtils, distributionUtils)
+	c4eClaimUtils := NewC4eClaimUtils(t, helpeCfeclaimmodulekeeper, helperCfevestingKeeper, helperAccountKeeper, bankUtils, stakingUtils, govUtils, feegrantUtils, distributionUtils)
 	return &ContextC4eClaimUtils{C4eClaimUtils: c4eClaimUtils, testContext: testContext}
 }
 
