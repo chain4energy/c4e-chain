@@ -260,7 +260,7 @@ func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campai
 		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft); err != nil {
 			return err
 		}
-		vestingPool.Sent = vestingPool.Sent.Add(campaignAmountLeft.AmountOf(vestingDenom))
+		vestingPool.Sent = vestingPool.Sent.Sub(campaignAmountLeft.AmountOf(vestingDenom))
 
 		if campaign.FeegrantAmount.IsPositive() {
 			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
@@ -268,7 +268,7 @@ func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campai
 			if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, cfevestingtypes.ModuleName, feegrantTotalAmount); err != nil {
 				return err
 			}
-			vestingPool.Sent = vestingPool.Sent.Add(feegrantTotalAmount.AmountOf(vestingDenom))
+			vestingPool.Sent = vestingPool.Sent.Sub(feegrantTotalAmount.AmountOf(vestingDenom))
 		}
 
 		k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)

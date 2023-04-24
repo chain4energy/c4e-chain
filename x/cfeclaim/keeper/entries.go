@@ -133,32 +133,8 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 		return err
 	}
 
-	if err = k.delteClaimRecordCloseActionSwitch(ctx, closeAction, &campaign, claimRecordAmount); err != nil {
+	if err = k.delteClaimRecordCloseActionSwitch(ctx, closeAction, &campaign, claimRecordAmount, userAddress); err != nil {
 		return err
-	}
-
-	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
-		granteeAddr, _ := sdk.AccAddressFromBech32(userEntry.Address)
-		_, feegrantAccountAddress := FeegrantAccountAddress(campaignId)
-		allowance, err := k.feeGrantKeeper.GetAllowance(ctx, feegrantAccountAddress, granteeAddr)
-
-		if err != nil {
-			x, ok := allowance.(*feegranttypes.AllowedMsgAllowance)
-			if ok {
-				for _, msg := range x.AllowedMessages {
-					if msg == MsgInitialClaimUrl {
-						k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddr)
-						ownerAddress, _ := sdk.AccAddressFromBech32(owner)
-						basicAllowance := x.Allowance.GetCachedValue().(feegranttypes.BasicAllowance)
-						err = k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, basicAllowance.SpendLimit)
-						if err != nil {
-							return err
-						}
-					}
-				}
-
-			}
-		}
 	}
 
 	k.SetUserEntry(ctx, userEntry)
@@ -178,30 +154,76 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	return nil
 }
 
-func (k Keeper) delteClaimRecordCloseActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, granterAddress sdk.AccAddress, granteeAddress sdk.AccAddress) (*sdk.Coins, error) {
+	allowance, err := k.feeGrantKeeper.GetAllowance(ctx, granterAddress, granteeAddress)
+	if err != nil {
+		return nil, err
+	}
+	x, ok := allowance.(*feegranttypes.AllowedMsgAllowance)
+	if !ok {
+		return nil, errors.Wrap(sdkerrors.ErrInvalidType, "cannot get AllowedMsgAllowance")
+	}
+	for _, msg := range x.AllowedMessages {
+		if msg == MsgInitialClaimUrl {
+			basicAllowance := x.Allowance.GetCachedValue().(feegranttypes.BasicAllowance)
+			return &basicAllowance.SpendLimit, nil
+		}
+	}
+	return nil, errors.Wrap(sdkerrors.ErrInvalidType, "cannot get feegrant left amount")
+}
+
+func (k Keeper) delteClaimRecordCloseActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
 	switch CloseAction {
 	case types.CloseSendToCommunityPool:
-		return k.delteClaimRecordCloseSendToCommunityPool(ctx, campaignAmountLeft)
+		return k.delteClaimRecordCloseSendToCommunityPool(ctx, campaign, campaignAmountLeft, userEntryAddress)
 	case types.CampaignCloseBurn:
-		return k.delteClaimRecordCloseBurn(ctx, campaignAmountLeft)
+		return k.delteClaimRecordCloseBurn(ctx, campaign, campaignAmountLeft, userEntryAddress)
 	case types.CampaignCloseSendToOwner:
-		return k.delteClaimRecordCloseSendToOwner(ctx, campaign, campaignAmountLeft)
+		return k.delteClaimRecordCloseSendToOwner(ctx, campaign, campaignAmountLeft, userEntryAddress)
 	default:
 		return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
 	}
 }
 
-func (k Keeper) delteClaimRecordCloseSendToCommunityPool(ctx sdk.Context, campaignAmountLeft sdk.Coins) error {
+func (k Keeper) delteClaimRecordCloseSendToCommunityPool(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
+	if campaign.FeegrantAmount.IsPositive() {
+		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+		granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
+		granterAddress, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
+		if err := k.distributionKeeper.FundCommunityPool(ctx, *granterAddress, feegrantAccountAddress); err != nil {
+			return err
+		}
+		k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
+	}
 	return k.distributionKeeper.FundCommunityPool(ctx, campaignAmountLeft, authtypes.NewModuleAddress(types.ModuleName))
 }
 
-func (k Keeper) delteClaimRecordCloseBurn(ctx sdk.Context, coinsToBurn sdk.Coins) error {
+func (k Keeper) delteClaimRecordCloseBurn(ctx sdk.Context, campaign *types.Campaign, coinsToBurn sdk.Coins, userEntryAddress string) error {
+	if campaign.FeegrantAmount.IsPositive() {
+		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+		granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
+		feegrantAmount, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
+		coinsToBurn = coinsToBurn.Add(*feegrantAmount...)
+		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, types.ModuleName, *feegrantAmount); err != nil {
+			return err
+		}
+		k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
+	}
 	return k.bankKeeper.BurnCoins(ctx, types.ModuleName, coinsToBurn)
 }
 
-func (k Keeper) delteClaimRecordCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+func (k Keeper) delteClaimRecordCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
 	if campaign.CampaignType != types.CampaignSale {
 		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
+		if campaign.FeegrantAmount.IsPositive() {
+			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+			granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
+			feegrantAmount, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
+			if err := k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, *feegrantAmount); err != nil {
+				return err
+			}
+			k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
+		}
 		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft)
 	} else {
 		vestingDenom := k.vestingKeeper.Denom(ctx)
@@ -214,13 +236,24 @@ func (k Keeper) delteClaimRecordCloseSendToOwner(ctx sdk.Context, campaign *type
 			}
 		}
 
+		if campaign.FeegrantAmount.IsPositive() {
+			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
+			granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
+			feegrantAmount, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
+			if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, cfevestingtypes.ModuleName, *feegrantAmount); err != nil {
+				return err
+			}
+			k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
+			vestingPool.Sent = vestingPool.Sent.Sub(feegrantAmount.AmountOf(vestingDenom))
+		}
 		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft); err != nil {
 			return err
 		}
 
-		vestingPool.Sent = vestingPool.Sent.Add(campaignAmountLeft.AmountOf(vestingDenom))
+		vestingPool.Sent = vestingPool.Sent.Sub(campaignAmountLeft.AmountOf(vestingDenom))
 		k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
 	}
+
 	return nil
 }
 
