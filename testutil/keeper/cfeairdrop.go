@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
@@ -82,13 +83,6 @@ func cfeclaimKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, block
 	authtypes.RegisterInterfaces(registry)
 	cdc := codec.NewProtoCodec(registry)
 
-	paramsSubspace := typesparams.NewSubspace(cdc,
-		types.Amino,
-		storeKey,
-		memStoreKey,
-		"CfeclaimParams",
-	)
-
 	accParamsSubspace := typesparams.NewSubspace(cdc,
 		types.Amino,
 		authStoreKey,
@@ -118,13 +112,14 @@ func cfeclaimKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, block
 		cdc,
 		storeKey,
 		memStoreKey,
-		paramsSubspace,
+
 		accountKeeper,
 		bankKeeper,
 		feegrantKeeper,
 		nil,
 		nil,
 		nil,
+		appparams.GetAuthority(),
 	)
 
 	header := tmproto.Header{}

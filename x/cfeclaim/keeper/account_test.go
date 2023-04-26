@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -102,7 +103,6 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 		testHelper.App.AppCodec(),
 		testHelper.App.GetKey(cfeclaimtypes.StoreKey),
 		testHelper.App.GetKey(cfeclaimtypes.MemStoreKey),
-		testHelper.App.GetSubspace(cfeclaimtypes.ModuleName),
 
 		testHelper.App.AccountKeeper,
 		testHelper.App.BankKeeper,
@@ -110,6 +110,7 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 		testHelper.App.StakingKeeper,
 		testHelper.App.DistrKeeper,
 		testHelper.App.CfevestingKeeper,
+		appparams.GetAuthority(),
 	)
 
 	moduleAmount := sdk.NewInt(10000)

@@ -9,15 +9,13 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   storetypes.StoreKey
-		memKey     storetypes.StoreKey
-		paramstore paramtypes.Subspace
+		cdc      codec.BinaryCodec
+		storeKey storetypes.StoreKey
+		memKey   storetypes.StoreKey
 
 		accountKeeper      types.AccountKeeper
 		bankKeeper         types.BankKeeper
@@ -25,6 +23,7 @@ type (
 		stakingKeeper      types.StakingKeeper
 		distributionKeeper types.DistributionKeeper
 		vestingKeeper      types.VestingKeeper
+		authority          string
 	}
 )
 
@@ -32,7 +31,6 @@ func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
-	ps paramtypes.Subspace,
 
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
@@ -40,23 +38,19 @@ func NewKeeper(
 	stakingKeeper types.StakingKeeper,
 	distributionKeeper types.DistributionKeeper,
 	vestingKeeper types.VestingKeeper,
+	authority string,
 ) *Keeper {
-	// set KeyTable if it has not already been set
-	if !ps.HasKeyTable() {
-		ps = ps.WithKeyTable(types.ParamKeyTable())
-	}
-
 	return &Keeper{
 		cdc:                cdc,
 		storeKey:           storeKey,
 		memKey:             memKey,
-		paramstore:         ps,
 		accountKeeper:      accountKeeper,
 		bankKeeper:         bankKeeper,
 		feeGrantKeeper:     feeGrantKeeper,
 		stakingKeeper:      stakingKeeper,
 		distributionKeeper: distributionKeeper,
 		vestingKeeper:      vestingKeeper,
+		authority:          authority,
 	}
 }
 

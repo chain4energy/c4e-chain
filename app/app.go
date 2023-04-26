@@ -457,7 +457,6 @@ func New(
 		appCodec,
 		keys[cfeclaimmoduletypes.StoreKey],
 		keys[cfeclaimmoduletypes.MemStoreKey],
-		app.GetSubspace(cfeclaimmoduletypes.ModuleName),
 
 		app.AccountKeeper,
 		app.BankKeeper,
@@ -465,6 +464,7 @@ func New(
 		stakingKeeper,
 		app.DistrKeeper,
 		app.CfevestingKeeper,
+		appparams.GetAuthority(),
 	)
 
 	cfeclaimModule := cfeclaimmodule.NewAppModule(appCodec, app.CfeclaimKeeper, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper)
