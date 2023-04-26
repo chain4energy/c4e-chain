@@ -25,7 +25,6 @@ func (k Keeper) GetMission(
 	ctx sdk.Context,
 	campaignId uint64,
 	missionId uint64,
-
 ) (val types.Mission, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
 

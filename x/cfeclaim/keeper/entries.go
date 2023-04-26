@@ -155,22 +155,25 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	return nil
 }
 
-func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, granterAddress sdk.AccAddress, granteeAddress sdk.AccAddress) (*sdk.Coins, error) {
+func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, campaignId uint64, userEntryAddress string) (sdk.AccAddress, sdk.AccAddress, sdk.Coins, error) {
+	_, granterAddress := FeegrantAccountAddress(campaignId)
+	granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
+
 	allowance, err := k.feeGrantKeeper.GetAllowance(ctx, granterAddress, granteeAddress)
 	if err != nil {
-		return nil, err
+		return nil, nil, nil, err
 	}
 	x, ok := allowance.(*feegranttypes.AllowedMsgAllowance)
 	if !ok {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidType, "cannot get AllowedMsgAllowance")
+		return nil, nil, nil, errors.Wrap(sdkerrors.ErrInvalidType, "cannot get AllowedMsgAllowance")
 	}
 	for _, msg := range x.AllowedMessages {
 		if msg == MsgInitialClaimUrl {
 			basicAllowance := x.Allowance.GetCachedValue().(feegranttypes.BasicAllowance)
-			return &basicAllowance.SpendLimit, nil
+			return granterAddress, granteeAddress, basicAllowance.SpendLimit, nil
 		}
 	}
-	return nil, errors.Wrap(sdkerrors.ErrInvalidType, "cannot get feegrant left amount")
+	return granterAddress, granteeAddress, nil, errors.Wrap(sdkerrors.ErrInvalidType, "cannot get feegrant left amount")
 }
 
 func (k Keeper) delteClaimRecordCloseActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
@@ -187,102 +190,111 @@ func (k Keeper) delteClaimRecordCloseActionSwitch(ctx sdk.Context, CloseAction t
 }
 
 func (k Keeper) delteClaimRecordCloseSendToCommunityPool(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
+	if campaign.CampaignType == types.CampaignSale || slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
+		return errors.Wrap(sdkerrors.ErrInvalidType, "in the case of sale campaigns and campaigns created from whitelist vesting accounts, it is not possible to use sendToCommunityPool close action")
+	}
 	if campaign.FeegrantAmount.IsPositive() {
-		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-		granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
-		granterAddress, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
-		if err := k.distributionKeeper.FundCommunityPool(ctx, *granterAddress, feegrantAccountAddress); err != nil {
+		granterAddress, granteeAddress, amountLeft, err := k.getFeegrantLeftAmount(ctx, campaign.Id, userEntryAddress)
+		if err != nil {
 			return err
 		}
-		k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
+		if err = k.distributionKeeper.FundCommunityPool(ctx, amountLeft, granterAddress); err != nil {
+			return err
+		}
+		k.revokeFeeAllowance(ctx, granterAddress, granteeAddress)
 	}
 	return k.distributionKeeper.FundCommunityPool(ctx, campaignAmountLeft, authtypes.NewModuleAddress(types.ModuleName))
 }
 
 func (k Keeper) delteClaimRecordCloseBurn(ctx sdk.Context, campaign *types.Campaign, coinsToBurn sdk.Coins, userEntryAddress string) error {
 	if campaign.FeegrantAmount.IsPositive() {
-		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-		granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
-		feegrantAmount, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
-		coinsToBurn = coinsToBurn.Add(*feegrantAmount...)
-		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, types.ModuleName, *feegrantAmount); err != nil {
+		granterAddress, granteeAddress, amountLeft, err := k.getFeegrantLeftAmount(ctx, campaign.Id, userEntryAddress)
+		if err != nil {
 			return err
 		}
-		k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
+		coinsToBurn = coinsToBurn.Add(amountLeft...)
+		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, granterAddress, types.ModuleName, amountLeft); err != nil {
+			return err
+		}
+		k.revokeFeeAllowance(ctx, granterAddress, granteeAddress)
 	}
 	return k.bankKeeper.BurnCoins(ctx, types.ModuleName, coinsToBurn)
 }
 
 func (k Keeper) delteClaimRecordCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
 	if campaign.CampaignType != types.CampaignSale {
-		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
-		if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
-			ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
-			if ownerAccount == nil {
-				return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
-			}
-			vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
-			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(campaignAmountLeft...)
+		return k.delteClaimRecordCloseSendToOwnerCampaignNotSale(ctx, campaign, campaignAmountLeft, userEntryAddress)
 
-			if campaign.FeegrantAmount.IsPositive() {
-				_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-				granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
-				feegrantAmount, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
-				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(*feegrantAmount...)
-				k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
-				if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, types.ModuleName, *feegrantAmount); err != nil {
-					return err
-				}
-				if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, *feegrantAmount); err != nil {
-					return err
-				}
-			}
-			k.accountKeeper.SetAccount(ctx, vestingAcc)
-			if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft); err != nil {
-				return err
-			}
-			return nil
-		}
-		if campaign.FeegrantAmount.IsPositive() {
-			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-			granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
-			feegrantAmount, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
-			if err := k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, *feegrantAmount); err != nil {
-				return err
-			}
-			k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
-		}
-		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft)
 	} else {
-		vestingDenom := k.vestingKeeper.Denom(ctx)
-		accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
-		var vestingPool *cfevestingtypes.VestingPool
-		for _, vestPool := range accountVestingPools.VestingPools {
-			if vestPool.Name == campaign.VestingPoolName {
-				vestingPool = vestPool
-				break
-			}
-		}
+		return k.delteClaimRecordCloseSendToOwnerCampaignNotSale(ctx, campaign, campaignAmountLeft, userEntryAddress)
+	}
+}
+
+func (k Keeper) delteClaimRecordCloseSendToOwnerCampaignNotSale(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
+	ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
+	if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
+		ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
+
+		vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
+		vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(campaignAmountLeft...)
 
 		if campaign.FeegrantAmount.IsPositive() {
-			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-			granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
-			feegrantAmount, _ := k.getFeegrantLeftAmount(ctx, feegrantAccountAddress, granteeAddress)
-			if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, cfevestingtypes.ModuleName, *feegrantAmount); err != nil {
+			granterAddress, granteeAddress, amountLeft, err := k.getFeegrantLeftAmount(ctx, campaign.Id, userEntryAddress)
+			if err != nil {
 				return err
 			}
-			k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
-			vestingPool.Sent = vestingPool.Sent.Sub(feegrantAmount.AmountOf(vestingDenom))
+			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(amountLeft...)
+			k.revokeFeeAllowance(ctx, granterAddress, granteeAddress)
+			if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, granterAddress, types.ModuleName, amountLeft); err != nil {
+				return err
+			}
+			if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, amountLeft); err != nil {
+				return err
+			}
 		}
-		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft); err != nil {
+		k.accountKeeper.SetAccount(ctx, vestingAcc)
+		return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
+	}
+	if campaign.FeegrantAmount.IsPositive() {
+		granterAddress, granteeAddress, amountLeft, err := k.getFeegrantLeftAmount(ctx, campaign.Id, userEntryAddress)
+		if err != nil {
 			return err
 		}
+		if err := k.bankKeeper.SendCoins(ctx, granterAddress, ownerAddress, amountLeft); err != nil {
+			return err
+		}
+		k.revokeFeeAllowance(ctx, granterAddress, granteeAddress)
+	}
+	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft)
+}
 
-		vestingPool.Sent = vestingPool.Sent.Sub(campaignAmountLeft.AmountOf(vestingDenom))
-		k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
+func (k Keeper) delteClaimRecordCloseSendToOwnerCampaignSale(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
+	vestingDenom := k.vestingKeeper.Denom(ctx)
+	accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
+	var vestingPool *cfevestingtypes.VestingPool
+	for _, vestPool := range accountVestingPools.VestingPools {
+		if vestPool.Name == campaign.VestingPoolName {
+			vestingPool = vestPool
+			break
+		}
 	}
 
-	return nil
+	if campaign.FeegrantAmount.IsPositive() {
+		granterAddress, granteeAddress, amountLeft, err := k.getFeegrantLeftAmount(ctx, campaign.Id, userEntryAddress)
+		if err != nil {
+			return err
+		}
+		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, granterAddress, cfevestingtypes.ModuleName, amountLeft); err != nil {
+			return err
+		}
+		k.revokeFeeAllowance(ctx, granterAddress, granteeAddress)
+		vestingPool.Sent = vestingPool.Sent.Sub(amountLeft.AmountOf(vestingDenom))
+	}
+
+	vestingPool.Sent = vestingPool.Sent.Sub(campaignAmountLeft.AmountOf(vestingDenom))
+	k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
+
+	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft)
 }
 
 func (k Keeper) ValidateAddUsersEntries(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) (*types.Campaign, error) {
@@ -536,12 +548,24 @@ func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaig
 		return types.UserEntry{}, nil, err
 	}
 
-	claimRecordAmount, err := ValidateClaimRecordExists(userEntry, campaign.Id)
+	claimRecord, err := ValidateClaimRecordExists(userEntry, campaign.Id)
 	if err != nil {
 		return types.UserEntry{}, nil, err
 	}
+	var amount sdk.Coins
 
-	return userEntry, claimRecordAmount, nil
+	for _, claimedMissionId := range claimRecord.ClaimedMissions {
+		mission, found := k.GetMission(ctx, campaign.Id, claimedMissionId)
+		if !found {
+			return types.UserEntry{}, nil, errors.Wrapf(sdkerrors.ErrNotFound, "mission with id %d not found", claimedMissionId)
+		}
+		for _, coin := range claimRecord.Amount {
+			weightedAmount := sdk.NewDecFromInt(coin.Amount).Mul(mission.Weight).TruncateInt()
+			amount = amount.Add(sdk.NewCoin(coin.Denom, weightedAmount))
+		}
+	}
+
+	return userEntry, amount, nil
 }
 
 func (k Keeper) ValidateUserEntry(ctx sdk.Context, userAddress string) (types.UserEntry, error) {
@@ -556,21 +580,14 @@ func (k Keeper) ValidateUserEntry(ctx sdk.Context, userAddress string) (types.Us
 	return userEntry, nil
 }
 
-func ValidateClaimRecordExists(userEntry types.UserEntry, campaignId uint64) (claimRecordAmount sdk.Coins, err error) {
-	claimRecordFound := false
-	for i, claimRecord := range userEntry.ClaimRecords {
+func ValidateClaimRecordExists(userEntry types.UserEntry, campaignId uint64) (claimRecordAmount *types.ClaimRecord, err error) {
+	for _, claimRecord := range userEntry.ClaimRecords {
 		if claimRecord.CampaignId == campaignId {
-			claimRecordFound = true
-			claimRecordAmount = claimRecord.Amount
-			userEntry.ClaimRecords = append(userEntry.ClaimRecords[:i], userEntry.ClaimRecords[i+1:]...)
-			break
+			return claimRecord, nil
 		}
 	}
-	if !claimRecordFound {
-		return nil, errors.Wrapf(c4eerrors.ErrParsing, "campaign id %d claim entry doesn't exist", campaignId)
-	}
 
-	return claimRecordAmount, nil
+	return nil, errors.Wrapf(c4eerrors.ErrParsing, "campaign id %d claim entry doesn't exist", campaignId)
 }
 
 func ValidateCampaignTypeIsTeamdrop(campaign types.Campaign) error {

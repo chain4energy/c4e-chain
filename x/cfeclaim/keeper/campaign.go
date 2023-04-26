@@ -206,6 +206,10 @@ func (k Keeper) closeActionSwitch(ctx sdk.Context, CloseAction types.CloseAction
 }
 
 func (k Keeper) campaignCloseSendToCommunityPool(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+	if campaign.CampaignType == types.CampaignSale || slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
+		return errors.Wrap(sdkerrors.ErrInvalidType, "in the case of sale campaigns and campaigns created from whitelist vesting accounts, it is not possible to use sendToCommunityPool close action")
+	}
+
 	if err := k.distributionKeeper.FundCommunityPool(ctx, campaignAmountLeft, authtypes.NewModuleAddress(types.ModuleName)); err != nil {
 		return err
 	}
