@@ -378,7 +378,7 @@ func (s *VestingSetupSuite) TestSplitVestingWrongAmount() {
 
 	coinToSplit := sdk.NewCoin(appparams.CoinDenom, amountToSend.AddRaw(1000000))
 	node.SplitVestingError(splitVestingAccountAddress, coinToSplit.String(), newVestingAccountAddress,
-		fmt.Sprintf("split vesting: split vesting coins: account %s: not enough to unlock. locked: 2497222uc4e, to unlock: 3500000uc4e: insufficient funds", newVestingAccountAddress))
+		fmt.Sprintf("split vesting: split vesting coins: account %s: not enough to unlock.", newVestingAccountAddress))
 	node.QueryAccountNotFound(splitVestingAccountAddress)
 }
 

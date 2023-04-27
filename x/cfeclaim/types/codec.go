@@ -2,21 +2,24 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
 )
 
-func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgClaim{}, "cfeclaim/Claim", nil)
-	cdc.RegisterConcrete(&MsgInitialClaim{}, "cfeclaim/InitialClaim", nil)
-	cdc.RegisterConcrete(&MsgCreateCampaign{}, "cfeclaim/CreateCampaign", nil)
-	cdc.RegisterConcrete(&MsgAddMissionToCampaign{}, "cfeclaim/AddMissionToCampaign", nil)
-	cdc.RegisterConcrete(&MsgAddClaimRecords{}, "cfeclaim/AddUsersEntries", nil)
-	cdc.RegisterConcrete(&MsgDeleteClaimRecord{}, "cfeclaim/DeleteClaimRecord", nil)
-	cdc.RegisterConcrete(&MsgCloseCampaign{}, "cfeclaim/CloseCampaign", nil)
-	cdc.RegisterConcrete(&MsgStartCampaign{}, "cfeclaim/StartCampaign", nil)
-	cdc.RegisterConcrete(&MsgEditCampaign{}, "cfeclaim/EditCampaign", nil)
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	legacy.RegisterAminoMsg(cdc, &MsgClaim{}, "cfeclaim/Claim")
+	legacy.RegisterAminoMsg(cdc, &MsgInitialClaim{}, "cfeclaim/InitialClaim")
+	legacy.RegisterAminoMsg(cdc, &MsgCreateCampaign{}, "cfeclaim/CreateCampaign")
+	legacy.RegisterAminoMsg(cdc, &MsgAddMissionToCampaign{}, "cfeclaim/AddMissionToCampaign")
+	legacy.RegisterAminoMsg(cdc, &MsgAddClaimRecords{}, "cfeclaim/AddUsersEntries")
+	legacy.RegisterAminoMsg(cdc, &MsgDeleteClaimRecord{}, "cfeclaim/DeleteClaimRecord")
+	legacy.RegisterAminoMsg(cdc, &MsgCloseCampaign{}, "cfeclaim/CloseCampaign")
+	legacy.RegisterAminoMsg(cdc, &MsgStartCampaign{}, "cfeclaim/StartCampaign")
+	legacy.RegisterAminoMsg(cdc, &MsgEditCampaign{}, "cfeclaim/EditCampaign")
 	// this line is used by starport scaffolding # 2
 }
 
@@ -39,5 +42,15 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 var (
 	Amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
+	ModuleCdc = codec.NewAminoCodec(Amino)
 )
+
+func init() {
+	RegisterLegacyAminoCodec(Amino)
+	cryptocodec.RegisterCrypto(Amino)
+	sdk.RegisterLegacyAminoCodec(Amino)
+
+	// Register all Amino interfaces and concrete types on the authz Amino codec so that this can later be
+	// used to properly serialize MsgGrant and MsgExec instances
+	RegisterLegacyAminoCodec(authzcodec.Amino)
+}
