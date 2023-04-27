@@ -290,6 +290,26 @@ func TestCreateCampaignCloseCloseActionSendToCommunityPool(t *testing.T) {
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CloseSendToCommunityPool)
 }
 
+func TestCreateSaleCampaignCloseCloseActionSendToCommunityPool(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	ownerAddress := acountsAddresses[0]
+
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.CampaignSale
+	campaign.VestingPoolName = vPool1
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
+	testHelper.C4eClaimUtils.StartCampaign(ownerAddress.String(), 0, nil, nil)
+	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 300)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eClaimUtils.CloseCampaignError(ownerAddress.String(), 0, types.CloseSendToCommunityPool, "in the case of sale campaigns and campaigns created from whitelist vesting accounts, it is not possible to use sendToCommunityPool close action: invalid type")
+}
+
 func TestCreateCampaignCloseCloseActionBurnAndFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
