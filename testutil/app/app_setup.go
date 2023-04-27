@@ -59,7 +59,7 @@ func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
 		appparams.EncodingConfig(encoding),
 		simapp.EmptyAppOptions{},
 	)
-	genesisState := c4eapp.NewDefaultGenesisState(encoding.Marshaler)
+	genesisState := c4eapp.NewDefaultGenesisState(encoding.Codec)
 
 	return app, genesisState
 }

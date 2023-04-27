@@ -35,7 +35,7 @@ func initEncodingConfigAndCdc() (params.EncodingConfig, codec.Codec) {
 		&ed25519.PubKey{},
 	)
 
-	cdc := encodingConfig.Marshaler
+	cdc := encodingConfig.Codec
 
 	return encodingConfig, cdc
 }

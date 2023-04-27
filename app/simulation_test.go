@@ -179,7 +179,7 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 		encoding,
 		simapp.EmptyAppOptions{},
 	)
-	genesisState := NewDefaultGenesisState(encoding.Marshaler)
+	genesisState := NewDefaultGenesisState(encoding.Codec)
 
 	return app, genesisState, config, db, dir
 
