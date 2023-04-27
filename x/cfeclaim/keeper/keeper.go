@@ -22,7 +22,7 @@ type (
 		feeGrantKeeper     types.FeeGrantKeeper
 		stakingKeeper      types.StakingKeeper
 		distributionKeeper types.DistributionKeeper
-		vestingKeeper      types.VestingKeeper
+		vestingKeeper      types.CfeVestingKeeper
 		authority          string
 	}
 )
@@ -37,7 +37,7 @@ func NewKeeper(
 	feeGrantKeeper types.FeeGrantKeeper,
 	stakingKeeper types.StakingKeeper,
 	distributionKeeper types.DistributionKeeper,
-	vestingKeeper types.VestingKeeper,
+	vestingKeeper types.CfeVestingKeeper,
 	authority string,
 ) *Keeper {
 	return &Keeper{

@@ -11,10 +11,6 @@ import (
 
 var _ cfeupgradetypes.AppKeepers = (*App)(nil)
 
-func (app *App) GetC4eClaimKeeper() *cfeclaimkeeper.Keeper {
-	return &app.CfeclaimKeeper
-}
-
 func (app *App) GetAccountKeeper() *authkeeper.AccountKeeper {
 	return &app.AccountKeeper
 }
@@ -29,4 +25,8 @@ func (app *App) GetC4eVestingKeeper() *cfevestingkeeper.Keeper {
 
 func (app *App) GetParamKeeper() *paramskeeper.Keeper {
 	return &app.ParamsKeeper
+}
+
+func (app *App) GetC4eClaimKeeper() *cfeclaimkeeper.Keeper {
+	return &app.CfeclaimKeeper
 }

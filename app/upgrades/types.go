@@ -15,10 +15,10 @@ import (
 
 type AppKeepers interface {
 	GetAccountKeeper() *authkeeper.AccountKeeper
-	GetC4eClaimKeeper() *cfeclaimkeeper.Keeper
 	GetBankKeeper() *bankkeeper.Keeper
 	GetParamKeeper() *paramsKeeper.Keeper
 	GetC4eVestingKeeper() *cfevestingkeeper.Keeper
+	GetC4eClaimKeeper() *cfeclaimkeeper.Keeper
 }
 
 // BaseAppParamManager defines an interrace that BaseApp is expected to fullfil

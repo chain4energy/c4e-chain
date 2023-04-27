@@ -16,6 +16,9 @@ func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 func CampaignAmountLeftSumCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		claimClaimsLeftList := k.GetAllCampaignAmountLeft(ctx)
+		if len(claimClaimsLeftList) == 0 {
+			return sdk.FormatInvariant(types.ModuleName, "claim claims left sum check", "claim claims left sum is equal to cfeclaim module account balance"), false
+		}
 		claimClaimsLeftSum := sdk.NewCoins()
 		for _, claimClaimsLeft := range claimClaimsLeftList {
 			claimClaimsLeftSum.Add(claimClaimsLeft.Amount...)

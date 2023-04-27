@@ -50,7 +50,7 @@ type DistributionKeeper interface {
 }
 
 // VestingKeeper defines the expected feegrant keeper interface
-type VestingKeeper interface {
+type CfeVestingKeeper interface {
 	GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (vestingPool cfevestingtypes.VestingPool, found bool)
 	GetVestingType(ctx sdk.Context, name string) (vestingType cfevestingtypes.VestingType, err error)
 	SetAccountVestingPools(ctx sdk.Context, accountVestingPools cfevestingtypes.AccountVestingPools)
