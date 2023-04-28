@@ -289,3 +289,12 @@ func (n *NodeConfig) MoveAvailableVestingByDenomsError(toAddress string, denoms 
 
 	n.LogActionF("successfully moved all available vesting by denoms to account %s", toAddress)
 }
+
+func (n *NodeConfig) CreateCampaign(vestingPoolName, amount, duration, vestinType, from string) {
+	n.LogActionF("creating campaign")
+	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", vestingPoolName, amount, duration, vestinType, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully created vesting pool %s", vestingPoolName)
+}

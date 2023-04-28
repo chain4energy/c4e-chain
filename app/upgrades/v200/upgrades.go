@@ -16,9 +16,10 @@ func CreateUpgradeHandler(
 	appKeepers cfeupgradetypes.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		if err := claim.Creates(ctx, appKeepers.GetC4eClaimKeeper(), appKeepers.GetAccountKeeper(), appKeepers.GetBankKeeper()); err != nil {
-			return nil, err
+		vmResult, err := mm.RunMigrations(ctx, configurator, vm)
+		if err != nil {
+			return vmResult, err
 		}
-		return mm.RunMigrations(ctx, configurator, vm)
+		return vmResult, claim.Creates(ctx, appKeepers.GetC4eClaimKeeper(), appKeepers.GetAccountKeeper(), appKeepers.GetBankKeeper())
 	}
 }

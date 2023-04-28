@@ -68,7 +68,6 @@ func CreateUpgradeHandler(
 			}
 			if !subspace.HasKeyTable() {
 				subspace.WithKeyTable(keyTable)
-
 			}
 		}
 

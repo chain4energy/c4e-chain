@@ -147,3 +147,8 @@ func (h *ContextC4eClaimUtils) CompleteVoteMission(campaignId uint64, missionId 
 	h.C4eClaimUtils.CompleteVoteMission(h.testContext.GetContext(), campaignId, missionId, claimer)
 
 }
+
+func (h *ContextC4eClaimUtils) CheckNonNegativeCoinStateInvariant(ctx sdk.Context, failed bool, message string) {
+	invariant := cfeclaimmodulekeeper.CampaignAmountLeftSumCheckInvariant(*h.helpeCfeclaimkeeper)
+	testcosmos.CheckInvariant(h.t, ctx, invariant, failed, message)
+}

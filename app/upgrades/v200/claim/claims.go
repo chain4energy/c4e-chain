@@ -23,7 +23,7 @@ const claimSource = "cfeminter"
 func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper *authkeeper.AccountKeeper, bankKeeper *bankkeeper.Keeper) error {
 	lockupPeriod := 3 * monthAvgHours
 	vestingPeriod := 6 * monthAvgHours
-	startTime := time.Now().Add(time.Hour * 2)
+	startTime := ctx.BlockTime().Add(time.Hour * 2)
 	endTime := startTime.Add(time.Hour * 100)
 	acc := accountKeeper.GetModuleAccount(ctx, claimSource)
 	if acc == nil {
