@@ -14,7 +14,7 @@ const TypeMsgCreateCampaign = "create_claim_campaign"
 var _ sdk.Msg = &MsgCreateCampaign{}
 
 func NewMsgCreateCampaign(owner string, name string, description string, campaignType CampaignType, argFeegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration) *MsgCreateCampaign {
+	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string) *MsgCreateCampaign {
 	return &MsgCreateCampaign{
 		Owner:                  owner,
 		Name:                   name,
@@ -26,6 +26,7 @@ func NewMsgCreateCampaign(owner string, name string, description string, campaig
 		EndTime:                endTime,
 		LockupPeriod:           lockupPeriod,
 		VestingPeriod:          vestingPeriod,
+		VestingPoolName:        vestingPoolName,
 	}
 }
 

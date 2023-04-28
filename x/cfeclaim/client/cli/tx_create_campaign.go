@@ -17,9 +17,9 @@ var _ = strconv.Itoa(0)
 
 func CmdCreateCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-campaign [name] [description] [campaign-type] [feegrant-amount] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period]",
+		Use:   "create-campaign [name] [description] [campaign-type] [feegrant-amount] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period] [optional-vesting-pool-name]",
 		Short: "Broadcast message CreateCampaign",
-		Args:  cobra.ExactArgs(9),
+		Args:  cobra.ExactArgs(10),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argDescription := args[1]
@@ -58,6 +58,7 @@ func CmdCreateCampaign() *cobra.Command {
 			if err != nil {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
+			argVestingPoolName := args[9]
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -74,6 +75,7 @@ func CmdCreateCampaign() *cobra.Command {
 				&argEndTime,
 				&argLockupPeriod,
 				&argVestingPeriod,
+				argVestingPoolName,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

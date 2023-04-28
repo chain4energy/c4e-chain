@@ -290,11 +290,74 @@ func (n *NodeConfig) MoveAvailableVestingByDenomsError(toAddress string, denoms 
 	n.LogActionF("successfully moved all available vesting by denoms to account %s", toAddress)
 }
 
-func (n *NodeConfig) CreateCampaign(vestingPoolName, amount, duration, vestinType, from string) {
+func (n *NodeConfig) CreateCampaign(name, description, campaignType, feegrantAmount, initialClaimFreeAmount, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, from string) {
 	n.LogActionF("creating campaign")
-	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", vestingPoolName, amount, duration, vestinType, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "create-campaign", name, description, campaignType, feegrantAmount, initialClaimFreeAmount, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
-	n.LogActionF("successfully created vesting pool %s", vestingPoolName)
+	n.LogActionF("successfully created campaign %s", name)
+}
+
+func (n *NodeConfig) AddUserEntriesToCampaign(campaignId, claimRecordsJsonFile, from string) {
+	n.LogActionF("add claim records")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "add-claim-records", campaignId, claimRecordsJsonFile, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully added user entries to campaign %s", campaignId)
+}
+
+func (n *NodeConfig) AddMissionToCampaign(campaignId, name, description, missionType, weight, claimStartDate, from string) {
+	n.LogActionF("add mission to campaign")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "add-mission-to-campaign", campaignId, name, description, missionType, weight, claimStartDate, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully add new mission %s to campaign %s", name, campaignId)
+}
+
+func (n *NodeConfig) StartCampaign(campaignId, from string) {
+	n.LogActionF("start campaign")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "start-campaign", campaignId, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully started campaign %s", campaignId)
+}
+
+func (n *NodeConfig) CloseCampaign(campaignId, campaignCloseAction, from string) {
+	n.LogActionF("close campaign")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "close-campaign", campaignId, campaignCloseAction, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully closed campaign %s", campaignId)
+}
+
+func (n *NodeConfig) ClaimMission(campaignId, missionId, from string) {
+	n.LogActionF("claim mission")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "claim", campaignId, missionId, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully claimed mission %s from campaign %s", missionId, campaignId)
+}
+
+func (n *NodeConfig) ClaimInitialMission(campaignId, optionalAddressToClaim, from string) {
+	n.LogActionF("claim initial mission")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "initial-claim", campaignId, optionalAddressToClaim, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully claimed initial mission from campaign %s with optional address %s", campaignId, optionalAddressToClaim)
+}
+
+func (n *NodeConfig) DelegateToValidator(validatorAddress, amount, from string) {
+	n.LogActionF("delegate to validator")
+	cmd := []string{"c4ed", "tx", "staking", "delegate", validatorAddress, amount, fmt.Sprintf("--from=%s", from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully delegated %s to validator %s", amount, validatorAddress)
 }

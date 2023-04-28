@@ -2,6 +2,7 @@ package cli
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -15,9 +16,9 @@ var _ = strconv.Itoa(0)
 
 func CmdStartCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "start-campaign [campaign-id]",
+		Use:   "start-campaign [campaign-id] [optional-start-time] [optional-end-time]",
 		Short: "Broadcast message StartCampaign",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := cast.ToUint64E(args[0])
 			if err != nil {
@@ -28,10 +29,30 @@ func CmdStartCampaign() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			timeLayout := "2006-01-02 15:04:05 -0700 MST"
+			var argStartTime *time.Time
+			if args[4] != "" {
+				parsedTime, err := time.Parse(timeLayout, args[5])
+				if err != nil {
+					return err
+				}
+				argStartTime = &parsedTime
 
+			}
+			var argEndTime *time.Time
+			if args[4] != "" {
+				parsedTime, err := time.Parse(timeLayout, args[5])
+				if err != nil {
+					return err
+				}
+				argEndTime = &parsedTime
+
+			}
 			msg := types.NewMsgStartCampaign(
 				clientCtx.GetFromAddress().String(),
 				argCampaignId,
+				argStartTime,
+				argEndTime,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

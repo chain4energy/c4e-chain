@@ -4,16 +4,19 @@ import (
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 )
 
 const TypeMsgStartCampaign = "start_claim_campaign"
 
 var _ sdk.Msg = &MsgStartCampaign{}
 
-func NewMsgStartCampaign(owner string, campaignId uint64) *MsgStartCampaign {
+func NewMsgStartCampaign(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) *MsgStartCampaign {
 	return &MsgStartCampaign{
 		Owner:      owner,
 		CampaignId: campaignId,
+		StartTime:  startTime,
+		EndTime:    endTime,
 	}
 }
 
