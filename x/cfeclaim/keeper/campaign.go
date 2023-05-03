@@ -66,6 +66,10 @@ func getInitialClaimFreeAmount(initialClaimFreeAmount *math.Int) (*math.Int, err
 		zeroInt := sdk.ZeroInt()
 		initialClaimFreeAmount = &zeroInt
 	}
+	if initialClaimFreeAmount.IsNil() {
+		zeroInt := sdk.ZeroInt()
+		initialClaimFreeAmount = &zeroInt
+	}
 
 	if initialClaimFreeAmount.IsNegative() {
 		return nil, errors.Wrapf(c4eerrors.ErrParam, "initial claim free amount (%s) cannot be negative", initialClaimFreeAmount.String())
@@ -76,6 +80,11 @@ func getInitialClaimFreeAmount(initialClaimFreeAmount *math.Int) (*math.Int, err
 
 func getFeeGrantAmount(feeGrantAmount *math.Int) (*math.Int, error) {
 	if feeGrantAmount == nil {
+		zeroInt := sdk.ZeroInt()
+		feeGrantAmount = &zeroInt
+	}
+
+	if feeGrantAmount.IsNil() {
 		zeroInt := sdk.ZeroInt()
 		feeGrantAmount = &zeroInt
 	}

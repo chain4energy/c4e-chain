@@ -536,7 +536,7 @@ func (h *C4eClaimUtils) CreateCampaign(ctx sdk.Context, owner string, name strin
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string) {
 
 	campaignCountBefore := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
-	err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
+	_, err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignCountBefore)
 	require.NoError(h.t, err)
 	campaignCountAfter := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
@@ -551,7 +551,7 @@ func (h *C4eClaimUtils) CreateCampaignError(ctx sdk.Context, owner string, name 
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string, errorMessage string) {
 
 	campaignCountBefore := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
-	err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
+	_, err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
 	require.EqualError(h.t, err, errorMessage)
 	campaignCountAfter := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignCountBefore)
