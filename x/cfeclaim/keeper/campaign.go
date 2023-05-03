@@ -15,23 +15,23 @@ import (
 	"time"
 )
 
-func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feeGrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string) error {
+func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, feeGrantAmount *math.Int, initialClaimFreeAmount *math.Int, startTime *time.Time,
+	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string) (*types.Campaign, error) {
 	k.Logger(ctx).Debug("create campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
 
 	if err := k.ValidateCampaignParams(ctx, name, description, startTime, endTime, campaignType, owner, vestingPoolName, lockupPeriod, vestingPeriod); err != nil {
-		return err
+		return nil, err
 	}
 
 	feeGrantAmount, err := getFeeGrantAmount(feeGrantAmount)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	initialClaimFreeAmount, err = getInitialClaimFreeAmount(initialClaimFreeAmount)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	campaign := types.Campaign{
@@ -55,14 +55,14 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 	err = k.AddMissionToCampaign(ctx, owner, campaignId, missionInitial.Name, missionInitial.Description,
 		missionInitial.MissionType, missionInitial.Weight, missionInitial.ClaimStartDate)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &campaign, nil
 }
 
 func getInitialClaimFreeAmount(initialClaimFreeAmount *math.Int) (*math.Int, error) {
-	if initialClaimFreeAmount.IsNil() {
+	if initialClaimFreeAmount == nil {
 		zeroInt := sdk.ZeroInt()
 		initialClaimFreeAmount = &zeroInt
 	}
@@ -74,8 +74,8 @@ func getInitialClaimFreeAmount(initialClaimFreeAmount *math.Int) (*math.Int, err
 	return initialClaimFreeAmount, nil
 }
 
-func getFeeGrantAmount(feeGrantAmount *sdk.Int) (*sdk.Int, error) {
-	if feeGrantAmount.IsNil() {
+func getFeeGrantAmount(feeGrantAmount *math.Int) (*math.Int, error) {
+	if feeGrantAmount == nil {
 		zeroInt := sdk.ZeroInt()
 		feeGrantAmount = &zeroInt
 	}

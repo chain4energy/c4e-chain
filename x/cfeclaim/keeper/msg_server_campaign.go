@@ -12,7 +12,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 	defer telemetry.IncrCounter(1, types.ModuleName, "create aidrop campaign message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.Keeper.CreateCampaign(
+	campaign, err := k.Keeper.CreateCampaign(
 		ctx,
 		msg.Owner,
 		msg.Name,
@@ -25,26 +25,27 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		msg.LockupPeriod,
 		msg.VestingPeriod,
 		msg.VestingPoolName,
-	); err != nil {
+	)
+	if err != nil {
 		k.Logger(ctx).Debug("create campaign", "err", err.Error())
 		return nil, err
 	}
 
 	event := &types.NewCampaign{
-		Owner:                  msg.Owner,
-		Name:                   msg.Name,
-		Description:            msg.Description,
-		CampaignType:           msg.CampaignType.String(),
-		FeegrantAmount:         msg.FeegrantAmount.String(),
-		InitialClaimFreeAmount: msg.InitialClaimFreeAmount.String(),
+		Owner:                  campaign.Owner,
+		Name:                   campaign.Name,
+		Description:            campaign.Description,
+		CampaignType:           campaign.CampaignType.String(),
+		FeegrantAmount:         campaign.FeegrantAmount.String(),
+		InitialClaimFreeAmount: campaign.InitialClaimFreeAmount.String(),
 		Enabled:                "false",
-		StartTime:              msg.StartTime.String(),
-		EndTime:                msg.EndTime.String(),
-		LockupPeriod:           msg.LockupPeriod.String(),
-		VestingPeriod:          msg.VestingPeriod.String(),
-		VestingPoolName:        msg.VestingPoolName,
+		StartTime:              campaign.StartTime.String(),
+		EndTime:                campaign.EndTime.String(),
+		LockupPeriod:           campaign.LockupPeriod.String(),
+		VestingPeriod:          campaign.VestingPeriod.String(),
+		VestingPoolName:        campaign.VestingPoolName,
 	}
-	err := ctx.EventManager().EmitTypedEvent(event)
+	err = ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
 		k.Logger(ctx).Error("create campaign emit event error", "event", event, "error", err.Error())
 	}

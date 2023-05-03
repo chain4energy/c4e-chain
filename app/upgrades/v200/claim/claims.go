@@ -36,20 +36,20 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper 
 		return err
 	}
 	zeroInt := sdk.ZeroInt()
-	err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
 	// TODO: change campaign type to teamdrop
-	err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
-	err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
-	err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}

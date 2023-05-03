@@ -25,7 +25,7 @@ var (
 const (
 	opWeightMsgClaim = "op_weight_msg_claim"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgClaim int = 100
+	defaultWeightMsgClaim int = 400
 
 	opWeightMsgCreateCampaign = "op_weight_msg_create_claim_campaign"
 	// TODO: Determine the simulation weight value

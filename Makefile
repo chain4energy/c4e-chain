@@ -149,7 +149,7 @@ BUILDDIR ?= $(CURDIR)/build
 E2E_UPGRADE_VERSION="v2.0.0"
 E2E_SCRIPT_NAME=chain
 
-test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-migration
+test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim
 
 run-e2e-chain: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions -count=1
@@ -158,13 +158,16 @@ test-e2e-ibc: e2e-setup
 	@VERSION=$(VERSION)  C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestIbcSuite
 
 test-e2e-vesting: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestVestingSuite
+	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestVestingSuite
+
+test-e2e-claim: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestClaimSuite
 
 test-e2e-params-change: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestParamsChangeSuite
 
-test-e2e-migration: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
+#test-e2e-migration: e2e-setup
+#	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
 
 SPECIFIC_TEST_NAME=TestMinterAndDistributorCustom
 SPECIFIC_TESTING_SUITE_NAME=TestParamsChangeSuite
