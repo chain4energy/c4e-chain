@@ -1,8 +1,11 @@
 package simulation
 
 import (
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
@@ -13,9 +16,8 @@ import (
 )
 
 func SimulateMsgClaim(
-	ak types.AccountKeeper,
-	bk types.BankKeeper,
 	k keeper.Keeper,
+	cfevestingKeeper cfevestingkeeper.Keeper,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -29,7 +31,7 @@ func SimulateMsgClaim(
 			Owner:                  simAccount.Address.String(),
 			Name:                   helpers.RandStringOfLengthCustomSeed(r, 10),
 			Description:            helpers.RandStringOfLengthCustomSeed(r, 10),
-			CampaignType:           types.CampaignType(helpers.RandomInt(r, 3)),
+			CampaignType:           types.CampaignType(helpers.RandomInt(r, 4)),
 			FeegrantAmount:         nil,
 			InitialClaimFreeAmount: nil,
 			StartTime:              &startTime,
@@ -38,7 +40,13 @@ func SimulateMsgClaim(
 			VestingPeriod:          &vestingPeriod,
 			VestingPoolName:        "",
 		}
-
+		if msg.CampaignType == types.CampaignSale {
+			randomVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
+			randVesingTypeId := helpers.RandomInt(r, 3)
+			randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))
+			_ = cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, math.NewInt(1000000), time.Hour, randomVestingType)
+			msg.VestingPoolName = randomVestingPoolName
+		}
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
 		_, err := msgServer.CreateCampaign(msgServerCtx, msg)
 		if err != nil {
@@ -79,7 +87,7 @@ func SimulateMsgClaim(
 		addClaimRecordsMsg := &types.MsgAddClaimRecords{
 			Owner:        simAccount.Address.String(),
 			CampaignId:   campaignId,
-			ClaimRecords: createNUserEntries(100, accs),
+			ClaimRecords: createNClaimRecords(100, accs),
 		}
 
 		_, err = msgServer.AddClaimRecords(msgServerCtx, addClaimRecordsMsg)

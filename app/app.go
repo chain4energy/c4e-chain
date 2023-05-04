@@ -582,7 +582,7 @@ func New(
 		app.CfevestingKeeper,
 		appparams.GetAuthority(),
 	)
-	cfeclaimModule := cfeclaimmodule.NewAppModule(appCodec, app.CfeclaimKeeper)
+	cfeclaimModule := cfeclaimmodule.NewAppModule(appCodec, app.CfeclaimKeeper, app.CfevestingKeeper)
 
 	// register the staking and gov hooks
 	// NOTE: stakingKeeper and govKeeper above is passed by reference, so that it will contain these hooks

@@ -121,5 +121,5 @@ func ValidateCampaignType(campaignType CampaignType, owner string, vestingPoolNa
 		return nil
 	}
 
-	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
+	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign type")
 }

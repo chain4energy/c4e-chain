@@ -3,6 +3,7 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
+	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -290,6 +291,8 @@ func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campai
 		accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
 		var vestingPool *cfevestingtypes.VestingPool
 		for _, vestPool := range accountVestingPools.VestingPools {
+			fmt.Println(accountVestingPools)
+			fmt.Println(campaign.VestingPoolName)
 			if vestPool.Name == campaign.VestingPoolName {
 				vestingPool = vestPool
 				break
@@ -299,6 +302,7 @@ func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campai
 		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft); err != nil {
 			return err
 		}
+		fmt.Println(vestingPool)
 		vestingPool.Sent = vestingPool.Sent.Sub(campaignAmountLeft.AmountOf(vestingDenom))
 
 		if campaign.FeegrantAmount.IsPositive() {

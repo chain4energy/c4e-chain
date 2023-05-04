@@ -73,7 +73,7 @@ func TestMsgCreateCampaign_ValidateBasic(t *testing.T) {
 				Owner:        sample.AccAddress(),
 			},
 			err:    sdkerrors.ErrInvalidType,
-			errMsg: "wrong campaign close action type: invalid type",
+			errMsg: "wrong campaign type: invalid type",
 		},
 		{
 			name: "invalid campaign type for Teamdrop",

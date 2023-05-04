@@ -71,6 +71,6 @@ func SimulateVestingOperations(
 		}
 
 		k.Logger(ctx).Debug("SIMULATION: Vesting operations - FINISHED")
-		return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations simulation completed", "123123", true, nil), nil, nil
+		return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations simulation completed", "", true, nil), nil, nil
 	}
 }

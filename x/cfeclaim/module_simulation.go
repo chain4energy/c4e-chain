@@ -97,7 +97,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgClaim,
-		cfeclaimsimulation.SimulateMsgClaim(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfeclaimsimulation.SimulateMsgClaim(am.keeper, am.cfevestingKeeper),
 	))
 
 	var weightMsgCreateCampaign int
@@ -108,7 +108,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateCampaign,
-		cfeclaimsimulation.SimulateMsgCreateCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfeclaimsimulation.SimulateMsgCreateCampaign(am.keeper, am.cfevestingKeeper),
 	))
 
 	var weightMsgAddMissionToAidropCampaign int
@@ -119,7 +119,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgAddMissionToAidropCampaign,
-		cfeclaimsimulation.SimulateMsgAddMissionToAidropCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfeclaimsimulation.SimulateMsgAddMissionToAidropCampaign(am.keeper, am.cfevestingKeeper),
 	))
 
 	var weightMsgCreateEntry int
@@ -130,7 +130,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateEntry,
-		cfeclaimsimulation.SimulateMsgAddClaimRecords(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfeclaimsimulation.SimulateMsgAddClaimRecords(am.keeper, am.cfevestingKeeper),
 	))
 
 	var weightMsgUpdateEntry int
@@ -155,7 +155,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCloseCampaign,
-		cfeclaimsimulation.SimulateMsgCloseCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfeclaimsimulation.SimulateMsgCloseCampaign(am.keeper, am.cfevestingKeeper),
 	))
 
 	var weightMsgStartCampaign int
@@ -166,7 +166,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgStartCampaign,
-		cfeclaimsimulation.SimulateMsgStartCampaign(am.accountKeeper, am.bankKeeper, am.keeper),
+		cfeclaimsimulation.SimulateMsgStartCampaign(am.keeper, am.cfevestingKeeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

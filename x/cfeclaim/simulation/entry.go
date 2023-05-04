@@ -3,6 +3,7 @@ package simulation
 import (
 	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"math/rand"
 	"time"
 
@@ -14,42 +15,20 @@ import (
 )
 
 func SimulateMsgAddClaimRecords(
-	ak types.AccountKeeper,
-	bk types.BankKeeper,
 	k keeper.Keeper,
+	cfevestingKeeper cfevestingkeeper.Keeper,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		simAccount, _ := simtypes.RandomAcc(r, accs)
-		startTime := ctx.BlockTime().Add(time.Duration(helpers.RandIntBetween(r, 1000000, 10000000)))
-		endTime := startTime.Add(time.Duration(helpers.RandIntBetween(r, 1000000, 10000000)))
-
-		lockupPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
-		vestingPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
-		msg := &types.MsgCreateCampaign{
-			Owner:                  simAccount.Address.String(),
-			Name:                   helpers.RandStringOfLengthCustomSeed(r, 10),
-			Description:            helpers.RandStringOfLengthCustomSeed(r, 10),
-			CampaignType:           types.CampaignType(helpers.RandomInt(r, 3)),
-			FeegrantAmount:         nil,
-			InitialClaimFreeAmount: nil,
-			StartTime:              &startTime,
-			EndTime:                &endTime,
-			LockupPeriod:           &lockupPeriod,
-			VestingPeriod:          &vestingPeriod,
-			VestingPoolName:        "",
-		}
-
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		_, err := msgServer.CreateCampaign(msgServerCtx, msg)
+		ownerAddress, err := createCampaign(k, cfevestingKeeper, msgServer, msgServerCtx, r, ctx, accs)
 		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Create campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), ""), nil, nil
+			return simtypes.NewOperationMsgBasic(types.ModuleName, "Create campaign", "", false, nil), nil, nil
 		}
 
 		campaigns := k.GetCampaigns(ctx)
 		startCampaignMsg := &types.MsgStartCampaign{
-			Owner:      simAccount.Address.String(),
+			Owner:      ownerAddress.String(),
 			CampaignId: uint64(len(campaigns) - 1),
 		}
 
@@ -60,9 +39,9 @@ func SimulateMsgAddClaimRecords(
 		}
 
 		addClaimRecordsMsg := &types.MsgAddClaimRecords{
-			Owner:        simAccount.Address.String(),
+			Owner:        ownerAddress.String(),
 			CampaignId:   uint64(len(campaigns) - 1),
-			ClaimRecords: createNUserEntries(100, accs),
+			ClaimRecords: createNClaimRecords(100, accs),
 		}
 
 		_, err = msgServer.AddClaimRecords(msgServerCtx, addClaimRecordsMsg)
@@ -76,7 +55,7 @@ func SimulateMsgAddClaimRecords(
 	}
 }
 
-func createNUserEntries(n int, accs []simtypes.Account) []*types.ClaimRecord {
+func createNClaimRecords(n int, accs []simtypes.Account) []*types.ClaimRecord {
 	var claimRecords []*types.ClaimRecord
 	for i := 0; i < n; i++ {
 		src := rand.NewSource(time.Now().UnixNano())
