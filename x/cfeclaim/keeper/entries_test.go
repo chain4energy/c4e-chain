@@ -274,7 +274,7 @@ func TestAddUsersEntriesWrongSrcAccountBalanceFeegrant(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "owner balance is too small (1000000045uc4e < 1025000045uc4e): insufficient funds")
 }
 
-func TestAddUsersEntriesCampaignSaleCampaignNotStarted(t *testing.T) {
+func TestAddUsersEntriesCampaignVestingPoolCampaignNotStarted(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -283,7 +283,7 @@ func TestAddUsersEntriesCampaignSaleCampaignNotStarted(t *testing.T) {
 
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.CampaignType = types.CampaignSale
+	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
 	mission := prepareTestMission()
 
@@ -293,7 +293,7 @@ func TestAddUsersEntriesCampaignSaleCampaignNotStarted(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
 }
 
-func TestAddUsersEntriesCampaignSaleCampaignVestingInPoolAmountTooSmall(t *testing.T) {
+func TestAddUsersEntriesCampaignVestingPoolCampaignVestingInPoolAmountTooSmall(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -302,7 +302,7 @@ func TestAddUsersEntriesCampaignSaleCampaignVestingInPoolAmountTooSmall(t *testi
 
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 3000)
 	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.CampaignType = types.CampaignSale
+	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
 	mission := prepareTestMission()
 

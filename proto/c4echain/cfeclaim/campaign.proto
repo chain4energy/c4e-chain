@@ -62,13 +62,13 @@ message CampaignAmountLeft {
 
 enum CampaignType {
   CAMPAIGN_TYPE_UNSPECIFIED = 0;
-  TEAMDROP = 1;
-  DEFAULT = 2;
-  SALE = 3;
+  DEFAULT = 1; // claim records cannot be deleted
+  DYNAMIC = 2; // claim records can be deleted
+  VESTING_POOL = 3; // campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
 }
 
-enum CloseAction { //Campaign close action
-  CLOSE_ACTION_UNSPECIFIED = 0; //Campaign close action
+enum CloseAction {
+  CLOSE_ACTION_UNSPECIFIED = 0;
   SEND_TO_COMMUNITY_POOL = 1;
   BURN = 2;
   SEND_TO_OWNER = 3;

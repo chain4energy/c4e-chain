@@ -10,7 +10,7 @@ import { Params } from "./types/c4echain/cfevesting/params"
 import { VestingPoolInfo } from "./types/c4echain/cfevesting/query"
 import { VestingAccountTrace } from "./types/c4echain/cfevesting/vesting_account"
 import { ContinuousVestingPeriod } from "./types/c4echain/cfevesting/vesting_account"
-import { RepeatedContinuousVestingAccount } from "./types/c4echain/cfevesting/vesting_account"
+import { PeriodicContinuousVestingAccount } from "./types/c4echain/cfevesting/vesting_account"
 import { BaseVestingAccount } from "./types/c4echain/cfevesting/vesting_account"
 import { AuthBaseAccount } from "./types/c4echain/cfevesting/vesting_account"
 import { VestingTypes } from "./types/c4echain/cfevesting/vesting_types"
@@ -30,7 +30,7 @@ export {
     VestingPoolInfo,
     VestingAccountTrace,
     ContinuousVestingPeriod,
-    RepeatedContinuousVestingAccount,
+    PeriodicContinuousVestingAccount,
     BaseVestingAccount,
     AuthBaseAccount,
     VestingTypes,

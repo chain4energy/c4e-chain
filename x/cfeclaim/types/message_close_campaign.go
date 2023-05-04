@@ -49,7 +49,7 @@ func (msg *MsgCloseCampaign) ValidateBasic() error {
 
 func ValidateCloseAction(action CloseAction) error {
 	switch action {
-	case CampaignCloseBurn, CampaignCloseSendToOwner, CloseSendToCommunityPool:
+	case CloseBurn, CloseSendToOwner, CloseSendToCommunityPool:
 		return nil
 	}
 

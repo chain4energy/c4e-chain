@@ -56,7 +56,7 @@ func createCampaign(k keeper.Keeper, cfevestingKeeper cfevestingkeeper.Keeper, m
 		VestingPoolName:        "",
 	}
 
-	if msg.CampaignType == types.CampaignSale {
+	if msg.CampaignType == types.VestingPoolCampaign {
 		randomVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
 		randVesingTypeId := helpers.RandomInt(r, 3)
 		randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))

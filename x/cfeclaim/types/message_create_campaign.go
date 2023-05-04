@@ -5,7 +5,6 @@ import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"golang.org/x/exp/slices"
 	"time"
 )
 
@@ -56,22 +55,22 @@ func (msg *MsgCreateCampaign) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-	return ValidateCampaignCreateParams(msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.CampaignType, msg.Owner, msg.VestingPoolName)
+	return ValidateCreateCampaignParams(msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.CampaignType, msg.Owner, msg.VestingPoolName)
 }
 
-func ValidateCampaignCreateParams(name string, description string, startTime *time.Time, endTime *time.Time, campaignType CampaignType, owner string, vestingPoolName string) error {
+func ValidateCreateCampaignParams(name string, description string, startTime *time.Time, endTime *time.Time, campaignType CampaignType, owner string, vestingPoolName string) error {
 	if err := ValidateCampaignName(name); err != nil {
 		return err
 	}
 	if err := ValidateCampaignDescription(description); err != nil {
 		return err
 	}
-	if campaignType != CampaignSale && startTime != nil {
+	if campaignType != VestingPoolCampaign && startTime != nil {
 		if err := ValidateCampaignEndTimeAfterStartTime(startTime, endTime); err != nil {
 			return err
 		}
 	}
-	return ValidateCampaignType(campaignType, owner, vestingPoolName)
+	return ValidateCampaignType(campaignType, vestingPoolName)
 }
 
 func ValidateCampaignName(name string) error {
@@ -101,22 +100,17 @@ func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.T
 	return nil
 }
 
-func ValidateCampaignType(campaignType CampaignType, owner string, vestingPoolName string) error {
-	if campaignType != CampaignSale && vestingPoolName != "" {
-		return errors.Wrap(c4eerrors.ErrParam, "vesting pool name can be set only for SALE type campaigns")
+func ValidateCampaignType(campaignType CampaignType, vestingPoolName string) error {
+	if campaignType != VestingPoolCampaign && vestingPoolName != "" {
+		return errors.Wrap(c4eerrors.ErrParam, "vesting pool name can be set only for VESTING_POOL type campaigns")
 	}
 
 	switch campaignType {
-	case CampaignDefault:
+	case DefaultCampaign, DynamicCampaign:
 		return nil
-	case CampaignSale:
+	case VestingPoolCampaign:
 		if vestingPoolName == "" {
-			return errors.Wrap(c4eerrors.ErrParam, "for SALE type campaigns, the vesting pool name must be provided")
-		}
-		return nil
-	case CampaignTeamdrop:
-		if !slices.Contains(GetWhitelistedTeamdropAccounts(), owner) {
-			return errors.Wrap(sdkerrors.ErrorInvalidSigner, "TeamDrop campaigns can be created only by specific accounts")
+			return errors.Wrap(c4eerrors.ErrParam, "for VESTING_POOL type campaigns, the vesting pool name must be provided")
 		}
 		return nil
 	}

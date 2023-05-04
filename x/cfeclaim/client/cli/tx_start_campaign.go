@@ -29,7 +29,7 @@ func CmdStartCampaign() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			timeLayout := "2006-01-02 15:04:05 -0700 MST"
+
 			var argStartTime *time.Time
 			if args[4] != "" {
 				parsedTime, err := time.Parse(timeLayout, args[5])
@@ -48,12 +48,14 @@ func CmdStartCampaign() *cobra.Command {
 				argEndTime = &parsedTime
 
 			}
+
 			msg := types.NewMsgStartCampaign(
 				clientCtx.GetFromAddress().String(),
 				argCampaignId,
 				argStartTime,
 				argEndTime,
 			)
+
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

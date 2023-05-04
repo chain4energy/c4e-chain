@@ -53,30 +53,6 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 	return &types.MsgCreateCampaignResponse{}, nil
 }
 
-func (k msgServer) EditCampaign(goCtx context.Context, msg *types.MsgEditCampaign) (*types.MsgEditCampaignResponse, error) {
-	defer telemetry.IncrCounter(1, types.ModuleName, "edit aidrop campaign message")
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	if err := k.Keeper.EditCampaign(
-		ctx,
-		msg.Owner,
-		msg.CampaignId,
-		msg.Name,
-		msg.Description,
-		msg.CampaignType,
-		msg.StartTime,
-		msg.EndTime,
-		msg.LockupPeriod,
-		msg.VestingPeriod,
-		msg.VestingPoolName,
-		msg.NewOwner,
-	); err != nil {
-		return nil, err
-	}
-
-	return &types.MsgEditCampaignResponse{}, nil
-}
-
 func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCampaign) (*types.MsgRemoveCampaignResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "start claim campaign message")
 	ctx := sdk.UnwrapSDKContext(goCtx)

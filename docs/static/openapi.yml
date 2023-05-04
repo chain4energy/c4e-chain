@@ -30,10 +30,14 @@ paths:
                     type: string
                     enum:
                       - CAMPAIGN_TYPE_UNSPECIFIED
-                      - TEAMDROP
                       - DEFAULT
-                      - SALE
+                      - DYNAMIC
+                      - VESTING_POOL
                     default: CAMPAIGN_TYPE_UNSPECIFIED
+                    title: |-
+                      - DEFAULT: claim records cannot be deleted
+                       - DYNAMIC: claim records can be deleted
+                       - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
                   feegrant_amount:
                     type: string
                   initial_claim_free_amount:
@@ -54,6 +58,112 @@ paths:
                     title: period of vesting coins after lockup period
                   vestingPoolName:
                     type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /c4e/claim/v1beta1/campaign_amount_left/{campaign_id}:
+    get:
+      summary: Queries a CampaignTotalAmount by campaignId.
+      operationId: Chain4EnergyC4EchainCfeclaimCampaignAmountLeft
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /c4e/claim/v1beta1/campaign_total_amount/{campaign_id}:
+    get:
+      summary: Queries a CampaignTotalAmount by campaignId.
+      operationId: Chain4EnergyC4EchainCfeclaimCampaignTotalAmount
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -108,10 +218,14 @@ paths:
                       type: string
                       enum:
                         - CAMPAIGN_TYPE_UNSPECIFIED
-                        - TEAMDROP
                         - DEFAULT
-                        - SALE
+                        - DYNAMIC
+                        - VESTING_POOL
                       default: CAMPAIGN_TYPE_UNSPECIFIED
+                      title: |-
+                        - DEFAULT: claim records cannot be deleted
+                         - DYNAMIC: claim records can be deleted
+                         - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
                     feegrant_amount:
                       type: string
                     initial_claim_free_amount:
@@ -235,112 +349,6 @@ paths:
           in: query
           required: false
           type: boolean
-      tags:
-        - Query
-  /c4e/claim/v1beta1/claim_claims_left/{campaign_id}:
-    get:
-      summary: Queries a CampaignTotalAmount by campaignId.
-      operationId: Chain4EnergyC4EchainCfeclaimCampaignAmountLeft
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              amount:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /c4e/claim/v1beta1/claim_distributions/{campaign_id}:
-    get:
-      summary: Queries a CampaignTotalAmount by campaignId.
-      operationId: Chain4EnergyC4EchainCfeclaimCampaignTotalAmount
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              amount:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
       tags:
         - Query
   /c4e/claim/v1beta1/mission:
@@ -47780,10 +47788,14 @@ definitions:
         type: string
         enum:
           - CAMPAIGN_TYPE_UNSPECIFIED
-          - TEAMDROP
           - DEFAULT
-          - SALE
+          - DYNAMIC
+          - VESTING_POOL
         default: CAMPAIGN_TYPE_UNSPECIFIED
+        title: |-
+          - DEFAULT: claim records cannot be deleted
+           - DYNAMIC: claim records can be deleted
+           - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
       feegrant_amount:
         type: string
       initial_claim_free_amount:
@@ -47808,10 +47820,14 @@ definitions:
     type: string
     enum:
       - CAMPAIGN_TYPE_UNSPECIFIED
-      - TEAMDROP
       - DEFAULT
-      - SALE
+      - DYNAMIC
+      - VESTING_POOL
     default: CAMPAIGN_TYPE_UNSPECIFIED
+    title: |-
+      - DEFAULT: claim records cannot be deleted
+       - DYNAMIC: claim records can be deleted
+       - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
   chain4energy.c4echain.cfeclaim.ClaimRecord:
     type: object
     properties:
@@ -47852,8 +47868,6 @@ definitions:
       - BURN
       - SEND_TO_OWNER
     default: CLOSE_ACTION_UNSPECIFIED
-    description: '- CLOSE_ACTION_UNSPECIFIED: Campaign close action'
-    title: Campaign close action
   chain4energy.c4echain.cfeclaim.Mission:
     type: object
     properties:
@@ -47902,8 +47916,6 @@ definitions:
     type: object
   chain4energy.c4echain.cfeclaim.MsgDeleteClaimRecordResponse:
     type: object
-  chain4energy.c4echain.cfeclaim.MsgEditCampaignResponse:
-    type: object
   chain4energy.c4echain.cfeclaim.MsgInitialClaimResponse:
     type: object
   chain4energy.c4echain.cfeclaim.MsgRemoveCampaignResponse:
@@ -47949,10 +47961,14 @@ definitions:
             type: string
             enum:
               - CAMPAIGN_TYPE_UNSPECIFIED
-              - TEAMDROP
               - DEFAULT
-              - SALE
+              - DYNAMIC
+              - VESTING_POOL
             default: CAMPAIGN_TYPE_UNSPECIFIED
+            title: |-
+              - DEFAULT: claim records cannot be deleted
+               - DYNAMIC: claim records can be deleted
+               - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
           feegrant_amount:
             type: string
           initial_claim_free_amount:
@@ -48011,10 +48027,14 @@ definitions:
               type: string
               enum:
                 - CAMPAIGN_TYPE_UNSPECIFIED
-                - TEAMDROP
                 - DEFAULT
-                - SALE
+                - DYNAMIC
+                - VESTING_POOL
               default: CAMPAIGN_TYPE_UNSPECIFIED
+              title: |-
+                - DEFAULT: claim records cannot be deleted
+                 - DYNAMIC: claim records can be deleted
+                 - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
             feegrant_amount:
               type: string
             initial_claim_free_amount:

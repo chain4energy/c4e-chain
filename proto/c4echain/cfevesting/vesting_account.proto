@@ -27,9 +27,9 @@ message ContinuousVestingPeriod {
   ];
 }
 
-// RepeatedContinuousVestingAccount implements the VestingAccount interface. It
+// PeriodicContinuousVestingAccount implements the VestingAccount interface. It
 // periodically vests by unlocking coins during each specified period.
-message RepeatedContinuousVestingAccount {
+message PeriodicContinuousVestingAccount {
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = false;
 

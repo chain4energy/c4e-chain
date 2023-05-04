@@ -39,7 +39,6 @@ func CmdAddMissionToCampaign() *cobra.Command {
 			if args[5] == "" {
 				argClaimStartDate = nil
 			} else {
-				timeLayout := "2006-01-02 15:04:05 -0700 MST"
 				parsedTime, err := time.Parse(timeLayout, args[5])
 				if err != nil {
 					return err

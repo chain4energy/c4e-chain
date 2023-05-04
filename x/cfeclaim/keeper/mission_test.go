@@ -156,7 +156,7 @@ func TestAddMissionToCampaignAlreadyOver(t *testing.T) {
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CampaignCloseBurn)
+	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0, types.CloseBurn)
 	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("campaign with id 0 campaign is over (end time - %s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 

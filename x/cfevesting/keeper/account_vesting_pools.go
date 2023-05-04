@@ -20,15 +20,12 @@ func (k Keeper) GetAccountVestingPools(ctx sdk.Context, accountAddress string) (
 }
 
 func (k Keeper) GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (vestingPool types.VestingPool, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.AccountVestingPoolsKeyPrefix)
-	var accountVestingPools types.AccountVestingPools
-	b := store.Get([]byte(accountAddress))
-	if b == nil {
+	accountVestingPools, accountVestingPoolsFound := k.GetAccountVestingPools(ctx, accountAddress)
+	if !accountVestingPoolsFound {
 		found = false
 		return
 	}
 
-	k.cdc.MustUnmarshal(b, &accountVestingPools)
 	for _, vestPool := range accountVestingPools.VestingPools {
 		if vestPool.Name == name {
 			vestingPool = *vestPool

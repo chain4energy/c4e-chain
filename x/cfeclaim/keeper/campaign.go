@@ -3,7 +3,6 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
-	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -12,7 +11,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"golang.org/x/exp/slices"
-	"strconv"
 	"time"
 )
 
@@ -25,12 +23,12 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 		return nil, err
 	}
 
-	feeGrantAmount, err := getFeeGrantAmount(feeGrantAmount)
+	feeGrantAmount, err := validateFeegrantAmount(feeGrantAmount)
 	if err != nil {
 		return nil, err
 	}
 
-	initialClaimFreeAmount, err = getInitialClaimFreeAmount(initialClaimFreeAmount)
+	initialClaimFreeAmount, err = validateInitialClaimFreeAmount(initialClaimFreeAmount)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +60,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 	return &campaign, nil
 }
 
-func getInitialClaimFreeAmount(initialClaimFreeAmount *math.Int) (*math.Int, error) {
+func validateInitialClaimFreeAmount(initialClaimFreeAmount *math.Int) (*math.Int, error) {
 	if initialClaimFreeAmount == nil {
 		zeroInt := sdk.ZeroInt()
 		initialClaimFreeAmount = &zeroInt
@@ -79,110 +77,6 @@ func getInitialClaimFreeAmount(initialClaimFreeAmount *math.Int) (*math.Int, err
 	return initialClaimFreeAmount, nil
 }
 
-func getFeeGrantAmount(feeGrantAmount *math.Int) (*math.Int, error) {
-	if feeGrantAmount == nil {
-		zeroInt := sdk.ZeroInt()
-		feeGrantAmount = &zeroInt
-	}
-
-	if feeGrantAmount.IsNil() {
-		zeroInt := sdk.ZeroInt()
-		feeGrantAmount = &zeroInt
-	}
-
-	if feeGrantAmount.IsNegative() {
-		return nil, errors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
-	}
-
-	return feeGrantAmount, nil
-}
-
-func (k Keeper) EditCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, campaignType types.CampaignType, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string, newOwner string) error {
-	k.Logger(ctx).Debug("edit claim campaign", "owner", owner, "name", name, "description", description,
-		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
-
-	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
-	if err != nil {
-		k.Logger(ctx).Debug("edit claim campaign", "err", err.Error())
-		return err
-	}
-
-	if err = types.ValidateCampaignIsNotEnabled(campaign); err != nil {
-		k.Logger(ctx).Debug("edit claim campaign", "err", err.Error())
-		return err
-	}
-
-	campaign, err = k.updateCampaignWithNewParams(name, description, campaignType, startTime, endTime, lockupPeriod, vestingPeriod, vestingPoolName, newOwner, campaign, ctx)
-	k.SetCampaign(ctx, campaign)
-
-	event := &types.EditCampaign{
-		Owner:                  campaign.Owner,
-		Name:                   campaign.Name,
-		Description:            campaign.Description,
-		CampaignType:           campaign.CampaignType.String(),
-		FeegrantAmount:         campaign.FeegrantAmount.String(),
-		InitialClaimFreeAmount: campaign.InitialClaimFreeAmount.String(),
-		Enabled:                strconv.FormatBool(campaign.Enabled),
-		StartTime:              campaign.StartTime.String(),
-		EndTime:                campaign.EndTime.String(),
-		LockupPeriod:           campaign.LockupPeriod.String(),
-		VestingPeriod:          campaign.VestingPeriod.String(),
-		VestingPoolName:        campaign.VestingPoolName,
-	}
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
-		k.Logger(ctx).Debug("edit campaign emit event error", "event", event, "error", err.Error())
-	}
-	return nil
-}
-
-func (k Keeper) updateCampaignWithNewParams(name string, description string, campaignType types.CampaignType, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string, newOwner string,
-	campaign types.Campaign, ctx sdk.Context) (types.Campaign, error) {
-
-	if name != "" {
-		campaign.Name = name
-	}
-
-	if description != "" {
-		campaign.Description = description
-	}
-
-	if startTime != nil {
-		campaign.StartTime = *startTime
-	}
-
-	if endTime != nil {
-		campaign.EndTime = *endTime
-	}
-
-	if vestingPeriod != nil {
-		campaign.VestingPeriod = *vestingPeriod
-	}
-
-	if lockupPeriod != nil {
-		campaign.LockupPeriod = *lockupPeriod
-	}
-
-	if vestingPoolName != "" {
-		campaign.VestingPoolName = vestingPoolName
-	}
-
-	if newOwner != "" {
-		campaign.Owner = newOwner
-	}
-
-	if err := types.ValidateCampaignType(campaignType, campaign.Owner, vestingPoolName); err == nil {
-		campaign.CampaignType = campaignType
-	}
-
-	if err := k.ValidateCampaignParams(ctx, campaign.Name, campaign.Description, &campaign.StartTime, &campaign.EndTime, campaign.CampaignType, campaign.Owner, campaign.VestingPoolName, &campaign.LockupPeriod, &campaign.VestingPeriod); err != nil {
-		return types.Campaign{}, err
-	}
-	return campaign, nil
-}
-
 func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, closeAction types.CloseAction) error {
 	k.Logger(ctx).Debug("close campaign", "owner", owner, "campaignId", campaignId, "CloseAction", closeAction)
 	campaign, err := k.ValidateCloseCampaignParams(ctx, closeAction, campaignId, owner)
@@ -196,6 +90,10 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 		return err
 	}
 
+	if err = k.closeCampaignSendFeegrant(ctx, closeAction, &campaign); err != nil {
+		return err
+	}
+
 	campaign.Enabled = false
 	k.SetCampaign(ctx, campaign)
 	k.DecrementCampaignAmountLeft(ctx, campaignId, campaignAmountLeft.Amount)
@@ -205,118 +103,59 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 func (k Keeper) closeActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
 	switch CloseAction {
 	case types.CloseSendToCommunityPool:
-		return k.campaignCloseSendToCommunityPool(ctx, campaign, campaignAmountLeft)
-	case types.CampaignCloseBurn:
-		return k.campaignCloseBurn(ctx, campaign, campaignAmountLeft)
-	case types.CampaignCloseSendToOwner:
+		if campaign.CampaignType == types.VestingPoolCampaign || slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
+			return errors.Wrap(sdkerrors.ErrInvalidType, "in the case of sale campaigns and campaigns created from whitelist vesting accounts, it is not possible to use sendToCommunityPool close action")
+		}
+		return k.distributionKeeper.FundCommunityPool(ctx, campaignAmountLeft, authtypes.NewModuleAddress(types.ModuleName))
+	case types.CloseBurn:
+		return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
+	case types.CloseSendToOwner:
 		return k.campaignCloseSendToOwner(ctx, campaign, campaignAmountLeft)
-	default:
-		return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
 	}
-}
-
-func (k Keeper) campaignCloseSendToCommunityPool(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
-	if campaign.CampaignType == types.CampaignSale || slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
-		return errors.Wrap(sdkerrors.ErrInvalidType, "in the case of sale campaigns and campaigns created from whitelist vesting accounts, it is not possible to use sendToCommunityPool close action")
-	}
-
-	if err := k.distributionKeeper.FundCommunityPool(ctx, campaignAmountLeft, authtypes.NewModuleAddress(types.ModuleName)); err != nil {
-		return err
-	}
-	if campaign.FeegrantAmount.IsPositive() {
-		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-		feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
-		if err := k.distributionKeeper.FundCommunityPool(ctx, feegrantTotalAmount, feegrantAccountAddress); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (k Keeper) campaignCloseBurn(ctx sdk.Context, campaign *types.Campaign, coinsToBurn sdk.Coins) error {
-	if campaign.FeegrantAmount.IsPositive() {
-		_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-		feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
-		coinsToBurn = coinsToBurn.Add(feegrantTotalAmount...)
-		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, types.ModuleName, feegrantTotalAmount); err != nil {
-			return err
-		}
-	}
-	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, coinsToBurn); err != nil {
-		return err
-	}
-	return nil
+	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
 }
 
 func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
-	if campaign.CampaignType != types.CampaignSale {
-		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
-		if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
-			ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
-			if ownerAccount == nil {
-				return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
-			}
-			vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
-			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(campaignAmountLeft...)
-
-			if campaign.FeegrantAmount.IsPositive() {
-				_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-				feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
-				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(feegrantTotalAmount...)
-				if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, types.ModuleName, feegrantTotalAmount); err != nil {
-					return err
-				}
-				err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, feegrantTotalAmount)
-				if err != nil {
-					return err
-				}
-			}
-			k.accountKeeper.SetAccount(ctx, vestingAcc)
-			return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
-		}
-
-		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft); err != nil {
-			return err
-		}
-		if campaign.FeegrantAmount.IsPositive() {
-			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-			feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
-			if err := k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, feegrantTotalAmount); err != nil {
-				return err
-			}
-		}
+	if campaign.CampaignType == types.VestingPoolCampaign {
+		return k.closeVestingPoolCampaignSendToOwner(ctx, campaign, campaignAmountLeft)
 	} else {
-		vestingDenom := k.vestingKeeper.Denom(ctx)
-		accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
-		var vestingPool *cfevestingtypes.VestingPool
-		for _, vestPool := range accountVestingPools.VestingPools {
-			fmt.Println(accountVestingPools)
-			fmt.Println(campaign.VestingPoolName)
-			if vestPool.Name == campaign.VestingPoolName {
-				vestingPool = vestPool
-				break
-			}
-		}
-
-		if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft); err != nil {
-			return err
-		}
-		fmt.Println(vestingPool)
-		vestingPool.Sent = vestingPool.Sent.Sub(campaignAmountLeft.AmountOf(vestingDenom))
-
-		if campaign.FeegrantAmount.IsPositive() {
-			_, feegrantAccountAddress := FeegrantAccountAddress(campaign.Id)
-			feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
-			if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, feegrantAccountAddress, cfevestingtypes.ModuleName, feegrantTotalAmount); err != nil {
-				return err
-			}
-			vestingPool.Sent = vestingPool.Sent.Sub(feegrantTotalAmount.AmountOf(vestingDenom))
-		}
-
-		k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
+		return k.closeDefaultAndDynamicCampaignSendToOwner(ctx, campaign, campaignAmountLeft)
 	}
-	return nil
+}
+
+func (k Keeper) closeVestingPoolCampaignSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+	vestingDenom := k.vestingKeeper.Denom(ctx)
+	accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
+	var vestingPool *cfevestingtypes.VestingPool
+	for _, vestPool := range accountVestingPools.VestingPools {
+		if vestPool.Name == campaign.VestingPoolName {
+			vestingPool = vestPool
+			break
+		}
+	}
+
+	vestingPool.Sent = vestingPool.Sent.Sub(campaignAmountLeft.AmountOf(vestingDenom))
+
+	k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
+	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft)
+}
+
+func (k Keeper) closeDefaultAndDynamicCampaignSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+	ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
+	if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
+		// TODO: move to vesting
+		ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
+		if ownerAccount == nil {
+			return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
+		}
+		vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
+		vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(campaignAmountLeft...)
+
+		k.accountKeeper.SetAccount(ctx, vestingAcc)
+		return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
+	}
+
+	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft)
 }
 
 func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) error {
@@ -326,7 +165,7 @@ func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 	if err != nil {
 		return err
 	}
-	if campaign.CampaignType == types.CampaignSale {
+	if campaign.CampaignType == types.VestingPoolCampaign {
 		if startTime != nil {
 			campaign.StartTime = *startTime
 		}
@@ -360,16 +199,16 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 }
 func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description string, startTime *time.Time, endTime *time.Time,
 	campaignType types.CampaignType, owner string, vestingPoolName string, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
-	if err := types.ValidateCampaignCreateParams(name, description, startTime, endTime, campaignType, owner, vestingPoolName); err != nil {
+	if err := types.ValidateCreateCampaignParams(name, description, startTime, endTime, campaignType, owner, vestingPoolName); err != nil {
 		return err
 	}
 
-	if campaignType != types.CampaignSale && startTime != nil {
+	if campaignType != types.VestingPoolCampaign && startTime != nil {
 		if err := ValidateCampaignStartTimeInTheFuture(ctx, startTime); err != nil {
 			return err
 		}
 	}
-	if campaignType == types.CampaignSale {
+	if campaignType == types.VestingPoolCampaign {
 		return k.ValidateCampaignWhenAddedFromVestingPool(ctx, owner, vestingPoolName, lockupPeriod, vestingPeriod)
 	}
 	return nil

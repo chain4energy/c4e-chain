@@ -134,7 +134,7 @@ func (h *ContextC4eClaimUtils) ClaimMissionError(campaignId uint64, missionId ui
 }
 
 func (h *ContextC4eClaimUtils) CreateRepeatedContinuousVestingAccount(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64,
-	endTime int64, periods ...cfevestingtypes.ContinuousVestingPeriod) *cfevestingtypes.RepeatedContinuousVestingAccount {
+	endTime int64, periods ...cfevestingtypes.ContinuousVestingPeriod) *cfevestingtypes.PeriodicContinuousVestingAccount {
 	return h.C4eClaimUtils.CreateRepeatedContinuousVestingAccount(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
 }
 

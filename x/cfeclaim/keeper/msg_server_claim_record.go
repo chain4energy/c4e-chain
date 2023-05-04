@@ -11,7 +11,7 @@ func (k msgServer) AddClaimRecords(goCtx context.Context, msg *types.MsgAddClaim
 	defer telemetry.IncrCounter(1, types.ModuleName, "add claim entries message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.Keeper.AddUsersEntries(
+	if err := k.Keeper.AddClaimRecords(
 		ctx,
 		msg.Owner,
 		msg.CampaignId,

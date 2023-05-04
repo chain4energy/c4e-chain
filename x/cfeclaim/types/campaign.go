@@ -8,24 +8,24 @@ import (
 
 // Campaign types
 const (
-	CampaignUnsecified = CampaignType_CAMPAIGN_TYPE_UNSPECIFIED
-	CampaignTeamdrop   = CampaignType_TEAMDROP
-	CampaignDefault    = CampaignType_DEFAULT
-	CampaignSale       = CampaignType_SALE
+	UnspecifiedCampaign = CampaignType_CAMPAIGN_TYPE_UNSPECIFIED
+	DynamicCampaign     = CampaignType_DYNAMIC
+	DefaultCampaign     = CampaignType_DEFAULT
+	VestingPoolCampaign = CampaignType_VESTING_POOL
 )
 
 // Campaign close action types
 const (
 	CloseActionUnspecified   = CloseAction_CLOSE_ACTION_UNSPECIFIED
 	CloseSendToCommunityPool = CloseAction_SEND_TO_COMMUNITY_POOL
-	CampaignCloseBurn        = CloseAction_BURN
-	CampaignCloseSendToOwner = CloseAction_SEND_TO_OWNER
+	CloseBurn                = CloseAction_BURN
+	CloseSendToOwner         = CloseAction_SEND_TO_OWNER
 )
 
 func CampaignTypeFromString(str string) (CampaignType, error) {
 	option, ok := MissionType_value[str]
 	if !ok {
-		return CampaignUnsecified, fmt.Errorf("'%s' is not a valid campaign type, available options: teamdrop/sale/default", str)
+		return UnspecifiedCampaign, fmt.Errorf("'%s' is not a valid campaign type, available options: default/dynamic/vesting_pool", str)
 	}
 	return CampaignType(option), nil
 }
@@ -33,14 +33,14 @@ func CampaignTypeFromString(str string) (CampaignType, error) {
 // NormalizeCampaignType - normalize user specified vote option
 func NormalizeCampaignType(option string) string {
 	switch option {
-	case "Teamdrop", "teamdrop":
-		return CampaignTeamdrop.String()
+	case "Dynamic", "dynamic", "DYNAMIC":
+		return DynamicCampaign.String()
 
-	case "Sale", "sale":
-		return CampaignSale.String()
+	case "VestingPool", "VESTING_POOL", "vesting_pool":
+		return VestingPoolCampaign.String()
 
-	case "Default", "default":
-		return CampaignDefault.String()
+	case "Default", "default", "DEFAULT":
+		return DefaultCampaign.String()
 
 	default:
 		return option
@@ -54,10 +54,10 @@ func NormalizeCloseAction(option string) string {
 		return CloseSendToCommunityPool.String()
 
 	case "Burn", "burn":
-		return CampaignCloseBurn.String()
+		return CloseBurn.String()
 
 	case "SendToOwner", "sendtoowner":
-		return CampaignCloseSendToOwner.String()
+		return CloseSendToOwner.String()
 
 	default:
 		return option
@@ -76,10 +76,6 @@ func GetWhitelistedVestingAccounts() []string {
 	return []string{"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj"}
 }
 
-func GetWhitelistedTeamdropAccounts() []string {
-	return []string{"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj"}
-}
-
 func (c *Campaign) IsActive(blockTime time.Time) error {
 	if !c.Enabled {
 		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d error", c.Id)
@@ -89,6 +85,13 @@ func (c *Campaign) IsActive(blockTime time.Time) error {
 	}
 	if blockTime.After(c.EndTime) {
 		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d has already ended (%s > endTime %s) error", c.Id, blockTime, c.EndTime)
+	}
+	return nil
+}
+
+func ValidateCampaignIsNotEnabled(campaign Campaign) error {
+	if campaign.Enabled == true {
+		return ErrCampaignEnabled
 	}
 	return nil
 }

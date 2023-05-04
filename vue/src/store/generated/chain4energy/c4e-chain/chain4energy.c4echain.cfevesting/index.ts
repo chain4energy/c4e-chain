@@ -11,12 +11,12 @@ import { Params } from "./module/types/cfevesting/params"
 import { VestingPoolInfo } from "./module/types/cfevesting/query"
 import { VestingAccount } from "./module/types/cfevesting/vesting_account"
 import { ContinuousVestingPeriod } from "./module/types/cfevesting/vesting_account"
-import { RepeatedContinuousVestingAccount } from "./module/types/cfevesting/vesting_account"
+import { PeriodicContinuousVestingAccount } from "./module/types/cfevesting/vesting_account"
 import { VestingTypes } from "./module/types/cfevesting/vesting_types"
 import { VestingType } from "./module/types/cfevesting/vesting_types"
 
 
-export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, ContinuousVestingPeriod, RepeatedContinuousVestingAccount, VestingTypes, VestingType };
+export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, ContinuousVestingPeriod, PeriodicContinuousVestingAccount, VestingTypes, VestingType };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -71,7 +71,7 @@ const getDefaultState = () => {
 						VestingPoolInfo: getStructure(VestingPoolInfo.fromPartial({})),
 						VestingAccount: getStructure(VestingAccount.fromPartial({})),
 						ContinuousVestingPeriod: getStructure(ContinuousVestingPeriod.fromPartial({})),
-						RepeatedContinuousVestingAccount: getStructure(RepeatedContinuousVestingAccount.fromPartial({})),
+						PeriodicContinuousVestingAccount: getStructure(PeriodicContinuousVestingAccount.fromPartial({})),
 						VestingTypes: getStructure(VestingTypes.fromPartial({})),
 						VestingType: getStructure(VestingType.fromPartial({})),
 						

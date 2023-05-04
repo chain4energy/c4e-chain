@@ -45,9 +45,9 @@ export enum CfeclaimCloseAction {
 
 export enum CfeclaimCampaignType {
   CAMPAIGN_TYPE_UNSPECIFIED = "CAMPAIGN_TYPE_UNSPECIFIED",
-  TEAMDROP = "TEAMDROP",
+  DYNAMIC = "DYNAMIC",
   DEFAULT = "DEFAULT",
-  SALE = "SALE",
+  VESTING_POOL = "VESTING_POOL",
 }
 
 export interface CfeclaimClaimRecord {

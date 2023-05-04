@@ -49,7 +49,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		if err != nil {
 			return err
 		}
-		_, accountAddr := FeegrantAccountAddress(campaignId)
+		_, accountAddr := CreateFeegrantAccountAddress(campaignId)
 		if err = k.revokeFeeAllowance(ctx, accountAddr, granteeAddr); err != nil {
 			return err
 		}
@@ -177,7 +177,7 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 	start := ctx.BlockTime().Add(campaign.LockupPeriod)
 	end := start.Add(campaign.VestingPeriod)
 
-	if err := k.SendToNewRepeatedContinuousVestingAccount(ctx, userEntry, claimableAmount, start.Unix(), end.Unix(), mission.MissionType); err != nil {
+	if err := k.SendToNewPeriodicContinuousVestingAccount(ctx, userEntry, claimableAmount, start.Unix(), end.Unix(), mission.MissionType); err != nil {
 		return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userEntry.ClaimAddress)
 	}
 

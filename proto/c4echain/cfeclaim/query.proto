@@ -50,11 +50,11 @@ service Query {
 	}
 	// Queries a CampaignTotalAmount by campaignId.
 	rpc CampaignTotalAmount(QueryCampaignTotalAmountRequest) returns (QueryCampaignTotalAmountResponse) {
-		option (google.api.http).get = "/c4e/claim/v1beta1/claim_distributions/{campaign_id}";
+		option (google.api.http).get = "/c4e/claim/v1beta1/campaign_total_amount/{campaign_id}";
 	}
 	// Queries a CampaignTotalAmount by campaignId.
 	rpc CampaignAmountLeft(QueryCampaignAmountLeftRequest) returns (QueryCampaignAmountLeftResponse) {
-		option (google.api.http).get = "/c4e/claim/v1beta1/claim_claims_left/{campaign_id}";
+		option (google.api.http).get = "/c4e/claim/v1beta1/campaign_amount_left/{campaign_id}";
 	}
 
 // this line is used by starport scaffolding # 2

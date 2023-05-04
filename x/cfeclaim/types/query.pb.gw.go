@@ -903,9 +903,9 @@ var (
 
 	pattern_Query_Campaign_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "claim", "v1beta1", "campaign", "campaign_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CampaignTotalAmount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "claim", "v1beta1", "claim_distributions", "campaign_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CampaignTotalAmount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "claim", "v1beta1", "campaign_total_amount", "campaign_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_CampaignAmountLeft_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "claim", "v1beta1", "claim_claims_left", "campaign_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CampaignAmountLeft_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "claim", "v1beta1", "campaign_amount_left", "campaign_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

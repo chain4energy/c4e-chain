@@ -19,10 +19,10 @@ export interface ContinuousVestingPeriod {
 }
 
 /**
- * RepeatedContinuousVestingAccount implements the VestingAccount interface. It
+ * PeriodicContinuousVestingAccount implements the VestingAccount interface. It
  * periodically vests by unlocking coins during each specified period.
  */
-export interface RepeatedContinuousVestingAccount {
+export interface PeriodicContinuousVestingAccount {
   base_vesting_account: BaseVestingAccount | undefined;
   start_time: number;
   vesting_periods: ContinuousVestingPeriod[];
@@ -209,9 +209,9 @@ export const ContinuousVestingPeriod = {
 
 const baseRepeatedContinuousVestingAccount: object = { start_time: 0 };
 
-export const RepeatedContinuousVestingAccount = {
+export const PeriodicContinuousVestingAccount = {
   encode(
-    message: RepeatedContinuousVestingAccount,
+    message: PeriodicContinuousVestingAccount,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.base_vesting_account !== undefined) {
@@ -232,12 +232,12 @@ export const RepeatedContinuousVestingAccount = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): RepeatedContinuousVestingAccount {
+  ): PeriodicContinuousVestingAccount {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
       ...baseRepeatedContinuousVestingAccount,
-    } as RepeatedContinuousVestingAccount;
+    } as PeriodicContinuousVestingAccount;
     message.vesting_periods = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -264,10 +264,10 @@ export const RepeatedContinuousVestingAccount = {
     return message;
   },
 
-  fromJSON(object: any): RepeatedContinuousVestingAccount {
+  fromJSON(object: any): PeriodicContinuousVestingAccount {
     const message = {
       ...baseRepeatedContinuousVestingAccount,
-    } as RepeatedContinuousVestingAccount;
+    } as PeriodicContinuousVestingAccount;
     message.vesting_periods = [];
     if (
       object.base_vesting_account !== undefined &&
@@ -295,7 +295,7 @@ export const RepeatedContinuousVestingAccount = {
     return message;
   },
 
-  toJSON(message: RepeatedContinuousVestingAccount): unknown {
+  toJSON(message: PeriodicContinuousVestingAccount): unknown {
     const obj: any = {};
     message.base_vesting_account !== undefined &&
       (obj.base_vesting_account = message.base_vesting_account
@@ -313,11 +313,11 @@ export const RepeatedContinuousVestingAccount = {
   },
 
   fromPartial(
-    object: DeepPartial<RepeatedContinuousVestingAccount>
-  ): RepeatedContinuousVestingAccount {
+    object: DeepPartial<PeriodicContinuousVestingAccount>
+  ): PeriodicContinuousVestingAccount {
     const message = {
       ...baseRepeatedContinuousVestingAccount,
-    } as RepeatedContinuousVestingAccount;
+    } as PeriodicContinuousVestingAccount;
     message.vesting_periods = [];
     if (
       object.base_vesting_account !== undefined &&

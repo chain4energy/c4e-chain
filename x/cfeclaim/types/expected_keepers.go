@@ -57,4 +57,5 @@ type CfeVestingKeeper interface {
 	GetAccountVestingPools(ctx sdk.Context, accountAddress string) (accountVestingPools cfevestingtypes.AccountVestingPools, found bool)
 	Denom(ctx sdk.Context) (res string)
 	UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Coins) (*vestingtypes.ContinuousVestingAccount, error)
+	SetupNewPeriodicContinousVestingAccount(ctx sdk.Context, address sdk.AccAddress, startTime int64, endTime int64) (*cfevestingtypes.PeriodicContinuousVestingAccount, error)
 }

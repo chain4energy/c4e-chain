@@ -41,7 +41,7 @@ func SimulateMsgCloseCampaign(
 			VestingPoolName:        "",
 		}
 
-		if campaign.CampaignType == types.CampaignSale {
+		if campaign.CampaignType == types.VestingPoolCampaign {
 			randomVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
 			randVesingTypeId := helpers.RandomInt(r, 3)
 			randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))

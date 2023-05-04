@@ -14,7 +14,7 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 )
 
-//go:embed stakedrop.json santadrop.json gleamdrop.json teamdrop.json
+//go:embed stakedrop.json santadrop.json gleamdrop.json dynamic.json
 var f embed.FS
 
 const monthAvgHours = 365 * 24 / 12 * time.Hour
@@ -36,20 +36,19 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper 
 		return err
 	}
 	zeroInt := sdk.ZeroInt()
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", types.DefaultCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
-	// TODO: change campaign type to teamdrop
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "dynamic", "dynamic", types.DynamicCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop", types.DefaultCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", types.CampaignDefault, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", types.DefaultCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
@@ -71,15 +70,15 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper 
 	if err != nil {
 		return err
 	}
-	if err = claimKeeper.AddUsersEntries(ctx, ownerAcc, 0, stakedropEntries); err != nil {
+	if err = claimKeeper.AddClaimRecords(ctx, ownerAcc, 0, stakedropEntries); err != nil {
 		return err
 	}
 
-	teamdropEntries, err := readEntriesFromJson("teamdrop.json")
+	dynamicEntries, err := readEntriesFromJson("dynamic.json")
 	if err != nil {
 		return err
 	}
-	if err = claimKeeper.AddUsersEntries(ctx, ownerAcc, 1, teamdropEntries); err != nil {
+	if err = claimKeeper.AddClaimRecords(ctx, ownerAcc, 1, dynamicEntries); err != nil {
 		return err
 	}
 
@@ -87,7 +86,7 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper 
 	if err != nil {
 		return err
 	}
-	if err = claimKeeper.AddUsersEntries(ctx, ownerAcc, 2, santadropEntries); err != nil {
+	if err = claimKeeper.AddClaimRecords(ctx, ownerAcc, 2, santadropEntries); err != nil {
 		return err
 	}
 
@@ -95,7 +94,7 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper 
 	if err != nil {
 		return err
 	}
-	if err = claimKeeper.AddUsersEntries(ctx, ownerAcc, 3, gleamdropEntries); err != nil {
+	if err = claimKeeper.AddClaimRecords(ctx, ownerAcc, 3, gleamdropEntries); err != nil {
 		return err
 	}
 

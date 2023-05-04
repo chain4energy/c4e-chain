@@ -162,23 +162,23 @@ func (m *ContinuousVestingPeriod) GetAmount() github_com_cosmos_cosmos_sdk_types
 	return nil
 }
 
-// RepeatedContinuousVestingAccount implements the VestingAccount interface. It
+// PeriodicContinuousVestingAccount implements the VestingAccount interface. It
 // periodically vests by unlocking coins during each specified period.
-type RepeatedContinuousVestingAccount struct {
+type PeriodicContinuousVestingAccount struct {
 	*types1.BaseVestingAccount `protobuf:"bytes,1,opt,name=base_vesting_account,json=baseVestingAccount,proto3,embedded=base_vesting_account" json:"base_vesting_account,omitempty"`
 	StartTime                  int64                     `protobuf:"varint,2,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	VestingPeriods             []ContinuousVestingPeriod `protobuf:"bytes,3,rep,name=vesting_periods,json=vestingPeriods,proto3" json:"vesting_periods"`
 }
 
-func (m *RepeatedContinuousVestingAccount) Reset()      { *m = RepeatedContinuousVestingAccount{} }
-func (*RepeatedContinuousVestingAccount) ProtoMessage() {}
-func (*RepeatedContinuousVestingAccount) Descriptor() ([]byte, []int) {
+func (m *PeriodicContinuousVestingAccount) Reset()      { *m = PeriodicContinuousVestingAccount{} }
+func (*PeriodicContinuousVestingAccount) ProtoMessage() {}
+func (*PeriodicContinuousVestingAccount) Descriptor() ([]byte, []int) {
 	return fileDescriptor_785587b07f9ac0c9, []int{2}
 }
-func (m *RepeatedContinuousVestingAccount) XXX_Unmarshal(b []byte) error {
+func (m *PeriodicContinuousVestingAccount) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RepeatedContinuousVestingAccount) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *PeriodicContinuousVestingAccount) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_RepeatedContinuousVestingAccount.Marshal(b, m, deterministic)
 	} else {
@@ -190,13 +190,13 @@ func (m *RepeatedContinuousVestingAccount) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *RepeatedContinuousVestingAccount) XXX_Merge(src proto.Message) {
+func (m *PeriodicContinuousVestingAccount) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_RepeatedContinuousVestingAccount.Merge(m, src)
 }
-func (m *RepeatedContinuousVestingAccount) XXX_Size() int {
+func (m *PeriodicContinuousVestingAccount) XXX_Size() int {
 	return m.Size()
 }
-func (m *RepeatedContinuousVestingAccount) XXX_DiscardUnknown() {
+func (m *PeriodicContinuousVestingAccount) XXX_DiscardUnknown() {
 	xxx_messageInfo_RepeatedContinuousVestingAccount.DiscardUnknown(m)
 }
 
@@ -205,7 +205,7 @@ var xxx_messageInfo_RepeatedContinuousVestingAccount proto.InternalMessageInfo
 func init() {
 	proto.RegisterType((*VestingAccountTrace)(nil), "chain4energy.c4echain.cfevesting.VestingAccountTrace")
 	proto.RegisterType((*ContinuousVestingPeriod)(nil), "chain4energy.c4echain.cfevesting.ContinuousVestingPeriod")
-	proto.RegisterType((*RepeatedContinuousVestingAccount)(nil), "chain4energy.c4echain.cfevesting.RepeatedContinuousVestingAccount")
+	proto.RegisterType((*PeriodicContinuousVestingAccount)(nil), "chain4energy.c4echain.cfevesting.PeriodicContinuousVestingAccount")
 }
 
 func init() {
@@ -361,7 +361,7 @@ func (m *ContinuousVestingPeriod) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *RepeatedContinuousVestingAccount) Marshal() (dAtA []byte, err error) {
+func (m *PeriodicContinuousVestingAccount) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -371,12 +371,12 @@ func (m *RepeatedContinuousVestingAccount) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *RepeatedContinuousVestingAccount) MarshalTo(dAtA []byte) (int, error) {
+func (m *PeriodicContinuousVestingAccount) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *RepeatedContinuousVestingAccount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *PeriodicContinuousVestingAccount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -472,7 +472,7 @@ func (m *ContinuousVestingPeriod) Size() (n int) {
 	return n
 }
 
-func (m *RepeatedContinuousVestingAccount) Size() (n int) {
+func (m *PeriodicContinuousVestingAccount) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -783,7 +783,7 @@ func (m *ContinuousVestingPeriod) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *RepeatedContinuousVestingAccount) Unmarshal(dAtA []byte) error {
+func (m *PeriodicContinuousVestingAccount) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -806,10 +806,10 @@ func (m *RepeatedContinuousVestingAccount) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RepeatedContinuousVestingAccount: wiretype end group for non-group")
+			return fmt.Errorf("proto: PeriodicContinuousVestingAccount: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RepeatedContinuousVestingAccount: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: PeriodicContinuousVestingAccount: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -7,7 +7,7 @@ import (
 // C4eCodespace is the codespace for all commen C4E errors
 const C4eCodespace = "c4e"
 
-// x/cfeclaim module sentinel errors
+// C4e common errors
 var (
 	ErrAmount                          = errors.Register(C4eCodespace, 2, "wrong amount value")
 	ErrAlreadyExists                   = errors.Register(C4eCodespace, 3, "entity already exists")

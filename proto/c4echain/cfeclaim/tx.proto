@@ -16,7 +16,6 @@ service Msg {
   rpc Claim(MsgClaim) returns (MsgClaimResponse);
   rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
   rpc CreateCampaign(MsgCreateCampaign) returns (MsgCreateCampaignResponse);
-  rpc EditCampaign(MsgEditCampaign) returns (MsgEditCampaignResponse);
   rpc AddMissionToCampaign(MsgAddMissionToCampaign) returns (MsgAddMissionToCampaignResponse);
   rpc AddClaimRecords(MsgAddClaimRecords) returns (MsgAddClaimRecordsResponse);
   rpc DeleteClaimRecord(MsgDeleteClaimRecord) returns (MsgDeleteClaimRecordResponse);
@@ -141,39 +140,4 @@ message MsgRemoveCampaign {
 
 message MsgRemoveCampaignResponse {}
 
-message MsgEditCampaign {
-  string owner = 1;
-  uint64 campaignId = 2;
-  string name = 3;
-  string description = 4;
-  CampaignType campaignType = 5;
-  string feegrant_amount = 6 [
-    (gogoproto.nullable) = true,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-  ];
-  string initial_claim_free_amount = 7 [
-    (gogoproto.nullable) = true,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-  ];
-  google.protobuf.Timestamp start_time = 8 [
-    (gogoproto.nullable) = true,
-    (gogoproto.stdtime) = true
-  ];
-  google.protobuf.Timestamp end_time = 9 [
-    (gogoproto.nullable) = true,
-    (gogoproto.stdtime) = true
-  ];
-  google.protobuf.Duration lockup_period = 10 [
-    (gogoproto.nullable) = true,
-    (gogoproto.stdduration) = true
-  ];
-  google.protobuf.Duration vesting_period = 11 [
-    (gogoproto.nullable) = true,
-    (gogoproto.stdduration) = true
-  ];
-  string vesting_poolName = 12;
-  string newOwner = 13;
-}
-
-message MsgEditCampaignResponse {}
 // this line is used by starport scaffolding # proto/tx/message

@@ -167,7 +167,7 @@ func TestCreateAccountWrongAccountType(t *testing.T) {
 	testHelper.C4eClaimUtils.SendToRepeatedContinuousVestingAccountError(acountsAddresses[0],
 		amount,
 		startTimeUnix,
-		endTimeUnix, false, "send to claim account - expected RepeatedContinuousVestingAccount, got: *types.BaseAccount: invalid account type",
+		endTimeUnix, false, "send to claim account - expected PeriodicContinuousVestingAccount, got: *types.BaseAccount: invalid account type",
 		cfeclaimtypes.MissionVote,
 	)
 }
@@ -187,7 +187,7 @@ func TestCreateAccountSendError(t *testing.T) {
 	testHelper.C4eClaimUtils.SendToRepeatedContinuousVestingAccountError(acountsAddresses[0],
 		amount.AddRaw(1),
 		startTimeUnix,
-		endTimeUnix, true, "send to claim account - send coins to claim account insufficient funds error (to: c4e15ky9du8a2wlstz6fpx3p4mqpjyrm5cgq3kx2f7, amount: 10000000001uc4e): insufficient funds",
+		endTimeUnix, true, "10000000000uc4e is smaller than 10000000001uc4e: insufficient funds",
 		cfeclaimtypes.MissionInitialClaim,
 	)
 }

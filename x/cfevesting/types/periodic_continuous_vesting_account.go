@@ -16,38 +16,54 @@ import (
 )
 
 var (
-	_ vestexported.VestingAccount = (*RepeatedContinuousVestingAccount)(nil)
-	_ authtypes.GenesisAccount    = (*RepeatedContinuousVestingAccount)(nil)
+	_ vestexported.VestingAccount = (*PeriodicContinuousVestingAccount)(nil)
+	_ authtypes.GenesisAccount    = (*PeriodicContinuousVestingAccount)(nil)
 )
 
 type ContinuousVestingPeriods []ContinuousVestingPeriod
 
-// NewRepeatedContinuousVestingAccountRaw creates a new VestingAccount object from BaseVestingAccount
-func NewRepeatedContinuousVestingAccountRaw(bva *vestingtypes.BaseVestingAccount, startTime int64) *RepeatedContinuousVestingAccount {
-	return &RepeatedContinuousVestingAccount{
+// NewPeriodicContinuousVestingAccountRaw creates a new VestingAccount object from BaseVestingAccount
+func NewPeriodicContinuousVestingAccountRaw(bva *vestingtypes.BaseVestingAccount, startTime int64) *PeriodicContinuousVestingAccount {
+	return &PeriodicContinuousVestingAccount{
 		BaseVestingAccount: bva,
 		StartTime:          startTime,
 	}
 }
 
 // NewRepeatedContinuousVestingAccount returns a new VestingAccount
-func NewRepeatedContinuousVestingAccount(baseAcc *authtypes.BaseAccount, originalVesting sdk.Coins, startTime int64, endTime int64, periods ContinuousVestingPeriods) *RepeatedContinuousVestingAccount {
+func NewRepeatedContinuousVestingAccount(baseAcc *authtypes.BaseAccount, originalVesting sdk.Coins, startTime int64, endTime int64, periods ContinuousVestingPeriods) *PeriodicContinuousVestingAccount {
 	baseVestingAcc := &vestingtypes.BaseVestingAccount{
 		BaseAccount:     baseAcc,
 		OriginalVesting: originalVesting,
 		EndTime:         endTime,
 	}
 
-	return &RepeatedContinuousVestingAccount{
+	return &PeriodicContinuousVestingAccount{
 		BaseVestingAccount: baseVestingAcc,
 		StartTime:          startTime,
 		VestingPeriods:     periods,
 	}
 }
 
+func AddNewContinousVestingPeriods(claimerAccount *PeriodicContinuousVestingAccount, startTime int64, endTime int64, amount sdk.Coins) *PeriodicContinuousVestingAccount {
+	hadPariods := len(claimerAccount.VestingPeriods) > 0
+
+	claimerAccount.VestingPeriods = append(claimerAccount.VestingPeriods,
+		ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
+
+	claimerAccount.BaseVestingAccount.OriginalVesting = claimerAccount.BaseVestingAccount.OriginalVesting.Add(amount...)
+	if !hadPariods || endTime > claimerAccount.BaseVestingAccount.EndTime {
+		claimerAccount.BaseVestingAccount.EndTime = endTime
+	}
+	if !hadPariods || startTime < claimerAccount.StartTime {
+		claimerAccount.StartTime = startTime
+	}
+	return claimerAccount
+}
+
 // GetVestedCoins returns the total number of vested coins. If no coins are vested,
 // nil is returned.
-func (cva RepeatedContinuousVestingAccount) GetVestedCoins(blockTime time.Time) sdk.Coins {
+func (cva PeriodicContinuousVestingAccount) GetVestedCoins(blockTime time.Time) sdk.Coins {
 	var vestedCoins sdk.Coins
 	for _, period := range cva.VestingPeriods {
 		vestedCoins = vestedCoins.Add(period.GetVestedCoins(blockTime)...)
@@ -57,36 +73,36 @@ func (cva RepeatedContinuousVestingAccount) GetVestedCoins(blockTime time.Time) 
 
 // GetVestingCoins returns the total number of vesting coins. If no coins are
 // vesting, nil is returned.
-func (cva RepeatedContinuousVestingAccount) GetVestingCoins(blockTime time.Time) sdk.Coins {
+func (cva PeriodicContinuousVestingAccount) GetVestingCoins(blockTime time.Time) sdk.Coins {
 	return cva.OriginalVesting.Sub(cva.GetVestedCoins(blockTime)...)
 }
 
 // LockedCoins returns the set of coins that are not spendable (i.e. locked),
 // defined as the vesting coins that are not delegated.
-func (cva RepeatedContinuousVestingAccount) LockedCoins(blockTime time.Time) sdk.Coins {
+func (cva PeriodicContinuousVestingAccount) LockedCoins(blockTime time.Time) sdk.Coins {
 	return cva.BaseVestingAccount.LockedCoinsFromVesting(cva.GetVestingCoins(blockTime))
 }
 
 // TrackDelegation tracks a desired delegation amount by setting the appropriate
 // values for the amount of delegated vesting, delegated free, and reducing the
 // overall amount of base coins.
-func (cva *RepeatedContinuousVestingAccount) TrackDelegation(blockTime time.Time, balance, amount sdk.Coins) {
+func (cva *PeriodicContinuousVestingAccount) TrackDelegation(blockTime time.Time, balance, amount sdk.Coins) {
 	cva.BaseVestingAccount.TrackDelegation(balance, cva.GetVestingCoins(blockTime), amount)
 }
 
 // GetStartTime returns the time when vesting starts for a continuous vesting
 // account.
 
-func (acc RepeatedContinuousVestingAccount) GetStartTime() int64 {
+func (acc PeriodicContinuousVestingAccount) GetStartTime() int64 {
 	return acc.StartTime
 }
 
-func (acc RepeatedContinuousVestingAccount) String() string {
+func (acc PeriodicContinuousVestingAccount) String() string {
 	out, _ := acc.MarshalYAML()
 	return out.(string)
 }
 
-func (acc RepeatedContinuousVestingAccount) MarshalYAML() (interface{}, error) {
+func (acc PeriodicContinuousVestingAccount) MarshalYAML() (interface{}, error) {
 	bz, err := codec.MarshalYAML(codec.NewProtoCodec(codectypes.NewInterfaceRegistry()), &acc)
 	if err != nil {
 		return nil, err
@@ -95,7 +111,7 @@ func (acc RepeatedContinuousVestingAccount) MarshalYAML() (interface{}, error) {
 }
 
 // Validate checks for errors on the account fields
-func (cva *RepeatedContinuousVestingAccount) Validate() error {
+func (cva *PeriodicContinuousVestingAccount) Validate() error {
 	if cva.GetStartTime() > cva.GetEndTime() {
 		return fmt.Errorf("vesting end-time (%d) cannot be before start-time (%d)", cva.GetEndTime(), cva.GetStartTime())
 	}

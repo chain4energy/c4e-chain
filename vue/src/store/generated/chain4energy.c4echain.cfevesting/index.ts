@@ -12,14 +12,14 @@ import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.c
 import { VestingPoolInfo } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingAccountTrace } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { ContinuousVestingPeriod } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
-import { RepeatedContinuousVestingAccount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
+import { PeriodicContinuousVestingAccount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { BaseVestingAccount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { AuthBaseAccount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingTypes } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingType } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 
 
-export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, VestingSplit, GenesisVestingType, Params, VestingPoolInfo, VestingAccountTrace, ContinuousVestingPeriod, RepeatedContinuousVestingAccount, BaseVestingAccount, AuthBaseAccount, VestingTypes, VestingType };
+export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, VestingSplit, GenesisVestingType, Params, VestingPoolInfo, VestingAccountTrace, ContinuousVestingPeriod, PeriodicContinuousVestingAccount, BaseVestingAccount, AuthBaseAccount, VestingTypes, VestingType };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -69,7 +69,7 @@ const getDefaultState = () => {
 						VestingPoolInfo: getStructure(VestingPoolInfo.fromPartial({})),
 						VestingAccountTrace: getStructure(VestingAccountTrace.fromPartial({})),
 						ContinuousVestingPeriod: getStructure(ContinuousVestingPeriod.fromPartial({})),
-						RepeatedContinuousVestingAccount: getStructure(RepeatedContinuousVestingAccount.fromPartial({})),
+						PeriodicContinuousVestingAccount: getStructure(PeriodicContinuousVestingAccount.fromPartial({})),
 						BaseVestingAccount: getStructure(BaseVestingAccount.fromPartial({})),
 						AuthBaseAccount: getStructure(AuthBaseAccount.fromPartial({})),
 						VestingTypes: getStructure(VestingTypes.fromPartial({})),

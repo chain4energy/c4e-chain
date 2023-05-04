@@ -22,7 +22,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgSplitVesting{}, "cfevesting/SplitVesting")
 	legacy.RegisterAminoMsg(cdc, &MsgMoveAvailableVesting{}, "cfevesting/MoveAvailableVesting")
 	legacy.RegisterAminoMsg(cdc, &MsgMoveAvailableVestingByDenoms{}, "cfevesting/MoveAvailableVestingByDenoms")
-	cdc.RegisterConcrete(&RepeatedContinuousVestingAccount{}, "c4e/RepeatedContinuousVestingAccount", nil)
+	cdc.RegisterConcrete(&PeriodicContinuousVestingAccount{}, "c4e/PeriodicContinuousVestingAccount", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -41,17 +41,17 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 	registry.RegisterImplementations(
 		(*vestexported.VestingAccount)(nil),
-		&RepeatedContinuousVestingAccount{},
+		&PeriodicContinuousVestingAccount{},
 	)
 
 	registry.RegisterImplementations(
 		(*authtypes.AccountI)(nil),
-		&RepeatedContinuousVestingAccount{},
+		&PeriodicContinuousVestingAccount{},
 	)
 
 	registry.RegisterImplementations(
 		(*authtypes.GenesisAccount)(nil),
-		&RepeatedContinuousVestingAccount{},
+		&PeriodicContinuousVestingAccount{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSplitVesting{},

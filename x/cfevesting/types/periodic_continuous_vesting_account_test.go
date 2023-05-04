@@ -230,7 +230,7 @@ func periodEndLessThanStartClaimVestingAccount() ClaimAccountTc {
 	}
 }
 
-func createCorrectClaimAccout() *types.RepeatedContinuousVestingAccount {
+func createCorrectClaimAccout() *types.PeriodicContinuousVestingAccount {
 	periods := types.ContinuousVestingPeriods{
 		{
 			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1000))),
@@ -258,13 +258,13 @@ func createCorrectClaimAccout() *types.RepeatedContinuousVestingAccount {
 
 }
 
-func createClaimAccout(originalVesting sdk.Coins, startTime int64, endTime int64, periods types.ContinuousVestingPeriods) *types.RepeatedContinuousVestingAccount {
+func createClaimAccout(originalVesting sdk.Coins, startTime int64, endTime int64, periods types.ContinuousVestingPeriods) *types.PeriodicContinuousVestingAccount {
 	return types.NewRepeatedContinuousVestingAccount(&authtypes.BaseAccount{}, originalVesting, startTime, endTime, periods)
 }
 
 type ClaimAccountTc struct {
 	desc    string
-	account *types.RepeatedContinuousVestingAccount
+	account *types.PeriodicContinuousVestingAccount
 	valid   bool
 	message string
 }

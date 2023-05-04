@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"io"
 	"net/http"
 	"time"
@@ -226,4 +227,64 @@ func (n *NodeConfig) QueryAccountNotFound(address string) {
 	require.Error(n.t, err)
 	require.EqualError(n.t, err, "unexpected status code: 404, body: {\n  \"code\": 5,\n  \"message\": \"account "+address+" not found\",\n  \"details\": [\n  ]\n}")
 
+}
+
+func (n *NodeConfig) QueryCampaign(campaignId string) cfeclaimmoduletypes.Campaign {
+	path := "/c4e/claim/v1beta1/campaign/" + campaignId
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryCampaignResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Campaign
+}
+
+func (n *NodeConfig) QueryCampaignAmountLeft(campaignId string) sdk.Coins {
+	path := "campaign_amount_left" + campaignId
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryCampaignAmountLeftResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Amount
+}
+
+func (n *NodeConfig) QueryCampaignTotalAmount(campaignId string) sdk.Coins {
+	path := "/c4e/claim/v1beta1/campaign_total_amount/" + campaignId
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryCampaignTotalAmountResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Amount
+}
+
+func (n *NodeConfig) QueryCampaignMission(campaignId, missionId string) cfeclaimmoduletypes.Mission {
+	path := "/c4e/claim/v1beta1/mission/" + campaignId + "/" + missionId
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryMissionResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Mission
+}
+
+func (n *NodeConfig) QueryUserEntry(address string) cfeclaimmoduletypes.UserEntry {
+	path := "/c4e/claim/v1beta1/user_entry/" + address
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryUserEntryResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.UserEntry
 }

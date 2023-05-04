@@ -9,9 +9,9 @@ export const protobufPackage = "chain4energy.c4echain.cfeclaim";
 
 export enum CampaignType {
   CAMPAIGN_TYPE_UNSPECIFIED = 0,
-  TEAMDROP = 1,
+  DYNAMIC = 1,
   DEFAULT = 2,
-  SALE = 3,
+  VESTING_POOL = 3,
   UNRECOGNIZED = -1,
 }
 
@@ -21,14 +21,14 @@ export function campaignTypeFromJSON(object: any): CampaignType {
     case "CAMPAIGN_TYPE_UNSPECIFIED":
       return CampaignType.CAMPAIGN_TYPE_UNSPECIFIED;
     case 1:
-    case "TEAMDROP":
-      return CampaignType.TEAMDROP;
+    case "DYNAMIC":
+      return CampaignType.DYNAMIC;
     case 2:
     case "DEFAULT":
       return CampaignType.DEFAULT;
     case 3:
-    case "SALE":
-      return CampaignType.SALE;
+    case "VESTING_POOL":
+      return CampaignType.VESTING_POOL;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -40,12 +40,12 @@ export function campaignTypeToJSON(object: CampaignType): string {
   switch (object) {
     case CampaignType.CAMPAIGN_TYPE_UNSPECIFIED:
       return "CAMPAIGN_TYPE_UNSPECIFIED";
-    case CampaignType.TEAMDROP:
-      return "TEAMDROP";
+    case CampaignType.DYNAMIC:
+      return "DYNAMIC";
     case CampaignType.DEFAULT:
       return "DEFAULT";
-    case CampaignType.SALE:
-      return "SALE";
+    case CampaignType.VESTING_POOL:
+      return "VESTING_POOL";
     default:
       return "UNKNOWN";
   }
