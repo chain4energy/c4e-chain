@@ -36,7 +36,7 @@ func (k Keeper) Campaigns(goCtx context.Context, req *types.QueryCampaignsReques
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryCampaignsResponse{Campaign: campaigns, Pagination: pageRes}, nil
+	return &types.QueryCampaignsResponse{Campaigns: campaigns, Pagination: pageRes}, nil
 }
 func (k Keeper) Campaign(goCtx context.Context, req *types.QueryCampaignRequest) (*types.QueryCampaignResponse, error) {
 	if req == nil {

@@ -241,6 +241,18 @@ func (n *NodeConfig) QueryCampaign(campaignId string) cfeclaimmoduletypes.Campai
 	return response.Campaign
 }
 
+func (n *NodeConfig) QueryCampaigns() []cfeclaimmoduletypes.Campaign {
+	path := "/c4e/claim/v1beta1/campaigns"
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryCampaignsResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Campaigns
+}
+
 func (n *NodeConfig) QueryCampaignAmountLeft(campaignId string) sdk.Coins {
 	path := "campaign_amount_left" + campaignId
 
@@ -287,4 +299,16 @@ func (n *NodeConfig) QueryUserEntry(address string) cfeclaimmoduletypes.UserEntr
 	err = util.Cdc.UnmarshalJSON(bz, &response)
 	require.NoError(n.t, err)
 	return response.UserEntry
+}
+
+func (n *NodeConfig) QueryUserEntries() []cfeclaimmoduletypes.UserEntry {
+	path := "/c4e/claim/v1beta1/users_entries"
+
+	bz, err := n.QueryGRPCGateway(path, "pagination.limit", "1000000000000")
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryUsersEntriesResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.UsersEntries
 }

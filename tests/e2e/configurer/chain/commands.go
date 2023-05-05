@@ -75,6 +75,26 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	n.LogActionF("successfully submitted param change proposal")
 }
 
+func (n *NodeConfig) AddClaimRecords(campaignId, proposalJson, from string) {
+	n.LogActionF("add user entries %s", proposalJson)
+	localProposalFile := n.ConfigDir + "/user_entries.json"
+	f, err := os.Create(localProposalFile)
+	require.NoError(n.t, err)
+	_, err = f.WriteString(proposalJson)
+	require.NoError(n.t, err)
+	err = f.Close()
+	require.NoError(n.t, err)
+
+	cmd := []string{"c4ed", "tx", "cfeclaim", "add-claim-records", campaignId, ".c4e-chain/user_entries.json", fmt.Sprintf("--from=%s", from)}
+
+	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	err = os.Remove(localProposalFile)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully addedclaim records")
+}
+
 func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, errorMessage string) {
 	n.LogActionF("submitting not valid param change proposal %s", proposalJson)
 	localProposalFile := n.ConfigDir + "/param_change_proposal.json"
@@ -317,9 +337,9 @@ func (n *NodeConfig) AddMissionToCampaign(campaignId, name, description, mission
 	n.LogActionF("successfully add new mission %s to campaign %s", name, campaignId)
 }
 
-func (n *NodeConfig) StartCampaign(campaignId, from string) {
+func (n *NodeConfig) StartCampaign(campaignId, optionalStartTime, optionalEndTime, from string) {
 	n.LogActionF("start campaign")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "start-campaign", campaignId, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "start-campaign", campaignId, optionalStartTime, optionalEndTime, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 

@@ -33,6 +33,8 @@ func NormalizeMissionType(option string) string {
 	case "Vote", "vote", "VOTE":
 		return MissionVote.String()
 
+	case "Claim", "claim", "CLAIM":
+		return MissionClaim.String()
 	default:
 		return option
 	}

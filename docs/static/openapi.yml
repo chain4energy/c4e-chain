@@ -200,7 +200,7 @@ paths:
           schema:
             type: object
             properties:
-              campaign:
+              campaigns:
                 type: array
                 items:
                   type: object
@@ -48009,7 +48009,7 @@ definitions:
   chain4energy.c4echain.cfeclaim.QueryCampaignsResponse:
     type: object
     properties:
-      campaign:
+      campaigns:
         type: array
         items:
           type: object

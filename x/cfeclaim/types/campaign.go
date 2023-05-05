@@ -23,7 +23,7 @@ const (
 )
 
 func CampaignTypeFromString(str string) (CampaignType, error) {
-	option, ok := MissionType_value[str]
+	option, ok := CampaignType_value[str]
 	if !ok {
 		return UnspecifiedCampaign, fmt.Errorf("'%s' is not a valid campaign type, available options: default/dynamic/vesting_pool", str)
 	}

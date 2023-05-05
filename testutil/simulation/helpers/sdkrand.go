@@ -88,6 +88,11 @@ func RandTimestamp(r *rand.Rand) time.Time {
 func RandIntBetween(r *rand.Rand, min, max int) int {
 	return r.Intn(max-min) + min
 }
+
+func RandDurationBetween(r *rand.Rand, min, max int) time.Duration {
+	return time.Duration(r.Intn(max-min)+min) * time.Second
+}
+
 func RandIntBetweenWith0(r *rand.Rand, min, max int64) int64 {
 	diff := int(max - min)
 	if diff <= 0 {

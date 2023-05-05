@@ -38,11 +38,11 @@ func CmdCreateCampaign() *cobra.Command {
 			if !ok {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
 			}
-			argStartTime, err := time.Parse(timeLayout, args[5])
+			argStartTime, err := time.Parse(TimeLayout, args[5])
 			if err != nil {
 				return err
 			}
-			argEndTime, err := time.Parse(timeLayout, args[6])
+			argEndTime, err := time.Parse(TimeLayout, args[6])
 			if err != nil {
 				return err
 			}

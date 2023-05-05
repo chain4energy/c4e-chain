@@ -19,7 +19,7 @@ func parseClaimEntries(clientCtx client.Context, campaignId uint64, claimEntries
 		return nil, err
 	}
 
-	err = json.Unmarshal(contents, claimEntries)
+	err = json.Unmarshal(contents, &claimEntries)
 	if err != nil {
 		return nil, err
 	}

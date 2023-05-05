@@ -31,8 +31,8 @@ func CmdStartCampaign() *cobra.Command {
 			}
 
 			var argStartTime *time.Time
-			if args[4] != "" {
-				parsedTime, err := time.Parse(timeLayout, args[5])
+			if args[1] != "" {
+				parsedTime, err := time.Parse(TimeLayout, args[1])
 				if err != nil {
 					return err
 				}
@@ -40,8 +40,8 @@ func CmdStartCampaign() *cobra.Command {
 
 			}
 			var argEndTime *time.Time
-			if args[4] != "" {
-				parsedTime, err := time.Parse(timeLayout, args[5])
+			if args[2] != "" {
+				parsedTime, err := time.Parse(TimeLayout, args[2])
 				if err != nil {
 					return err
 				}
