@@ -7,6 +7,7 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	cfeclaimcli "github.com/chain4energy/c4e-chain/x/cfeclaim/client/cli"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 	"math/rand"
@@ -45,7 +46,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	r := rand.New(src)
 
 	startTime := time.Now().Add(time.Second * 30)
-	endTime := startTime.Add(helpers.RandDurationBetween(r, 60, 80))
+	endTime := startTime.Add(helpers.RandDurationBetween(r, 40, 45))
 	lockupPeriod := helpers.RandDurationBetween(r, 10000, 10000000)
 	vestingPeriod := helpers.RandDurationBetween(r, 10000, 10000000)
 	randName := helpers.RandStringOfLength(10)
@@ -100,7 +101,7 @@ func (s *ClaimSetupSuite) TestDynamicCampaign() {
 	r := rand.New(src)
 
 	startTime := time.Now().Add(time.Second * 30)
-	endTime := startTime.Add(helpers.RandDurationBetween(r, 60, 80))
+	endTime := startTime.Add(helpers.RandDurationBetween(r, 40, 45))
 	lockupPeriod := helpers.RandDurationBetween(r, 10000, 10000000)
 	vestingPeriod := helpers.RandDurationBetween(r, 10000, 10000000)
 	randName := helpers.RandStringOfLength(10)
@@ -160,20 +161,22 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	vestingPoolDuration := 10 * time.Second
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
-	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), vestingPoolDuration.String(), vestingTypes[0].Name, creatorWalletName)
+	vestingType := vestingTypes[0]
+	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), vestingPoolDuration.String(), vestingType.Name, creatorWalletName)
 
 	startTime := time.Now().Add(time.Second * 30)
-	endTime := startTime.Add(helpers.RandDurationBetween(r, 60, 80))
-	lockupPeriod := helpers.RandDurationBetween(r, 10000, 10000000)
-	vestingPeriod := helpers.RandDurationBetween(r, 10000, 10000000)
+	endTime := startTime.Add(helpers.RandDurationBetween(r, 40, 45))
 	randName := helpers.RandStringOfLength(10)
 	randDescription := helpers.RandStringOfLength(10)
 	feegrantAmount := math.NewInt(2500000).String()
 	inititalClaimFreeAmount := math.ZeroInt().String()
 	campaignType := types.VestingPoolCampaign
-
+	lockupDuration, err := cfevestingmoduletypes.DurationFromUnits(cfevestingmoduletypes.PeriodUnit(vestingType.LockupPeriodUnit), vestingType.LockupPeriod)
+	s.NoError(err)
+	vestingDuration, err := cfevestingmoduletypes.DurationFromUnits(cfevestingmoduletypes.PeriodUnit(vestingType.VestingPeriodUnit), vestingType.VestingPeriod)
+	s.NoError(err)
 	node.CreateCampaign(randName, randDescription, campaignType.String(), feegrantAmount, inititalClaimFreeAmount,
-		startTime.Format(cfeclaimcli.TimeLayout), endTime.Format(cfeclaimcli.TimeLayout), lockupPeriod.String(), vestingPeriod.String(), randVestingPoolName, creatorWalletName)
+		startTime.Format(cfeclaimcli.TimeLayout), endTime.Format(cfeclaimcli.TimeLayout), lockupDuration.String(), vestingDuration.String(), randVestingPoolName, creatorWalletName)
 
 	campaigns := node.QueryCampaigns()
 	campaignId := len(campaigns) - 1
@@ -199,3 +202,5 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 
 	node.CloseCampaign(strconv.Itoa(campaignId), types.CloseSendToOwner.String(), creatorWalletName)
 }
+
+// TODO: add verifications and more options (probably when adding manual E2E tests)

@@ -35,44 +35,14 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	feesAndClaimRecordsAmountSum := amountSum.Add(feegrantFeesSum...)
 	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
 
-	if campaign.CampaignType != types.VestingPoolCampaign {
-		allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-
-		if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) { // TODO: probably to delete
-			if err = k.ValidateCampaignWhenAddedFromVestingAccount(ctx, ownerAddress, campaign); err != nil {
-				return err
-			}
-			if err = k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, ownerAddress, amountSum); err != nil {
-				return err
-			}
-			allBalances = k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-		}
-
-		if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
-			return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum)
-		}
-
-		if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, amountSum); err != nil {
+	if campaign.CampaignType == types.VestingPoolCampaign {
+		if err = k.addClaimRecordsToVestingPoolCampaign(ctx, owner, campaign, amountSum); err != nil {
 			return err
 		}
-	} else if campaign.CampaignType == types.VestingPoolCampaign {
-		accountVestingPools, found := k.vestingKeeper.GetAccountVestingPools(ctx, owner)
-		if !found {
-			return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
-		}
-
-		if err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, cfevestingtypes.ModuleName, types.ModuleName, amountSum); err != nil {
+	} else {
+		if err = k.addClaimRecordsToDefaultAndDynamicCampaign(ctx, ownerAddress, campaign, amountSum, feesAndClaimRecordsAmountSum); err != nil {
 			return err
 		}
-
-		for _, vestPool := range accountVestingPools.VestingPools {
-			if vestPool.Name == campaign.VestingPoolName {
-				vestPool.Sent = vestPool.Sent.Add(amountSum.AmountOf(k.vestingKeeper.Denom(ctx)))
-				break
-			}
-		}
-
-		k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
 	}
 
 	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
@@ -105,6 +75,43 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	}
 
 	return nil
+}
+
+func (k Keeper) addClaimRecordsToVestingPoolCampaign(ctx sdk.Context, owner string, campaign *types.Campaign, amountSum sdk.Coins) error {
+	accountVestingPools, found := k.vestingKeeper.GetAccountVestingPools(ctx, owner)
+	if !found {
+		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+	}
+
+	for _, vestPool := range accountVestingPools.VestingPools {
+		if vestPool.Name == campaign.VestingPoolName {
+			vestPool.Sent = vestPool.Sent.Add(amountSum.AmountOf(k.vestingKeeper.Denom(ctx)))
+			break
+		}
+	}
+
+	k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
+	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, cfevestingtypes.ModuleName, types.ModuleName, amountSum)
+}
+
+func (k Keeper) addClaimRecordsToDefaultAndDynamicCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, campaign *types.Campaign, amountSum sdk.Coins, feesAndClaimRecordsAmountSum sdk.Coins) error {
+	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
+
+	if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) { // TODO: probably to delete
+		if err := k.ValidateCampaignWhenAddedFromVestingAccount(ctx, ownerAddress, campaign); err != nil {
+			return err
+		}
+		if err := k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, ownerAddress, amountSum); err != nil {
+			return err
+		}
+		allBalances = k.bankKeeper.GetAllBalances(ctx, ownerAddress)
+	}
+
+	if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum)
+	}
+
+	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, amountSum)
 }
 
 func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint64, userAddress string, closeAction types.CloseAction) error {

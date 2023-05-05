@@ -27,5 +27,5 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 
 	userEntries := node.QueryUserEntries()
 	s.Equal(107404, len(userEntries))
-
+	// TODO: add verifications and more options (probably when the final version of the migration will be set)
 }

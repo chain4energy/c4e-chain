@@ -203,15 +203,11 @@ func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description
 		return err
 	}
 
-	if campaignType != types.VestingPoolCampaign && startTime != nil {
-		if err := ValidateCampaignStartTimeInTheFuture(ctx, startTime); err != nil {
-			return err
-		}
-	}
 	if campaignType == types.VestingPoolCampaign {
 		return k.ValidateCampaignWhenAddedFromVestingPool(ctx, owner, vestingPoolName, lockupPeriod, vestingPeriod)
+	} else {
+		return ValidateCampaignStartTimeInTheFuture(ctx, startTime)
 	}
-	return nil
 }
 func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, action types.CloseAction, campaignId uint64, owner string) (types.Campaign, error) {
 	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
