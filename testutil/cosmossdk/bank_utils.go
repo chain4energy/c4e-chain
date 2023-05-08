@@ -73,6 +73,11 @@ func (bu *BankUtils) GetModuleAccountBalanceByDenom(ctx sdk.Context, accName str
 	return bu.helperBankKeeper.GetBalance(ctx, moduleAccAddr, denom).Amount
 }
 
+func (bu *BankUtils) GetModuleAccountAllBalances(ctx sdk.Context, accName string) sdk.Coins {
+	moduleAccAddr := bu.helperAccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
+	return bu.helperBankKeeper.GetAllBalances(ctx, moduleAccAddr)
+}
+
 func (bu *BankUtils) GetModuleAccountDefultDenomBalance(ctx sdk.Context, accName string) math.Int {
 	return bu.GetModuleAccountBalanceByDenom(ctx, accName, testenv.DefaultTestDenom)
 }
@@ -97,6 +102,12 @@ func (bu *BankUtils) VerifyModuleAccountBalanceByDenom(ctx sdk.Context, accName 
 	moduleAccAddr := bu.helperAccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
 	moduleBalance := bu.helperBankKeeper.GetBalance(ctx, moduleAccAddr, denom)
 	require.Truef(bu.t, expectedAmount.Equal(moduleBalance.Amount), "expectedAmount %s <> module balance %s", expectedAmount, moduleBalance.Amount)
+}
+
+func (bu *BankUtils) VerifyModuleAccountAllBalances(ctx sdk.Context, accName string, expectedAmount sdk.Coins) {
+	moduleAccAddr := bu.helperAccountKeeper.GetModuleAccount(ctx, accName).GetAddress()
+	moduleBalance := bu.helperBankKeeper.GetAllBalances(ctx, moduleAccAddr)
+	require.Truef(bu.t, expectedAmount.IsEqual(moduleBalance), "expectedAmount %s <> module balance %s", expectedAmount, moduleBalance)
 }
 
 func (bu *BankUtils) VerifyAccountDefultDenomLocked(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {

@@ -81,6 +81,14 @@ func (h *ContextC4eClaimUtils) AddClaimRecords(srcAddress sdk.AccAddress, campai
 	h.C4eClaimUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, claimEntries)
 }
 
+func (h *ContextC4eClaimUtils) DeleteClaimRecord(ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, deleteClaimRecordAction cfeclaimtypes.CloseAction, amoutDiff sdk.Coins) {
+	h.C4eClaimUtils.DeleteClaimRecord(h.testContext.GetContext(), ownerAddress, campaignId, userAddress, deleteClaimRecordAction, amoutDiff)
+}
+
+func (h *ContextC4eClaimUtils) DeleteClaimRecordError(ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, deleteClaimRecordAction cfeclaimtypes.CloseAction, errorMessage string) {
+	h.C4eClaimUtils.DeleteClaimRecordError(h.testContext.GetContext(), ownerAddress, campaignId, userAddress, deleteClaimRecordAction, errorMessage)
+}
+
 func (h *ContextC4eClaimUtils) AddClaimRecordsFromWhitelistedVestingAccount(srcAddress sdk.AccAddress, amountToSend sdk.Int, unlockedAmount sdk.Int) {
 	coinsToSend := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amountToSend))
 	unlockedCoins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, unlockedAmount))

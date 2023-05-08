@@ -132,6 +132,12 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 
 	_ = k.deleteClaimRecordCloseActionSendFeegrant(ctx, closeAction, &campaign, userAddress)
 
+	for i, claimRecord := range userEntry.ClaimRecords {
+		if claimRecord.CampaignId == campaignId {
+			userEntry.ClaimRecords = append(userEntry.ClaimRecords[:i], userEntry.ClaimRecords[i+1:]...)
+		}
+	}
+
 	k.SetUserEntry(ctx, userEntry)
 	k.DecrementCampaignTotalAmount(ctx, campaignId, claimRecordAmount)
 

@@ -17,6 +17,8 @@ import (
 	"time"
 )
 
+// TODO: verify all balances not only for default denoms!!!
+
 type C4eClaimUtils struct {
 	C4eClaimKeeperUtils
 	helperAccountKeeper    *authkeeper.AccountKeeper
@@ -164,7 +166,15 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 		vestingPoolBefore, accFound = h.helperCfevestingKeeper.GetAccountVestingPool(ctx, srcAddress.String(), campaign.VestingPoolName)
 		require.True(h.t, accFound)
 	}
-
+	userEntriesBefore := h.helpeCfeclaimkeeper.GetUsersEntries(ctx)
+	userEntryBeforeCount := 0
+	for _, userEntry := range userEntriesBefore {
+		for _, claimRecord := range userEntry.ClaimRecords {
+			if claimRecord.CampaignId == campaignId {
+				userEntryBeforeCount++
+			}
+		}
+	}
 	require.NoError(h.t, h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimEntries))
 	claimClaimsLeftAfter, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
 	claimDistrubitionsAfter, _ := h.helpeCfeclaimkeeper.GetCampaignTotalAmount(ctx, campaignId)
@@ -173,7 +183,17 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 	require.EqualValues(h.t, claimClaimsLeftBefore, claimClaimsLeftAfter)
 	require.EqualValues(h.t, claimDistrubitionsBefore, claimDistrubitionsAfter)
 
-	// TODO: add check if len(beforeAllEntry) + len(claimEntries) == len(afterAllEntry)
+	userEntriesAfter := h.helpeCfeclaimkeeper.GetUsersEntries(ctx)
+	userEntryAfterCount := 0
+	for _, userEntry := range userEntriesAfter {
+		for _, claimRecord := range userEntry.ClaimRecords {
+			if claimRecord.CampaignId == campaignId {
+				userEntryAfterCount++
+			}
+		}
+	}
+	require.EqualValues(h.t, userEntryBeforeCount+len(claimEntries), userEntryAfterCount)
+
 	for _, claimRecord := range claimEntries {
 		userEntry, found := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimRecord.Address)
 		require.True(h.t, found)
@@ -222,14 +242,68 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 	}
 }
 
+func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, deleteClaimRecordAction cfeclaimtypes.CloseAction, amoutDiff sdk.Coins) {
+	claimClaimsLeftBefore, ok := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	if !ok {
+		claimClaimsLeftBefore = cfeclaimtypes.CampaignAmountLeft{
+			Amount:     sdk.NewCoins(),
+			CampaignId: campaignId,
+		}
+	}
+
+	srcBalance := h.BankUtils.GetAccountAllBalances(ctx, ownerAddress)
+	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
+
+	var vestingPoolBefore cfevestingtypes.VestingPool
+	if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
+		var accFound bool
+		vestingPoolBefore, accFound = h.helperCfevestingKeeper.GetAccountVestingPool(ctx, ownerAddress.String(), campaign.VestingPoolName)
+		require.True(h.t, accFound)
+	}
+	userEntryBefore, found := h.helpeCfeclaimkeeper.GetUserEntry(ctx, userAddress)
+	require.True(h.t, found)
+	found = false
+	for _, claimRecord := range userEntryBefore.ClaimRecords {
+		require.NotEqual(h.t, claimRecord.CampaignId, campaignId)
+	}
+	require.NoError(h.t, h.helpeCfeclaimkeeper.DeleteClaimRecord(ctx, ownerAddress.String(), campaignId, userAddress, deleteClaimRecordAction))
+	claimClaimsLeftAfter, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	require.EqualValues(h.t, claimClaimsLeftBefore, claimClaimsLeftAfter.Amount.Add(amoutDiff...))
+
+	userEntry, found := h.helpeCfeclaimkeeper.GetUserEntry(ctx, userAddress)
+	require.True(h.t, found)
+	for _, claimRecord := range userEntry.ClaimRecords {
+		require.NotEqual(h.t, claimRecord.CampaignId, campaignId)
+	}
+	moduleBalanceAfter := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+	require.Equal(h.t, moduleBalanceAfter, moduleBalanceBefore.Add(amoutDiff...))
+	if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
+		vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, ownerAddress.String(), campaign.VestingPoolName)
+		require.True(h.t, vestingPoolBefore.Sent.Sub(amoutDiff.AmountOf(testenv.DefaultTestDenom)).LT(vestingPool.Sent))
+		// TODO: add feegrant verification
+	} else {
+		h.BankUtils.VerifyAccountBalances(ctx, ownerAddress, srcBalance.Add(amoutDiff...), true)
+	}
+}
+
+func (h *C4eClaimUtils) DeleteClaimRecordError(ctx sdk.Context, ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, deleteClaimRecordAction cfeclaimtypes.CloseAction, errorMessage string) {
+	srcBalance := h.BankUtils.GetAccountAllBalances(ctx, ownerAddress)
+	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+
+	require.EqualError(h.t, h.helpeCfeclaimkeeper.DeleteClaimRecord(ctx, ownerAddress.String(), campaignId, userAddress, deleteClaimRecordAction), errorMessage)
+	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBalanceBefore)
+	h.BankUtils.VerifyAccountBalances(ctx, ownerAddress, srcBalance, true)
+}
+
 func (h *C4eClaimUtils) AddClaimRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord, errorMessage string) {
-	ownerBalanceBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, srcAddress)
-	moduleBalanceBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
+	ownerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, srcAddress)
+	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 	err := h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimEntries)
 	require.EqualError(h.t, err, errorMessage)
 
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBalanceBefore)
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, ownerBalanceBefore)
+	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBalanceBefore)
+	h.BankUtils.VerifyAccountBalances(ctx, srcAddress, ownerBalanceBefore, true)
 }
 
 func (h *C4eClaimUtils) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, from sdk.AccAddress, amountToSend sdk.Coins, unlockedAmount sdk.Coins) {
@@ -696,8 +770,8 @@ func (h *C4eClaimUtils) VerifyCampaign(ctx sdk.Context, campaignId uint64, mustE
 	}
 
 	require.EqualValues(h.t, claimCampaign.Enabled, enabled)
-	require.EqualValues(h.t, claimCampaign.StartTime, startTime)
-	require.EqualValues(h.t, claimCampaign.EndTime, endTime)
+	require.True(h.t, claimCampaign.StartTime.Equal(startTime))
+	require.True(h.t, claimCampaign.EndTime.Equal(endTime))
 	require.EqualValues(h.t, claimCampaign.VestingPeriod, vestingPeriod)
 	require.EqualValues(h.t, claimCampaign.LockupPeriod, lockupPeriod)
 }
