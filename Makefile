@@ -142,12 +142,17 @@ open-memory-profiler-result:
 #C4E_E2E_DEBUG_LOG - debug logs and print them onto the screen
 #C4E_E2E_FORK_HEIGHT - determine if this upgrade is a fork
 #C4E_E2E_SKIP_CLEANUP - skip cleaning up Docker resources in teardown
+#C4E_E2E_SIGN_MODE - sign mode used by e2e cmd manager. Currently you can choose from three possible modes:
+#	direct (default mode)
+#	amino-json
+#	direct-aux
 #C4E_E2E_UPGRADE_VERSION - environment variable name to determine what version we are upgrading to
 
 PACKAGES_E2E=./tests/e2e
 BUILDDIR ?= $(CURDIR)/build
 E2E_UPGRADE_VERSION="v2.0.0"
 E2E_SCRIPT_NAME=chain
+C4E_E2E_SIGN_MODE = "direct"
 
 test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim
 
@@ -155,19 +160,19 @@ run-e2e-chain: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions -count=1
 
 test-e2e-ibc: e2e-setup
-	@VERSION=$(VERSION)  C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestIbcSuite
+	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestIbcSuite
 
 test-e2e-vesting: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestVestingSuite
+	@VERSION=$(VERSION) C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestVestingSuite
 
 test-e2e-claim: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestClaimSuite
+	@VERSION=$(VERSION) C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestClaimSuite
 
 test-e2e-params-change: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestParamsChangeSuite
+	@VERSION=$(VERSION) C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestParamsChangeSuite
 
 test-e2e-migration: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
+	@VERSION=$(VERSION)  C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
 
 SPECIFIC_TEST_NAME=TestMinterAndDistributorCustom
 SPECIFIC_TESTING_SUITE_NAME=TestParamsChangeSuite

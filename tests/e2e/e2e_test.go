@@ -11,7 +11,7 @@ func TestRunChainWithOptions(t *testing.T) {
 	upgradeSettings.Version = "v1.0.1"
 	upgradeSettings.IsEnabled = false
 
-	_, err := configurer.StartDockerContainers(t, false, true, upgradeSettings)
+	_, err := configurer.StartDockerContainers(t, false, true, "", upgradeSettings)
 	if err != nil {
 		return
 	}

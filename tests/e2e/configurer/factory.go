@@ -104,8 +104,8 @@ var (
 // at the previous C4e version.
 // - If !isIBCEnabled and !isUpgradeEnabled, we only need one chain at the current
 // Git branch version of the C4e code.
-func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, upgradeSettings UpgradeSettings) (Configurer, error) {
-	containerManager, err := containers.NewManager(upgradeSettings.IsEnabled, isDebugLogEnabled)
+func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, signMode string, upgradeSettings UpgradeSettings) (Configurer, error) {
+	containerManager, err := containers.NewManager(upgradeSettings.IsEnabled, isDebugLogEnabled, signMode)
 	if err != nil {
 		return nil, err
 	}

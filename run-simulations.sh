@@ -1,6 +1,6 @@
 #!/bin/bash
-PARALLEL_SIMULATIONS_NUMBER=5
-SIMULATION_RESULT_DIRECTORY=simulationResults
+PARALLEL_SIMULATIONS_NUMBER=3
+SIMULATION_RESULT_DIRECTORY=simulation_results
 mkdir -p $SIMULATION_RESULT_DIRECTORY
 
 run_simulation(){
@@ -10,7 +10,7 @@ run_simulation(){
     echo "Running simulation $i.. Current date: $START_TIME"
     SEED=$(shuf -i 0-6500 -n 1)
     SIM_NUM_BLOCKS=$(shuf -i 200-20000 -n 1)
-    SIM_BLOCK_SIZE=$(shuf -i 200-400 -n 1)
+    SIM_BLOCK_SIZE=$(shuf -i 100-200 -n 1)
     SIMAPP=./app
     simulationResultFile=$SIMULATION_RESULT_DIRECTORY/.simulation-result.$i.$START_TIME
 

@@ -1,9 +1,12 @@
 package e2e
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/suite"
 	"os"
 	"strconv"
@@ -13,9 +16,9 @@ import (
 const (
 	AverageBlockTime  = time.Second * 6
 	debugLogEnv       = "C4E_E2E_DEBUG_LOG"
-	forkHeightEnv     = "C4E_E2E_FORK_HEIGHT"
 	skipCleanupEnv    = "C4E_E2E_SKIP_CLEANUP"
 	upgradeVersionEnv = "C4E_E2E_UPGRADE_VERSION"
+	signModeEnv       = "C4E_E2E_SIGN_MODE"
 )
 
 type BaseSetupSuite struct {
@@ -59,7 +62,17 @@ func (s *BaseSetupSuite) SetupSuiteWithUpgradeAppState(startUpgrade, startIBC bo
 		}
 	}
 
-	s.configurer, err = configurer.StartDockerContainers(s.T(), startIBC, isDebugLogEnabled, upgradeSettings)
+	signMode := flags.SignModeDirect
+	if str := os.Getenv(signModeEnv); len(str) > 0 {
+		signMode = str
+		err = verifySignMode(signMode)
+		s.Require().NoError(err)
+		if isDebugLogEnabled {
+			s.T().Logf("sign mode %s is enabled", signMode)
+		}
+	}
+
+	s.configurer, err = configurer.StartDockerContainers(s.T(), startIBC, isDebugLogEnabled, signMode, upgradeSettings)
 	s.Require().NoError(err)
 }
 
@@ -107,4 +120,11 @@ func (s *BaseSetupSuite) validateBalanceOfAccount(node *chain.NodeConfig, denom,
 	totalSupplyAfter, err := node.QueryBalances(accAddress)
 	s.NoError(err)
 	s.Equal(totalSupplyAfter.AmountOf(denom).GT(totalSupplyBefore.AmountOf(denom)), gte)
+}
+
+func verifySignMode(signMode string) error {
+	if signMode == flags.SignModeDirect || signMode == flags.SignModeLegacyAminoJSON || signMode == flags.SignModeDirectAux {
+		return nil
+	}
+	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong sign mode")
 }

@@ -32,15 +32,17 @@ type Manager struct {
 	network           *dockertest.Network
 	resources         map[string]*dockertest.Resource
 	isDebugLogEnabled bool
+	signMode          string
 }
 
 // NewManager creates a new Manager instance and initializes
 // all Docker specific utilies. Returns an error if initialiation fails.
-func NewManager(isUpgrade bool, isDebugLogEnabled bool) (docker *Manager, err error) {
+func NewManager(isUpgrade bool, isDebugLogEnabled bool, signMode string) (docker *Manager, err error) {
 	docker = &Manager{
 		ImageConfig:       NewImageConfig(isUpgrade),
 		resources:         make(map[string]*dockertest.Resource),
 		isDebugLogEnabled: isDebugLogEnabled,
+		signMode:          signMode,
 	}
 	docker.pool, err = dockertest.NewPool("")
 	if err != nil {
@@ -62,7 +64,7 @@ func (m *Manager) ExecTxCmd(t *testing.T, chainId string, containerName string, 
 // namely adding flags `--chain-id={chain-id} -b=block --yes --keyring-backend=test "--log_format=json"`,
 // and searching for `successStr`
 func (m *Manager) ExecCmdWithResponseString(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
-	allTxArgs := []string{"--gas=auto", fmt.Sprintf("--chain-id=%s", chainId), "-b=block", "--yes", "--keyring-backend=test", "--log_format=json"}
+	allTxArgs := []string{"--gas=auto", fmt.Sprintf("--chain-id=%s", chainId), "-b=block", "--yes", "--keyring-backend=test", "--log_format=json", fmt.Sprintf("--sign-mode=%s", m.signMode)}
 	txCommand := append(command, allTxArgs...)
 	return m.ExecCmd(t, containerName, txCommand, successStr)
 }
