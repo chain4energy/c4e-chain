@@ -13,8 +13,6 @@ import (
 	"strconv"
 )
 
-const MsgInitialClaimUrl = "/chain4energy.c4echain.cfeclaim.MsgInitialClaim"
-
 func validateFeegrantAmount(feeGrantAmount *math.Int) (*math.Int, error) {
 	if feeGrantAmount == nil {
 		zeroInt := sdk.ZeroInt()
@@ -34,7 +32,7 @@ func validateFeegrantAmount(feeGrantAmount *math.Int) (*math.Int, error) {
 }
 
 func CreateFeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
-	moduleAddressName := "fee-grant-" + strconv.FormatUint(campaignId, 10)
+	moduleAddressName := types.ModuleName + "-fee-grant-" + strconv.FormatUint(campaignId, 10)
 	return moduleAddressName, authtypes.NewModuleAddress(moduleAddressName)
 }
 
@@ -69,7 +67,7 @@ func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddres
 
 	allowedMsgAllowance := feegranttypes.AllowedMsgAllowance{
 		Allowance:       basicAllowance,
-		AllowedMessages: []string{MsgInitialClaimUrl},
+		AllowedMessages: []string{sdk.MsgTypeURL(&types.MsgInitialClaim{})},
 	}
 
 	for _, claimRecord := range claimEntries {
@@ -152,7 +150,7 @@ func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, campaignId uint64, userEn
 		return nil, nil, nil, errors.Wrap(sdkerrors.ErrInvalidType, "cannot get AllowedMsgAllowance")
 	}
 	for _, msg := range x.AllowedMessages {
-		if msg == MsgInitialClaimUrl {
+		if msg == sdk.MsgTypeURL(&types.MsgInitialClaim{}) {
 			basicAllowance := x.Allowance.GetCachedValue().(feegranttypes.BasicAllowance)
 			return granterAddress, granteeAddress, basicAllowance.SpendLimit, nil
 		}

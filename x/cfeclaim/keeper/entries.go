@@ -126,7 +126,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 		return err
 	}
 
-	if err = k.delteClaimRecordCloseActionSwitch(ctx, closeAction, &campaign, claimRecordAmount, userAddress); err != nil {
+	if err = k.deleteClaimRecordCloseActionSwitch(ctx, closeAction, &campaign, claimRecordAmount, userAddress); err != nil {
 		return err
 	}
 
@@ -149,20 +149,20 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	return nil
 }
 
-func (k Keeper) delteClaimRecordCloseActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
+func (k Keeper) deleteClaimRecordCloseActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
 	switch CloseAction {
 	case types.CloseSendToCommunityPool:
-		return k.delteClaimRecordCloseSendToCommunityPool(ctx, campaign, campaignAmountLeft, userEntryAddress)
+		return k.deleteClaimRecordCloseSendToCommunityPool(ctx, campaign, campaignAmountLeft, userEntryAddress)
 	case types.CloseBurn:
 		return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
 	case types.CloseSendToOwner:
-		return k.delteClaimRecordCloseSendToOwner(ctx, campaign, campaignAmountLeft, userEntryAddress)
+		return k.deleteClaimRecordCloseSendToOwner(ctx, campaign, campaignAmountLeft, userEntryAddress)
 	default:
 		return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
 	}
 }
 
-func (k Keeper) delteClaimRecordCloseSendToCommunityPool(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
+func (k Keeper) deleteClaimRecordCloseSendToCommunityPool(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
 	if campaign.CampaignType == types.VestingPoolCampaign || slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
 		return errors.Wrap(sdkerrors.ErrInvalidType, "in the case of sale campaigns and campaigns created from whitelist vesting accounts, it is not possible to use sendToCommunityPool close action")
 	}
@@ -170,7 +170,7 @@ func (k Keeper) delteClaimRecordCloseSendToCommunityPool(ctx sdk.Context, campai
 	return k.distributionKeeper.FundCommunityPool(ctx, campaignAmountLeft, authtypes.NewModuleAddress(types.ModuleName))
 }
 
-func (k Keeper) delteClaimRecordCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
+func (k Keeper) deleteClaimRecordCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
 	if campaign.CampaignType == types.VestingPoolCampaign {
 		return k.vestingKeeper.SendFromModuleToVestingPool(ctx, campaign.Owner, campaign.VestingPoolName, campaignAmountLeft, types.ModuleName)
 	} else {
