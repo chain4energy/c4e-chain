@@ -5,7 +5,6 @@ import (
 	"cosmossdk.io/math"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -117,27 +116,10 @@ func (k Keeper) closeActionSwitch(ctx sdk.Context, CloseAction types.CloseAction
 
 func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
 	if campaign.CampaignType == types.VestingPoolCampaign {
-		return k.closeVestingPoolCampaignSendToOwner(ctx, campaign, campaignAmountLeft)
+		return k.vestingKeeper.SendFromModuleToVestingPool(ctx, campaign.Owner, campaign.VestingPoolName, campaignAmountLeft, types.ModuleName)
 	} else {
 		return k.closeDefaultAndDynamicCampaignSendToOwner(ctx, campaign, campaignAmountLeft)
 	}
-}
-
-func (k Keeper) closeVestingPoolCampaignSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
-	vestingDenom := k.vestingKeeper.Denom(ctx)
-	accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
-	var vestingPool *cfevestingtypes.VestingPool
-	for _, vestPool := range accountVestingPools.VestingPools {
-		if vestPool.Name == campaign.VestingPoolName {
-			vestingPool = vestPool
-			break
-		}
-	}
-
-	vestingPool.Sent = vestingPool.Sent.Sub(campaignAmountLeft.AmountOf(vestingDenom))
-
-	k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
-	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft)
 }
 
 func (k Keeper) closeDefaultAndDynamicCampaignSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {

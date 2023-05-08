@@ -1,7 +1,9 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"strconv"
 	"time"
 
@@ -366,4 +368,38 @@ func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, 
 		k.Logger(ctx).Error("new vestig account emit event error", "error", err.Error())
 	}
 	return acc, nil
+}
+
+func (k Keeper) SendFromModuleToVestingPool(ctx sdk.Context, owner string, vestingPoolName string, amount sdk.Coins, moduleName string) error {
+	vestingDenom := k.Denom(ctx)
+	accountVestingPools, _ := k.GetAccountVestingPools(ctx, owner)
+	var vestingPool *types.VestingPool
+	for _, vestPool := range accountVestingPools.VestingPools {
+		if vestPool.Name == vestingPoolName {
+			vestingPool = vestPool
+			break
+		}
+	}
+
+	vestingPool.Sent = vestingPool.Sent.Sub(amount.AmountOf(vestingDenom))
+
+	k.SetAccountVestingPools(ctx, accountVestingPools)
+	return k.bank.SendCoinsFromModuleToModule(ctx, moduleName, types.ModuleName, amount)
+}
+
+func (k Keeper) SendFromVestingPoolToModule(ctx sdk.Context, owner string, vestingPoolName string, amount sdk.Coins, moduleName string) error {
+	accountVestingPools, found := k.GetAccountVestingPools(ctx, owner)
+	if !found {
+		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+	}
+
+	for _, vestPool := range accountVestingPools.VestingPools {
+		if vestPool.Name == vestingPoolName {
+			vestPool.Sent = vestPool.Sent.Add(amount.AmountOf(k.Denom(ctx)))
+			break
+		}
+	}
+
+	k.SetAccountVestingPools(ctx, accountVestingPools)
+	return k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, moduleName, amount)
 }

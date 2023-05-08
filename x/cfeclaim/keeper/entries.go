@@ -36,7 +36,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
 
 	if campaign.CampaignType == types.VestingPoolCampaign {
-		if err = k.addClaimRecordsToVestingPoolCampaign(ctx, owner, campaign, amountSum); err != nil {
+		if err = k.vestingKeeper.SendFromVestingPoolToModule(ctx, owner, campaign.VestingPoolName, amountSum, types.ModuleName); err != nil {
 			return err
 		}
 	} else {
@@ -172,7 +172,7 @@ func (k Keeper) delteClaimRecordCloseSendToCommunityPool(ctx sdk.Context, campai
 
 func (k Keeper) delteClaimRecordCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
 	if campaign.CampaignType == types.VestingPoolCampaign {
-		return k.deleteClaimRecordFromVestingPoolCampaignSendToOwner(ctx, campaign, campaignAmountLeft, userEntryAddress)
+		return k.vestingKeeper.SendFromModuleToVestingPool(ctx, campaign.Owner, campaign.VestingPoolName, campaignAmountLeft, types.ModuleName)
 	} else {
 		return k.deleteClaimRecordFromDefaultAndDynamicCampaignSendToOwner(ctx, campaign, campaignAmountLeft, userEntryAddress)
 	}
@@ -188,23 +188,6 @@ func (k Keeper) deleteClaimRecordFromDefaultAndDynamicCampaignSendToOwner(ctx sd
 		return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
 	}
 	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft)
-}
-
-func (k Keeper) deleteClaimRecordFromVestingPoolCampaignSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins, userEntryAddress string) error {
-	vestingDenom := k.vestingKeeper.Denom(ctx)
-	accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, campaign.Owner)
-	var vestingPool *cfevestingtypes.VestingPool
-	for _, vestPool := range accountVestingPools.VestingPools {
-		if vestPool.Name == campaign.VestingPoolName {
-			vestingPool = vestPool
-			break
-		}
-	}
-
-	vestingPool.Sent = vestingPool.Sent.Sub(campaignAmountLeft.AmountOf(vestingDenom))
-	k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
-
-	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, cfevestingtypes.ModuleName, campaignAmountLeft)
 }
 
 func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) (*types.Campaign, error) {
@@ -249,15 +232,9 @@ func (k Keeper) ValidateCampaignWhenAddedFromVestingAccount(ctx sdk.Context, own
 
 func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string,
 	campaignLockupPeriod *time.Duration, campaignVestingPeriod *time.Duration) error {
-	accountVestingPools, _ := k.vestingKeeper.GetAccountVestingPools(ctx, owner)
-	var vestingPool *cfevestingtypes.VestingPool
-	for _, vestPool := range accountVestingPools.VestingPools {
-		if vestPool.Name == vestingPoolName {
-			vestingPool = vestPool
-			break
-		}
-	}
-	if vestingPool == nil {
+	vestingPool, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
+
+	if !found {
 		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
 	}
 
