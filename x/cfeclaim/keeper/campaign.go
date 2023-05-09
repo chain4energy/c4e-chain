@@ -99,45 +99,40 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 	return nil
 }
 
-func (k Keeper) closeActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+func (k Keeper) closeActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, amount sdk.Coins) error {
 	switch CloseAction {
 	case types.CloseSendToCommunityPool:
 		if campaign.CampaignType == types.VestingPoolCampaign || slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
 			return errors.Wrap(sdkerrors.ErrInvalidType, "in the case of sale campaigns and campaigns created from whitelist vesting accounts, it is not possible to use sendToCommunityPool close action")
 		}
-		return k.distributionKeeper.FundCommunityPool(ctx, campaignAmountLeft, authtypes.NewModuleAddress(types.ModuleName))
+		return k.distributionKeeper.FundCommunityPool(ctx, amount, authtypes.NewModuleAddress(types.ModuleName))
 	case types.CloseBurn:
-		return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
+		return k.bankKeeper.BurnCoins(ctx, types.ModuleName, amount)
 	case types.CloseSendToOwner:
-		return k.campaignCloseSendToOwner(ctx, campaign, campaignAmountLeft)
+		return k.closeSendToOwner(ctx, campaign, amount)
 	}
 	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
 }
 
-func (k Keeper) campaignCloseSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+func (k Keeper) closeSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
 	if campaign.CampaignType == types.VestingPoolCampaign {
 		return k.vestingKeeper.SendFromModuleToVestingPool(ctx, campaign.Owner, campaign.VestingPoolName, campaignAmountLeft, types.ModuleName)
 	} else {
-		return k.closeDefaultAndDynamicCampaignSendToOwner(ctx, campaign, campaignAmountLeft)
-	}
-}
+		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
+		if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) { // TODO: probably delete
+			ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
+			if ownerAccount == nil {
+				return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
+			}
+			vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
+			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(campaignAmountLeft...)
 
-func (k Keeper) closeDefaultAndDynamicCampaignSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
-	ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
-	if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
-		// TODO: move to vesting
-		ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
-		if ownerAccount == nil {
-			return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
+			k.accountKeeper.SetAccount(ctx, vestingAcc)
+			return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
 		}
-		vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
-		vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(campaignAmountLeft...)
 
-		k.accountKeeper.SetAccount(ctx, vestingAcc)
-		return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
+		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft)
 	}
-
-	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft)
 }
 
 func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) error {
