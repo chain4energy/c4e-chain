@@ -264,7 +264,7 @@ func ValidateCampaignStartTimeInTheFuture(ctx sdk.Context, startTime *time.Time)
 }
 
 func (k Keeper) ValidateVestingPool(ctx sdk.Context, owner string, vestingPoolName string) error {
-	_, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
+	_, _, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !found {
 		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
 	}

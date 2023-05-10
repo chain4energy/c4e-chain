@@ -19,7 +19,7 @@ func (k Keeper) GetAccountVestingPools(ctx sdk.Context, accountAddress string) (
 	return
 }
 
-func (k Keeper) GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (vestingPool types.VestingPool, found bool) {
+func (k Keeper) GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (accountVestingPools types.AccountVestingPools, vestingPool *types.VestingPool, found bool) {
 	accountVestingPools, accountVestingPoolsFound := k.GetAccountVestingPools(ctx, accountAddress)
 	if !accountVestingPoolsFound {
 		found = false
@@ -28,7 +28,7 @@ func (k Keeper) GetAccountVestingPool(ctx sdk.Context, accountAddress string, na
 
 	for _, vestPool := range accountVestingPools.VestingPools {
 		if vestPool.Name == name {
-			vestingPool = *vestPool
+			vestingPool = vestPool
 			found = true
 			return
 		}

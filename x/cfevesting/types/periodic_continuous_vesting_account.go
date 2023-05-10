@@ -45,27 +45,26 @@ func NewRepeatedContinuousVestingAccount(baseAcc *authtypes.BaseAccount, origina
 	}
 }
 
-func AddNewContinousVestingPeriods(claimerAccount *PeriodicContinuousVestingAccount, startTime int64, endTime int64, amount sdk.Coins) *PeriodicContinuousVestingAccount {
-	hadPariods := len(claimerAccount.VestingPeriods) > 0
+func (account *PeriodicContinuousVestingAccount) AddNewContinousVestingPeriod(startTime int64, endTime int64, amount sdk.Coins) {
+	hadPariods := len(account.VestingPeriods) > 0
 
-	claimerAccount.VestingPeriods = append(claimerAccount.VestingPeriods,
+	account.VestingPeriods = append(account.VestingPeriods,
 		ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
 
-	claimerAccount.BaseVestingAccount.OriginalVesting = claimerAccount.BaseVestingAccount.OriginalVesting.Add(amount...)
-	if !hadPariods || endTime > claimerAccount.BaseVestingAccount.EndTime {
-		claimerAccount.BaseVestingAccount.EndTime = endTime
+	account.BaseVestingAccount.OriginalVesting = account.BaseVestingAccount.OriginalVesting.Add(amount...)
+	if !hadPariods || endTime > account.BaseVestingAccount.EndTime {
+		account.BaseVestingAccount.EndTime = endTime
 	}
-	if !hadPariods || startTime < claimerAccount.StartTime {
-		claimerAccount.StartTime = startTime
+	if !hadPariods || startTime < account.StartTime {
+		account.StartTime = startTime
 	}
-	return claimerAccount
 }
 
 // GetVestedCoins returns the total number of vested coins. If no coins are vested,
 // nil is returned.
-func (cva PeriodicContinuousVestingAccount) GetVestedCoins(blockTime time.Time) sdk.Coins {
+func (account PeriodicContinuousVestingAccount) GetVestedCoins(blockTime time.Time) sdk.Coins {
 	var vestedCoins sdk.Coins
-	for _, period := range cva.VestingPeriods {
+	for _, period := range account.VestingPeriods {
 		vestedCoins = vestedCoins.Add(period.GetVestedCoins(blockTime)...)
 	}
 	return vestedCoins
@@ -73,37 +72,37 @@ func (cva PeriodicContinuousVestingAccount) GetVestedCoins(blockTime time.Time) 
 
 // GetVestingCoins returns the total number of vesting coins. If no coins are
 // vesting, nil is returned.
-func (cva PeriodicContinuousVestingAccount) GetVestingCoins(blockTime time.Time) sdk.Coins {
-	return cva.OriginalVesting.Sub(cva.GetVestedCoins(blockTime)...)
+func (account PeriodicContinuousVestingAccount) GetVestingCoins(blockTime time.Time) sdk.Coins {
+	return account.OriginalVesting.Sub(account.GetVestedCoins(blockTime)...)
 }
 
 // LockedCoins returns the set of coins that are not spendable (i.e. locked),
 // defined as the vesting coins that are not delegated.
-func (cva PeriodicContinuousVestingAccount) LockedCoins(blockTime time.Time) sdk.Coins {
-	return cva.BaseVestingAccount.LockedCoinsFromVesting(cva.GetVestingCoins(blockTime))
+func (account PeriodicContinuousVestingAccount) LockedCoins(blockTime time.Time) sdk.Coins {
+	return account.BaseVestingAccount.LockedCoinsFromVesting(account.GetVestingCoins(blockTime))
 }
 
 // TrackDelegation tracks a desired delegation amount by setting the appropriate
 // values for the amount of delegated vesting, delegated free, and reducing the
 // overall amount of base coins.
-func (cva *PeriodicContinuousVestingAccount) TrackDelegation(blockTime time.Time, balance, amount sdk.Coins) {
-	cva.BaseVestingAccount.TrackDelegation(balance, cva.GetVestingCoins(blockTime), amount)
+func (account *PeriodicContinuousVestingAccount) TrackDelegation(blockTime time.Time, balance, amount sdk.Coins) {
+	account.BaseVestingAccount.TrackDelegation(balance, account.GetVestingCoins(blockTime), amount)
 }
 
 // GetStartTime returns the time when vesting starts for a continuous vesting
 // account.
 
-func (acc PeriodicContinuousVestingAccount) GetStartTime() int64 {
-	return acc.StartTime
+func (account PeriodicContinuousVestingAccount) GetStartTime() int64 {
+	return account.StartTime
 }
 
-func (acc PeriodicContinuousVestingAccount) String() string {
-	out, _ := acc.MarshalYAML()
+func (account PeriodicContinuousVestingAccount) String() string {
+	out, _ := account.MarshalYAML()
 	return out.(string)
 }
 
-func (acc PeriodicContinuousVestingAccount) MarshalYAML() (interface{}, error) {
-	bz, err := codec.MarshalYAML(codec.NewProtoCodec(codectypes.NewInterfaceRegistry()), &acc)
+func (account PeriodicContinuousVestingAccount) MarshalYAML() (interface{}, error) {
+	bz, err := codec.MarshalYAML(codec.NewProtoCodec(codectypes.NewInterfaceRegistry()), &account)
 	if err != nil {
 		return nil, err
 	}
@@ -111,15 +110,15 @@ func (acc PeriodicContinuousVestingAccount) MarshalYAML() (interface{}, error) {
 }
 
 // Validate checks for errors on the account fields
-func (cva *PeriodicContinuousVestingAccount) Validate() error {
-	if cva.GetStartTime() > cva.GetEndTime() {
-		return fmt.Errorf("vesting end-time (%d) cannot be before start-time (%d)", cva.GetEndTime(), cva.GetStartTime())
+func (account *PeriodicContinuousVestingAccount) Validate() error {
+	if account.GetStartTime() > account.GetEndTime() {
+		return fmt.Errorf("vesting end-time (%d) cannot be before start-time (%d)", account.GetEndTime(), account.GetStartTime())
 	}
 	var vestedCoins sdk.Coins
 	var startTime int64 = math.MaxInt64
 	var endTime int64 = 0
 
-	for _, period := range cva.VestingPeriods {
+	for _, period := range account.VestingPeriods {
 		if err := period.Validate(); err != nil {
 			return err
 		}
@@ -131,18 +130,18 @@ func (cva *PeriodicContinuousVestingAccount) Validate() error {
 		}
 		vestedCoins = vestedCoins.Add(period.Amount...)
 	}
-	if !cva.BaseVestingAccount.OriginalVesting.IsEqual(vestedCoins) {
-		return fmt.Errorf("original vesting (%s) not equal to sum of periods (%s)", cva.BaseVestingAccount.OriginalVesting, vestedCoins)
+	if !account.BaseVestingAccount.OriginalVesting.IsEqual(vestedCoins) {
+		return fmt.Errorf("original vesting (%s) not equal to sum of periods (%s)", account.BaseVestingAccount.OriginalVesting, vestedCoins)
 	}
-	if len(cva.VestingPeriods) > 0 {
-		if cva.GetStartTime() != startTime {
-			return fmt.Errorf("vesting start-time (%d) not eqaul to earliest period start time (%d)", cva.GetStartTime(), startTime)
+	if len(account.VestingPeriods) > 0 {
+		if account.GetStartTime() != startTime {
+			return fmt.Errorf("vesting start-time (%d) not eqaul to earliest period start time (%d)", account.GetStartTime(), startTime)
 		}
-		if cva.GetEndTime() != endTime {
-			return fmt.Errorf("vesting end-time (%d) not eqaul to lastest period end time (%d)", cva.GetEndTime(), endTime)
+		if account.GetEndTime() != endTime {
+			return fmt.Errorf("vesting end-time (%d) not eqaul to lastest period end time (%d)", account.GetEndTime(), endTime)
 		}
 	}
-	return cva.BaseVestingAccount.Validate()
+	return account.BaseVestingAccount.Validate()
 }
 
 func (cvp ContinuousVestingPeriod) String() string {

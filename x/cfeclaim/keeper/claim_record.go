@@ -78,23 +78,6 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	return nil
 }
 
-func (k Keeper) addClaimRecordsToVestingPoolCampaign(ctx sdk.Context, owner string, campaign *types.Campaign, amountSum sdk.Coins) error {
-	accountVestingPools, found := k.vestingKeeper.GetAccountVestingPools(ctx, owner)
-	if !found {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
-	}
-
-	for _, vestPool := range accountVestingPools.VestingPools {
-		if vestPool.Name == campaign.VestingPoolName {
-			vestPool.Sent = vestPool.Sent.Add(amountSum.AmountOf(k.vestingKeeper.Denom(ctx)))
-			break
-		}
-	}
-
-	k.vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
-	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, cfevestingtypes.ModuleName, types.ModuleName, amountSum)
-}
-
 func (k Keeper) addClaimRecordsToDefaultAndDynamicCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, campaign *types.Campaign, amountSum sdk.Coins, feesAndClaimRecordsAmountSum sdk.Coins) error {
 	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
 
@@ -198,7 +181,7 @@ func (k Keeper) ValidateCampaignWhenAddedFromVestingAccount(ctx sdk.Context, own
 
 func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string,
 	campaignLockupPeriod *time.Duration, campaignVestingPeriod *time.Duration) error {
-	vestingPool, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
+	_, vestingPool, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
 
 	if !found {
 		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)

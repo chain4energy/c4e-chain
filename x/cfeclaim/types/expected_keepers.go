@@ -53,16 +53,14 @@ type DistributionKeeper interface {
 
 // VestingKeeper defines the expected feegrant keeper interface
 type CfeVestingKeeper interface {
-	GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (vestingPool cfevestingtypes.VestingPool, found bool)
+	GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (accountVestingPools cfevestingtypes.AccountVestingPools, vestingPool *cfevestingtypes.VestingPool, found bool)
 	GetVestingType(ctx sdk.Context, name string) (vestingType cfevestingtypes.VestingType, err error)
-	SetAccountVestingPools(ctx sdk.Context, accountVestingPools cfevestingtypes.AccountVestingPools)
 	GetAccountVestingPools(ctx sdk.Context, accountAddress string) (accountVestingPools cfevestingtypes.AccountVestingPools, found bool)
 	Denom(ctx sdk.Context) (res string)
 	UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Coins) (*vestingtypes.ContinuousVestingAccount, error)
 	SetupNewPeriodicContinousVestingAccount(ctx sdk.Context, address sdk.AccAddress, startTime int64, endTime int64) (*cfevestingtypes.PeriodicContinuousVestingAccount, error)
-	SendFromModuleToVestingPool(ctx sdk.Context, owner string, vestingPoolName string, amount sdk.Coins, moduleName string) error
-	SendFromVestingPoolToModule(ctx sdk.Context, owner string, vestingPoolName string, amount sdk.Coins, moduleName string) error
-	AddVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, campaignId uint64, amout math.Int) error
-	RemoveVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, campaignId uint64, amout math.Int) error
-	SendToNewVestingAccountFromReservation(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, campaignId uint64, startTime time.Time, endTime time.Time) (withdrawn sdk.Coin, returnedError error)
+	AddVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error
+	RemoveVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error
+	SendToNewVestingAccountFromReservation(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, reservationId uint64, startTime time.Time, endTime time.Time) error
+	SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins, startTime int64, endTime int64) error
 }
