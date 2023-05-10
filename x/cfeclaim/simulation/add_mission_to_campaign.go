@@ -11,7 +11,7 @@ import (
 	"math/rand"
 )
 
-func SimulateMsgAddMissionToAidropCampaign(
+func SimulateMsgAddMissionToCampaign(
 	k keeper.Keeper,
 	cfevestingKeeper cfevestingkeeper.Keeper,
 ) simtypes.Operation {

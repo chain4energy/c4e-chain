@@ -79,7 +79,7 @@ var (
 		LockEnd:         advisorsLockEnd,
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.NewInt(500000000000),
-		GenesisPool:      false,
+		GenesisPool:     false,
 	}
 
 	oldValidatorsPool = cfevestingtypes.VestingPool{
@@ -90,7 +90,7 @@ var (
 		LockEnd:         validatorsLockEnd,
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.NewInt(95000000000),
-		GenesisPool:      false,
+		GenesisPool:     false,
 	}
 
 	newAdvisorsPool = cfevestingtypes.VestingPool{
@@ -101,7 +101,7 @@ var (
 		LockEnd:         advisorsLockEnd,
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.NewInt(500000000000),
-		GenesisPool:      true,
+		GenesisPool:     true,
 	}
 
 	newValidatorsRoundPool = cfevestingtypes.VestingPool{
@@ -112,7 +112,7 @@ var (
 		LockEnd:         validatorsLockEnd,
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.NewInt(95000000000),
-		GenesisPool:      true,
+		GenesisPool:     true,
 	}
 
 	newVcRoundPool = cfevestingtypes.VestingPool{
@@ -123,7 +123,7 @@ var (
 		LockEnd:         validatorsLockStart.AddDate(3, 0, 0),
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.ZeroInt(),
-		GenesisPool:      true,
+		GenesisPool:     true,
 	}
 
 	newEarlyBirdRoundPool = cfevestingtypes.VestingPool{
@@ -134,7 +134,7 @@ var (
 		LockEnd:         validatorsLockStart.AddDate(2, 3, 0),
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.ZeroInt(),
-		GenesisPool:      true,
+		GenesisPool:     true,
 	}
 
 	newPublicRoundPool = cfevestingtypes.VestingPool{
@@ -145,7 +145,7 @@ var (
 		LockEnd:         validatorsLockStart.AddDate(1, 6, 0),
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.ZeroInt(),
-		GenesisPool:      true,
+		GenesisPool:     true,
 	}
 
 	newStrategicRoundPool = cfevestingtypes.VestingPool{
@@ -156,7 +156,7 @@ var (
 		LockEnd:         validatorsLockStart.AddDate(2, 0, 0),
 		Withdrawn:       math.ZeroInt(),
 		Sent:            math.ZeroInt(),
-		GenesisPool:      true,
+		GenesisPool:     true,
 	}
 )
 
@@ -169,7 +169,7 @@ func TestSplitVestingPools(t *testing.T) {
 	require.True(t, found)
 	sumBefore := math.ZeroInt()
 	for _, vp := range avps.VestingPools {
-		sumBefore = sumBefore.Add(vp.GetCurrentlyLocked())
+		sumBefore = sumBefore.Add(vp.GetCurrentlyLockedWithoutReservations())
 	}
 
 	err := v120.ModifyVestingPoolsState(testHelper.Context, testHelper.App)
@@ -184,7 +184,7 @@ func TestSplitVestingPools(t *testing.T) {
 	avps, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
 	sumAfter := math.ZeroInt()
 	for _, vp := range avps.VestingPools {
-		sumAfter = sumAfter.Add(vp.GetCurrentlyLocked())
+		sumAfter = sumAfter.Add(vp.GetCurrentlyLockedWithoutReservations())
 	}
 	require.Equal(t, sumBefore, sumAfter)
 

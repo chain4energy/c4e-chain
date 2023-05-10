@@ -23,37 +23,26 @@ var (
 )
 
 const (
-	opWeightMsgClaim = "op_weight_msg_claim"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgClaim int = 400
+	opWeightMsgClaim          = "op_weight_msg_claim"
+	defaultWeightMsgClaim int = 300
 
-	opWeightMsgCreateCampaign = "op_weight_msg_create_claim_campaign"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateCampaign int = 100
+	opWeightMsgCreateCampaign          = "op_weight_msg_create_claim_campaign"
+	defaultWeightMsgCreateCampaign int = 50
 
-	opWeightMsgAddMissionToAidropCampaign = "op_weight_msg_add_mission_to_aidrop_campaign"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgAddMissionToAidropCampaign int = 100
+	opWeightMsgAddMissionToCampaign          = "op_weight_msg_add_mission_to_aidrop_campaign"
+	defaultWeightMsgAddMissionToCampaign int = 100
 
-	opWeightMsgCreateEntry = "op_weight_msg_claim_entry"
-	// TODO: Determine the simulation weight value
+	opWeightMsgAddClaimRecords      = "op_weight_msg_claim_entry"
 	defaultWeightMsgCreateEntry int = 100
 
-	opWeightMsgUpdateEntry = "op_weight_msg_claim_entry"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgUpdateEntry int = 100
-
-	opWeightMsgDeleteClaimRecord = "op_weight_msg_claim_entry"
-	// TODO: Determine the simulation weight value
+	opWeightMsgDeleteClaimRecord          = "op_weight_msg_claim_entry"
 	defaultWeightMsgDeleteClaimRecord int = 100
 
-	opWeightMsgCloseCampaign = "op_weight_msg_close_claim_campaign"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgCloseCampaign int = 100
+	opWeightMsgCloseCampaign          = "op_weight_msg_close_claim_campaign"
+	defaultWeightMsgCloseCampaign int = 25
 
-	opWeightMsgStartCampaign = "op_weight_msg_start_claim_campaign"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgStartCampaign int = 100
+	opWeightMsgStartCampaign          = "op_weight_msg_start_claim_campaign"
+	defaultWeightMsgStartCampaign int = 25
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
@@ -111,34 +100,27 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		cfeclaimsimulation.SimulateMsgCreateCampaign(am.keeper, am.cfevestingKeeper),
 	))
 
-	var weightMsgAddMissionToAidropCampaign int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddMissionToAidropCampaign, &weightMsgAddMissionToAidropCampaign, nil,
+	var weightMsgAddMissionToCampaign int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddMissionToCampaign, &weightMsgAddMissionToCampaign, nil,
 		func(_ *rand.Rand) {
-			weightMsgAddMissionToAidropCampaign = defaultWeightMsgAddMissionToAidropCampaign
+			weightMsgAddMissionToCampaign = defaultWeightMsgAddMissionToCampaign
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgAddMissionToAidropCampaign,
-		cfeclaimsimulation.SimulateMsgAddMissionToAidropCampaign(am.keeper, am.cfevestingKeeper),
+		weightMsgAddMissionToCampaign,
+		cfeclaimsimulation.SimulateMsgAddMissionToCampaign(am.keeper, am.cfevestingKeeper),
 	))
 
-	var weightMsgCreateEntry int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateEntry, &weightMsgCreateEntry, nil,
+	var weightMsgAddClaimRecords int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddClaimRecords, &weightMsgAddClaimRecords, nil,
 		func(_ *rand.Rand) {
-			weightMsgCreateEntry = defaultWeightMsgCreateEntry
+			weightMsgAddClaimRecords = defaultWeightMsgCreateEntry
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateEntry,
+		weightMsgAddClaimRecords,
 		cfeclaimsimulation.SimulateMsgAddClaimRecords(am.keeper, am.cfevestingKeeper),
 	))
-
-	var weightMsgUpdateEntry int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateEntry, &weightMsgUpdateEntry, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateEntry = defaultWeightMsgUpdateEntry
-		},
-	)
 
 	var weightMsgDeleteClaimRecord int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteClaimRecord, &weightMsgDeleteClaimRecord, nil,
@@ -146,6 +128,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			weightMsgDeleteClaimRecord = defaultWeightMsgDeleteClaimRecord
 		},
 	)
+	// TODO: add simulation to delete claim record
 
 	var weightMsgCloseCampaign int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCloseCampaign, &weightMsgCloseCampaign, nil,

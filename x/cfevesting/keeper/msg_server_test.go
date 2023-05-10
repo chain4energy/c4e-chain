@@ -33,7 +33,7 @@ func verifyVestingResponse(t *testing.T, response *types.QueryVestingPoolsRespon
 				require.EqualValues(t, true, vesting.LockEnd.Equal(vestingInfo.LockEnd))
 				require.EqualValues(t, testenv.DefaultTestDenom, response.VestingPools[0].InitiallyLocked.Denom)
 				require.EqualValues(t, vesting.InitiallyLocked, response.VestingPools[0].InitiallyLocked.Amount)
-				require.EqualValues(t, vesting.GetCurrentlyLocked().String(), response.VestingPools[0].CurrentlyLocked)
+				require.EqualValues(t, vesting.GetCurrentlyLockedWithoutReservations().String(), response.VestingPools[0].CurrentlyLocked)
 				require.EqualValues(t, vesting.Sent.String(), response.VestingPools[0].SentAmount)
 
 				found = true

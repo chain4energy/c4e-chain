@@ -57,12 +57,24 @@ func (av AccountVestingPools) ValidateAgainstVestingTypes(vestingTypes []Genesis
 	return nil
 }
 
+func (m *VestingPool) GetCurrentlyLockedWithoutReservations() math.Int {
+	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn).Sub(m.GetCurrentlyLockedInReservations())
+}
+
 func (m *VestingPool) GetCurrentlyLocked() math.Int {
-	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn).Sub(m.GetReservationsAmountSum()) // TODO fix!
+	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn)
 }
 
 func (m *VestingPool) GetCurrentlyLockedInReservation(reservationId uint64) math.Int {
 	return m.GetReservation(reservationId).Amount
+}
+
+func (pool *VestingPool) GetCurrentlyLockedInReservations() math.Int {
+	amountSum := math.ZeroInt()
+	for _, reservation := range pool.Reservations {
+		amountSum = amountSum.Add(reservation.Amount)
+	}
+	return amountSum
 }
 
 func (m *VestingPool) Validate(accountAdd string) error {
@@ -78,7 +90,7 @@ func (m *VestingPool) Validate(accountAdd string) error {
 	if m.Sent.IsNegative() {
 		return fmt.Errorf("vesting pool with name: %s defined for account: %s has Sent value negative %s", m.Name, accountAdd, m.Sent)
 	}
-	if m.GetCurrentlyLocked().IsNegative() {
+	if m.GetCurrentlyLockedWithoutReservations().IsNegative() {
 		return fmt.Errorf("vesting pool with name: %s defined for account: %s has InitiallyLocked (%s) < Withdrawn (%s) + Sent (%s)",
 			m.Name, accountAdd, m.InitiallyLocked, m.Withdrawn, m.Sent)
 	}
@@ -92,7 +104,7 @@ func (avpl AccountVestingPoolsList) GetGenesisAmount() math.Int {
 	for _, avp := range avpl {
 		for _, vp := range avp.VestingPools {
 			if vp.GenesisPool {
-				result = result.Add(vp.GetCurrentlyLocked())
+				result = result.Add(vp.GetCurrentlyLockedWithoutReservations())
 			}
 		}
 	}
@@ -136,12 +148,4 @@ func (pool *VestingPool) SubstractFromReservation(reservationId uint64, amount m
 		}
 	}
 	return nil
-}
-
-func (pool *VestingPool) GetReservationsAmountSum() math.Int {
-	amountSum := math.ZeroInt()
-	for _, reservation := range pool.Reservations {
-		amountSum = amountSum.Add(reservation.Amount)
-	}
-	return amountSum
 }
