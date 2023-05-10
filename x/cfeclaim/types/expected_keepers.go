@@ -1,11 +1,13 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	"time"
 )
 
 // AccountKeeper defines the expected account keeper interface
@@ -60,4 +62,7 @@ type CfeVestingKeeper interface {
 	SetupNewPeriodicContinousVestingAccount(ctx sdk.Context, address sdk.AccAddress, startTime int64, endTime int64) (*cfevestingtypes.PeriodicContinuousVestingAccount, error)
 	SendFromModuleToVestingPool(ctx sdk.Context, owner string, vestingPoolName string, amount sdk.Coins, moduleName string) error
 	SendFromVestingPoolToModule(ctx sdk.Context, owner string, vestingPoolName string, amount sdk.Coins, moduleName string) error
+	AddVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, campaignId uint64, amout math.Int) error
+	RemoveVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, campaignId uint64, amout math.Int) error
+	SendToNewVestingAccountFromReservation(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, campaignId uint64, startTime time.Time, endTime time.Time) (withdrawn sdk.Coin, returnedError error)
 }

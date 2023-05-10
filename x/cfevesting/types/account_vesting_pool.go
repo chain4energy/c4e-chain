@@ -1,7 +1,9 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -56,7 +58,11 @@ func (av AccountVestingPools) ValidateAgainstVestingTypes(vestingTypes []Genesis
 }
 
 func (m *VestingPool) GetCurrentlyLocked() math.Int {
-	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn)
+	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn).Sub(m.GetReservationsAmountSum()) // TODO fix!
+}
+
+func (m *VestingPool) GetCurrentlyLockedInReservation(reservationId uint64) math.Int {
+	return m.GetReservation(reservationId).Amount
 }
 
 func (m *VestingPool) Validate(accountAdd string) error {
@@ -91,4 +97,51 @@ func (avpl AccountVestingPoolsList) GetGenesisAmount() math.Int {
 		}
 	}
 	return result
+}
+
+func (pool *VestingPool) GetReservation(reservationId uint64) *VestingPoolReservation {
+	for _, reservation := range pool.Reservations {
+		if reservation.Id == reservationId {
+			return reservation
+		}
+	}
+	return nil
+}
+
+func (pool *VestingPool) AddReservation(reservationId uint64, amount math.Int) {
+	for _, reservation := range pool.Reservations {
+		if reservation.Id == reservationId {
+			reservation.Amount = reservation.Amount.Add(amount)
+			return
+		}
+	}
+	pool.Reservations = append(pool.Reservations, &VestingPoolReservation{
+		Id:     reservationId,
+		Amount: amount,
+	})
+}
+
+func (pool *VestingPool) SubstractFromReservation(reservationId uint64, amount math.Int) error {
+	for i, reservation := range pool.Reservations {
+		if reservation.Id == reservationId {
+			if amount.GT(reservation.Amount) {
+				return errors.Wrapf(c4eerrors.ErrAmount, "cannot substract from reservation, amount too big (%s > %s)", amount, reservation.Amount)
+			}
+
+			if amount.Equal(reservation.Amount) {
+				pool.Reservations = append(pool.Reservations[:i], pool.Reservations[i+1:]...)
+			} else {
+				reservation.Amount = reservation.Amount.Sub(amount)
+			}
+		}
+	}
+	return nil
+}
+
+func (pool *VestingPool) GetReservationsAmountSum() math.Int {
+	amountSum := math.ZeroInt()
+	for _, reservation := range pool.Reservations {
+		amountSum = amountSum.Add(reservation.Amount)
+	}
+	return amountSum
 }

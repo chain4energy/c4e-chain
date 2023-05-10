@@ -20,6 +20,7 @@ import (
 func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) error {
 	ctx.Logger().Debug("add user entries", "owner", owner, "campaignId", campaignId, "claimRecordsLength", len(claimRecords))
 	feegrantDenom := k.stakingKeeper.BondDenom(ctx)
+	vestingDenom := k.vestingKeeper.Denom(ctx)
 
 	campaign, err := k.ValidateAddClaimRecords(ctx, owner, campaignId, claimRecords)
 	if err != nil {
@@ -36,7 +37,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
 
 	if campaign.CampaignType == types.VestingPoolCampaign {
-		if err = k.vestingKeeper.SendFromVestingPoolToModule(ctx, owner, campaign.VestingPoolName, amountSum, types.ModuleName); err != nil {
+		if err = k.vestingKeeper.AddVestingPoolReservation(ctx, owner, campaign.VestingPoolName, campaignId, amountSum.AmountOf(vestingDenom)); err != nil {
 			return err
 		}
 	} else {

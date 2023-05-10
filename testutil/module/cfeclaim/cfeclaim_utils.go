@@ -160,12 +160,7 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 
 	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
 	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
-	var vestingPoolBefore cfevestingtypes.VestingPool
-	if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
-		var accFound bool
-		vestingPoolBefore, accFound = h.helperCfevestingKeeper.GetAccountVestingPool(ctx, srcAddress.String(), campaign.VestingPoolName)
-		require.True(h.t, accFound)
-	}
+
 	userEntriesBefore := h.helpeCfeclaimkeeper.GetUsersEntries(ctx)
 	userEntryBeforeCount := 0
 	for _, userEntry := range userEntriesBefore {
@@ -230,13 +225,15 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, feegrandModuleAddress, feegrantSum)
 		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(feegrantSum).Sub(amountSum.AmountOf(testenv.DefaultTestDenom)))
 	} else {
-		h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBalance.Add(amountSum.AmountOf(testenv.DefaultTestDenom)))
-		if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
-			vestingPool, accFound := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, srcAddress.String(), campaign.VestingPoolName)
-			require.True(h.t, accFound)
-			require.EqualValues(h.t, vestingPoolBefore.Sent.Add(amountSum.AmountOf(testenv.DefaultTestDenom)), vestingPool.Sent)
-		} else {
+		if campaign.CampaignType != cfeclaimtypes.VestingPoolCampaign {
+			h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBalance.Add(amountSum.AmountOf(testenv.DefaultTestDenom)))
 			h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(amountSum.AmountOf(testenv.DefaultTestDenom)))
+		} else {
+			if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
+				vestingPool, accFound := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, srcAddress.String(), campaign.VestingPoolName)
+				require.True(h.t, accFound)
+				require.EqualValues(h.t, amountSum.AmountOf(testenv.DefaultTestDenom), vestingPool.GetReservation(campaignId).Amount)
+			}
 		}
 
 	}
@@ -659,6 +656,7 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 	campaignAmoutLeftBefore, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
 	cfeclaimModuleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
 	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
+	require.True(h.t, ok)
 	_, feegrantAccountAddress := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaign.Id)
 	feegrantAmountLefBefore := math.ZeroInt()
 	if campaign.FeegrantAmount.IsPositive() {
@@ -693,19 +691,17 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 		if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
 			vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaign.VestingPoolName)
 			if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
-				require.True(h.t, vestingPoolBefore.Sent.
-					Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)).Sub(feegrantAmountLefBefore).Equal(vestingPool.Sent))
+				require.True(h.t, vestingPoolBefore.Sent.Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)).Sub(feegrantAmountLefBefore).Equal(vestingPool.Sent))
 			} else {
-				require.True(h.t, vestingPoolBefore.Sent.Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)).Equal(vestingPool.Sent))
+				require.Nil(h.t, vestingPool.GetReservation(campaignId))
 			}
 
 		} else {
+			h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, cfeclaimModuleBalance.Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)))
 			h.BankUtils.VerifyAccountDefultDenomBalance(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom).Add(feegrantAmountLefBefore)))
 		}
 	}
 
-	require.True(h.t, ok)
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, cfeclaimModuleBalance.Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)))
 	h.VerifyCloseAction(ctx, campaignId, CloseAction, campaignAmoutLeftBefore.Amount)
 	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, false, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
 }

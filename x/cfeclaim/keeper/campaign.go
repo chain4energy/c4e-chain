@@ -114,9 +114,9 @@ func (k Keeper) closeActionSwitch(ctx sdk.Context, CloseAction types.CloseAction
 	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
 }
 
-func (k Keeper) closeSendToOwner(ctx sdk.Context, campaign *types.Campaign, campaignAmountLeft sdk.Coins) error {
+func (k Keeper) closeSendToOwner(ctx sdk.Context, campaign *types.Campaign, amount sdk.Coins) error {
 	if campaign.CampaignType == types.VestingPoolCampaign {
-		return k.vestingKeeper.SendFromModuleToVestingPool(ctx, campaign.Owner, campaign.VestingPoolName, campaignAmountLeft, types.ModuleName)
+		return k.vestingKeeper.RemoveVestingPoolReservation(ctx, campaign.Owner, campaign.VestingPoolName, campaign.Id, amount.AmountOf(k.vestingKeeper.Denom(ctx)))
 	} else {
 		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
 		if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) { // TODO: probably delete
@@ -125,13 +125,13 @@ func (k Keeper) closeSendToOwner(ctx sdk.Context, campaign *types.Campaign, camp
 				return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
 			}
 			vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
-			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(campaignAmountLeft...)
+			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(amount...)
 
 			k.accountKeeper.SetAccount(ctx, vestingAcc)
-			return k.bankKeeper.BurnCoins(ctx, types.ModuleName, campaignAmountLeft)
+			return k.bankKeeper.BurnCoins(ctx, types.ModuleName, amount)
 		}
 
-		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, campaignAmountLeft)
+		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, amount)
 	}
 }
 

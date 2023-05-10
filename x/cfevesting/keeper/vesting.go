@@ -172,12 +172,6 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
 	k.Logger(ctx).Debug("send to new vesting account", "owner", owner, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "restartVesting", restartVesting)
 
-	_, toAccAddress, err := types.ValidateSendToVestingAccount(owner, toAddr, vestingPoolName, amount)
-	if err != nil {
-		k.Logger(ctx).Debug("send to new vesting account validation error", "error", err.Error())
-		return withdrawn, err
-	}
-
 	w, err := k.WithdrawAllAvailable(ctx, owner)
 	if err != nil {
 		k.Logger(ctx).Debug("send to new vesting account withdraw all available error", "owner", owner, "error", err.Error())
@@ -213,11 +207,11 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 		return withdrawn, sdkerrors.Wrap(types.ErrGetVestingType, sdkerrors.Wrapf(err, "send to new vesting account - from addr: %s, vestingType %s", owner, vestingPool.VestingType).Error())
 	}
 	if restartVesting {
-		err = k.newVestingAccount(ctx, toAccAddress, amount, vt.Free,
-			ctx.BlockTime().Add(vt.LockupPeriod), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod))
+		err = k.SendToNewPeriodicContinuousVestingAccountFromReservation(ctx, toAddr, sdk.NewCoins(sdk.NewCoin("uc4e", amount)),
+			ctx.BlockTime().Add(vt.LockupPeriod).Unix(), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod).Unix()) // TODO : FXI!
 	} else {
-		err = k.newVestingAccount(ctx, toAccAddress, amount, vt.Free,
-			vestingPool.LockEnd, vestingPool.LockEnd)
+		err = k.SendToNewPeriodicContinuousVestingAccountFromReservation(ctx, toAddr, sdk.NewCoins(sdk.NewCoin("uc4e", amount)),
+			vestingPool.LockEnd.Unix(), vestingPool.LockEnd.Unix())
 	}
 	if err == nil {
 		k.SetAccountVestingPools(ctx, accVestingPools)
@@ -234,6 +228,67 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 			VestingPoolName: vestingPool.Name,
 			Amount:          amount.String() + k.Denom(ctx),
 			RestartVesting:  strconv.FormatBool(restartVesting),
+		})
+		if eventErr != nil {
+			k.Logger(ctx).Error("new vesting account from vesting pool emit event error", "error", err.Error())
+		}
+	}
+	k.Logger(ctx).Debug("send to new vesting account ret", "withdrawn", w, "error", err, "accVestingPools", accVestingPools)
+	return w, err
+}
+
+func (k Keeper) SendToNewVestingAccountFromReservation(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, reservationId uint64, startTime time.Time, endTime time.Time) (withdrawn sdk.Coin, returnedError error) {
+	k.Logger(ctx).Debug("send to new vesting account", "owner", owner, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount)
+
+	w, err := k.WithdrawAllAvailable(ctx, owner) // TODO: probably to delte
+	if err != nil {
+		k.Logger(ctx).Debug("send to new vesting account withdraw all available error", "owner", owner, "error", err.Error())
+		return withdrawn, sdkerrors.Wrap(err, "send to new vesting account - withdraw all available error")
+	}
+
+	accVestingPools, vestingPoolsFound := k.GetAccountVestingPools(ctx, owner)
+	if !vestingPoolsFound || len(accVestingPools.VestingPools) == 0 {
+		k.Logger(ctx).Debug("send to new vesting account no vesting pools found", "owner", owner)
+		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "send to new vesting account - no vesting pools found for address (%s)", owner)
+	}
+	var vestingPool *types.VestingPool = nil
+	for _, vest := range accVestingPools.VestingPools {
+		if vest.Name == vestingPoolName {
+			vestingPool = vest
+		}
+	}
+	if vestingPool == nil {
+		k.Logger(ctx).Debug("send to new vesting account vesting pool id not found", "owner", owner, "vestingPoolName", vestingPoolName)
+		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "send to new vesting account - vesting pool with name %s not found", vestingPoolName)
+	}
+	available := vestingPool.GetReservationsAmountSum()
+
+	if available.LT(amount) {
+		k.Logger(ctx).Debug("send to new vesting account vesting available is smaller than amount", "owner", owner, "vestingPoolName", vestingPoolName, "available", available, "amount", amount)
+		return withdrawn, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+			"send to new vesting account - vesting available: %s is smaller than requested amount: %s", available, amount)
+	}
+	if err = vestingPool.SubstractFromReservation(reservationId, amount); err != nil {
+		return withdrawn, nil
+	}
+
+	err = k.SendToNewPeriodicContinuousVestingAccountFromReservation(ctx, toAddr, sdk.NewCoins(sdk.NewCoin("uc4e", amount)), startTime.Unix(), endTime.Unix()) // TODO : FXI!
+
+	if err == nil {
+		k.SetAccountVestingPools(ctx, accVestingPools)
+		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
+			Address:            toAddr,
+			Genesis:            false,
+			FromGenesisPool:    vestingPool.GenesisPool,
+			FromGenesisAccount: false,
+		})
+
+		eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
+			Owner:           owner,
+			Address:         toAddr,
+			VestingPoolName: vestingPool.Name,
+			Amount:          amount.String() + k.Denom(ctx),
+			RestartVesting:  "false",
 		})
 		if eventErr != nil {
 			k.Logger(ctx).Error("new vesting account from vesting pool emit event error", "error", err.Error())
@@ -370,36 +425,112 @@ func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, 
 	return acc, nil
 }
 
-func (k Keeper) SendFromModuleToVestingPool(ctx sdk.Context, owner string, vestingPoolName string, amount sdk.Coins, moduleName string) error {
+func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error {
 	vestingDenom := k.Denom(ctx)
-	accountVestingPools, _ := k.GetAccountVestingPools(ctx, owner)
-	var vestingPool *types.VestingPool
-	for _, vestPool := range accountVestingPools.VestingPools {
-		if vestPool.Name == vestingPoolName {
-			vestingPool = vestPool
-			break
-		}
-	}
-
-	vestingPool.Sent = vestingPool.Sent.Sub(amount.AmountOf(vestingDenom))
-
-	k.SetAccountVestingPools(ctx, accountVestingPools)
-	return k.bank.SendCoinsFromModuleToModule(ctx, moduleName, types.ModuleName, amount)
-}
-
-func (k Keeper) SendFromVestingPoolToModule(ctx sdk.Context, owner string, vestingPoolName string, amount sdk.Coins, moduleName string) error {
 	accountVestingPools, found := k.GetAccountVestingPools(ctx, owner)
 	if !found {
 		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
 	}
 
+	found = false
+	var vestingPool *types.VestingPool
 	for _, vestPool := range accountVestingPools.VestingPools {
 		if vestPool.Name == vestingPoolName {
-			vestPool.Sent = vestPool.Sent.Add(amount.AmountOf(k.Denom(ctx)))
+			vestingPool = vestPool
+			currentlyLocked := vestingPool.GetCurrentlyLocked()
+			if currentlyLocked.LT(amout) {
+				return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "%s%s is smaller than %s%s", currentlyLocked, vestingDenom, amout, vestingDenom)
+			}
+			found = true
 			break
 		}
 	}
+	if !found {
+		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
+	}
+
+	vestingPool.AddReservation(reservationId, amout)
 
 	k.SetAccountVestingPools(ctx, accountVestingPools)
-	return k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, moduleName, amount)
+	return nil
+}
+
+func (k Keeper) RemoveVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error {
+	accountVestingPools, found := k.GetAccountVestingPools(ctx, owner)
+	if !found {
+		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+	}
+
+	found = false
+	var vestingPool *types.VestingPool
+	for _, vestPool := range accountVestingPools.VestingPools {
+		if vestPool.Name == vestingPoolName {
+			vestingPool = vestPool
+			found = true
+			break
+		}
+	}
+	if !found {
+		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
+	}
+
+	if err := vestingPool.SubstractFromReservation(reservationId, amout); err != nil {
+		return err
+	}
+
+	k.SetAccountVestingPools(ctx, accountVestingPools)
+	return nil
+}
+
+func (k Keeper) SendToNewPeriodicContinuousVestingAccountFromReservation(ctx sdk.Context, userAddress string, amount sdk.Coins, startTime int64, endTime int64) error {
+	claimerAddress, err := k.getClaimerAddress(userAddress)
+	if err != nil {
+		return err
+	}
+
+	claimerAccount, err := k.getOrCreateClaimerAccount(ctx, claimerAddress, startTime, endTime)
+	if err != nil {
+		return err
+	}
+
+	claimerAccount = types.AddNewContinousVestingPeriods(claimerAccount, startTime, endTime, amount)
+
+	if err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, claimerAddress, amount); err != nil {
+		return err
+	}
+
+	k.account.SetAccount(ctx, claimerAccount)
+	return nil
+}
+
+func (k Keeper) getClaimerAddress(claimer string) (sdk.AccAddress, error) {
+	claimerAddress, err := sdk.AccAddressFromBech32(claimer)
+	if err != nil {
+		return nil, errors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), claimer)
+	}
+	if k.bank.BlockedAddr(claimerAddress) {
+		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "send to claim account - account address: %s is not allowed to receive funds error", claimerAddress)
+	}
+	return claimerAddress, nil
+}
+
+func (k Keeper) getOrCreateClaimerAccount(ctx sdk.Context, claimerAddress sdk.AccAddress, startTime, endTime int64) (*types.PeriodicContinuousVestingAccount, error) {
+	claimerAccount := k.account.GetAccount(ctx, claimerAddress)
+	periodicContinuousVestingAccount, ok := claimerAccount.(*types.PeriodicContinuousVestingAccount)
+	if !ok {
+		var err error
+		claimerAccount, err = k.SetupNewPeriodicContinousVestingAccount(ctx, claimerAddress, startTime, endTime)
+		if err != nil {
+			return nil, err
+		}
+		if claimerAccount == nil {
+			return nil, errors.Wrapf(c4eerrors.ErrNotExists, "send to claim account - account does not exist: %s", claimerAddress)
+		}
+		periodicContinuousVestingAccount, ok = claimerAccount.(*types.PeriodicContinuousVestingAccount)
+		if !ok {
+			return nil, errors.Wrapf(c4eerrors.ErrInvalidAccountType, "send to claim account - expected PeriodicContinuousVestingAccount, got: %T", claimerAccount)
+		}
+	}
+
+	return periodicContinuousVestingAccount, nil
 }

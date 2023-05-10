@@ -176,9 +176,15 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 
 	start := ctx.BlockTime().Add(campaign.LockupPeriod)
 	end := start.Add(campaign.VestingPeriod)
-
-	if err := k.SendToNewPeriodicContinuousVestingAccount(ctx, userEntry, claimableAmount, start.Unix(), end.Unix(), mission.MissionType); err != nil {
-		return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userEntry.ClaimAddress)
+	if campaign.CampaignType == types.VestingPoolCampaign {
+		_, err := k.vestingKeeper.SendToNewVestingAccountFromReservation(ctx, campaign.Owner, userEntry.ClaimAddress, campaign.VestingPoolName, claimableAmount.AmountOf(k.vestingKeeper.Denom(ctx)), campaign.Id, start, end)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		if err := k.SendToNewPeriodicContinuousVestingAccount(ctx, userEntry, claimableAmount, start.Unix(), end.Unix(), mission.MissionType); err != nil {
+			return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userEntry.ClaimAddress)
+		}
 	}
 
 	k.DecrementCampaignAmountLeft(ctx, campaignId, claimableAmount)
