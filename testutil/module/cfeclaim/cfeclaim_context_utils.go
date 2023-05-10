@@ -58,21 +58,6 @@ func (h *ContextC4eClaimUtils) CloseCampaignError(owner string, campaignId uint6
 	h.C4eClaimUtils.CloseCampaignError(h.testContext.GetContext(), owner, campaignId, CloseAction, errorString)
 }
 
-//func (h *ContextC4eClaimUtils) SendToRepeatedContinuousVestingAccount(toAddress sdk.AccAddress,
-//	amount sdk.Int, startTime int64, endTime int64, missionType cfeclaimtypes.MissionType) {
-//	h.C4eClaimUtils.SendToRepeatedContinuousVestingAccount(h.testContext.GetContext(), toAddress, amount, startTime, endTime, missionType)
-//}
-//
-//func (h *ContextC4eClaimUtils) SendToRepeatedContinuousVestingAccountError(toAddress sdk.AccAddress,
-//	amount sdk.Int, startTime int64, endTime int64, createAccount bool, errorMessage string, missionType cfeclaimtypes.MissionType) {
-//	h.C4eClaimUtils.SendToRepeatedContinuousVestingAccountError(h.testContext.GetContext(), toAddress, amount, startTime, endTime, createAccount, errorMessage, missionType)
-//}
-
-func (h *ContextC4eClaimUtils) VerifyRepeatedContinuousVestingAccount(address sdk.AccAddress,
-	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod, missionType cfeclaimtypes.MissionType) {
-	h.C4eClaimUtils.VerifyRepeatedContinuousVestingAccount(h.testContext.GetContext(), address, expectedOriginalVesting, expectedStartTime, expectedEndTime, expectedPeriods, missionType)
-}
-
 func (h *ContextC4eClaimUtils) InitGenesis(genState cfeclaimtypes.GenesisState) {
 	h.C4eClaimKeeperUtils.InitGenesis(h.testContext.GetContext(), genState)
 }

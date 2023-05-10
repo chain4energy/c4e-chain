@@ -90,7 +90,10 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 		}
 	}
 
-	claimableAmount := userEntry.ClaimableFromMission(mission)
+	claimableAmount, err := userEntry.ClaimableFromMission(mission)
+	if err != nil {
+		return err
+	}
 	userEntry, err = k.claimMission(ctx, campaign, mission, userEntry, claimableAmount)
 	if err != nil {
 		return err

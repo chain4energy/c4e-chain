@@ -1,7 +1,6 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -13,7 +12,7 @@ func (m *UserEntry) Validate() error {
 	}
 
 	if len(m.ClaimRecords) == 0 {
-		return errors.New("at least one campaign record is required")
+		return fmt.Errorf("at least one campaign record is required")
 	}
 
 	campaignIDMap := make(map[uint64]struct{})
@@ -26,7 +25,7 @@ func (m *UserEntry) Validate() error {
 
 	for _, claimRecord := range m.ClaimRecords {
 		if !claimRecord.Amount.IsAllPositive() {
-			return errors.New("claimable amount must be positive")
+			return fmt.Errorf("claimable amount must be positive")
 		}
 
 		missionIDMap := make(map[uint64]struct{})
@@ -112,15 +111,18 @@ func (m *UserEntry) ClaimMission(campaignId uint64, missionID uint64) error {
 }
 
 // ClaimableFromMission returns the amount claimable for this claim record from the provided mission completion
-func (m UserEntry) ClaimableFromMission(mission *Mission) (coinSum sdk.Coins) {
+func (m UserEntry) ClaimableFromMission(mission *Mission) (sdk.Coins, error) {
 	claimRecord := m.GetClaimRecord(mission.CampaignId)
+
 	if claimRecord == nil {
-		return sdk.NewCoins() // TODO error ??
+		return nil, fmt.Errorf("no campaign record with id %d for address %s", mission.CampaignId, m.Address)
 	}
+
+	var coinSum sdk.Coins
 	for _, coin := range claimRecord.Amount {
 		coinSum = coinSum.Add(sdk.NewCoin(coin.Denom, mission.Weight.Mul(sdk.NewDecFromInt(coin.Amount)).TruncateInt()))
 	}
-	return
+	return coinSum, nil
 }
 
 func (cr *UserEntry) GetClaimRecord(camapaignId uint64) *ClaimRecord {
