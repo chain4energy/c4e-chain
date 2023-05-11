@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 	"encoding/base64"
 
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
@@ -68,7 +69,7 @@ func (k Keeper) isValidSignature(goCtx context.Context, targetAccAddress, signat
 	// decode signature from base64
 	signatureBytes, err := base64.StdEncoding.DecodeString(signature)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrLogic, "failed to decode signature string")
+		return errors.Wrap(sdkerrors.ErrLogic, "failed to decode signature string")
 
 	}
 
@@ -86,7 +87,7 @@ func (k Keeper) isValidSignature(goCtx context.Context, targetAccAddress, signat
 
 	// verifies that signature is a valid signature
 	if err = userCert.CheckSignature(x509signatureAlgorithm, []byte(signaturePayload), signatureBytes); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "signature validation failed")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "signature validation failed")
 	}
 
 	return nil

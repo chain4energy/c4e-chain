@@ -77,13 +77,13 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, error) {
 	campaign, campaignFound := k.GetCampaign(ctx, campaignId)
 	if !campaignFound {
-		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
+		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
 	}
 	k.Logger(ctx).Debug("campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaign.StartTime, "campaigh end", campaign.EndTime)
 
 	userEntry, found := k.GetUserEntry(ctx, claimerAddress)
 	if !found {
-		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "user claim entries not found for address %s", claimerAddress)
+		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "user claim entries not found for address %s", claimerAddress)
 	}
 
 	if err := campaign.IsActive(ctx.BlockTime()); err != nil {
@@ -92,15 +92,15 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId u
 
 	mission, missionFound := k.GetMission(ctx, campaignId, missionId)
 	if !missionFound {
-		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "mission not found - campaignId %d, missionId %d", campaignId, missionId)
+		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "mission not found - campaignId %d, missionId %d", campaignId, missionId)
 	}
 	k.Logger(ctx).Debug("mission", mission)
 	if err := mission.IsEnabled(ctx.BlockTime()); err != nil {
-		return nil, nil, nil, sdkerrors.Wrapf(err, "mission disabled - campaignId %d, missionId %d", campaignId, missionId)
+		return nil, nil, nil, errors.Wrapf(err, "mission disabled - campaignId %d, missionId %d", campaignId, missionId)
 	}
 
 	if !userEntry.HasCampaign(campaignId) {
-		return nil, nil, nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id %d not found for address %s", campaignId, claimerAddress)
+		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id %d not found for address %s", campaignId, claimerAddress)
 	}
 
 	return &campaign, &mission, &userEntry, nil
@@ -110,7 +110,7 @@ func (k Keeper) ValidateMissionWeightsNotGreaterThan1(ctx sdk.Context, campaignI
 	_, weightSum := k.AllMissionForCampaign(ctx, campaignId)
 	weightSum = weightSum.Add(newMissionWeight)
 	if weightSum.GT(sdk.NewDec(1)) {
-		return sdkerrors.Wrapf(c4eerrors.ErrParam, "add mission to claim - all campaign missions weight sum is >= 1 (%s > 1) error", weightSum.String())
+		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim - all campaign missions weight sum is >= 1 (%s > 1) error", weightSum.String())
 	}
 	return nil
 }

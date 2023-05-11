@@ -1,8 +1,8 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
 )
 
@@ -45,7 +45,7 @@ func (c *Mission) IsEnabled(blockTime time.Time) error {
 		return nil
 	}
 	if c.ClaimStartDate.Before(blockTime) {
-		return sdkerrors.Wrapf(ErrMissionDisabled, "mission %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.ClaimStartDate)
+		return errors.Wrapf(ErrMissionDisabled, "mission %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.ClaimStartDate)
 	}
 	return nil
 }

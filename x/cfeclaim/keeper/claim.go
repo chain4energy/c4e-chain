@@ -122,7 +122,7 @@ func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, miss
 	}
 	if !userEntry.IsInitialMissionClaimed(campaignId) {
 		k.Logger(ctx).Debug("complete mission - initial mission not completed", "claimerAddress", address, "campaignId", campaignId, "missionId", missionId)
-		return sdkerrors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d, missionId: %d", address, campaignId, 0)
+		return errors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d, missionId: %d", address, campaignId, 0)
 	}
 	userEntry, err = k.completeMission(mission, userEntry)
 	if err != nil {
@@ -197,7 +197,7 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddress string) error {
 	addititonalAccAddress, err := sdk.AccAddressFromBech32(additionalAddress)
 	if err != nil {
-		return errors.Wrap(c4eerrors.ErrParsing, sdkerrors.Wrapf(err, "add mission to claim campaign - additionalAddress parsing error: %s", additionalAddress).Error())
+		return errors.Wrap(c4eerrors.ErrParsing, errors.Wrapf(err, "add mission to claim campaign - additionalAddress parsing error: %s", additionalAddress).Error())
 	}
 
 	if k.bankKeeper.BlockedAddr(addititonalAccAddress) {
@@ -246,7 +246,7 @@ func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaign
 	claimableAmount = claimableAmount.Sub(freeVestingAmount...)
 
 	if err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userMainAddress, freeVestingAmount); err != nil {
-		return nil, errors.Wrap(c4eerrors.ErrSendCoins, sdkerrors.Wrapf(err,
+		return nil, errors.Wrap(c4eerrors.ErrSendCoins, errors.Wrapf(err,
 			"send to claim account - send coins to claim account error (to: %s, amount: %s)", userMainAddress, freeVestingAmount.String()).Error())
 	}
 

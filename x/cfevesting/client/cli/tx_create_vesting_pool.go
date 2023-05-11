@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -51,12 +52,12 @@ $ %s tx %s create-vesting-pool my_vesting_pool 1000000 8760h my_vesting_type --f
 			}
 			amountInt, ok := sdk.NewIntFromString(argAmount)
 			if !ok {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "amount must be a positive integer")
+				return errors.Wrap(sdkerrors.ErrInvalidRequest, "amount must be a positive integer")
 			}
 
 			duration, err := time.ParseDuration(argDuration)
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
 
 			msg := types.NewMsgCreateVestingPool(

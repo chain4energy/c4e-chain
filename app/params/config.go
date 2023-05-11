@@ -1,6 +1,7 @@
 package params
 
 import (
+	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -46,11 +47,11 @@ func SetAddressPrefixes() {
 
 	config.SetAddressVerifier(func(bytes []byte) error {
 		if len(bytes) == 0 {
-			return sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, "addresses cannot be empty")
+			return errors.Wrap(sdkerrors.ErrUnknownAddress, "addresses cannot be empty")
 		}
 
 		if len(bytes) > address.MaxAddrLen {
-			return sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "address max length is %d, got %d", address.MaxAddrLen, len(bytes))
+			return errors.Wrapf(sdkerrors.ErrUnknownAddress, "address max length is %d, got %d", address.MaxAddrLen, len(bytes))
 		}
 
 		return nil

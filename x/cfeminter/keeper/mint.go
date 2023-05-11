@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	"time"
 
@@ -32,7 +33,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int
 
 	if currentMinter == nil {
 		k.Logger(ctx).Error("mint - current minter not found error", "lev", level, "SequenceId", minterState.SequenceId)
-		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter - mint - current minter for sequence id %d not found", minterState.SequenceId)
+		return sdk.ZeroInt(), errors.Wrapf(sdkerrors.ErrNotFound, "minter - mint - current minter for sequence id %d not found", minterState.SequenceId)
 	}
 
 	var startTime time.Time
@@ -62,13 +63,13 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int
 	err := k.MintCoins(ctx, coins)
 	if err != nil {
 		k.Logger(ctx).Error("mint - mint coins error", "lev", level, "error", err.Error())
-		return sdk.ZeroInt(), sdkerrors.Wrap(err, "minter mint coins error")
+		return sdk.ZeroInt(), errors.Wrap(err, "minter mint coins error")
 	}
 
 	err = k.SendMintedCoins(ctx, coins)
 	if err != nil {
 		k.Logger(ctx).Error("mint - add collected fees error", "lev", level, "error", err.Error())
-		return sdk.ZeroInt(), sdkerrors.Wrap(err, "minter - mint - add collected fees error")
+		return sdk.ZeroInt(), errors.Wrap(err, "minter - mint - add collected fees error")
 	}
 
 	minterState.AmountMinted = minterState.AmountMinted.Add(amount)

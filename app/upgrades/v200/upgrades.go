@@ -20,6 +20,6 @@ func CreateUpgradeHandler(
 		if err != nil {
 			return vmResult, err
 		}
-		return vmResult, claim.Creates(ctx, appKeepers.GetC4eClaimKeeper(), appKeepers.GetAccountKeeper(), appKeepers.GetBankKeeper())
+		return vmResult, claim.Creates(ctx, appKeepers.GetC4eClaimKeeper(), appKeepers.GetC4eVestingKeeper(), appKeepers.GetAccountKeeper(), appKeepers.GetBankKeeper())
 	}
 }

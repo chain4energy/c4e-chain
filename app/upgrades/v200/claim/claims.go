@@ -1,10 +1,13 @@
 package claim
 
 import (
+	"cosmossdk.io/math"
 	"embed"
 	"encoding/json"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"time"
 
@@ -20,10 +23,10 @@ var f embed.FS
 const monthAvgHours = 365 * 24 / 12 * time.Hour
 const claimSource = "cfeminter"
 
-func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper *authkeeper.AccountKeeper, bankKeeper *bankkeeper.Keeper) error {
+func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper *cfevestingkeeper.Keeper, accountKeeper *authkeeper.AccountKeeper, bankKeeper *bankkeeper.Keeper) error {
 	lockupPeriod := 3 * monthAvgHours
 	vestingPeriod := 6 * monthAvgHours
-	startTime := ctx.BlockTime().Add(time.Hour * 2)
+	startTime := ctx.BlockTime()
 	endTime := startTime.Add(time.Hour * 100)
 	acc := accountKeeper.GetModuleAccount(ctx, claimSource)
 	if acc == nil {
@@ -31,12 +34,44 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper 
 		return fmt.Errorf("source module account not found: %s", claimSource)
 	}
 	ownerAcc := acc.GetAddress().String()
-	err := bankkeeper.Keeper.MintCoins(*bankKeeper, ctx, claimSource, sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(100000000000000))))
+	err := bankkeeper.Keeper.MintCoins(*bankKeeper, ctx, claimSource, sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(1000000000000000))))
 	if err != nil {
 		return err
 	}
 	zeroInt := sdk.ZeroInt()
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", types.DefaultCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+
+	vestingType := cfevestingtypes.VestingType{
+		Name:          "NewVestingType",
+		LockupPeriod:  time.Hour,
+		VestingPeriod: time.Hour,
+		Free:          sdk.ZeroDec(),
+	}
+	vestingKeeper.SetVestingType(ctx, vestingType)
+
+	accountVestingPools := cfevestingtypes.AccountVestingPools{
+		Owner: acc.GetAddress().String(),
+		VestingPools: []*cfevestingtypes.VestingPool{
+			{
+				Name:            "NewVestingPool",
+				VestingType:     vestingType.Name,
+				LockStart:       startTime,
+				LockEnd:         endTime,
+				InitiallyLocked: math.NewInt(100000000000000),
+				Withdrawn:       math.ZeroInt(),
+				Sent:            math.ZeroInt(),
+				GenesisPool:     true,
+				Reservations:    nil,
+			},
+		},
+	}
+
+	vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
+	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(*bankKeeper, ctx, acc.GetAddress(), cfevestingtypes.ModuleName, sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(100000000000000))))
+	if err != nil {
+		return err
+	}
+
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", types.VestingPoolCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "NewVestingPool")
 	if err != nil {
 		return err
 	}
@@ -48,7 +83,7 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, accountKeeper 
 	if err != nil {
 		return err
 	}
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", types.DefaultCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", types.VestingPoolCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "NewVestingPool")
 	if err != nil {
 		return err
 	}

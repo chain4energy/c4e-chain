@@ -124,13 +124,13 @@ func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context
 			previousPeriods = claimAccount.VestingPeriods
 		}
 	}
-
-	require.NoError(h.t, h.helperCfevestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, cfevestingtypes.ModuleName,
+	_, err := h.helperCfevestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, cfevestingtypes.ModuleName,
 		toAddress.String(),
 		coins,
 		startTime,
 		endTime,
-	))
+	)
+	require.NoError(h.t, err)
 
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, toAddress, accBalance.Add(amount))
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalance.Sub(amount))
@@ -153,13 +153,13 @@ func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccountError(ctx sdk.Co
 	if accountBefore != nil {
 		_, wasAccount = accountBefore.(*cfevestingtypes.PeriodicContinuousVestingAccount)
 	}
-
-	require.EqualError(h.t, h.helperCfevestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, cfevestingtypes.ModuleName,
+	_, err := h.helperCfevestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, cfevestingtypes.ModuleName,
 		toAddress.String(),
 		coins,
 		startTime,
 		endTime,
-	), errorMessage)
+	)
+	require.EqualError(h.t, err, errorMessage)
 
 	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, toAddress, accBalance)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalance)

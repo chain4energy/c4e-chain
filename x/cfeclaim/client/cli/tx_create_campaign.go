@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
@@ -29,14 +30,14 @@ func CmdCreateCampaign() *cobra.Command {
 			}
 			argFeegrantAmount, ok := sdk.NewIntFromString(args[3])
 			if !ok {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
+				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
 			}
 			if err != nil {
 				return err
 			}
 			argInitialClaimFreeAmount, ok := sdk.NewIntFromString(args[4])
 			if !ok {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
+				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
 			}
 			argStartTime, err := time.Parse(TimeLayout, args[5])
 			if err != nil {
@@ -51,11 +52,11 @@ func CmdCreateCampaign() *cobra.Command {
 			}
 			argLockupPeriod, err := time.ParseDuration(args[7])
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
 			argVestingPeriod, err := time.ParseDuration(args[8])
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
 			argVestingPoolName := args[9]
 			clientCtx, err := client.GetClientTxContext(cmd)

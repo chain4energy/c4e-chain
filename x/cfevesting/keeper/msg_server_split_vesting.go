@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 	"github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -19,7 +20,7 @@ func (k msgServer) SplitVesting(goCtx context.Context, msg *types.MsgSplitVestin
 	}
 
 	if err = k.splitVestingCoins(ctx, fromAccAddress, toAccAddress, msg.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "split vesting")
+		return nil, errors.Wrap(err, "split vesting")
 	}
 
 	for _, a := range msg.Amount {
@@ -38,29 +39,29 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 	amount sdk.Coins) error {
 
 	if len(amount) == 0 {
-		return sdkerrors.Wrapf(types.ErrParam, "split vesting coins - no coins to split %s", amount)
+		return errors.Wrapf(types.ErrParam, "split vesting coins - no coins to split %s", amount)
 	}
 
 	if amount.IsAnyNil() {
-		return sdkerrors.Wrapf(types.ErrParam, "split vesting coins - all coins of amount must not be nil: %s", amount)
+		return errors.Wrapf(types.ErrParam, "split vesting coins - all coins of amount must not be nil: %s", amount)
 	}
 
 	if err := k.bank.IsSendEnabledCoins(ctx, amount...); err != nil {
-		return sdkerrors.Wrapf(types.ErrParam, "send is disabled")
+		return errors.Wrapf(types.ErrParam, "send is disabled")
 	}
 
 	if k.bank.BlockedAddr(toAddress) {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", toAddress)
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", toAddress)
 	}
 
 	if acc := k.account.GetAccount(ctx, toAddress); acc != nil {
 		k.Logger(ctx).Debug("split vesting coins - to account already exists error", "toAddress", toAddress)
-		return sdkerrors.Wrapf(types.ErrAlreadyExists, "split vesting coins - account address: %s", toAddress)
+		return errors.Wrapf(types.ErrAlreadyExists, "split vesting coins - account address: %s", toAddress)
 	}
 
 	vestingAcc, err := k.UnlockUnbondedContinuousVestingAccountCoins(ctx, from, amount)
 	if err != nil {
-		return sdkerrors.Wrap(err, "split vesting coins")
+		return errors.Wrap(err, "split vesting coins")
 	}
 
 	startTime := ctx.BlockTime().Unix()
@@ -77,11 +78,11 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 		k.Logger(ctx).Error("vesting split emit event error", "event", event, "error", err.Error())
 	}
 	if _, err = k.newContinuousVestingAccount(ctx, toAddress, amount, startTime, vestingAcc.EndTime); err != nil {
-		return sdkerrors.Wrap(err, "split vesting coins")
+		return errors.Wrap(err, "split vesting coins")
 	}
 
 	if err = k.bank.SendCoins(ctx, from, toAddress, amount); err != nil {
-		return sdkerrors.Wrap(err, "split vesting coins")
+		return errors.Wrap(err, "split vesting coins")
 	}
 
 	vAcc, found := k.GetVestingAccountTrace(ctx, from.String())

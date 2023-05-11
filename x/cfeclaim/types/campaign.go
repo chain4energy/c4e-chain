@@ -1,8 +1,8 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
 )
 
@@ -78,13 +78,13 @@ func GetWhitelistedVestingAccounts() []string {
 
 func (c *Campaign) IsActive(blockTime time.Time) error {
 	if !c.Enabled {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d error", c.Id)
+		return errors.Wrapf(ErrCampaignDisabled, "campaign %d error", c.Id)
 	}
 	if blockTime.Before(c.StartTime) {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.StartTime)
+		return errors.Wrapf(ErrCampaignDisabled, "campaign %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.StartTime)
 	}
 	if blockTime.After(c.EndTime) {
-		return sdkerrors.Wrapf(ErrCampaignDisabled, "campaign %d has already ended (%s > endTime %s) error", c.Id, blockTime, c.EndTime)
+		return errors.Wrapf(ErrCampaignDisabled, "campaign %d has already ended (%s > endTime %s) error", c.Id, blockTime, c.EndTime)
 	}
 	return nil
 }

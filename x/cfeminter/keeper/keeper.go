@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"time"
@@ -63,7 +64,7 @@ func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO 
 	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.Minters, &minterState)
 	if currentMinter == nil {
 		k.Logger(ctx).Error("minter current sequence id not found error", "SequenceId", minterState.SequenceId)
-		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.SequenceId)
+		return sdk.ZeroDec(), errors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.SequenceId)
 	}
 
 	var startTime time.Time

@@ -94,7 +94,7 @@ func (account PeriodicContinuousVestingAccount) GetVestingCoins(blockTime time.T
 	return account.OriginalVesting.Sub(account.GetVestedCoins(blockTime)...)
 }
 
-// GetAllLockedCoins returns the set of coins that are not spendable (i.e. locked),
+// cfevestingtypes.ModuleName returns the set of coins that are not spendable (i.e. locked),
 // defined as the vesting coins that are not delegated.
 func (account PeriodicContinuousVestingAccount) LockedCoins(blockTime time.Time) sdk.Coins {
 	return account.BaseVestingAccount.LockedCoinsFromVesting(account.GetVestingCoins(blockTime))

@@ -1,9 +1,8 @@
 package cfevesting
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
-
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -33,12 +32,12 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 		lockupPeriod, err := types.DurationFromUnits(types.PeriodUnit(gVestingType.LockupPeriodUnit), gVestingType.LockupPeriod)
 		if err != nil {
 			k.Logger(ctx).Error("init genesis lockup period duration error", "unit", gVestingType.LockupPeriodUnit, "period", gVestingType.LockupPeriod)
-			panic(sdkerrors.Wrapf(err, "init genesis lockup period duration error: unit: %s", gVestingType.LockupPeriodUnit))
+			panic(errors.Wrapf(err, "init genesis lockup period duration error: unit: %s", gVestingType.LockupPeriodUnit))
 		}
 		vestingPeriod, err := types.DurationFromUnits(types.PeriodUnit(gVestingType.VestingPeriodUnit), gVestingType.VestingPeriod)
 		if err != nil {
 			k.Logger(ctx).Error("init genesis vesting period duration error", "unit", gVestingType.VestingPeriodUnit, "period", gVestingType.VestingPeriod)
-			panic(sdkerrors.Wrapf(err, "init genesis lockup period duration error: unit: %s", gVestingType.VestingPeriodUnit))
+			panic(errors.Wrapf(err, "init genesis lockup period duration error: unit: %s", gVestingType.VestingPeriodUnit))
 		}
 		vt := types.VestingType{
 			Name:          gVestingType.Name,

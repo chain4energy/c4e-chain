@@ -2,11 +2,11 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 	metrics "github.com/armon/go-metrics"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k msgServer) MoveAvailableVestingByDenoms(goCtx context.Context, msg *types.MsgMoveAvailableVestingByDenoms) (*types.MsgMoveAvailableVestingByDenomsResponse, error) {
@@ -23,7 +23,7 @@ func (k msgServer) MoveAvailableVestingByDenoms(goCtx context.Context, msg *type
 	amount := sdk.NewCoins()
 	for _, denom := range msg.Denoms {
 		if len(denom) == 0 {
-			return nil, sdkerrors.Wrapf(types.ErrParam, "move available vesting by denoms - empty denom")
+			return nil, errors.Wrapf(types.ErrParam, "move available vesting by denoms - empty denom")
 		}
 		denAmount := locked.AmountOf(denom)
 		if denAmount.IsPositive() {
@@ -31,7 +31,7 @@ func (k msgServer) MoveAvailableVestingByDenoms(goCtx context.Context, msg *type
 		}
 	}
 	if err := k.splitVestingCoins(ctx, fromAccAddress, toAccAddress, amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "move available vesting by denoms")
+		return nil, errors.Wrap(err, "move available vesting by denoms")
 	}
 	for _, a := range amount {
 		if a.Amount.IsInt64() {

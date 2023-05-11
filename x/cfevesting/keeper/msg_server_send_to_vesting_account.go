@@ -2,18 +2,18 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 	metrics "github.com/armon/go-metrics"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k msgServer) SendToVestingAccount(goCtx context.Context, msg *types.MsgSendToVestingAccount) (*types.MsgSendToVestingAccountResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "send to vesting account message")
 	if msg.Amount.IsNil() {
-		return nil, sdkerrors.Wrap(c4eerrors.ErrParam, "send to new vesting account - amount is nil")
+		return nil, errors.Wrap(c4eerrors.ErrParam, "send to new vesting account - amount is nil")
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
