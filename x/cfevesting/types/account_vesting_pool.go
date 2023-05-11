@@ -90,7 +90,7 @@ func (m *VestingPool) Validate(accountAdd string) error {
 	if m.Sent.IsNegative() {
 		return fmt.Errorf("vesting pool with name: %s defined for account: %s has Sent value negative %s", m.Name, accountAdd, m.Sent)
 	}
-	if m.GetCurrentlyLockedWithoutReservations().IsNegative() {
+	if m.GetCurrentlyLocked().IsNegative() {
 		return fmt.Errorf("vesting pool with name: %s defined for account: %s has InitiallyLocked (%s) < Withdrawn (%s) + Sent (%s)",
 			m.Name, accountAdd, m.InitiallyLocked, m.Withdrawn, m.Sent)
 	}
@@ -104,7 +104,7 @@ func (avpl AccountVestingPoolsList) GetGenesisAmount() math.Int {
 	for _, avp := range avpl {
 		for _, vp := range avp.VestingPools {
 			if vp.GenesisPool {
-				result = result.Add(vp.GetCurrentlyLockedWithoutReservations())
+				result = result.Add(vp.GetCurrentlyLocked())
 			}
 		}
 	}
