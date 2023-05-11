@@ -170,36 +170,34 @@ type PeriodicContinuousVestingAccount struct {
 	VestingPeriods             []ContinuousVestingPeriod `protobuf:"bytes,3,rep,name=vesting_periods,json=vestingPeriods,proto3" json:"vesting_periods"`
 }
 
-func (account *PeriodicContinuousVestingAccount) Reset() {
-	*account = PeriodicContinuousVestingAccount{}
-}
+func (m *PeriodicContinuousVestingAccount) Reset()      { *m = PeriodicContinuousVestingAccount{} }
 func (*PeriodicContinuousVestingAccount) ProtoMessage() {}
 func (*PeriodicContinuousVestingAccount) Descriptor() ([]byte, []int) {
 	return fileDescriptor_785587b07f9ac0c9, []int{2}
 }
-func (account *PeriodicContinuousVestingAccount) XXX_Unmarshal(b []byte) error {
-	return account.Unmarshal(b)
+func (m *PeriodicContinuousVestingAccount) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
 }
-func (account *PeriodicContinuousVestingAccount) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *PeriodicContinuousVestingAccount) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_PeriodicContinuousVestingAccount.Marshal(b, account, deterministic)
+		return xxx_messageInfo_PeriodicContinuousVestingAccount.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
-		n, err := account.MarshalToSizedBuffer(b)
+		n, err := m.MarshalToSizedBuffer(b)
 		if err != nil {
 			return nil, err
 		}
 		return b[:n], nil
 	}
 }
-func (account *PeriodicContinuousVestingAccount) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PeriodicContinuousVestingAccount.Merge(account, src)
+func (m *PeriodicContinuousVestingAccount) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PeriodicContinuousVestingAccount.Merge(m, src)
 }
-func (account *PeriodicContinuousVestingAccount) XXX_Size() int {
-	return account.Size()
+func (m *PeriodicContinuousVestingAccount) XXX_Size() int {
+	return m.Size()
 }
-func (account *PeriodicContinuousVestingAccount) XXX_DiscardUnknown() {
-	xxx_messageInfo_PeriodicContinuousVestingAccount.DiscardUnknown(account)
+func (m *PeriodicContinuousVestingAccount) XXX_DiscardUnknown() {
+	xxx_messageInfo_PeriodicContinuousVestingAccount.DiscardUnknown(m)
 }
 
 var xxx_messageInfo_PeriodicContinuousVestingAccount proto.InternalMessageInfo
@@ -363,30 +361,30 @@ func (m *ContinuousVestingPeriod) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (account *PeriodicContinuousVestingAccount) Marshal() (dAtA []byte, err error) {
-	size := account.Size()
+func (m *PeriodicContinuousVestingAccount) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
 	dAtA = make([]byte, size)
-	n, err := account.MarshalToSizedBuffer(dAtA[:size])
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
 		return nil, err
 	}
 	return dAtA[:n], nil
 }
 
-func (account *PeriodicContinuousVestingAccount) MarshalTo(dAtA []byte) (int, error) {
-	size := account.Size()
-	return account.MarshalToSizedBuffer(dAtA[:size])
+func (m *PeriodicContinuousVestingAccount) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (account *PeriodicContinuousVestingAccount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *PeriodicContinuousVestingAccount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(account.VestingPeriods) > 0 {
-		for iNdEx := len(account.VestingPeriods) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.VestingPeriods) > 0 {
+		for iNdEx := len(m.VestingPeriods) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := account.VestingPeriods[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.VestingPeriods[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -397,14 +395,14 @@ func (account *PeriodicContinuousVestingAccount) MarshalToSizedBuffer(dAtA []byt
 			dAtA[i] = 0x1a
 		}
 	}
-	if account.StartTime != 0 {
-		i = encodeVarintVestingAccount(dAtA, i, uint64(account.StartTime))
+	if m.StartTime != 0 {
+		i = encodeVarintVestingAccount(dAtA, i, uint64(m.StartTime))
 		i--
 		dAtA[i] = 0x10
 	}
-	if account.BaseVestingAccount != nil {
+	if m.BaseVestingAccount != nil {
 		{
-			size, err := account.BaseVestingAccount.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.BaseVestingAccount.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -474,21 +472,21 @@ func (m *ContinuousVestingPeriod) Size() (n int) {
 	return n
 }
 
-func (account *PeriodicContinuousVestingAccount) Size() (n int) {
-	if account == nil {
+func (m *PeriodicContinuousVestingAccount) Size() (n int) {
+	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if account.BaseVestingAccount != nil {
-		l = account.BaseVestingAccount.Size()
+	if m.BaseVestingAccount != nil {
+		l = m.BaseVestingAccount.Size()
 		n += 1 + l + sovVestingAccount(uint64(l))
 	}
-	if account.StartTime != 0 {
-		n += 1 + sovVestingAccount(uint64(account.StartTime))
+	if m.StartTime != 0 {
+		n += 1 + sovVestingAccount(uint64(m.StartTime))
 	}
-	if len(account.VestingPeriods) > 0 {
-		for _, e := range account.VestingPeriods {
+	if len(m.VestingPeriods) > 0 {
+		for _, e := range m.VestingPeriods {
 			l = e.Size()
 			n += 1 + l + sovVestingAccount(uint64(l))
 		}
@@ -785,7 +783,7 @@ func (m *ContinuousVestingPeriod) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (account *PeriodicContinuousVestingAccount) Unmarshal(dAtA []byte) error {
+func (m *PeriodicContinuousVestingAccount) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -843,10 +841,10 @@ func (account *PeriodicContinuousVestingAccount) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if account.BaseVestingAccount == nil {
-				account.BaseVestingAccount = &types1.BaseVestingAccount{}
+			if m.BaseVestingAccount == nil {
+				m.BaseVestingAccount = &types1.BaseVestingAccount{}
 			}
-			if err := account.BaseVestingAccount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.BaseVestingAccount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -854,7 +852,7 @@ func (account *PeriodicContinuousVestingAccount) Unmarshal(dAtA []byte) error {
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StartTime", wireType)
 			}
-			account.StartTime = 0
+			m.StartTime = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowVestingAccount
@@ -864,7 +862,7 @@ func (account *PeriodicContinuousVestingAccount) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				account.StartTime |= int64(b&0x7F) << shift
+				m.StartTime |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -898,8 +896,8 @@ func (account *PeriodicContinuousVestingAccount) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			account.VestingPeriods = append(account.VestingPeriods, ContinuousVestingPeriod{})
-			if err := account.VestingPeriods[len(account.VestingPeriods)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.VestingPeriods = append(m.VestingPeriods, ContinuousVestingPeriod{})
+			if err := m.VestingPeriods[len(m.VestingPeriods)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

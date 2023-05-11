@@ -2810,6 +2810,16 @@ paths:
                       type: string
                     sent_amount:
                       type: string
+                    reservations:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uint64
+                          amount:
+                            type: string
         default:
           description: An unexpected error response.
           schema:
@@ -49834,6 +49844,16 @@ definitions:
               type: string
             sent_amount:
               type: string
+            reservations:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  amount:
+                    type: string
   chain4energy.c4echain.cfevesting.QueryVestingTypeResponse:
     type: object
     properties:
@@ -49906,6 +49926,24 @@ definitions:
       currently_locked:
         type: string
       sent_amount:
+        type: string
+      reservations:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            amount:
+              type: string
+  chain4energy.c4echain.cfevesting.VestingPoolReservation:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      amount:
         type: string
   cosmos.auth.v1beta1.AddressBytesToStringResponse:
     type: object

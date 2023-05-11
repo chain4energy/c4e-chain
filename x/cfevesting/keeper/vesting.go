@@ -198,7 +198,7 @@ func (k Keeper) SendToNewVestingAccountFromReservation(ctx sdk.Context, owner st
 		FromGenesisAccount: false,
 	})
 
-	eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
+	eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{ // TODO : modify
 		Owner:           owner,
 		Address:         toAddr,
 		VestingPoolName: vestingPool.Name,
@@ -215,10 +215,10 @@ func (k Keeper) SendToNewVestingAccountFromReservation(ctx sdk.Context, owner st
 func (k Keeper) SendToNewVestingAccountFromLocked(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
 	k.Logger(ctx).Debug("send to new vesting account", "owner", owner, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "restartVesting", restartVesting)
 
-	w, err := k.WithdrawAllAvailable(ctx, owner)
+	w, err := k.WithdrawAllAvailable(ctx, owner) // TODO: maybe to delete?
 	if err != nil {
-		k.Logger(ctx).Debug("send to new vesting account withdraw all available error", "owner", owner, "error", err.Error())
-		return withdrawn, sdkerrors.Wrap(err, "send to new vesting account - withdraw all available error")
+		k.Logger(ctx).Debug("send to new vesting account withdraw all available error", "owner", owner, "error", err.Error()) // TODO: logs strategy?
+		return withdrawn, sdkerrors.Wrap(err, "send to new vesting account - withdraw all available error")                   // TODO: maybe make errors easier?
 	}
 
 	accVestingPools, vestingPool, vestingPoolsFound := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
@@ -420,7 +420,7 @@ func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vesting
 	if !found {
 		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
 	}
-
+	// TODO : add event
 	vestingPool.AddReservation(reservationId, amout)
 
 	k.SetAccountVestingPools(ctx, accountVestingPools)
@@ -445,7 +445,7 @@ func (k Keeper) RemoveVestingPoolReservation(ctx sdk.Context, owner string, vest
 	if !found {
 		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
 	}
-
+	// TODO : add event
 	if err := vestingPool.SubstractFromReservation(reservationId, amout); err != nil {
 		return err
 	}

@@ -53,7 +53,7 @@ func (k Keeper) createVestingsSummary(ctx sdk.Context, genesisOnly bool) (*Summa
 			vestingCoins := continuousVestingAccount.GetVestingCoins(ctx.BlockTime()) // TODO ??? this should be reduced by amount of burned coins by jailing if burned amount before moment in time when thore burned vested
 			allVestingInAccounts = allVestingInAccounts.Add(vestingCoins.AmountOf(denom))
 			allLockedNotDelegated = allLockedNotDelegated.Add(lockedCoins.AmountOf(denom))
-		} else if periodcVestingAccount, ok := vestingAccount.(*vestingtypes.PeriodicVestingAccount); ok {
+		} else if periodcVestingAccount, ok := vestingAccount.(*types.PeriodicContinuousVestingAccount); ok {
 			lockedCoins := periodcVestingAccount.LockedCoins(ctx.BlockTime())
 			vestingCoins := periodcVestingAccount.GetVestingCoins(ctx.BlockTime()) // TODO ??? this should be reduced by amount of burned coins by jailing if burned amount before moment in time when thore burned vested
 			allVestingInAccounts = allVestingInAccounts.Add(vestingCoins.AmountOf(denom))
