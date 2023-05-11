@@ -186,17 +186,24 @@ func (k Keeper) SendToNewVestingAccountFromReservation(ctx sdk.Context, owner st
 		return err
 	}
 
-	if err := k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin("uc4e", amount)), startTime.Unix(), endTime.Unix()); err != nil {
+	periodId, err := k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin("uc4e", amount)), startTime.Unix(), endTime.Unix())
+	if err != nil {
 		return err
 	}
 
 	k.SetAccountVestingPools(ctx, accVestingPools)
-	k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
-		Address:            toAddr,
-		Genesis:            false,
-		FromGenesisPool:    vestingPool.GenesisPool,
-		FromGenesisAccount: false,
-	})
+	vestingAccountTrace, found := k.GetVestingAccountTrace(ctx, toAddr)
+	if !found {
+		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
+			Address:            toAddr,
+			Genesis:            false,
+			FromGenesisPool:    vestingPool.GenesisPool,
+			FromGenesisAccount: false,
+			PeriodsToTrace:     []uint64{periodId},
+		})
+	} else {
+		vestingAccountTrace.PeriodsToTrace = append(vestingAccountTrace.PeriodsToTrace, periodId)
+	}
 
 	eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{ // TODO : modify
 		Owner:           owner,
@@ -239,21 +246,28 @@ func (k Keeper) SendToNewVestingAccountFromLocked(ctx sdk.Context, owner string,
 		return withdrawn, sdkerrors.Wrap(types.ErrGetVestingType, sdkerrors.Wrapf(err, "send to new vesting account - from addr: %s, vestingType %s", owner, vestingPool.VestingType).Error())
 	}
 	coinsToSend := sdk.NewCoins(sdk.NewCoin(k.Denom(ctx), amount))
+	var periodId uint64
 	if restartVesting {
-		err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, coinsToSend,
+		periodId, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, coinsToSend,
 			ctx.BlockTime().Add(vt.LockupPeriod).Unix(), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod).Unix())
 	} else {
-		err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, coinsToSend,
+		periodId, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, coinsToSend,
 			vestingPool.LockEnd.Unix(), vestingPool.LockEnd.Unix())
 	}
 	if err == nil {
 		k.SetAccountVestingPools(ctx, accVestingPools)
-		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
-			Address:            toAddr,
-			Genesis:            false,
-			FromGenesisPool:    vestingPool.GenesisPool,
-			FromGenesisAccount: false,
-		})
+		vestingAccountTrace, found := k.GetVestingAccountTrace(ctx, toAddr)
+		if !found {
+			k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
+				Address:            toAddr,
+				Genesis:            false,
+				FromGenesisPool:    vestingPool.GenesisPool,
+				FromGenesisAccount: false,
+				PeriodsToTrace:     []uint64{periodId},
+			})
+		} else {
+			vestingAccountTrace.PeriodsToTrace = append(vestingAccountTrace.PeriodsToTrace, periodId)
+		}
 
 		eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
 			Owner:           owner,

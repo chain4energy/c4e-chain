@@ -10,29 +10,25 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
-func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins, startTime int64, endTime int64) error {
+func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins, startTime int64, endTime int64) (uint64, error) {
 	userAccAddress, err := sdk.AccAddressFromBech32(userAddress)
 	if err != nil {
-		return errors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: ", userAddress)
+		return 0, errors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: ", userAddress)
 	}
 
 	if k.bank.BlockedAddr(userAccAddress) {
-		return errors.Wrapf(sdkerrors.ErrUnauthorized, "account address: %s is not allowed to receive funds error", userAddress)
-	}
-
-	if err != nil {
-		return err
+		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "account address: %s is not allowed to receive funds error", userAddress)
 	}
 
 	periodicContinousVestingAccount, err := k.getOrCreatePeriodicContinousVestingAccount(ctx, userAccAddress, startTime, endTime)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	periodicContinousVestingAccount.AddNewContinousVestingPeriod(startTime, endTime, amount)
+	periodId := periodicContinousVestingAccount.AddNewContinousVestingPeriod(startTime, endTime, amount)
 
 	k.account.SetAccount(ctx, periodicContinousVestingAccount)
-	return k.bank.SendCoinsFromModuleToAccount(ctx, moduleName, userAccAddress, amount)
+	return periodId, k.bank.SendCoinsFromModuleToAccount(ctx, moduleName, userAccAddress, amount)
 }
 
 func (k Keeper) getOrCreatePeriodicContinousVestingAccount(ctx sdk.Context, claimerAddress sdk.AccAddress, startTime, endTime int64) (*types.PeriodicContinuousVestingAccount, error) {

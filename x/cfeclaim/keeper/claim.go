@@ -185,7 +185,7 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 			return nil, err
 		}
 	} else {
-		if err := k.vestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, userEntry.ClaimAddress, claimableAmount, start.Unix(), end.Unix()); err != nil {
+		if _, err := k.vestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, userEntry.ClaimAddress, claimableAmount, start.Unix(), end.Unix()); err != nil {
 			return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userEntry.ClaimAddress)
 		}
 	}

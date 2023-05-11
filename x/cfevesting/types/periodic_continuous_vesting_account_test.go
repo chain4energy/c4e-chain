@@ -41,7 +41,7 @@ func TestSinglePeriod(t *testing.T) {
 		}
 		require.True(t, acc.GetVestedCoins(checkTime).IsEqual(vested))
 		require.True(t, acc.GetVestingCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
-		require.True(t, acc.LockedCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
+		require.True(t, acc.GetAllLockedCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
 		require.True(t, acc.DelegatedFree.IsZero())
 		require.True(t, acc.DelegatedVesting.IsZero())
 	}
@@ -53,7 +53,7 @@ func TestSinglePeriod(t *testing.T) {
 
 	require.True(t, acc.GetVestedCoins(checkTime).IsEqual(vested))
 	require.True(t, acc.GetVestingCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
-	require.True(t, acc.LockedCoins(checkTime).IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2000000)))))
+	require.True(t, acc.GetAllLockedCoins(checkTime).IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2000000)))))
 	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(5000000)))))
 	require.True(t, acc.DelegatedFree.IsZero())
 
@@ -64,7 +64,7 @@ func TestSinglePeriod(t *testing.T) {
 
 	require.True(t, acc.GetVestedCoins(checkTime).IsEqual(vested))
 	require.True(t, acc.GetVestingCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
-	require.True(t, acc.LockedCoins(checkTime).IsZero())
+	require.True(t, acc.GetAllLockedCoins(checkTime).IsZero())
 	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(6000000)))))
 	require.True(t, acc.DelegatedFree.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2000000)))))
 
@@ -74,7 +74,7 @@ func TestSinglePeriod(t *testing.T) {
 	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2000000))), sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2000000))))
 	require.True(t, acc.GetVestedCoins(checkTime).IsEqual(vested))
 	require.True(t, acc.GetVestingCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
-	require.True(t, acc.LockedCoins(checkTime).IsZero())
+	require.True(t, acc.GetAllLockedCoins(checkTime).IsZero())
 	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(6000000)))))
 	require.True(t, acc.DelegatedFree.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(4000000)))))
 
@@ -139,7 +139,7 @@ func TestMultiplePeriods(t *testing.T) {
 
 		require.True(t, acc.GetVestedCoins(checkTime).IsEqual(vested))
 		require.True(t, acc.GetVestingCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
-		require.True(t, acc.LockedCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
+		require.True(t, acc.GetAllLockedCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
 		require.True(t, acc.DelegatedFree.IsZero())
 		require.True(t, acc.DelegatedVesting.IsZero())
 	}

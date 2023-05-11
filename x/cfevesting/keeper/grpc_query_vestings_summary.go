@@ -49,13 +49,13 @@ func (k Keeper) createVestingsSummary(ctx sdk.Context, genesisOnly bool) (*Summa
 
 		vestingAccount := k.account.GetAccount(ctx, accAddr)
 		if continuousVestingAccount, ok := vestingAccount.(*vestingtypes.ContinuousVestingAccount); ok {
-			lockedCoins := continuousVestingAccount.LockedCoins(ctx.BlockTime())
-			vestingCoins := continuousVestingAccount.GetVestingCoins(ctx.BlockTime()) // TODO ??? this should be reduced by amount of burned coins by jailing if burned amount before moment in time when thore burned vested
+			vestingCoins := continuousVestingAccount.GetVestingCoins(ctx.BlockTime())
+			lockedCoins := continuousVestingAccount.BaseVestingAccount.LockedCoinsFromVesting(vestingCoins) // TODO ??? this should be reduced by amount of burned coins by jailing if burned amount before moment in time when thore burned vested
 			allVestingInAccounts = allVestingInAccounts.Add(vestingCoins.AmountOf(denom))
 			allLockedNotDelegated = allLockedNotDelegated.Add(lockedCoins.AmountOf(denom))
 		} else if periodcVestingAccount, ok := vestingAccount.(*types.PeriodicContinuousVestingAccount); ok {
-			lockedCoins := periodcVestingAccount.LockedCoins(ctx.BlockTime())
-			vestingCoins := periodcVestingAccount.GetVestingCoins(ctx.BlockTime()) // TODO ??? this should be reduced by amount of burned coins by jailing if burned amount before moment in time when thore burned vested
+			vestingCoins := periodcVestingAccount.GetVestingCoinsForSpecyficPeriods(ctx.BlockTime(), accFromList.PeriodsToTrace)
+			lockedCoins := periodcVestingAccount.GetLockedCoins(vestingCoins)
 			allVestingInAccounts = allVestingInAccounts.Add(vestingCoins.AmountOf(denom))
 			allLockedNotDelegated = allLockedNotDelegated.Add(lockedCoins.AmountOf(denom))
 		}

@@ -45,8 +45,9 @@ func NewRepeatedContinuousVestingAccount(baseAcc *authtypes.BaseAccount, origina
 	}
 }
 
-func (account *PeriodicContinuousVestingAccount) AddNewContinousVestingPeriod(startTime int64, endTime int64, amount sdk.Coins) {
-	hadPariods := len(account.VestingPeriods) > 0
+func (account *PeriodicContinuousVestingAccount) AddNewContinousVestingPeriod(startTime int64, endTime int64, amount sdk.Coins) uint64 {
+	vestingPeriodsLen := len(account.VestingPeriods)
+	hadPariods := vestingPeriodsLen > 0
 
 	account.VestingPeriods = append(account.VestingPeriods,
 		ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: amount})
@@ -58,6 +59,7 @@ func (account *PeriodicContinuousVestingAccount) AddNewContinousVestingPeriod(st
 	if !hadPariods || startTime < account.StartTime {
 		account.StartTime = startTime
 	}
+	return uint64(vestingPeriodsLen)
 }
 
 // GetVestedCoins returns the total number of vested coins. If no coins are vested,
@@ -70,16 +72,38 @@ func (account PeriodicContinuousVestingAccount) GetVestedCoins(blockTime time.Ti
 	return vestedCoins
 }
 
+// GetVestingCoinsForSpecyficPeriods returns the total number of vesting coins. If no coins are
+// vesting, nil is returned.
+func (account PeriodicContinuousVestingAccount) GetVestingCoinsForSpecyficPeriods(blockTime time.Time, periodsToTrace []uint64) sdk.Coins {
+	return account.OriginalVesting.Sub(account.GetVestedCoinsForSpecyficPeriods(blockTime, periodsToTrace)...)
+}
+
+// GetVestedCoinsForSpecyficPeriods returns the total number of vested coins. If no coins are vested,
+// nil is returned.
+func (account PeriodicContinuousVestingAccount) GetVestedCoinsForSpecyficPeriods(blockTime time.Time, periodsToTrace []uint64) sdk.Coins {
+	var vestedCoins sdk.Coins
+	for _, periodId := range periodsToTrace {
+		vestedCoins = vestedCoins.Add(account.VestingPeriods[periodId].GetVestedCoins(blockTime)...)
+	}
+	return vestedCoins
+}
+
 // GetVestingCoins returns the total number of vesting coins. If no coins are
 // vesting, nil is returned.
 func (account PeriodicContinuousVestingAccount) GetVestingCoins(blockTime time.Time) sdk.Coins {
 	return account.OriginalVesting.Sub(account.GetVestedCoins(blockTime)...)
 }
 
-// LockedCoins returns the set of coins that are not spendable (i.e. locked),
+// GetAllLockedCoins returns the set of coins that are not spendable (i.e. locked),
 // defined as the vesting coins that are not delegated.
 func (account PeriodicContinuousVestingAccount) LockedCoins(blockTime time.Time) sdk.Coins {
 	return account.BaseVestingAccount.LockedCoinsFromVesting(account.GetVestingCoins(blockTime))
+}
+
+// GetLockedCoinsFromCoins returns the set of coins that are not spendable (i.e. locked),
+// defined as the vesting coins that are not delegated.
+func (account PeriodicContinuousVestingAccount) GetLockedCoins(vestingCoins sdk.Coins) sdk.Coins {
+	return account.BaseVestingAccount.LockedCoinsFromVesting(vestingCoins)
 }
 
 // TrackDelegation tracks a desired delegation amount by setting the appropriate
