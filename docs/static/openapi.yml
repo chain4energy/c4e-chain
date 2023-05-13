@@ -42,6 +42,8 @@ paths:
                     type: string
                   initial_claim_free_amount:
                     type: string
+                  free:
+                    type: string
                   enabled:
                     type: boolean
                   start_time:
@@ -229,6 +231,8 @@ paths:
                     feegrant_amount:
                       type: string
                     initial_claim_free_amount:
+                      type: string
+                    free:
                       type: string
                     enabled:
                       type: boolean
@@ -47810,6 +47814,8 @@ definitions:
         type: string
       initial_claim_free_amount:
         type: string
+      free:
+        type: string
       enabled:
         type: boolean
       start_time:
@@ -47983,6 +47989,8 @@ definitions:
             type: string
           initial_claim_free_amount:
             type: string
+          free:
+            type: string
           enabled:
             type: boolean
           start_time:
@@ -48048,6 +48056,8 @@ definitions:
             feegrant_amount:
               type: string
             initial_claim_free_amount:
+              type: string
+            free:
               type: string
             enabled:
               type: boolean

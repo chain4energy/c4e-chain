@@ -13,22 +13,20 @@ import (
 	"strconv"
 )
 
-func validateFeegrantAmount(feeGrantAmount *math.Int) (*math.Int, error) {
+func validateFeegrantAmount(feeGrantAmount *math.Int) (math.Int, error) {
 	if feeGrantAmount == nil {
-		zeroInt := sdk.ZeroInt()
-		feeGrantAmount = &zeroInt
+		return sdk.ZeroInt(), nil
 	}
 
 	if feeGrantAmount.IsNil() {
-		zeroInt := sdk.ZeroInt()
-		feeGrantAmount = &zeroInt
+		return sdk.ZeroInt(), nil
 	}
 
 	if feeGrantAmount.IsNegative() {
-		return nil, errors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
+		return sdk.ZeroInt(), errors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
 	}
 
-	return feeGrantAmount, nil
+	return *feeGrantAmount, nil
 }
 
 func CreateFeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {

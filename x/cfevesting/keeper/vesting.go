@@ -169,7 +169,8 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 	return result, nil
 }
 
-func (k Keeper) SendToNewVestingAccountFromReservation(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, reservationId uint64, startTime time.Time, endTime time.Time) error {
+func (k Keeper) SendToNewVestingAccountFromReservedTokens(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, reservationId uint64,
+	free sdk.Dec, lockupPeriod time.Duration, vestingPeriod time.Duration) error {
 	k.Logger(ctx).Debug("send to new vesting account", "owner", owner, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "reservationId", reservationId)
 
 	accVestingPools, vestingPool, vestingPoolsFound := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
@@ -177,65 +178,65 @@ func (k Keeper) SendToNewVestingAccountFromReservation(ctx sdk.Context, owner st
 		return errors.Wrapf(sdkerrors.ErrNotFound, "send to new vesting account - no vesting pools found for address (%s)", owner)
 	}
 
-	available := vestingPool.GetCurrentlyLockedInReservations()
-
-	if available.LT(amount) {
-		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "send to new vesting account - vesting available: %s is smaller than requested amount: %s", available, amount)
-	}
-	if err := vestingPool.SubstractFromReservation(reservationId, amount); err != nil {
+	vestingType, err := k.GetVestingType(ctx, vestingPool.VestingType)
+	if err = vestingType.ValidateVestingPeriods(lockupPeriod, vestingPeriod); err != nil {
 		return err
 	}
 
-	periodId, err := k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin("uc4e", amount)), startTime.Unix(), endTime.Unix())
+	if free.GT(vestingType.Free) {
+		free = vestingType.Free // TODO: if custom free is greater than vesting type free use vesting type free. Maybe we should return an error in this case?
+	}
+
+	if err = vestingPool.SendFromReservedTokens(reservationId, amount); err != nil {
+		return err
+	}
+
+	denom := k.Denom(ctx)
+	periodId, err := k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin(denom, amount)), free,
+		ctx.BlockTime().Add(lockupPeriod).Unix(), ctx.BlockTime().Add(lockupPeriod).Add(vestingPeriod).Unix())
 	if err != nil {
 		return err
 	}
 
 	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, false, accVestingPools, vestingPool)
-
 	return nil
 }
 
-func (k Keeper) SendToNewVestingAccountFromLocked(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, restartVesting bool) (withdrawn sdk.Coin, returnedError error) {
+func (k Keeper) SendToNewVestingAccountFromLocked(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, restartVesting bool) error {
 	k.Logger(ctx).Debug("send to new vesting account", "owner", owner, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "restartVesting", restartVesting)
-
-	w, err := k.WithdrawAllAvailable(ctx, owner) // TODO: maybe to delete?
-	if err != nil {
-		k.Logger(ctx).Debug("send to new vesting account withdraw all available error", "owner", owner, "error", err.Error()) // TODO: logs strategy?
-		return withdrawn, errors.Wrap(err, "send to new vesting account - withdraw all available error")                      // TODO: maybe make errors easier?
-	}
 
 	accVestingPools, vestingPool, vestingPoolsFound := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !vestingPoolsFound || len(accVestingPools.VestingPools) == 0 || vestingPool == nil {
-		return w, errors.Wrapf(sdkerrors.ErrNotFound, "send to new vesting account - no vesting pools found for address (%s)", owner)
+		return errors.Wrapf(sdkerrors.ErrNotFound, "send to new vesting account - no vesting pools found for address (%s)", owner)
 	}
 
-	available := vestingPool.GetCurrentlyLockedWithoutReservations()
-
-	if available.LT(amount) {
-		return w, errors.Wrapf(sdkerrors.ErrInsufficientFunds,
-			"send to new vesting account - vesting available: %s is smaller than requested amount: %s", available, amount)
-	}
-	vestingPool.Sent = vestingPool.Sent.Add(amount)
-	vt, vErr := k.GetVestingType(ctx, vestingPool.VestingType)
-	if vErr != nil {
+	vestingType, err := k.GetVestingType(ctx, vestingPool.VestingType)
+	if err != nil {
 		k.Logger(ctx).Debug("send to new vesting account get vesting type error", "owner", owner, "vestingPool", vestingPool, "error", err.Error())
-		return withdrawn, errors.Wrap(types.ErrGetVestingType, errors.Wrapf(err, "send to new vesting account - from addr: %s, vestingType %s", owner, vestingPool.VestingType).Error())
+		return errors.Wrap(types.ErrGetVestingType, errors.Wrapf(err, "send to new vesting account - from addr: %s, vestingType %s", owner, vestingPool.VestingType).Error())
 	}
-	coinsToSend := sdk.NewCoins(sdk.NewCoin(k.Denom(ctx), amount))
+
+	if err = vestingPool.SendFromLockedTokens(amount); err != nil {
+		return err
+	}
+
+	denom := k.Denom(ctx)
 	var periodId uint64
 	if restartVesting {
-		periodId, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, coinsToSend,
-			ctx.BlockTime().Add(vt.LockupPeriod).Unix(), ctx.BlockTime().Add(vt.LockupPeriod).Add(vt.VestingPeriod).Unix())
+		periodId, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin(denom, amount)), vestingType.Free,
+			ctx.BlockTime().Add(vestingType.LockupPeriod).Unix(), ctx.BlockTime().Add(vestingType.LockupPeriod).Add(vestingType.VestingPeriod).Unix())
 	} else {
-		periodId, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, coinsToSend,
+		periodId, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin(denom, amount)), vestingType.Free,
 			vestingPool.LockEnd.Unix(), vestingPool.LockEnd.Unix())
 	}
-	if err == nil {
-		k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, restartVesting, accVestingPools, vestingPool)
+	if err != nil {
+		return err
+
 	}
-	k.Logger(ctx).Debug("send to new vesting account ret", "withdrawn", w, "error", err, "accVestingPools", accVestingPools)
-	return w, err
+
+	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, restartVesting, accVestingPools, vestingPool)
+	k.Logger(ctx).Debug("send to new vesting account ret", "error", err, "accVestingPools", accVestingPools)
+	return nil
 }
 
 func (k Keeper) SetAccountVestingPoolsAndVestingAccountTrace(ctx sdk.Context, owner string, toAddr string, amount math.Int, periodId uint64,
@@ -318,58 +319,6 @@ func CalculateWithdrawable(current time.Time, vestingPool types.VestingPool) mat
 	}
 	return sdk.ZeroInt()
 }
-
-//func (k Keeper) newVestingAccount(ctx sdk.Context, toAddress sdk.AccAddress, amount math.Int, free sdk.Dec, // TODO: probably to delte
-//	lockEnd time.Time,
-//	vestingEnd time.Time) error {
-//	denom := k.GetParams(ctx).Denom
-//	k.Logger(ctx).Debug("new vesting account", "toAddress", toAddress, "amount", amount, "lockEnd", lockEnd,
-//		"vestingEnd", vestingEnd, "denom", denom)
-//
-//	ak := k.account
-//	bk := k.bank
-//	coinToSend := sdk.NewCoin(denom, amount)
-//	if err := bk.IsSendEnabledCoins(ctx, coinToSend); err != nil {
-//		k.Logger(ctx).Debug("new vesting account is send coins disabled error", "error", err.Error())
-//		return errors.Wrapf(err, "new vesting account - is send coins disabled")
-//	}
-//
-//	if bk.BlockedAddr(toAddress) {
-//		k.Logger(ctx).Debug("new vesting account is not allowed to receive funds error", "address", toAddress)
-//		return errors.Wrapf(types.ErrAccountNotAllowedToReceiveFunds, "new vesting account - account address: %s", toAddress)
-//	}
-//
-//	if acc := ak.GetAccount(ctx, toAddress); acc != nil {
-//		k.Logger(ctx).Debug("new vesting account account already exists error", "toAddress", toAddress)
-//		return errors.Wrapf(types.ErrAlreadyExists, "new vesting account - account address: %s", toAddress)
-//	}
-//
-//	decimalAmount := sdk.NewDecFromInt(amount)
-//	originalVestingAmount := decimalAmount.Sub(decimalAmount.Mul(free)).TruncateInt()
-//	originalVestingCoin := sdk.NewCoin(denom, originalVestingAmount)
-//	originalVesting := sdk.NewCoins(originalVestingCoin)
-//
-//	startTime := lockEnd
-//	if lockEnd.Before(ctx.BlockTime()) {
-//		startTime = ctx.BlockTime()
-//	}
-//
-//	_, err := k.newContinuousVestingAccount(ctx, toAddress, originalVesting, startTime.Unix(), vestingEnd.Unix())
-//	if err != nil {
-//		k.Logger(ctx).Debug("new vesting account - to account creation error", "error", err.Error())
-//		return errors.Wrap(err, fmt.Sprintf("new vesting account - to account creation error: %s", toAddress))
-//	}
-//
-//	coinsToSend := sdk.NewCoins(coinToSend)
-//	err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, toAddress, coinsToSend)
-//
-//	if err != nil {
-//		k.Logger(ctx).Debug("new vesting account send coins to vesting account error", "error", err.Error())
-//		return errors.Wrap(types.ErrSendCoins, errors.Wrapf(err, "new vesting account - send coins to vesting account error").Error())
-//	}
-//
-//	return nil
-//}
 
 func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, originalVesting sdk.Coins, startTime int64, vestingEnd int64) (*vestingtypes.ContinuousVestingAccount, error) {
 	baseAccount := k.account.NewAccountWithAddress(ctx, to)

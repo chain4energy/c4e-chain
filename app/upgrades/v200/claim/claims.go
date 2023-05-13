@@ -39,6 +39,7 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper 
 		return err
 	}
 	zeroInt := sdk.ZeroInt()
+	zeroDec := sdk.ZeroDec()
 
 	vestingType := cfevestingtypes.VestingType{
 		Name:          "NewVestingType",
@@ -71,19 +72,23 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper 
 		return err
 	}
 
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop", types.VestingPoolCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "NewVestingPool")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "stakedrop", "stakedrop",
+		types.VestingPoolCampaign, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "NewVestingPool")
 	if err != nil {
 		return err
 	}
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop", types.DynamicCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop",
+		types.DynamicCampaign, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop", types.DefaultCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "santadrop", "santadrop",
+		types.DefaultCampaign, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
-	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop", types.VestingPoolCampaign, &zeroInt, &zeroInt, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "NewVestingPool")
+	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "gleamdrop", "gleamdrop",
+		types.VestingPoolCampaign, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "NewVestingPool")
 	if err != nil {
 		return err
 	}

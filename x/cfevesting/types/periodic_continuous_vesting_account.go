@@ -72,9 +72,9 @@ func (account PeriodicContinuousVestingAccount) GetVestedCoins(blockTime time.Ti
 	return vestedCoins
 }
 
-// GetVestingCoinsForSpecyficPeriods returns the total number of vesting coins. If no coins are
+// GetVestingCoinsForSpecificPeriods returns the total number of vesting coins. If no coins are
 // vesting, nil is returned.
-func (account PeriodicContinuousVestingAccount) GetVestingCoinsForSpecyficPeriods(blockTime time.Time, periodsToTrace []uint64) sdk.Coins {
+func (account PeriodicContinuousVestingAccount) GetVestingCoinsForSpecificPeriods(blockTime time.Time, periodsToTrace []uint64) sdk.Coins {
 	return account.OriginalVesting.Sub(account.GetVestedCoinsForSpecyficPeriods(blockTime, periodsToTrace)...)
 }
 

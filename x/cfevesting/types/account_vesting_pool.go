@@ -4,6 +4,8 @@ import (
 	"cosmossdk.io/errors"
 	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -145,7 +147,54 @@ func (pool *VestingPool) SubstractFromReservation(reservationId uint64, amount m
 			} else {
 				reservation.Amount = reservation.Amount.Sub(amount)
 			}
+			return nil
 		}
 	}
+	return errors.Wrapf(c4eerrors.ErrNotExists, "reservation with id %d not found", reservationId)
+}
+
+func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amount math.Int) error {
+	available := vestingPool.GetCurrentlyLockedInReservations()
+
+	if available.LT(amount) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "send to new vesting account - vesting available: %s is smaller than requested amount: %s", available, amount)
+	}
+	if err := vestingPool.SubstractFromReservation(reservationId, amount); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (vestingPool *VestingPool) SendFromLockedTokens(amount math.Int) error {
+	available := vestingPool.GetCurrentlyLockedWithoutReservations()
+
+	if available.LT(amount) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds,
+			"send to new vesting account - vesting available: %s is smaller than requested amount: %s", available, amount)
+	}
+	vestingPool.Sent = vestingPool.Sent.Add(amount)
+	return nil
+}
+
+func (vestingType *VestingType) ValidateVestingFree(free sdk.Dec) error {
+	if free.GT(vestingType.Free) {
+		return errors.Wrapf(c4eerrors.ErrParam,
+			fmt.Sprintf("the free decimal must be equal to or greater than the vesting type free (%s > %s)", vestingType.Free.String(), free.String()))
+	}
+
+	return nil
+}
+
+func (vestingType *VestingType) ValidateVestingPeriods(lockupPeriod time.Duration, vestingPeriod time.Duration) error {
+	if vestingType.LockupPeriod > lockupPeriod {
+		return errors.Wrapf(c4eerrors.ErrParam,
+			fmt.Sprintf("the duration of lockup period must be equal to or greater than the vesting type lockup period (%s > %s)", vestingType.LockupPeriod.String(), lockupPeriod.String()))
+	}
+
+	if vestingType.VestingPeriod > vestingPeriod {
+		return errors.Wrapf(c4eerrors.ErrParam,
+			fmt.Sprintf("the duration of vesting period must be equal to or greater than the vesting type vesting period (%s > %s)", vestingType.VestingPeriod.String(), vestingPeriod.String()))
+	}
+
 	return nil
 }

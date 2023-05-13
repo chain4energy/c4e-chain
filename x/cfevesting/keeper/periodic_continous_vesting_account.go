@@ -10,7 +10,9 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )
 
-func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins, startTime int64, endTime int64) (uint64, error) {
+func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins,
+	free sdk.Dec, startTime int64, endTime int64) (uint64, error) {
+
 	userAccAddress, err := sdk.AccAddressFromBech32(userAddress)
 	if err != nil {
 		return 0, errors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: ", userAddress)
@@ -25,41 +27,65 @@ func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context
 		return 0, err
 	}
 
-	periodId := periodicContinousVestingAccount.AddNewContinousVestingPeriod(startTime, endTime, amount)
+	if err = k.bank.SendCoinsFromModuleToAccount(ctx, moduleName, userAccAddress, amount); err != nil {
+		return 0, err
+	}
 
+	var vestingPeriodCoins sdk.Coins
+	for _, coin := range amount {
+		decimalAmount := sdk.NewDecFromInt(coin.Amount)
+		vestingPeriodAmount := decimalAmount.Sub(decimalAmount.Mul(free)).TruncateInt()
+		vestingPeriodCoins = vestingPeriodCoins.Add(sdk.NewCoin(coin.Denom, vestingPeriodAmount))
+	}
+
+	periodId := periodicContinousVestingAccount.AddNewContinousVestingPeriod(startTime, endTime, vestingPeriodCoins)
 	k.account.SetAccount(ctx, periodicContinousVestingAccount)
-	return periodId, k.bank.SendCoinsFromModuleToAccount(ctx, moduleName, userAccAddress, amount)
+	return periodId, nil
 }
 
-func (k Keeper) getOrCreatePeriodicContinousVestingAccount(ctx sdk.Context, claimerAddress sdk.AccAddress, startTime, endTime int64) (*types.PeriodicContinuousVestingAccount, error) {
-	claimerAccount := k.account.GetAccount(ctx, claimerAddress)
-	periodicContinuousVestingAccount, ok := claimerAccount.(*types.PeriodicContinuousVestingAccount)
-	if !ok {
-		var err error
-		claimerAccount, err = k.SetupNewPeriodicContinousVestingAccount(ctx, claimerAddress, startTime, endTime)
-		if err != nil {
-			return nil, err
-		}
-		if claimerAccount == nil {
-			return nil, errors.Wrapf(c4eerrors.ErrNotExists, "send to claim account - account does not exist: %s", claimerAddress)
-		}
-		periodicContinuousVestingAccount, ok = claimerAccount.(*types.PeriodicContinuousVestingAccount)
+func (k Keeper) getOrCreatePeriodicContinousVestingAccount(ctx sdk.Context, userAddress sdk.AccAddress, startTime,
+	endTime int64) (*types.PeriodicContinuousVestingAccount, error) {
+	account := k.account.GetAccount(ctx, userAddress)
+
+	periodicContinuousVestingAccount, ok := account.(*types.PeriodicContinuousVestingAccount)
+	if ok {
+		return periodicContinuousVestingAccount, nil
+	}
+
+	if account == nil {
+		return k.newPeriodicContinousVestingAccount(ctx, userAddress, startTime, endTime)
+	} else {
+		// If there was a base account previously, migrate it to a periodicVestingAccount. This operation
+		// is required because the account to which we want to transfer tokens may have been created earlier,
+		// for example, if the feegrant (in the cfeclaim campaign) is set to a value greater than zero.
+		baseAccount, ok := account.(*authtypes.BaseAccount)
 		if !ok {
-			return nil, errors.Wrapf(c4eerrors.ErrInvalidAccountType, "send to claim account - expected PeriodicContinuousVestingAccount, got: %T", claimerAccount)
+			k.Logger(ctx).Error("invalid account type; expected: BaseAccount", "notExpectedAccount", account)
+			return nil, errors.Wrapf(c4eerrors.ErrInvalidAccountType, "expected BaseAccount, got: %T", account)
 		}
+		return k.newPeriodicContinousVestingAccountFromBaseAccount(baseAccount, startTime, endTime)
 	}
-
-	return periodicContinuousVestingAccount, nil
 }
 
-func (k Keeper) SetupNewPeriodicContinousVestingAccount(ctx sdk.Context, address sdk.AccAddress, startTime int64, endTime int64) (*types.PeriodicContinuousVestingAccount, error) {
-	baseAccount := k.account.NewAccountWithAddress(ctx, address)
-	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
-		k.Logger(ctx).Error("invalid account type; expected: BaseAccount", "notExpectedAccount", baseAccount)
-		return nil, errors.Wrapf(c4eerrors.ErrInvalidAccountType, "expected BaseAccount, got: %T", baseAccount)
+func (k Keeper) newPeriodicContinousVestingAccount(ctx sdk.Context, address sdk.AccAddress, startTime int64,
+	endTime int64) (*types.PeriodicContinuousVestingAccount, error) {
+	account := k.account.NewAccountWithAddress(ctx, address)
+	baseAccount, ok := account.(*authtypes.BaseAccount)
+
+	if !ok {
+		k.Logger(ctx).Error("invalid account type; expected: BaseAccount", "notExpectedAccount", account)
+		return nil, errors.Wrapf(c4eerrors.ErrInvalidAccountType, "expected BaseAccount, got: %T", account)
 	}
 
-	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), endTime)
+	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount, sdk.NewCoins(), endTime)
+	newAcc := types.NewPeriodicContinuousVestingAccountRaw(baseVestingAccount, startTime)
+	newAcc.EndTime = endTime
+	return newAcc, nil
+}
+
+func (k Keeper) newPeriodicContinousVestingAccountFromBaseAccount(baseAccount *authtypes.BaseAccount, startTime int64,
+	endTime int64) (*types.PeriodicContinuousVestingAccount, error) {
+	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount, sdk.NewCoins(), endTime)
 
 	newAcc := types.NewPeriodicContinuousVestingAccountRaw(baseVestingAccount, startTime)
 	newAcc.EndTime = endTime

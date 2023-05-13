@@ -22,26 +22,30 @@ message Campaign {
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  bool enabled = 8;
-  google.protobuf.Timestamp start_time = 9 [
+  string free = 8 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  bool enabled = 9;
+  google.protobuf.Timestamp start_time = 10 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Timestamp end_time = 10 [
+  google.protobuf.Timestamp end_time = 11 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
   // period of locked coins from claim
-  google.protobuf.Duration lockup_period = 11 [
+  google.protobuf.Duration lockup_period = 12 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
   // period of vesting coins after lockup period
-  google.protobuf.Duration vesting_period = 12 [
+  google.protobuf.Duration vesting_period = 13 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
-  string vestingPoolName = 13;
+  string vestingPoolName = 14;
 }
 
 message CampaignTotalAmount {

@@ -55,12 +55,10 @@ type DistributionKeeper interface {
 type CfeVestingKeeper interface {
 	GetAccountVestingPool(ctx sdk.Context, accountAddress string, name string) (accountVestingPools cfevestingtypes.AccountVestingPools, vestingPool *cfevestingtypes.VestingPool, found bool)
 	GetVestingType(ctx sdk.Context, name string) (vestingType cfevestingtypes.VestingType, err error)
-	GetAccountVestingPools(ctx sdk.Context, accountAddress string) (accountVestingPools cfevestingtypes.AccountVestingPools, found bool)
 	Denom(ctx sdk.Context) (res string)
 	UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Coins) (*vestingtypes.ContinuousVestingAccount, error)
-	SetupNewPeriodicContinousVestingAccount(ctx sdk.Context, address sdk.AccAddress, startTime int64, endTime int64) (*cfevestingtypes.PeriodicContinuousVestingAccount, error)
 	AddVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error
 	RemoveVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error
-	SendToNewVestingAccountFromReservation(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, reservationId uint64, startTime time.Time, endTime time.Time) error
-	SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins, startTime int64, endTime int64) (uint64, error)
+	SendToNewVestingAccountFromReservedTokens(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, reservationId uint64, free sdk.Dec, lockupPeriod time.Duration, vestingPeriod time.Duration) error
+	SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins, free sdk.Dec, startTime int64, endTime int64) (uint64, error)
 }

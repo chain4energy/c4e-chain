@@ -5,7 +5,6 @@ import (
 	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -180,7 +179,7 @@ func (k Keeper) ValidateCampaignWhenAddedFromVestingAccount(ctx sdk.Context, own
 }
 
 func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string,
-	campaignLockupPeriod *time.Duration, campaignVestingPeriod *time.Duration) error {
+	lockupPeriod *time.Duration, vestingPeriod *time.Duration, free sdk.Dec) error {
 	_, vestingPool, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
 
 	if !found {
@@ -191,21 +190,16 @@ func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner 
 	if err != nil {
 		return err
 	}
-
-	return validateVestingTimesForCampaign(vestingType, campaignLockupPeriod, campaignVestingPeriod)
-}
-
-func validateVestingTimesForCampaign(vestingType cfevestingtypes.VestingType, campaignLockupPeriod *time.Duration, campaignVestingPeriod *time.Duration) error {
-	if vestingType.LockupPeriod > *campaignLockupPeriod {
-		return errors.Wrapf(c4eerrors.ErrParam,
-			fmt.Sprintf("the duration of campaign lockup period must be equal to or greater than the vesting type lockup period (%s > %s)", vestingType.LockupPeriod.String(), campaignLockupPeriod.String()))
+	if lockupPeriod == nil {
+		return errors.Wrap(c4eerrors.ErrParam, "lockup period cannot be nil for vesting pool campaign")
 	}
-
-	if vestingType.VestingPeriod > *campaignVestingPeriod {
-		return errors.Wrapf(c4eerrors.ErrParam,
-			fmt.Sprintf("the duration of campaign vesting period must be equal to or greater than the vesting type vesting period (%s > %s)", vestingType.VestingPeriod.String(), campaignVestingPeriod.String()))
+	if vestingPeriod == nil {
+		return errors.Wrap(c4eerrors.ErrParam, "lockup period cannot be nil for vesting pool campaign")
 	}
-	return nil
+	if err := vestingType.ValidateVestingPeriods(*lockupPeriod, *vestingPeriod); err != nil {
+		return err
+	}
+	return vestingType.ValidateVestingFree(free)
 }
 
 func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, claimRecords []*types.ClaimRecord) (usersEntries []*types.UserEntry, entriesAmountSum sdk.Coins, err error) {

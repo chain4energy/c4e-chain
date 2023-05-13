@@ -279,12 +279,9 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, vestingAmount)
 
 	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimer).(*cfevestingtypes.PeriodicContinuousVestingAccount)
-	if !accExisted {
-		claimerAccountBefore.AccountNumber = claimerAccount.AccountNumber
-	}
-	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
-		claimerAccount.AccountNumber++
-	}
+
+	claimerAccountBefore.AccountNumber = claimerAccount.AccountNumber
+
 	require.True(h.t, ok)
 	require.NoError(h.t, claimerAccount.Validate())
 	require.EqualValues(h.t, claimerAccountBefore, claimerAccount)

@@ -6,8 +6,7 @@ import (
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
-	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -67,8 +66,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
 }
 
-// TODO: fix
-//func TestCreateAccountSendDisabled(t *testing.T) {
+//func TestCreateAccountSendDisabled(t *testing.T) { // TODO: Fix
 //	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
 //	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
 //	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
@@ -83,11 +81,10 @@ func TestCreateAccount(t *testing.T) {
 //	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
 //	testHelper.BankUtils.DisableSend()
 //
-//	testHelper.C4eClaimUtils.SendToRepeatedContinuousVestingAccountError(acountsAddresses[0],
+//	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 //		amount,
 //		startTimeUnix,
 //		endTimeUnix, true, "send coins disabled: uc4e transfers are currently disabled: send transactions are disabled",
-//		cfeclaimtypes.MissionVote,
 //	)
 //}
 
@@ -101,20 +98,19 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 	testHelper.App.BankKeeper = bankkeeper.NewBaseKeeper(
 		testHelper.App.AppCodec(), testHelper.App.GetKey(banktypes.StoreKey), testHelper.App.AccountKeeper, testHelper.App.GetSubspace(banktypes.ModuleName), blockedAccounts,
 	)
-	testHelper.App.CfeclaimKeeper = *cfeclaimmodulekeeper.NewKeeper(
-		testHelper.App.AppCodec(),
-		testHelper.App.GetKey(cfeclaimtypes.StoreKey),
-		testHelper.App.GetKey(cfeclaimtypes.MemStoreKey),
 
-		testHelper.App.AccountKeeper,
+	testHelper.App.CfevestingKeeper = *cfevestingmodulekeeper.NewKeeper(
+		testHelper.App.AppCodec(),
+		testHelper.App.GetKey(cfevestingtypes.StoreKey),
+		testHelper.App.GetKey(cfevestingtypes.MemStoreKey),
+		testHelper.App.GetSubspace(cfevestingtypes.ModuleName),
 		testHelper.App.BankKeeper,
-		testHelper.App.FeeGrantKeeper,
 		testHelper.App.StakingKeeper,
+		testHelper.App.AccountKeeper,
 		testHelper.App.DistrKeeper,
-		testHelper.App.CfevestingKeeper,
+		testHelper.App.GovKeeper,
 		appparams.GetAuthority(),
 	)
-
 	moduleAmount := sdk.NewInt(10000)
 	amount := sdk.NewInt(1000)
 
@@ -126,26 +122,6 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 		startTimeUnix,
 		endTimeUnix, true,
 		fmt.Sprintf("account address: %s is not allowed to receive funds error: unauthorized", acountsAddresses[0]),
-	)
-}
-
-func TestCreateAccountNotExist(t *testing.T) {
-	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
-	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
-	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
-
-	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
-
-	moduleAmount := sdk.NewInt(10000)
-	amount := sdk.NewInt(1000)
-
-	startTimeUnix := startTime.Unix()
-	endTimeUnix := endTime.Unix()
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
-		amount,
-		startTimeUnix,
-		endTimeUnix, false, fmt.Sprintf("account does not exist: %s: entity does not exist", acountsAddresses[0]),
 	)
 }
 
@@ -167,7 +143,7 @@ func TestCreateAccountWrongAccountType(t *testing.T) {
 	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount,
 		startTimeUnix,
-		endTimeUnix, false, "expected PeriodicContinuousVestingAccount, got: *types.BaseAccount: invalid account type",
+		endTimeUnix, false, "account already exists and is not of PeriodicContinuousVestingAccount type, account type: *types.BaseAccount: invalid account type",
 	)
 }
 

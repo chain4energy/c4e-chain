@@ -18,9 +18,9 @@ var _ = strconv.Itoa(0)
 
 func CmdCreateCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-campaign [name] [description] [campaign-type] [feegrant-amount] [initial_claim_free_amount] [start-time] [end-time] [lockup-period] [vesting-period] [optional-vesting-pool-name]",
+		Use:   "create-campaign [name] [description] [campaign-type] [feegrant-amount] [initial_claim_free_amount] [free] [start-time] [end-time] [lockup-period] [vesting-period] [optional-vesting-pool-name]",
 		Short: "Broadcast message CreateCampaign",
-		Args:  cobra.ExactArgs(10),
+		Args:  cobra.ExactArgs(11),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argDescription := args[1]
@@ -39,26 +39,30 @@ func CmdCreateCampaign() *cobra.Command {
 			if !ok {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
 			}
-			argStartTime, err := time.Parse(TimeLayout, args[5])
+			argFree, err := sdk.NewDecFromStr(args[5])
+			if err != nil {
+				return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value, error: %s", err.Error())
+			}
+			argStartTime, err := time.Parse(TimeLayout, args[6])
 			if err != nil {
 				return err
 			}
-			argEndTime, err := time.Parse(TimeLayout, args[6])
+			argEndTime, err := time.Parse(TimeLayout, args[7])
 			if err != nil {
 				return err
 			}
 			if err != nil {
 				return err
 			}
-			argLockupPeriod, err := time.ParseDuration(args[7])
+			argLockupPeriod, err := time.ParseDuration(args[8])
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
-			argVestingPeriod, err := time.ParseDuration(args[8])
+			argVestingPeriod, err := time.ParseDuration(args[9])
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
-			argVestingPoolName := args[9]
+			argVestingPoolName := args[10]
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -71,6 +75,7 @@ func CmdCreateCampaign() *cobra.Command {
 				argCampaignType,
 				&argFeegrantAmount,
 				&argInitialClaimFreeAmount,
+				&argFree,
 				&argStartTime,
 				&argEndTime,
 				&argLockupPeriod,

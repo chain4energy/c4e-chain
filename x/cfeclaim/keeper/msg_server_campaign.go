@@ -20,6 +20,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		msg.CampaignType,
 		msg.FeegrantAmount,
 		msg.InitialClaimFreeAmount,
+		msg.Free,
 		msg.StartTime,
 		msg.EndTime,
 		msg.LockupPeriod,

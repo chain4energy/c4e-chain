@@ -54,23 +54,27 @@ message MsgCreateCampaign {
     (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  google.protobuf.Timestamp start_time = 7 [
+  string free = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+  google.protobuf.Timestamp start_time = 8 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Timestamp end_time = 8 [
+  google.protobuf.Timestamp end_time = 9 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Duration lockup_period = 9 [
+  google.protobuf.Duration lockup_period = 10 [
     (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
-  google.protobuf.Duration vesting_period = 10 [
+  google.protobuf.Duration vesting_period = 11 [
     (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
-  string vestingPoolName = 11;
+  string vestingPoolName = 12;
 }
 
 message MsgCreateCampaignResponse {}

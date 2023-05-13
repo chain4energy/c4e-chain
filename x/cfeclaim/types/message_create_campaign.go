@@ -2,6 +2,7 @@ package types
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -12,8 +13,9 @@ const TypeMsgCreateCampaign = "create_claim_campaign"
 
 var _ sdk.Msg = &MsgCreateCampaign{}
 
-func NewMsgCreateCampaign(owner string, name string, description string, campaignType CampaignType, argFeegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string) *MsgCreateCampaign {
+func NewMsgCreateCampaign(owner string, name string, description string, campaignType CampaignType, argFeegrantAmount *math.Int,
+	initialClaimFreeAmount *math.Int, free *sdk.Dec, startTime *time.Time, endTime *time.Time, lockupPeriod *time.Duration,
+	vestingPeriod *time.Duration, vestingPoolName string) *MsgCreateCampaign {
 	return &MsgCreateCampaign{
 		Owner:                  owner,
 		Name:                   name,
@@ -21,6 +23,7 @@ func NewMsgCreateCampaign(owner string, name string, description string, campaig
 		CampaignType:           campaignType,
 		FeegrantAmount:         argFeegrantAmount,
 		InitialClaimFreeAmount: initialClaimFreeAmount,
+		Free:                   free,
 		StartTime:              startTime,
 		EndTime:                endTime,
 		LockupPeriod:           lockupPeriod,
@@ -55,10 +58,10 @@ func (msg *MsgCreateCampaign) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-	return ValidateCreateCampaignParams(msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.CampaignType, msg.Owner, msg.VestingPoolName)
+	return ValidateCreateCampaignParams(msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.CampaignType, msg.VestingPoolName)
 }
 
-func ValidateCreateCampaignParams(name string, description string, startTime *time.Time, endTime *time.Time, campaignType CampaignType, owner string, vestingPoolName string) error {
+func ValidateCreateCampaignParams(name string, description string, startTime *time.Time, endTime *time.Time, campaignType CampaignType, vestingPoolName string) error {
 	if err := ValidateCampaignName(name); err != nil {
 		return err
 	}

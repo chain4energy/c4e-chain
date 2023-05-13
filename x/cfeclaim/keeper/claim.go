@@ -34,12 +34,12 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 
 	claimableAmount := k.calculateInitialClaimClaimableAmount(ctx, campaignId, userEntry)
 
-	claimableAmount, err = k.calculateAndSendInitialClaimFreeAmount(ctx, campaignId, userEntry, claimableAmount, campaign.InitialClaimFreeAmount)
+	updatedFree, err := k.calculateInitialClaimFree(userEntry, claimableAmount, campaign)
 	if err != nil {
 		return err
 	}
 
-	userEntry, err = k.claimMission(ctx, campaign, mission, userEntry, claimableAmount)
+	userEntry, err = k.claimMission(ctx, campaign, mission, userEntry, claimableAmount, updatedFree)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 	if err != nil {
 		return err
 	}
-	userEntry, err = k.claimMission(ctx, campaign, mission, userEntry, claimableAmount)
+	userEntry, err = k.claimMission(ctx, campaign, mission, userEntry, claimableAmount, nil)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,8 @@ func (k Keeper) completeMission(mission *types.Mission, userEntry *types.UserEnt
 	return userEntry, nil
 }
 
-func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission *types.Mission, userEntry *types.UserEntry, claimableAmount sdk.Coins) (*types.UserEntry, error) {
+func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission *types.Mission, userEntry *types.UserEntry,
+	claimableAmount sdk.Coins, updatedFee *sdk.Dec) (*types.UserEntry, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
 	address := userEntry.ClaimAddress
@@ -177,15 +178,21 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 		return nil, errors.Wrapf(types.ErrMissionClaiming, err.Error())
 	}
 
-	start := ctx.BlockTime().Add(campaign.LockupPeriod)
-	end := start.Add(campaign.VestingPeriod)
+	free := campaign.Free
+	if updatedFee != nil {
+		free = *updatedFee
+	}
+
 	if campaign.CampaignType == types.VestingPoolCampaign {
-		if err := k.vestingKeeper.SendToNewVestingAccountFromReservation(ctx, campaign.Owner, userEntry.ClaimAddress, campaign.VestingPoolName,
-			claimableAmount.AmountOf(k.vestingKeeper.Denom(ctx)), campaign.Id, start, end); err != nil {
+		if err := k.vestingKeeper.SendToNewVestingAccountFromReservedTokens(ctx, campaign.Owner, userEntry.ClaimAddress, campaign.VestingPoolName,
+			claimableAmount.AmountOf(k.vestingKeeper.Denom(ctx)), campaign.Id, free, campaign.LockupPeriod, campaign.VestingPeriod); err != nil {
 			return nil, err
 		}
 	} else {
-		if _, err := k.vestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, userEntry.ClaimAddress, claimableAmount, start.Unix(), end.Unix()); err != nil {
+		start := ctx.BlockTime().Add(campaign.LockupPeriod)
+		end := start.Add(campaign.VestingPeriod)
+		if _, err := k.vestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, userEntry.ClaimAddress,
+			claimableAmount, free, start.Unix(), end.Unix()); err != nil {
 			return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userEntry.ClaimAddress)
 		}
 	}
@@ -225,31 +232,25 @@ func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId
 	return claimRecord.Amount.Sub(allMissionsAmountSum...)
 }
 
-func (k Keeper) calculateAndSendInitialClaimFreeAmount(ctx sdk.Context, campaignId uint64, userEntry *types.UserEntry, claimableAmount sdk.Coins, initialClaimFreeAmount sdk.Int) (sdk.Coins, error) {
+func (k Keeper) calculateInitialClaimFree(userEntry *types.UserEntry, claimableAmount sdk.Coins, campaign *types.Campaign) (*sdk.Dec, error) {
 	userMainAddress, err := sdk.AccAddressFromBech32(userEntry.Address)
 	if err != nil {
 		return nil, errors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userEntry.Address)
 	}
 	if k.bankKeeper.BlockedAddr(userMainAddress) {
-		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "send to claim account - account address: %s is not allowed to receive funds error", userMainAddress)
+		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "account address: %s is not allowed to receive funds error", userMainAddress)
 	}
 
-	freeVestingAmount := sdk.NewCoins()
+	minFreeAmount := campaign.Free
 	for _, claimableAmountCoin := range claimableAmount {
-		if claimableAmountCoin.Sub(sdk.NewCoin(claimableAmountCoin.Denom, initialClaimFreeAmount)).IsNegative() {
+		if claimableAmountCoin.Sub(sdk.NewCoin(claimableAmountCoin.Denom, campaign.InitialClaimFreeAmount)).IsNegative() {
 			return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claim account  wrong send coins amount. %s < 1 token (1000000 %s)", claimableAmountCoin.String(), claimableAmountCoin.Denom)
 		}
-		coin := sdk.NewCoins(sdk.NewCoin(claimableAmountCoin.Denom, initialClaimFreeAmount))
-		freeVestingAmount = freeVestingAmount.Add(coin...)
-
-	}
-	claimableAmount = claimableAmount.Sub(freeVestingAmount...)
-
-	if err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userMainAddress, freeVestingAmount); err != nil {
-		return nil, errors.Wrap(c4eerrors.ErrSendCoins, errors.Wrapf(err,
-			"send to claim account - send coins to claim account error (to: %s, amount: %s)", userMainAddress, freeVestingAmount.String()).Error())
+		free := sdk.NewDecFromInt(campaign.InitialClaimFreeAmount.Quo(claimableAmountCoin.Amount))
+		if minFreeAmount.LT(free) {
+			minFreeAmount = free
+		}
 	}
 
-	k.DecrementCampaignAmountLeft(ctx, campaignId, freeVestingAmount)
-	return claimableAmount, nil
+	return &minFreeAmount, nil
 }

@@ -54,7 +54,7 @@ func (k Keeper) createVestingsSummary(ctx sdk.Context, genesisOnly bool) (*Summa
 			allVestingInAccounts = allVestingInAccounts.Add(vestingCoins.AmountOf(denom))
 			allLockedNotDelegated = allLockedNotDelegated.Add(lockedCoins.AmountOf(denom))
 		} else if periodcVestingAccount, ok := vestingAccount.(*types.PeriodicContinuousVestingAccount); ok {
-			vestingCoins := periodcVestingAccount.GetVestingCoinsForSpecyficPeriods(ctx.BlockTime(), accFromList.PeriodsToTrace)
+			vestingCoins := periodcVestingAccount.GetVestingCoinsForSpecificPeriods(ctx.BlockTime(), accFromList.PeriodsToTrace)
 			lockedCoins := periodcVestingAccount.GetLockedCoins(vestingCoins)
 			allVestingInAccounts = allVestingInAccounts.Add(vestingCoins.AmountOf(denom))
 			allLockedNotDelegated = allLockedNotDelegated.Add(lockedCoins.AmountOf(denom))
