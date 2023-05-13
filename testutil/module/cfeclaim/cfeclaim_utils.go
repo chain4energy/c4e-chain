@@ -339,7 +339,7 @@ func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, campaignId ui
 		h.StakingUtils.MessageDelegate(ctx, 2, 0, valAddress, claimer, deleagtionAmount)
 		return nil
 	}
-	beforeCheck := func(accBefore authtypes.AccountI, accAfter authtypes.AccountI, claimerAmountBefore sdk.Int) (authtypes.AccountI, sdk.Int) {
+	beforeCheck := func(accBefore authtypes.AccountI, accAfter authtypes.AccountI, claimerAmountBefore math.Int) (authtypes.AccountI, math.Int) {
 		veBefore, okBefore := accBefore.(*cfevestingtypes.PeriodicContinuousVestingAccount)
 		veAfter, okAfter := accAfter.(*cfevestingtypes.PeriodicContinuousVestingAccount)
 		if okBefore && okAfter {
@@ -382,7 +382,7 @@ func (h *C4eClaimUtils) CompleteMissionFromHook(ctx sdk.Context, campaignId uint
 }
 
 func (h *C4eClaimUtils) completeAnyMission(ctx sdk.Context, campaignId uint64, missionId uint64,
-	claimer sdk.AccAddress, action func() error, beforeCheck func(before authtypes.AccountI, after authtypes.AccountI, ampountBefore sdk.Int) (authtypes.AccountI, sdk.Int)) {
+	claimer sdk.AccAddress, action func() error, beforeCheck func(before authtypes.AccountI, after authtypes.AccountI, ampountBefore math.Int) (authtypes.AccountI, math.Int)) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
@@ -457,7 +457,7 @@ func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64
 }
 
 func (h *C4eClaimUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId uint64,
-	claimerAccountBefore *cfevestingtypes.PeriodicContinuousVestingAccount, expectedAmount sdk.Int) *cfevestingtypes.PeriodicContinuousVestingAccount {
+	claimerAccountBefore *cfevestingtypes.PeriodicContinuousVestingAccount, expectedAmount math.Int) *cfevestingtypes.PeriodicContinuousVestingAccount {
 	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	expectedStartTime := ctx.BlockTime().Add(campaign.LockupPeriod)
 	expectedEndTime := expectedStartTime.Add(campaign.VestingPeriod)
@@ -503,11 +503,11 @@ func (h *C4eClaimUtils) CreateRepeatedContinuousVestingAccount(ctx sdk.Context, 
 	return claimAcc
 }
 
-func (h *C4eClaimUtils) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType cfeclaimtypes.CampaignType, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
+func (h *C4eClaimUtils) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType cfeclaimtypes.CampaignType, feegrantAmount math.Int, initialClaimFreeAmount math.Int, free sdk.Dec, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string) {
 
 	campaignCountBefore := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
-	_, err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
+	_, err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &free, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignCountBefore)
 	require.NoError(h.t, err)
 	campaignCountAfter := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
@@ -518,11 +518,11 @@ func (h *C4eClaimUtils) CreateCampaign(ctx sdk.Context, owner string, name strin
 	h.VerifyMission(ctx, true, campaignCountBefore, 0, "Initial mission", "Initial mission - basic mission that must be claimed first", cfeclaimtypes.MissionInitialClaim, sdk.ZeroDec(), nil)
 }
 
-func (h *C4eClaimUtils) CreateCampaignError(ctx sdk.Context, owner string, name string, description string, campaignType cfeclaimtypes.CampaignType, feegrantAmount sdk.Int, initialClaimFreeAmount sdk.Int, startTime time.Time,
+func (h *C4eClaimUtils) CreateCampaignError(ctx sdk.Context, owner string, name string, description string, campaignType cfeclaimtypes.CampaignType, feegrantAmount math.Int, initialClaimFreeAmount math.Int, free sdk.Dec, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string, errorMessage string) {
 
 	campaignCountBefore := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
-	_, err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
+	_, err := h.helpeCfeclaimkeeper.CreateCampaign(ctx, owner, name, description, campaignType, &feegrantAmount, &initialClaimFreeAmount, &free, &startTime, &endTime, &lockupPeriod, &vestingPeriod, vestingPoolName)
 	require.EqualError(h.t, err, errorMessage)
 	campaignCountAfter := h.helpeCfeclaimkeeper.GetCampaignCount(ctx)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignCountBefore)
@@ -637,7 +637,7 @@ func (h *C4eClaimUtils) AddMissionToCampaignError(ctx sdk.Context, owner string,
 	require.Equal(h.t, missionCountBefore, missionCountAfter)
 }
 
-func (h *C4eClaimUtils) VerifyCampaign(ctx sdk.Context, campaignId uint64, mustExist bool, owner string, name string, description string, enabled bool, feegrantAmount *sdk.Int, initialClaimFreeAmount *sdk.Int, startTime time.Time,
+func (h *C4eClaimUtils) VerifyCampaign(ctx sdk.Context, campaignId uint64, mustExist bool, owner string, name string, description string, enabled bool, feegrantAmount *math.Int, initialClaimFreeAmount *math.Int, startTime time.Time,
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string) {
 
 	claimCampaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)

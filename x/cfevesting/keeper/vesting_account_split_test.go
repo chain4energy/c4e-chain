@@ -20,7 +20,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 	denom1 := sdk.NewInt(8999999999999999999)
 	denom2 := sdk.NewInt(123124)
 	denom3 := sdk.NewInt(10)
-	initialAmount := createDenomCoins([]sdk.Int{denom1, denom2, denom3})
+	initialAmount := createDenomCoins([]math.Int{denom1, denom2, denom3})
 
 	duration := 1000 * time.Hour
 
@@ -43,7 +43,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			desc:            "all not enough to unlock - before start",
 			initialAmount:   initialAmount,
 			lockedBefore:    initialAmount,
-			toUnlock:        createDenomCoins([]sdk.Int{denom1.AddRaw(1), denom2.AddRaw(1), denom3.AddRaw(1)}),
+			toUnlock:        createDenomCoins([]math.Int{denom1.AddRaw(1), denom2.AddRaw(1), denom3.AddRaw(1)}),
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
@@ -53,7 +53,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			desc:            "first not enough to unlock - before start",
 			initialAmount:   initialAmount,
 			lockedBefore:    initialAmount,
-			toUnlock:        createDenomCoins([]sdk.Int{denom1.AddRaw(1), denom2, denom3}),
+			toUnlock:        createDenomCoins([]math.Int{denom1.AddRaw(1), denom2, denom3}),
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
@@ -63,7 +63,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			desc:            "second not enough to unlock - before start",
 			initialAmount:   initialAmount,
 			lockedBefore:    initialAmount,
-			toUnlock:        createDenomCoins([]sdk.Int{denom1, denom2.AddRaw(1), denom3}),
+			toUnlock:        createDenomCoins([]math.Int{denom1, denom2.AddRaw(1), denom3}),
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
@@ -73,7 +73,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			desc:            "thrid not enough to unlock - before start",
 			initialAmount:   initialAmount,
 			lockedBefore:    initialAmount,
-			toUnlock:        createDenomCoins([]sdk.Int{denom1, denom2, denom3.AddRaw(1)}),
+			toUnlock:        createDenomCoins([]math.Int{denom1, denom2, denom3.AddRaw(1)}),
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
@@ -83,7 +83,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			desc:            "unknown denom - not enough to unlock - before start",
 			initialAmount:   initialAmount,
 			lockedBefore:    initialAmount,
-			toUnlock:        createDenomCoins([]sdk.Int{denom1, denom2, denom3, sdk.NewInt(1)}),
+			toUnlock:        createDenomCoins([]math.Int{denom1, denom2, denom3, sdk.NewInt(1)}),
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
@@ -126,8 +126,8 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 		{
 			desc:            "second not enough to unlock -  half vesting",
 			initialAmount:   initialAmount,
-			lockedBefore:    createDenomCoins([]sdk.Int{denom1.QuoRaw(2), denom2.QuoRaw(2), denom3.QuoRaw(2)}),
-			toUnlock:        createDenomCoins([]sdk.Int{denom1.QuoRaw(2), denom2.QuoRaw(2).AddRaw(1), denom3.QuoRaw(2)}),
+			lockedBefore:    createDenomCoins([]math.Int{denom1.QuoRaw(2), denom2.QuoRaw(2), denom3.QuoRaw(2)}),
+			toUnlock:        createDenomCoins([]math.Int{denom1.QuoRaw(2), denom2.QuoRaw(2).AddRaw(1), denom3.QuoRaw(2)}),
 			blockTime:       startTime.Add(duration / 2),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
@@ -137,7 +137,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsManyDenomError(t *testing.T)
 			desc:            "one coin is zore - before start",
 			initialAmount:   initialAmount,
 			lockedBefore:    initialAmount,
-			toUnlock:        createDenomCoins([]sdk.Int{denom1, sdk.ZeroInt(), denom3}),
+			toUnlock:        createDenomCoins([]math.Int{denom1, sdk.ZeroInt(), denom3}),
 			blockTime:       startTime.Add(-time.Hour),
 			vAccStartTime:   startTime,
 			vestingDuration: duration,
@@ -265,9 +265,9 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsSingleDenomError(t *testing.
 
 	for _, tc := range []struct {
 		desc            string
-		initialAmount   sdk.Int
-		lockedBefore    sdk.Int
-		toUnlock        sdk.Int
+		initialAmount   math.Int
+		lockedBefore    math.Int
+		toUnlock        math.Int
 		blockTime       time.Time
 		vAccStartTime   time.Time
 		vestingDuration time.Duration
@@ -332,8 +332,8 @@ func testUnlockUnbondedContinuousVestingAccountCoinsSingleDenom(t *testing.T, us
 
 	for _, tc := range []struct {
 		desc            string
-		initialAmount   sdk.Int
-		lockedBefore    sdk.Int
+		initialAmount   math.Int
+		lockedBefore    math.Int
 		blockTime       time.Time
 		vAccStartTime   time.Time
 		vestingDuration time.Duration
@@ -354,7 +354,7 @@ func testUnlockUnbondedContinuousVestingAccountCoinsSingleDenom(t *testing.T, us
 }
 
 func testSingleTimeUnlockUnbondedContinuousVestingAccountCoinsSingleDenom(t require.TestingT, accToCreateAddr sdk.AccAddress,
-	initialAmount sdk.Int, lockedBefore sdk.Int, blockTime time.Time,
+	initialAmount math.Int, lockedBefore math.Int, blockTime time.Time,
 	vAccStartTime time.Time, vestingDuration time.Duration, useDelegation bool, valAddrs []sdk.ValAddress) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	testHelper.SetContextBlockTime(blockTime)
@@ -404,7 +404,7 @@ func testSingleTimeUnlockUnbondedContinuousVestingAccountCoins(t require.Testing
 	testHelper.C4eVestingUtils.UnlockUnbondedContinuousVestingAccountCoins(accToCreateAddr, amountToUnlock, initialAmount, lockedBefore)
 }
 
-func createDenomCoins(amounts []sdk.Int) sdk.Coins {
+func createDenomCoins(amounts []math.Int) sdk.Coins {
 	result := sdk.Coins{}
 	for i, amount := range amounts {
 		coin := sdk.Coin{
@@ -418,8 +418,8 @@ func createDenomCoins(amounts []sdk.Int) sdk.Coins {
 	return result
 }
 
-func createArrayOfInt(amount sdk.Int, count int) []sdk.Int {
-	result := []sdk.Int{}
+func createArrayOfInt(amount math.Int, count int) []math.Int {
+	result := []math.Int{}
 	for i := 0; i < count; i++ {
 		result = append(result, amount)
 	}

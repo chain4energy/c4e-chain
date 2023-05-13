@@ -82,7 +82,7 @@ func (n *NodeConfig) QueryBalances(address string) (sdk.Coins, error) {
 	return balancesResp.GetBalances(), nil
 }
 
-func (n *NodeConfig) QuerySupplyOf(denom string) (sdk.Int, error) {
+func (n *NodeConfig) QuerySupplyOf(denom string) (math.Int, error) {
 	path := fmt.Sprintf("cosmos/bank/v1beta1/supply/by_denom?denom=%s", denom)
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)
@@ -94,7 +94,7 @@ func (n *NodeConfig) QuerySupplyOf(denom string) (sdk.Int, error) {
 	return supplyResp.Amount.Amount, nil
 }
 
-func (n *NodeConfig) QueryPropTally(proposalNumber int) (sdk.Int, sdk.Int, sdk.Int, sdk.Int, error) {
+func (n *NodeConfig) QueryPropTally(proposalNumber int) (math.Int, math.Int, math.Int, math.Int, error) {
 	path := fmt.Sprintf("cosmos/gov/v1beta1/proposals/%d/tally", proposalNumber)
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)

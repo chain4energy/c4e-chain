@@ -29,11 +29,11 @@ type BankUtils struct {
 	helperBankKeeper    bankkeeper.Keeper
 }
 
-func (bu *BankUtils) VerifyAccountDefultDenomSpendableCoins(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {
+func (bu *BankUtils) VerifyAccountDefultDenomSpendableCoins(ctx sdk.Context, addr sdk.AccAddress, expectedAmount math.Int) {
 	bu.VerifyAccountSpendableByDenom(ctx, addr, testenv.DefaultTestDenom, expectedAmount)
 }
 
-func (bu *BankUtils) VerifyAccountSpendableByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string, expectedAmount sdk.Int) {
+func (bu *BankUtils) VerifyAccountSpendableByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string, expectedAmount math.Int) {
 	locked := bu.helperBankKeeper.SpendableCoins(ctx, addr).AmountOf(denom)
 	require.Truef(bu.t, expectedAmount.Equal(locked), "expectedAmount %s <> spendable amount %s", expectedAmount, locked)
 }
@@ -110,7 +110,7 @@ func (bu *BankUtils) VerifyModuleAccountAllBalances(ctx sdk.Context, accName str
 	require.Truef(bu.t, expectedAmount.IsEqual(moduleBalance), "expectedAmount %s <> module balance %s", expectedAmount, moduleBalance)
 }
 
-func (bu *BankUtils) VerifyAccountDefultDenomLocked(ctx sdk.Context, addr sdk.AccAddress, expectedAmount sdk.Int) {
+func (bu *BankUtils) VerifyAccountDefultDenomLocked(ctx sdk.Context, addr sdk.AccAddress, expectedAmount math.Int) {
 	bu.VerifyAccountLockedByDenom(ctx, addr, testenv.DefaultTestDenom, expectedAmount)
 }
 
@@ -124,7 +124,7 @@ func (bu *BankUtils) DisableDefaultSend(ctx sdk.Context) {
 	bu.helperBankKeeper.SetParams(ctx, params)
 }
 
-func (bu *BankUtils) VerifyAccountLockedByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string, expectedAmount sdk.Int) {
+func (bu *BankUtils) VerifyAccountLockedByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string, expectedAmount math.Int) {
 	locked := bu.helperBankKeeper.LockedCoins(ctx, addr).AmountOf(denom)
 	require.Truef(bu.t, expectedAmount.Equal(locked), "expectedAmount %s <> account locked %s", expectedAmount, locked)
 }

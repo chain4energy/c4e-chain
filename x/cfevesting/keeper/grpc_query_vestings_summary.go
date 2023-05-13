@@ -70,8 +70,8 @@ func (k Keeper) createVestingsSummary(ctx sdk.Context, genesisOnly bool) (*Summa
 }
 
 type Summary struct {
-	VestingAllAmount        sdk.Int
-	VestingInPoolsAmount    sdk.Int
-	VestingInAccountsAmount sdk.Int
-	DelegatedVestingAmount  sdk.Int
+	VestingAllAmount        math.Int
+	VestingInPoolsAmount    math.Int
+	VestingInAccountsAmount math.Int
+	DelegatedVestingAmount  math.Int
 }

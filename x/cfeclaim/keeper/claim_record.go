@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
@@ -221,7 +222,7 @@ func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, 
 	return
 }
 
-func (k Keeper) validateInitialClaimFreeAmount(initialClaimFreeAmount sdk.Int, missions []types.Mission, claimRecord *types.ClaimRecord) error {
+func (k Keeper) validateInitialClaimFreeAmount(initialClaimFreeAmount math.Int, missions []types.Mission, claimRecord *types.ClaimRecord) error {
 	allMissionsAmountSum := sdk.NewCoins()
 	for _, mission := range missions {
 		for _, amount := range claimRecord.Amount {

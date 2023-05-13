@@ -5,7 +5,6 @@ import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"strconv"
 )
@@ -34,7 +33,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 
 	claimableAmount := k.calculateInitialClaimClaimableAmount(ctx, campaignId, userEntry)
 
-	updatedFree, err := k.calculateInitialClaimFree(userEntry, claimableAmount, campaign)
+	updatedFree, err := k.calculateInitialClaimFree(claimableAmount, campaign)
 	if err != nil {
 		return err
 	}
@@ -232,21 +231,13 @@ func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId
 	return claimRecord.Amount.Sub(allMissionsAmountSum...)
 }
 
-func (k Keeper) calculateInitialClaimFree(userEntry *types.UserEntry, claimableAmount sdk.Coins, campaign *types.Campaign) (*sdk.Dec, error) {
-	userMainAddress, err := sdk.AccAddressFromBech32(userEntry.Address)
-	if err != nil {
-		return nil, errors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: "+err.Error(), userEntry.Address)
-	}
-	if k.bankKeeper.BlockedAddr(userMainAddress) {
-		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "account address: %s is not allowed to receive funds error", userMainAddress)
-	}
-
+func (k Keeper) calculateInitialClaimFree(claimableAmount sdk.Coins, campaign *types.Campaign) (*sdk.Dec, error) {
 	minFreeAmount := campaign.Free
 	for _, claimableAmountCoin := range claimableAmount {
 		if claimableAmountCoin.Sub(sdk.NewCoin(claimableAmountCoin.Denom, campaign.InitialClaimFreeAmount)).IsNegative() {
 			return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claim account  wrong send coins amount. %s < 1 token (1000000 %s)", claimableAmountCoin.String(), claimableAmountCoin.Denom)
 		}
-		free := sdk.NewDecFromInt(campaign.InitialClaimFreeAmount.Quo(claimableAmountCoin.Amount))
+		free := sdk.NewDecFromInt(campaign.InitialClaimFreeAmount).Quo(sdk.NewDecFromInt(claimableAmountCoin.Amount))
 		if minFreeAmount.LT(free) {
 			minFreeAmount = free
 		}

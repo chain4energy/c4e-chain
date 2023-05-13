@@ -149,7 +149,7 @@ func (au *ContextAuthUtils) ModifyVestingAccountOriginalVesting(address string, 
 	return au.AuthUtils.ModifyVestingAccountOriginalVesting(au.testContext.GetContext(), address, newOrignalVestings)
 }
 
-func (au *ContextAuthUtils) CreateDefaultDenomBaseAccount(address string, amount sdk.Int) error {
+func (au *ContextAuthUtils) CreateDefaultDenomBaseAccount(address string, amount math.Int) error {
 	return au.AuthUtils.CreateDefaultDenomBaseAccount(au.testContext.GetContext(), address, amount)
 }
 

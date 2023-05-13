@@ -109,7 +109,7 @@ func (h *C4eVestingUtils) MessageCreateGenesisVestingPool(ctx sdk.Context, addre
 }
 
 func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context, toAddress sdk.AccAddress,
-	amount math.Int, startTime int64, endTime int64) {
+	amount math.Int, free sdk.Dec, startTime int64, endTime int64) {
 	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
 	moduleBalance := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
 	accBalance := h.bankUtils.GetAccountDefultDenomBalance(ctx, toAddress)
@@ -127,6 +127,7 @@ func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context
 	_, err := h.helperCfevestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, cfevestingtypes.ModuleName,
 		toAddress.String(),
 		coins,
+		free,
 		startTime,
 		endTime,
 	)
@@ -143,7 +144,7 @@ func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context
 }
 
 func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccountError(ctx sdk.Context, toAddress sdk.AccAddress,
-	amount math.Int, startTime int64, endTime int64, createAccount bool, errorMessage string) {
+	amount math.Int, free sdk.Dec, startTime int64, endTime int64, createAccount bool, errorMessage string) {
 	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
 	moduleBalance := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
 	accBalance := h.bankUtils.GetAccountDefultDenomBalance(ctx, toAddress)
@@ -156,6 +157,7 @@ func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccountError(ctx sdk.Co
 	_, err := h.helperCfevestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, cfevestingtypes.ModuleName,
 		toAddress.String(),
 		coins,
+		free,
 		startTime,
 		endTime,
 	)
@@ -526,7 +528,7 @@ func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Co
 	require.Truef(h.t, expectedLockedBalancesBefore.Sub(amountsToUnlock...).IsEqual(locked), "expectedLockedBalances %s <> locked %s", expectedLockedBalancesBefore.Sub(amountsToUnlock...), locked)
 }
 
-func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int) {
+func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock math.Int, expectedAccountBalance math.Int, expectedLockedBalanceBefore math.Int) {
 	h.UnlockUnbondedContinuousVestingAccountCoins(ctx, ownerAddress,
 		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amountToUnlock)),
 		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedAccountBalance)),
@@ -544,7 +546,7 @@ func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoinsError(ctx s
 
 }
 
-func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int, expectedError string) {
+func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock math.Int, expectedAccountBalance math.Int, expectedLockedBalanceBefore math.Int, expectedError string) {
 	h.UnlockUnbondedContinuousVestingAccountCoinsError(ctx, ownerAddress,
 		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amountToUnlock)),
 		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedAccountBalance)),
@@ -793,11 +795,11 @@ func (h *C4eVestingUtils) MessageCreateVestingAccountError(
 	require.Equal(h.t, false, found)
 }
 
-func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int) {
+func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ownerAddress sdk.AccAddress, amountToUnlock math.Int, expectedAccountBalance math.Int, expectedLockedBalanceBefore math.Int) {
 	h.C4eVestingUtils.UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(h.testContext.GetContext(), ownerAddress, amountToUnlock, expectedAccountBalance, expectedLockedBalanceBefore)
 }
 
-func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int, expectedError string) {
+func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ownerAddress sdk.AccAddress, amountToUnlock math.Int, expectedAccountBalance math.Int, expectedLockedBalanceBefore math.Int, expectedError string) {
 	h.C4eVestingUtils.UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(h.testContext.GetContext(), ownerAddress, amountToUnlock, expectedAccountBalance, expectedLockedBalanceBefore, expectedError)
 }
 

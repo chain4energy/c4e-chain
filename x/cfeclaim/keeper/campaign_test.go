@@ -263,7 +263,7 @@ func TestCreateVestingPoolCampaignWrongVestingPeriod(t *testing.T) {
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
 	campaign.VestingPeriod = time.Minute
-	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("the duration of campaign vesting period must be equal to or greater than the vesting type vesting period (%s > %s): wrong param value",
+	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("the duration of vesting period must be equal to or greater than the vesting type vesting period (%s > %s): wrong param value",
 		(time.Hour*100).String(), campaign.VestingPeriod.String()))
 }
 
@@ -277,7 +277,7 @@ func TestCreateVestingPoolCampaignWrongLockupPeriod(t *testing.T) {
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
 	campaign.LockupPeriod = time.Minute
-	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("the duration of campaign lockup period must be equal to or greater than the vesting type lockup period (%s > %s): wrong param value",
+	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("the duration of lockup period must be equal to or greater than the vesting type lockup period (%s > %s): wrong param value",
 		(time.Hour*100).String(), campaign.LockupPeriod.String()))
 }
 

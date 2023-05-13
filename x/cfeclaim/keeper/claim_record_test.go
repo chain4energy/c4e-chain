@@ -312,7 +312,7 @@ func TestAddUsersEntriesCampaignVestingPoolCampaignVestingInPoolAmountTooSmall(t
 	testHelper.C4eClaimUtils.AddClaimRecordsError(ownerAddress, 0, claimEntries, fmt.Sprintf("%s is smaller than %s: insufficient funds", sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000)), sdk.NewCoin(testenv.DefaultTestDenom, amountSum)))
 }
 
-func createTestClaimRecords(addresses []sdk.AccAddress, startAmount int) (claimEntries []*types.ClaimRecord, amountSum sdk.Int) {
+func createTestClaimRecords(addresses []sdk.AccAddress, startAmount int) (claimEntries []*types.ClaimRecord, amountSum math.Int) {
 	amountSum = sdk.ZeroInt()
 	for i, addr := range addresses {
 		coinsAmount := sdk.NewInt(int64(startAmount + i))

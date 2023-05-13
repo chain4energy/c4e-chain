@@ -27,11 +27,15 @@ func NewContextC4eClaimUtils(t require.TestingT, testContext testenv.TestContext
 }
 
 func (h *ContextC4eClaimUtils) CreateCampaign(owner string, campaign cfeclaimtypes.Campaign) {
-	h.C4eClaimUtils.CreateCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
+	h.C4eClaimUtils.CreateCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType,
+		campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.Free, campaign.StartTime, campaign.EndTime,
+		campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
 }
 
 func (h *ContextC4eClaimUtils) CreateCampaignError(owner string, campaign cfeclaimtypes.Campaign, errorMessage string) {
-	h.C4eClaimUtils.CreateCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName, errorMessage)
+	h.C4eClaimUtils.CreateCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType,
+		campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.Free, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod,
+		campaign.VestingPeriod, campaign.VestingPoolName, errorMessage)
 }
 
 func (h *ContextC4eClaimUtils) AddMissionToCampaign(owner string, campaignId uint64, mission cfeclaimtypes.Mission) {
@@ -74,13 +78,13 @@ func (h *ContextC4eClaimUtils) DeleteClaimRecordError(ownerAddress sdk.AccAddres
 	h.C4eClaimUtils.DeleteClaimRecordError(h.testContext.GetContext(), ownerAddress, campaignId, userAddress, deleteClaimRecordAction, errorMessage)
 }
 
-func (h *ContextC4eClaimUtils) AddClaimRecordsFromWhitelistedVestingAccount(srcAddress sdk.AccAddress, amountToSend sdk.Int, unlockedAmount sdk.Int) {
+func (h *ContextC4eClaimUtils) AddClaimRecordsFromWhitelistedVestingAccount(srcAddress sdk.AccAddress, amountToSend math.Int, unlockedAmount math.Int) {
 	coinsToSend := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amountToSend))
 	unlockedCoins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, unlockedAmount))
 	h.C4eClaimUtils.AddClaimRecordsFromWhitelistedVestingAccount(h.testContext.GetContext(), srcAddress, coinsToSend, unlockedCoins)
 }
 
-func (h *ContextC4eClaimUtils) AddCoinsToCampaignOwnerAcc(srcAddress sdk.AccAddress, amountOfCoins sdk.Int) {
+func (h *ContextC4eClaimUtils) AddCoinsToCampaignOwnerAcc(srcAddress sdk.AccAddress, amountOfCoins math.Int) {
 	h.BankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), amountOfCoins, srcAddress)
 }
 
