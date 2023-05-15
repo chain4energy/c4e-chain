@@ -153,8 +153,8 @@ func (pool *VestingPool) SubstractFromReservation(reservationId uint64, amount m
 	return errors.Wrapf(c4eerrors.ErrNotExists, "reservation with id %d not found", reservationId)
 }
 
-func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amount math.Int) error {
-	available := vestingPool.GetCurrentlyLockedInReservations()
+func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amount math.Int) error { // TODO mylaca nazwa metody
+	available := vestingPool.GetCurrentlyLockedInReservations() // TODO po co to?
 
 	if available.LT(amount) {
 		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "send to new vesting account - vesting available: %s is smaller than requested amount: %s", available, amount)
@@ -165,7 +165,7 @@ func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amo
 	return nil
 }
 
-func (vestingPool *VestingPool) SendFromLockedTokens(amount math.Int) error {
+func (vestingPool *VestingPool) SendFromLockedTokens(amount math.Int) error { // TODO mylaca nazwa metody
 	available := vestingPool.GetCurrentlyLockedWithoutReservations()
 
 	if available.LT(amount) {
