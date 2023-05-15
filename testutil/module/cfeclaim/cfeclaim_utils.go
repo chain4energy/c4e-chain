@@ -17,8 +17,6 @@ import (
 	"time"
 )
 
-// TODO: verify all balances not only for default denoms!!!
-
 type C4eClaimUtils struct {
 	C4eClaimKeeperUtils
 	helperAccountKeeper    *authkeeper.AccountKeeper
@@ -59,9 +57,9 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 			CampaignId: campaignId,
 		}
 	}
-	srcBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, srcAddress)
+	srcBalance := h.BankUtils.GetAccountAllBalances(ctx, srcAddress)
 
-	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
+	moduleBalance := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 
 	userEntriesBefore := h.helpeCfeclaimkeeper.GetUsersEntries(ctx)
@@ -124,13 +122,14 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
 		_, feegrandModuleAddress := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaignId)
 		feegrantSum := campaign.FeegrantAmount.MulRaw(int64(len(claimEntries)))
-		h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBalance.Add(amountSum.AmountOf(testenv.DefaultTestDenom)))
-		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, feegrandModuleAddress, feegrantSum)
-		h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(feegrantSum).Sub(amountSum.AmountOf(testenv.DefaultTestDenom)))
+		feegrantCoins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, feegrantSum))
+		h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBalance.Add(amountSum...))
+		h.BankUtils.VerifyAccountAllBalances(ctx, feegrandModuleAddress, feegrantCoins)
+		h.BankUtils.VerifyAccountAllBalances(ctx, srcAddress, srcBalance.Sub(feegrantCoins...).Sub(amountSum...))
 	} else {
 		if campaign.CampaignType != cfeclaimtypes.VestingPoolCampaign {
-			h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBalance.Add(amountSum.AmountOf(testenv.DefaultTestDenom)))
-			h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance.Sub(amountSum.AmountOf(testenv.DefaultTestDenom)))
+			h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBalance.Add(amountSum...))
+			h.BankUtils.VerifyAccountAllBalances(ctx, srcAddress, srcBalance.Sub(amountSum...))
 		} else {
 			if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
 				_, vestingPool, accFound := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, srcAddress.String(), campaign.VestingPoolName)
@@ -183,7 +182,7 @@ func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccA
 		require.True(h.t, vestingPoolBefore.Sent.Sub(amoutDiff.AmountOf(testenv.DefaultTestDenom)).LT(vestingPool.Sent))
 		// TODO: add feegrant verification
 	} else {
-		h.BankUtils.VerifyAccountBalances(ctx, ownerAddress, srcBalance.Add(amoutDiff...), true)
+		h.BankUtils.VerifyAccountAllBalances(ctx, ownerAddress, srcBalance.Add(amoutDiff...))
 	}
 }
 
@@ -193,7 +192,7 @@ func (h *C4eClaimUtils) DeleteClaimRecordError(ctx sdk.Context, ownerAddress sdk
 
 	require.EqualError(h.t, h.helpeCfeclaimkeeper.DeleteClaimRecord(ctx, ownerAddress.String(), campaignId, userAddress, deleteClaimRecordAction), errorMessage)
 	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBalanceBefore)
-	h.BankUtils.VerifyAccountBalances(ctx, ownerAddress, srcBalance, true)
+	h.BankUtils.VerifyAccountAllBalances(ctx, ownerAddress, srcBalance)
 }
 
 func (h *C4eClaimUtils) AddClaimRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord, errorMessage string) {
@@ -203,7 +202,7 @@ func (h *C4eClaimUtils) AddClaimRecordsError(ctx sdk.Context, srcAddress sdk.Acc
 	require.EqualError(h.t, err, errorMessage)
 
 	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBalanceBefore)
-	h.BankUtils.VerifyAccountBalances(ctx, srcAddress, ownerBalanceBefore, true)
+	h.BankUtils.VerifyAccountAllBalances(ctx, srcAddress, ownerBalanceBefore)
 }
 
 func (h *C4eClaimUtils) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, from sdk.AccAddress, amountToSend sdk.Coins, unlockedAmount sdk.Coins) {
@@ -218,20 +217,20 @@ func (h *C4eClaimUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sdk.
 		for _, claimRecord := range claimEntries {
 			sum = sum.Add(claimRecord.Amount...)
 		}
-		h.BankUtils.AddDefaultDenomCoinsToAccount(ctx, sum.AmountOf(testenv.DefaultTestDenom), srcAddress)
+		h.BankUtils.AddCoinsToAccount(ctx, sum, srcAddress)
 	}
 	usersEntriesBefore := h.helpeCfeclaimkeeper.GetUsersEntries(ctx)
 
-	srcBalance := h.BankUtils.GetAccountDefultDenomBalance(ctx, srcAddress)
+	srcBalance := h.BankUtils.GetAccountAllBalances(ctx, srcAddress)
 
-	moduleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
+	moduleBalance := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 
 	require.EqualError(h.t, h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimEntries), errorMessage)
 
 	usersEntriesAfter := h.helpeCfeclaimkeeper.GetUsersEntries(ctx)
 	require.ElementsMatch(h.t, usersEntriesBefore, usersEntriesAfter)
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBalance)
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, srcAddress, srcBalance)
+	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBalance)
+	h.BankUtils.VerifyAccountAllBalances(ctx, srcAddress, srcBalance)
 
 }
 
@@ -242,8 +241,8 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	if !accExisted {
 		claimerAccountBefore = nil
 	}
-	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
-	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+	claimerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, claimer)
 	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	claimClaimsLeftBefore, ok := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
 
@@ -264,8 +263,12 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 
 	require.EqualValues(h.t, claimClaimsLeftBefore, claimClaimsLeftAfter)
 
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore.AddRaw(expectedAmount))
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBefore.SubRaw(expectedAmount))
+	for _, coin := range claimerBalanceBefore {
+		h.BankUtils.VerifyAccountBalanceByDenom(ctx, claimer, coin.Denom, coin.Amount.AddRaw(expectedAmount))
+	}
+	for _, coin := range moduleBalanceBefore {
+		h.BankUtils.VerifyModuleAccountBalanceByDenom(ctx, cfeclaimtypes.ModuleName, coin.Denom, coin.Amount.SubRaw(expectedAmount))
+	}
 
 	if claimerAccountBefore == nil {
 		baseAccount := h.helperAccountKeeper.NewAccountWithAddress(ctx, claimer)
@@ -276,7 +279,8 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	if campaign.InitialClaimFreeAmount.GT(sdk.ZeroInt()) {
 		vestingAmount = sdk.NewInt(expectedAmount).Sub(campaign.InitialClaimFreeAmount)
 	}
-	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, vestingAmount)
+	vestingCoins := sdk.NewCoins(sdk.NewCoin(h.helperCfevestingKeeper.GetParams(ctx).Denom, vestingAmount))
+	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, vestingCoins)
 
 	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimer).(*cfevestingtypes.PeriodicContinuousVestingAccount)
 
@@ -294,16 +298,16 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 
 func (h *C4eClaimUtils) ClaimInitialError(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, errorMessage string) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
-	balanceBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	balanceBefore := h.BankUtils.GetAccountAllBalances(ctx, claimer)
 	userEntryBefore, foundBefore := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 
-	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
+	moduleBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 
 	require.EqualError(h.t, h.helpeCfeclaimkeeper.InitialClaim(ctx, claimer.String(), campaignId, claimer.String()), errorMessage)
 
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, balanceBefore)
+	h.BankUtils.VerifyAccountAllBalances(ctx, claimer, balanceBefore)
 
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBefore)
+	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBefore)
 
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
 
@@ -339,14 +343,14 @@ func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, campaignId ui
 		h.StakingUtils.MessageDelegate(ctx, 2, 0, valAddress, claimer, deleagtionAmount)
 		return nil
 	}
-	beforeCheck := func(accBefore authtypes.AccountI, accAfter authtypes.AccountI, claimerAmountBefore math.Int) (authtypes.AccountI, math.Int) {
+	beforeCheck := func(accBefore authtypes.AccountI, accAfter authtypes.AccountI, claimerAmountBefore sdk.Coins) (authtypes.AccountI, sdk.Coins) {
 		veBefore, okBefore := accBefore.(*cfevestingtypes.PeriodicContinuousVestingAccount)
 		veAfter, okAfter := accAfter.(*cfevestingtypes.PeriodicContinuousVestingAccount)
 		if okBefore && okAfter {
 			veBefore.DelegatedFree = veAfter.DelegatedFree
 			veBefore.DelegatedVesting = veAfter.DelegatedVesting
 		}
-		return veBefore, claimerAmountBefore.Sub(deleagtionAmount)
+		return veBefore, claimerAmountBefore.Sub(sdk.NewCoin(h.StakingUtils.GetStakingDenom(ctx), deleagtionAmount))
 	}
 	h.completeAnyMission(ctx, campaignId, missionId, claimer, action, beforeCheck)
 }
@@ -382,10 +386,10 @@ func (h *C4eClaimUtils) CompleteMissionFromHook(ctx sdk.Context, campaignId uint
 }
 
 func (h *C4eClaimUtils) completeAnyMission(ctx sdk.Context, campaignId uint64, missionId uint64,
-	claimer sdk.AccAddress, action func() error, beforeCheck func(before authtypes.AccountI, after authtypes.AccountI, ampountBefore math.Int) (authtypes.AccountI, math.Int)) {
+	claimer sdk.AccAddress, action func() error, beforeCheck func(before authtypes.AccountI, after authtypes.AccountI, ampountBefore sdk.Coins) (authtypes.AccountI, sdk.Coins)) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
-	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
-	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	moduleBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+	claimerBefore := h.BankUtils.GetAccountAllBalances(ctx, claimer)
 	userEntryBefore, foundCr := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	require.True(h.t, foundCr)
 
@@ -395,8 +399,8 @@ func (h *C4eClaimUtils) completeAnyMission(ctx sdk.Context, campaignId uint64, m
 		claimerAccountBefore, claimerBefore = beforeCheck(claimerAccountBefore, claimerAccountAfter, claimerBefore)
 	}
 	require.EqualValues(h.t, claimerAccountBefore, claimerAccountAfter)
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBefore)
+	h.BankUtils.VerifyAccountAllBalances(ctx, claimer, claimerBefore)
+	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBefore)
 
 	userEntry, foundCr := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	require.True(h.t, foundCr)
@@ -406,15 +410,15 @@ func (h *C4eClaimUtils) completeAnyMission(ctx sdk.Context, campaignId uint64, m
 
 func (h *C4eClaimUtils) CompleteMissionFromHookError(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
-	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
-	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	moduleBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+	claimerBefore := h.BankUtils.GetAccountAllBalances(ctx, claimer)
 	claimRecordBefore, foundCrBefore := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 
 	require.EqualError(h.t, h.helpeCfeclaimkeeper.CompleteMissionFromHook(ctx, campaignId, missionId, claimer.String()), errorMessage)
 
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBefore)
+	h.BankUtils.VerifyAccountAllBalances(ctx, claimer, claimerBefore)
+	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBefore)
 	userEntry, foundCr := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	require.Equal(h.t, foundCrBefore, foundCr)
 	require.EqualValues(h.t, claimRecordBefore, userEntry)
@@ -427,8 +431,8 @@ func (h *C4eClaimUtils) ClaimMission(ctx sdk.Context, campaignId uint64, mission
 func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, claimerDstAddress sdk.AccAddress) {
 	claimerAccountBefore, ok := h.helperAccountKeeper.GetAccount(ctx, claimerDstAddress).(*cfevestingtypes.PeriodicContinuousVestingAccount)
 	require.True(h.t, ok)
-	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
-	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimerDstAddress)
+	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+	claimerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, claimerDstAddress)
 	userEntryBefore, foundCr := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	require.True(h.t, foundCr)
 	mission, _ := h.helpeCfeclaimkeeper.GetMission(ctx, campaignId, missionId)
@@ -443,12 +447,18 @@ func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64
 
 	require.EqualValues(h.t, userEntryBefore, userEntry)
 
-	expectedAmount := mission.Weight.MulInt(userEntry.GetClaimRecord(campaignId).Amount.AmountOf(testenv.DefaultTestDenom)).TruncateInt()
+	var expectedCoins sdk.Coins
+	for _, coin := range userEntry.GetClaimRecord(campaignId).Amount {
+		expectedAmount := mission.Weight.MulInt(coin.Amount).TruncateInt()
+		claimerCoinBefore := claimerBalanceBefore.AmountOf(coin.Denom)
+		h.BankUtils.VerifyAccountBalanceByDenom(ctx, claimer, coin.Denom, claimerCoinBefore.Add(expectedAmount))
 
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimerDstAddress, claimerBefore.Add(expectedAmount))
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBefore.Sub(expectedAmount))
+		moduleCoinBefore := moduleBalanceBefore.AmountOf(coin.Denom)
+		h.BankUtils.VerifyModuleAccountBalanceByDenom(ctx, cfeclaimtypes.ModuleName, coin.Denom, moduleCoinBefore.Sub(expectedAmount))
+		expectedCoins = expectedCoins.Add(sdk.NewCoin(coin.Denom, expectedAmount))
+	}
 
-	h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, expectedAmount)
+	h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, expectedCoins)
 
 	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimerDstAddress).(*cfevestingtypes.PeriodicContinuousVestingAccount)
 	require.True(h.t, ok)
@@ -457,11 +467,11 @@ func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64
 }
 
 func (h *C4eClaimUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId uint64,
-	claimerAccountBefore *cfevestingtypes.PeriodicContinuousVestingAccount, expectedAmount math.Int) *cfevestingtypes.PeriodicContinuousVestingAccount {
+	claimerAccountBefore *cfevestingtypes.PeriodicContinuousVestingAccount, expectedAmount sdk.Coins) *cfevestingtypes.PeriodicContinuousVestingAccount {
 	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	expectedStartTime := ctx.BlockTime().Add(campaign.LockupPeriod)
 	expectedEndTime := expectedStartTime.Add(campaign.VestingPeriod)
-	expectedOriginalVesting := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedAmount))
+	expectedOriginalVesting := sdk.NewCoins(expectedAmount...)
 	if len(claimerAccountBefore.VestingPeriods) == 0 {
 		claimerAccountBefore.StartTime = expectedStartTime.Unix()
 		claimerAccountBefore.EndTime = expectedEndTime.Unix()
@@ -481,15 +491,15 @@ func (h *C4eClaimUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId uin
 
 func (h *C4eClaimUtils) ClaimMissionError(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, errorMessage string) {
 	claimerAccountBefore := h.helperAccountKeeper.GetAccount(ctx, claimer)
-	moduleBefore := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
-	claimerBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, claimer)
+	moduleBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+	claimerBefore := h.BankUtils.GetAccountAllBalances(ctx, claimer)
 	claimRecordBefore, foundCrBefore := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 
 	require.EqualError(h.t, h.helpeCfeclaimkeeper.Claim(ctx, campaignId, missionId, claimer.String()), errorMessage)
 
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
-	h.BankUtils.VerifyAccountDefultDenomBalance(ctx, claimer, claimerBefore)
-	h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, moduleBefore)
+	h.BankUtils.VerifyAccountAllBalances(ctx, claimer, claimerBefore)
+	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBefore)
 	userEntry, foundCr := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	require.Equal(h.t, foundCrBefore, foundCr)
 	require.EqualValues(h.t, claimRecordBefore, userEntry)
@@ -554,16 +564,16 @@ func (h *C4eClaimUtils) StartCampaignError(ctx sdk.Context, owner string, campai
 
 func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction) {
 	campaignAmoutLeftBefore, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
-	cfeclaimModuleBalance := h.BankUtils.GetModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName)
+	cfeclaimModuleBalance := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.True(h.t, ok)
 	_, feegrantAccountAddress := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaign.Id)
-	feegrantAmountLefBefore := math.ZeroInt()
+	feegrantAmountLefBefore := sdk.NewCoins()
 	if campaign.FeegrantAmount.IsPositive() {
-		feegrantAmountLefBefore = h.BankUtils.GetAccountDefultDenomBalance(ctx, feegrantAccountAddress)
+		feegrantAmountLefBefore = h.BankUtils.GetAccountAllBalances(ctx, feegrantAccountAddress)
 	}
 	ownerAccAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
-	ownerBalanceBefore := h.BankUtils.GetAccountDefultDenomBalance(ctx, ownerAccAddress)
+	ownerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, ownerAccAddress)
 	var vestingPoolBefore *cfevestingtypes.VestingPool
 
 	if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
@@ -578,27 +588,28 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 	require.True(h.t, campaignAmoutLeft.Amount.IsEqual(sdk.NewCoins()))
 
 	if campaign.FeegrantAmount.IsPositive() {
-		feegrantAmountLef := h.BankUtils.GetAccountDefultDenomBalance(ctx, feegrantAccountAddress)
+		feegrantAmountLef := h.BankUtils.GetAccountAllBalances(ctx, feegrantAccountAddress)
 		require.True(h.t, feegrantAmountLef.IsZero())
 	}
+	amountDiff := campaignAmoutLeftBefore.Amount.Sub(feegrantAmountLefBefore...)
 	switch CloseAction {
 	case cfeclaimtypes.CloseSendToCommunityPool:
 		feePool := h.DistributionUtils.DistrKeeper.GetFeePool(ctx)
-		feePoolAmount := feePool.CommunityPool.AmountOf(testenv.DefaultTestDenom)
-		expectedAmount := sdk.NewDecFromInt(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom).Add(feegrantAmountLefBefore))
-		require.True(h.t, feePoolAmount.Equal(expectedAmount))
+		feePoolAmount := feePool.CommunityPool
+		sdk.NewDecCoinsFromCoins(amountDiff...)
+		require.EqualValues(h.t, feePoolAmount, sdk.NewDecCoinsFromCoins(campaignAmoutLeftBefore.Amount.Add(feegrantAmountLefBefore...)...))
 	case cfeclaimtypes.CloseSendToOwner:
 		if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
 			_, vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaign.VestingPoolName)
 			if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
-				require.True(h.t, vestingPoolBefore.Sent.Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)).Sub(feegrantAmountLefBefore).Equal(vestingPool.Sent))
+				require.True(h.t, vestingPoolBefore.Sent.Sub(amountDiff.AmountOf(h.helperCfevestingKeeper.GetParams(ctx).Denom)).Equal(vestingPool.Sent))
 			} else {
 				require.Nil(h.t, vestingPool.GetReservation(campaignId))
 			}
 
 		} else {
-			h.BankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfeclaimtypes.ModuleName, cfeclaimModuleBalance.Sub(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom)))
-			h.BankUtils.VerifyAccountDefultDenomBalance(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.AmountOf(testenv.DefaultTestDenom).Add(feegrantAmountLefBefore)))
+			h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, cfeclaimModuleBalance.Sub(campaignAmoutLeftBefore.Amount...))
+			h.BankUtils.VerifyAccountAllBalances(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.Add(feegrantAmountLefBefore...)...))
 		}
 	}
 

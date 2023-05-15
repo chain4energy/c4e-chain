@@ -76,6 +76,10 @@ func (su *StakingUtils) VerifyNumberOfUnbondingDelegations(ctx sdk.Context, expe
 	require.Equal(su.t, expectedNumberOfUnbondingDelegations, len(su.helperStakingkeeper.GetAllUnbondingDelegations(ctx, delegatorAddress)))
 }
 
+func (su *StakingUtils) GetStakingDenom(ctx sdk.Context) string {
+	return su.helperStakingkeeper.GetParams(ctx).BondDenom
+}
+
 type ContextStakingUtils struct {
 	StakingUtils
 	testContext testenv.TestContext
