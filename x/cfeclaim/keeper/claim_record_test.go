@@ -83,7 +83,7 @@ func TestUsersEntriesGetAll(t *testing.T) {
 	)
 }
 
-func TestAddUsersEntries(t *testing.T) {
+func TestAddClaimRecords(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -106,7 +106,7 @@ func TestAddManyUsersEntries(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries2)
 }
 
-func TestAddUsersEntriesBalanceToSmall(t *testing.T) {
+func TestAddClaimRecordsBalanceToSmall(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -116,7 +116,7 @@ func TestAddUsersEntriesBalanceToSmall(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "owner balance is too small (1000000043uc4e < 1000000045uc4e): insufficient funds")
 }
 
-func TestAddUsersEntriesEmptyAmount(t *testing.T) {
+func TestAddClaimRecordsEmptyAmount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -127,7 +127,7 @@ func TestAddUsersEntriesEmptyAmount(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim record must has at least one coin and all amounts must be positive: wrong param value")
 }
 
-func TestAddUsersEntriesZeroAmount(t *testing.T) {
+func TestAddClaimRecordsZeroAmount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -138,7 +138,7 @@ func TestAddUsersEntriesZeroAmount(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim record must has at least one coin and all amounts must be positive: wrong param value")
 }
 
-func TestAddUsersEntriesEmptyAddress(t *testing.T) {
+func TestAddClaimRecordsEmptyAddress(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -149,7 +149,7 @@ func TestAddUsersEntriesEmptyAddress(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim record empty address: wrong param value")
 }
 
-func TestAddUsersEntriesWrongOwner(t *testing.T) {
+func TestAddClaimRecordsWrongOwner(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -159,7 +159,7 @@ func TestAddUsersEntriesWrongOwner(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[1], 0, claimEntries, "you are not the campaign owner: tx intended signer does not match the given signer")
 }
 
-func TestAddUsersEntriesCampaignDoesntExist(t *testing.T) {
+func TestAddClaimRecordsCampaignDoesntExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -169,7 +169,7 @@ func TestAddUsersEntriesCampaignDoesntExist(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 1, claimEntries, "campaign with id 1 not found: entity does not exist")
 }
 
-func TestAddUsersEntriesCampaignNotEnabled(t *testing.T) {
+func TestAddClaimRecordsCampaignNotEnabled(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -182,7 +182,7 @@ func TestAddUsersEntriesCampaignNotEnabled(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "campaign is disabled: entity already exists")
 }
 
-func TestAddUsersEntriesCampaignIsOver(t *testing.T) {
+func TestAddClaimRecordsCampaignIsOver(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -198,7 +198,7 @@ func TestAddUsersEntriesCampaignIsOver(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, fmt.Sprintf("campaign with id 0 campaign is over (end time - %s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 
-func TestAddUsersEntriesclaimRecordExist(t *testing.T) {
+func TestAddClaimRecordsclaimRecordExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -209,7 +209,7 @@ func TestAddUsersEntriesclaimRecordExist(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, fmt.Sprintf("claim records index 0: campaignId 0 already exists for address: %s: entity already exists", claimEntries[0].Address))
 }
 
-func TestAddUsersEntriesInitialClaimAmountError(t *testing.T) {
+func TestAddClaimRecordsInitialClaimAmountError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
@@ -225,7 +225,7 @@ func TestAddUsersEntriesInitialClaimAmountError(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim amount 80000000 < campaign initial claim free amount (100000000000000000): wrong param value")
 }
 
-func TestAddUsersEntriesInitialClaimAmount(t *testing.T) {
+func TestAddClaimRecordsInitialClaimAmount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
@@ -241,7 +241,7 @@ func TestAddUsersEntriesInitialClaimAmount(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 }
 
-func TestAddUsersEntriesCorrectFeegrant(t *testing.T) {
+func TestAddClaimRecordsCorrectFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	feegrantAmount := sdk.NewInt(2500000)
@@ -258,7 +258,7 @@ func TestAddUsersEntriesCorrectFeegrant(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 }
 
-func TestAddUsersEntriesWrongSrcAccountBalanceFeegrant(t *testing.T) {
+func TestAddClaimRecordsWrongSrcAccountBalanceFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	feegrantAmount := sdk.NewInt(2500000)
@@ -274,7 +274,7 @@ func TestAddUsersEntriesWrongSrcAccountBalanceFeegrant(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "owner balance is too small (1000000045uc4e < 1025000045uc4e): insufficient funds")
 }
 
-func TestAddUsersEntriesCampaignVestingPoolCampaignNotStarted(t *testing.T) {
+func TestAddClaimRecordsCampaignVestingPoolCampaignNotStarted(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -293,7 +293,7 @@ func TestAddUsersEntriesCampaignVestingPoolCampaignNotStarted(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
 }
 
-func TestAddUsersEntriesCampaignVestingPoolCampaignVestingInPoolAmountTooSmall(t *testing.T) {
+func TestAddClaimRecordsCampaignVestingPoolCampaignVestingInPoolAmountTooSmall(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 

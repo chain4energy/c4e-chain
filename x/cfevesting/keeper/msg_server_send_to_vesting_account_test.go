@@ -98,6 +98,45 @@ func TestSendVestingAccountNoRestartVesting(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
+func TestSendVestingAccountOnPoolLockEnd(t *testing.T) {
+	sendVestingAccountPoolLockEndedTest(t, 0, true)
+}
+
+func TestSendVestingAccountNoRestartVestingOnPoolLockEnd(t *testing.T) {
+	sendVestingAccountPoolLockEndedTest(t, 0, false)
+}
+
+func TestSendVestingAccountAfterPoolLockEnd(t *testing.T) {
+	sendVestingAccountPoolLockEndedTest(t, 1, true)
+}
+
+func TestSendVestingAccountNoRestartVestingAfterPoolLockEnd(t *testing.T) {
+	sendVestingAccountPoolLockEndedTest(t, 1, false)
+}
+
+func sendVestingAccountPoolLockEndedTest(t *testing.T, afterEnd time.Duration, restartVesting bool) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	lockupDuration := time.Duration(1000)
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, lockupDuration, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+
+	testHelper.SetContextBlockTime(testHelper.Context.BlockTime().Add(lockupDuration + afterEnd))
+	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, vPool1, sdk.NewInt(100), restartVesting, sdk.NewInt(95))
+	testHelper.BankUtils.VerifyAccountDefultDenomBalance(accAddr, accInitBalance.Sub(vested))
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
 func TestSendVestingAccountMultiple(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := app.SetupTestAppWithHeight(t, 1000)

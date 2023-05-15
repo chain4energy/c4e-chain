@@ -30,33 +30,10 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
-// type ExtendedC4eClaimKeeperUtils struct {
-// 	cfeclaimtestutils.C4eClaimKeeperUtils
-// 	BankUtils *commontestutils.BankUtils
-// 	Cdc      *codec.ProtoCodec
-// 	StoreKey *storetypes.KVStoreKey
-// }
-
-// func NewExtendedC4eClaimKeeperUtils(t *testing.T, helperCfeclaimKeeper *keeper.Keeper,
-// 	bankUtils *commontestutils.BankUtils,
-// 	cdc *codec.ProtoCodec,
-// 	storeKey *storetypes.KVStoreKey) ExtendedC4eClaimKeeperUtils {
-// 	return ExtendedC4eClaimKeeperUtils{C4eClaimKeeperUtils: cfeclaimtestutils.NewC4eClaimKeeperUtils(t, helperCfeclaimKeeper),
-// 		BankUtils: bankUtils,
-// 		Cdc:      cdc,
-// 		StoreKey: storeKey}
-// }
-
-// func CfeclaimKeeperTestUtil(t *testing.T) (*cfeclaimtestutils.C4eClaimKeeperUtils, *keeper.Keeper, sdk.Context) {
-// 	k, ctx := CfeclaimKeeper(t)
-// 	utils := cfeclaimtestutils.NewC4eClaimKeeperUtils(t, k)
-// 	return &utils, k, ctx
-// }
-
 func CfeclaimKeeperTestUtilWithCdc(t *testing.T) (*cfeclaimtestutils.C4eClaimUtils, *keeper.Keeper, sdk.Context) {
 	k, ak, bk, ctx, _, _ := cfeclaimKeeperWithBlockHeightAndTime(t, 0, testenv.TestEnvTime)
 	bankUtils := commontestutils.NewBankUtils(t, ctx, ak, bk)
-	utils := cfeclaimtestutils.NewC4eClaimUtils(t, k, nil, ak, &bankUtils, nil, nil, nil, nil)
+	utils := cfeclaimtestutils.NewC4eClaimUtils(t, k, nil, nil, &bankUtils, nil, nil, nil, nil)
 	return &utils, k, ctx
 }
 
