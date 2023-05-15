@@ -55,6 +55,60 @@ func SimulateMsgAddClaimRecords(
 	}
 }
 
+func SimulateMsgDeleteClaimRecord(
+	k keeper.Keeper,
+	cfevestingKeeper cfevestingkeeper.Keeper,
+) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
+		ownerAddress, err := createCampaign(k, cfevestingKeeper, msgServer, msgServerCtx, r, ctx, accs)
+		if err != nil {
+			return simtypes.NewOperationMsgBasic(types.ModuleName, "Create campaign", "", false, nil), nil, nil
+		}
+
+		campaigns := k.GetCampaigns(ctx)
+		startCampaignMsg := &types.MsgStartCampaign{
+			Owner:      ownerAddress.String(),
+			CampaignId: uint64(len(campaigns) - 1),
+		}
+
+		_, err = msgServer.StartCampaign(msgServerCtx, startCampaignMsg)
+		if err != nil {
+			k.Logger(ctx).Error("SIMULATION: Start campaign error", err.Error())
+			return simtypes.NoOpMsg(types.ModuleName, startCampaignMsg.Type(), ""), nil, nil
+		}
+		claimRecords := createNClaimRecords(100, accs)
+		addClaimRecordsMsg := &types.MsgAddClaimRecords{
+			Owner:        ownerAddress.String(),
+			CampaignId:   uint64(len(campaigns) - 1),
+			ClaimRecords: claimRecords,
+		}
+
+		_, err = msgServer.AddClaimRecords(msgServerCtx, addClaimRecordsMsg)
+		if err != nil {
+			k.Logger(ctx).Error("SIMULATION: Add claim records error", err.Error())
+			return simtypes.NoOpMsg(types.ModuleName, addClaimRecordsMsg.Type(), ""), nil, nil
+		}
+
+		deleteClaimRecordMsg := &types.MsgDeleteClaimRecord{
+			Owner:                   ownerAddress.String(),
+			CampaignId:              uint64(len(campaigns) - 1),
+			UserAddress:             claimRecords[helpers.RandomInt(r, len(claimRecords))].Address,
+			DeleteClaimRecordAction: types.CloseAction(helpers.RandomInt(r, 4)),
+		}
+
+		_, err = msgServer.DeleteClaimRecord(msgServerCtx, deleteClaimRecordMsg)
+		if err != nil {
+			k.Logger(ctx).Error("SIMULATION: Delete claim record error", err.Error())
+			return simtypes.NoOpMsg(types.ModuleName, deleteClaimRecordMsg.Type(), ""), nil, nil
+		}
+
+		k.Logger(ctx).Debug("SIMULATION:  Delete claim record - deleted")
+		return simtypes.NewOperationMsg(deleteClaimRecordMsg, true, " Delete claim record simulation completed", nil), nil, nil
+	}
+}
+
 func createNClaimRecords(n int, accs []simtypes.Account) []*types.ClaimRecord {
 	var claimRecords []*types.ClaimRecord
 	for i := 0; i < n; i++ {

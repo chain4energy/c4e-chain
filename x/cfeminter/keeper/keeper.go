@@ -58,7 +58,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO add unit tests
+func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
 	minterState := k.GetMinterState(ctx)
 	params := k.GetParams(ctx)
 	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.Minters, &minterState)

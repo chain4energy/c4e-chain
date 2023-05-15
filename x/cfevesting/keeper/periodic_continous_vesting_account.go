@@ -22,6 +22,10 @@ func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context
 		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "account address: %s is not allowed to receive funds error", userAddress)
 	}
 
+	if err = k.bank.IsSendEnabledCoins(ctx, amount...); err != nil {
+		return 0, err
+	}
+
 	periodicContinousVestingAccount, err := k.getOrCreatePeriodicContinousVestingAccount(ctx, userAccAddress, startTime, endTime)
 	if err != nil {
 		return 0, err

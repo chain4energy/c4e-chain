@@ -64,5 +64,4 @@ func parseDenoms(denomsStr string) (denoms []string, err error) {
 		// TODO check if duplications
 	}
 	return
-	// return newDecCoins, nil
 }

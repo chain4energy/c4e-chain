@@ -24,22 +24,6 @@ var (
 	_ = baseapp.Paramspace
 )
 
-const (
-	opWeightMsgSplitVesting = "op_weight_msg_split_vesting"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgSplitVesting int = 100
-
-	opWeightMsgMoveAvailableVesting = "op_weight_msg_move_available_vesting"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgMoveAvailableVesting int = 100
-
-	opWeightMsgMoveAvailableVestingByDenoms = "op_weight_msg_move_available_vesting_by_denoms"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgMoveAvailableVestingByDenoms int = 100
-
-	// this line is used by starport scaffolding # simapp/module/const
-)
-
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	cfevestingGenesis := types.GenesisState{

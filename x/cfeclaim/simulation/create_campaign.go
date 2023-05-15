@@ -46,7 +46,7 @@ func createCampaign(k keeper.Keeper, cfevestingKeeper cfevestingkeeper.Keeper, m
 		Owner:                  simAccount.Address.String(),
 		Name:                   helpers.RandStringOfLengthCustomSeed(r, 10),
 		Description:            helpers.RandStringOfLengthCustomSeed(r, 10),
-		CampaignType:           3,
+		CampaignType:           types.CampaignType(helpers.RandomInt(r, 4)),
 		FeegrantAmount:         nil,
 		InitialClaimFreeAmount: nil,
 		StartTime:              &startTime,

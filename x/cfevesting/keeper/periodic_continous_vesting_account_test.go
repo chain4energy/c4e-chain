@@ -71,27 +71,28 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
 }
 
-//func TestCreateAccountSendDisabled(t *testing.T) { // TODO: Fix
-//	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
-//	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
-//	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
-//
-//	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
-//
-//	moduleAmount := sdk.NewInt(10000)
-//	amount := sdk.NewInt(1000)
-//
-//	startTimeUnix := startTime.Unix()
-//	endTimeUnix := endTime.Unix()
-//	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
-//	testHelper.BankUtils.DisableSend()
-//
-//	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
-//		amount,
-//		startTimeUnix,
-//		endTimeUnix, true, "send coins disabled: uc4e transfers are currently disabled: send transactions are disabled",
-//	)
-//}
+func TestCreateAccountSendDisabled(t *testing.T) {
+	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
+	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)
+	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
+
+	moduleAmount := sdk.NewInt(10000)
+	amount := sdk.NewInt(1000)
+
+	startTimeUnix := startTime.Unix()
+	endTimeUnix := endTime.Unix()
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
+	testHelper.BankUtils.DisableSend()
+
+	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
+		amount,
+		sdk.ZeroDec(),
+		startTimeUnix,
+		endTimeUnix, true, fmt.Sprintf("%s transfers are currently disabled: send transactions are disabled", testenv.DefaultTestDenom),
+	)
+}
 
 func TestCreateAccountBlockedAddress(t *testing.T) {
 	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
