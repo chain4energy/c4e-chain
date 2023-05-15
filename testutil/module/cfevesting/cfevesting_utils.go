@@ -458,8 +458,9 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	accAmountBefore := h.bankUtils.GetAccountDefultDenomBalance(ctx, vestingAccAddress)
 	moduleAmountBefore := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
 	accountBefore := h.helperAccountKeeper.GetAccount(ctx, vestingAccAddress)
-
 	newVestingAccountTraceId := vestingAccountCount
+	vaccFromListBefore, vaccFromListBeforeFound := h.helperCfevestingKeeper.GetVestingAccountTrace(ctx, vestingAccAddress.String())
+
 	if accountBefore != nil {
 		newVestingAccountTraceId = vestingAccountCount - 1
 	} else {
@@ -487,7 +488,13 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 		Genesis:            false,
 		FromGenesisPool:    foundVPool.GenesisPool,
 		FromGenesisAccount: false,
-		PeriodsToTrace:     []uint64{0},
+	}
+	if foundVPool.GenesisPool {
+		if vaccFromListBeforeFound {
+			expectedVestingAccountTrace.PeriodsToTrace = append(vaccFromListBefore.PeriodsToTrace, uint64(len(vaccFromListBefore.PeriodsToTrace)))
+		} else {
+			expectedVestingAccountTrace.PeriodsToTrace = []uint64{0}
+		}
 	}
 	require.EqualValues(h.t, expectedVestingAccountTrace, vaccFromList)
 

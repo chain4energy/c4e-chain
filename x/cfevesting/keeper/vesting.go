@@ -254,16 +254,22 @@ func (k Keeper) SetAccountVestingPoolsAndVestingAccountTrace(ctx sdk.Context, ow
 	restartVesting bool, accVestingPools *types.AccountVestingPools, vestingPool *types.VestingPool) {
 	k.SetAccountVestingPools(ctx, *accVestingPools)
 	vestingAccountTrace, found := k.GetVestingAccountTrace(ctx, toAddr)
+
 	if !found {
-		k.AppendVestingAccountTrace(ctx, types.VestingAccountTrace{
+		vestingAccountTrace = types.VestingAccountTrace{
 			Address:            toAddr,
 			Genesis:            false,
 			FromGenesisPool:    vestingPool.GenesisPool,
 			FromGenesisAccount: false,
-			PeriodsToTrace:     []uint64{periodId},
-		})
-	} else {
+			PeriodsToTrace:     []uint64{},
+		}
+		if vestingPool.GenesisPool {
+			vestingAccountTrace.PeriodsToTrace = []uint64{periodId}
+		}
+		k.AppendVestingAccountTrace(ctx, vestingAccountTrace)
+	} else if vestingPool.GenesisPool {
 		vestingAccountTrace.PeriodsToTrace = append(vestingAccountTrace.PeriodsToTrace, periodId)
+		k.SetVestingAccountTrace(ctx, vestingAccountTrace)
 	}
 
 	eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
