@@ -1,6 +1,7 @@
 package v3_test
 
 import (
+	"cosmossdk.io/math"
 	"encoding/binary"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
@@ -199,9 +200,9 @@ func generateRandomOldVestingPool(accuntId int, vestingId int) v2.VestingPool {
 		VestingType:     "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:       testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
 		LockEnd:         testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
-		InitiallyLocked: sdk.NewInt(int64(vested)),
-		Withdrawn:       sdk.NewInt(int64(withdrawn)),
-		Sent:            sdk.NewInt(int64(sent)),
+		InitiallyLocked: math.NewInt(int64(vested)),
+		Withdrawn:       math.NewInt(int64(withdrawn)),
+		Sent:            math.NewInt(int64(sent)),
 	}
 }
 

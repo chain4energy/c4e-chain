@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"cosmossdk.io/math"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
@@ -24,7 +25,7 @@ func SimulateMsgMoveAvailableVesting(
 		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(helpers.RandomInt(r, 100000))
 		simAccount3Address := testcosmos.CreateRandomAccAddressNoBalance(helpers.RandomInt(r, 10000000))
 
-		randCoinsAmount := sdk.NewInt(helpers.RandomInt(r, 1000))
+		randCoinsAmount := math.NewInt(helpers.RandomInt(r, 1000))
 		coin := sdk.NewCoin(sdk.DefaultBondDenom, randCoinsAmount)
 		coins := sdk.NewCoins(coin)
 

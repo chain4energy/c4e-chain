@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"testing"
 	"time"
 
@@ -15,7 +16,7 @@ func TestGetMinterState(t *testing.T) {
 
 	minterState := types.MinterState{
 		SequenceId:                  7,
-		AmountMinted:                sdk.NewInt(123412),
+		AmountMinted:                math.NewInt(123412),
 		RemainderToMint:             sdk.ZeroDec(),
 		RemainderFromPreviousMinter: sdk.ZeroDec(),
 		LastMintBlockTime:           time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC),

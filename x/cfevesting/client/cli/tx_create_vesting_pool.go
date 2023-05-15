@@ -2,6 +2,7 @@ package cli
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"fmt"
 	"strconv"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
@@ -50,7 +50,7 @@ $ %s tx %s create-vesting-pool my_vesting_pool 1000000 8760h my_vesting_type --f
 			if err != nil {
 				return err
 			}
-			amountInt, ok := sdk.NewIntFromString(argAmount)
+			amountInt, ok := math.NewIntFromString(argAmount)
 			if !ok {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "amount must be a positive integer")
 			}

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -44,7 +45,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		return err
 	}
 
-	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
 		granteeAddr, err := sdk.AccAddressFromBech32(userEntry.Address)
 		if err != nil {
 			return err

@@ -27,7 +27,7 @@ func TestCompleteDelegationMission(t *testing.T) {
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
-	delagationAmount := sdk.NewInt(1000)
+	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
@@ -122,7 +122,7 @@ func TestClaimMissionCampaignHasEnded(t *testing.T) {
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
-	delagationAmount := sdk.NewInt(1000)
+	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
@@ -146,7 +146,7 @@ func TestClaimMissionWithTypeClaim(t *testing.T) {
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
-	delagationAmount := sdk.NewInt(1000)
+	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
@@ -167,7 +167,7 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
-	delagationAmount := sdk.NewInt(1000)
+	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
@@ -192,7 +192,7 @@ func TestFullCampaign(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 60000001)
 
-	delagationAmount := sdk.NewInt(1000000)
+	delagationAmount := math.NewInt(1000000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
@@ -285,7 +285,7 @@ func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
-	delagationAmount := sdk.NewInt(1000)
+	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])

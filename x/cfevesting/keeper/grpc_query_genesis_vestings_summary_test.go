@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/app"
@@ -10,8 +11,6 @@ import (
 
 	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	// abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -20,15 +19,15 @@ func TestVestingsAmountPoolsOnlyNoGenesis(t *testing.T) {
 
 	start := testutils.CreateTimeFromNumOfHours(1000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(10000)
-	amount := sdk.NewInt(1000000)
+	amount := math.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
 		VestingType:     "test",
 		LockStart:       start,
 		LockEnd:         lockEnd,
 		InitiallyLocked: amount,
-		Withdrawn:       sdk.ZeroInt(),
-		Sent:            sdk.ZeroInt(),
+		Withdrawn:       math.ZeroInt(),
+		Sent:            math.ZeroInt(),
 	}
 	accVestingPools := types.AccountVestingPools{
 		Owner:        acountsAddresses[0].String(),
@@ -46,14 +45,14 @@ func TestVestingsAmountPoolsOnlyNoGenesis(t *testing.T) {
 
 	testHelper := app.SetupTestApp(t)
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(1000000), types.ModuleName)
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
 	expected := types.QueryGenesisVestingsSummaryResponse{
-		VestingAllAmount:        sdk.ZeroInt(),
-		VestingInPoolsAmount:    sdk.ZeroInt(),
-		VestingInAccountsAmount: sdk.ZeroInt(),
-		DelegatedVestingAmount:  sdk.ZeroInt(),
+		VestingAllAmount:        math.ZeroInt(),
+		VestingInPoolsAmount:    math.ZeroInt(),
+		VestingInAccountsAmount: math.ZeroInt(),
+		DelegatedVestingAmount:  math.ZeroInt(),
 	}
 
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
@@ -64,15 +63,15 @@ func TestVestingsAmountPoolsOnlyGenesis(t *testing.T) {
 
 	start := testutils.CreateTimeFromNumOfHours(1000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(10000)
-	amount := sdk.NewInt(1000000)
+	amount := math.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
 		VestingType:     "test",
 		LockStart:       start,
 		LockEnd:         lockEnd,
 		InitiallyLocked: amount,
-		Withdrawn:       sdk.ZeroInt(),
-		Sent:            sdk.ZeroInt(),
+		Withdrawn:       math.ZeroInt(),
+		Sent:            math.ZeroInt(),
 		GenesisPool:     true,
 	}
 	accVestingPools := types.AccountVestingPools{
@@ -91,14 +90,14 @@ func TestVestingsAmountPoolsOnlyGenesis(t *testing.T) {
 
 	testHelper := app.SetupTestApp(t)
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(1000000), types.ModuleName)
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
 	expected := types.QueryGenesisVestingsSummaryResponse{
-		VestingAllAmount:        sdk.NewInt(1000000),
-		VestingInPoolsAmount:    sdk.NewInt(1000000),
-		VestingInAccountsAmount: sdk.ZeroInt(),
-		DelegatedVestingAmount:  sdk.ZeroInt(),
+		VestingAllAmount:        math.NewInt(1000000),
+		VestingInPoolsAmount:    math.NewInt(1000000),
+		VestingInAccountsAmount: math.ZeroInt(),
+		DelegatedVestingAmount:  math.ZeroInt(),
 	}
 
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
@@ -109,15 +108,15 @@ func TestVestingsAmountPoolsAndAccountNoGenesis(t *testing.T) {
 
 	start := testutils.CreateTimeFromNumOfHours(1000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(10000)
-	amount := sdk.NewInt(1000000)
+	amount := math.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
 		VestingType:     "test",
 		LockStart:       start,
 		LockEnd:         lockEnd,
 		InitiallyLocked: amount,
-		Withdrawn:       sdk.ZeroInt(),
-		Sent:            sdk.ZeroInt(),
+		Withdrawn:       math.ZeroInt(),
+		Sent:            math.ZeroInt(),
 	}
 
 	accVestingPools := types.AccountVestingPools{
@@ -142,36 +141,36 @@ func TestVestingsAmountPoolsAndAccountNoGenesis(t *testing.T) {
 
 	testHelper := app.SetupTestApp(t)
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
-	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(1000000), types.ModuleName)
+	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), math.NewInt(300000), start, lockEnd)
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
 	expected := types.QueryGenesisVestingsSummaryResponse{
-		VestingAllAmount:        sdk.ZeroInt(),
-		VestingInPoolsAmount:    sdk.ZeroInt(),
-		VestingInAccountsAmount: sdk.ZeroInt(),
-		DelegatedVestingAmount:  sdk.ZeroInt(),
+		VestingAllAmount:        math.ZeroInt(),
+		VestingInPoolsAmount:    math.ZeroInt(),
+		VestingInAccountsAmount: math.ZeroInt(),
+		DelegatedVestingAmount:  math.ZeroInt(),
 	}
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(5500))
 
 	// expected = types.QueryGenesisVestingsSummaryResponse{
-	// 	VestingAllAmount:        sdk.NewInt(1150000),
-	// 	VestingInPoolsAmount:    sdk.NewInt(1000000),
-	// 	VestingInAccountsAmount: sdk.NewInt(150000),
-	// 	DelegatedVestingAmount:  sdk.NewInt(1).SubRaw(1),
+	// 	VestingAllAmount:        math.NewInt(1150000),
+	// 	VestingInPoolsAmount:    math.NewInt(1000000),
+	// 	VestingInAccountsAmount: math.NewInt(150000),
+	// 	DelegatedVestingAmount:  math.NewInt(1).SubRaw(1),
 	// }
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(10000))
 
 	// expected = types.QueryGenesisVestingsSummaryResponse{
-	// 	VestingAllAmount:        sdk.NewInt(1000000),
-	// 	VestingInPoolsAmount:    sdk.NewInt(1000000),
-	// 	VestingInAccountsAmount: sdk.NewInt(0),
-	// 	DelegatedVestingAmount:  sdk.NewInt(0),
+	// 	VestingAllAmount:        math.NewInt(1000000),
+	// 	VestingInPoolsAmount:    math.NewInt(1000000),
+	// 	VestingInAccountsAmount: math.NewInt(0),
+	// 	DelegatedVestingAmount:  math.NewInt(0),
 	// }
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
 
@@ -194,15 +193,15 @@ func testVestingsAmountPoolsAndAccountGenesis(t *testing.T, genesis bool, fromGe
 
 	start := testutils.CreateTimeFromNumOfHours(1000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(10000)
-	amount := sdk.NewInt(1000000)
+	amount := math.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
 		VestingType:     "test",
 		LockStart:       start,
 		LockEnd:         lockEnd,
 		InitiallyLocked: amount,
-		Withdrawn:       sdk.ZeroInt(),
-		Sent:            sdk.ZeroInt(),
+		Withdrawn:       math.ZeroInt(),
+		Sent:            math.ZeroInt(),
 		GenesisPool:     true,
 	}
 
@@ -231,36 +230,36 @@ func testVestingsAmountPoolsAndAccountGenesis(t *testing.T, genesis bool, fromGe
 
 	testHelper := app.SetupTestApp(t)
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1000000), types.ModuleName)
-	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), sdk.NewInt(300000), start, lockEnd)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(1000000), types.ModuleName)
+	testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[1].String(), math.NewInt(300000), start, lockEnd)
 
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
 	expected := types.QueryGenesisVestingsSummaryResponse{
-		VestingAllAmount:        sdk.NewInt(1300000),
-		VestingInPoolsAmount:    sdk.NewInt(1000000),
-		VestingInAccountsAmount: sdk.NewInt(300000),
-		DelegatedVestingAmount:  sdk.NewInt(1).SubRaw(1),
+		VestingAllAmount:        math.NewInt(1300000),
+		VestingInPoolsAmount:    math.NewInt(1000000),
+		VestingInAccountsAmount: math.NewInt(300000),
+		DelegatedVestingAmount:  math.NewInt(1).SubRaw(1),
 	}
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(5500))
 
 	expected = types.QueryGenesisVestingsSummaryResponse{
-		VestingAllAmount:        sdk.NewInt(1150000),
-		VestingInPoolsAmount:    sdk.NewInt(1000000),
-		VestingInAccountsAmount: sdk.NewInt(150000),
-		DelegatedVestingAmount:  sdk.NewInt(1).SubRaw(1),
+		VestingAllAmount:        math.NewInt(1150000),
+		VestingInPoolsAmount:    math.NewInt(1000000),
+		VestingInAccountsAmount: math.NewInt(150000),
+		DelegatedVestingAmount:  math.NewInt(1).SubRaw(1),
 	}
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(10000))
 
 	expected = types.QueryGenesisVestingsSummaryResponse{
-		VestingAllAmount:        sdk.NewInt(1000000),
-		VestingInPoolsAmount:    sdk.NewInt(1000000),
-		VestingInAccountsAmount: sdk.NewInt(0),
-		DelegatedVestingAmount:  sdk.NewInt(0),
+		VestingAllAmount:        math.NewInt(1000000),
+		VestingInPoolsAmount:    math.NewInt(1000000),
+		VestingInAccountsAmount: math.NewInt(0),
+		DelegatedVestingAmount:  math.NewInt(0),
 	}
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
 
@@ -271,15 +270,15 @@ func TestVestingsAmountPoolsAndAccountMixed(t *testing.T) {
 
 	start := testutils.CreateTimeFromNumOfHours(1000)
 	lockEnd := testutils.CreateTimeFromNumOfHours(10000)
-	amount := sdk.NewInt(1000000)
+	amount := math.NewInt(1000000)
 
 	vestingPool := types.VestingPool{
 		VestingType:     "test",
 		LockStart:       start,
 		LockEnd:         lockEnd,
 		InitiallyLocked: amount,
-		Withdrawn:       sdk.ZeroInt(),
-		Sent:            sdk.ZeroInt(),
+		Withdrawn:       math.ZeroInt(),
+		Sent:            math.ZeroInt(),
 		GenesisPool:     true,
 	}
 
@@ -288,8 +287,8 @@ func TestVestingsAmountPoolsAndAccountMixed(t *testing.T) {
 		LockStart:       start,
 		LockEnd:         lockEnd,
 		InitiallyLocked: amount,
-		Withdrawn:       sdk.ZeroInt(),
-		Sent:            sdk.ZeroInt(),
+		Withdrawn:       math.ZeroInt(),
+		Sent:            math.ZeroInt(),
 		GenesisPool:     false,
 	}
 
@@ -346,37 +345,37 @@ func TestVestingsAmountPoolsAndAccountMixed(t *testing.T) {
 
 	testHelper := app.SetupTestApp(t)
 
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(5*1000000), types.ModuleName)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(5*1000000), types.ModuleName)
 	for i := 1; i < 6; i++ {
-		testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[i].String(), sdk.NewInt(300000), start, lockEnd)
+		testHelper.AuthUtils.CreateDefaultDenomVestingAccount(acountsAddresses[i].String(), math.NewInt(300000), start, lockEnd)
 	}
 	testHelper.C4eVestingUtils.InitGenesis(genesisState)
 
 	expected := types.QueryGenesisVestingsSummaryResponse{
-		VestingAllAmount:        sdk.NewInt(3 * 1300000),
-		VestingInPoolsAmount:    sdk.NewInt(3 * 1000000),
-		VestingInAccountsAmount: sdk.NewInt(3 * 300000),
-		DelegatedVestingAmount:  sdk.NewInt(1).SubRaw(1),
+		VestingAllAmount:        math.NewInt(3 * 1300000),
+		VestingInPoolsAmount:    math.NewInt(3 * 1000000),
+		VestingInAccountsAmount: math.NewInt(3 * 300000),
+		DelegatedVestingAmount:  math.NewInt(1).SubRaw(1),
 	}
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(5500))
 
 	expected = types.QueryGenesisVestingsSummaryResponse{
-		VestingAllAmount:        sdk.NewInt(3 * 1150000),
-		VestingInPoolsAmount:    sdk.NewInt(3 * 1000000),
-		VestingInAccountsAmount: sdk.NewInt(3 * 150000),
-		DelegatedVestingAmount:  sdk.NewInt(1).SubRaw(1),
+		VestingAllAmount:        math.NewInt(3 * 1150000),
+		VestingInPoolsAmount:    math.NewInt(3 * 1000000),
+		VestingInAccountsAmount: math.NewInt(3 * 150000),
+		DelegatedVestingAmount:  math.NewInt(1).SubRaw(1),
 	}
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
 
 	testHelper.IncrementContextBlockHeightAndSetTime(testutils.CreateTimeFromNumOfHours(10000))
 
 	expected = types.QueryGenesisVestingsSummaryResponse{
-		VestingAllAmount:        sdk.NewInt(3 * 1000000),
-		VestingInPoolsAmount:    sdk.NewInt(3 * 1000000),
-		VestingInAccountsAmount: sdk.NewInt(0),
-		DelegatedVestingAmount:  sdk.NewInt(0),
+		VestingAllAmount:        math.NewInt(3 * 1000000),
+		VestingInPoolsAmount:    math.NewInt(3 * 1000000),
+		VestingInAccountsAmount: math.NewInt(0),
+		DelegatedVestingAmount:  math.NewInt(0),
 	}
 	testHelper.C4eVestingUtils.QueryGenesisVestings(expected)
 

@@ -1,6 +1,7 @@
 package cfeclaim_test
 
 import (
+	"cosmossdk.io/math"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,8 +25,8 @@ func TestGenesis(t *testing.T) {
 				Name:                   "Campaign 1",
 				Description:            "Campaign 1 description",
 				CampaignType:           2,
-				FeegrantAmount:         sdk.NewInt(300),
-				InitialClaimFreeAmount: sdk.NewInt(500),
+				FeegrantAmount:         math.NewInt(300),
+				InitialClaimFreeAmount: math.NewInt(500),
 				Enabled:                false,
 				StartTime:              time.Now(),
 				EndTime:                time.Now().Add(time.Hour),
@@ -38,8 +39,8 @@ func TestGenesis(t *testing.T) {
 				Name:                   "Campaign 2",
 				Description:            "Campaign 2 description",
 				CampaignType:           1,
-				FeegrantAmount:         sdk.NewInt(100),
-				InitialClaimFreeAmount: sdk.NewInt(300),
+				FeegrantAmount:         math.NewInt(100),
+				InitialClaimFreeAmount: math.NewInt(300),
 				Enabled:                true,
 				StartTime:              time.Now(),
 				EndTime:                time.Now().Add(time.Hour),
@@ -75,14 +76,14 @@ func TestGenesis(t *testing.T) {
 					{
 						CampaignId:        0,
 						Address:           "cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj",
-						Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1234))),
+						Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(1234))),
 						CompletedMissions: []uint64{0, 1},
 						ClaimedMissions:   []uint64{0},
 					},
 					{
 						CampaignId:        1,
 						Address:           "cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj",
-						Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(10000))),
+						Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000))),
 						CompletedMissions: []uint64{0},
 						ClaimedMissions:   []uint64{0},
 					},
@@ -95,14 +96,14 @@ func TestGenesis(t *testing.T) {
 					{
 						CampaignId:        0,
 						Address:           "c4e1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8fdd9gs",
-						Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1234))),
+						Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(1234))),
 						CompletedMissions: []uint64{0, 1},
 						ClaimedMissions:   []uint64{0},
 					},
 					{
 						CampaignId:        1,
 						Address:           "c4e1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8fdd9gs",
-						Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(10000))),
+						Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000))),
 						CompletedMissions: []uint64{0, 1},
 						ClaimedMissions:   []uint64{0, 1},
 					},

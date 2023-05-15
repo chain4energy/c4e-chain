@@ -23,7 +23,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(123),
+					AmountMinted:                math.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("324.543"),
@@ -39,7 +39,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", time.Now(), []*types.Minter{}),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(123),
+					AmountMinted:                math.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("324.543"),
@@ -60,7 +60,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createOkCfeminterParams().StartTime, createOkCfeminterParams().Minters),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(123),
+					AmountMinted:                math.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("324.543"),
@@ -75,7 +75,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createNotOkCfeminterParams().StartTime, createNotOkCfeminterParams().Minters),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(123),
+					AmountMinted:                math.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("324.543"),
@@ -91,7 +91,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createOkCfeminterParams().StartTime, createOkCfeminterParams().Minters),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(-123),
+					AmountMinted:                math.NewInt(-123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("324.543"),
@@ -107,7 +107,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createOkCfeminterParams().StartTime, createOkCfeminterParams().Minters),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(123),
+					AmountMinted:                math.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("-123.221"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("324.543"),
@@ -123,7 +123,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createOkCfeminterParams().StartTime, createOkCfeminterParams().Minters),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(123),
+					AmountMinted:                math.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("-324.543"),
@@ -139,7 +139,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createOkCfeminterParams().StartTime, createOkCfeminterParams().Minters),
 				MinterState: types.MinterState{
 					SequenceId:                  6,
-					AmountMinted:                sdk.NewInt(123),
+					AmountMinted:                math.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("324.543"),
@@ -155,7 +155,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createOkCfeminterParams().StartTime, createOkCfeminterParams().Minters),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(123),
+					AmountMinted:                math.NewInt(123),
 					RemainderToMint:             sdk.MustNewDecFromStr("123.221"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("324.543"),
@@ -171,7 +171,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createOkCfeminterParams().StartTime, createOkCfeminterParams().Minters),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(100),
+					AmountMinted:                math.NewInt(100),
 					RemainderToMint:             sdk.MustNewDecFromStr("324.543"),
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.Dec{},
@@ -187,7 +187,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.NewParams("myc4e", createOkCfeminterParams().StartTime, createOkCfeminterParams().Minters),
 				MinterState: types.MinterState{
 					SequenceId:                  2,
-					AmountMinted:                sdk.NewInt(100),
+					AmountMinted:                math.NewInt(100),
 					RemainderToMint:             sdk.Dec{},
 					LastMintBlockTime:           time.Now(),
 					RemainderFromPreviousMinter: sdk.MustNewDecFromStr("324.543"),
@@ -230,14 +230,14 @@ func createHistory() []*types.MinterState {
 	history := make([]*types.MinterState, 0)
 	state1 := types.MinterState{
 		SequenceId:                  0,
-		AmountMinted:                sdk.NewInt(324),
+		AmountMinted:                math.NewInt(324),
 		RemainderToMint:             sdk.MustNewDecFromStr("1243.221"),
 		LastMintBlockTime:           time.Now(),
 		RemainderFromPreviousMinter: sdk.MustNewDecFromStr("3124.543"),
 	}
 	state2 := types.MinterState{
 		SequenceId:                  1,
-		AmountMinted:                sdk.NewInt(432),
+		AmountMinted:                math.NewInt(432),
 		RemainderToMint:             sdk.MustNewDecFromStr("12433.221"),
 		LastMintBlockTime:           time.Now(),
 		RemainderFromPreviousMinter: sdk.MustNewDecFromStr("3284.543"),
@@ -251,8 +251,8 @@ func createOkCfeminterParams() types.Params {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -273,8 +273,8 @@ func createNotOkCfeminterParams() types.Params {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 

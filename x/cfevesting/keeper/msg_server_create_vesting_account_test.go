@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 	"time"
@@ -18,9 +19,9 @@ func TestCreateVestingAccount(t *testing.T) {
 	accAddr1 := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
 
-	accBalance := sdk.NewInt(100000)
+	accBalance := math.NewInt(100000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
-	sendAmount := sdk.NewInt(10000)
+	sendAmount := math.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
 	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.UTC)
@@ -45,9 +46,9 @@ func TestCreateVestingAccountAccountExists(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 	accAddr3 := acountsAddresses[2]
 
-	accBalance := sdk.NewInt(100000)
+	accBalance := math.NewInt(100000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
-	sendAmount := sdk.NewInt(10000)
+	sendAmount := math.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
 	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.UTC)
@@ -113,9 +114,9 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 	accAddr2 := acountsAddresses[1]
 	accAddr3 := acountsAddresses[2]
 
-	accBalance := sdk.NewInt(15000)
+	accBalance := math.NewInt(15000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
-	sendAmount := sdk.NewInt(10000)
+	sendAmount := math.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
 	startTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.UTC)
@@ -150,9 +151,9 @@ func TestCreateVestingAccountStartTimeAfterEndTime(t *testing.T) {
 	accAddr1 := acountsAddresses[0]
 	accAddr2 := acountsAddresses[1]
 
-	accBalance := sdk.NewInt(15000)
+	accBalance := math.NewInt(15000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accBalance, accAddr1)
-	sendAmount := sdk.NewInt(10000)
+	sendAmount := math.NewInt(10000)
 	coins := sdk.Coins{{Amount: sendAmount, Denom: testenv.DefaultTestDenom}}
 	startTime := time.Date(2035, 2, 3, 0, 0, 0, 0, time.Local)
 	endTime := time.Date(2025, 2, 3, 0, 0, 0, 0, time.Local)

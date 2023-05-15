@@ -78,8 +78,8 @@ func (k Keeper) addVestingPool(
 		LockStart:       lockStart,
 		LockEnd:         lockEnd,
 		InitiallyLocked: amount,
-		Withdrawn:       sdk.ZeroInt(),
-		Sent:            sdk.ZeroInt(),
+		Withdrawn:       math.ZeroInt(),
+		Sent:            math.ZeroInt(),
 	}
 	accVestingPools.VestingPools = append(accVestingPools.VestingPools, &vestingPool)
 
@@ -118,7 +118,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 	}
 
 	current := ctx.BlockTime()
-	toWithdraw := sdk.ZeroInt()
+	toWithdraw := math.ZeroInt()
 	events := make([]types.WithdrawAvailable, 0)
 	denom := k.GetParams(ctx).Denom
 	for _, vestingPool := range accVestingPools.VestingPools {
@@ -136,7 +136,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 		}
 	}
 
-	if toWithdraw.GT(sdk.ZeroInt()) {
+	if toWithdraw.GT(math.ZeroInt()) {
 		coinToSend := sdk.NewCoin(denom, toWithdraw)
 		coinsToSend := sdk.NewCoins(coinToSend)
 		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, coinsToSend)
@@ -334,7 +334,7 @@ func CalculateWithdrawable(current time.Time, vestingPool types.VestingPool) mat
 	if current.Equal(vestingPool.LockEnd) || current.After(vestingPool.LockEnd) {
 		return vestingPool.GetCurrentlyLockedWithoutReservations()
 	}
-	return sdk.ZeroInt()
+	return math.ZeroInt()
 }
 
 func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, originalVesting sdk.Coins, startTime int64, vestingEnd int64) (*vestingtypes.ContinuousVestingAccount, error) {

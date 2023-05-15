@@ -55,15 +55,15 @@ const (
 )
 
 var (
-	StakeAmountIntA  = sdk.NewInt(StakeAmountA)
+	StakeAmountIntA  = math.NewInt(StakeAmountA)
 	StakeAmountCoinA = sdk.NewCoin(C4eDenom, StakeAmountIntA)
-	StakeAmountIntB  = sdk.NewInt(StakeAmountB)
+	StakeAmountIntB  = math.NewInt(StakeAmountB)
 	StakeAmountCoinB = sdk.NewCoin(C4eDenom, StakeAmountIntB)
 
 	InitBalanceStrA = fmt.Sprintf("%d%s", C4eBalanceA+StakeBalanceA, C4eDenom)
 	InitBalanceStrB = fmt.Sprintf("%d%s", C4eBalanceB+StakeBalanceB, C4eDenom)
-	C4eToken        = sdk.NewInt64Coin(C4eDenom, IbcSendAmount) // 3,300uosmo
-	tenC4e          = sdk.Coins{sdk.NewInt64Coin(C4eDenom, 10_000_000)}
+	C4eToken        = math.NewInt64Coin(C4eDenom, IbcSendAmount) // 3,300uosmo
+	tenC4e          = sdk.Coins{math.NewInt64Coin(C4eDenom, 10_000_000)}
 )
 
 func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHeight int) error {

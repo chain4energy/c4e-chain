@@ -21,7 +21,7 @@ import (
 
 func TestMigrationLinearMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(10000))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Hour)
 	V1MintingPeriods := []*v1.MintingPeriod{
@@ -34,7 +34,7 @@ func TestMigrationLinearMinting(t *testing.T) {
 
 func TestMigrationExponentialStepMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), math.NewInt(10000))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Hour)
 	V1MintingPeriods := []*v1.MintingPeriod{
@@ -47,8 +47,8 @@ func TestMigrationExponentialStepMinting(t *testing.T) {
 
 func TestMigrationLinearMintingAndExponentialStepMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
-	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), math.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
 	endTime2 := endTime1.Add(time.Hour)
@@ -71,8 +71,8 @@ func TestMigrationNoMinters(t *testing.T) {
 
 func TestMigrationWrongMinterPosition(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
-	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), math.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
 	endTime2 := endTime1.Add(time.Hour)
@@ -87,8 +87,8 @@ func TestMigrationWrongMinterPosition(t *testing.T) {
 
 func TestMigrationWrongMintingStartTime(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
-	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), math.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
 	endTime2 := endTime1.Add(time.Hour)
@@ -103,7 +103,7 @@ func TestMigrationWrongMintingStartTime(t *testing.T) {
 
 func TestMigrationWrongMinterType(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(10000))
+	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
 	V1MintingPeriods := []*v1.MintingPeriod{
@@ -115,7 +115,7 @@ func TestMigrationWrongMinterType(t *testing.T) {
 
 func TestMigrationWrongExponentialStepMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 0, sdk.MustNewDecFromStr("0.5"), sdk.NewInt(10000))
+	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 0, sdk.MustNewDecFromStr("0.5"), math.NewInt(10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
 	V1MintingPeriods := []*v1.MintingPeriod{
@@ -128,7 +128,7 @@ func TestMigrationWrongExponentialStepMinting(t *testing.T) {
 
 func TestMigrationWrongLinearMinting(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV1TimeLinearMinter(sdk.NewInt(-10000))
+	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(-10000))
 	startTime := time.Now()
 	endTime1 := startTime.Add(time.Hour)
 	V1MintingPeriods := []*v1.MintingPeriod{

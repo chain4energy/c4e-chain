@@ -30,7 +30,7 @@ func TestMigrateLinearMinting(t *testing.T) {
 	testUtil, ctx := testkeeper.CfeminterKeeperTestUtilWithCdc(t)
 	endTime := testenv.TestEnvTime.Add(time.Hour)
 	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(sdk.NewInt(1000))),
+		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
 		createV2Minter(2, nil, types.NoMintingType, nil, nil),
 	}
 
@@ -43,7 +43,7 @@ func TestMigrateExponentialStepMinting(t *testing.T) {
 	endTime := testenv.TestEnvTime.Add(time.Hour)
 	legacyMinters := []*types.LegacyMinter{
 		createV2Minter(1, &endTime, types.ExponentialStepMintingType,
-			createExonentialStepMinting(sdk.NewInt(1000), time.Hour, sdk.MustNewDecFromStr("0.5")), nil),
+			createExonentialStepMinting(math.NewInt(1000), time.Hour, sdk.MustNewDecFromStr("0.5")), nil),
 		createV2Minter(2, nil, types.NoMintingType, nil, nil),
 	}
 
@@ -57,9 +57,9 @@ func TestMigrateExponentialStepMintingAndLinearMinting(t *testing.T) {
 	endTime2 := endTime.Add(time.Hour)
 
 	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(sdk.NewInt(1000))),
+		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
 		createV2Minter(2, &endTime2, types.ExponentialStepMintingType,
-			createExonentialStepMinting(sdk.NewInt(1000), time.Hour, sdk.MustNewDecFromStr("0.5")), nil),
+			createExonentialStepMinting(math.NewInt(1000), time.Hour, sdk.MustNewDecFromStr("0.5")), nil),
 		createV2Minter(3, nil, types.NoMintingType, nil, nil),
 	}
 
@@ -73,9 +73,9 @@ func TestMigrateWrongSequenceId(t *testing.T) {
 	endTime2 := endTime.Add(time.Hour)
 
 	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(sdk.NewInt(1000))),
+		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
 		createV2Minter(1, &endTime2, types.ExponentialStepMintingType,
-			createExonentialStepMinting(sdk.NewInt(1000), time.Hour, sdk.MustNewDecFromStr("0.5")), nil),
+			createExonentialStepMinting(math.NewInt(1000), time.Hour, sdk.MustNewDecFromStr("0.5")), nil),
 		createV2Minter(3, nil, types.NoMintingType, nil, nil),
 	}
 
@@ -89,7 +89,7 @@ func TestMigrateWrongMinterType(t *testing.T) {
 	endTime2 := endTime.Add(time.Hour)
 
 	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(sdk.NewInt(1000))),
+		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
 		createV2Minter(2, &endTime2, types.ExponentialStepMintingType,
 			nil, nil),
 		createV2Minter(3, nil, types.NoMintingType, nil, nil),

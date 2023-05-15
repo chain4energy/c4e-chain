@@ -1,6 +1,7 @@
 package v2_test
 
 import (
+	"cosmossdk.io/math"
 	"testing"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -18,7 +19,7 @@ import (
 
 func TestMigrationStatesBurnFalse(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	coin := sdk.NewDecCoin(testenv.DefaultTestDenom, sdk.NewInt(0))
+	coin := sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(0))
 	states := []v1.State{
 		createV1SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
 		createV1SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", false, coin),
@@ -30,7 +31,7 @@ func TestMigrationStatesBurnFalse(t *testing.T) {
 
 func TestMigrationStatesBurnTrue(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	coin := sdk.NewDecCoin(testenv.DefaultTestDenom, sdk.NewInt(100))
+	coin := sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(100))
 	states := []v1.State{
 		createV1SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
 		createV1SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
@@ -42,8 +43,8 @@ func TestMigrationStatesBurnTrue(t *testing.T) {
 
 func TestMigrationStatesBurnTrueAndFalse(t *testing.T) {
 	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	coin := sdk.NewDecCoin(testenv.DefaultTestDenom, sdk.NewInt(100))
-	coin2 := sdk.NewDecCoin(testenv.DefaultTestDenom, sdk.NewInt(300))
+	coin := sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(100))
+	coin2 := sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(300))
 	states := []v1.State{
 		createV1SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin),
 		createV1SubdistributorState("CUSTOM_ID", "CUSTOM_ACC_TYPE", true, coin2),

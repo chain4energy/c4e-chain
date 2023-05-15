@@ -36,8 +36,8 @@ func (k Keeper) createVestingsSummary(ctx sdk.Context, genesisOnly bool) (*Summa
 	}
 
 	allAcc := k.GetAllVestingAccountTrace(ctx)
-	allVestingInAccounts := sdk.ZeroInt()
-	allLockedNotDelegated := sdk.ZeroInt()
+	allVestingInAccounts := math.ZeroInt()
+	allLockedNotDelegated := math.ZeroInt()
 	for _, accFromList := range allAcc {
 		if genesisOnly && !accFromList.IsGenesisOrFromGenesis() {
 			continue

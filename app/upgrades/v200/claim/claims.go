@@ -34,11 +34,11 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper 
 		return fmt.Errorf("source module account not found: %s", claimSource)
 	}
 	ownerAcc := acc.GetAddress().String()
-	err := bankkeeper.Keeper.MintCoins(*bankKeeper, ctx, claimSource, sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(1000000000000000))))
+	err := bankkeeper.Keeper.MintCoins(*bankKeeper, ctx, claimSource, sdk.NewCoins(sdk.NewCoin("uc4e", math.NewInt(1000000000000000))))
 	if err != nil {
 		return err
 	}
-	zeroInt := sdk.ZeroInt()
+	zeroInt := math.ZeroInt()
 	zeroDec := sdk.ZeroDec()
 
 	vestingType := cfevestingtypes.VestingType{
@@ -67,7 +67,7 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper 
 	}
 
 	vestingKeeper.SetAccountVestingPools(ctx, accountVestingPools)
-	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(*bankKeeper, ctx, acc.GetAddress(), cfevestingtypes.ModuleName, sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(100000000000000))))
+	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(*bankKeeper, ctx, acc.GetAddress(), cfevestingtypes.ModuleName, sdk.NewCoins(sdk.NewCoin("uc4e", math.NewInt(100000000000000))))
 	if err != nil {
 		return err
 	}

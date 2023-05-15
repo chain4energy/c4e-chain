@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	"cosmossdk.io/math"
 	"testing"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -22,7 +23,7 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 			msg: types.MsgSplitVesting{
 				FromAddress: "invalid_address",
 				ToAddress:   sample.AccAddress(),
-				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
+				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(2))),
 			},
 			err:    types.ErrParsing,
 			errMsg: "split vesting: from acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
@@ -32,7 +33,7 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 			msg: types.MsgSplitVesting{
 				FromAddress: sample.AccAddress(),
 				ToAddress:   "invalid_address",
-				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
+				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(2))),
 			},
 			err:    types.ErrParsing,
 			errMsg: "split vesting: to acc address error: decoding bech32 failed: invalid separator index -1: failed to parse",
@@ -42,7 +43,7 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 			msg: types.MsgSplitVesting{
 				FromAddress: sample.AccAddress(),
 				ToAddress:   sample.AccAddress(),
-				Amount:      sdk.Coins{sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2)), sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))},
+				Amount:      sdk.Coins{sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(2)), sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(2))},
 			},
 			err:    types.ErrParam,
 			errMsg: "split vesting - invalid amount (duplicate denomination uc4e): wrong param value",
@@ -52,7 +53,7 @@ func TestMsgSplitVesting_ValidateBasic(t *testing.T) {
 			msg: types.MsgSplitVesting{
 				FromAddress: sample.AccAddress(),
 				ToAddress:   sample.AccAddress(),
-				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2))),
+				Amount:      sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(2))),
 			},
 		},
 	}

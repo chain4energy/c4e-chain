@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"cosmossdk.io/math"
 	"math/rand"
 	"strconv"
 	"time"
@@ -27,7 +28,7 @@ func SimulateVestingOperations(
 		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
 
 		randVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
-		randVestingAmount := sdk.NewInt(helpers.RandomInt(r, 10000000000))
+		randVestingAmount := math.NewInt(helpers.RandomInt(r, 10000000000))
 		randVestingDuration := time.Duration(helpers.RandomInt(r, 3))
 		randVesingId := helpers.RandomInt(r, 3)
 		randomVestingType := "New vesting" + strconv.Itoa(int(randVesingId))
@@ -47,7 +48,7 @@ func SimulateVestingOperations(
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations - create vesting pool", "", false, nil), nil, nil
 		}
 
-		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10000000))
+		randMsgSendToVestinAccAmount := math.NewInt(helpers.RandomInt(r, 10000000))
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
 			Owner:           simAccount1.Address.String(),
 			ToAddress:       simAccount2Address,

@@ -21,28 +21,28 @@ import (
 
 func TestMigrationCorrectMinterState(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	state := createV1MinterState(1, sdk.ZeroDec(), sdk.ZeroDec(), time.Now(), sdk.NewInt(10000))
+	state := createV1MinterState(1, sdk.ZeroDec(), sdk.ZeroDec(), time.Now(), math.NewInt(10000))
 	setV1MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, state)
 	MigrateStoreV100ToV1(t, ctx, *k, &keeperData, false, "")
 }
 
 func TestMigrationWrongMinterStateNegativeAmount(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	state := createV1MinterState(1, sdk.ZeroDec(), sdk.ZeroDec(), time.Now(), sdk.NewInt(-10000))
+	state := createV1MinterState(1, sdk.ZeroDec(), sdk.ZeroDec(), time.Now(), math.NewInt(-10000))
 	setV1MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, state)
 	MigrateStoreV100ToV1(t, ctx, *k, &keeperData, true, "minter state validation error: amountMinted cannot be less than 0")
 }
 
 func TestMigrationWrongMinterStateNegativeRemainder(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	state := createV1MinterState(1, sdk.MustNewDecFromStr("-100"), sdk.ZeroDec(), time.Now(), sdk.NewInt(10000))
+	state := createV1MinterState(1, sdk.MustNewDecFromStr("-100"), sdk.ZeroDec(), time.Now(), math.NewInt(10000))
 	setV1MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, state)
 	MigrateStoreV100ToV1(t, ctx, *k, &keeperData, true, "minter state validation error: remainderToMint cannot be less than 0")
 }
 
 func TestMigrationWrongMinterStateNegativePreviousRemainder(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	state := createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("-100"), time.Now(), sdk.NewInt(10000))
+	state := createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("-100"), time.Now(), math.NewInt(10000))
 	setV1MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, state)
 	MigrateStoreV100ToV1(t, ctx, *k, &keeperData, true, "minter state validation error: remainderFromPreviousPeriod cannot be less than 0")
 }
@@ -55,10 +55,10 @@ func TestMigrationNoMinterStates(t *testing.T) {
 func TestMigrationMinterStateHistory(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
 	stateHistory := []v1.MinterState{
-		createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000)),
-		createV1MinterState(2, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10001)),
+		createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), math.NewInt(10000)),
+		createV1MinterState(2, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), math.NewInt(10001)),
 	}
-	minterState := createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000))
+	minterState := createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), math.NewInt(10000))
 	setV1MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, minterState)
 	setOldMinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc, stateHistory)
 	MigrateStoreV100ToV1(t, ctx, *k, &keeperData, false, "")
@@ -67,10 +67,10 @@ func TestMigrationMinterStateHistory(t *testing.T) {
 func TestMigrationWrongMinterStateHistory(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
 	stateHistory := []v1.MinterState{
-		createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("-100"), time.Now(), sdk.NewInt(10000)),
-		createV1MinterState(2, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10001)),
+		createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("-100"), time.Now(), math.NewInt(10000)),
+		createV1MinterState(2, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), math.NewInt(10001)),
 	}
-	minterState := createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000))
+	minterState := createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), math.NewInt(10000))
 	setV1MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, minterState)
 	setOldMinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc, stateHistory)
 	MigrateStoreV100ToV1(t, ctx, *k, &keeperData, true, "minter state validation error: remainderFromPreviousPeriod cannot be less than 0")
@@ -79,7 +79,7 @@ func TestMigrationWrongMinterStateHistory(t *testing.T) {
 func TestMigrationNoStateHistory(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
 	stateHistory := []v1.MinterState{}
-	minterState := createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), sdk.NewInt(10000))
+	minterState := createV1MinterState(1, sdk.ZeroDec(), sdk.MustNewDecFromStr("100"), time.Now(), math.NewInt(10000))
 	setV1MinterState(ctx, keeperData.StoreKey, keeperData.Cdc, minterState)
 	setOldMinterStateHistory(ctx, keeperData.StoreKey, keeperData.Cdc, stateHistory)
 	MigrateStoreV100ToV1(t, ctx, *k, &keeperData, false, "")

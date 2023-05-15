@@ -2,6 +2,7 @@ package cfevesting
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"fmt"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
@@ -64,7 +65,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 func ValidateAccountsOnGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState,
 	ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) error {
 	accsVestingPools := genState.AccountVestingPools
-	vestingPoolsAmount := sdk.ZeroInt()
+	vestingPoolsAmount := math.ZeroInt()
 
 	for _, accVestingPools := range accsVestingPools {
 		for _, v := range accVestingPools.VestingPools {

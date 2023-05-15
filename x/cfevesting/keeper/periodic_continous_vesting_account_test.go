@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
@@ -23,8 +24,8 @@ func TestCreateAccount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
-	moduleAmount := sdk.NewInt(10000)
-	amount := sdk.NewInt(1000)
+	moduleAmount := math.NewInt(10000)
+	amount := math.NewInt(1000)
 
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
@@ -41,7 +42,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.SetContextBlockTime(testenv.TestEnvTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount.QuoRaw(2))
 	testHelper.SetContextBlockTime(endTime)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], math.ZeroInt())
 
 	testHelper.SetContextBlockTime(startTime)
 	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
@@ -55,7 +56,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.SetContextBlockTime(testenv.TestEnvTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount)
 	testHelper.SetContextBlockTime(endTime)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], math.ZeroInt())
 
 	testHelper.SetContextBlockTime(startTime)
 	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
@@ -68,7 +69,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.SetContextBlockTime(testenv.TestEnvTime)
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], amount.QuoRaw(2).MulRaw(3))
 	testHelper.SetContextBlockTime(endTime)
-	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], sdk.ZeroInt())
+	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], math.ZeroInt())
 }
 
 func TestCreateAccountSendDisabled(t *testing.T) {
@@ -78,8 +79,8 @@ func TestCreateAccountSendDisabled(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
-	moduleAmount := sdk.NewInt(10000)
-	amount := sdk.NewInt(1000)
+	moduleAmount := math.NewInt(10000)
+	amount := math.NewInt(1000)
 
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
@@ -117,8 +118,8 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 		testHelper.App.GovKeeper,
 		appparams.GetAuthority(),
 	)
-	moduleAmount := sdk.NewInt(10000)
-	amount := sdk.NewInt(1000)
+	moduleAmount := math.NewInt(10000)
+	amount := math.NewInt(1000)
 
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
@@ -143,8 +144,8 @@ func TestCreateAccountWrongAccountType(t *testing.T) {
 	baseAccount, _ := account.(*authtypes.BaseAccount)
 	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount, sdk.NewCoins(), time.Now().Add(time.Hour).Unix())
 	testHelper.App.AccountKeeper.SetAccount(testHelper.Context, baseVestingAccount)
-	moduleAmount := sdk.NewInt(10000)
-	amount := sdk.NewInt(100)
+	moduleAmount := math.NewInt(10000)
+	amount := math.NewInt(100)
 
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
@@ -163,7 +164,7 @@ func TestCreateAccountSendError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeightAndTime(t, 1000, startTime)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
-	amount := sdk.NewInt(10000000000)
+	amount := math.NewInt(10000000000)
 
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	errortypes "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -41,14 +42,14 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 	orignalVestings := vestingAcc.OriginalVesting
 
 	for _, coin := range amountToUnlock {
-		if coin.Amount.GT(sdk.ZeroInt()) {
+		if coin.Amount.GT(math.ZeroInt()) {
 			orignalVesting := orignalVestings.AmountOf(coin.Denom)
 			vestingCoin := vestingCoins.AmountOf(coin.Denom)
 			originalVestingDiffDec := sdk.NewDecFromInt(coin.Amount).Mul(sdk.NewDecFromInt(orignalVesting)).Quo(sdk.NewDecFromInt(vestingCoin))
 			originalVestingDiff := originalVestingDiffDec.TruncateInt()
 			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoin(coin.Denom, originalVestingDiff))
 			if vestingCoin.Sub(vestingAcc.GetVestingCoins(ctx.BlockTime()).AmountOf(coin.Denom)).LT(coin.Amount) {
-				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoin(coin.Denom, sdk.NewInt(bankersRoundingCompensation)))
+				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoin(coin.Denom, math.NewInt(bankersRoundingCompensation)))
 				// Subtracting 1 is done to compensate bankers rounding of vesting coins calculation nad truncating of original vesting difference.
 				// TODO Some better explanation maybe?
 				// Variables used in the calculations are:

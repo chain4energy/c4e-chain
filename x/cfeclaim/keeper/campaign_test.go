@@ -155,7 +155,7 @@ func TestCreateCampaignNegativeInitialClaimAmount(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.InitialClaimFreeAmount = sdk.NewInt(-100)
+	campaign.InitialClaimFreeAmount = math.NewInt(-100)
 	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("initial claim free amount (%s) cannot be negative: wrong param value", campaign.InitialClaimFreeAmount))
 }
 
@@ -164,7 +164,7 @@ func TestCreateCampaignNegativeFeegrantAmount(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.FeegrantAmount = sdk.NewInt(-100)
+	campaign.FeegrantAmount = math.NewInt(-100)
 	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("feegrant amount (%s) cannot be negative: wrong param value", campaign.FeegrantAmount))
 }
 
@@ -393,7 +393,7 @@ func TestCreateCampaignCloseCloseActionBurnAndFeegrant(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.FeegrantAmount = sdk.NewInt(1000)
+	campaign.FeegrantAmount = math.NewInt(1000)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
@@ -408,7 +408,7 @@ func TestCreateCampaignCloseCloseActionSendToOwnerAndFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.FeegrantAmount = sdk.NewInt(1000)
+	campaign.FeegrantAmount = math.NewInt(1000)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
@@ -424,7 +424,7 @@ func TestCreateCampaignCloseCloseActionSendToCommunityPoolAndFeegrant(t *testing
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.FeegrantAmount = sdk.NewInt(1000)
+	campaign.FeegrantAmount = math.NewInt(1000)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)

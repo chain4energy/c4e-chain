@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
@@ -19,7 +20,7 @@ func TestSinglePeriod(t *testing.T) {
 	endTime := time.Now().Add(100 * 100 * time.Hour)
 	periods := types.ContinuousVestingPeriods{
 		{
-			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(10000000))),
+			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000000))),
 			StartTime: startTime.Unix(),
 			EndTime:   endTime.Unix(),
 		},
@@ -49,34 +50,34 @@ func TestSinglePeriod(t *testing.T) {
 	checkTime := startTime.Add(time.Duration(30*100) * time.Hour)
 	vested := sdk.NewCoins(sdk.NewCoin(periods[0].Amount[0].Denom, periods[0].Amount[0].Amount))
 	vested[0].Amount = vested[0].Amount.MulRaw(int64(30)).QuoRaw(100)
-	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(10000000))), sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(5000000))))
+	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000000))), sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(5000000))))
 
 	require.True(t, acc.GetVestedCoins(checkTime).IsEqual(vested))
 	require.True(t, acc.GetVestingCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
-	require.True(t, acc.LockedCoins(checkTime).IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2000000)))))
-	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(5000000)))))
+	require.True(t, acc.LockedCoins(checkTime).IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(2000000)))))
+	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(5000000)))))
 	require.True(t, acc.DelegatedFree.IsZero())
 
 	checkTime = startTime.Add(time.Duration(40*100) * time.Hour)
 	vested = sdk.NewCoins(sdk.NewCoin(periods[0].Amount[0].Denom, periods[0].Amount[0].Amount))
 	vested[0].Amount = vested[0].Amount.MulRaw(int64(40)).QuoRaw(100)
-	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(5000000))), sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(3000000))))
+	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(5000000))), sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(3000000))))
 
 	require.True(t, acc.GetVestedCoins(checkTime).IsEqual(vested))
 	require.True(t, acc.GetVestingCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
 	require.True(t, acc.LockedCoins(checkTime).IsZero())
-	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(6000000)))))
-	require.True(t, acc.DelegatedFree.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2000000)))))
+	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(6000000)))))
+	require.True(t, acc.DelegatedFree.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(2000000)))))
 
 	checkTime = startTime.Add(time.Duration(50*100) * time.Hour)
 	vested = sdk.NewCoins(sdk.NewCoin(periods[0].Amount[0].Denom, periods[0].Amount[0].Amount))
 	vested[0].Amount = vested[0].Amount.MulRaw(int64(50)).QuoRaw(100)
-	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2000000))), sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2000000))))
+	acc.TrackDelegation(checkTime, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(2000000))), sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(2000000))))
 	require.True(t, acc.GetVestedCoins(checkTime).IsEqual(vested))
 	require.True(t, acc.GetVestingCoins(checkTime).IsEqual(acc.OriginalVesting.Sub(vested...)))
 	require.True(t, acc.LockedCoins(checkTime).IsZero())
-	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(6000000)))))
-	require.True(t, acc.DelegatedFree.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(4000000)))))
+	require.True(t, acc.DelegatedVesting.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(6000000)))))
+	require.True(t, acc.DelegatedFree.IsEqual(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(4000000)))))
 
 }
 
@@ -91,17 +92,17 @@ func TestMultiplePeriods(t *testing.T) {
 	p3EndTime := p1EndTime.Add(2 * timeShift)
 	periods := types.ContinuousVestingPeriods{
 		{
-			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(10000000))),
+			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000000))),
 			StartTime: p1StartTime.Unix(),
 			EndTime:   p1EndTime.Unix(),
 		},
 		{
-			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(100000000))),
+			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(100000000))),
 			StartTime: p2StartTime.Unix(),
 			EndTime:   p2EndTime.Unix(),
 		},
 		{
-			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1000000000))),
+			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(1000000000))),
 			StartTime: p3StartTime.Unix(),
 			EndTime:   p3EndTime.Unix(),
 		},
@@ -176,7 +177,7 @@ func correctClaimVestingAccount() ClaimAccountTc {
 
 func wrongOriginalVestingClaimVestingAccount() ClaimAccountTc {
 	acc := createCorrectClaimAccout()
-	acc.OriginalVesting[0].Amount = acc.OriginalVesting[0].Amount.Add(sdk.NewInt(300))
+	acc.OriginalVesting[0].Amount = acc.OriginalVesting[0].Amount.Add(math.NewInt(300))
 	return ClaimAccountTc{
 		desc:    "wrong original vesting claim account",
 		account: acc,
@@ -233,22 +234,22 @@ func periodEndLessThanStartClaimVestingAccount() ClaimAccountTc {
 func createCorrectClaimAccout() *types.PeriodicContinuousVestingAccount {
 	periods := types.ContinuousVestingPeriods{
 		{
-			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1000))),
+			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(1000))),
 			StartTime: time.Now().Add(-24 * 100 * time.Hour).Unix(),
 			EndTime:   time.Now().Add(24 * 100 * time.Hour).Unix(),
 		},
 		{
-			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(800))),
+			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(800))),
 			StartTime: time.Now().Add(-24 * 300 * time.Hour).Unix(),
 			EndTime:   time.Now().Add(24 * 150 * time.Hour).Unix(),
 		},
 		{
-			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(900000))),
+			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(900000))),
 			StartTime: time.Now().Add(-24 * 32 * time.Hour).Unix(),
 			EndTime:   time.Now().Add(24 * 400 * time.Hour).Unix(),
 		},
 		{
-			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(20000))),
+			Amount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(20000))),
 			StartTime: time.Now().Add(-24 * 200 * time.Hour).Unix(),
 			EndTime:   time.Now().Add(24 * 150 * time.Hour).Unix(),
 		},

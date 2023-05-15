@@ -2,6 +2,7 @@ package cli
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
@@ -28,14 +29,14 @@ func CmdCreateCampaign() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argFeegrantAmount, ok := sdk.NewIntFromString(args[3])
+			argFeegrantAmount, ok := math.NewIntFromString(args[3])
 			if !ok {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
 			}
 			if err != nil {
 				return err
 			}
-			argInitialClaimFreeAmount, ok := sdk.NewIntFromString(args[4])
+			argInitialClaimFreeAmount, ok := math.NewIntFromString(args[4])
 			if !ok {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
 			}

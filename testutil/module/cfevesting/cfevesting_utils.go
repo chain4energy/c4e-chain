@@ -271,7 +271,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPoolWithGenesisParam(ctx sdk.Conte
 		}
 		require.NotNil(h.t, vestingPool)
 		h.VerifyVestingPool(ctx, vestingPool, vestingPoolName, vestingType.Name, ctx.BlockTime(), ctx.BlockTime().Add(lockupDuration),
-			amountToVest, sdk.ZeroInt(), sdk.ZeroInt())
+			amountToVest, math.ZeroInt(), math.ZeroInt())
 	}
 	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, address, accAmountAfter)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountAfter)
@@ -348,7 +348,7 @@ func (h *C4eVestingUtils) VerifyAccountVestingPoolsWithModification(ctx sdk.Cont
 		found := false
 		// if vesting.Id == int32(i+1) {
 		h.VerifyVestingPool(ctx, vesting, vestingNames[i], vestingTypes[i].Name, startsTimes[i], startsTimes[i].Add(durations[i]),
-			vestedAmounts[i], withdrawnAmounts[i], sdk.NewInt(sentAmounts[i]))
+			vestedAmounts[i], withdrawnAmounts[i], math.NewInt(sentAmounts[i]))
 		found = true
 
 		// }
@@ -705,7 +705,7 @@ func (h *ContextC4eVestingUtils) MessageCreateVestingPool(address sdk.AccAddress
 }
 
 func (h *ContextC4eVestingUtils) AddTestVestingPool(address sdk.AccAddress, vestingPoolName string, vested math.Int, lockupPeriodInHours int64, vestingPeriodInHours int64) {
-	accInitBalance := sdk.NewInt(10000)
+	accInitBalance := math.NewInt(10000)
 	h.bankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), accInitBalance, address)
 
 	vestingType := cfevestingtypes.VestingType{

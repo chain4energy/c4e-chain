@@ -119,7 +119,7 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 
 	}
 
-	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
 		_, feegrandModuleAddress := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaignId)
 		feegrantSum := campaign.FeegrantAmount.MulRaw(int64(len(claimRecords)))
 		feegrantCoins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, feegrantSum))
@@ -248,7 +248,7 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 
 	userEntry, _ := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	_, granterAddr := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaignId)
-	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
 		allowance, err := h.FeegrantUtils.FeegrantKeeper.GetAllowance(ctx, granterAddr, claimer)
 		require.NoError(h.t, err)
 		require.NotNil(h.t, allowance)
@@ -259,7 +259,7 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	require.Error(h.t, err)
 	require.Nil(h.t, allowance)
 	claimClaimsLeftAfter, ok := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
-	claimClaimsLeftBefore.Amount = claimClaimsLeftBefore.Amount.Sub(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(expectedAmount)))...)
+	claimClaimsLeftBefore.Amount = claimClaimsLeftBefore.Amount.Sub(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(expectedAmount)))...)
 
 	require.EqualValues(h.t, claimClaimsLeftBefore, claimClaimsLeftAfter)
 
@@ -275,9 +275,9 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 		claimerAccountBefore = cfevestingtypes.NewRepeatedContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), 100000000, 100000000, nil)
 	}
 
-	vestingAmount := sdk.NewInt(expectedAmount)
-	if campaign.InitialClaimFreeAmount.GT(sdk.ZeroInt()) {
-		vestingAmount = sdk.NewInt(expectedAmount).Sub(campaign.InitialClaimFreeAmount)
+	vestingAmount := math.NewInt(expectedAmount)
+	if campaign.InitialClaimFreeAmount.GT(math.ZeroInt()) {
+		vestingAmount = math.NewInt(expectedAmount).Sub(campaign.InitialClaimFreeAmount)
 	}
 	vestingCoins := sdk.NewCoins(sdk.NewCoin(h.helperCfevestingKeeper.GetParams(ctx).Denom, vestingAmount))
 	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, vestingCoins)
@@ -339,7 +339,7 @@ func (h *C4eClaimUtils) SetUsersEntries(
 
 func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, deleagtionAmount math.Int, valAddress sdk.ValAddress) {
 	action := func() error {
-		h.StakingUtils.SetupValidators(ctx, []sdk.ValAddress{valAddress}, sdk.NewInt(1))
+		h.StakingUtils.SetupValidators(ctx, []sdk.ValAddress{valAddress}, math.NewInt(1))
 		h.StakingUtils.MessageDelegate(ctx, 2, 0, valAddress, claimer, deleagtionAmount)
 		return nil
 	}
@@ -605,7 +605,7 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 	case cfeclaimtypes.CloseSendToOwner:
 		if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
 			_, vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaign.VestingPoolName)
-			if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+			if campaign.FeegrantAmount.GT(math.ZeroInt()) {
 				require.True(h.t, vestingPoolBefore.Sent.Sub(amountDiff.AmountOf(h.helperCfevestingKeeper.GetParams(ctx).Denom)).Equal(vestingPool.Sent))
 			} else {
 				require.Nil(h.t, vestingPool.GetReservation(campaignId))
@@ -669,13 +669,13 @@ func (h *C4eClaimUtils) VerifyCampaign(ctx sdk.Context, campaignId uint64, mustE
 	require.EqualValues(h.t, claimCampaign.VestingPoolName, vestingPoolName)
 
 	if feegrantAmount.IsNil() {
-		require.EqualValues(h.t, claimCampaign.FeegrantAmount, sdk.ZeroInt())
+		require.EqualValues(h.t, claimCampaign.FeegrantAmount, math.ZeroInt())
 	} else {
 		require.True(h.t, claimCampaign.FeegrantAmount.Equal(*feegrantAmount))
 	}
 
 	if initialClaimFreeAmount.IsNil() {
-		require.EqualValues(h.t, claimCampaign.InitialClaimFreeAmount, sdk.ZeroInt())
+		require.EqualValues(h.t, claimCampaign.InitialClaimFreeAmount, math.ZeroInt())
 	} else {
 		require.True(h.t, claimCampaign.InitialClaimFreeAmount.Equal(*initialClaimFreeAmount))
 	}

@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"cosmossdk.io/math"
 	"math/rand"
 	"time"
 
@@ -24,7 +25,7 @@ func SimulateMsgCreateVestingAccount(
 		randInt := helpers.RandomInt(r, 100000)
 		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
 
-		randCoinsAmount := sdk.NewInt(helpers.RandomInt(r, 1000))
+		randCoinsAmount := math.NewInt(helpers.RandomInt(r, 1000))
 		coin := sdk.NewCoin(sdk.DefaultBondDenom, randCoinsAmount)
 		coins := sdk.NewCoins(coin)
 		randomStartDurationAdd := time.Duration(helpers.RandomInt(r, 1000000))

@@ -1,6 +1,7 @@
 package v2_test
 
 import (
+	"cosmossdk.io/math"
 	"math/rand"
 	"strconv"
 	"testing"
@@ -114,7 +115,7 @@ func SetupOldAccountVestingPoolsWrongSent(testUtil *testkeeper.ExtendedC4eVestin
 	accountVestingPools := generateOneOldAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
 	accountVestingPools.Address = address
 	for _, vesting := range accountVestingPools.VestingPools {
-		vesting.Sent = sdk.NewInt(100)
+		vesting.Sent = math.NewInt(100)
 	}
 	setOldAccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
 	return accountVestingPools
@@ -252,12 +253,12 @@ func generateRandomOldVestingPool(accuntId int, vestingId int) v1.VestingPool {
 		VestingType:               "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:                 testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
 		LockEnd:                   testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
-		Vested:                    sdk.NewInt(int64(vested)),
-		Withdrawn:                 sdk.NewInt(int64(withdrawn)),
-		Sent:                      sdk.NewInt(int64(sent)),
+		Vested:                    math.NewInt(int64(vested)),
+		Withdrawn:                 math.NewInt(int64(withdrawn)),
+		Sent:                      math.NewInt(int64(sent)),
 		LastModification:          testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
-		LastModificationVested:    sdk.NewInt(int64(lastModificationVested)),
-		LastModificationWithdrawn: sdk.NewInt(int64(lastModificationWithdrawn)),
+		LastModificationVested:    math.NewInt(int64(lastModificationVested)),
+		LastModificationWithdrawn: math.NewInt(int64(lastModificationWithdrawn)),
 	}
 }
 

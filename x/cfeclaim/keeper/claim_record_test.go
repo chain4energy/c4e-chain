@@ -112,7 +112,7 @@ func TestAddClaimRecordsBalanceToSmall(t *testing.T) {
 
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
-	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Sub(sdk.NewInt(2)))
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Sub(math.NewInt(2)))
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "owner balance is too small (1000000043uc4e < 1000000045uc4e): insufficient funds")
 }
 
@@ -132,7 +132,7 @@ func TestAddClaimRecordsZeroAmount(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
-	claimEntries[0].Amount[0].Amount = sdk.ZeroInt()
+	claimEntries[0].Amount[0].Amount = math.ZeroInt()
 	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim record must has at least one coin and all amounts must be positive: wrong param value")
@@ -215,7 +215,7 @@ func TestAddClaimRecordsInitialClaimAmountError(t *testing.T) {
 
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.InitialClaimFreeAmount = sdk.NewInt(100000000000000000)
+	campaign.InitialClaimFreeAmount = math.NewInt(100000000000000000)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
@@ -231,7 +231,7 @@ func TestAddClaimRecordsInitialClaimAmount(t *testing.T) {
 
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.InitialClaimFreeAmount = sdk.NewInt(50000000)
+	campaign.InitialClaimFreeAmount = math.NewInt(50000000)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
@@ -244,7 +244,7 @@ func TestAddClaimRecordsInitialClaimAmount(t *testing.T) {
 func TestAddClaimRecordsCorrectFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
-	feegrantAmount := sdk.NewInt(2500000)
+	feegrantAmount := math.NewInt(2500000)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.FeegrantAmount = feegrantAmount
@@ -261,7 +261,7 @@ func TestAddClaimRecordsCorrectFeegrant(t *testing.T) {
 func TestAddClaimRecordsWrongSrcAccountBalanceFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
-	feegrantAmount := sdk.NewInt(2500000)
+	feegrantAmount := math.NewInt(2500000)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.FeegrantAmount = feegrantAmount
@@ -313,9 +313,9 @@ func TestAddClaimRecordsCampaignVestingPoolCampaignVestingInPoolAmountTooSmall(t
 }
 
 func createTestClaimRecords(addresses []sdk.AccAddress, startAmount int) (claimEntries []*types.ClaimRecord, amountSum math.Int) {
-	amountSum = sdk.ZeroInt()
+	amountSum = math.ZeroInt()
 	for i, addr := range addresses {
-		coinsAmount := sdk.NewInt(int64(startAmount + i))
+		coinsAmount := math.NewInt(int64(startAmount + i))
 		newclaimRecord := types.ClaimRecord{
 			Address: addr.String(),
 			Amount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, coinsAmount)),
@@ -344,7 +344,7 @@ func createNUsersEntries(keeper *keeper.Keeper, ctx sdk.Context, numberOfUsersEn
 		claimRecordStates := make([]types.ClaimRecord, numberOfClaimEntreis)
 		for j := range claimRecordStates {
 			claimRecordStates[j].CampaignId = uint64(2000000 + i)
-			claimRecordStates[j].Amount = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(int64(3000000+i))))
+			claimRecordStates[j].Amount = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(int64(3000000+i))))
 			if addCompletedMissions {
 				claimRecordStates[j].CompletedMissions = []uint64{uint64(4000000 + i), uint64(5000000 + i), uint64(6000000 + i)}
 			}

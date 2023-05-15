@@ -138,7 +138,7 @@ func genesisVestingTypesUnitsTest(t *testing.T, multiplier int64, srcUnits strin
 }
 
 func getVestingPoolsAmount(accVestingPools []*types.AccountVestingPools) math.Int {
-	result := sdk.ZeroInt()
+	result := math.ZeroInt()
 	for _, accV := range accVestingPools {
 		for _, v := range accV.VestingPools {
 			result = result.Add(v.GetCurrentlyLockedWithoutReservations())

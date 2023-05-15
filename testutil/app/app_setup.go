@@ -1,6 +1,7 @@
 package app
 
 import (
+	"cosmossdk.io/math"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"time"
 
@@ -42,7 +43,7 @@ func SetupWithValidatorsAmount(isCheckTx bool, bondDenom string, validatorsAmoun
 		coin := AddValidatorsToAppGenesis(app, genesisState, bondDenom, createValidatorSet(validatorsAmount), balances...)
 		return app, coin
 	}
-	return app, sdk.NewCoin(bondDenom, sdk.ZeroInt())
+	return app, sdk.NewCoin(bondDenom, math.ZeroInt())
 }
 
 func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
@@ -85,7 +86,7 @@ func createValidatorSet(validatorsAmount int) *tmtypes.ValidatorSet {
 func AddValidatorsToAppGenesis(app *c4eapp.App, genesisState c4eapp.GenesisState, bondDenom string, valSet *tmtypes.ValidatorSet, balances ...banktypes.Balance) sdk.Coin {
 	senderPrivKey := secp256k1.GenPrivKey()
 	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
-	senderCoin := sdk.NewCoin(bondDenom, sdk.NewInt(1000000))
+	senderCoin := sdk.NewCoin(bondDenom, math.NewInt(1000000))
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
 		Coins:   sdk.NewCoins(senderCoin),
@@ -143,7 +144,7 @@ func genesisStateWithValSet(
 			UnbondingHeight:   int64(0),
 			UnbondingTime:     time.Unix(0, 0).UTC(),
 			Commission:        stakingtypes.NewCommission(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
-			MinSelfDelegation: sdk.ZeroInt(),
+			MinSelfDelegation: math.ZeroInt(),
 		}
 
 		validators = append(validators, validator)
@@ -159,7 +160,7 @@ func genesisStateWithValSet(
 		totalSupply = totalSupply.Add(b.Coins...)
 	}
 
-	delegationsSum := sdk.NewCoin(bondDenom, sdk.ZeroInt())
+	delegationsSum := sdk.NewCoin(bondDenom, math.ZeroInt())
 	for range delegations {
 		totalSupply = totalSupply.Add(sdk.NewCoin(bondDenom, bondAmt))
 		delegationsSum = delegationsSum.Add(sdk.NewCoin(bondDenom, bondAmt))

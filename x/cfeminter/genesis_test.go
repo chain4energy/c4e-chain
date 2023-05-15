@@ -1,6 +1,7 @@
 package cfeminter_test
 
 import (
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -25,7 +26,7 @@ func TestGenesis(t *testing.T) {
 		Params: types.NewParams(testenv.DefaultTestDenom, time.Now(), createMinter(time.Now())),
 		MinterState: types.MinterState{
 			SequenceId:                  9,
-			AmountMinted:                sdk.NewInt(12312),
+			AmountMinted:                math.NewInt(12312),
 			RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
 			RemainderFromPreviousMinter: sdk.MustNewDecFromStr("7654.423"),
 			LastMintBlockTime:           mintTime,
@@ -49,7 +50,7 @@ func TestGenesisWithHistory(t *testing.T) {
 		Params: types.NewParams(testenv.DefaultTestDenom, time.Now(), createMinter(time.Now())),
 		MinterState: types.MinterState{
 			SequenceId:                  9,
-			AmountMinted:                sdk.NewInt(12312),
+			AmountMinted:                math.NewInt(12312),
 			RemainderToMint:             sdk.MustNewDecFromStr("1233.546"),
 			RemainderFromPreviousMinter: sdk.MustNewDecFromStr("7654.423"),
 			LastMintBlockTime:           mintTime,
@@ -71,7 +72,7 @@ func createHistory() []*types.MinterState {
 	history := make([]*types.MinterState, 0)
 	state1 := types.MinterState{
 		SequenceId:                  0,
-		AmountMinted:                sdk.NewInt(324),
+		AmountMinted:                math.NewInt(324),
 		RemainderToMint:             sdk.MustNewDecFromStr("1243.221"),
 		LastMintBlockTime:           mintTime,
 		RemainderFromPreviousMinter: sdk.MustNewDecFromStr("3124.543"),
@@ -81,7 +82,7 @@ func createHistory() []*types.MinterState {
 	mintTime, _ = time.Parse(layout, str)
 	state2 := types.MinterState{
 		SequenceId:                  1,
-		AmountMinted:                sdk.NewInt(432),
+		AmountMinted:                math.NewInt(432),
 		RemainderToMint:             sdk.MustNewDecFromStr("12433.221"),
 		LastMintBlockTime:           mintTime,
 		RemainderFromPreviousMinter: sdk.MustNewDecFromStr("3284.543"),
@@ -94,8 +95,8 @@ func createMinter(startTime time.Time) []*types.Minter {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 

@@ -102,7 +102,7 @@ var MainnetMinterConfigLong = cfemintertypes.Params{
 }
 var exponentialStepMintingConfig, _ = codectypes.NewAnyWithValue(
 	&cfemintertypes.ExponentialStepMinting{
-		Amount:           sdk.NewInt(160000000000000),
+		Amount:           math.NewInt(160000000000000),
 		AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
 		StepDuration:     time.Second * 12,
 	},

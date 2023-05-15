@@ -1,6 +1,7 @@
 package cfeminter
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
@@ -39,7 +40,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	now := simState.GenTimestamp
 
 	exponentialStepMinting := types.ExponentialStepMinting{
-		Amount:           sdk.NewInt(randAmount),
+		Amount:           math.NewInt(randAmount),
 		StepDuration:     time.Duration(randStepDuration),
 		AmountMultiplier: sdk.MustNewDecFromStr(randAmountMultiplierFactor),
 	}
@@ -55,7 +56,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		Params: types.NewParams("stake", now, minters),
 		MinterState: types.MinterState{
 			SequenceId:   1,
-			AmountMinted: sdk.NewInt(0),
+			AmountMinted: math.NewInt(0),
 		},
 	}
 

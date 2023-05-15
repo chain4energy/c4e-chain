@@ -67,14 +67,14 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 
 func validateInitialClaimFreeAmount(initialClaimFreeAmount *math.Int) (math.Int, error) {
 	if initialClaimFreeAmount == nil {
-		return sdk.ZeroInt(), nil
+		return math.ZeroInt(), nil
 	}
 	if initialClaimFreeAmount.IsNil() {
-		return sdk.ZeroInt(), nil
+		return math.ZeroInt(), nil
 	}
 
 	if initialClaimFreeAmount.IsNegative() {
-		return sdk.ZeroInt(), errors.Wrapf(c4eerrors.ErrParam, "initial claim free amount (%s) cannot be negative", initialClaimFreeAmount.String())
+		return math.ZeroInt(), errors.Wrapf(c4eerrors.ErrParam, "initial claim free amount (%s) cannot be negative", initialClaimFreeAmount.String())
 	}
 
 	return *initialClaimFreeAmount, nil

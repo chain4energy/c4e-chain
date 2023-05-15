@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	"testing"
 
@@ -336,7 +337,7 @@ func invalidVestingPoolsEmptyName() TcData {
 func invalidVestingPoolsNegativeInitiallyLocked() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
-	accountVestingPoolsArray[4].VestingPools[3].InitiallyLocked = sdk.NewInt(-1)
+	accountVestingPoolsArray[4].VestingPools[3].InitiallyLocked = math.NewInt(-1)
 
 	return TcData{
 		desc: "invalid VestingPools negative initially locked",
@@ -355,7 +356,7 @@ func invalidVestingPoolsNegativeInitiallyLocked() TcData {
 func invalidVestingPoolsNegativeWithdrawn() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
-	accountVestingPoolsArray[4].VestingPools[3].Withdrawn = sdk.NewInt(-1)
+	accountVestingPoolsArray[4].VestingPools[3].Withdrawn = math.NewInt(-1)
 
 	return TcData{
 		desc: "invalid VestingPools negative withdrawn",
@@ -374,7 +375,7 @@ func invalidVestingPoolsNegativeWithdrawn() TcData {
 func invalidVestingPoolsNegativeSent() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
-	accountVestingPoolsArray[4].VestingPools[3].Sent = sdk.NewInt(-1)
+	accountVestingPoolsArray[4].VestingPools[3].Sent = math.NewInt(-1)
 
 	return TcData{
 		desc: "invalid VestingPools negative sent",
@@ -393,9 +394,9 @@ func invalidVestingPoolsNegativeSent() TcData {
 func invalidVestingPoolsNegativeCurrentlyLocked() TcData {
 	accountVestingPoolsArray := testutils.GenerateAccountVestingPoolsWithRandomVestingPools(10, 10, 1, 1)
 	vestingTypes := testutils.GenerateGenesisVestingTypesForAccounVestingPools(accountVestingPoolsArray)
-	accountVestingPoolsArray[4].VestingPools[3].InitiallyLocked = sdk.NewInt(100)
-	accountVestingPoolsArray[4].VestingPools[3].Withdrawn = sdk.NewInt(50)
-	accountVestingPoolsArray[4].VestingPools[3].Sent = sdk.NewInt(51)
+	accountVestingPoolsArray[4].VestingPools[3].InitiallyLocked = math.NewInt(100)
+	accountVestingPoolsArray[4].VestingPools[3].Withdrawn = math.NewInt(50)
+	accountVestingPoolsArray[4].VestingPools[3].Sent = math.NewInt(51)
 
 	return TcData{
 		desc: "invalid VestingPools empty name",

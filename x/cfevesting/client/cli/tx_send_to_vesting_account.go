@@ -2,6 +2,7 @@ package cli
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"fmt"
 	"strconv"
 	"strings"
@@ -60,8 +61,8 @@ $ %s tx %s create-vesting-account %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj my_v
 			if argVestingPoolName == "" {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "vesting-pool name cannot be empty")
 			}
-			amountInt, ok := sdk.NewIntFromString(argAmount)
-			if !ok || amountInt.LTE(sdk.ZeroInt()) {
+			amountInt, ok := math.NewIntFromString(argAmount)
+			if !ok || amountInt.LTE(math.ZeroInt()) {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "amount must be a positive integer")
 			}
 			restartVestingBool, err := strconv.ParseBool(argRestartVesting)

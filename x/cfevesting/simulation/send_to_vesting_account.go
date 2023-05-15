@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"cosmossdk.io/math"
 	"math/rand"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
@@ -25,7 +26,7 @@ func SimulateSendToVestingAccount(
 		}
 		randVestingPoolId := helpers.RandomInt(r, len(allVestingPools))
 		accAddress := allVestingPools[randVestingPoolId].Owner
-		randMsgSendToVestinAccAmount := sdk.NewInt(helpers.RandomInt(r, 10))
+		randMsgSendToVestinAccAmount := math.NewInt(helpers.RandomInt(r, 10))
 		randInt := helpers.RandomInt(r, 1000000000)
 		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
 		numOfPools := len(allVestingPools[randVestingPoolId].VestingPools)

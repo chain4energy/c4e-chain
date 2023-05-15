@@ -40,7 +40,7 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {
 
 	endTime := time.Now().Add(10 * time.Minute).UTC()
 	newDenom := "newTestDenom"
-	linearMinterConfig, _ := codectypes.NewAnyWithValue(&cfemintertypes.LinearMinting{Amount: sdk.NewInt(100000)})
+	linearMinterConfig, _ := codectypes.NewAnyWithValue(&cfemintertypes.LinearMinting{Amount: math.NewInt(100000)})
 	noMintingConfig, _ := codectypes.NewAnyWithValue(&cfemintertypes.NoMinting{})
 
 	updateMintersParams := cfemintertypes.MsgUpdateParams{
@@ -195,14 +195,14 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
 	// transfer funds and create vesting pool
 	creatorWalletName := testhelpers.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, sdk.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 
 	vestingTypes := node.QueryVestingTypes()
 	s.NoError(err)
 	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
 	randVestingPoolName := testhelpers.RandStringOfLength(5)
-	vestingAmount := balanceBeforeAmount.Quo(sdk.NewInt(4))
+	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
 
 	// submit new proposal

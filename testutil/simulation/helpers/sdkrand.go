@@ -50,7 +50,7 @@ func RandPositiveInt(r *rand.Rand, max math.Int) (math.Int, error) {
 
 	max = max.Sub(sdk.OneInt())
 
-	return sdk.NewIntFromBigInt(new(big.Int).Rand(r, max.BigInt())).Add(sdk.OneInt()), nil
+	return math.NewIntFromBigInt(new(big.Int).Rand(r, max.BigInt())).Add(sdk.OneInt()), nil
 }
 
 func RandomAmount(r *rand.Rand, max math.Int) math.Int {
@@ -65,7 +65,7 @@ func RandomAmount(r *rand.Rand, max math.Int) math.Int {
 		randInt = big.NewInt(0).Rand(r, max.BigInt()) // up to max - 1
 	}
 
-	return sdk.NewIntFromBigInt(randInt)
+	return math.NewIntFromBigInt(randInt)
 }
 
 func RandomDecAmount(r *rand.Rand, max sdk.Dec) sdk.Dec {

@@ -1,11 +1,11 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"
 )
@@ -156,7 +156,7 @@ func TestInitialClaimFreeInitialAmount(t *testing.T) {
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
-	campaign.InitialClaimFreeAmount = sdk.NewInt(100000)
+	campaign.InitialClaimFreeAmount = math.NewInt(100000)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
 	testHelper.C4eClaimUtils.StartCampaign(acountsAddresses[0].String(), 0, nil, nil)
@@ -194,7 +194,7 @@ func TestInitialClaimFeegrant(t *testing.T) {
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
-	campaign.FeegrantAmount = sdk.NewInt(100000)
+	campaign.FeegrantAmount = math.NewInt(100000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], campaign.FeegrantAmount.MulRaw(int64(len(acountsAddresses))))
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)

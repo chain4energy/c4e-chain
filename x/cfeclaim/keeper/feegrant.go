@@ -15,15 +15,15 @@ import (
 
 func validateFeegrantAmount(feeGrantAmount *math.Int) (math.Int, error) {
 	if feeGrantAmount == nil {
-		return sdk.ZeroInt(), nil
+		return math.ZeroInt(), nil
 	}
 
 	if feeGrantAmount.IsNil() {
-		return sdk.ZeroInt(), nil
+		return math.ZeroInt(), nil
 	}
 
 	if feeGrantAmount.IsNegative() {
-		return sdk.ZeroInt(), errors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
+		return math.ZeroInt(), errors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
 	}
 
 	return *feeGrantAmount, nil
@@ -35,14 +35,14 @@ func CreateFeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
 }
 
 func calculateFeegrantFeesSum(feegrantAmount math.Int, claimRecordsNumber int64, feegrantDenom string) (feesSum sdk.Coins) {
-	if feegrantAmount.GT(sdk.ZeroInt()) {
+	if feegrantAmount.GT(math.ZeroInt()) {
 		feesSum = feesSum.Add(sdk.NewCoin(feegrantDenom, feegrantAmount.MulRaw(claimRecordsNumber)))
 	}
 	return
 }
 
 func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecords []*types.ClaimRecord, feegrantDenom string) error {
-	if campaign.FeegrantAmount.GT(sdk.ZeroInt()) {
+	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
 		acc := k.NewModuleAccountSet(ctx, campaign.Id)
 		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc.GetAddress(), feegrantFeesSum); err != nil {
 			return err

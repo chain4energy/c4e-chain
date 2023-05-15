@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	fmt "fmt"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -19,7 +20,7 @@ func DefaultGenesis() *GenesisState {
 		Params: DefaultParams(),
 		MinterState: MinterState{
 			SequenceId:                  1,
-			AmountMinted:                sdk.ZeroInt(),
+			AmountMinted:                math.ZeroInt(),
 			RemainderToMint:             sdk.ZeroDec(),
 			LastMintBlockTime:           time.Now(),
 			RemainderFromPreviousMinter: sdk.ZeroDec(),

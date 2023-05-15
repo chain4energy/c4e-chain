@@ -90,7 +90,7 @@ func (n *NodeConfig) QuerySupplyOf(denom string) (math.Int, error) {
 
 	var supplyResp banktypes.QuerySupplyOfResponse
 	if err := util.Cdc.UnmarshalJSON(bz, &supplyResp); err != nil {
-		return sdk.NewInt(0), err
+		return math.NewInt(0), err
 	}
 	return supplyResp.Amount.Amount, nil
 }
@@ -102,12 +102,12 @@ func (n *NodeConfig) QueryPropTally(proposalNumber int) (math.Int, math.Int, mat
 
 	var balancesResp govv1.QueryTallyResultResponse
 	if err := util.Cdc.UnmarshalJSON(bz, &balancesResp); err != nil {
-		return sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt(), err
+		return math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), err
 	}
-	noTotal, _ := sdk.NewIntFromString(balancesResp.Tally.NoCount)
-	yesTotal, _ := sdk.NewIntFromString(balancesResp.Tally.YesCount)
-	noWithVetoTotal, _ := sdk.NewIntFromString(balancesResp.Tally.NoWithVetoCount)
-	abstainTotal, _ := sdk.NewIntFromString(balancesResp.Tally.AbstainCount)
+	noTotal, _ := math.NewIntFromString(balancesResp.Tally.NoCount)
+	yesTotal, _ := math.NewIntFromString(balancesResp.Tally.YesCount)
+	noWithVetoTotal, _ := math.NewIntFromString(balancesResp.Tally.NoWithVetoCount)
+	abstainTotal, _ := math.NewIntFromString(balancesResp.Tally.AbstainCount)
 
 	return noTotal, yesTotal, noWithVetoTotal, abstainTotal, nil
 }
