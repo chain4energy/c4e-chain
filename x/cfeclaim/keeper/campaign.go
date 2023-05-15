@@ -282,14 +282,6 @@ func ValidateCampaignStartTimeInTheFuture(ctx sdk.Context, startTime *time.Time)
 	return nil
 }
 
-func (k Keeper) ValidateVestingPool(ctx sdk.Context, owner string, vestingPoolName string) error {
-	_, _, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
-	if !found {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
-	}
-	return nil
-}
-
 func ValidateCampaignNotEnded(ctx sdk.Context, campaign types.Campaign) error {
 	if ctx.BlockTime().After(campaign.EndTime) {
 		return errors.Wrapf(c4eerrors.ErrParam, "campaign with id %d campaign is over (end time - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())

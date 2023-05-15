@@ -4,8 +4,9 @@ import (
 	"cosmossdk.io/errors"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"strconv"
 )
 
@@ -211,9 +212,10 @@ func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddr
 	}
 
 	account := k.accountKeeper.GetAccount(ctx, addititonalAccAddress)
-	_, ok := account.(*vestingtypes.BaseVestingAccount)
-	if ok {
-		return errors.Wrapf(c4eerrors.ErrAccountNotAllowedToReceiveFunds, "new vesting account - account address: %s", additionalAddress)
+	_, baseAccountOk := account.(*authtypes.BaseAccount)
+	_, periodicContinuousVestingAccountOk := account.(*cfevestingtypes.PeriodicContinuousVestingAccount)
+	if baseAccountOk && periodicContinuousVestingAccountOk {
+		return errors.Wrapf(c4eerrors.ErrInvalidAccountType, "account already exists and is not of PeriodicContinuousVestingAccount nor BaseAccount type, got: %T", account)
 	}
 
 	return nil

@@ -430,8 +430,13 @@ func (h *C4eClaimUtils) ClaimMission(ctx sdk.Context, campaignId uint64, mission
 
 func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, claimerDstAddress sdk.AccAddress) {
 	claimerAccountBefore, ok := h.helperAccountKeeper.GetAccount(ctx, claimerDstAddress).(*cfevestingtypes.PeriodicContinuousVestingAccount)
+	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
+	moduleName := cfeclaimtypes.ModuleName
+	if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
+		moduleName = cfevestingtypes.ModuleName
+	}
 	require.True(h.t, ok)
-	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, moduleName)
 	claimerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, claimerDstAddress)
 	userEntryBefore, foundCr := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	require.True(h.t, foundCr)
@@ -452,9 +457,8 @@ func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64
 		expectedAmount := mission.Weight.MulInt(coin.Amount).TruncateInt()
 		claimerCoinBefore := claimerBalanceBefore.AmountOf(coin.Denom)
 		h.BankUtils.VerifyAccountBalanceByDenom(ctx, claimer, coin.Denom, claimerCoinBefore.Add(expectedAmount))
-
 		moduleCoinBefore := moduleBalanceBefore.AmountOf(coin.Denom)
-		h.BankUtils.VerifyModuleAccountBalanceByDenom(ctx, cfeclaimtypes.ModuleName, coin.Denom, moduleCoinBefore.Sub(expectedAmount))
+		h.BankUtils.VerifyModuleAccountBalanceByDenom(ctx, moduleName, coin.Denom, moduleCoinBefore.Sub(expectedAmount))
 		expectedCoins = expectedCoins.Add(sdk.NewCoin(coin.Denom, expectedAmount))
 	}
 

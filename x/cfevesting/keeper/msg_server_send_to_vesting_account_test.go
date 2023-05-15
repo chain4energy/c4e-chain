@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
@@ -321,4 +322,190 @@ func TestSendVestingAccountVestingTypesFreeMaxFree(t *testing.T) {
 	testHelper.C4eVestingUtils.SetVestingTypes(vestingTypes)
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, vestingTypeMaxFree, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, vPool1, sendToVestingAccountAmount, true, sdk.NewInt(0))
+}
+
+func TestSendReservedToVestingAccountWrongVestingTimes(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+
+	testHelper.C4eVestingUtils.SendReservedToVestingAccountError(accAddr, accAddr2, vPool1, sdk.NewInt(100), 1,
+		sdk.ZeroDec(), time.Hour, usedVestingType.VestingPeriod, "the duration of lockup period must be equal to or greater than the vesting type lockup period (1000h0m0s > 1h0m0s): wrong param value")
+	testHelper.C4eVestingUtils.SendReservedToVestingAccountError(accAddr, accAddr2, vPool1, sdk.NewInt(100), 1,
+		sdk.ZeroDec(), usedVestingType.LockupPeriod, time.Hour, "the duration of vesting period must be equal to or greater than the vesting type vesting period (5000h0m0s > 1h0m0s): wrong param value")
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
+func TestSendReservedToVestingAccountReservationNotExist(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+
+	testHelper.C4eVestingUtils.SendReservedToVestingAccountError(accAddr, accAddr2, vPool1, sdk.NewInt(100), 1,
+		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, "reservation with id 1 not found: entity does not exist")
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
+func TestSendReservedToVestingAccount(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, math.NewInt(1000))
+	testHelper.C4eVestingUtils.SendReservedToVestingAccount(accAddr, accAddr2, vPool1, sdk.NewInt(100), 0,
+		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, sdk.NewInt(100))
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
+func TestSendReservedToVestingAccountAmountTooBig(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+	reservationAmount := math.NewInt(1000)
+	amount := reservationAmount.AddRaw(100)
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, reservationAmount)
+	testHelper.C4eVestingUtils.SendReservedToVestingAccountError(accAddr, accAddr2, vPool1, amount, 0,
+		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod,
+		fmt.Sprintf("cannot substract from reservation, amount too big (%s > %s): wrong amount value", amount, reservationAmount))
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
+func TestSendReservedToVestingAccountSendAllReserved(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+	reservationAmount := math.NewInt(1000)
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, reservationAmount)
+	testHelper.C4eVestingUtils.SendReservedToVestingAccount(accAddr, accAddr2, vPool1, reservationAmount, 0,
+		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod,
+		reservationAmount)
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
+func TestSendReservedToVestingAccountWithFree(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, math.NewInt(1000))
+	testHelper.C4eVestingUtils.SendReservedToVestingAccount(accAddr, accAddr2, vPool1, sdk.NewInt(100), 0,
+		sdk.MustNewDecFromStr("0.02"), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, sdk.NewInt(98))
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
+func TestSendReservedToVestingAccountFreeBiggerThanVestingTypeFree(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, math.NewInt(1000))
+	testHelper.C4eVestingUtils.SendReservedToVestingAccount(accAddr, accAddr2, vPool1, sdk.NewInt(100), 0,
+		sdk.MustNewDecFromStr("0.6"), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, sdk.NewInt(95))
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
+func TestSendReservedToVestingAccountRemovedReservation(t *testing.T) {
+	vested := sdk.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := sdk.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
+	reservationAmount := math.NewInt(1000)
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, reservationAmount)
+	testHelper.C4eVestingUtils.RemoveReservationToVestingPool(accAddr, vPool1, 0, reservationAmount)
+	testHelper.C4eVestingUtils.SendReservedToVestingAccountError(accAddr, accAddr2, vPool1, sdk.NewInt(100), 0,
+		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, "reservation with id 0 not found: entity does not exist")
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }

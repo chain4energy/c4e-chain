@@ -361,28 +361,16 @@ func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, 
 
 func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error {
 	vestingDenom := k.Denom(ctx)
-	accountVestingPools, found := k.GetAccountVestingPools(ctx, owner)
+	accountVestingPools, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !found {
 		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
 	}
 
-	found = false
-	var vestingPool *types.VestingPool
-	for _, vestPool := range accountVestingPools.VestingPools {
-		if vestPool.Name == vestingPoolName {
-			vestingPool = vestPool
-			currentlyLocked := vestingPool.GetCurrentlyLockedWithoutReservations()
-			if currentlyLocked.LT(amout) {
-				return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "%s%s is smaller than %s%s", currentlyLocked, vestingDenom, amout, vestingDenom)
-			}
-			found = true
-			break
-		}
+	currentlyLocked := vestingPool.GetCurrentlyLockedWithoutReservations()
+	if currentlyLocked.LT(amout) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "%s%s is smaller than %s%s", currentlyLocked, vestingDenom, amout, vestingDenom)
 	}
-	if !found {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
-	}
-	// TODO : add event
+
 	vestingPool.AddReservation(reservationId, amout)
 
 	k.SetAccountVestingPools(ctx, accountVestingPools)
@@ -390,24 +378,10 @@ func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vesting
 }
 
 func (k Keeper) RemoveVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error {
-	accountVestingPools, found := k.GetAccountVestingPools(ctx, owner)
+	accountVestingPools, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !found {
 		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
 	}
-
-	found = false
-	var vestingPool *types.VestingPool
-	for _, vestPool := range accountVestingPools.VestingPools {
-		if vestPool.Name == vestingPoolName {
-			vestingPool = vestPool
-			found = true
-			break
-		}
-	}
-	if !found {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
-	}
-	// TODO : add event
 	if err := vestingPool.SubstractFromReservation(reservationId, amout); err != nil {
 		return err
 	}
