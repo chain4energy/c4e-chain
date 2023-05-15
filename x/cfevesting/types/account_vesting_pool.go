@@ -153,7 +153,7 @@ func (pool *VestingPool) SubstractFromReservation(reservationId uint64, amount m
 	return errors.Wrapf(c4eerrors.ErrNotExists, "reservation with id %d not found", reservationId)
 }
 
-func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amount math.Int) error {
+func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amount math.Int) error { 
 	available := vestingPool.GetCurrentlyLockedInReservations()
 
 	if available.LT(amount) {
