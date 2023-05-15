@@ -16,7 +16,7 @@ func TestVestingTypesQueryEmpty(t *testing.T) {
 
 	response, err := k.VestingType(wctx, &types.QueryVestingTypeRequest{})
 	require.NoError(t, err)
-	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: []types.GenesisVestingType{}}, response)
+	require.Equal(t, &types.QueryVestingTypeResponse{VestingTypes: []types.GenesisVestingType(nil)}, response)
 }
 
 func TestVestingTypesQueryNotEmpty(t *testing.T) {

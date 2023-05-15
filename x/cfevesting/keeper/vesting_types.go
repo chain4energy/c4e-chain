@@ -12,7 +12,7 @@ import (
 func (k Keeper) GetAllVestingTypes(ctx sdk.Context) (vestingTypes types.VestingTypes) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.VestingTypesKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-	list := []*types.VestingType{}
+	var list []*types.VestingType
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {

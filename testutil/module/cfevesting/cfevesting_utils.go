@@ -457,7 +457,14 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx)
 	accAmountBefore := h.bankUtils.GetAccountDefultDenomBalance(ctx, vestingAccAddress)
 	moduleAmountBefore := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
+	accountBefore := h.helperAccountKeeper.GetAccount(ctx, vestingAccAddress)
 
+	newVestingAccountTraceId := vestingAccountCount
+	if accountBefore != nil {
+		newVestingAccountTraceId = vestingAccountCount - 1
+	} else {
+		vestingAccountCount++
+	}
 	vestingPools, found := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, fromAddress.String())
 	require.Equal(h.t, true, found)
 	foundVPool, _ := GetVestingPoolByName(vestingPools.VestingPools, vestingPoolName)
@@ -470,16 +477,17 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 
 	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, vestingAccAddress, accAmountBefore.Add(amount))
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountBefore.Sub(amount))
+	require.Equal(h.t, vestingAccountCount, h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx))
 
-	require.Equal(h.t, uint64(vestingAccountCount+1), h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx))
-	vaccFromList, found := h.helperCfevestingKeeper.GetVestingAccountTraceById(ctx, uint64(vestingAccountCount))
+	vaccFromList, found := h.helperCfevestingKeeper.GetVestingAccountTraceById(ctx, newVestingAccountTraceId)
 	require.Equal(h.t, true, found)
 	expectedVestingAccountTrace := cfevestingtypes.VestingAccountTrace{
-		Id:                 uint64(vestingAccountCount),
+		Id:                 newVestingAccountTraceId,
 		Address:            vestingAccAddress.String(),
 		Genesis:            false,
 		FromGenesisPool:    foundVPool.GenesisPool,
 		FromGenesisAccount: false,
+		PeriodsToTrace:     []uint64{0},
 	}
 	require.EqualValues(h.t, expectedVestingAccountTrace, vaccFromList)
 

@@ -2,6 +2,7 @@ package chain
 
 import (
 	"context"
+	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
 	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"

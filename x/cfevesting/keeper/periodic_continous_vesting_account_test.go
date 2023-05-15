@@ -9,6 +9,8 @@ import (
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"testing"
@@ -30,6 +32,7 @@ func TestCreateAccount(t *testing.T) {
 
 	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
 		amount,
+		sdk.ZeroDec(),
 		startTimeUnix,
 		endTimeUnix,
 	)
@@ -43,6 +46,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.SetContextBlockTime(startTime)
 	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
 		amount,
+		sdk.ZeroDec(),
 		startTimeUnix,
 		endTimeUnix,
 	)
@@ -56,6 +60,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.SetContextBlockTime(startTime)
 	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
 		amount,
+		sdk.ZeroDec(),
 		startTimeUnix,
 		endTimeUnix,
 	)
@@ -119,6 +124,7 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
 	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount,
+		sdk.ZeroDec(),
 		startTimeUnix,
 		endTimeUnix, true,
 		fmt.Sprintf("account address: %s is not allowed to receive funds error: unauthorized", acountsAddresses[0]),
@@ -132,8 +138,10 @@ func TestCreateAccountWrongAccountType(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
 
-	baseAccount := testHelper.App.AccountKeeper.NewAccountWithAddress(testHelper.Context, acountsAddresses[0])
-	testHelper.App.AccountKeeper.SetAccount(testHelper.Context, baseAccount)
+	account := testHelper.App.AccountKeeper.NewAccountWithAddress(testHelper.Context, acountsAddresses[0])
+	baseAccount, _ := account.(*authtypes.BaseAccount)
+	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount, sdk.NewCoins(), time.Now().Add(time.Hour).Unix())
+	testHelper.App.AccountKeeper.SetAccount(testHelper.Context, baseVestingAccount)
 	moduleAmount := sdk.NewInt(10000)
 	amount := sdk.NewInt(100)
 
@@ -142,8 +150,9 @@ func TestCreateAccountWrongAccountType(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
 	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount,
+		sdk.ZeroDec(),
 		startTimeUnix,
-		endTimeUnix, false, "account already exists and is not of PeriodicContinuousVestingAccount type, account type: *types.BaseAccount: invalid account type",
+		endTimeUnix, false, "account already exists and is not of PeriodicContinuousVestingAccount nor BaseAccount type, got: *types.BaseVestingAccount: invalid account type",
 	)
 }
 
@@ -161,6 +170,7 @@ func TestCreateAccountSendError(t *testing.T) {
 
 	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount.AddRaw(1),
+		sdk.ZeroDec(),
 		startTimeUnix,
 		endTimeUnix, true, "10000000000uc4e is smaller than 10000000001uc4e: insufficient funds",
 	)

@@ -183,7 +183,7 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 	}
 
 	if campaign.CampaignType == types.VestingPoolCampaign {
-		if err := k.vestingKeeper.SendToNewVestingAccountFromReservedTokens(ctx, campaign.Owner, userEntry.ClaimAddress, campaign.VestingPoolName,
+		if err := k.vestingKeeper.SendReservedToNewVestingAccount(ctx, campaign.Owner, userEntry.ClaimAddress, campaign.VestingPoolName,
 			claimableAmount.AmountOf(k.vestingKeeper.Denom(ctx)), campaign.Id, free, campaign.LockupPeriod, campaign.VestingPeriod); err != nil {
 			return nil, err
 		}

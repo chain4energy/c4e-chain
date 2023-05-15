@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 	"time"
@@ -97,46 +98,6 @@ func TestSendVestingAccountNoRestartVesting(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
-func TestSendVestingAccountOnPoolLockEnd(t *testing.T) {
-	sendVestingAccountPoolLockEndedTest(t, 0, true)
-}
-
-func TestSendVestingAccountNoRestartVestingOnPoolLockEnd(t *testing.T) {
-	sendVestingAccountPoolLockEndedTest(t, 0, false)
-}
-
-func TestSendVestingAccountAfterPoolLockEnd(t *testing.T) {
-	sendVestingAccountPoolLockEndedTest(t, 1, true)
-}
-
-func TestSendVestingAccountNoRestartVestingAfterPoolLockEnd(t *testing.T) {
-	sendVestingAccountPoolLockEndedTest(t, 1, false)
-}
-
-func sendVestingAccountPoolLockEndedTest(t *testing.T, afterEnd time.Duration, restartVesting bool) {
-	vested := sdk.NewInt(1000)
-	testHelper := app.SetupTestAppWithHeight(t, 1000)
-
-	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
-
-	accAddr := acountsAddresses[0]
-	accAddr2 := acountsAddresses[1]
-
-	accInitBalance := sdk.NewInt(10000)
-	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
-
-	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
-	usedVestingType := vestingTypes.VestingTypes[0]
-	lockupDuration := time.Duration(1000)
-	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, lockupDuration, *usedVestingType, vested, accInitBalance, sdk.ZeroInt(), accInitBalance.Sub(vested), vested)
-
-	testHelper.SetContextBlockTime(testHelper.Context.BlockTime().Add(lockupDuration + afterEnd))
-	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, vPool1, sdk.NewInt(100), restartVesting,
-		"send to new vesting account - vesting available: 0 is smaller than requested amount: 100: insufficient funds")
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(accAddr, accInitBalance)
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
-}
-
 func TestSendVestingAccountMultiple(t *testing.T) {
 	vested := sdk.NewInt(1000)
 	testHelper := app.SetupTestAppWithHeight(t, 1000)
@@ -176,7 +137,7 @@ func TestSendVestingAccountVestingPoolNotExistsForAddress(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, "pool", sdk.NewInt(100), true,
-		"send to new vesting account - withdraw all available error: withdraw all available - no vesting pools found error: owner: c4e15ky9du8a2wlstz6fpx3p4mqpjyrm5cgq3kx2f7: not found")
+		fmt.Sprintf("send locked to new vesting account: no vesting pool pool found for address %s: not found", accAddr))
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
@@ -197,7 +158,7 @@ func TestSendVestingAccountVestingPoolNotFound(t *testing.T) {
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
-	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, "wrongpool", sdk.NewInt(100), true, "send to new vesting account - vesting pool with name wrongpool not found: not found")
+	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, "wrongpool", sdk.NewInt(100), true, fmt.Sprintf("send locked to new vesting account: no vesting pool wrongpool found for address %s: not found", accAddr))
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
@@ -263,7 +224,7 @@ func TestSendVestingAccountAlreadyExists(t *testing.T) {
 
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, sdk.ZeroInt() /*0,*/, accInitBalance.Sub(vested) /*0,*/, vested)
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, vPool1, sdk.NewInt(100), true, sdk.NewInt(95))
-	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, vPool1, sdk.NewInt(300), true, "new vesting account - account address: "+accAddr2.String()+": entity already exists")
+	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, vPool1, sdk.NewInt(300), true, sdk.NewInt(380))
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 

@@ -60,8 +60,7 @@ func (k Keeper) getOrCreatePeriodicContinousVestingAccount(ctx sdk.Context, user
 		// for example, if the feegrant (in the cfeclaim campaign) is set to a value greater than zero.
 		baseAccount, ok := account.(*authtypes.BaseAccount)
 		if !ok {
-			k.Logger(ctx).Error("invalid account type; expected: BaseAccount", "notExpectedAccount", account)
-			return nil, errors.Wrapf(c4eerrors.ErrInvalidAccountType, "expected BaseAccount, got: %T", account)
+			return nil, errors.Wrapf(c4eerrors.ErrInvalidAccountType, "account already exists and is not of PeriodicContinuousVestingAccount nor BaseAccount type, got: %T", account)
 		}
 		return k.newPeriodicContinousVestingAccountFromBaseAccount(baseAccount, startTime, endTime)
 	}
@@ -73,7 +72,6 @@ func (k Keeper) newPeriodicContinousVestingAccount(ctx sdk.Context, address sdk.
 	baseAccount, ok := account.(*authtypes.BaseAccount)
 
 	if !ok {
-		k.Logger(ctx).Error("invalid account type; expected: BaseAccount", "notExpectedAccount", account)
 		return nil, errors.Wrapf(c4eerrors.ErrInvalidAccountType, "expected BaseAccount, got: %T", account)
 	}
 

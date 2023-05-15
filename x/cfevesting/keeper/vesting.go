@@ -172,7 +172,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 func (k Keeper) getVestingPoolAndType(ctx sdk.Context, owner string, vestingPoolName string) (*types.AccountVestingPools, *types.VestingPool, *types.VestingType, error) {
 	accVestingPools, vestingPool, vestingPoolsFound := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !vestingPoolsFound || len(accVestingPools.VestingPools) == 0 || vestingPool == nil {
-		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "no vesting pools found for address (%s)", owner)
+		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "no vesting pool %s found for address %s", vestingPoolName, owner)
 	}
 
 	vestingType, err := k.GetVestingType(ctx, vestingPool.VestingType)
@@ -182,7 +182,11 @@ func (k Keeper) getVestingPoolAndType(ctx sdk.Context, owner string, vestingPool
 	return &accVestingPools, vestingPool, &vestingType, nil
 }
 
-func (k Keeper) SendToNewVestingAccountFromReservedTokens(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, reservationId uint64,
+// The SendReservedToNewVestingAccount function sends reserved tokens from the vesting pool to a new vesting account.
+// The function validates whether the lockupPeriod and vestingPeriod are greater than or equal to the vesting periods
+// specified in the vesting type. Additionally, the free (sdk.Dec) is validated, and if it exceeds the value specified
+// in the vesting type, instead of returning an error, it is set to the free value specified in the vesting type.
+func (k Keeper) SendReservedToNewVestingAccount(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, reservationId uint64,
 	free sdk.Dec, lockupPeriod time.Duration, vestingPeriod time.Duration) error {
 	k.Logger(ctx).Debug("send reserved to new vesting account", "owner", owner, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "reservationId", reservationId)
 
@@ -197,7 +201,7 @@ func (k Keeper) SendToNewVestingAccountFromReservedTokens(ctx sdk.Context, owner
 	}
 
 	if free.GT(vestingType.Free) {
-		free = vestingType.Free // TODO: if custom free is greater than vesting type free use vesting type free. Maybe we should return an error in this case?
+		free = vestingType.Free
 	}
 
 	if err = vestingPool.SendFromReservedTokens(reservationId, amount); err != nil {
@@ -215,7 +219,7 @@ func (k Keeper) SendToNewVestingAccountFromReservedTokens(ctx sdk.Context, owner
 	return nil
 }
 
-func (k Keeper) SendToNewVestingAccountFromLocked(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, restartVesting bool) error {
+func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, restartVesting bool) error {
 	k.Logger(ctx).Debug("send to new vesting account", "owner", owner, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "restartVesting", restartVesting)
 
 	accVestingPools, vestingPool, vestingType, err := k.getVestingPoolAndType(ctx, owner, vestingPoolName)
@@ -239,7 +243,6 @@ func (k Keeper) SendToNewVestingAccountFromLocked(ctx sdk.Context, owner string,
 	}
 	if err != nil {
 		return err
-
 	}
 
 	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, restartVesting, accVestingPools, vestingPool)
