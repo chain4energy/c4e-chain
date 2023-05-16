@@ -17,11 +17,11 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 )
 
-//go:embed stakedrop.json santadrop.json gleamdrop.json dynamic.json
+//go:embed stakedrop.json santadrop.json gleamdrop.json teamdrop.json
 var f embed.FS
 
 const monthAvgHours = 365 * 24 / 12 * time.Hour
-const claimSource = "cfeminter"
+const claimSource = "cfeminter" // TODO: delete
 
 func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper *cfevestingkeeper.Keeper, accountKeeper *authkeeper.AccountKeeper, bankKeeper *bankkeeper.Keeper) error {
 	lockupPeriod := 3 * monthAvgHours
@@ -34,7 +34,7 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper 
 		return fmt.Errorf("source module account not found: %s", claimSource)
 	}
 	ownerAcc := acc.GetAddress().String()
-	err := bankkeeper.Keeper.MintCoins(*bankKeeper, ctx, claimSource, sdk.NewCoins(sdk.NewCoin("uc4e", math.NewInt(1000000000000000))))
+	err := bankkeeper.Keeper.MintCoins(*bankKeeper, ctx, claimSource, sdk.NewCoins(sdk.NewCoin("uc4e", math.NewInt(1000000000000000)))) // TODO: delete
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper 
 		return err
 	}
 	_, err = claimKeeper.CreateCampaign(ctx, acc.GetAddress().String(), "teamdrop", "teamdrop",
-		types.DynamicCampaign, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
+		types.DefaultCampaign, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &lockupPeriod, &vestingPeriod, "")
 	if err != nil {
 		return err
 	}
@@ -93,16 +93,16 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper 
 		return err
 	}
 
-	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 0, nil, nil); err != nil {
+	if err = claimKeeper.EnableCampaign(ctx, ownerAcc, 0, nil, nil); err != nil {
 		return err
 	}
-	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 1, nil, nil); err != nil {
+	if err = claimKeeper.EnableCampaign(ctx, ownerAcc, 1, nil, nil); err != nil {
 		return err
 	}
-	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 2, nil, nil); err != nil {
+	if err = claimKeeper.EnableCampaign(ctx, ownerAcc, 2, nil, nil); err != nil {
 		return err
 	}
-	if err = claimKeeper.StartCampaign(ctx, ownerAcc, 3, nil, nil); err != nil {
+	if err = claimKeeper.EnableCampaign(ctx, ownerAcc, 3, nil, nil); err != nil {
 		return err
 	}
 
@@ -114,7 +114,7 @@ func Creates(ctx sdk.Context, claimKeeper *cfeclaimkeeper.Keeper, vestingKeeper 
 		return err
 	}
 
-	dynamicEntries, err := readEntriesFromJson("dynamic.json")
+	dynamicEntries, err := readEntriesFromJson("teamdrop.json")
 	if err != nil {
 		return err
 	}

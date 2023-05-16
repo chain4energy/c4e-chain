@@ -14,10 +14,10 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdStartCampaign() *cobra.Command {
+func CmdEnableCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "start-campaign [campaign-id] [optional-start-time] [optional-end-time]",
-		Short: "Broadcast message StartCampaign",
+		Use:   "enable-campaign [campaign-id] [optional-start-time] [optional-end-time]",
+		Short: "Broadcast message EnableCampaign",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := cast.ToUint64E(args[0])
@@ -49,7 +49,7 @@ func CmdStartCampaign() *cobra.Command {
 
 			}
 
-			msg := types.NewMsgStartCampaign(
+			msg := types.NewMsgEnableCampaign(
 				clientCtx.GetFromAddress().String(),
 				argCampaignId,
 				argStartTime,

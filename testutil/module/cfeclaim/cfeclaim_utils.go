@@ -141,7 +141,7 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 	}
 }
 
-func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, deleteClaimRecordAction cfeclaimtypes.CloseAction, amoutDiff sdk.Coins) {
+func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, amoutDiff sdk.Coins) {
 	claimClaimsLeftBefore, ok := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
 	if !ok {
 		claimClaimsLeftBefore = cfeclaimtypes.CampaignAmountLeft{
@@ -166,7 +166,7 @@ func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccA
 	for _, claimRecord := range userEntryBefore.ClaimRecords {
 		require.NotEqual(h.t, claimRecord.CampaignId, campaignId)
 	}
-	require.NoError(h.t, h.helpeCfeclaimkeeper.DeleteClaimRecord(ctx, ownerAddress.String(), campaignId, userAddress, deleteClaimRecordAction))
+	require.NoError(h.t, h.helpeCfeclaimkeeper.DeleteClaimRecord(ctx, ownerAddress.String(), campaignId, userAddress))
 	claimClaimsLeftAfter, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
 	require.EqualValues(h.t, claimClaimsLeftBefore, claimClaimsLeftAfter.Amount.Add(amoutDiff...))
 
@@ -186,11 +186,11 @@ func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccA
 	}
 }
 
-func (h *C4eClaimUtils) DeleteClaimRecordError(ctx sdk.Context, ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, deleteClaimRecordAction cfeclaimtypes.CloseAction, errorMessage string) {
+func (h *C4eClaimUtils) DeleteClaimRecordError(ctx sdk.Context, ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, errorMessage string) {
 	srcBalance := h.BankUtils.GetAccountAllBalances(ctx, ownerAddress)
 	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 
-	require.EqualError(h.t, h.helpeCfeclaimkeeper.DeleteClaimRecord(ctx, ownerAddress.String(), campaignId, userAddress, deleteClaimRecordAction), errorMessage)
+	require.EqualError(h.t, h.helpeCfeclaimkeeper.DeleteClaimRecord(ctx, ownerAddress.String(), campaignId, userAddress), errorMessage)
 	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBalanceBefore)
 	h.BankUtils.VerifyAccountAllBalances(ctx, ownerAddress, srcBalance)
 }
@@ -546,18 +546,18 @@ func (h *C4eClaimUtils) CreateCampaignError(ctx sdk.Context, owner string, name 
 	require.False(h.t, ok)
 }
 
-func (h *C4eClaimUtils) StartCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) {
-	err := h.helpeCfeclaimkeeper.StartCampaign(ctx, owner, campaignId, startTime, endTime)
+func (h *C4eClaimUtils) EnableCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) {
+	err := h.helpeCfeclaimkeeper.EnableCampaign(ctx, owner, campaignId, startTime, endTime)
 	require.NoError(h.t, err)
 	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.True(h.t, ok)
 	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, true, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
 }
 
-func (h *C4eClaimUtils) StartCampaignError(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time, errorString string) {
+func (h *C4eClaimUtils) EnableCampaignError(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time, errorString string) {
 	campaignBefore, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 
-	err := h.helpeCfeclaimkeeper.StartCampaign(ctx, owner, campaignId, startTime, endTime)
+	err := h.helpeCfeclaimkeeper.EnableCampaign(ctx, owner, campaignId, startTime, endTime)
 	require.EqualError(h.t, err, errorString)
 	if !ok {
 		return
@@ -566,7 +566,7 @@ func (h *C4eClaimUtils) StartCampaignError(ctx sdk.Context, owner string, campai
 	h.VerifyCampaign(ctx, campaignBefore.Id, true, campaignBefore.Owner, campaignBefore.Name, campaignBefore.Description, enabled, &campaignBefore.FeegrantAmount, &campaignBefore.InitialClaimFreeAmount, campaignBefore.StartTime, campaignBefore.EndTime, campaignBefore.LockupPeriod, campaignBefore.VestingPeriod, campaignBefore.VestingPoolName)
 }
 
-func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction) {
+func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) {
 	campaignAmoutLeftBefore, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
 	cfeclaimModuleBalance := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
@@ -584,7 +584,7 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 		_, vestingPoolBefore, _ = h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaign.VestingPoolName)
 	}
 
-	err := h.helpeCfeclaimkeeper.CloseCampaign(ctx, owner, campaignId, CloseAction)
+	err := h.helpeCfeclaimkeeper.CloseCampaign(ctx, owner, campaignId)
 	require.NoError(h.t, err)
 
 	campaign, _ = h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
@@ -596,35 +596,28 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 		require.True(h.t, feegrantAmountLef.IsZero())
 	}
 	amountDiff := campaignAmoutLeftBefore.Amount.Sub(feegrantAmountLefBefore...)
-	switch CloseAction {
-	case cfeclaimtypes.CloseSendToCommunityPool:
-		feePool := h.DistributionUtils.DistrKeeper.GetFeePool(ctx)
-		feePoolAmount := feePool.CommunityPool
-		sdk.NewDecCoinsFromCoins(amountDiff...)
-		require.EqualValues(h.t, feePoolAmount, sdk.NewDecCoinsFromCoins(campaignAmoutLeftBefore.Amount.Add(feegrantAmountLefBefore...)...))
-	case cfeclaimtypes.CloseSendToOwner:
-		if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
-			_, vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaign.VestingPoolName)
-			if campaign.FeegrantAmount.GT(math.ZeroInt()) {
-				require.True(h.t, vestingPoolBefore.Sent.Sub(amountDiff.AmountOf(h.helperCfevestingKeeper.GetParams(ctx).Denom)).Equal(vestingPool.Sent))
-			} else {
-				require.Nil(h.t, vestingPool.GetReservation(campaignId))
-			}
 
+	if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
+		_, vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaign.VestingPoolName)
+		if campaign.FeegrantAmount.GT(math.ZeroInt()) {
+			require.True(h.t, vestingPoolBefore.Sent.Sub(amountDiff.AmountOf(h.helperCfevestingKeeper.GetParams(ctx).Denom)).Equal(vestingPool.Sent))
 		} else {
-			h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, cfeclaimModuleBalance.Sub(campaignAmoutLeftBefore.Amount...))
-			h.BankUtils.VerifyAccountAllBalances(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.Add(feegrantAmountLefBefore...)...))
+			require.Nil(h.t, vestingPool.GetReservation(campaignId))
 		}
+
+	} else {
+		h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, cfeclaimModuleBalance.Sub(campaignAmoutLeftBefore.Amount...))
+		h.BankUtils.VerifyAccountAllBalances(ctx, ownerAccAddress, ownerBalanceBefore.Add(campaignAmoutLeftBefore.Amount.Add(feegrantAmountLefBefore...)...))
 	}
 
-	h.VerifyCloseAction(ctx, campaignId, CloseAction, campaignAmoutLeftBefore.Amount)
+	h.VerifyCloseAction(ctx, campaignId, campaignAmoutLeftBefore.Amount)
 	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, false, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
 }
 
-func (h *C4eClaimUtils) CloseCampaignError(ctx sdk.Context, owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction, errorString string) {
+func (h *C4eClaimUtils) CloseCampaignError(ctx sdk.Context, owner string, campaignId uint64, errorString string) {
 	campaignBefore, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 
-	err := h.helpeCfeclaimkeeper.CloseCampaign(ctx, owner, campaignId, CloseAction)
+	err := h.helpeCfeclaimkeeper.CloseCampaign(ctx, owner, campaignId)
 	require.EqualError(h.t, err, errorString)
 	if !ok {
 		return
@@ -687,7 +680,7 @@ func (h *C4eClaimUtils) VerifyCampaign(ctx sdk.Context, campaignId uint64, mustE
 	require.EqualValues(h.t, claimCampaign.LockupPeriod, lockupPeriod)
 }
 
-func (h *C4eClaimUtils) VerifyCloseAction(ctx sdk.Context, campaignId uint64, CloseAction cfeclaimtypes.CloseAction, campaignAmountLeftBefore sdk.Coins) {
+func (h *C4eClaimUtils) VerifyCloseAction(ctx sdk.Context, campaignId uint64, campaignAmountLeftBefore sdk.Coins) {
 
 }
 

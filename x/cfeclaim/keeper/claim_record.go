@@ -41,7 +41,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 			return err
 		}
 	} else {
-		if err = k.addClaimRecordsToDefaultAndDynamicCampaign(ctx, ownerAddress, campaign, amountSum, feesAndClaimRecordsAmountSum); err != nil {
+		if err = k.addClaimRecordsToDefaultCampaign(ctx, ownerAddress, campaign, amountSum, feesAndClaimRecordsAmountSum); err != nil {
 			return err
 		}
 	}
@@ -78,7 +78,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	return nil
 }
 
-func (k Keeper) addClaimRecordsToDefaultAndDynamicCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, campaign *types.Campaign, amountSum sdk.Coins, feesAndClaimRecordsAmountSum sdk.Coins) error {
+func (k Keeper) addClaimRecordsToDefaultCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, campaign *types.Campaign, amountSum sdk.Coins, feesAndClaimRecordsAmountSum sdk.Coins) error {
 	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
 
 	if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) { // TODO: probably to delete
@@ -110,7 +110,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 		return err
 	}
 
-	if err = k.closeSendToOwner(ctx, &campaign, claimRecordAmount); err != nil {
+	if err = k.sendCampaignAmountLeftToOwner(ctx, &campaign, claimRecordAmount); err != nil {
 		return err
 	}
 
@@ -151,13 +151,6 @@ func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignI
 	if err = types.ValidateClaimRecords(claimRecords); err != nil {
 		return nil, err
 	}
-
-	if campaign.CampaignType != types.VestingPoolCampaign {
-		if err = ValidateCampaignIsNotDisabled(campaign); err != nil {
-			return nil, err
-		}
-	}
-
 	if err = ValidateCampaignNotEnded(ctx, campaign); err != nil {
 		return nil, err
 	}
@@ -278,37 +271,11 @@ func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) *authtyp
 	return macc
 }
 
-func (k Keeper) AddClaimRecordsFromWhitelistedVestingAccount(ctx sdk.Context, ownerAddress sdk.AccAddress, amount sdk.Coins) error {
-	spendableCoins := k.bankKeeper.SpendableCoins(ctx, ownerAddress)
-	if spendableCoins.IsAllGTE(amount) {
-		return nil
-	}
-
-	ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
-	if ownerAccount == nil {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
-	}
-	vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
-
-	if vestingAcc.DelegatedVesting.IsAllPositive() {
-		balance := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-		balanceWithoutOriginalVesting := balance.Add(vestingAcc.DelegatedVesting...).Sub(vestingAcc.OriginalVesting...)
-		amount = amount.Add(balanceWithoutOriginalVesting...)
-	}
-
-	amount = amount.Sub(spendableCoins...)
-
-	_, err := k.vestingKeeper.UnlockUnbondedContinuousVestingAccountCoins(ctx, ownerAddress, amount)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaign types.Campaign, userAddress string) (types.UserEntry, sdk.Coins, error) {
-	if err := ValidateCampaignTypeIsDynamic(campaign); err != nil {
-		return types.UserEntry{}, nil, err
+	if campaign.Enabled == true {
+		if !campaign.RemovableClaimRecords {
+			return types.UserEntry{}, nil, errors.Wrap(sdkerrors.ErrInvalidType, "campaign must have RemovableClaimRecords flag set to true to be able to delete its entries")
+		}
 	}
 
 	if err := ValidateOwner(campaign, owner); err != nil {
@@ -360,11 +327,4 @@ func ValidateClaimRecordExists(userEntry types.UserEntry, campaignId uint64) (cl
 	}
 
 	return nil, errors.Wrapf(c4eerrors.ErrParsing, "campaign id %d claim entry doesn't exist", campaignId)
-}
-
-func ValidateCampaignTypeIsDynamic(campaign types.Campaign) error {
-	if campaign.CampaignType != types.DynamicCampaign {
-		return errors.Wrap(sdkerrors.ErrInvalidType, "ampaign must be of DYNAMIC type to be able to delete its entries")
-	}
-	return nil
 }

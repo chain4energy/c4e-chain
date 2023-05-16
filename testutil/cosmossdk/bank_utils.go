@@ -176,6 +176,17 @@ func (bu *BankUtils) VerifyTotalSupplyByDenom(ctx sdk.Context, denom string, exp
 	require.Truef(bu.t, expectedAmount.Equal(supply), "expectedAmount %s <> supply %s", expectedAmount, supply)
 }
 
+func (bu *BankUtils) VerifyTotalSupply(ctx sdk.Context, expectedAmount sdk.Coins) {
+	for _, coin := range expectedAmount {
+		supply := bu.helperBankKeeper.GetSupply(ctx, coin.Denom)
+		require.Truef(bu.t, coin.Equal(supply), "expectedAmount %s <> supply %s", expectedAmount, supply)
+	}
+}
+
+func (bu *BankUtils) GetTotalSupplyByDenom(ctx sdk.Context, denom string) sdk.Coin {
+	return bu.helperBankKeeper.GetSupply(ctx, denom)
+}
+
 func (bu *BankUtils) VerifyDefultDenomTotalSupply(ctx sdk.Context, expectedAmount math.Int) {
 	bu.VerifyTotalSupplyByDenom(ctx, testenv.DefaultTestDenom, expectedAmount)
 }

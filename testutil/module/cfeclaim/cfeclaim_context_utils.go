@@ -46,20 +46,20 @@ func (h *ContextC4eClaimUtils) AddMissionToCampaignError(owner string, campaignI
 	h.C4eClaimUtils.AddMissionToCampaignError(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate, errorString)
 }
 
-func (h *ContextC4eClaimUtils) StartCampaign(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) {
-	h.C4eClaimUtils.StartCampaign(h.testContext.GetContext(), owner, campaignId, startTime, endTime)
+func (h *ContextC4eClaimUtils) EnableCampaign(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) {
+	h.C4eClaimUtils.EnableCampaign(h.testContext.GetContext(), owner, campaignId, startTime, endTime)
 }
 
-func (h *ContextC4eClaimUtils) StartCampaignError(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time, errorString string) {
-	h.C4eClaimUtils.StartCampaignError(h.testContext.GetContext(), owner, campaignId, startTime, endTime, errorString)
+func (h *ContextC4eClaimUtils) EnableCampaignError(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time, errorString string) {
+	h.C4eClaimUtils.EnableCampaignError(h.testContext.GetContext(), owner, campaignId, startTime, endTime, errorString)
 }
 
-func (h *ContextC4eClaimUtils) CloseCampaign(owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction) {
-	h.C4eClaimUtils.CloseCampaign(h.testContext.GetContext(), owner, campaignId, CloseAction)
+func (h *ContextC4eClaimUtils) CloseCampaign(owner string, campaignId uint64) {
+	h.C4eClaimUtils.CloseCampaign(h.testContext.GetContext(), owner, campaignId)
 }
 
-func (h *ContextC4eClaimUtils) CloseCampaignError(owner string, campaignId uint64, CloseAction cfeclaimtypes.CloseAction, errorString string) {
-	h.C4eClaimUtils.CloseCampaignError(h.testContext.GetContext(), owner, campaignId, CloseAction, errorString)
+func (h *ContextC4eClaimUtils) CloseCampaignError(owner string, campaignId uint64, errorString string) {
+	h.C4eClaimUtils.CloseCampaignError(h.testContext.GetContext(), owner, campaignId, errorString)
 }
 
 func (h *ContextC4eClaimUtils) InitGenesis(genState cfeclaimtypes.GenesisState) {
@@ -70,12 +70,12 @@ func (h *ContextC4eClaimUtils) AddClaimRecords(srcAddress sdk.AccAddress, campai
 	h.C4eClaimUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, claimEntries)
 }
 
-func (h *ContextC4eClaimUtils) DeleteClaimRecord(ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, deleteClaimRecordAction cfeclaimtypes.CloseAction, amoutDiff sdk.Coins) {
-	h.C4eClaimUtils.DeleteClaimRecord(h.testContext.GetContext(), ownerAddress, campaignId, userAddress, deleteClaimRecordAction, amoutDiff)
+func (h *ContextC4eClaimUtils) DeleteClaimRecord(ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, amoutDiff sdk.Coins) {
+	h.C4eClaimUtils.DeleteClaimRecord(h.testContext.GetContext(), ownerAddress, campaignId, userAddress, amoutDiff)
 }
 
-func (h *ContextC4eClaimUtils) DeleteClaimRecordError(ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, deleteClaimRecordAction cfeclaimtypes.CloseAction, errorMessage string) {
-	h.C4eClaimUtils.DeleteClaimRecordError(h.testContext.GetContext(), ownerAddress, campaignId, userAddress, deleteClaimRecordAction, errorMessage)
+func (h *ContextC4eClaimUtils) DeleteClaimRecordError(ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, errorMessage string) {
+	h.C4eClaimUtils.DeleteClaimRecordError(h.testContext.GetContext(), ownerAddress, campaignId, userAddress, errorMessage)
 }
 
 func (h *ContextC4eClaimUtils) AddClaimRecordsFromWhitelistedVestingAccount(srcAddress sdk.AccAddress, amountToSend math.Int, unlockedAmount math.Int) {

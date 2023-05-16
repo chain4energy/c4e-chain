@@ -30,7 +30,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdAddClaimRecords())
 	cmd.AddCommand(CmdDeleteClaimRecord())
 	cmd.AddCommand(CmdCloseCampaign())
-	cmd.AddCommand(CmdStartCampaign())
+	cmd.AddCommand(CmdEnableCampaign())
 	cmd.AddCommand(CmdRemoveCampaign())
 	// this line is used by starport scaffolding # 1
 

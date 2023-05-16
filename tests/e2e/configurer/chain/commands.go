@@ -337,7 +337,7 @@ func (n *NodeConfig) AddMissionToCampaign(campaignId, name, description, mission
 	n.LogActionF("successfully add new mission %s to campaign %s", name, campaignId)
 }
 
-func (n *NodeConfig) StartCampaign(campaignId, optionalStartTime, optionalEndTime, from string) {
+func (n *NodeConfig) EnableCampaign(campaignId, optionalStartTime, optionalEndTime, from string) {
 	n.LogActionF("start campaign")
 	cmd := []string{"c4ed", "tx", "cfeclaim", "start-campaign", campaignId, optionalStartTime, optionalEndTime, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
@@ -346,9 +346,9 @@ func (n *NodeConfig) StartCampaign(campaignId, optionalStartTime, optionalEndTim
 	n.LogActionF("successfully started campaign %s", campaignId)
 }
 
-func (n *NodeConfig) CloseCampaign(campaignId, campaignCloseAction, from string) {
+func (n *NodeConfig) CloseCampaign(campaignId, from string) {
 	n.LogActionF("close campaign")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "close-campaign", campaignId, campaignCloseAction, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "close-campaign", campaignId, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 

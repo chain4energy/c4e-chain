@@ -100,7 +100,7 @@ export type CfeclaimMsgInitialClaimResponse = object;
 
 export type CfeclaimMsgRemoveCampaignResponse = object;
 
-export type CfeclaimMsgStartCampaignResponse = object;
+export type CfeclaimMsgEnableCampaignResponse = object;
 
 /**
  * Params defines the parameters for the module.

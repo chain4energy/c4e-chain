@@ -302,7 +302,7 @@ func TestValidateDestinationsShares(t *testing.T) {
 			true, "destination share ShareName share must be between 0 and 1",
 		},
 		{
-			"Burn share is nil",
+			"MessageBurn share is nil",
 			types.Destinations{PrimaryShare: mainAccount, Shares: corectShares, BurnShare: sdk.Dec{}},
 			true, "burn share cannot be nil",
 		},

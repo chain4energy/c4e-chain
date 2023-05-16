@@ -9,7 +9,7 @@ import { NewCampaign } from "./module/types/cfeclaim/event"
 import { EditCampaign } from "./module/types/cfeclaim/event"
 import { CloseCampaign } from "./module/types/cfeclaim/event"
 import { RemoveCampaign } from "./module/types/cfeclaim/event"
-import { StartCampaign } from "./module/types/cfeclaim/event"
+import { EnableCampaign } from "./module/types/cfeclaim/event"
 import { AddMissionToCampaign } from "./module/types/cfeclaim/event"
 import { Claim } from "./module/types/cfeclaim/event"
 import { InitialClaim } from "./module/types/cfeclaim/event"
@@ -20,7 +20,7 @@ import { Mission } from "./module/types/cfeclaim/mission"
 import { Params } from "./module/types/cfeclaim/params"
 
 
-export { Campaign, CampaignTotalAmount, CampaignAmountLeft, UserEntry, ClaimRecord, NewCampaign, EditCampaign, CloseCampaign, RemoveCampaign, StartCampaign, AddMissionToCampaign, Claim, InitialClaim, AddClaimRecords, DeleteClaimRecord, CompleteMissionFromHook, Mission, Params };
+export { Campaign, CampaignTotalAmount, CampaignAmountLeft, UserEntry, ClaimRecord, NewCampaign, EditCampaign, CloseCampaign, RemoveCampaign, EnableCampaign, AddMissionToCampaign, Claim, InitialClaim, AddClaimRecords, DeleteClaimRecord, CompleteMissionFromHook, Mission, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -78,7 +78,7 @@ const getDefaultState = () => {
 						EditCampaign: getStructure(EditCampaign.fromPartial({})),
 						CloseCampaign: getStructure(CloseCampaign.fromPartial({})),
 						RemoveCampaign: getStructure(RemoveCampaign.fromPartial({})),
-						StartCampaign: getStructure(StartCampaign.fromPartial({})),
+						EnableCampaign: getStructure(EnableCampaign.fromPartial({})),
 						AddMissionToCampaign: getStructure(AddMissionToCampaign.fromPartial({})),
 						Claim: getStructure(Claim.fromPartial({})),
 						InitialClaim: getStructure(InitialClaim.fromPartial({})),
@@ -443,18 +443,18 @@ export default {
 				}
 			}
 		},
-		async sendMsgStartCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgEnableCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgStartCampaign(value)
+				const msg = await txClient.MsgEnableCampaign(value)
 				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
 	gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStartCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgEnableCampaign:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgStartCampaign:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgEnableCampaign:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -590,16 +590,16 @@ export default {
 				}
 			}
 		},
-		async MsgStartCampaign({ rootGetters }, { value }) {
+		async MsgEnableCampaign({ rootGetters }, { value }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgStartCampaign(value)
+				const msg = await txClient.MsgEnableCampaign(value)
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStartCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgEnableCampaign:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgStartCampaign:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgEnableCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},

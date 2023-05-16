@@ -241,7 +241,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPoolWithGenesisParam(ctx sdk.Conte
 	msg := cfevestingtypes.MsgCreateVestingPool{Owner: address.String(), Name: vestingPoolName,
 		Amount: amountToVest, Duration: lockupDuration, VestingType: vestingType.Name}
 	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
-	require.EqualValues(h.t, nil, err)
+	require.NoError(h.t, err)
 
 	accVestingPools, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
 	require.EqualValues(h.t, accountVestingPoolsExistsAfter, accFound)

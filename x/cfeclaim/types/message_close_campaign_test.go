@@ -19,26 +19,15 @@ func TestMsgCloseCampaign_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid owner address",
 			msg: types.MsgCloseCampaign{
-				Owner:               "invalid_address",
-				CampaignCloseAction: types.CloseBurn,
+				Owner: "invalid_address",
 			},
 			err:    sdkerrors.ErrInvalidAddress,
 			errMsg: "invalid creator address (decoding bech32 failed: invalid separator index -1): invalid address",
 		},
 		{
-			name: "invalid campaign close action",
-			msg: types.MsgCloseCampaign{
-				Owner:               sample.AccAddress(),
-				CampaignCloseAction: types.CloseAction_CLOSE_ACTION_UNSPECIFIED,
-			},
-			err:    sdkerrors.ErrInvalidType,
-			errMsg: "wrong campaign close action type: invalid type",
-		},
-		{
 			name: "valid msg",
 			msg: types.MsgCloseCampaign{
-				Owner:               sample.AccAddress(),
-				CampaignCloseAction: types.CloseSendToOwner,
+				Owner: sample.AccAddress(),
 			},
 		},
 	}

@@ -9,7 +9,6 @@ import (
 // Campaign types
 const (
 	UnspecifiedCampaign = CampaignType_CAMPAIGN_TYPE_UNSPECIFIED
-	DynamicCampaign     = CampaignType_DYNAMIC
 	DefaultCampaign     = CampaignType_DEFAULT
 	VestingPoolCampaign = CampaignType_VESTING_POOL
 )
@@ -25,8 +24,6 @@ func CampaignTypeFromString(str string) (CampaignType, error) {
 // NormalizeCampaignType - normalize user specified vote option
 func NormalizeCampaignType(option string) string {
 	switch option {
-	case "Dynamic", "dynamic", "DYNAMIC":
-		return DynamicCampaign.String()
 
 	case "VestingPool", "VESTING_POOL", "vesting_pool":
 		return VestingPoolCampaign.String()

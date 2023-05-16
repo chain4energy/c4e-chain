@@ -16,10 +16,10 @@ import { MsgRemoveCampaign } from "./types/c4echain/cfeclaim/tx";
 import { MsgCloseCampaign } from "./types/c4echain/cfeclaim/tx";
 import { MsgAddClaimRecords } from "./types/c4echain/cfeclaim/tx";
 import { MsgAddMissionToCampaign } from "./types/c4echain/cfeclaim/tx";
-import { MsgStartCampaign } from "./types/c4echain/cfeclaim/tx";
+import { MsgEnableCampaign } from "./types/c4echain/cfeclaim/tx";
 
 
-export { MsgClaim, MsgCreateCampaign, MsgDeleteClaimRecord, MsgInitialClaim, MsgEditCampaign, MsgRemoveCampaign, MsgCloseCampaign, MsgAddClaimRecords, MsgAddMissionToCampaign, MsgStartCampaign };
+export { MsgClaim, MsgCreateCampaign, MsgDeleteClaimRecord, MsgInitialClaim, MsgEditCampaign, MsgRemoveCampaign, MsgCloseCampaign, MsgAddClaimRecords, MsgAddMissionToCampaign, MsgEnableCampaign };
 
 type sendMsgClaimParams = {
   value: MsgClaim,
@@ -75,8 +75,8 @@ type sendMsgAddMissionToCampaignParams = {
   memo?: string
 };
 
-type sendMsgStartCampaignParams = {
-  value: MsgStartCampaign,
+type sendMsgEnableCampaignParams = {
+  value: MsgEnableCampaign,
   fee?: StdFee,
   memo?: string
 };
@@ -118,8 +118,8 @@ type msgAddMissionToCampaignParams = {
   value: MsgAddMissionToCampaign,
 };
 
-type msgStartCampaignParams = {
-  value: MsgStartCampaign,
+type MsgEnableCampaignParams = {
+  value: MsgEnableCampaign,
 };
 
 
@@ -266,17 +266,17 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgStartCampaign({ value, fee, memo }: sendMsgStartCampaignParams): Promise<DeliverTxResponse> {
+		async sendMsgEnableCampaign({ value, fee, memo }: sendMsgEnableCampaignParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgStartCampaign: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgEnableCampaign: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgStartCampaign({ value: MsgStartCampaign.fromPartial(value) })
+				let msg = this.MsgEnableCampaign({ value: MsgEnableCampaign.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgStartCampaign: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgEnableCampaign: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -353,11 +353,11 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgStartCampaign({ value }: msgStartCampaignParams): EncodeObject {
+		MsgEnableCampaign({ value }: MsgEnableCampaignParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgStartCampaign", value: MsgStartCampaign.fromPartial( value ) }
+				return { typeUrl: "/chain4energy.c4echain.cfeclaim.MsgEnableCampaign", value: MsgEnableCampaign.fromPartial( value ) }
 			} catch (e: any) {
-				throw new Error('TxClient:MsgStartCampaign: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgEnableCampaign: Could not create message: ' + e.message)
 			}
 		},
 		

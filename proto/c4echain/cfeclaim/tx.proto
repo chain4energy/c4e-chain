@@ -20,7 +20,7 @@ service Msg {
   rpc AddClaimRecords(MsgAddClaimRecords) returns (MsgAddClaimRecordsResponse);
   rpc DeleteClaimRecord(MsgDeleteClaimRecord) returns (MsgDeleteClaimRecordResponse);
   rpc CloseCampaign(MsgCloseCampaign) returns (MsgCloseCampaignResponse);
-  rpc StartCampaign(MsgStartCampaign) returns (MsgStartCampaignResponse);
+  rpc EnableCampaign(MsgEnableCampaign) returns (MsgEnableCampaignResponse);
   rpc RemoveCampaign(MsgRemoveCampaign) returns (MsgRemoveCampaignResponse);
   // this line is used by starport scaffolding # proto/tx/rpc
 }
@@ -46,35 +46,36 @@ message MsgCreateCampaign {
   string name = 2;
   string description = 3;
   CampaignType campaignType = 4;
-  string feegrant_amount = 5 [
+  bool removable_claim_records = 5;
+  string feegrant_amount = 6 [
     (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  string initial_claim_free_amount = 6 [
+  string initial_claim_free_amount = 7 [
     (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  string free = 7 [
+  string free = 8 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = true
   ];
-  google.protobuf.Timestamp start_time = 8 [
+  google.protobuf.Timestamp start_time = 9 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Timestamp end_time = 9 [
+  google.protobuf.Timestamp end_time = 10 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  google.protobuf.Duration lockup_period = 10 [
+  google.protobuf.Duration lockup_period = 11 [
     (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
-  google.protobuf.Duration vesting_period = 11 [
+  google.protobuf.Duration vesting_period = 12 [
     (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
-  string vestingPoolName = 12;
+  string vestingPoolName = 13;
 }
 
 message MsgCreateCampaignResponse {}
@@ -120,7 +121,7 @@ message MsgCloseCampaign {
 
 message MsgCloseCampaignResponse {}
 
-message MsgStartCampaign {
+message MsgEnableCampaign {
   string owner = 1;
   uint64 campaignId = 2;
   google.protobuf.Timestamp start_time = 3 [
@@ -133,7 +134,7 @@ message MsgStartCampaign {
   ];
 }
 
-message MsgStartCampaignResponse {}
+message MsgEnableCampaignResponse {}
 
 message MsgRemoveCampaign {
   string owner = 1;

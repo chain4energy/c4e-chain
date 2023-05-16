@@ -27,15 +27,15 @@ func SimulateMsgAddClaimRecords(
 		}
 
 		campaigns := k.GetCampaigns(ctx)
-		startCampaignMsg := &types.MsgStartCampaign{
+		EnableCampaignMsg := &types.MsgEnableCampaign{
 			Owner:      ownerAddress.String(),
 			CampaignId: uint64(len(campaigns) - 1),
 		}
 
-		_, err = msgServer.StartCampaign(msgServerCtx, startCampaignMsg)
+		_, err = msgServer.EnableCampaign(msgServerCtx, EnableCampaignMsg)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Start campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, startCampaignMsg.Type(), ""), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, EnableCampaignMsg.Type(), ""), nil, nil
 		}
 
 		addClaimRecordsMsg := &types.MsgAddClaimRecords{
@@ -68,15 +68,15 @@ func SimulateMsgDeleteClaimRecord(
 		}
 
 		campaigns := k.GetCampaigns(ctx)
-		startCampaignMsg := &types.MsgStartCampaign{
+		EnableCampaignMsg := &types.MsgEnableCampaign{
 			Owner:      ownerAddress.String(),
 			CampaignId: uint64(len(campaigns) - 1),
 		}
 
-		_, err = msgServer.StartCampaign(msgServerCtx, startCampaignMsg)
+		_, err = msgServer.EnableCampaign(msgServerCtx, EnableCampaignMsg)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Start campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, startCampaignMsg.Type(), ""), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, EnableCampaignMsg.Type(), ""), nil, nil
 		}
 		claimRecords := createNClaimRecords(100, accs)
 		addClaimRecordsMsg := &types.MsgAddClaimRecords{

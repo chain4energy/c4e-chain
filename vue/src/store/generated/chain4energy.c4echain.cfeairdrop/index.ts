@@ -9,7 +9,7 @@ import { NewCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4ech
 import { EditCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
 import { CloseCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
 import { RemoveCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
-import { StartCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
+import { EnableCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
 import { AddMissionToCampaign } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
 import { Claim } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
 import { InitialClaim } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
@@ -20,7 +20,7 @@ import { Mission } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.
 import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfeclaim/types"
 
 
-export { Campaign, CampaignTotalAmount, CampaignAmountLeft, UserEntry, ClaimRecord, NewCampaign, EditCampaign, CloseCampaign, RemoveCampaign, StartCampaign, AddMissionToCampaign, Claim, InitialClaim, AddClaimRecords, DeleteClaimRecord, CompleteMissionFromHook, Mission, Params };
+export { Campaign, CampaignTotalAmount, CampaignAmountLeft, UserEntry, ClaimRecord, NewCampaign, EditCampaign, CloseCampaign, RemoveCampaign, EnableCampaign, AddMissionToCampaign, Claim, InitialClaim, AddClaimRecords, DeleteClaimRecord, CompleteMissionFromHook, Mission, Params };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -71,7 +71,7 @@ const getDefaultState = () => {
 						EditCampaign: getStructure(EditCampaign.fromPartial({})),
 						CloseCampaign: getStructure(CloseCampaign.fromPartial({})),
 						RemoveCampaign: getStructure(RemoveCampaign.fromPartial({})),
-						StartCampaign: getStructure(StartCampaign.fromPartial({})),
+						EnableCampaign: getStructure(EnableCampaign.fromPartial({})),
 						AddMissionToCampaign: getStructure(AddMissionToCampaign.fromPartial({})),
 						Claim: getStructure(Claim.fromPartial({})),
 						InitialClaim: getStructure(InitialClaim.fromPartial({})),
@@ -523,16 +523,16 @@ export default {
 				}
 			}
 		},
-		async sendMsgStartCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgEnableCampaign({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgStartCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgEnableCampaign({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStartCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgEnableCampaign:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgStartCampaign:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgEnableCampaign:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -654,16 +654,16 @@ export default {
 				}
 			}
 		},
-		async MsgStartCampaign({ rootGetters }, { value }) {
+		async MsgEnableCampaign({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgStartCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.MsgEnableCampaign({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStartCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgEnableCampaign:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgStartCampaign:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgEnableCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},

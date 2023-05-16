@@ -78,11 +78,11 @@ func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCam
 	return &types.MsgRemoveCampaignResponse{}, nil
 }
 
-func (k msgServer) StartCampaign(goCtx context.Context, msg *types.MsgStartCampaign) (*types.MsgStartCampaignResponse, error) {
+func (k msgServer) EnableCampaign(goCtx context.Context, msg *types.MsgEnableCampaign) (*types.MsgEnableCampaignResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "start claim campaign message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.Keeper.StartCampaign(
+	if err := k.Keeper.EnableCampaign(
 		ctx,
 		msg.Owner,
 		msg.CampaignId,
@@ -93,7 +93,7 @@ func (k msgServer) StartCampaign(goCtx context.Context, msg *types.MsgStartCampa
 		return nil, err
 	}
 
-	event := &types.StartCampaign{
+	event := &types.EnableCampaign{
 		Owner:      msg.Owner,
 		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
 	}
@@ -102,7 +102,7 @@ func (k msgServer) StartCampaign(goCtx context.Context, msg *types.MsgStartCampa
 		k.Logger(ctx).Error("start campaign emit event error", "event", event, "error", err.Error())
 	}
 
-	return &types.MsgStartCampaignResponse{}, nil
+	return &types.MsgEnableCampaignResponse{}, nil
 }
 
 func (k msgServer) CloseCampaign(goCtx context.Context, msg *types.MsgCloseCampaign) (*types.MsgCloseCampaignResponse, error) {

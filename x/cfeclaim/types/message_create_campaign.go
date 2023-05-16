@@ -104,16 +104,15 @@ func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.T
 }
 
 func ValidateCampaignType(campaignType CampaignType, vestingPoolName string) error {
-	if campaignType != VestingPoolCampaign && vestingPoolName != "" {
-		return errors.Wrap(c4eerrors.ErrParam, "vesting pool name can be set only for VESTING_POOL type campaigns")
-	}
-
 	switch campaignType {
-	case DefaultCampaign, DynamicCampaign:
-		return nil
 	case VestingPoolCampaign:
 		if vestingPoolName == "" {
 			return errors.Wrap(c4eerrors.ErrParam, "for VESTING_POOL type campaigns, the vesting pool name must be provided")
+		}
+		return nil
+	case DefaultCampaign:
+		if vestingPoolName != "" {
+			return errors.Wrap(c4eerrors.ErrParam, "vesting pool name can be set only for VESTING_POOL type campaigns")
 		}
 		return nil
 	}

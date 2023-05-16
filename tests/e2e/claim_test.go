@@ -65,7 +65,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	randMissionDescription := helpers.RandStringOfLength(10)
 	node.AddMissionToCampaign(strconv.Itoa(campaignId), randMissionName, randMissionDescription, types.MissionClaim.String(), "0.5", "", creatorWalletName)
 
-	node.StartCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
+	node.EnableCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
 
 	userEntires := []types.ClaimRecord{
 		{
@@ -80,7 +80,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	node.ClaimInitialMission(strconv.Itoa(campaignId), "", receiverWalletName)
 	node.ClaimMission(strconv.Itoa(campaignId), "1", receiverWalletName)
 
-	node.CloseCampaign(strconv.Itoa(campaignId), types.CloseSendToOwner.String(), creatorWalletName)
+	node.CloseCampaign(strconv.Itoa(campaignId), creatorWalletName)
 }
 
 func (s *ClaimSetupSuite) TestDynamicCampaign() {
@@ -108,7 +108,7 @@ func (s *ClaimSetupSuite) TestDynamicCampaign() {
 	randDescription := helpers.RandStringOfLength(10)
 	feegrantAmount := math.NewInt(2500000).String()
 	inititalClaimFreeAmount := math.ZeroInt().String()
-	campaignType := types.DynamicCampaign
+	campaignType := types.DefaultCampaign
 	vestingPoolName := ""
 	node.CreateCampaign(randName, randDescription, campaignType.String(), feegrantAmount, inititalClaimFreeAmount,
 		startTime.Format(cfeclaimcli.TimeLayout), endTime.Format(cfeclaimcli.TimeLayout), lockupPeriod.String(), vestingPeriod.String(), vestingPoolName, creatorWalletName)
@@ -120,7 +120,7 @@ func (s *ClaimSetupSuite) TestDynamicCampaign() {
 	randMissionDescription := helpers.RandStringOfLength(10)
 	node.AddMissionToCampaign(strconv.Itoa(campaignId), randMissionName, randMissionDescription, types.MissionClaim.String(), "0.5", "", creatorWalletName)
 
-	node.StartCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
+	node.EnableCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
 
 	userEntires := []types.ClaimRecord{
 		{
@@ -135,7 +135,7 @@ func (s *ClaimSetupSuite) TestDynamicCampaign() {
 	node.ClaimInitialMission(strconv.Itoa(campaignId), "", receiverWalletName)
 	node.ClaimMission(strconv.Itoa(campaignId), "1", receiverWalletName)
 
-	node.CloseCampaign(strconv.Itoa(campaignId), types.CloseBurn.String(), creatorWalletName)
+	node.CloseCampaign(strconv.Itoa(campaignId), creatorWalletName)
 }
 
 func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
@@ -185,7 +185,7 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	randMissionDescription := helpers.RandStringOfLength(10)
 	node.AddMissionToCampaign(strconv.Itoa(campaignId), randMissionName, randMissionDescription, types.MissionClaim.String(), "0.5", "", creatorWalletName)
 
-	node.StartCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
+	node.EnableCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
 
 	userEntires := []types.ClaimRecord{
 		{
@@ -200,7 +200,7 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	node.ClaimInitialMission(strconv.Itoa(campaignId), "", receiverWalletName)
 	node.ClaimMission(strconv.Itoa(campaignId), "1", receiverWalletName)
 
-	node.CloseCampaign(strconv.Itoa(campaignId), types.CloseSendToOwner.String(), creatorWalletName)
+	node.CloseCampaign(strconv.Itoa(campaignId), creatorWalletName)
 }
 
 // TODO: add verifications and more options (probably when adding manual E2E tests)

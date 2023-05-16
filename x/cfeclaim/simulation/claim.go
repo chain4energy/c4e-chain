@@ -73,15 +73,15 @@ func SimulateMsgClaim(
 			return simtypes.NoOpMsg(types.ModuleName, addMissionToCampaignMsg.Type(), ""), nil, nil
 		}
 
-		startCampaignMsg := &types.MsgStartCampaign{
+		EnableCampaignMsg := &types.MsgEnableCampaign{
 			Owner:      simAccount.Address.String(),
 			CampaignId: campaignId,
 		}
 
-		_, err = msgServer.StartCampaign(msgServerCtx, startCampaignMsg)
+		_, err = msgServer.EnableCampaign(msgServerCtx, EnableCampaignMsg)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Start campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, startCampaignMsg.Type(), ""), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, EnableCampaignMsg.Type(), ""), nil, nil
 		}
 
 		addClaimRecordsMsg := &types.MsgAddClaimRecords{

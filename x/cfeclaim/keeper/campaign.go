@@ -102,7 +102,7 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) 
 
 	campaignAmountLeft, _ := k.GetCampaignAmountLeft(ctx, campaign.Id)
 
-	if err = k.closeSendToOwner(ctx, &campaign, campaignAmountLeft.Amount); err != nil {
+	if err = k.sendCampaignAmountLeftToOwner(ctx, &campaign, campaignAmountLeft.Amount); err != nil {
 		return err
 	}
 	if err = k.closeCampaignSendFeegrant(ctx, &campaign); err != nil {
@@ -115,44 +115,31 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) 
 	return nil
 }
 
-func (k Keeper) closeSendToOwner(ctx sdk.Context, campaign *types.Campaign, amount sdk.Coins) error {
+func (k Keeper) sendCampaignAmountLeftToOwner(ctx sdk.Context, campaign *types.Campaign, amount sdk.Coins) error {
 	if campaign.CampaignType == types.VestingPoolCampaign {
 		return k.vestingKeeper.RemoveVestingPoolReservation(ctx, campaign.Owner, campaign.VestingPoolName, campaign.Id, amount.AmountOf(k.vestingKeeper.Denom(ctx)))
 	} else {
 		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
-		//if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) { // TODO: probably delete
-		//	ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
-		//	if ownerAccount == nil {
-		//		return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
-		//	}
-		//	vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
-		//	vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(amount...)
-		//
-		//	k.accountKeeper.SetAccount(ctx, vestingAcc)
-		//	return k.bankKeeper.BurnCoins(ctx, types.ModuleName, amount)
-		//}
-
 		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, amount)
 	}
 }
 
-func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) error {
+func (k Keeper) EnableCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) error {
 	k.Logger(ctx).Debug("start campaign", "owner", owner, "campaignId", campaignId)
 
 	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
 	if err != nil {
 		return err
 	}
-	if campaign.CampaignType == types.VestingPoolCampaign {
-		if startTime != nil {
-			campaign.StartTime = *startTime
-		}
-		if endTime != nil {
-			campaign.EndTime = *endTime
-		}
+
+	if startTime != nil {
+		campaign.StartTime = *startTime
+	}
+	if endTime != nil {
+		campaign.EndTime = *endTime
 	}
 
-	err = k.ValidateStartCampaignParams(ctx, campaign, owner)
+	err = k.ValidateEnableCampaignParams(ctx, campaign, owner)
 	if err != nil {
 		return err
 	}
@@ -165,14 +152,25 @@ func (k Keeper) StartCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
 	k.Logger(ctx).Debug("remove campaign", "owner", owner, "campaignId", campaignId)
 
-	err := k.ValidateRemoveCampaignParams(ctx, owner, campaignId)
+	campaign, err := k.ValidateRemoveCampaignParams(ctx, owner, campaignId)
 	if err != nil {
 		k.Logger(ctx).Debug("remove campaign", "err", err.Error())
 		return err
 	}
 
+	campaignAmountLeft, _ := k.GetCampaignAmountLeft(ctx, campaign.Id)
+
+	if err = k.sendCampaignAmountLeftToOwner(ctx, campaign, campaignAmountLeft.Amount); err != nil {
+		return err
+	}
+	if err = k.closeCampaignSendFeegrant(ctx, campaign); err != nil {
+		return err
+	}
+
 	k.removeCampaign(ctx, campaignId)
 	k.RemoveAllMissionForCampaign(ctx, campaignId)
+	k.DecrementCampaignAmountLeft(ctx, campaignId, campaignAmountLeft.Amount)
+	k.DecrementCampaignTotalAmount(ctx, campaignId, campaignAmountLeft.Amount)
 	return nil
 }
 func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description string, free sdk.Dec, startTime *time.Time, endTime *time.Time,
@@ -202,7 +200,7 @@ func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, campaignId uint64, 
 	return campaign, nil
 }
 
-func (k Keeper) ValidateStartCampaignParams(ctx sdk.Context, campaign types.Campaign, owner string) error {
+func (k Keeper) ValidateEnableCampaignParams(ctx sdk.Context, campaign types.Campaign, owner string) error {
 	if err := ValidateOwner(campaign, owner); err != nil {
 		return err
 	}
@@ -216,17 +214,17 @@ func (k Keeper) ValidateStartCampaignParams(ctx sdk.Context, campaign types.Camp
 	return ValidateCampaignStartTimeInTheFuture(ctx, &campaign.StartTime)
 }
 
-func (k Keeper) ValidateRemoveCampaignParams(ctx sdk.Context, owner string, campaignId uint64) error {
+func (k Keeper) ValidateRemoveCampaignParams(ctx sdk.Context, owner string, campaignId uint64) (*types.Campaign, error) {
 	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if err = ValidateOwner(campaign, owner); err != nil {
-		return err
+		return nil, err
 	}
 
-	return types.ValidateCampaignIsNotEnabled(campaign)
+	return &campaign, types.ValidateCampaignIsNotEnabled(campaign)
 }
 
 func (k Keeper) ValidateCampaignExists(ctx sdk.Context, campaignId uint64) (types.Campaign, error) {

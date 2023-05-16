@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-const TypeMsgStartCampaign = "start_claim_campaign"
+const TypeMsgEnableCampaign = "start_claim_campaign"
 
-var _ sdk.Msg = &MsgStartCampaign{}
+var _ sdk.Msg = &MsgEnableCampaign{}
 
-func NewMsgStartCampaign(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) *MsgStartCampaign {
-	return &MsgStartCampaign{
+func NewMsgEnableCampaign(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) *MsgEnableCampaign {
+	return &MsgEnableCampaign{
 		Owner:      owner,
 		CampaignId: campaignId,
 		StartTime:  startTime,
@@ -20,15 +20,15 @@ func NewMsgStartCampaign(owner string, campaignId uint64, startTime *time.Time, 
 	}
 }
 
-func (msg *MsgStartCampaign) Route() string {
+func (msg *MsgEnableCampaign) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgStartCampaign) Type() string {
-	return TypeMsgStartCampaign
+func (msg *MsgEnableCampaign) Type() string {
+	return TypeMsgEnableCampaign
 }
 
-func (msg *MsgStartCampaign) GetSigners() []sdk.AccAddress {
+func (msg *MsgEnableCampaign) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
@@ -36,12 +36,12 @@ func (msg *MsgStartCampaign) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgStartCampaign) GetSignBytes() []byte {
+func (msg *MsgEnableCampaign) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgStartCampaign) ValidateBasic() error {
+func (msg *MsgEnableCampaign) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)

@@ -87,12 +87,12 @@ export interface MsgCloseCampaign {
 
 export interface MsgCloseCampaignResponse {}
 
-export interface MsgStartCampaign {
+export interface MsgEnableCampaign {
   owner: string;
   campaignId: number;
 }
 
-export interface MsgStartCampaignResponse {}
+export interface MsgEnableCampaignResponse {}
 
 export interface MsgRemoveCampaign {
   owner: string;
@@ -1401,10 +1401,10 @@ export const MsgCloseCampaignResponse = {
   },
 };
 
-const baseMsgStartCampaign: object = { owner: "", campaignId: 0 };
+const baseMsgEnableCampaign: object = { owner: "", campaignId: 0 };
 
-export const MsgStartCampaign = {
-  encode(message: MsgStartCampaign, writer: Writer = Writer.create()): Writer {
+export const MsgEnableCampaign = {
+  encode(message: MsgEnableCampaign, writer: Writer = Writer.create()): Writer {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -1414,10 +1414,10 @@ export const MsgStartCampaign = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgStartCampaign {
+  decode(input: Reader | Uint8Array, length?: number): MsgEnableCampaign {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgStartCampaign } as MsgStartCampaign;
+    const message = { ...baseMsgEnableCampaign } as MsgEnableCampaign;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1435,8 +1435,8 @@ export const MsgStartCampaign = {
     return message;
   },
 
-  fromJSON(object: any): MsgStartCampaign {
-    const message = { ...baseMsgStartCampaign } as MsgStartCampaign;
+  fromJSON(object: any): MsgEnableCampaign {
+    const message = { ...baseMsgEnableCampaign } as MsgEnableCampaign;
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = String(object.owner);
     } else {
@@ -1450,15 +1450,15 @@ export const MsgStartCampaign = {
     return message;
   },
 
-  toJSON(message: MsgStartCampaign): unknown {
+  toJSON(message: MsgEnableCampaign): unknown {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.campaignId !== undefined && (obj.campaignId = message.campaignId);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgStartCampaign>): MsgStartCampaign {
-    const message = { ...baseMsgStartCampaign } as MsgStartCampaign;
+  fromPartial(object: DeepPartial<MsgEnableCampaign>): MsgEnableCampaign {
+    const message = { ...baseMsgEnableCampaign } as MsgEnableCampaign;
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = object.owner;
     } else {
@@ -1473,11 +1473,11 @@ export const MsgStartCampaign = {
   },
 };
 
-const baseMsgStartCampaignResponse: object = {};
+const baseMsgEnableCampaignResponse: object = {};
 
-export const MsgStartCampaignResponse = {
+export const MsgEnableCampaignResponse = {
   encode(
-    _: MsgStartCampaignResponse,
+    _: MsgEnableCampaignResponse,
     writer: Writer = Writer.create()
   ): Writer {
     return writer;
@@ -1486,12 +1486,12 @@ export const MsgStartCampaignResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): MsgStartCampaignResponse {
+  ): MsgEnableCampaignResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseMsgStartCampaignResponse,
-    } as MsgStartCampaignResponse;
+      ...baseMsgEnableCampaignResponse,
+    } as MsgEnableCampaignResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1503,24 +1503,24 @@ export const MsgStartCampaignResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgStartCampaignResponse {
+  fromJSON(_: any): MsgEnableCampaignResponse {
     const message = {
-      ...baseMsgStartCampaignResponse,
-    } as MsgStartCampaignResponse;
+      ...baseMsgEnableCampaignResponse,
+    } as MsgEnableCampaignResponse;
     return message;
   },
 
-  toJSON(_: MsgStartCampaignResponse): unknown {
+  toJSON(_: MsgEnableCampaignResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<MsgStartCampaignResponse>
-  ): MsgStartCampaignResponse {
+    _: DeepPartial<MsgEnableCampaignResponse>
+  ): MsgEnableCampaignResponse {
     const message = {
-      ...baseMsgStartCampaignResponse,
-    } as MsgStartCampaignResponse;
+      ...baseMsgEnableCampaignResponse,
+    } as MsgEnableCampaignResponse;
     return message;
   },
 };
@@ -1970,7 +1970,7 @@ export interface Msg {
     request: MsgDeleteClaimRecord
   ): Promise<MsgDeleteClaimRecordResponse>;
   CloseCampaign(request: MsgCloseCampaign): Promise<MsgCloseCampaignResponse>;
-  StartCampaign(request: MsgStartCampaign): Promise<MsgStartCampaignResponse>;
+  EnableCampaign(request: MsgEnableCampaign): Promise<MsgEnableCampaignResponse>;
   /** this line is used by starport scaffolding # proto/tx/rpc */
   RemoveCampaign(
     request: MsgRemoveCampaign
@@ -2084,15 +2084,15 @@ export class MsgClientImpl implements Msg {
     );
   }
 
-  StartCampaign(request: MsgStartCampaign): Promise<MsgStartCampaignResponse> {
-    const data = MsgStartCampaign.encode(request).finish();
+  EnableCampaign(request: MsgEnableCampaign): Promise<MsgEnableCampaignResponse> {
+    const data = MsgEnableCampaign.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeclaim.Msg",
-      "StartCampaign",
+      "EnableCampaign",
       data
     );
     return promise.then((data) =>
-      MsgStartCampaignResponse.decode(new Reader(data))
+      MsgEnableCampaignResponse.decode(new Reader(data))
     );
   }
 

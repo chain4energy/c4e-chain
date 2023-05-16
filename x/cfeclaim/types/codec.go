@@ -18,7 +18,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgAddClaimRecords{}, "cfeclaim/AddClaimRecords")
 	legacy.RegisterAminoMsg(cdc, &MsgDeleteClaimRecord{}, "cfeclaim/DeleteClaimRecord")
 	legacy.RegisterAminoMsg(cdc, &MsgCloseCampaign{}, "cfeclaim/CloseCampaign")
-	legacy.RegisterAminoMsg(cdc, &MsgStartCampaign{}, "cfeclaim/StartCampaign")
+	legacy.RegisterAminoMsg(cdc, &MsgEnableCampaign{}, "cfeclaim/EnableCampaign")
 	// this line is used by starport scaffolding # 2
 }
 
@@ -31,7 +31,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgAddClaimRecords{},
 		&MsgDeleteClaimRecord{},
 		&MsgCloseCampaign{},
-		&MsgStartCampaign{},
+		&MsgEnableCampaign{},
 	)
 	// this line is used by starport scaffolding # 3
 

@@ -11,6 +11,8 @@ accounts:
 - name: alice
   coins:
   - 120000000000uc4e
+  - 100abc
+  - 100xyz
   mnemonic: cabin gun luggage green fever either engage nest arrow sure record physical palace dutch clap vocal north snack birth exhibit either ancient sniff settle
 - name: bob
   coins:

@@ -89,10 +89,10 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		cfeclaimsimulation.SimulateMsgCloseCampaign(am.keeper, am.cfevestingKeeper),
 	))
 
-	var weightMsgStartCampaign = 20
+	var weightMsgEnableCampaign = 20
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgStartCampaign,
-		cfeclaimsimulation.SimulateMsgStartCampaign(am.keeper, am.cfevestingKeeper),
+		weightMsgEnableCampaign,
+		cfeclaimsimulation.SimulateMsgEnableCampaign(am.keeper, am.cfevestingKeeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

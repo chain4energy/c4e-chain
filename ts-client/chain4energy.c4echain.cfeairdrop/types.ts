@@ -7,7 +7,7 @@ import { NewCampaign } from "./types/c4echain/cfeclaim/event"
 import { EditCampaign } from "./types/c4echain/cfeclaim/event"
 import { CloseCampaign } from "./types/c4echain/cfeclaim/event"
 import { RemoveCampaign } from "./types/c4echain/cfeclaim/event"
-import { StartCampaign } from "./types/c4echain/cfeclaim/event"
+import { EnableCampaign } from "./types/c4echain/cfeclaim/event"
 import { AddMissionToCampaign } from "./types/c4echain/cfeclaim/event"
 import { Claim } from "./types/c4echain/cfeclaim/event"
 import { InitialClaim } from "./types/c4echain/cfeclaim/event"
@@ -28,7 +28,7 @@ export {
     EditCampaign,
     CloseCampaign,
     RemoveCampaign,
-    StartCampaign,
+    EnableCampaign,
     AddMissionToCampaign,
     Claim,
     InitialClaim,

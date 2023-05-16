@@ -31,13 +31,14 @@ paths:
                     enum:
                       - CAMPAIGN_TYPE_UNSPECIFIED
                       - DEFAULT
-                      - DYNAMIC
                       - VESTING_POOL
                     default: CAMPAIGN_TYPE_UNSPECIFIED
-                    title: |-
-                      - DEFAULT: claim records cannot be deleted
-                       - DYNAMIC: claim records can be deleted
-                       - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
+                    title: >-
+                      - DEFAULT: campaign must be enabled to add new claim
+                      records
+                       - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and it is
+                  removable_claim_records:
+                    type: boolean
                   feegrant_amount:
                     type: string
                   initial_claim_free_amount:
@@ -221,13 +222,14 @@ paths:
                       enum:
                         - CAMPAIGN_TYPE_UNSPECIFIED
                         - DEFAULT
-                        - DYNAMIC
                         - VESTING_POOL
                       default: CAMPAIGN_TYPE_UNSPECIFIED
-                      title: |-
-                        - DEFAULT: claim records cannot be deleted
-                         - DYNAMIC: claim records can be deleted
-                         - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
+                      title: >-
+                        - DEFAULT: campaign must be enabled to add new claim
+                        records
+                         - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and it is
+                    removable_claim_records:
+                      type: boolean
                     feegrant_amount:
                       type: string
                     initial_claim_free_amount:
@@ -47803,13 +47805,13 @@ definitions:
         enum:
           - CAMPAIGN_TYPE_UNSPECIFIED
           - DEFAULT
-          - DYNAMIC
           - VESTING_POOL
         default: CAMPAIGN_TYPE_UNSPECIFIED
         title: |-
-          - DEFAULT: claim records cannot be deleted
-           - DYNAMIC: claim records can be deleted
-           - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
+          - DEFAULT: campaign must be enabled to add new claim records
+           - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and it is
+      removable_claim_records:
+        type: boolean
       feegrant_amount:
         type: string
       initial_claim_free_amount:
@@ -47837,13 +47839,11 @@ definitions:
     enum:
       - CAMPAIGN_TYPE_UNSPECIFIED
       - DEFAULT
-      - DYNAMIC
       - VESTING_POOL
     default: CAMPAIGN_TYPE_UNSPECIFIED
     title: |-
-      - DEFAULT: claim records cannot be deleted
-       - DYNAMIC: claim records can be deleted
-       - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
+      - DEFAULT: campaign must be enabled to add new claim records
+       - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and it is
   chain4energy.c4echain.cfeclaim.ClaimRecord:
     type: object
     properties:
@@ -47924,11 +47924,11 @@ definitions:
     type: object
   chain4energy.c4echain.cfeclaim.MsgDeleteClaimRecordResponse:
     type: object
+  chain4energy.c4echain.cfeclaim.MsgEnableCampaignResponse:
+    type: object
   chain4energy.c4echain.cfeclaim.MsgInitialClaimResponse:
     type: object
   chain4energy.c4echain.cfeclaim.MsgRemoveCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeclaim.MsgStartCampaignResponse:
     type: object
   chain4energy.c4echain.cfeclaim.Params:
     type: object
@@ -47970,13 +47970,13 @@ definitions:
             enum:
               - CAMPAIGN_TYPE_UNSPECIFIED
               - DEFAULT
-              - DYNAMIC
               - VESTING_POOL
             default: CAMPAIGN_TYPE_UNSPECIFIED
             title: |-
-              - DEFAULT: claim records cannot be deleted
-               - DYNAMIC: claim records can be deleted
-               - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
+              - DEFAULT: campaign must be enabled to add new claim records
+               - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and it is
+          removable_claim_records:
+            type: boolean
           feegrant_amount:
             type: string
           initial_claim_free_amount:
@@ -48038,13 +48038,13 @@ definitions:
               enum:
                 - CAMPAIGN_TYPE_UNSPECIFIED
                 - DEFAULT
-                - DYNAMIC
                 - VESTING_POOL
               default: CAMPAIGN_TYPE_UNSPECIFIED
               title: |-
-                - DEFAULT: claim records cannot be deleted
-                 - DYNAMIC: claim records can be deleted
-                 - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and claim records cannot be deleted
+                - DEFAULT: campaign must be enabled to add new claim records
+                 - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and it is
+            removable_claim_records:
+              type: boolean
             feegrant_amount:
               type: string
             initial_claim_free_amount:

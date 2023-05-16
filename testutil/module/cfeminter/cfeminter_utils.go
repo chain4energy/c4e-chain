@@ -100,6 +100,52 @@ func (m *C4eMinterUtils) UpdateParamsError(ctx sdk.Context, authority string, pa
 	CompareCfeminterParams(m.t, previousParams, newParams)
 }
 
+func (m *C4eMinterUtils) MessageBurn(ctx sdk.Context, address string, amount sdk.Coins) {
+	accAddress, _ := sdk.AccAddressFromBech32(address)
+	balanceBefore := m.bankUtils.GetAccountAllBalances(ctx, accAddress)
+	var totalSupplyBefore sdk.Coins
+	for _, coin := range amount {
+		totalSupplyBefore = totalSupplyBefore.Add(m.bankUtils.GetTotalSupplyByDenom(ctx, coin.Denom))
+	}
+	moduleBalanceBefore := m.bankUtils.GetModuleAccountAllBalances(ctx, cfemintertypes.ModuleName)
+
+	msgServer, msgServerCtx := cfemintermodulekeeper.NewMsgServerImpl(*m.helperCfeminterKeeper), sdk.WrapSDKContext(ctx)
+	msg := cfemintertypes.MsgBurn{
+		Address: address,
+		Amount:  amount,
+	}
+	_, err := msgServer.Burn(msgServerCtx, &msg)
+	require.NoError(m.t, err)
+
+	m.bankUtils.VerifyAccountAllBalances(ctx, accAddress, balanceBefore.Sub(amount...))
+	m.bankUtils.VerifyModuleAccountAllBalances(ctx, cfemintertypes.ModuleName, moduleBalanceBefore)
+	m.bankUtils.VerifyTotalSupply(ctx, totalSupplyBefore.Sub(amount...))
+}
+
+func (m *C4eMinterUtils) MessageBurnError(ctx sdk.Context, address string, amount sdk.Coins, errorMessage string) {
+	accAddress, _ := sdk.AccAddressFromBech32(address)
+	balanceBefore := m.bankUtils.GetAccountAllBalances(ctx, accAddress)
+	var totalSupplyBefore sdk.Coins
+	for _, coin := range amount {
+		totalSupplyBefore = totalSupplyBefore.Add(m.bankUtils.GetTotalSupplyByDenom(ctx, coin.Denom))
+	}
+	moduleBalanceBefore := m.bankUtils.GetModuleAccountAllBalances(ctx, cfemintertypes.ModuleName)
+	msgServer, msgServerCtx := cfemintermodulekeeper.NewMsgServerImpl(*m.helperCfeminterKeeper), sdk.WrapSDKContext(ctx)
+
+	msg := cfemintertypes.MsgBurn{
+		Address: address,
+		Amount:  amount,
+	}
+	_, err := msgServer.Burn(msgServerCtx, &msg)
+	require.EqualError(m.t, err, errorMessage)
+	balanceAfter := m.bankUtils.GetAccountAllBalances(ctx, accAddress)
+	_ = balanceAfter
+	_ = balanceBefore
+	//m.bankUtils.VerifyAccountAllBalances(ctx, accAddress, balanceBefore)
+	m.bankUtils.VerifyModuleAccountAllBalances(ctx, cfemintertypes.ModuleName, moduleBalanceBefore)
+	m.bankUtils.VerifyTotalSupply(ctx, totalSupplyBefore)
+}
+
 func (m *C4eMinterUtils) MintError(ctx sdk.Context, errorMessage string) {
 	_, err := m.helperCfeminterKeeper.Mint(ctx)
 	require.EqualError(m.t, err, errorMessage)
@@ -161,6 +207,14 @@ func (m *ContextC4eMinterUtils) UpdateParams(authority string, params cfemintert
 
 func (m *ContextC4eMinterUtils) UpdateParamsError(authority string, params cfemintertypes.Params, error string) {
 	m.C4eMinterUtils.UpdateParamsError(m.testContext.GetContext(), authority, params, error)
+}
+
+func (m *ContextC4eMinterUtils) MessageBurn(address string, amount sdk.Coins) {
+	m.C4eMinterUtils.MessageBurn(m.testContext.GetContext(), address, amount)
+}
+
+func (m *ContextC4eMinterUtils) MessageBurnError(address string, amount sdk.Coins, errorMessage string) {
+	m.C4eMinterUtils.MessageBurnError(m.testContext.GetContext(), address, amount, errorMessage)
 }
 
 func (m *ContextC4eMinterUtils) Mint(expectedMintedAmount math.Int, expectedMinterStateSequenceId uint32, expectedMinterStateAmountMinted math.Int,

@@ -11,7 +11,7 @@ import (
 	"math/rand"
 )
 
-func SimulateMsgStartCampaign(
+func SimulateMsgEnableCampaign(
 	k keeper.Keeper,
 	cfevestingKeeper cfevestingkeeper.Keeper,
 ) simtypes.Operation {
@@ -23,27 +23,27 @@ func SimulateMsgStartCampaign(
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Create campaign", "", false, nil), nil, nil
 		}
 
-		var startCampaignOwner string
+		var EnableCampaignOwner string
 		if helpers.RandomInt(r, 2) == 1 {
 			simAccount2, _ := simtypes.RandomAcc(r, accs)
-			startCampaignOwner = simAccount2.Address.String()
+			EnableCampaignOwner = simAccount2.Address.String()
 		} else {
-			startCampaignOwner = ownerAddress.String()
+			EnableCampaignOwner = ownerAddress.String()
 		}
 
 		campaigns := k.GetCampaigns(ctx)
-		startCampaignMsg := &types.MsgStartCampaign{
-			Owner:      startCampaignOwner,
+		EnableCampaignMsg := &types.MsgEnableCampaign{
+			Owner:      EnableCampaignOwner,
 			CampaignId: uint64(len(campaigns) - 1),
 		}
 
-		_, err = msgServer.StartCampaign(msgServerCtx, startCampaignMsg)
+		_, err = msgServer.EnableCampaign(msgServerCtx, EnableCampaignMsg)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Start campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, startCampaignMsg.Type(), ""), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, EnableCampaignMsg.Type(), ""), nil, nil
 		}
 
 		k.Logger(ctx).Debug("SIMULATION: Start campaign - started")
-		return simtypes.NewOperationMsg(startCampaignMsg, true, "Start campaign simulation completed", nil), nil, nil
+		return simtypes.NewOperationMsg(EnableCampaignMsg, true, "Start campaign simulation completed", nil), nil, nil
 	}
 }

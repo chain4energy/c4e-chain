@@ -9,21 +9,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgStartCampaign_ValidateBasic(t *testing.T) {
+func TestMsgEnableCampaign_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  types.MsgStartCampaign
+		msg  types.MsgEnableCampaign
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: types.MsgStartCampaign{
+			msg: types.MsgEnableCampaign{
 				Owner: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: types.MsgStartCampaign{
+			msg: types.MsgEnableCampaign{
 				Owner: sample.AccAddress(),
 			},
 		},
