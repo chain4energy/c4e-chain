@@ -113,16 +113,14 @@ func (k msgServer) CloseCampaign(goCtx context.Context, msg *types.MsgCloseCampa
 		ctx,
 		msg.Owner,
 		msg.CampaignId,
-		msg.CampaignCloseAction,
 	); err != nil {
 		k.Logger(ctx).Debug("close campaign", "err", err.Error())
 		return nil, err
 	}
 
 	event := &types.CloseCampaign{
-		Owner:               msg.Owner,
-		CampaignId:          strconv.FormatUint(msg.CampaignId, 10),
-		CampaignCloseAction: msg.CampaignCloseAction.String(),
+		Owner:      msg.Owner,
+		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
 	}
 	err := ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {

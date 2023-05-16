@@ -14,14 +14,6 @@ const (
 	VestingPoolCampaign = CampaignType_VESTING_POOL
 )
 
-// Campaign close action types
-const (
-	CloseActionUnspecified   = CloseAction_CLOSE_ACTION_UNSPECIFIED
-	CloseSendToCommunityPool = CloseAction_SEND_TO_COMMUNITY_POOL
-	CloseBurn                = CloseAction_BURN
-	CloseSendToOwner         = CloseAction_SEND_TO_OWNER
-)
-
 func CampaignTypeFromString(str string) (CampaignType, error) {
 	option, ok := CampaignType_value[str]
 	if !ok {
@@ -45,31 +37,6 @@ func NormalizeCampaignType(option string) string {
 	default:
 		return option
 	}
-}
-
-// NormalizeCloseAction - normalize user specified vote option
-func NormalizeCloseAction(option string) string {
-	switch option {
-	case "SendToCommunityPool", "sendtocommunitypool":
-		return CloseSendToCommunityPool.String()
-
-	case "Burn", "burn":
-		return CloseBurn.String()
-
-	case "SendToOwner", "sendtoowner":
-		return CloseSendToOwner.String()
-
-	default:
-		return option
-	}
-}
-
-func CloseActionFromString(str string) (CloseAction, error) {
-	option, ok := CloseAction_value[str]
-	if !ok {
-		return CloseAction_CLOSE_ACTION_UNSPECIFIED, fmt.Errorf("'%s' is not a valid mission type, available options: initial_claim/vote/delegation", str)
-	}
-	return CloseAction(option), nil
 }
 
 func GetWhitelistedVestingAccounts() []string {

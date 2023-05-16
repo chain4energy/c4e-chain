@@ -1,25 +1,25 @@
 package cli
 
 import (
+	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strconv"
 
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 )
 
 var _ = strconv.Itoa(0)
 
-func CmdCloseCampaign() *cobra.Command {
+func CmdBurn() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "close-campaign [campaign-id] [campaign-close-action]",
-		Short: "Broadcast message CloseCampaign",
-		Args:  cobra.ExactArgs(2),
+		Use:   "burn [amount]",
+		Short: "Broadcast message Burn",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argCampaignId, err := cast.ToUint64E(args[0])
+			argAmount, err := sdk.ParseCoinsNormalized(args[0])
 			if err != nil {
 				return err
 			}
@@ -28,11 +28,11 @@ func CmdCloseCampaign() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCloseCampaign(
+			msg := types.NewMsgBurn(
 				clientCtx.GetFromAddress().String(),
-				argCampaignId,
+				argAmount,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)

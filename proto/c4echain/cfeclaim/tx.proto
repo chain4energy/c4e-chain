@@ -109,7 +109,6 @@ message MsgDeleteClaimRecord {
   string owner = 1;
   uint64 campaignId = 2;
   string userAddress = 3;
-  CloseAction delete_claim_record_action = 4;
 }
 
 message MsgDeleteClaimRecordResponse {}
@@ -117,7 +116,6 @@ message MsgDeleteClaimRecordResponse {}
 message MsgCloseCampaign {
   string owner = 1;
   uint64 campaign_id = 2;
-  CloseAction campaign_close_action = 3;
 }
 
 message MsgCloseCampaignResponse {}

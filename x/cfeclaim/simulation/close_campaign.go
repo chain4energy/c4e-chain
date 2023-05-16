@@ -55,9 +55,8 @@ func SimulateMsgCloseCampaign(
 		campaignId := uint64(len(campaigns) - 1)
 
 		closeCampaignMsg := &types.MsgCloseCampaign{
-			Owner:               simAccount.Address.String(),
-			CampaignId:          campaignId,
-			CampaignCloseAction: types.CloseAction(helpers.RandomInt(r, 5)),
+			Owner:      simAccount.Address.String(),
+			CampaignId: campaignId,
 		}
 
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)

@@ -92,10 +92,9 @@ func SimulateMsgDeleteClaimRecord(
 		}
 
 		deleteClaimRecordMsg := &types.MsgDeleteClaimRecord{
-			Owner:                   ownerAddress.String(),
-			CampaignId:              uint64(len(campaigns) - 1),
-			UserAddress:             claimRecords[helpers.RandomInt(r, len(claimRecords))].Address,
-			DeleteClaimRecordAction: types.CloseAction(helpers.RandomInt(r, 4)),
+			Owner:       ownerAddress.String(),
+			CampaignId:  uint64(len(campaigns) - 1),
+			UserAddress: claimRecords[helpers.RandomInt(r, len(claimRecords))].Address,
 		}
 
 		_, err = msgServer.DeleteClaimRecord(msgServerCtx, deleteClaimRecordMsg)

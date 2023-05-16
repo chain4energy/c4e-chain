@@ -47876,14 +47876,6 @@ definitions:
         items:
           type: string
           format: uint64
-  chain4energy.c4echain.cfeclaim.CloseAction:
-    type: string
-    enum:
-      - CLOSE_ACTION_UNSPECIFIED
-      - SEND_TO_COMMUNITY_POOL
-      - BURN
-      - SEND_TO_OWNER
-    default: CLOSE_ACTION_UNSPECIFIED
   chain4energy.c4echain.cfeclaim.Mission:
     type: object
     properties:
@@ -49241,6 +49233,8 @@ definitions:
         format: date-time
       remainder_from_previous_minter:
         type: string
+  chain4energy.c4echain.cfeminter.MsgBurnResponse:
+    type: object
   chain4energy.c4echain.cfeminter.MsgUpdateMintersParamsResponse:
     type: object
   chain4energy.c4echain.cfeminter.MsgUpdateParamsResponse:

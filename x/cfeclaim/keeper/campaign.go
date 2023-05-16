@@ -7,9 +7,6 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-	"golang.org/x/exp/slices"
 	"time"
 )
 
@@ -95,20 +92,20 @@ func validateFreeAmount(free *sdk.Dec) (sdk.Dec, error) {
 	return *free, nil
 }
 
-func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, closeAction types.CloseAction) error {
-	k.Logger(ctx).Debug("close campaign", "owner", owner, "campaignId", campaignId, "CloseAction", closeAction)
-	campaign, err := k.ValidateCloseCampaignParams(ctx, closeAction, campaignId, owner)
+func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
+	k.Logger(ctx).Debug("close campaign", "owner", owner, "campaignId", campaignId)
+	campaign, err := k.ValidateCloseCampaignParams(ctx, campaignId, owner)
 	if err != nil {
 
 		return err
 	}
 
 	campaignAmountLeft, _ := k.GetCampaignAmountLeft(ctx, campaign.Id)
-	if err = k.closeActionSwitch(ctx, closeAction, &campaign, campaignAmountLeft.Amount); err != nil {
+
+	if err = k.closeSendToOwner(ctx, &campaign, campaignAmountLeft.Amount); err != nil {
 		return err
 	}
-
-	if err = k.closeCampaignSendFeegrant(ctx, closeAction, &campaign); err != nil {
+	if err = k.closeCampaignSendFeegrant(ctx, &campaign); err != nil {
 		return err
 	}
 
@@ -118,37 +115,22 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64, 
 	return nil
 }
 
-func (k Keeper) closeActionSwitch(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, amount sdk.Coins) error {
-	switch CloseAction {
-	case types.CloseSendToCommunityPool:
-		if campaign.CampaignType == types.VestingPoolCampaign || slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) {
-			return errors.Wrap(sdkerrors.ErrInvalidType, "in the case of sale campaigns and campaigns created from whitelist vesting accounts, it is not possible to use sendToCommunityPool close action")
-		}
-		return k.distributionKeeper.FundCommunityPool(ctx, amount, authtypes.NewModuleAddress(types.ModuleName))
-	case types.CloseBurn:
-		return k.bankKeeper.BurnCoins(ctx, types.ModuleName, amount)
-	case types.CloseSendToOwner:
-		return k.closeSendToOwner(ctx, campaign, amount)
-	}
-	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign close action type")
-}
-
 func (k Keeper) closeSendToOwner(ctx sdk.Context, campaign *types.Campaign, amount sdk.Coins) error {
 	if campaign.CampaignType == types.VestingPoolCampaign {
 		return k.vestingKeeper.RemoveVestingPoolReservation(ctx, campaign.Owner, campaign.VestingPoolName, campaign.Id, amount.AmountOf(k.vestingKeeper.Denom(ctx)))
 	} else {
 		ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
-		if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) { // TODO: probably delete
-			ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
-			if ownerAccount == nil {
-				return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
-			}
-			vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
-			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(amount...)
-
-			k.accountKeeper.SetAccount(ctx, vestingAcc)
-			return k.bankKeeper.BurnCoins(ctx, types.ModuleName, amount)
-		}
+		//if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) { // TODO: probably delete
+		//	ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
+		//	if ownerAccount == nil {
+		//		return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAddress)
+		//	}
+		//	vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
+		//	vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Add(amount...)
+		//
+		//	k.accountKeeper.SetAccount(ctx, vestingAcc)
+		//	return k.bankKeeper.BurnCoins(ctx, types.ModuleName, amount)
+		//}
 
 		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, amount)
 	}
@@ -205,7 +187,7 @@ func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description
 		return ValidateCampaignStartTimeInTheFuture(ctx, startTime)
 	}
 }
-func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, action types.CloseAction, campaignId uint64, owner string) (types.Campaign, error) {
+func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, campaignId uint64, owner string) (types.Campaign, error) {
 	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
 	if err != nil {
 		return types.Campaign{}, err
@@ -214,9 +196,6 @@ func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, action types.CloseA
 		return types.Campaign{}, err
 	}
 	if err = ValidateCampaignEnded(ctx, campaign); err != nil {
-		return types.Campaign{}, err
-	}
-	if err = types.ValidateCloseAction(action); err != nil {
 		return types.Campaign{}, err
 	}
 

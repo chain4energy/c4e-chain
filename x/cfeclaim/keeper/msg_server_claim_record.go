@@ -33,7 +33,6 @@ func (k msgServer) DeleteClaimRecord(goCtx context.Context, msg *types.MsgDelete
 		msg.Owner,
 		msg.CampaignId,
 		msg.UserAddress,
-		msg.DeleteClaimRecordAction,
 	); err != nil {
 		k.Logger(ctx).Debug("delete claim record", "err", err.Error())
 		return nil, err

@@ -98,7 +98,7 @@ func (k Keeper) addClaimRecordsToDefaultAndDynamicCampaign(ctx sdk.Context, owne
 	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, amountSum)
 }
 
-func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint64, userAddress string, closeAction types.CloseAction) error {
+func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint64, userAddress string) error {
 	k.Logger(ctx).Debug("delete claim record", "owner", owner, "campaignId", campaignId, "userAddress", userAddress)
 	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
 	if err != nil {
@@ -110,11 +110,11 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 		return err
 	}
 
-	if err = k.closeActionSwitch(ctx, closeAction, &campaign, claimRecordAmount); err != nil {
+	if err = k.closeSendToOwner(ctx, &campaign, claimRecordAmount); err != nil {
 		return err
 	}
 
-	_ = k.deleteClaimRecordSendFeegrant(ctx, closeAction, &campaign, userAddress)
+	_ = k.deleteClaimRecordSendFeegrant(ctx, &campaign, userAddress)
 
 	for i, claimRecord := range userEntry.ClaimRecords {
 		if claimRecord.CampaignId == campaignId {

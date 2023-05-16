@@ -81,17 +81,18 @@ func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddres
 	return nil
 }
 
-func (k Keeper) closeCampaignSendFeegrant(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign) error {
+func (k Keeper) closeCampaignSendFeegrant(ctx sdk.Context, campaign *types.Campaign) error {
 	if !campaign.FeegrantAmount.IsPositive() {
 		return nil
 	}
 	_, feegrantAccountAddress := CreateFeegrantAccountAddress(campaign.Id)
 	feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
+	ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
 
-	return k.feegrantCloseActionSwitch(ctx, campaign.Owner, CloseAction, feegrantTotalAmount, feegrantAccountAddress)
+	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, feegrantTotalAmount)
 }
 
-func (k Keeper) deleteClaimRecordSendFeegrant(ctx sdk.Context, CloseAction types.CloseAction, campaign *types.Campaign, userEntryAddress string) error {
+func (k Keeper) deleteClaimRecordSendFeegrant(ctx sdk.Context, campaign *types.Campaign, userEntryAddress string) error {
 	if !campaign.FeegrantAmount.IsPositive() {
 		return nil
 	}
@@ -101,32 +102,7 @@ func (k Keeper) deleteClaimRecordSendFeegrant(ctx sdk.Context, CloseAction types
 	}
 
 	k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
-
-	return k.feegrantCloseActionSwitch(ctx, campaign.Owner, CloseAction, amountLeft, feegrantAccountAddress)
-}
-
-func (k Keeper) feegrantCloseActionSwitch(ctx sdk.Context, owner string, CloseAction types.CloseAction, amountLeft sdk.Coins, granterAddress sdk.AccAddress) error {
-	switch CloseAction {
-	case types.CloseSendToCommunityPool:
-		if err := k.distributionKeeper.FundCommunityPool(ctx, amountLeft, granterAddress); err != nil {
-			return err
-		}
-	case types.CloseBurn:
-		if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, granterAddress, types.ModuleName, amountLeft); err != nil {
-			return err
-		}
-		if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, amountLeft); err != nil {
-			return err
-		}
-	case types.CloseSendToOwner:
-		ownerAddress, _ := sdk.AccAddressFromBech32(owner)
-		if err := k.bankKeeper.SendCoins(ctx, granterAddress, ownerAddress, amountLeft); err != nil {
-			return err
-		}
-	default:
-		return errors.Wrap(sdkerrors.ErrInvalidType, "wrong close action type")
-	}
-	return nil
+	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, granteeAddress, amountLeft)
 }
 
 func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, campaignId uint64, userEntryAddress string) (sdk.AccAddress, sdk.AccAddress, sdk.Coins, error) {
