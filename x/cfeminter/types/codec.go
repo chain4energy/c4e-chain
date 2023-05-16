@@ -12,7 +12,7 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	legacy.RegisterAminoMsg(cdc, &MsgBurn{}, "cfeminter/MessageBurn")
+	legacy.RegisterAminoMsg(cdc, &MsgBurn{}, "cfeminter/Burn")
 	cdc.RegisterInterface((*MinterConfigI)(nil), nil)
 	cdc.RegisterConcrete(&ExponentialStepMinting{}, "c4e-chain/ExponentialStepMinting", nil)
 	cdc.RegisterConcrete(&LinearMinting{}, "c4e-chain/LinearMinting", nil)

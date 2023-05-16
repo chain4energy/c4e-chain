@@ -885,7 +885,7 @@ func (m *State) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MessageBurn", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Burn", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {

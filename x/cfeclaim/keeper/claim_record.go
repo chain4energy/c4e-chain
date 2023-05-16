@@ -12,7 +12,6 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	"golang.org/x/exp/slices"
 	"strconv"
 	"time"
 )
@@ -80,17 +79,6 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 
 func (k Keeper) addClaimRecordsToDefaultCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, campaign *types.Campaign, amountSum sdk.Coins, feesAndClaimRecordsAmountSum sdk.Coins) error {
 	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-
-	if slices.Contains(types.GetWhitelistedVestingAccounts(), campaign.Owner) { // TODO: probably to delete
-		if err := k.ValidateCampaignWhenAddedFromVestingAccount(ctx, ownerAddress, campaign); err != nil {
-			return err
-		}
-		if err := k.AddClaimRecordsFromWhitelistedVestingAccount(ctx, ownerAddress, amountSum); err != nil {
-			return err
-		}
-		allBalances = k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-	}
-
 	if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
 		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum)
 	}
