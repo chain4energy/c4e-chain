@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"

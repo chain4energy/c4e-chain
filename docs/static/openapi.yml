@@ -387,7 +387,7 @@ paths:
                       enum:
                         - MISSION_TYPE_UNSPECIFIED
                         - INITIAL_CLAIM
-                        - DELEGATION
+                        - DELEGATE
                         - VOTE
                         - CLAIM
                       default: MISSION_TYPE_UNSPECIFIED
@@ -529,7 +529,7 @@ paths:
                     enum:
                       - MISSION_TYPE_UNSPECIFIED
                       - INITIAL_CLAIM
-                      - DELEGATION
+                      - DELEGATE
                       - VOTE
                       - CLAIM
                     default: MISSION_TYPE_UNSPECIFIED
@@ -47894,7 +47894,7 @@ definitions:
         enum:
           - MISSION_TYPE_UNSPECIFIED
           - INITIAL_CLAIM
-          - DELEGATION
+          - DELEGATE
           - VOTE
           - CLAIM
         default: MISSION_TYPE_UNSPECIFIED
@@ -47908,7 +47908,7 @@ definitions:
     enum:
       - MISSION_TYPE_UNSPECIFIED
       - INITIAL_CLAIM
-      - DELEGATION
+      - DELEGATE
       - VOTE
       - CLAIM
     default: MISSION_TYPE_UNSPECIFIED
@@ -48114,7 +48114,7 @@ definitions:
             enum:
               - MISSION_TYPE_UNSPECIFIED
               - INITIAL_CLAIM
-              - DELEGATION
+              - DELEGATE
               - VOTE
               - CLAIM
             default: MISSION_TYPE_UNSPECIFIED
@@ -48146,7 +48146,7 @@ definitions:
               enum:
                 - MISSION_TYPE_UNSPECIFIED
                 - INITIAL_CLAIM
-                - DELEGATION
+                - DELEGATE
                 - VOTE
                 - CLAIM
               default: MISSION_TYPE_UNSPECIFIED

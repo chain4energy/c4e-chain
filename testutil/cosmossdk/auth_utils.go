@@ -109,9 +109,7 @@ func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddres
 	vacc, ok := account.(vestexported.VestingAccount)
 	require.True(au.t, ok, ok)
 	locked := vacc.LockedCoins(ctx.BlockTime())
-	fmt.Print(locked)
 	require.True(au.t, locked.IsEqual(lockedAmount))
-
 	require.Equal(au.t, endTime.Unix(), vacc.GetEndTime())
 	require.Equal(au.t, startTime.Unix(), vacc.GetStartTime())
 }

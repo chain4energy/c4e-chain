@@ -25,7 +25,7 @@ message Mission {
 enum MissionType {
   MISSION_TYPE_UNSPECIFIED = 0;
   INITIAL_CLAIM = 1;
-  DELEGATION = 2;
+  DELEGATE = 2;
   VOTE = 3;
   CLAIM = 4;
 }

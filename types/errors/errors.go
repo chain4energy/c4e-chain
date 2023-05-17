@@ -17,4 +17,5 @@ var (
 	ErrParsing                         = errors.Register(C4eCodespace, 7, "failed to parse")
 	ErrParam                           = errors.Register(C4eCodespace, 8, "wrong param value")
 	ErrNotExists                       = errors.Register(C4eCodespace, 9, "entity does not exist")
+	ErrWrongSigner                     = errors.Register(C4eCodespace, 10, "wrong transaction signer")
 )

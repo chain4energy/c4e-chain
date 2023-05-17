@@ -1,6 +1,7 @@
 package initialization
 
 import (
+	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"

@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"cosmossdk.io/math"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"

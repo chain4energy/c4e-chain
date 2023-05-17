@@ -23,7 +23,7 @@ func TestCampaignAmountLeftSumCheckInvariantCorrect(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
-	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
+	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.CheckNonNegativeCoinStateInvariant(testHelper.Context, false,
@@ -35,7 +35,7 @@ func TestCampaignAmountLeftSumCheckInvariantError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
-	createCampaignMissionAndStart(testHelper, acountsAddresses[0].String())
+	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	coinsToAddToModule := sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(1000))

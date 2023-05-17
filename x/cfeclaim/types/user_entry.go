@@ -126,9 +126,9 @@ func (m UserEntry) ClaimableFromMission(mission *Mission) (sdk.Coins, error) {
 }
 
 func (cr *UserEntry) GetClaimRecord(camapaignId uint64) *ClaimRecord {
-	for _, claimRecordState := range cr.ClaimRecords {
-		if claimRecordState.CampaignId == camapaignId {
-			return claimRecordState
+	for _, claimRecord := range cr.ClaimRecords {
+		if claimRecord.CampaignId == camapaignId {
+			return claimRecord
 		}
 	}
 	return nil

@@ -278,7 +278,7 @@ func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 	campaign.CampaignType = cfeclaimtypes.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
 	mission := prepareTestMission()
-	mission.MissionType = cfeclaimtypes.MissionDelegation
+	mission.MissionType = cfeclaimtypes.MissionDelegate
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
 	testHelper.C4eClaimUtils.AddMissionToCampaign(ownerAddress.String(), 0, mission)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)

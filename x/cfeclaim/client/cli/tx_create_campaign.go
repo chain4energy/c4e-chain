@@ -19,9 +19,9 @@ var _ = strconv.Itoa(0)
 
 func CmdCreateCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-campaign [name] [description] [campaign-type] [feegrant-amount] [initial_claim_free_amount] [free] [start-time] [end-time] [lockup-period] [vesting-period] [optional-vesting-pool-name]",
+		Use:   "create-campaign [name] [description] [campaign-type] [removable-claim-records] [feegrant-amount] [initial_claim_free_amount] [free] [start-time] [end-time] [lockup-period] [vesting-period] [optional-vesting-pool-name]",
 		Short: "Broadcast message CreateCampaign",
-		Args:  cobra.ExactArgs(11),
+		Args:  cobra.ExactArgs(12),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argDescription := args[1]
@@ -29,41 +29,45 @@ func CmdCreateCampaign() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argFeegrantAmount, ok := math.NewIntFromString(args[3])
+			argRemovableClaimRecords, err := strconv.ParseBool(args[3])
+			if err != nil {
+				return errors.Wrap(err, "Wrong [removable-claim-records] value")
+			}
+			argFeegrantAmount, ok := math.NewIntFromString(args[4])
 			if !ok {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
 			}
 			if err != nil {
 				return err
 			}
-			argInitialClaimFreeAmount, ok := math.NewIntFromString(args[4])
+			argInitialClaimFreeAmount, ok := math.NewIntFromString(args[5])
 			if !ok {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value")
 			}
-			argFree, err := sdk.NewDecFromStr(args[5])
+			argFree, err := sdk.NewDecFromStr(args[6])
 			if err != nil {
 				return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Wrong [initial_claim_free_amount] value, error: %s", err.Error())
 			}
-			argStartTime, err := time.Parse(TimeLayout, args[6])
+			argStartTime, err := time.Parse(TimeLayout, args[7])
 			if err != nil {
 				return err
 			}
-			argEndTime, err := time.Parse(TimeLayout, args[7])
+			argEndTime, err := time.Parse(TimeLayout, args[8])
 			if err != nil {
 				return err
 			}
 			if err != nil {
 				return err
 			}
-			argLockupPeriod, err := time.ParseDuration(args[8])
+			argLockupPeriod, err := time.ParseDuration(args[9])
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
-			argVestingPeriod, err := time.ParseDuration(args[9])
+			argVestingPeriod, err := time.ParseDuration(args[10])
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
-			argVestingPoolName := args[10]
+			argVestingPoolName := args[11]
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -74,6 +78,7 @@ func CmdCreateCampaign() *cobra.Command {
 				argName,
 				argDescription,
 				argCampaignType,
+				argRemovableClaimRecords,
 				&argFeegrantAmount,
 				&argInitialClaimFreeAmount,
 				&argFree,

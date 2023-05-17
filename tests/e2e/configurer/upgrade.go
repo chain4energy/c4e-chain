@@ -1,6 +1,7 @@
 package configurer
 
 import (
+	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
 	"os"

@@ -1,6 +1,7 @@
 package initialization
 
 import (
+	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
@@ -62,8 +63,8 @@ var (
 
 	InitBalanceStrA = fmt.Sprintf("%d%s", C4eBalanceA+StakeBalanceA, C4eDenom)
 	InitBalanceStrB = fmt.Sprintf("%d%s", C4eBalanceB+StakeBalanceB, C4eDenom)
-	C4eToken        = math.NewInt64Coin(C4eDenom, IbcSendAmount) // 3,300uosmo
-	tenC4e          = sdk.Coins{math.NewInt64Coin(C4eDenom, 10_000_000)}
+	C4eToken        = sdk.NewInt64Coin(C4eDenom, IbcSendAmount) // 3,300uosmo
+	tenC4e          = sdk.Coins{sdk.NewInt64Coin(C4eDenom, 10_000_000)}
 )
 
 func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHeight int) error {

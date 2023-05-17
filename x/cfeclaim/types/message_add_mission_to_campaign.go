@@ -108,7 +108,7 @@ func ValidateMissionDescription(description string) error {
 
 func ValidateMissionType(missionType MissionType) error {
 	switch missionType {
-	case MissionClaim, MissionDelegation, MissionVote, MissionInitialClaim:
+	case MissionClaim, MissionDelegate, MissionVote, MissionInitialClaim:
 		return nil
 	}
 

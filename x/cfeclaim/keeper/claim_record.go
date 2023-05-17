@@ -3,13 +3,11 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
-	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	"strconv"
@@ -17,7 +15,7 @@ import (
 )
 
 func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) error {
-	ctx.Logger().Debug("add user entries", "owner", owner, "campaignId", campaignId, "claimRecordsLength", len(claimRecords))
+	k.Logger(ctx).Debug("add user entries", "owner", owner, "campaignId", campaignId, "claimRecordsLength", len(claimRecords))
 	feegrantDenom := k.stakingKeeper.BondDenom(ctx)
 	vestingDenom := k.vestingKeeper.Denom(ctx)
 
@@ -112,6 +110,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 
 	k.SetUserEntry(ctx, userEntry)
 	k.DecrementCampaignTotalAmount(ctx, campaignId, claimRecordAmount)
+	k.DecrementCampaignAmountLeft(ctx, campaignId, claimRecordAmount)
 
 	event := &types.DeleteClaimRecord{
 		Owner:             owner,
@@ -143,21 +142,6 @@ func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignI
 		return nil, err
 	}
 	return &campaign, nil
-}
-
-func (k Keeper) ValidateCampaignWhenAddedFromVestingAccount(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign) error {
-	ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAcc)
-	if ownerAccount == nil {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "account %s doesn't exist", ownerAcc)
-	}
-	vestingAcc := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
-	vestingAccTimeDiff := vestingAcc.EndTime - vestingAcc.StartTime
-	campaignLockupAndVestingSum := int64(campaign.VestingPeriod.Seconds() + campaign.LockupPeriod.Seconds())
-	if campaignLockupAndVestingSum < vestingAccTimeDiff {
-		return errors.Wrapf(c4eerrors.ErrParam,
-			fmt.Sprintf("the duration of vesting and lockup must be equal to or greater than the remaining vesting time of the vesting account (%d < %d)", campaignLockupAndVestingSum, vestingAccTimeDiff))
-	}
-	return nil
 }
 
 func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string,
@@ -279,16 +263,22 @@ func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaig
 	if err != nil {
 		return types.UserEntry{}, nil, err
 	}
-	var amount sdk.Coins
+
+	amount := userEntry.GetClaimRecord(campaign.Id).Amount
 
 	for _, claimedMissionId := range claimRecord.ClaimedMissions {
 		mission, found := k.GetMission(ctx, campaign.Id, claimedMissionId)
 		if !found {
 			return types.UserEntry{}, nil, errors.Wrapf(sdkerrors.ErrNotFound, "mission with id %d not found", claimedMissionId)
 		}
+		if mission.MissionType == types.MissionInitialClaim {
+			initiialClaimClaimableAmount := k.calculateInitialClaimClaimableAmount(ctx, campaign.Id, &userEntry)
+			amount = amount.Sub(initiialClaimClaimableAmount...)
+			continue
+		}
 		for _, coin := range claimRecord.Amount {
 			weightedAmount := sdk.NewDecFromInt(coin.Amount).Mul(mission.Weight).TruncateInt()
-			amount = amount.Add(sdk.NewCoin(coin.Denom, weightedAmount))
+			amount = amount.Sub(sdk.NewCoin(coin.Denom, weightedAmount))
 		}
 	}
 
@@ -301,18 +291,17 @@ func (k Keeper) ValidateUserEntry(ctx sdk.Context, userAddress string) (types.Us
 		userAddress,
 	)
 	if !found {
-		return types.UserEntry{}, errors.Wrapf(c4eerrors.ErrParsing, "userEntry doesn't exist")
+		return types.UserEntry{}, errors.Wrapf(c4eerrors.ErrNotExists, "userEntry %s doesn't exist", userAddress)
 	}
 
 	return userEntry, nil
 }
 
 func ValidateClaimRecordExists(userEntry types.UserEntry, campaignId uint64) (claimRecordAmount *types.ClaimRecord, err error) {
-	for _, claimRecord := range userEntry.ClaimRecords {
-		if claimRecord.CampaignId == campaignId {
-			return claimRecord, nil
-		}
+	claimRecord := userEntry.GetClaimRecord(campaignId)
+	if claimRecord == nil {
+		return nil, errors.Wrapf(c4eerrors.ErrParsing, "campaign id %d claim entry doesn't exist", campaignId)
 	}
 
-	return nil, errors.Wrapf(c4eerrors.ErrParsing, "campaign id %d claim entry doesn't exist", campaignId)
+	return claimRecord, nil
 }

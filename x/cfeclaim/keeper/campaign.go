@@ -6,11 +6,10 @@ import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
 )
 
-func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType,
+func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, removableClaimRecords bool,
 	feeGrantAmount *math.Int, initialClaimFreeAmount *math.Int, free *sdk.Dec, startTime *time.Time,
 	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string) (*types.Campaign, error) {
 	k.Logger(ctx).Debug("create campaign", "owner", owner, "name", name, "description", description,
@@ -39,6 +38,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 		Name:                   name,
 		Description:            description,
 		CampaignType:           campaignType,
+		RemovableClaimRecords:  removableClaimRecords,
 		FeegrantAmount:         validdFeegrantAmount,
 		InitialClaimFreeAmount: validInitialClaimFreeAmount,
 		Free:                   validFree,
@@ -237,14 +237,7 @@ func (k Keeper) ValidateCampaignExists(ctx sdk.Context, campaignId uint64) (type
 
 func ValidateOwner(campaign types.Campaign, owner string) error {
 	if campaign.Owner != owner {
-		return errors.Wrap(sdkerrors.ErrorInvalidSigner, "you are not the campaign owner")
-	}
-	return nil
-}
-
-func ValidateCampaignIsNotDisabled(campaign types.Campaign) error {
-	if campaign.Enabled == false {
-		return errors.Wrap(c4eerrors.ErrAlreadyExists, "campaign is disabled")
+		return errors.Wrap(c4eerrors.ErrWrongSigner, "you are not the campaign owner")
 	}
 	return nil
 }

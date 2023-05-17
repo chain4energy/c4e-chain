@@ -16,7 +16,7 @@ const (
 func CampaignTypeFromString(str string) (CampaignType, error) {
 	option, ok := CampaignType_value[str]
 	if !ok {
-		return UnspecifiedCampaign, fmt.Errorf("'%s' is not a valid campaign type, available options: default/dynamic/vesting_pool", str)
+		return UnspecifiedCampaign, fmt.Errorf("'%s' is not a valid campaign type, available options: default/vesting_pool", str)
 	}
 	return CampaignType(option), nil
 }
@@ -24,7 +24,6 @@ func CampaignTypeFromString(str string) (CampaignType, error) {
 // NormalizeCampaignType - normalize user specified vote option
 func NormalizeCampaignType(option string) string {
 	switch option {
-
 	case "VestingPool", "VESTING_POOL", "vesting_pool":
 		return VestingPoolCampaign.String()
 
@@ -34,10 +33,6 @@ func NormalizeCampaignType(option string) string {
 	default:
 		return option
 	}
-}
-
-func GetWhitelistedVestingAccounts() []string {
-	return []string{"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj"}
 }
 
 func (c *Campaign) IsActive(blockTime time.Time) error {

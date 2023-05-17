@@ -20,6 +20,16 @@ func CreateUpgradeHandler(
 		if err != nil {
 			return vmResult, err
 		}
-		return vmResult, claim.Creates(ctx, appKeepers.GetC4eClaimKeeper(), appKeepers.GetC4eVestingKeeper(), appKeepers.GetAccountKeeper(), appKeepers.GetBankKeeper())
+
+		if err = modifyAndAddVestingTypes(ctx, appKeepers); err != nil {
+			return vmResult, err
+		}
+		if err = migrateAirdropModuleAccount(ctx, appKeepers); err != nil {
+			return vmResult, err
+		}
+		if err = migrateVestingAccount(ctx, appKeepers); err != nil {
+			return vmResult, err
+		}
+		return vmResult, claim.Creates(ctx, appKeepers)
 	}
 }

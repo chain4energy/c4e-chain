@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"github.com/stretchr/testify/suite"
+	"os"
 	"testing"
 )
 
@@ -14,7 +15,11 @@ func TestMainnetMigrationSuite(t *testing.T) {
 }
 
 func (s *MainnetMigrationSetupSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(true, false)
+	bytes, err := os.ReadFile("./resources/mainnet-migration-app-state.json")
+	if err != nil {
+		panic(err)
+	}
+	s.BaseSetupSuite.SetupSuiteWithUpgradeAppState(true, false, bytes)
 }
 
 func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {

@@ -132,7 +132,7 @@ func TestAddMissionToCampaignWrongOwner(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[1].String(), 0, mission, "you are not the campaign owner: tx intended signer does not match the given signer")
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[1].String(), 0, mission, "you are not the campaign owner: wrong transaction signer")
 }
 
 func TestAddMissionToCampaignAlreadyEnabled(t *testing.T) {
@@ -179,7 +179,7 @@ func prepareTestMission() types.Mission {
 	return types.Mission{
 		CampaignId:  0,
 		Name:        "Name",
-		MissionType: types.MissionDelegation,
+		MissionType: types.MissionDelegate,
 		Description: "test-delegation-mission",
 		Weight:      delegationMissionWeight,
 	}

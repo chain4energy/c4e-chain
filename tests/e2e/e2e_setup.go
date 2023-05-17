@@ -106,8 +106,6 @@ func (s *BaseSetupSuite) validateTotalSupplyAfterPeriod(node *chain.NodeConfig, 
 		s.NoError(err)
 		time.Sleep(AverageBlockTime)
 		totalSupplyAfter, err := node.QuerySupplyOf(denom)
-		fmt.Println(totalSupplyAfter.Int64())
-		fmt.Println(totalSupplyBefore.Int64())
 		s.NoError(err)
 		s.Equal(totalSupplyAfter, totalSupplyBefore.AddRaw(int64(increment)))
 	}

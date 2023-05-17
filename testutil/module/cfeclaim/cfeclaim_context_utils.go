@@ -27,13 +27,13 @@ func NewContextC4eClaimUtils(t require.TestingT, testContext testenv.TestContext
 }
 
 func (h *ContextC4eClaimUtils) CreateCampaign(owner string, campaign cfeclaimtypes.Campaign) {
-	h.C4eClaimUtils.CreateCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType,
+	h.C4eClaimUtils.CreateCampaign(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.RemovableClaimRecords,
 		campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.Free, campaign.StartTime, campaign.EndTime,
 		campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
 }
 
 func (h *ContextC4eClaimUtils) CreateCampaignError(owner string, campaign cfeclaimtypes.Campaign, errorMessage string) {
-	h.C4eClaimUtils.CreateCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType,
+	h.C4eClaimUtils.CreateCampaignError(h.testContext.GetContext(), owner, campaign.Name, campaign.Description, campaign.CampaignType, campaign.RemovableClaimRecords,
 		campaign.FeegrantAmount, campaign.InitialClaimFreeAmount, campaign.Free, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod,
 		campaign.VestingPeriod, campaign.VestingPoolName, errorMessage)
 }
@@ -60,6 +60,14 @@ func (h *ContextC4eClaimUtils) CloseCampaign(owner string, campaignId uint64) {
 
 func (h *ContextC4eClaimUtils) CloseCampaignError(owner string, campaignId uint64, errorString string) {
 	h.C4eClaimUtils.CloseCampaignError(h.testContext.GetContext(), owner, campaignId, errorString)
+}
+
+func (h *ContextC4eClaimUtils) RemoveCampaign(owner string, campaignId uint64) {
+	h.C4eClaimUtils.RemoveCampaign(h.testContext.GetContext(), owner, campaignId)
+}
+
+func (h *ContextC4eClaimUtils) RemoveCampaignError(owner string, campaignId uint64, errorString string) {
+	h.C4eClaimUtils.RemoveCampaignError(h.testContext.GetContext(), owner, campaignId, errorString)
 }
 
 func (h *ContextC4eClaimUtils) InitGenesis(genState cfeclaimtypes.GenesisState) {
