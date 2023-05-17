@@ -100,7 +100,10 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 		return err
 	}
 
-	_ = k.deleteClaimRecordSendFeegrant(ctx, &campaign, userAddress)
+	err = k.deleteClaimRecordSendFeegrant(ctx, &campaign, userAddress)
+	if err != nil {
+		k.Logger(ctx).Debug("delete claim record send feegrant err", "err", err.Error())
+	}
 
 	for i, claimRecord := range userEntry.ClaimRecords {
 		if claimRecord.CampaignId == campaignId {

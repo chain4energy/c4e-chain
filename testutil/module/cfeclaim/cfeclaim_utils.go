@@ -12,6 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
 	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/stretchr/testify/require"
 	"time"
@@ -160,6 +161,19 @@ func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccA
 	srcBalance := h.BankUtils.GetAccountAllBalances(ctx, ownerAddress)
 	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
+	ownerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, ownerAddress)
+	_, granterAddress := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaignId)
+	userAccAddress, _ := sdk.AccAddressFromBech32(userAddress)
+	allowanceBefore, _ := h.FeegrantUtils.FeegrantKeeper.GetAllowance(ctx, granterAddress, userAccAddress)
+	x, ok := allowanceBefore.(*feegranttypes.AllowedMsgAllowance)
+	var basicAllowance *feegranttypes.BasicAllowance
+	if ok {
+		for _, msg := range x.AllowedMessages {
+			if msg == sdk.MsgTypeURL(&cfeclaimtypes.MsgInitialClaim{}) {
+				basicAllowance = x.Allowance.GetCachedValue().(*feegranttypes.BasicAllowance)
+			}
+		}
+	}
 
 	var vestingPoolBefore *cfevestingtypes.VestingPool
 	if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
@@ -167,9 +181,6 @@ func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccA
 		_, vestingPoolBefore, accFound = h.helperCfevestingKeeper.GetAccountVestingPool(ctx, ownerAddress.String(), campaign.VestingPoolName)
 		require.True(h.t, accFound)
 	}
-	//userEntryBefore, found := h.helpeCfeclaimkeeper.GetUserEntry(ctx, userAddress)
-	//require.True(h.t, found)
-	//found = false
 
 	require.NoError(h.t, h.helpeCfeclaimkeeper.DeleteClaimRecord(ctx, ownerAddress.String(), campaignId, userAddress))
 	campaignAmountLeftAfter, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
@@ -183,9 +194,11 @@ func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccA
 
 	if campaign.CampaignType == cfeclaimtypes.VestingPoolCampaign {
 		_, vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, ownerAddress.String(), campaign.VestingPoolName)
-		//if campaign.FeegrantAmount.GT(math.ZeroInt()) {
-		//	h.BankUtils.VerifyAccountAllBalances(ctx, ownerAddress, ownerBalanceBefore.Add(feegrantAmountLefBefore...))
-		//}
+		if campaign.FeegrantAmount.GT(math.ZeroInt()) {
+			h.BankUtils.VerifyAccountAllBalances(ctx, ownerAddress, ownerBalanceBefore.Add(basicAllowance.SpendLimit...))
+			_, err := h.FeegrantUtils.FeegrantKeeper.GetAllowance(ctx, granterAddress, userAccAddress)
+			require.Error(h.t, err)
+		}
 		require.True(h.t, vestingPoolBefore.GetReservation(campaignId).Amount.Sub(amoutDiff.AmountOf(testenv.DefaultTestDenom)).
 			Equal(vestingPool.GetReservation(campaignId).Amount))
 	} else {

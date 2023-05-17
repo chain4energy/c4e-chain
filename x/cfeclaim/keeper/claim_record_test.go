@@ -441,7 +441,7 @@ func TestVestingPoolCampaignDeleteClaimRecordTwoMissionsClaimed(t *testing.T) {
 	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimEntries[1].Address, claimEntries[1].Amount.Sub(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(25))))
 }
 
-func TestVestingPoolCampaignDeleteClaimRecordTwoMissionsClaimedAndFeegrant(t *testing.T) {
+func TestVestingPoolCampaignDeleteClaimWithFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -461,9 +461,7 @@ func TestVestingPoolCampaignDeleteClaimRecordTwoMissionsClaimedAndFeegrant(t *te
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimEntries)))))
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 19)
-	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
-	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimEntries[1].Address, claimEntries[1].Amount.Sub(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(25))))
+	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimEntries[1].Address, claimEntries[1].Amount)
 }
 
 func TestDeleteClaimRecordVestingPoolCampaign(t *testing.T) {

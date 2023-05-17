@@ -102,7 +102,11 @@ func (k Keeper) deleteClaimRecordSendFeegrant(ctx sdk.Context, campaign *types.C
 	}
 
 	k.revokeFeeAllowance(ctx, feegrantAccountAddress, granteeAddress)
-	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, granteeAddress, amountLeft)
+	campaignOwnerAccAddress, err := sdk.AccAddressFromBech32(campaign.Owner)
+	if err != nil {
+		return err
+	}
+	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, campaignOwnerAccAddress, amountLeft)
 }
 
 func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, campaignId uint64, userEntryAddress string) (sdk.AccAddress, sdk.AccAddress, sdk.Coins, error) {
@@ -119,7 +123,7 @@ func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, campaignId uint64, userEn
 	}
 	for _, msg := range x.AllowedMessages {
 		if msg == sdk.MsgTypeURL(&types.MsgInitialClaim{}) {
-			basicAllowance := x.Allowance.GetCachedValue().(feegranttypes.BasicAllowance)
+			basicAllowance := x.Allowance.GetCachedValue().(*feegranttypes.BasicAllowance)
 			return granterAddress, granteeAddress, basicAllowance.SpendLimit, nil
 		}
 	}
