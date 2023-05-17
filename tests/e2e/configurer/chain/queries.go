@@ -166,7 +166,7 @@ func (n *NodeConfig) QueryListSnapshots() ([]*tmabcitypes.Snapshot, error) {
 	return listSnapshots.Snapshots, nil
 }
 
-func (n *NodeConfig) QueryVestingPools(address string) []*cfevestingmoduletypes.VestingPoolInfo {
+func (n *NodeConfig) QueryVestingPoolsInfo(address string) []*cfevestingmoduletypes.VestingPoolInfo {
 	path := "/c4e/vesting/v1beta1/vesting_pools/" + address
 
 	bz, err := n.QueryGRPCGateway(path)
@@ -255,7 +255,7 @@ func (n *NodeConfig) QueryCampaigns() []cfeclaimmoduletypes.Campaign {
 }
 
 func (n *NodeConfig) QueryCampaignAmountLeft(campaignId string) sdk.Coins {
-	path := "campaign_amount_left" + campaignId
+	path := "/c4e/claim/v1beta1/campaign_amount_left/" + campaignId
 
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)

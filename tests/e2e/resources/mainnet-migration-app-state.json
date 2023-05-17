@@ -266,60 +266,20 @@
     "vesting_account_traces": [],
     "vesting_types": [
       {
-        "free": "0.000000000000000000",
-        "lockup_period": "5",
-        "lockup_period_unit": "minute",
-        "name": "Advisors pool",
-        "vesting_period": "5",
-        "vesting_period_unit": "day"
-      },
-      {
-        "free": "0.000000000000000000",
-        "lockup_period": "0",
+        "name": "Early-bird round",
+        "lockup_period": "456",
         "lockup_period_unit": "day",
-        "name": "Long vesting delegable",
-        "vesting_period": "100",
-        "vesting_period_unit": "day"
+        "vesting_period": "365",
+        "vesting_period_unit": "day",
+        "free": "0.100000000000000000"
       },
       {
-        "free": "0.000000000000000000",
-        "lockup_period": "25",
+        "name": "Public round",
+        "lockup_period": "274",
         "lockup_period_unit": "day",
-        "name": "Long vesting with lockup",
-        "vesting_period": "70",
-        "vesting_period_unit": "day"
-      },
-      {
-        "free": "0.000000000000000000",
-        "lockup_period": "0",
-        "lockup_period_unit": "day",
-        "name": "Mid vesting delegable",
-        "vesting_period": "200",
-        "vesting_period_unit": "hour"
-      },
-      {
-        "free": "0.000000000000000000",
-        "lockup_period": "150",
-        "lockup_period_unit": "minute",
-        "name": "Mid vesting with lockup",
-        "vesting_period": "150",
-        "vesting_period_unit": "hour"
-      },
-      {
-        "free": "0.000000000000000000",
-        "lockup_period": "1",
-        "lockup_period_unit": "minute",
-        "name": "Short vesting with lockup",
-        "vesting_period": "10",
-        "vesting_period_unit": "minute"
-      },
-      {
-        "free": "0.050000000000000000",
-        "lockup_period": "10",
-        "lockup_period_unit": "minute",
-        "name": "Validators pool",
-        "vesting_period": "10",
-        "vesting_period_unit": "day"
+        "vesting_period": "274",
+        "vesting_period_unit": "day",
+        "free": "0.150000000000000000"
       }
     ]
   },

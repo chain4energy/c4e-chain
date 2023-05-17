@@ -1,6 +1,11 @@
 package e2e
 
 import (
+	"cosmossdk.io/math"
+	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 	"os"
 	"testing"
@@ -32,5 +37,119 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 
 	userEntries := node.QueryUserEntries()
 	s.Equal(107404, len(userEntries))
-	// TODO: add verifications and more options (probably when the final version of the migration will be set)
+
+	vestingTypes := node.QueryVestingTypes()
+	s.Equal(6, len(vestingTypes))
+	s.ElementsMatch(createMainnetVestingTypes(), vestingTypes)
+	balances, err := node.QueryBalances(v200.AirdropModuleAccountAddress)
+	s.NoError(err)
+	s.True(balances.IsEqual(sdk.NewCoins()))
+
+	teamdropAccount := node.QueryAccount(v200.TeamdropVestingAccount)
+	s.NotNil(teamdropAccount)
+	teamdropVestingPools := node.QueryVestingPoolsInfo(v200.TeamdropVestingAccount)
+	s.Equal(1, len(teamdropVestingPools))
+	s.Equal(teamdropVestingPools[0].VestingType, "Teamdrop")
+
+	teamdropCampaign := node.QueryCampaign("0")
+	s.NotNil(teamdropCampaign)
+	teamdropCampaignAmountLeft := node.QueryCampaignAmountLeft("0")
+	teamdropCampaignTotalAmount := node.QueryCampaignTotalAmount("0")
+
+	s.Equal(teamdropVestingPools[0].Reservations[0].Amount, teamdropCampaignAmountLeft.AmountOf(testenv.DefaultTestDenom))
+	s.Equal(teamdropVestingPools[0].CurrentlyLocked, "8899990000000")
+	s.Equal(teamdropVestingPools[0].InitiallyLocked.Amount, sdk.NewInt(8899990000000))
+	s.Equal(teamdropVestingPools[0].SentAmount, math.ZeroInt().String())
+	s.Equal(teamdropCampaignAmountLeft, teamdropCampaignTotalAmount)
+
+	santadropCampaign := node.QueryCampaign("2")
+	s.NotNil(santadropCampaign)
+	santadropCampaignAmountLeft := node.QueryCampaignAmountLeft("2")
+	santadropCampaignTotalAmount := node.QueryCampaignTotalAmount("2")
+	s.Equal(santadropCampaignAmountLeft, santadropCampaignTotalAmount)
+
+	stakedropCampaign := node.QueryCampaign("1")
+	s.NotNil(stakedropCampaign)
+	stakedropCampaignAmountLeft := node.QueryCampaignAmountLeft("1")
+	stakedropCampaignTotalAmount := node.QueryCampaignTotalAmount("1")
+	s.Equal(stakedropCampaignAmountLeft, stakedropCampaignTotalAmount)
+
+	gleamdropCampaign := node.QueryCampaign("3")
+	s.NotNil(gleamdropCampaign)
+	gleamdropCampaignAmountLeft := node.QueryCampaignAmountLeft("3")
+	gleamdropCampaignTotalAmount := node.QueryCampaignTotalAmount("3")
+	s.Equal(gleamdropCampaignTotalAmount, gleamdropCampaignAmountLeft)
+
+	fairdropVestingPools := node.QueryVestingPoolsInfo(v200.NewAirdropVestingPoolOwner)
+	for _, vestingPoolInfo := range fairdropVestingPools {
+		if vestingPoolInfo.Name == "Fairdrop" {
+			s.Equal(vestingPoolInfo.VestingType, "Fairdrop")
+			s.Equal(vestingPoolInfo.InitiallyLocked.Amount, math.NewInt(20000000000000))
+			s.Equal(vestingPoolInfo.SentAmount, math.ZeroInt().String())
+			s.Equal(vestingPoolInfo.Reservations[0].Amount, stakedropCampaignAmountLeft.AmountOf(testenv.DefaultTestDenom))
+			s.Equal(vestingPoolInfo.Reservations[1].Amount, santadropCampaignAmountLeft.AmountOf(testenv.DefaultTestDenom))
+			s.Equal(vestingPoolInfo.Reservations[2].Amount, gleamdropCampaignAmountLeft.AmountOf(testenv.DefaultTestDenom))
+		}
+	}
+
+}
+
+func (s *MainnetMigrationSetupSuite) validateAllTokensReserved(vestingPoolInfo *cfevestingtypes.VestingPoolInfo, campaignTotalAmount sdk.Coins, campaignAmountLeft sdk.Coins) {
+	s.Equal(campaignTotalAmount, campaignAmountLeft)
+	s.Equal(vestingPoolInfo.CurrentlyLocked, campaignTotalAmount.AmountOf(testenv.DefaultTestDenom).String())
+	s.Equal(vestingPoolInfo.InitiallyLocked.Amount, campaignTotalAmount.AmountOf(testenv.DefaultTestDenom))
+	s.Equal(vestingPoolInfo.SentAmount, math.ZeroInt().String())
+}
+
+func createMainnetVestingTypes() []cfevestingtypes.GenesisVestingType {
+	fairdropVestingType := cfevestingtypes.GenesisVestingType{
+		Name:              "Fairdrop",
+		LockupPeriod:      183,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     91,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.10"),
+	}
+
+	teamdropVestingType := cfevestingtypes.GenesisVestingType{
+		Name:              "Teamdrop",
+		Free:              sdk.MustNewDecFromStr("0.10"),
+		LockupPeriod:      730,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     730,
+		VestingPeriodUnit: "day",
+	}
+	earlyBirdRoundVestingType := cfevestingtypes.GenesisVestingType{
+		Name:              "Early-bird round",
+		Free:              sdk.MustNewDecFromStr("0.15"),
+		LockupPeriod:      0,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     274,
+		VestingPeriodUnit: "day",
+	}
+	publicRoundVestingType := cfevestingtypes.GenesisVestingType{
+		Name:              "Public round",
+		Free:              sdk.MustNewDecFromStr("0.20"),
+		LockupPeriod:      0,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     183,
+		VestingPeriodUnit: "day",
+	}
+	advisorsPool := cfevestingtypes.GenesisVestingType{
+		Name:              "Advisors",
+		LockupPeriod:      365,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     730,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.000000000000000000"),
+	}
+	testVestingPool := cfevestingtypes.GenesisVestingType{
+		Name:              "TestVestingPool",
+		LockupPeriod:      30,
+		LockupPeriodUnit:  "second",
+		VestingPeriod:     30,
+		VestingPeriodUnit: "second",
+		Free:              sdk.MustNewDecFromStr("0.000000000000000000"),
+	}
+	return []cfevestingtypes.GenesisVestingType{fairdropVestingType, teamdropVestingType, earlyBirdRoundVestingType, publicRoundVestingType, advisorsPool, testVestingPool}
 }

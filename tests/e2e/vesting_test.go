@@ -56,12 +56,12 @@ func (s *VestingSetupSuite) TestSendToVestingAccount() {
 	s.NoError(err)
 	s.Equal(balanceBeforeAmount.Sub(vestingAmount), balanceAfter.AmountOf(appparams.CoinDenom))
 
-	vestingPools := node.QueryVestingPools(creatorAddress)
+	vestingPools := node.QueryVestingPoolsInfo(creatorAddress)
 	s.Equal(1, len(vestingPools))
 
 	sendToVestingAccAmount := vestingAmount.Quo(math.NewInt(2))
 	node.SendToVestingAccount(creatorAddress, receiverAddress, randVestingPoolName, sendToVestingAccAmount.String(), "false")
-	vestingPools = node.QueryVestingPools(creatorAddress)
+	vestingPools = node.QueryVestingPoolsInfo(creatorAddress)
 	s.Equal(sendToVestingAccAmount.String(), vestingPools[0].SentAmount)
 }
 
@@ -85,16 +85,16 @@ func (s *VestingSetupSuite) TestWithdrawAllAvailable() {
 	vestingPoolDuration := 10 * time.Second
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), vestingPoolDuration.String(), vestingTypes[0].Name, creatorWalletName)
 
-	vestingPools := node.QueryVestingPools(creatorAddress)
+	vestingPools := node.QueryVestingPoolsInfo(creatorAddress)
 	s.Equal(vestingPools[0].Withdrawable, "0")
 	s.Equal(vestingPools[0].CurrentlyLocked, vestingAmount.String())
 
 	s.Eventually(
 		func() bool {
-			vestingPools := node.QueryVestingPools(creatorAddress)
+			vestingPools := node.QueryVestingPoolsInfo(creatorAddress)
 			if vestingAmount.String() == vestingPools[0].Withdrawable {
 				node.WithdrawAllAvailable(creatorAddress)
-				vestingPools = node.QueryVestingPools(creatorAddress)
+				vestingPools = node.QueryVestingPoolsInfo(creatorAddress)
 				return s.True(vestingPools[0].Withdrawable == "0")
 			}
 			return false
@@ -129,16 +129,16 @@ func (s *VestingSetupSuite) TestCreateVestingPool() {
 	vestingPoolDuration := 10 * time.Second
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), vestingPoolDuration.String(), vestingTypes[0].Name, creatorWalletName)
 
-	vestingPools := node.QueryVestingPools(creatorAddress)
+	vestingPools := node.QueryVestingPoolsInfo(creatorAddress)
 	s.Equal(vestingPools[0].Withdrawable, "0")
 	s.Equal(vestingPools[0].CurrentlyLocked, vestingAmount.String())
 
 	s.Eventually(
 		func() bool {
-			vestingPools := node.QueryVestingPools(creatorAddress)
+			vestingPools := node.QueryVestingPoolsInfo(creatorAddress)
 			if vestingAmount.String() == vestingPools[0].Withdrawable {
 				node.WithdrawAllAvailable(creatorAddress)
-				vestingPools = node.QueryVestingPools(creatorAddress)
+				vestingPools = node.QueryVestingPoolsInfo(creatorAddress)
 				return s.True(vestingPools[0].Withdrawable == "0")
 			}
 			return false

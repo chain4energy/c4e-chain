@@ -19,7 +19,7 @@ const (
 	AirdropVestingPoolOwner  = "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54"
 )
 
-func Creates(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+func SetupAirdrops(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	airdropLockupPeriod := 183 * 24 * time.Hour
 	airdropVestingPeriod := 91 * 24 * time.Hour
 	teamdropLockupPeriod := 730 * 24 * time.Hour
@@ -65,19 +65,19 @@ func Creates(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 		return err
 	}
 
+	teamdropEntries, err := readEntriesFromJson("teamdrop.json")
+	if err != nil {
+		return err
+	}
+	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, TeamdropVestingPoolOwner, 0, teamdropEntries); err != nil {
+		return err
+	}
+
 	stakedropEntries, err := readEntriesFromJson("stakedrop.json")
 	if err != nil {
 		return err
 	}
-	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 0, stakedropEntries); err != nil {
-		return err
-	}
-
-	dynamicEntries, err := readEntriesFromJson("teamdrop.json")
-	if err != nil {
-		return err
-	}
-	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, TeamdropVestingPoolOwner, 1, dynamicEntries); err != nil {
+	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 1, stakedropEntries); err != nil {
 		return err
 	}
 

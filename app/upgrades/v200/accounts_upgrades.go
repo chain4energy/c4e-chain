@@ -42,8 +42,6 @@ func migrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.App
 		ctx.Logger().Info("migrate airdrop module account error", "err", err)
 		return err
 	}
-	airdropAccount := appKeepers.GetAccountKeeper().GetAccount(ctx, airdropModuleAccAddress)
-	appKeepers.GetAccountKeeper().RemoveAccount(ctx, airdropAccount)
 
 	fairdropPool := cfevestingtypes.VestingPool{
 		Name:            "Fairdrop",
@@ -61,7 +59,7 @@ func migrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.App
 	return nil
 }
 
-func migrateVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+func migrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	teamdropAccAddress, err := sdk.AccAddressFromBech32(TeamdropVestingAccount)
 	if err != nil {
 		return err
