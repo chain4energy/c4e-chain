@@ -73,13 +73,13 @@ func TestUsersEntriesGetAll(t *testing.T) {
 	items := createNUsersEntries(k, ctx, 10, 0, false, false)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(k.GetUsersEntries(ctx)),
+		nullify.Fill(k.GetAllUsersEntries(ctx)),
 	)
 
 	items = createNUsersEntries(k, ctx, 10, 10, true, true)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(k.GetUsersEntries(ctx)),
+		nullify.Fill(k.GetAllUsersEntries(ctx)),
 	)
 }
 

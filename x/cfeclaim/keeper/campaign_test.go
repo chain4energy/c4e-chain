@@ -5,7 +5,6 @@ import (
 	"fmt"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
@@ -17,127 +16,50 @@ const (
 	vPool2 = "v-pool-2"
 )
 
-func TestCampaigns(t *testing.T) {
+func TestCreateCampaign(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+}
 
-	correctName := "Name"
-	correctDescription := "Description"
-	startTime := testenv.TestEnvTime
-	endTime := startTime.Add(time.Hour)
-	lockupPeriod := time.Hour
-	vestingPeriod := time.Hour
+func TestCreateCampaignEmptyName(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	for _, tc := range []struct {
-		desc                   string
-		Name                   string
-		Description            string
-		InitialClaimFreeAmount math.Int
-		FeegrantAmount         math.Int
-		StartTime              time.Time
-		EndTime                time.Time
-		LockupPeriod           time.Duration
-		VestingPeriod          time.Duration
-		CampaignType           types.CampaignType
-		vestingPoolName        string
-		blockTime              time.Time
-		error                  bool
-		expectedError          string
-	}{
-		{
-			desc:            "create campaign",
-			Name:            correctName,
-			Description:     correctDescription,
-			StartTime:       startTime,
-			EndTime:         endTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           false,
-			expectedError:   "",
-		},
-		{
-			desc:            "create campaign - empty name",
-			Name:            "",
-			Description:     correctDescription,
-			StartTime:       startTime,
-			EndTime:         endTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           true,
-			expectedError:   "campaign name is empty: wrong param value",
-		},
-		{
-			desc:            "create campaign - start time equal end time",
-			Name:            correctName,
-			Description:     correctDescription,
-			StartTime:       startTime,
-			EndTime:         startTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           true,
-			expectedError:   fmt.Sprintf("start time is equal to end time (%s = %s): wrong param value", startTime, startTime),
-		},
-		{
-			desc:            "create campaign - start time after end time",
-			Name:            correctName,
-			Description:     correctDescription,
-			StartTime:       startTime.Add(time.Hour),
-			EndTime:         startTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           true,
-			expectedError:   fmt.Sprintf("start time is after end time (%s > %s): wrong param value", startTime.Add(time.Hour), startTime),
-		},
-		{
-			desc:            "create campaign - start time in the past",
-			Name:            correctName,
-			Description:     correctDescription,
-			StartTime:       startTime.Add(-time.Hour),
-			EndTime:         startTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           true,
-			expectedError:   fmt.Sprintf("start time in the past error (%s < %s): wrong param value", startTime.Add(-time.Hour), startTime.UTC()),
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-			testHelper.SetContextBlockTime(tc.blockTime)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.Name = ""
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, "campaign name is empty: wrong param value")
+}
 
-			campaign := types.Campaign{
-				Name:                   tc.Name,
-				Description:            tc.Description,
-				StartTime:              tc.StartTime,
-				EndTime:                tc.EndTime,
-				LockupPeriod:           tc.LockupPeriod,
-				VestingPeriod:          tc.VestingPeriod,
-				CampaignType:           tc.CampaignType,
-				VestingPoolName:        tc.vestingPoolName,
-				InitialClaimFreeAmount: tc.InitialClaimFreeAmount,
-				FeegrantAmount:         tc.FeegrantAmount,
-			}
+func TestCreateCampaignEmptyDescription(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-			if tc.error {
-				testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, tc.expectedError)
-			} else {
-				testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-			}
-		})
-	}
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.Description = ""
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, "description is empty: wrong param value")
+}
+
+func TestCreateCampaignStartTimeAfterEndTime(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	startTimeAfterEndTime := campaign.EndTime.Add(time.Hour)
+	campaign.StartTime = startTimeAfterEndTime
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("start time is after end time (%s > %s): wrong param value", campaign.StartTime, campaign.EndTime))
+}
+
+func TestCreateCampaignStartTimeInThePast(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	startTimeInThePast := campaign.StartTime.Add(-time.Hour)
+	campaign.StartTime = startTimeInThePast
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("start time in the past error (%s < %s): wrong param value", campaign.StartTime, testHelper.Context.BlockTime()))
 }
 
 func TestCreateManyClaimCampaigns(t *testing.T) {

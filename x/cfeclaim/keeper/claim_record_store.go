@@ -33,8 +33,8 @@ func (k Keeper) GetUserEntry(
 	return val, true
 }
 
-// GetUsersEntries returns all UserEntries
-func (k Keeper) GetUsersEntries(ctx sdk.Context) (list []types.UserEntry) {
+// GetAllUsersEntries returns all UserEntries
+func (k Keeper) GetAllUsersEntries(ctx sdk.Context) (list []types.UserEntry) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.UserEntryKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 

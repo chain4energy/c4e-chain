@@ -14,7 +14,7 @@ const (
 	TeamdropTypeName       = "Teamdrop"
 )
 
-func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+func ModifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	fairdropVestingType := cfevestingtypes.VestingType{
 		Name:          FairdropTypeName,
 		Free:          sdk.MustNewDecFromStr("0.10"),

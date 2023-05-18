@@ -15,11 +15,13 @@ import (
 var f embed.FS
 
 const (
+	FairdropVestingPoolName  = "Fairdrop"
+	TeamdropVestingPoolName  = "Teamdrop"
 	TeamdropVestingPoolOwner = "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8"
 	AirdropVestingPoolOwner  = "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54"
 )
 
-func SetupAirdrops(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	airdropLockupPeriod := 183 * 24 * time.Hour
 	airdropVestingPeriod := 91 * 24 * time.Hour
 	teamdropLockupPeriod := 730 * 24 * time.Hour
@@ -28,39 +30,62 @@ func SetupAirdrops(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error
 	endTime := startTime.Add(time.Hour * 100)
 	zeroInt := math.ZeroInt()
 	zeroDec := sdk.ZeroDec()
+	inititalClaimOneC4E := math.NewInt(1000000)
 
-	_, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, AirdropVestingPoolOwner)
+	airdropVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, AirdropVestingPoolOwner)
 	if !found {
 		ctx.Logger().Info("account vesting pools not found for NewAirdropVestingPoolOwner", "owner", AirdropVestingPoolOwner)
 		return nil
 	}
+	found = false
+	for _, vestingPool := range airdropVestingPools.VestingPools {
+		if vestingPool.Name == FairdropVestingPoolName {
+			found = true
+			break
+		}
+	}
+	if !found {
+		ctx.Logger().Info("fairdrop vesting pool not found fo for NewAirdropVestingPoolOwner", "owner", AirdropVestingPoolOwner)
+		return nil
+	}
 
-	_, found = appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, TeamdropVestingPoolOwner)
+	teamdropVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, TeamdropVestingPoolOwner)
 	if !found {
 		ctx.Logger().Info("account vesting pools not found for TeamdropVestingPoolOwner", "owner", TeamdropVestingPoolOwner)
 		return nil
 	}
+	found = false
+	for _, vestingPool := range teamdropVestingPools.VestingPools {
+		if vestingPool.Name == TeamdropVestingPoolName {
+			found = true
+			break
+		}
+	}
+	if !found {
+		ctx.Logger().Info("teamdrop vesting pool not found fo for NewAirdropVestingPoolOwner", "owner", TeamdropVestingPoolOwner)
+		return nil
+	}
 
 	_, err := appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, TeamdropVestingPoolOwner, "teamdrop", "teamdrop",
-		types.VestingPoolCampaign, true, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &teamdropLockupPeriod, &teamdropVestingPeriod, "Teamdrop")
+		types.VestingPoolCampaign, true, &zeroInt, &inititalClaimOneC4E, &zeroDec, &startTime, &endTime, &teamdropLockupPeriod, &teamdropVestingPeriod, TeamdropVestingPoolName)
 	if err != nil {
 		return err
 	}
 
 	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "stakedrop", "stakedrop",
-		types.VestingPoolCampaign, false, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &airdropLockupPeriod, &airdropVestingPeriod, "Fairdrop")
+		types.VestingPoolCampaign, false, &zeroInt, &inititalClaimOneC4E, &zeroDec, &startTime, &endTime, &airdropLockupPeriod, &airdropVestingPeriod, FairdropVestingPoolName)
 	if err != nil {
 		return err
 	}
 
 	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "santadrop", "santadrop",
-		types.VestingPoolCampaign, false, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &airdropLockupPeriod, &airdropVestingPeriod, "Fairdrop")
+		types.VestingPoolCampaign, false, &zeroInt, &inititalClaimOneC4E, &zeroDec, &startTime, &endTime, &airdropLockupPeriod, &airdropVestingPeriod, FairdropVestingPoolName)
 	if err != nil {
 		return err
 	}
 
 	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "gleamdrop", "gleamdrop",
-		types.VestingPoolCampaign, false, &zeroInt, &zeroInt, &zeroDec, &startTime, &endTime, &airdropLockupPeriod, &airdropVestingPeriod, "Fairdrop")
+		types.VestingPoolCampaign, false, &zeroInt, &inititalClaimOneC4E, &zeroDec, &startTime, &endTime, &airdropLockupPeriod, &airdropVestingPeriod, FairdropVestingPoolName)
 	if err != nil {
 		return err
 	}

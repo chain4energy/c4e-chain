@@ -102,8 +102,16 @@ func (h *ContextC4eClaimUtils) ClaimInitialError(claimer sdk.AccAddress, campaig
 	h.C4eClaimUtils.ClaimInitialError(h.testContext.GetContext(), campaignId, claimer, errorMessage)
 }
 
-func (h *ContextC4eClaimUtils) GetUsersEntries(address string) *cfeclaimtypes.UserEntry {
-	return h.C4eClaimUtils.GetUsersEntries(h.testContext.GetContext(), address)
+func (h *ContextC4eClaimUtils) GetUsersEntry(address string) *cfeclaimtypes.UserEntry {
+	return h.C4eClaimUtils.GetUsersEntry(h.testContext.GetContext(), address)
+}
+
+func (h *ContextC4eClaimUtils) GetAllUsersEntries() []cfeclaimtypes.UserEntry {
+	return h.C4eClaimUtils.GetAllUsersEntries(h.testContext.GetContext())
+}
+
+func (h *ContextC4eClaimUtils) GetCampaigns() []cfeclaimtypes.Campaign {
+	return h.C4eClaimUtils.GetCampaigns(h.testContext.GetContext())
 }
 
 func (h *ContextC4eClaimUtils) SetUsersEntries(userEntry *cfeclaimtypes.UserEntry) {

@@ -21,15 +21,15 @@ func CreateUpgradeHandler(
 			return vmResult, err
 		}
 
-		if err = modifyAndAddVestingTypes(ctx, appKeepers); err != nil {
+		if err = ModifyAndAddVestingTypes(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}
-		if err = migrateAirdropModuleAccount(ctx, appKeepers); err != nil {
+		if err = MigrateAirdropModuleAccount(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}
-		if err = migrateTeamdropVestingAccount(ctx, appKeepers); err != nil {
+		if err = MigrateTeamdropVestingAccount(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}
-		return vmResult, claim.SetupAirdrops(ctx, appKeepers)
+		return vmResult, claim.SetupCampaigns(ctx, appKeepers)
 	}
 }
