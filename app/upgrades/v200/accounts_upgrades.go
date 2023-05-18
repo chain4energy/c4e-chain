@@ -81,10 +81,22 @@ func migrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 	vestingAccount.OriginalVesting = sdk.NewCoins()
 	appKeepers.GetAccountKeeper().SetAccount(ctx, vestingAccount)
 
-	fourYears := 24 * 365 * 3 * time.Hour
-	if err = appKeepers.GetC4eVestingKeeper().CreateVestingPool(ctx, TeamdropVestingAccount, "Teamdrop",
-		originalVestingAmount.AmountOf(vestingDenom), fourYears, TeamdropTypeName); err != nil {
-		return err
+	accountVestingPools := cfevestingtypes.AccountVestingPools{
+		Owner: TeamdropVestingAccount,
+		VestingPools: []*cfevestingtypes.VestingPool{
+			{
+				Name:            "Teamdrop",
+				VestingType:     "Teamdrop",
+				LockStart:       time.Date(2024, 9, 26, 2, 00, 00, 00, time.UTC),
+				LockEnd:         time.Date(2026, 9, 25, 2, 00, 00, 00, time.UTC),
+				InitiallyLocked: originalVestingAmount.AmountOf(vestingDenom),
+				Withdrawn:       sdk.ZeroInt(),
+				Sent:            sdk.ZeroInt(),
+				GenesisPool:     false, // TODO?
+				Reservations:    nil,
+			},
+		},
 	}
+	appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, accountVestingPools)
 	return nil
 }

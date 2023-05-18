@@ -293,7 +293,12 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 
 	vestingAmount := math.NewInt(expectedAmount)
 	if campaign.InitialClaimFreeAmount.GT(math.ZeroInt()) {
-		vestingAmount = math.NewInt(expectedAmount).Sub(campaign.InitialClaimFreeAmount)
+		initialClaimDec := sdk.NewDecFromInt(campaign.InitialClaimFreeAmount).Quo(sdk.NewDec(expectedAmount))
+		if initialClaimDec.GT(sdk.NewDec(1)) {
+			initialClaimDec = sdk.NewDec(1)
+		}
+		vestingAmount = sdk.NewDec(expectedAmount).Sub(sdk.NewDec(expectedAmount).Mul(initialClaimDec)).TruncateInt()
+
 	}
 	vestingCoins := sdk.NewCoins(sdk.NewCoin(h.helperCfevestingKeeper.GetParams(ctx).Denom, vestingAmount))
 	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, vestingCoins)
@@ -475,7 +480,7 @@ func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64
 		h.BankUtils.VerifyAccountBalanceByDenom(ctx, claimer, coin.Denom, claimerCoinBefore.Add(expectedAmount))
 		moduleCoinBefore := moduleBalanceBefore.AmountOf(coin.Denom)
 		h.BankUtils.VerifyModuleAccountBalanceByDenom(ctx, moduleName, coin.Denom, moduleCoinBefore.Sub(expectedAmount))
-		expectedCoins = expectedCoins.Add(sdk.NewCoin(coin.Denom, expectedAmount))
+		expectedCoins = expectedCoins.Add(sdk.NewCoin(coin.Denom, expectedAmount.Sub(sdk.NewDecFromInt(expectedAmount).Mul(campaign.Free).TruncateInt())))
 	}
 
 	h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, expectedCoins)
@@ -491,6 +496,7 @@ func (h *C4eClaimUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId uin
 	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	expectedStartTime := ctx.BlockTime().Add(campaign.LockupPeriod)
 	expectedEndTime := expectedStartTime.Add(campaign.VestingPeriod)
+
 	expectedOriginalVesting := sdk.NewCoins(expectedAmount...)
 	if len(claimerAccountBefore.VestingPeriods) == 0 {
 		claimerAccountBefore.StartTime = expectedStartTime.Unix()
@@ -503,6 +509,10 @@ func (h *C4eClaimUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId uin
 		if claimerAccountBefore.EndTime < expectedEndTime.Unix() {
 			claimerAccountBefore.EndTime = expectedEndTime.Unix()
 		}
+	}
+	if len(expectedAmount) == 0 || expectedAmount == nil {
+		claimerAccountBefore.OriginalVesting = nil
+		return claimerAccountBefore
 	}
 	claimerAccountBefore.OriginalVesting = claimerAccountBefore.OriginalVesting.Add(expectedOriginalVesting...)
 	claimerAccountBefore.VestingPeriods = append(claimerAccountBefore.VestingPeriods, cfevestingtypes.ContinuousVestingPeriod{StartTime: expectedStartTime.Unix(), EndTime: expectedEndTime.Unix(), Amount: expectedOriginalVesting})

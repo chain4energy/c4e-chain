@@ -237,14 +237,14 @@ func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId
 func (k Keeper) calculateInitialClaimFree(claimableAmount sdk.Coins, campaign *types.Campaign) (*sdk.Dec, error) {
 	minFreeAmount := campaign.Free
 	for _, claimableAmountCoin := range claimableAmount {
-		if claimableAmountCoin.Sub(sdk.NewCoin(claimableAmountCoin.Denom, campaign.InitialClaimFreeAmount)).IsNegative() {
-			return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claim account  wrong send coins amount. %s < 1 token (1000000 %s)", claimableAmountCoin.String(), claimableAmountCoin.Denom)
-		}
 		free := sdk.NewDecFromInt(campaign.InitialClaimFreeAmount).Quo(sdk.NewDecFromInt(claimableAmountCoin.Amount))
 		if minFreeAmount.LT(free) {
 			minFreeAmount = free
 		}
 	}
-
+	maxMinFreeAmount := sdk.NewDec(1)
+	if minFreeAmount.GT(sdk.NewDec(1)) {
+		minFreeAmount = maxMinFreeAmount
+	}
 	return &minFreeAmount, nil
 }

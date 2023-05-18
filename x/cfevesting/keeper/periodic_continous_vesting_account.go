@@ -41,7 +41,10 @@ func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context
 		vestingPeriodAmount := decimalAmount.Sub(decimalAmount.Mul(free)).TruncateInt()
 		vestingPeriodCoins = vestingPeriodCoins.Add(sdk.NewCoin(coin.Denom, vestingPeriodAmount))
 	}
-
+	if vestingPeriodCoins == nil {
+		k.account.SetAccount(ctx, periodicContinousVestingAccount)
+		return 0, nil
+	}
 	periodId := periodicContinousVestingAccount.AddNewContinousVestingPeriod(startTime, endTime, vestingPeriodCoins)
 	k.account.SetAccount(ctx, periodicContinousVestingAccount)
 	return periodId, nil

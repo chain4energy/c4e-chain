@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
-	"cosmossdk.io/math"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -172,13 +171,7 @@ func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner 
 }
 
 func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, claimRecords []*types.ClaimRecord) (usersEntries []*types.UserEntry, entriesAmountSum sdk.Coins, err error) {
-	allCampaignMissions, _ := k.AllMissionForCampaign(ctx, campaign.Id)
-
 	for i, claimRecord := range claimRecords {
-		if err = k.validateInitialClaimFreeAmount(campaign.InitialClaimFreeAmount, allCampaignMissions, claimRecord); err != nil {
-			return nil, nil, types.WrapClaimRecordIndex(err, i)
-		}
-
 		entriesAmountSum = entriesAmountSum.Add(claimRecord.Amount...)
 
 		userEntry, err := k.addClaimRecordToUserEntry(ctx, campaign.Id, claimRecord.Address, claimRecord.Amount)
@@ -188,24 +181,6 @@ func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, 
 		usersEntries = append(usersEntries, userEntry)
 	}
 	return
-}
-
-func (k Keeper) validateInitialClaimFreeAmount(initialClaimFreeAmount math.Int, missions []types.Mission, claimRecord *types.ClaimRecord) error {
-	allMissionsAmountSum := sdk.NewCoins()
-	for _, mission := range missions {
-		for _, amount := range claimRecord.Amount {
-			allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
-		}
-	}
-	initialClaimAmount := claimRecord.Amount.Sub(allMissionsAmountSum...)
-
-	for _, coin := range claimRecord.Amount {
-		if initialClaimAmount.AmountOf(coin.Denom).LT(initialClaimFreeAmount) {
-			return errors.Wrapf(c4eerrors.ErrParam, "claim amount %s < campaign initial claim free amount (%s)", initialClaimAmount.AmountOf(coin.Denom), initialClaimFreeAmount.String())
-		}
-	}
-
-	return nil
 }
 
 func (k Keeper) addClaimRecordToUserEntry(ctx sdk.Context, campaignId uint64, address string, allCoins sdk.Coins) (*types.UserEntry, error) {

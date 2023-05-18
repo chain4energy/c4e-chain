@@ -224,22 +224,6 @@ func TestAddClaimRecordsclaimRecordExist(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, fmt.Sprintf("claim records index 0: campaignId 0 already exists for address: %s: entity already exists", claimEntries[0].Address))
 }
 
-func TestAddClaimRecordsInitialClaimAmountError(t *testing.T) {
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
-
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
-	campaign := prepareTestCampaign(testHelper.Context)
-	campaign.InitialClaimFreeAmount = math.NewInt(100000000000000000)
-	mission := prepareTestMission()
-	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
-
-	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimEntries, "claim records index 0: claim amount 80000000 < campaign initial claim free amount (100000000000000000): wrong param value")
-}
-
 func TestAddClaimRecordsInitialClaimAmount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
