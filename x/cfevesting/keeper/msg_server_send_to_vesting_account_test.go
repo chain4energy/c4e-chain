@@ -509,3 +509,50 @@ func TestSendReservedToVestingAccountRemovedReservation(t *testing.T) {
 		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, "reservation with id 0 not found: entity does not exist")
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
+
+func TestSendVestingAccountWithReservation(t *testing.T) {
+	vested := math.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := math.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, math.ZeroInt(), accInitBalance.Sub(vested), vested)
+	reservationAmount := vested.QuoRaw(2)
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, reservationAmount.QuoRaw(2))
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 1, reservationAmount.QuoRaw(2))
+	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, vPool1, math.NewInt(100), true, math.NewInt(95))
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
+func TestSendVestingAccountWithReservationError(t *testing.T) {
+	vested := math.NewInt(1000)
+	testHelper := app.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+
+	accAddr := acountsAddresses[0]
+	accAddr2 := acountsAddresses[1]
+
+	accInitBalance := math.NewInt(10000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(accInitBalance, accAddr)
+
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypes(2, 1, 1)
+	usedVestingType := vestingTypes.VestingTypes[0]
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, math.ZeroInt(), accInitBalance.Sub(vested), vested)
+	reservationAmount := vested.QuoRaw(2)
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, reservationAmount.QuoRaw(2))
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 1, reservationAmount.QuoRaw(2))
+	testHelper.C4eVestingUtils.MessageSendToVestingAccountError(accAddr, accAddr2, vPool1, math.NewInt(550), true,
+		"send to new vesting account - vesting available: 500 is smaller than requested amount: 550: insufficient funds")
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}

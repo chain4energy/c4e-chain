@@ -116,6 +116,42 @@ func TestWithdrawAllAvailableAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 }
 
+func TestVestAndReservationWithdrawAllAvailable(t *testing.T) {
+	vested := math.NewInt(1000000)
+	testHelper := app.SetupTestAppWithHeightAndTime(t, 1000, testutils.CreateTimeFromNumOfHours(1000))
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(1, 0)
+	accAddr := acountsAddresses[0]
+
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(vested, accAddr)
+
+	modifyVestingType := func(vt *types.VestingType) {
+		vt.LockupPeriod = testutils.CreateDurationFromNumOfHours(9000)
+		vt.VestingPeriod = testutils.CreateDurationFromNumOfHours(100000)
+	}
+	vestingTypes := testHelper.C4eVestingUtils.SetupVestingTypesWithModification(modifyVestingType, 1, 1, 1)
+
+	startTime := testHelper.Context.BlockTime()
+
+	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *vestingTypes.VestingTypes[0], vested, vested /*0,*/, math.ZeroInt(), math.ZeroInt() /*0,*/, vested)
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	reservationAmount := vested.QuoRaw(2)
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, reservationAmount.QuoRaw(2))
+	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 1, reservationAmount.QuoRaw(2))
+	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, math.ZeroInt(), vested, math.ZeroInt())
+
+	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []math.Int{vested}, []math.Int{math.ZeroInt()})
+
+	testHelper.SetContextBlockHeightAndTime(int64(110000), testutils.CreateTimeFromNumOfHours(110000))
+
+	withdrawn := vested.Sub(reservationAmount)
+	testHelper.C4eVestingUtils.MessageWithdrawAllAvailable(accAddr, math.ZeroInt(), vested, withdrawn)
+
+	testHelper.C4eVestingUtils.VerifyAccountVestingPools(accAddr, []string{vPool1}, []time.Duration{1000}, []types.VestingType{*vestingTypes.VestingTypes[0]}, []math.Int{vested}, []math.Int{withdrawn}, startTime)
+
+	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+}
+
 func TestWithdrawAllAvailableManyVestedAllToWithdrawAndSomeWithdrawn(t *testing.T) {
 	vested := math.NewInt(1000000)
 	withdrawable := vested
