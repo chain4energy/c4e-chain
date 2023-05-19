@@ -13,7 +13,7 @@ func DefaultGenesis() *GenesisState {
 		Campaigns:            []Campaign{},
 		UsersEntries:         []UserEntry{},
 		Missions:             []Mission{},
-		CampaignsAmountLeft:  []CampaignAmountLeft{},
+		CampaignsAmountLeft:  []CampaignCurrentAmount{},
 		CampaignsTotalAmount: []CampaignTotalAmount{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),

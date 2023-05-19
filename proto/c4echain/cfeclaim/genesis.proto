@@ -23,7 +23,7 @@ message GenesisState {
   repeated Mission missions = 5 [
     (gogoproto.nullable) = false
   ];
-  repeated CampaignAmountLeft campaigns_amount_left = 6 [
+  repeated CampaignCurrentAmount campaigns_amount_left = 6 [
     (gogoproto.nullable) = false
   ];
   repeated CampaignTotalAmount campaigns_total_amount = 7 [

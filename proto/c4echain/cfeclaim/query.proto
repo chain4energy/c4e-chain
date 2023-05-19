@@ -53,7 +53,7 @@ service Query {
 		option (google.api.http).get = "/c4e/claim/v1beta1/campaign_total_amount/{campaign_id}";
 	}
 	// Queries a CampaignTotalAmount by campaignId.
-	rpc CampaignAmountLeft(QueryCampaignAmountLeftRequest) returns (QueryCampaignAmountLeftResponse) {
+	rpc CampaignCurrentAmount(QueryCampaignCurrentAmountRequest) returns (QueryCampaignCurrentAmountResponse) {
 		option (google.api.http).get = "/c4e/claim/v1beta1/campaign_amount_left/{campaign_id}";
 	}
 
@@ -92,11 +92,11 @@ message QueryCampaignTotalAmountResponse {
 	];
 }
 
-message QueryCampaignAmountLeftRequest {
+message QueryCampaignCurrentAmountRequest {
 	uint64 campaign_id = 1;
 }
 
-message QueryCampaignAmountLeftResponse {
+message QueryCampaignCurrentAmountResponse {
 	repeated cosmos.base.v1beta1.Coin amount = 1 [
 		(gogoproto.nullable) = false,
 		(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"

@@ -5,6 +5,7 @@ import (
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	"github.com/chain4energy/c4e-chain/x/cfeclaim"
 	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
@@ -44,9 +45,9 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 		amountSum = amountSum.Add(claimRecord.Amount...)
 	}
 	usersEntriesBefore := h.helpeCfeclaimkeeper.GetAllUsersEntries(ctx)
-	claimClaimsLeftBefore, ok := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	claimClaimsLeftBefore, ok := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
 	if !ok {
-		claimClaimsLeftBefore = cfeclaimtypes.CampaignAmountLeft{
+		claimClaimsLeftBefore = cfeclaimtypes.CampaignCurrentAmount{
 			Amount:     sdk.NewCoins(),
 			CampaignId: campaignId,
 		}
@@ -77,7 +78,7 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 		_, vestingPoolBefore, _ = h.helperCfevestingKeeper.GetAccountVestingPool(ctx, srcAddress.String(), campaign.VestingPoolName)
 	}
 	require.NoError(h.t, h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimRecords))
-	claimClaimsLeftAfter, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	claimClaimsLeftAfter, _ := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
 	claimDistrubitionsAfter, _ := h.helpeCfeclaimkeeper.GetCampaignTotalAmount(ctx, campaignId)
 	claimClaimsLeftBefore.Amount = claimClaimsLeftBefore.Amount.Add(amountSum...)
 	claimDistrubitionsBefore.Amount = claimDistrubitionsBefore.Amount.Add(amountSum...)
@@ -150,9 +151,9 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 }
 
 func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, amoutDiff sdk.Coins) {
-	campaignAmountLeftBefore, ok := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	campaignCurrentAmountBefore, ok := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
 	if !ok {
-		campaignAmountLeftBefore = cfeclaimtypes.CampaignAmountLeft{
+		campaignCurrentAmountBefore = cfeclaimtypes.CampaignCurrentAmount{
 			Amount:     sdk.NewCoins(),
 			CampaignId: campaignId,
 		}
@@ -183,8 +184,8 @@ func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccA
 	}
 
 	require.NoError(h.t, h.helpeCfeclaimkeeper.DeleteClaimRecord(ctx, ownerAddress.String(), campaignId, userAddress))
-	campaignAmountLeftAfter, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
-	require.EqualValues(h.t, campaignAmountLeftBefore.Amount.Sub(amoutDiff...), campaignAmountLeftAfter.Amount)
+	campaignCurrentAmountAfter, _ := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
+	require.EqualValues(h.t, campaignCurrentAmountBefore.Amount.Sub(amoutDiff...), campaignCurrentAmountAfter.Amount)
 
 	userEntry, found := h.helpeCfeclaimkeeper.GetUserEntry(ctx, userAddress)
 	require.True(h.t, found)
@@ -250,6 +251,20 @@ func (h *C4eClaimUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sdk.
 
 }
 
+func (m *C4eClaimUtils) ExportGenesisAndValidate(ctx sdk.Context) {
+	exportedGenesis := cfeclaim.ExportGenesis(ctx, *m.helpeCfeclaimkeeper)
+	err := exportedGenesis.Validate()
+	require.NoError(m.t, err)
+	require.NoError(m.t, err)
+}
+
+func (m *C4eClaimUtils) ValidateInvariants(ctx sdk.Context) {
+	invariants := []sdk.Invariant{
+		cfeclaimmodulekeeper.CampaignCurrentAmountSumCheckInvariant(*m.helpeCfeclaimkeeper),
+	}
+	testcosmos.ValidateManyInvariants(m.t, ctx, invariants)
+}
+
 func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, expectedAmount int64) {
 	acc := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	claimerAccountBefore, ok := acc.(*cfevestingtypes.PeriodicContinuousVestingAccount)
@@ -260,7 +275,7 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 	claimerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, claimer)
 	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
-	claimClaimsLeftBefore, ok := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	claimClaimsLeftBefore, ok := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
 
 	userEntry, _ := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	_, granterAddr := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaignId)
@@ -274,7 +289,7 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	allowance, err := h.FeegrantUtils.FeegrantKeeper.GetAllowance(ctx, granterAddr, claimer)
 	require.Error(h.t, err)
 	require.Nil(h.t, allowance)
-	claimClaimsLeftAfter, ok := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	claimClaimsLeftAfter, ok := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
 	claimClaimsLeftBefore.Amount = claimClaimsLeftBefore.Amount.Sub(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(expectedAmount)))...)
 
 	require.EqualValues(h.t, claimClaimsLeftBefore, claimClaimsLeftAfter)
@@ -606,7 +621,7 @@ func (h *C4eClaimUtils) EnableCampaignError(ctx sdk.Context, owner string, campa
 }
 
 func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) {
-	campaignAmoutLeftBefore, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	campaignAmoutLeftBefore, _ := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
 	cfeclaimModuleBalance := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.True(h.t, ok)
@@ -627,7 +642,7 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 	require.NoError(h.t, err)
 
 	campaign, _ = h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
-	campaignAmoutLeft, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	campaignAmoutLeft, _ := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
 	require.True(h.t, campaignAmoutLeft.Amount.IsEqual(sdk.NewCoins()))
 
 	if campaign.FeegrantAmount.IsPositive() {
@@ -665,7 +680,7 @@ func (h *C4eClaimUtils) CloseCampaignError(ctx sdk.Context, owner string, campai
 }
 
 func (h *C4eClaimUtils) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64) {
-	campaignAmoutLeftBefore, _ := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	campaignAmoutLeftBefore, _ := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
 	cfeclaimModuleBalance := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.True(h.t, ok)
@@ -681,7 +696,7 @@ func (h *C4eClaimUtils) RemoveCampaign(ctx sdk.Context, owner string, campaignId
 
 	_, found := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.False(h.t, found)
-	campaignAmoutLeft, found := h.helpeCfeclaimkeeper.GetCampaignAmountLeft(ctx, campaignId)
+	campaignAmoutLeft, found := h.helpeCfeclaimkeeper.GetCampaignCurrentAmount(ctx, campaignId)
 	require.True(h.t, campaignAmoutLeft.Amount.IsEqual(sdk.NewCoins()))
 
 	if campaign.FeegrantAmount.IsPositive() {

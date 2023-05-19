@@ -100,9 +100,9 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) 
 		return err
 	}
 
-	campaignAmountLeft, _ := k.GetCampaignAmountLeft(ctx, campaign.Id)
+	campaignCurrentAmount, _ := k.GetCampaignCurrentAmount(ctx, campaign.Id)
 
-	if err = k.sendCampaignAmountLeftToOwner(ctx, &campaign, campaignAmountLeft.Amount); err != nil {
+	if err = k.sendCampaignCurrentAmountToOwner(ctx, &campaign, campaignCurrentAmount.Amount); err != nil {
 		return err
 	}
 	if err = k.closeCampaignSendFeegrant(ctx, &campaign); err != nil {
@@ -111,11 +111,11 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) 
 
 	campaign.Enabled = false
 	k.SetCampaign(ctx, campaign)
-	k.DecrementCampaignAmountLeft(ctx, campaignId, campaignAmountLeft.Amount)
+	k.DecrementCampaignCurrentAmount(ctx, campaignId, campaignCurrentAmount.Amount)
 	return nil
 }
 
-func (k Keeper) sendCampaignAmountLeftToOwner(ctx sdk.Context, campaign *types.Campaign, amount sdk.Coins) error {
+func (k Keeper) sendCampaignCurrentAmountToOwner(ctx sdk.Context, campaign *types.Campaign, amount sdk.Coins) error {
 	if campaign.CampaignType == types.VestingPoolCampaign {
 		return k.vestingKeeper.RemoveVestingPoolReservation(ctx, campaign.Owner, campaign.VestingPoolName, campaign.Id, amount.AmountOf(k.vestingKeeper.Denom(ctx)))
 	} else {
@@ -158,9 +158,9 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 		return err
 	}
 
-	campaignAmountLeft, _ := k.GetCampaignAmountLeft(ctx, campaign.Id)
+	campaignCurrentAmount, _ := k.GetCampaignCurrentAmount(ctx, campaign.Id)
 
-	if err = k.sendCampaignAmountLeftToOwner(ctx, campaign, campaignAmountLeft.Amount); err != nil {
+	if err = k.sendCampaignCurrentAmountToOwner(ctx, campaign, campaignCurrentAmount.Amount); err != nil {
 		return err
 	}
 	if err = k.closeCampaignSendFeegrant(ctx, campaign); err != nil {
@@ -169,8 +169,8 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 
 	k.removeCampaign(ctx, campaignId)
 	k.RemoveAllMissionForCampaign(ctx, campaignId)
-	k.DecrementCampaignAmountLeft(ctx, campaignId, campaignAmountLeft.Amount)
-	k.DecrementCampaignTotalAmount(ctx, campaignId, campaignAmountLeft.Amount)
+	k.DecrementCampaignCurrentAmount(ctx, campaignId, campaignCurrentAmount.Amount)
+	k.DecrementCampaignTotalAmount(ctx, campaignId, campaignCurrentAmount.Amount)
 	return nil
 }
 func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description string, free sdk.Dec, startTime *time.Time, endTime *time.Time,

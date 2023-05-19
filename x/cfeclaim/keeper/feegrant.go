@@ -34,20 +34,21 @@ func CreateFeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
 	return moduleAddressName, authtypes.NewModuleAddress(moduleAddressName)
 }
 
-func calculateFeegrantFeesSum(feegrantAmount math.Int, claimRecordsNumber int64, feegrantDenom string) (feesSum sdk.Coins) {
+func calculateFeegrantFeesSum(feegrantAmount math.Int, claimRecordsNumber int64, feegrantDenom string) sdk.Coins {
 	if feegrantAmount.GT(math.ZeroInt()) {
-		feesSum = feesSum.Add(sdk.NewCoin(feegrantDenom, feegrantAmount.MulRaw(claimRecordsNumber)))
+		return sdk.NewCoins(sdk.NewCoin(feegrantDenom, feegrantAmount.MulRaw(claimRecordsNumber)))
 	}
-	return
+	return nil
 }
 
 func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecords []*types.ClaimRecord, feegrantDenom string) error {
 	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
 		acc := k.NewModuleAccountSet(ctx, campaign.Id)
-		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc.GetAddress(), feegrantFeesSum); err != nil {
+
+		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc, feegrantFeesSum); err != nil {
 			return err
 		}
-		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc.GetAddress(), claimRecords, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {
+		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc, claimRecords, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {
 			return err
 		}
 	}

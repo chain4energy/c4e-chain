@@ -192,13 +192,13 @@ func (k Keeper) DecrementCampaignTotalAmount(
 }
 
 // GetCampaign returns a campaignO from its index
-func (k Keeper) GetCampaignAmountLeft(
+func (k Keeper) GetCampaignCurrentAmount(
 	ctx sdk.Context,
 	campaignId uint64,
-) (val types.CampaignAmountLeft, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignAmountLeftPrefix))
+) (val types.CampaignCurrentAmount, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignCurrentAmountPrefix))
 
-	b := store.Get(types.CampaignAmountLeftKey(
+	b := store.Get(types.CampaignCurrentAmountKey(
 		campaignId,
 	))
 	if b == nil {
@@ -210,14 +210,14 @@ func (k Keeper) GetCampaignAmountLeft(
 }
 
 // GetCampaigns returns all campaignO
-func (k Keeper) GetAllCampaignAmountLeft(ctx sdk.Context) (list []types.CampaignAmountLeft) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignAmountLeftPrefix))
+func (k Keeper) GetAllCampaignCurrentAmount(ctx sdk.Context) (list []types.CampaignCurrentAmount) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignCurrentAmountPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.CampaignAmountLeft
+		var val types.CampaignCurrentAmount
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}
@@ -226,39 +226,39 @@ func (k Keeper) GetAllCampaignAmountLeft(ctx sdk.Context) (list []types.Campaign
 }
 
 // GetCampaign returns a campaignO from its index
-func (k Keeper) IncrementCampaignAmountLeft(
+func (k Keeper) IncrementCampaignCurrentAmount(
 	ctx sdk.Context,
-	claimClaimsLeft types.CampaignAmountLeft,
-) (val types.CampaignAmountLeft) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignAmountLeftPrefix))
+	claimClaimsLeft types.CampaignCurrentAmount,
+) (val types.CampaignCurrentAmount) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignCurrentAmountPrefix))
 
-	b := store.Get(types.CampaignAmountLeftKey(
+	b := store.Get(types.CampaignCurrentAmountKey(
 		claimClaimsLeft.CampaignId,
 	))
 
-	if b != nil {
+	if b == nil {
+		val = claimClaimsLeft
+	} else {
 		k.cdc.MustUnmarshal(b, &val)
 		val.Amount = val.Amount.Add(claimClaimsLeft.Amount...)
-	} else {
-		val = claimClaimsLeft
 	}
 
 	appendedValue := k.cdc.MustMarshal(&val)
-	store.Set(types.CampaignAmountLeftKey(
+	store.Set(types.CampaignCurrentAmountKey(
 		val.CampaignId,
 	), appendedValue)
 	return val
 }
 
 // GetCampaign returns a campaignO from its index
-func (k Keeper) DecrementCampaignAmountLeft(
+func (k Keeper) DecrementCampaignCurrentAmount(
 	ctx sdk.Context,
 	campaignId uint64,
 	amount sdk.Coins,
-) (val types.CampaignAmountLeft) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignAmountLeftPrefix))
+) (val types.CampaignCurrentAmount) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignCurrentAmountPrefix))
 
-	b := store.Get(types.CampaignAmountLeftKey(
+	b := store.Get(types.CampaignCurrentAmountKey(
 		campaignId,
 	))
 
@@ -269,7 +269,7 @@ func (k Keeper) DecrementCampaignAmountLeft(
 	val.Amount = val.Amount.Sub(amount...)
 
 	appendedValue := k.cdc.MustMarshal(&val)
-	store.Set(types.CampaignAmountLeftKey(
+	store.Set(types.CampaignCurrentAmountKey(
 		campaignId,
 	), appendedValue)
 	return val

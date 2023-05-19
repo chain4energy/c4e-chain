@@ -32,6 +32,7 @@ func TestCompleteDelegationMission(t *testing.T) {
 
 	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestCompleteVoteMission(t *testing.T) {
@@ -52,6 +53,7 @@ func TestCompleteVoteMission(t *testing.T) {
 
 	testHelper.C4eClaimUtils.CompleteVoteMission(0, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestClaimMissionDoesntExist(t *testing.T) {
@@ -70,6 +72,7 @@ func TestClaimMissionDoesntExist(t *testing.T) {
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 
 	testHelper.C4eClaimUtils.ClaimMissionError(0, 2, acountsAddresses[1], "mission not found - campaignId 0, missionId 2: not found")
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestClaimCampaignDoesntExist(t *testing.T) {
@@ -88,6 +91,7 @@ func TestClaimCampaignDoesntExist(t *testing.T) {
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 
 	testHelper.C4eClaimUtils.ClaimMissionError(1, 0, acountsAddresses[1], "camapign not found: campaignId 1: not found")
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestClaimNoInitialClaimError(t *testing.T) {
@@ -105,6 +109,7 @@ func TestClaimNoInitialClaimError(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 
 	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1], fmt.Sprintf("initial mission not completed: address %s, campaignId: 0: mission not completed yet", acountsAddresses[1].String()))
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestClaimMissionCampaignHasEnded(t *testing.T) {
@@ -129,6 +134,7 @@ func TestClaimMissionCampaignHasEnded(t *testing.T) {
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1], fmt.Sprintf("campaign 0 has already ended (%s > endTime %s) error: campaign is disabled", testHelper.Context.BlockTime(), campaign.EndTime))
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAMount(t *testing.T) {
@@ -151,6 +157,7 @@ func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAMount(t *
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAmountAndFree(t *testing.T) {
@@ -174,6 +181,7 @@ func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAmountAndF
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestClaimMissionWithTypeClaim(t *testing.T) {
@@ -195,6 +203,7 @@ func TestClaimMissionWithTypeClaim(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestClaimMissionAlreadyClaimed(t *testing.T) {
@@ -217,6 +226,7 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1], fmt.Sprintf("address %s, campaignId: 0, missionId: 1: mission already completed", acountsAddresses[1].String()))
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestFullCampaign(t *testing.T) {
@@ -247,6 +257,7 @@ func TestFullCampaign(t *testing.T) {
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
 
 	testHelper.C4eClaimUtils.ClaimMission(0, 2, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestClaimMissionWithTypeClaimRecordNotFound(t *testing.T) {
@@ -264,6 +275,7 @@ func TestClaimMissionWithTypeClaimRecordNotFound(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 
 	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[10], fmt.Sprintf("user claim entries not found for address %s: not found", acountsAddresses[10].String()))
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestVestingPoolCampaignClaimMissionClaim(t *testing.T) {
@@ -286,6 +298,7 @@ func TestVestingPoolCampaignClaimMissionClaim(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestVestingPoolCampaignClaimMissionVote(t *testing.T) {
@@ -309,6 +322,7 @@ func TestVestingPoolCampaignClaimMissionVote(t *testing.T) {
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
 	testHelper.C4eClaimUtils.CompleteVoteMission(0, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
@@ -335,6 +349,7 @@ func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 
 	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
 func TestVestingPoolCampaignClaimWrongAccountType(t *testing.T) {
@@ -357,4 +372,5 @@ func TestVestingPoolCampaignClaimWrongAccountType(t *testing.T) {
 	require.NoError(t, err)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, "account already exists and is not of PeriodicContinuousVestingAccount nor BaseAccount type, got: *types.ContinuousVestingAccount: invalid account type")
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }

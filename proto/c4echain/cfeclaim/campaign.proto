@@ -57,7 +57,7 @@ message CampaignTotalAmount {
   ];
 }
 
-message CampaignAmountLeft {
+message CampaignCurrentAmount {
   uint64 campaign_id = 1;
   repeated cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.nullable) = false,

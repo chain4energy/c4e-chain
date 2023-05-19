@@ -11,14 +11,14 @@ import (
 	"testing"
 )
 
-func TestCampaignAmountLeftSumCheckInvariantEmptyClaimsLeft(t *testing.T) {
+func TestCampaignCurrentAmountSumCheckInvariantEmptyClaimsLeft(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	testHelper.C4eClaimUtils.CheckNonNegativeCoinStateInvariant(testHelper.Context, false,
 		"cfeclaim: claim claims left sum check invariant\nclaim claims left sum is empty\n")
 }
 
-func TestCampaignAmountLeftSumCheckInvariantCorrect(t *testing.T) {
+func TestCampaignCurrentAmountSumCheckInvariantCorrect(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -30,7 +30,7 @@ func TestCampaignAmountLeftSumCheckInvariantCorrect(t *testing.T) {
 		"cfeclaim: claim claims left sum check invariant\nclaim claims left sum is equal to cfeclaim module account balance\n")
 }
 
-func TestCampaignAmountLeftSumCheckInvariantError(t *testing.T) {
+func TestCampaignCurrentAmountSumCheckInvariantError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 

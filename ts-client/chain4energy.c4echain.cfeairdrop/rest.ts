@@ -107,7 +107,7 @@ export type CfeclaimMsgEnableCampaignResponse = object;
  */
 export type CfeclaimParams = object;
 
-export interface CfeclaimQueryCampaignAmountLeftResponse {
+export interface CfeclaimQueryCampaignCurrentAmountResponse {
   amount?: V1Beta1Coin[];
 }
 
@@ -409,12 +409,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryCampaignAmountLeft
+   * @name QueryCampaignCurrentAmount
    * @summary Queries a CampaignTotalAmount by campaignId.
    * @request GET:/c4e/claim/v1beta1/claim_claims_left/{campaign_id}
    */
-  queryCampaignAmountLeft = (campaignId: string, params: RequestParams = {}) =>
-    this.request<CfeclaimQueryCampaignAmountLeftResponse, RpcStatus>({
+  queryCampaignCurrentAmount = (campaignId: string, params: RequestParams = {}) =>
+    this.request<CfeclaimQueryCampaignCurrentAmountResponse, RpcStatus>({
       path: `/c4e/claim/v1beta1/claim_claims_left/${campaignId}`,
       method: "GET",
       format: "json",

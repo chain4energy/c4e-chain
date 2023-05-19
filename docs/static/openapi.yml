@@ -90,7 +90,7 @@ paths:
   /c4e/claim/v1beta1/campaign_amount_left/{campaign_id}:
     get:
       summary: Queries a CampaignTotalAmount by campaignId.
-      operationId: Chain4EnergyC4EchainCfeclaimCampaignAmountLeft
+      operationId: Chain4EnergyC4EchainCfeclaimCampaignCurrentAmount
       responses:
         '200':
           description: A successful response.
@@ -47933,7 +47933,7 @@ definitions:
   chain4energy.c4echain.cfeclaim.Params:
     type: object
     description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeclaim.QueryCampaignAmountLeftResponse:
+  chain4energy.c4echain.cfeclaim.QueryCampaignCurrentAmountResponse:
     type: object
     properties:
       amount:

@@ -17,7 +17,6 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	k.Logger(ctx).Debug("add user entries", "owner", owner, "campaignId", campaignId, "claimRecordsLength", len(claimRecords))
 	feegrantDenom := k.stakingKeeper.BondDenom(ctx)
 	vestingDenom := k.vestingKeeper.Denom(ctx)
-
 	campaign, err := k.ValidateAddClaimRecords(ctx, owner, campaignId, claimRecords)
 	if err != nil {
 		return err
@@ -27,34 +26,42 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	if err != nil {
 		return err
 	}
-
 	feegrantFeesSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecords)), feegrantDenom)
-	feesAndClaimRecordsAmountSum := amountSum.Add(feegrantFeesSum...)
 	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
 
 	if campaign.CampaignType == types.VestingPoolCampaign {
+		balances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
+		if feegrantFeesSum.IsAnyGT(balances) {
+			return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", balances, feegrantFeesSum)
+		}
 		if err = k.vestingKeeper.AddVestingPoolReservation(ctx, owner, campaign.VestingPoolName, campaignId, amountSum.AmountOf(vestingDenom)); err != nil {
 			return err
 		}
 	} else {
-		if err = k.addClaimRecordsToDefaultCampaign(ctx, ownerAddress, campaign, amountSum, feesAndClaimRecordsAmountSum); err != nil {
+		feesAndClaimRecordsAmountSum := amountSum.Add(feegrantFeesSum...)
+		balances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
+		if feesAndClaimRecordsAmountSum.IsAnyGT(balances) {
+			return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", balances, feesAndClaimRecordsAmountSum)
+		}
+		if err = k.addClaimRecordsToDefaultCampaign(ctx, ownerAddress, amountSum); err != nil {
 			return err
 		}
-	}
-
-	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
-	if err != nil {
-		return err
 	}
 
 	k.IncrementCampaignTotalAmount(ctx, types.CampaignTotalAmount{
 		CampaignId: campaignId,
 		Amount:     amountSum,
 	})
-	k.IncrementCampaignAmountLeft(ctx, types.CampaignAmountLeft{
+	k.IncrementCampaignCurrentAmount(ctx, types.CampaignCurrentAmount{
 		CampaignId: campaignId,
 		Amount:     amountSum,
 	})
+
+	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
+	if err != nil {
+		return err
+	}
+
 	for _, userEntry := range usersEntries {
 		k.SetUserEntry(ctx, *userEntry)
 	}
@@ -74,12 +81,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	return nil
 }
 
-func (k Keeper) addClaimRecordsToDefaultCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, campaign *types.Campaign, amountSum sdk.Coins, feesAndClaimRecordsAmountSum sdk.Coins) error {
-	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-	if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
-		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum)
-	}
-
+func (k Keeper) addClaimRecordsToDefaultCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, amountSum sdk.Coins) error {
 	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, amountSum)
 }
 
@@ -95,7 +97,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 		return err
 	}
 
-	if err = k.sendCampaignAmountLeftToOwner(ctx, &campaign, claimRecordAmount); err != nil {
+	if err = k.sendCampaignCurrentAmountToOwner(ctx, &campaign, claimRecordAmount); err != nil {
 		return err
 	}
 
@@ -112,7 +114,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 
 	k.SetUserEntry(ctx, userEntry)
 	k.DecrementCampaignTotalAmount(ctx, campaignId, claimRecordAmount)
-	k.DecrementCampaignAmountLeft(ctx, campaignId, claimRecordAmount)
+	k.DecrementCampaignCurrentAmount(ctx, campaignId, claimRecordAmount)
 
 	event := &types.DeleteClaimRecord{
 		Owner:             owner,
@@ -170,9 +172,9 @@ func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner 
 	return vestingType.ValidateVestingFree(free)
 }
 
-func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, claimRecords []*types.ClaimRecord) (usersEntries []*types.UserEntry, entriesAmountSum sdk.Coins, err error) {
+func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, claimRecords []*types.ClaimRecord) (usersEntries []*types.UserEntry, amountSum sdk.Coins, err error) {
 	for i, claimRecord := range claimRecords {
-		entriesAmountSum = entriesAmountSum.Add(claimRecord.Amount...)
+		amountSum = amountSum.Add(claimRecord.Amount...)
 
 		userEntry, err := k.addClaimRecordToUserEntry(ctx, campaign.Id, claimRecord.Address, claimRecord.Amount)
 		if err != nil {
@@ -209,8 +211,12 @@ func (k Keeper) revokeFeeAllowance(ctx sdk.Context, granter sdk.Address, grantee
 	return nil
 }
 
-func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) *authtypes.ModuleAccount {
+func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) sdk.AccAddress {
 	moduleAddressName, accountAddr := CreateFeegrantAccountAddress(campaignId)
+	account := k.accountKeeper.GetAccount(ctx, accountAddr)
+	if account != nil {
+		return accountAddr
+	}
 	macc := &authtypes.ModuleAccount{
 		BaseAccount: &authtypes.BaseAccount{
 			Address: accountAddr.String(),
@@ -218,7 +224,7 @@ func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) *authtyp
 		Name: moduleAddressName,
 	}
 	k.accountKeeper.SetAccount(ctx, k.accountKeeper.NewAccount(ctx, macc))
-	return macc
+	return accountAddr
 }
 
 func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaign types.Campaign, userAddress string) (types.UserEntry, sdk.Coins, error) {
@@ -254,10 +260,11 @@ func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaig
 			amount = amount.Sub(initiialClaimClaimableAmount...)
 			continue
 		}
-		for _, coin := range claimRecord.Amount {
-			weightedAmount := sdk.NewDecFromInt(coin.Amount).Mul(mission.Weight).TruncateInt()
-			amount = amount.Sub(sdk.NewCoin(coin.Denom, weightedAmount))
+		claimableFromMission, err := userEntry.ClaimableFromMission(&mission)
+		if err != nil {
+			return types.UserEntry{}, nil, err
 		}
+		amount = amount.Sub(claimableFromMission...)
 	}
 
 	return userEntry, amount, nil

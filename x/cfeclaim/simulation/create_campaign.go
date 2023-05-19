@@ -42,13 +42,16 @@ func createCampaign(k keeper.Keeper, cfevestingKeeper cfevestingkeeper.Keeper, m
 
 	lockupPeriod := time.Duration(helpers.RandomInt(r, nanoSecondsInDay))
 	vestingPeriod := time.Duration(helpers.RandomInt(r, nanoSecondsInDay))
+
+	randomMathInt := helpers.RandomAmount(r, math.NewInt(1000000))
 	msg := &types.MsgCreateCampaign{
 		Owner:                  simAccount.Address.String(),
 		Name:                   helpers.RandStringOfLengthCustomSeed(r, 10),
 		Description:            helpers.RandStringOfLengthCustomSeed(r, 10),
-		CampaignType:           types.CampaignType(helpers.RandomInt(r, 4)),
+		CampaignType:           types.CampaignType(helpers.RandomInt(r, 3)),
 		FeegrantAmount:         nil,
-		InitialClaimFreeAmount: nil,
+		RemovableClaimRecords:  helpers.RandomBool(r),
+		InitialClaimFreeAmount: &randomMathInt,
 		StartTime:              &startTime,
 		EndTime:                &endTime,
 		LockupPeriod:           &lockupPeriod,

@@ -98,6 +98,11 @@ func (h *ContextC4eClaimUtils) ClaimInitial(claimer sdk.AccAddress, campaignId u
 	h.C4eClaimUtils.ClaimInitial(h.testContext.GetContext(), campaignId, claimer, expectedAmount)
 }
 
+func (m *ContextC4eClaimUtils) ValidateGenesisAndInvariants() {
+	m.C4eClaimUtils.ExportGenesisAndValidate(m.testContext.GetContext())
+	m.C4eClaimUtils.ValidateInvariants(m.testContext.GetContext())
+}
+
 func (h *ContextC4eClaimUtils) ClaimInitialError(claimer sdk.AccAddress, campaignId uint64, errorMessage string) {
 	h.C4eClaimUtils.ClaimInitialError(h.testContext.GetContext(), campaignId, claimer, errorMessage)
 }
@@ -156,6 +161,6 @@ func (h *ContextC4eClaimUtils) CompleteVoteMission(campaignId uint64, missionId 
 }
 
 func (h *ContextC4eClaimUtils) CheckNonNegativeCoinStateInvariant(ctx sdk.Context, failed bool, message string) {
-	invariant := cfeclaimmodulekeeper.CampaignAmountLeftSumCheckInvariant(*h.helpeCfeclaimkeeper)
+	invariant := cfeclaimmodulekeeper.CampaignCurrentAmountSumCheckInvariant(*h.helpeCfeclaimkeeper)
 	testcosmos.CheckInvariant(h.t, ctx, invariant, failed, message)
 }

@@ -11,15 +11,15 @@ import (
 // RegisterInvariants register cfedistribution invariants
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 	ir.RegisterRoute(types.ModuleName, "claim-claims-left-sum-check",
-		CampaignAmountLeftSumCheckInvariant(k))
+		CampaignCurrentAmountSumCheckInvariant(k))
 }
 
-// CampaignAmountLeftSumCheckInvariant checks that sum of claim claims left is equal to cfeaidrop module account balance
-func CampaignAmountLeftSumCheckInvariant(k Keeper) sdk.Invariant {
+// TODO: add if reservation amount = campaignCurrentAmount
+// CampaignCurrentAmountSumCheckInvariant checks that sum of claim claims left is equal to cfeaidrop module account balance
+func CampaignCurrentAmountSumCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		claimClaimsLeftList := k.GetAllCampaignAmountLeft(ctx)
+		claimClaimsLeftList := k.GetAllCampaignCurrentAmount(ctx)
 		campaigns := k.GetCampaigns(ctx)
-
 		if len(claimClaimsLeftList) == 0 {
 			return sdk.FormatInvariant(types.ModuleName, "claim claims left sum check", "claim claims left sum is empty"), false
 		}
@@ -31,7 +31,6 @@ func CampaignAmountLeftSumCheckInvariant(k Keeper) sdk.Invariant {
 				return sdk.FormatInvariant(types.ModuleName, "claim claims left sum check",
 					err.Error()), true
 			}
-
 			if *campaignType != types.VestingPoolCampaign {
 				claimClaimsLeftSum = claimClaimsLeftSum.Add(claimClaimsLeft.Amount...)
 			}

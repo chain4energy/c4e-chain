@@ -8,7 +8,7 @@ const (
 	// CampaignKeyPrefix is the prefix to retrieve all CampaignO
 	CampaignKeyPrefix            = "Campaign/value/"
 	CampaignTotalAmountKeyPrefix = "CampaignTotalAmount/value/"
-	CampaignAmountLeftPrefix     = "CampaignAmountLeft/value/"
+	CampaignCurrentAmountPrefix  = "CampaignCurrentAmount/value/"
 	CampaignCountKey             = "AidropCampaignCountKey-count-"
 )
 
@@ -36,8 +36,8 @@ func CampaignTotalAmountKey(
 	return key
 }
 
-// CampaignAmountLeftKey returns the store key to retrieve a CampaignO from the index fields
-func CampaignAmountLeftKey(
+// CampaignCurrentAmountKey returns the store key to retrieve a CampaignO from the index fields
+func CampaignCurrentAmountKey(
 	campaignId uint64,
 ) []byte {
 	key := make([]byte, 8)

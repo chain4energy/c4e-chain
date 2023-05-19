@@ -53,7 +53,7 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgClaim = 50
+	var weightMsgClaim = 100
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgClaim,
 		cfeclaimsimulation.SimulateMsgClaim(am.keeper, am.cfevestingKeeper),
@@ -71,7 +71,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		cfeclaimsimulation.SimulateMsgAddMissionToCampaign(am.keeper, am.cfevestingKeeper),
 	))
 
-	var weightMsgAddClaimRecords = 50
+	var weightMsgAddClaimRecords = 100
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgAddClaimRecords,
 		cfeclaimsimulation.SimulateMsgAddClaimRecords(am.keeper, am.cfevestingKeeper),

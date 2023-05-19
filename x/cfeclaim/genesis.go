@@ -23,7 +23,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		k.SetUserEntry(ctx, elem)
 	}
 	for _, elem := range genState.CampaignsAmountLeft {
-		k.IncrementCampaignAmountLeft(ctx, elem)
+		k.IncrementCampaignCurrentAmount(ctx, elem)
 	}
 	for _, elem := range genState.CampaignsTotalAmount {
 		k.IncrementCampaignTotalAmount(ctx, elem)
@@ -32,6 +32,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	k.SetParams(ctx, genState.Params)
 }
 
+// TODO : add valitations
 // ExportGenesis returns the capability module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
@@ -39,7 +40,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.UsersEntries = k.GetAllUsersEntries(ctx)
 	genesis.Missions = k.GetAllMission(ctx)
 	genesis.CampaignsTotalAmount = k.GetAllCampaignTotalAmount(ctx)
-	genesis.CampaignsAmountLeft = k.GetAllCampaignAmountLeft(ctx)
+	genesis.CampaignsAmountLeft = k.GetAllCampaignCurrentAmount(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

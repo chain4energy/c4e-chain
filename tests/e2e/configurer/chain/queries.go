@@ -254,13 +254,13 @@ func (n *NodeConfig) QueryCampaigns() []cfeclaimmoduletypes.Campaign {
 	return response.Campaigns
 }
 
-func (n *NodeConfig) QueryCampaignAmountLeft(campaignId string) sdk.Coins {
+func (n *NodeConfig) QueryCampaignCurrentAmount(campaignId string) sdk.Coins {
 	path := "/c4e/claim/v1beta1/campaign_amount_left/" + campaignId
 
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)
 
-	var response cfeclaimmoduletypes.QueryCampaignAmountLeftResponse
+	var response cfeclaimmoduletypes.QueryCampaignCurrentAmountResponse
 	err = util.Cdc.UnmarshalJSON(bz, &response)
 	require.NoError(n.t, err)
 	return response.Amount

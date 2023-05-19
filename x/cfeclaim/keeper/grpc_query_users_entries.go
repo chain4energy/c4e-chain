@@ -73,13 +73,13 @@ func (k Keeper) CampaignTotalAmount(c context.Context, req *types.QueryCampaignT
 	return &types.QueryCampaignTotalAmountResponse{Amount: val.Amount}, nil
 }
 
-func (k Keeper) CampaignAmountLeft(c context.Context, req *types.QueryCampaignAmountLeftRequest) (*types.QueryCampaignAmountLeftResponse, error) {
+func (k Keeper) CampaignCurrentAmount(c context.Context, req *types.QueryCampaignCurrentAmountRequest) (*types.QueryCampaignCurrentAmountResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetCampaignAmountLeft(
+	val, found := k.GetCampaignCurrentAmount(
 		ctx,
 		req.CampaignId,
 	)
@@ -87,5 +87,5 @@ func (k Keeper) CampaignAmountLeft(c context.Context, req *types.QueryCampaignAm
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryCampaignAmountLeftResponse{Amount: val.Amount}, nil
+	return &types.QueryCampaignCurrentAmountResponse{Amount: val.Amount}, nil
 }

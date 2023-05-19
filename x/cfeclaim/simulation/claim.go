@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"cosmossdk.io/math"
+	"fmt"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"math/rand"
@@ -27,31 +28,32 @@ func SimulateMsgClaim(
 
 		lockupPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
 		vestingPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
-		msg := &types.MsgCreateCampaign{
+		randomMathInt := helpers.RandomAmount(r, math.NewInt(1000000))
+		msgCreateCampaign := &types.MsgCreateCampaign{
 			Owner:                  simAccount.Address.String(),
 			Name:                   helpers.RandStringOfLengthCustomSeed(r, 10),
 			Description:            helpers.RandStringOfLengthCustomSeed(r, 10),
-			CampaignType:           types.CampaignType(helpers.RandomInt(r, 4)),
-			FeegrantAmount:         nil,
-			InitialClaimFreeAmount: nil,
+			CampaignType:           types.CampaignType(helpers.RandomInt(r, 3)),
+			FeegrantAmount:         &randomMathInt,
+			InitialClaimFreeAmount: &randomMathInt,
 			StartTime:              &startTime,
 			EndTime:                &endTime,
 			LockupPeriod:           &lockupPeriod,
 			VestingPeriod:          &vestingPeriod,
 			VestingPoolName:        "",
 		}
-		if msg.CampaignType == types.VestingPoolCampaign {
+		if msgCreateCampaign.CampaignType == types.VestingPoolCampaign {
 			randomVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
 			randVesingTypeId := helpers.RandomInt(r, 3)
 			randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))
-			_ = cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, math.NewInt(1000000), time.Hour, randomVestingType)
-			msg.VestingPoolName = randomVestingPoolName
+			_ = cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, math.NewInt(10000000), time.Hour, randomVestingType)
+			msgCreateCampaign.VestingPoolName = randomVestingPoolName
 		}
 		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		_, err := msgServer.CreateCampaign(msgServerCtx, msg)
+		_, err := msgServer.CreateCampaign(msgServerCtx, msgCreateCampaign)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Create campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), ""), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, msgCreateCampaign.Type(), ""), nil, nil
 		}
 
 		campaigns := k.GetCampaigns(ctx)
@@ -62,7 +64,7 @@ func SimulateMsgClaim(
 			CampaignId:     campaignId,
 			Name:           helpers.RandStringOfLengthCustomSeed(r, 10),
 			Description:    helpers.RandStringOfLengthCustomSeed(r, 10),
-			MissionType:    types.MissionType(helpers.RandIntBetween(r, 2, 6)),
+			MissionType:    types.MissionType(helpers.RandIntBetween(r, 2, 5)),
 			Weight:         &randomWeight,
 			ClaimStartDate: nil,
 		}
@@ -120,6 +122,6 @@ func SimulateMsgClaim(
 			return simtypes.NoOpMsg(types.ModuleName, claimMsg.Type(), ""), nil, nil
 		}
 		k.Logger(ctx).Debug("SIMULATION: Claim mission - claimed")
-		return simtypes.NewOperationMsg(claimMsg, true, "Claim simulation completed", nil), nil, nil
+		return simtypes.NewOperationMsg(claimMsg, true, fmt.Sprintf("Claim simulation completed for %s", msgCreateCampaign.CampaignType.String()), nil), nil, nil
 	}
 }
