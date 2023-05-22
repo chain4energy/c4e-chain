@@ -74,6 +74,10 @@ func (h *ContextC4eClaimUtils) InitGenesis(genState cfeclaimtypes.GenesisState) 
 	h.C4eClaimKeeperUtils.InitGenesis(h.testContext.GetContext(), genState)
 }
 
+func (h *ContextC4eClaimUtils) ExportGenesis(genState cfeclaimtypes.GenesisState) {
+	h.C4eClaimKeeperUtils.ExportGenesis(h.testContext.GetContext(), genState)
+}
+
 func (h *ContextC4eClaimUtils) AddClaimRecords(srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord) {
 	h.C4eClaimUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, claimEntries)
 }

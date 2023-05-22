@@ -206,7 +206,7 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddress string) error {
 	addititonalAccAddress, err := sdk.AccAddressFromBech32(additionalAddress)
 	if err != nil {
-		return errors.Wrap(c4eerrors.ErrParsing, errors.Wrapf(err, "add mission to claim campaign - additionalAddress parsing error: %s", additionalAddress).Error())
+		return errors.Wrap(c4eerrors.ErrParsing, errors.Wrapf(err, "additionalAddress parsing error: %s", additionalAddress).Error())
 	}
 
 	if k.bankKeeper.BlockedAddr(addititonalAccAddress) {

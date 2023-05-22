@@ -3,12 +3,13 @@ package types
 // DONTCOVER
 
 import (
+	"cosmossdk.io/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // x/cfeclaim module sentinel errors
 var (
-	ErrCampaignDisabled    = sdkerrors.Register(ModuleName, 2, "campaign is disabled")
+	ErrCampaignDisabled    = errors.Register(ModuleName, 2, "campaign is disabled")
 	ErrMissionCompleted    = sdkerrors.Register(ModuleName, 3, "mission already completed")
 	ErrMissionClaimed      = sdkerrors.Register(ModuleName, 4, "mission already claimed")
 	ErrMissionNotCompleted = sdkerrors.Register(ModuleName, 5, "mission not completed yet")

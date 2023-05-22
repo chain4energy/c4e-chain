@@ -86,11 +86,11 @@ func ValidateMissionWeight(weight *sdk.Dec, missionType MissionType) error {
 		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
 	}
 	if weight.GT(sdk.NewDec(1)) || weight.LT(sdk.ZeroDec()) {
-		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign - weight (%s) is not between 0 and 1 error", weight.String())
+		return errors.Wrapf(c4eerrors.ErrParam, "weight (%s) is not between 0 and 1 error", weight.String())
 	}
 	if missionType != MissionInitialClaim {
 		if weight.Equal(sdk.ZeroDec()) {
-			return errors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - mission weight can be set to zero only for InitialClaim missions")
+			return errors.Wrap(c4eerrors.ErrParam, "mission weight can be set to zero only for InitialClaim missions")
 		}
 	}
 	return nil
@@ -98,14 +98,14 @@ func ValidateMissionWeight(weight *sdk.Dec, missionType MissionType) error {
 
 func ValidateMissionName(name string) error {
 	if name == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - empty name error")
+		return errors.Wrap(c4eerrors.ErrParam, "empty name error")
 	}
 	return nil
 }
 
 func ValidateMissionDescription(description string) error {
 	if description == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - mission empty description error")
+		return errors.Wrap(c4eerrors.ErrParam, "mission empty description error")
 	}
 	return nil
 }

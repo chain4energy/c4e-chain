@@ -20,10 +20,12 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 		return nil, err
 	}
 
-	if err := k.ValidateCampaignParams(ctx, name, description, validFree, startTime, endTime, campaignType, owner, vestingPoolName, lockupPeriod, vestingPeriod); err != nil {
+	if err = k.ValidateCampaignParams(ctx, name, description, validFree, startTime, endTime, campaignType, owner, vestingPoolName, lockupPeriod, vestingPeriod); err != nil {
 		return nil, err
 	}
-
+	if err = ValidateCampaignEndTimeInTheFuture(ctx, endTime); err != nil {
+		return nil, err
+	}
 	validdFeegrantAmount, err := validateFeegrantAmount(feeGrantAmount)
 	if err != nil {
 		return nil, err
@@ -186,7 +188,7 @@ func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description
 	if campaignType == types.VestingPoolCampaign {
 		return k.ValidateCampaignWhenAddedFromVestingPool(ctx, owner, vestingPoolName, lockupPeriod, vestingPeriod, free)
 	}
-	return ValidateCampaignEndTimeInTheFuture(ctx, endTime)
+	return nil
 }
 func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, campaignId uint64, owner string) (types.Campaign, error) {
 	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
