@@ -74,6 +74,10 @@ func (h *ContextC4eClaimUtils) InitGenesis(genState cfeclaimtypes.GenesisState) 
 	h.C4eClaimKeeperUtils.InitGenesis(h.testContext.GetContext(), genState)
 }
 
+func (h *ContextC4eClaimUtils) InitGenesisError(genState cfeclaimtypes.GenesisState, errorString string) {
+	h.C4eClaimKeeperUtils.InitGenesisError(h.testContext.GetContext(), genState, errorString)
+}
+
 func (h *ContextC4eClaimUtils) ExportGenesis(genState cfeclaimtypes.GenesisState) {
 	h.C4eClaimKeeperUtils.ExportGenesis(h.testContext.GetContext(), genState)
 }

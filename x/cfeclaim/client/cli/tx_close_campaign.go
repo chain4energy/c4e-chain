@@ -16,7 +16,7 @@ var _ = strconv.Itoa(0)
 func CmdCloseCampaign() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "close-campaign [campaign-id] [campaign-close-action]",
-		Short: "Broadcast message CloseCampaign",
+		Short: "Close a campaign",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := cast.ToUint64E(args[0])

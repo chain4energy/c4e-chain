@@ -1,10 +1,11 @@
 package cfeclaim
 
 import (
-	"fmt"
+	"cosmossdk.io/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis
@@ -23,7 +24,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, mission := range genState.Missions {
 		campaign, found := k.GetCampaign(ctx, mission.CampaignId)
 		if !found {
-			panic(fmt.Sprintf("Campaign %d not found for mission %s", mission.CampaignId, mission.Name))
+			panic(errors.Wrapf(sdkerrors.ErrNotFound, "campaign with id %d not found for mission %s", mission.CampaignId, mission.Name))
 		}
 		if _, err := k.ValidateAddMissionToCampaign(ctx, campaign.Owner, mission.CampaignId, mission.Name,
 			mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate); err != nil {
@@ -34,23 +35,23 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// Set all user entries
 	for userEntryIndex, usersEntry := range genState.UsersEntries {
 		if err := types.ValidateUserEntry(usersEntry); err != nil {
-			panic(fmt.Sprintf("%s, userEntry index: %d", err, userEntryIndex))
+			panic(errors.Wrapf(err, "userEntry index: %d", userEntryIndex))
 		}
 		for claimRecordIndex, claimRecord := range usersEntry.ClaimRecords {
 			_, err := k.ValidateCampaignExists(ctx, claimRecord.CampaignId)
 			if err != nil {
-				panic(fmt.Sprintf("%s, userEntry index: %d, claimRecord index: %d", err, userEntryIndex, claimRecordIndex))
+				panic(errors.Wrapf(err, "userEntry index: %d, claimRecord index: %d", userEntryIndex, claimRecordIndex))
 			}
 			for i, missionId := range claimRecord.ClaimedMissions {
 				_, err = k.ValidateMissionExists(ctx, claimRecord.CampaignId, missionId)
 				if err != nil {
-					panic(fmt.Sprintf("%s, userEntry index: %d, claimRecord index: %d, claimed mission index: %d", err, userEntryIndex, claimRecordIndex, i))
+					panic(errors.Wrapf(err, "userEntry index: %d, claimRecord index: %d, claimed mission index: %d", userEntryIndex, claimRecordIndex, i))
 				}
 			}
 			for i, missionId := range claimRecord.CompletedMissions {
 				_, err = k.ValidateMissionExists(ctx, claimRecord.CampaignId, missionId)
 				if err != nil {
-					panic(fmt.Sprintf("%s, userEntry index: %d, claimRecord index: %d, completed mission index: %d", err, userEntryIndex, claimRecordIndex, i))
+					panic(errors.Wrapf(err, "userEntry index: %d, claimRecord index: %d, completed mission index: %d", userEntryIndex, claimRecordIndex, i))
 				}
 			}
 		}

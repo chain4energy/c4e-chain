@@ -22,6 +22,10 @@ func (d *C4eClaimKeeperUtils) InitGenesis(ctx sdk.Context, genState types.Genesi
 	cfeclaim.InitGenesis(ctx, *d.helpeCfeclaimkeeper, genState)
 }
 
+func (d *C4eClaimKeeperUtils) InitGenesisError(ctx sdk.Context, genState types.GenesisState, errorString string) {
+	require.PanicsWithError(d.t, errorString, func() { cfeclaim.InitGenesis(ctx, *d.helpeCfeclaimkeeper, genState) })
+}
+
 func (d *C4eClaimKeeperUtils) ExportGenesis(ctx sdk.Context, genState types.GenesisState) {
 	got := cfeclaim.ExportGenesis(ctx, *d.helpeCfeclaimkeeper)
 	require.NotNil(d.t, got)

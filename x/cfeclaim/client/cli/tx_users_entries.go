@@ -14,8 +14,21 @@ import (
 func CmdAddClaimRecords() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-claim-records [campaignId] [claim-entries-json-file]",
-		Short: "Create a new ClaimRecord",
-		Args:  cobra.ExactArgs(2),
+		Short: "Add new claim records to the campaign",
+		Example: `Example claim-entries-json-file
+[
+	{
+		"address": "c4e128dcl5738ffy08kxxgcxyj6sp7zpyu32n4u32k",
+		"amount":[
+			{
+				"denom":"uc4e",
+				"amount":"11250000000"
+			}
+		]
+	}
+]
+`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := cast.ToUint64E(args[0])
 			if err != nil {
@@ -25,7 +38,7 @@ func CmdAddClaimRecords() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argClaimEntries, err := parseClaimEntries(clientCtx, argCampaignId, args[1])
+			argClaimEntries, err := parseClaimEntries(argCampaignId, args[1])
 			if err != nil {
 				return err
 			}

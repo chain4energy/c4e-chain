@@ -17,7 +17,8 @@ var _ = strconv.Itoa(0)
 func CmdEnableCampaign() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "enable-campaign [campaign-id] [optional-start-time] [optional-end-time]",
-		Short: "Broadcast message EnableCampaign",
+		Short: "Enable existing campaign",
+		Long:  `Remember that after changing campaign status to enabled you won't be able to remove or close campaign unitl its end time`,
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := cast.ToUint64E(args[0])
