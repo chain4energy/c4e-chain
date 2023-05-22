@@ -1,0 +1,44 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfefingerprint;
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/chain4energy/c4echain/x/cfefingerprint/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc CreateAccount(MsgCreateAccount) returns (MsgCreateAccountResponse);
+  rpc CreateReferencePayloadLink(MsgCreateReferencePayloadLink) returns (MsgCreateReferencePayloadLinkResponse);
+  rpc CreateNewAccount(MsgCreateNewAccount) returns (MsgCreateNewAccountResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgCreateAccount {
+  string creator = 1;
+  string accAddressString = 2;
+  string pubKeyString = 3;
+}
+
+message MsgCreateAccountResponse {
+  string accountNumber = 1;
+}
+
+message MsgCreateReferencePayloadLink {
+  string creator = 1;
+  string payloadHash = 2;
+}
+
+message MsgCreateReferencePayloadLinkResponse {
+  string referenceId = 1;
+}
+
+message MsgCreateNewAccount {
+  string creator = 1;
+  string accAddressString = 2;
+}
+
+message MsgCreateNewAccountResponse {
+  uint64 accountNumber = 1;
+}
+
+// this line is used by starport scaffolding # proto/tx/message
