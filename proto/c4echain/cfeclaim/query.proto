@@ -5,7 +5,6 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos/base/v1beta1/coin.proto";
-import "c4echain/cfeclaim/params.proto";
 import "c4echain/cfeclaim/campaign.proto";
 import "c4echain/cfeclaim/mission.proto";
 import "c4echain/cfeclaim/claim_record.proto";
@@ -16,10 +15,6 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/c4e/claim/v1beta1/params";
-  }
   // Queries a UserEntry by index.
 	rpc UserEntry(QueryUserEntryRequest) returns (QueryUserEntryResponse) {
 		option (google.api.http).get = "/c4e/claim/v1beta1/user_entry/{address}";
@@ -48,27 +43,7 @@ service Query {
 	rpc Campaign(QueryCampaignRequest) returns (QueryCampaignResponse) {
 		option (google.api.http).get = "/c4e/claim/v1beta1/campaign/{campaign_id}";
 	}
-	// Queries a CampaignTotalAmount by campaignId.
-	rpc CampaignTotalAmount(QueryCampaignTotalAmountRequest) returns (QueryCampaignTotalAmountResponse) {
-		option (google.api.http).get = "/c4e/claim/v1beta1/campaign_total_amount/{campaign_id}";
-	}
-	// Queries a CampaignTotalAmount by campaignId.
-	rpc CampaignCurrentAmount(QueryCampaignCurrentAmountRequest) returns (QueryCampaignCurrentAmountResponse) {
-		option (google.api.http).get = "/c4e/claim/v1beta1/campaign_amount_left/{campaign_id}";
-	}
-
-// this line is used by starport scaffolding # 2
-}
-
-// QueryParamsRequest is request type for the Query/Params RPC method.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is response type for the Query/Params RPC method.
-message QueryParamsResponse {
-  // params holds all the parameters of this module.
-  Params params = 1 [
-		(gogoproto.nullable) = false
-	];
+	// this line is used by starport scaffolding # 2
 }
 
 message QueryUserEntryRequest {
@@ -78,28 +53,6 @@ message QueryUserEntryRequest {
 message QueryUserEntryResponse {
 	UserEntry user_entry = 1 [
 		(gogoproto.nullable) = false
-	];
-}
-
-message QueryCampaignTotalAmountRequest {
-	uint64 campaign_id = 1;
-}
-
-message QueryCampaignTotalAmountResponse {
-	repeated cosmos.base.v1beta1.Coin amount = 1 [
-		(gogoproto.nullable) = false,
-		(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-	];
-}
-
-message QueryCampaignCurrentAmountRequest {
-	uint64 campaign_id = 1;
-}
-
-message QueryCampaignCurrentAmountResponse {
-	repeated cosmos.base.v1beta1.Coin amount = 1 [
-		(gogoproto.nullable) = false,
-		(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
 	];
 }
 

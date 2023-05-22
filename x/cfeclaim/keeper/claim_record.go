@@ -48,14 +48,9 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 		}
 	}
 
-	k.IncrementCampaignTotalAmount(ctx, types.CampaignTotalAmount{
-		CampaignId: campaignId,
-		Amount:     amountSum,
-	})
-	k.IncrementCampaignCurrentAmount(ctx, types.CampaignCurrentAmount{
-		CampaignId: campaignId,
-		Amount:     amountSum,
-	})
+	campaign.CampaignCurrentAmount = campaign.CampaignCurrentAmount.Add(amountSum...)
+	campaign.CampaignTotalAmount = campaign.CampaignTotalAmount.Add(amountSum...)
+	k.SetCampaign(ctx, *campaign)
 
 	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
 	if err != nil {
@@ -113,8 +108,8 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	}
 
 	k.SetUserEntry(ctx, userEntry)
-	k.DecrementCampaignTotalAmount(ctx, campaignId, claimRecordAmount)
-	k.DecrementCampaignCurrentAmount(ctx, campaignId, claimRecordAmount)
+	campaign.CampaignTotalAmount = campaign.CampaignTotalAmount.Sub(claimRecordAmount...)
+	k.SetCampaign(ctx, campaign)
 
 	event := &types.DeleteClaimRecord{
 		Owner:             owner,

@@ -66,7 +66,7 @@ func ValidateAddMissionToCampaign(owner string, name string, description string,
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 
-	if err = ValidateMissionWeight(weight); err != nil {
+	if err = ValidateMissionWeight(weight, missionType); err != nil {
 		return err
 	}
 	if err = ValidateMissionName(name); err != nil {
@@ -78,7 +78,7 @@ func ValidateAddMissionToCampaign(owner string, name string, description string,
 	return ValidateMissionDescription(description)
 }
 
-func ValidateMissionWeight(weight *sdk.Dec) error {
+func ValidateMissionWeight(weight *sdk.Dec, missionType MissionType) error {
 	if weight == nil {
 		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
 	}
@@ -88,7 +88,11 @@ func ValidateMissionWeight(weight *sdk.Dec) error {
 	if weight.GT(sdk.NewDec(1)) || weight.LT(sdk.ZeroDec()) {
 		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign - weight (%s) is not between 0 and 1 error", weight.String())
 	}
-
+	if missionType != MissionInitialClaim {
+		if weight.Equal(sdk.ZeroDec()) {
+			return errors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - mission weight can be set to zero only for InitialClaim missions")
+		}
+	}
 	return nil
 }
 

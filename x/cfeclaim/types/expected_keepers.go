@@ -60,4 +60,5 @@ type CfeVestingKeeper interface {
 	RemoveVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error
 	SendReservedToNewVestingAccount(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, reservationId uint64, free sdk.Dec, lockupPeriod time.Duration, vestingPeriod time.Duration) error
 	SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins, free sdk.Dec, startTime int64, endTime int64) (uint64, error)
+	GetVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64) (*cfevestingtypes.VestingPoolReservation, error)
 }

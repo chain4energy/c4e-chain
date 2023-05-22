@@ -23,7 +23,6 @@ type (
 		stakingKeeper      types.StakingKeeper
 		distributionKeeper types.DistributionKeeper
 		vestingKeeper      types.CfeVestingKeeper
-		authority          string
 	}
 )
 
@@ -38,7 +37,6 @@ func NewKeeper(
 	stakingKeeper types.StakingKeeper,
 	distributionKeeper types.DistributionKeeper,
 	vestingKeeper types.CfeVestingKeeper,
-	authority string,
 ) *Keeper {
 	return &Keeper{
 		cdc:                cdc,
@@ -50,7 +48,6 @@ func NewKeeper(
 		stakingKeeper:      stakingKeeper,
 		distributionKeeper: distributionKeeper,
 		vestingKeeper:      vestingKeeper,
-		authority:          authority,
 	}
 }
 

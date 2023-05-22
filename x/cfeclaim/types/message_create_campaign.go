@@ -69,10 +69,8 @@ func ValidateCreateCampaignParams(name string, description string, startTime *ti
 	if err := ValidateCampaignDescription(description); err != nil {
 		return err
 	}
-	if campaignType != VestingPoolCampaign && startTime != nil {
-		if err := ValidateCampaignEndTimeAfterStartTime(startTime, endTime); err != nil {
-			return err
-		}
+	if err := ValidateCampaignEndTimeAfterStartTime(startTime, endTime); err != nil {
+		return err
 	}
 	return ValidateCampaignType(campaignType, vestingPoolName)
 }

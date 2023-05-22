@@ -112,3 +112,16 @@ func ValidateClaimRecord(claimRecord *ClaimRecord) error {
 func WrapClaimRecordIndex(err error, index int) error {
 	return errors.Wrap(err, fmt.Sprintf("claim records index %d", index))
 }
+
+func ValidateUserEntry(userEntry UserEntry) error {
+	if userEntry.ClaimAddress == "" {
+		return errors.Wrapf(c4eerrors.ErrParam, "user entry empty claim address")
+	}
+	if userEntry.Address == "" {
+		return errors.Wrapf(c4eerrors.ErrParam, "user entry empty address")
+	}
+	if err := ValidateClaimRecords(userEntry.ClaimRecords); err != nil {
+		return err
+	}
+	return nil
+}

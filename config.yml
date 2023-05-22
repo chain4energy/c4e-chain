@@ -227,6 +227,11 @@ genesis:
       params:
         bond_denom: uc4e
         unbonding_time: 100s
+    crisis:
+      constant_fee:
+        amount: "1000"
+        denom: "uc4e"
+
 validators:
 - name: alice
   bonded: 100000000uc4e

@@ -1,16 +1,15 @@
 package keeper
 
 import (
-	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"fmt"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // RegisterInvariants register cfedistribution invariants
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
-	ir.RegisterRoute(types.ModuleName, "claim-claims-left-sum-check",
+	ir.RegisterRoute(types.ModuleName, "campaigns-current-amount",
 		CampaignCurrentAmountSumCheckInvariant(k))
 }
 
@@ -18,38 +17,37 @@ func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 // CampaignCurrentAmountSumCheckInvariant checks that sum of claim claims left is equal to cfeaidrop module account balance
 func CampaignCurrentAmountSumCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		claimClaimsLeftList := k.GetAllCampaignCurrentAmount(ctx)
 		campaigns := k.GetCampaigns(ctx)
-		if len(claimClaimsLeftList) == 0 {
-			return sdk.FormatInvariant(types.ModuleName, "claim claims left sum check", "claim claims left sum is empty"), false
+		if len(campaigns) == 0 {
+			return sdk.FormatInvariant(types.ModuleName, "campaigns current amount sum", "campaigns list is empty"), false
 		}
 
-		var claimClaimsLeftSum = sdk.NewCoins()
-		for _, claimClaimsLeft := range claimClaimsLeftList {
-			campaignType, err := findCampaignType(campaigns, claimClaimsLeft.CampaignId)
-			if err != nil {
-				return sdk.FormatInvariant(types.ModuleName, "claim claims left sum check",
-					err.Error()), true
-			}
-			if *campaignType != types.VestingPoolCampaign {
-				claimClaimsLeftSum = claimClaimsLeftSum.Add(claimClaimsLeft.Amount...)
-			}
+		var vestingCampaignsCurrentAmount = sdk.NewCoins()
+		var lockedInReservations = math.ZeroInt()
+		var defaultCampaignsCurrentAmount = sdk.NewCoins()
 
+		for _, campaign := range campaigns {
+			if campaign.CampaignType == types.VestingPoolCampaign {
+				vestingCampaignsCurrentAmount = vestingCampaignsCurrentAmount.Add(campaign.CampaignCurrentAmount...)
+				reservation, err := k.vestingKeeper.GetVestingPoolReservation(ctx, campaign.Owner, campaign.VestingPoolName, campaign.Id)
+				if err == nil {
+					lockedInReservations = lockedInReservations.Add(reservation.Amount)
+				}
+			} else if campaign.CampaignType == types.DefaultCampaign {
+				defaultCampaignsCurrentAmount = defaultCampaignsCurrentAmount.Add(campaign.CampaignCurrentAmount...)
+			}
 		}
 		cfeaidropAccountCoins := k.GetAccountCoinsForModuleAccount(ctx, types.ModuleName)
-		if !cfeaidropAccountCoins.IsEqual(claimClaimsLeftSum) {
-			return sdk.FormatInvariant(types.ModuleName, "claim claims left sum check",
-				fmt.Sprintf("claim claims left sum is equal to cfeclaim module account balance (%v != %v)", claimClaimsLeftSum, cfeaidropAccountCoins)), true
+		if !cfeaidropAccountCoins.IsEqual(defaultCampaignsCurrentAmount) {
+			return sdk.FormatInvariant(types.ModuleName, "campaigns current amount sum",
+				fmt.Sprintf("campaigns current amount sum is not equal to cfeclaim module account balance (%v != %v)", defaultCampaignsCurrentAmount, cfeaidropAccountCoins)), true
 		}
-		return sdk.FormatInvariant(types.ModuleName, "claim claims left sum check", "claim claims left sum is equal to cfeclaim module account balance"), false
-	}
-}
 
-func findCampaignType(campaigns []types.Campaign, campaignId uint64) (*types.CampaignType, error) {
-	for _, campaign := range campaigns {
-		if campaign.Id == campaignId {
-			return &campaign.CampaignType, nil
+		if !vestingCampaignsCurrentAmount.AmountOf(k.vestingKeeper.Denom(ctx)).Equal(lockedInReservations) {
+			return sdk.FormatInvariant(types.ModuleName, "campaigns current amount sum",
+				fmt.Sprintf("campaigns current amount sum is not equal to lock tokens in vesting pools reservations (%v != %v)", vestingCampaignsCurrentAmount, lockedInReservations)), true
 		}
+
+		return sdk.FormatInvariant(types.ModuleName, "campaigns current amount sum", "claim claims left sum is equal to cfeclaim module account balance"), false
 	}
-	return nil, errors.Wrapf(c4eerrors.ErrNotExists, "campaign with id: %d doesn't exist", campaignId)
 }

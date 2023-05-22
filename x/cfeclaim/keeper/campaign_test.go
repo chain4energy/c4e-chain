@@ -57,9 +57,9 @@ func TestCreateCampaignStartTimeInThePast(t *testing.T) {
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
-	startTimeInThePast := campaign.StartTime.Add(-time.Hour)
-	campaign.StartTime = startTimeInThePast
-	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("start time in the past error (%s < %s): wrong param value", campaign.StartTime, testHelper.Context.BlockTime()))
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("end time in the past error (%s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 
 func TestCreateManyClaimCampaigns(t *testing.T) {
@@ -116,9 +116,9 @@ func TestCreateCampaignAndStartTimeAfterTimeNowError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	blockTime := campaign.StartTime.Add(time.Minute)
+	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 0, nil, nil, fmt.Sprintf("start time in the past error (%s < %s): wrong param value", campaign.StartTime, blockTime))
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 0, nil, nil, fmt.Sprintf("end time in the past error (%s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 
 func TestCreateCampaignAndStartOwnerNotValidError(t *testing.T) {

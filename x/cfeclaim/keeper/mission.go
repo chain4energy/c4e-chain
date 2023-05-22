@@ -15,29 +15,7 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 	k.Logger(ctx).Debug("add mission to claim campaign", "owner", owner, "campaignId", campaignId, "name", name,
 		"description", description, "missionType", missionType, "weight", weight)
 
-	err := types.ValidateAddMissionToCampaign(owner, name, description, missionType, &weight)
-	if err != nil {
-		return err
-	}
-
-	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
-	if err != nil {
-		return err
-	}
-	if err = types.ValidateCampaignIsNotEnabled(campaign); err != nil {
-		return err
-	}
-	if err = ValidateOwner(campaign, owner); err != nil {
-		return err
-	}
-	if err = k.ValidateMissionWeightsNotGreaterThan1(ctx, campaignId, weight); err != nil {
-		return err
-	}
-
-	if err = ValidateCampaignNotEnded(ctx, campaign); err != nil {
-		return err
-	}
-	if err = ValidateMissionClaimStartDate(campaign, claimStartDate); err != nil {
+	if err := k.ValidateAddMissionToCampaign(ctx, owner, campaignId, name, description, missionType, weight, claimStartDate); err != nil {
 		return err
 	}
 
@@ -66,11 +44,40 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 		ClaimStartDate: eventClaimStartDate,
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
+	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Error("add mission to campaign emit event error", "event", event, "error", err.Error())
 	}
 
+	return nil
+}
+
+func (k Keeper) ValidateAddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string,
+	missionType types.MissionType, weight sdk.Dec, claimStartDate *time.Time) error {
+	err := types.ValidateAddMissionToCampaign(owner, name, description, missionType, &weight)
+	if err != nil {
+		return err
+	}
+
+	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
+	if err != nil {
+		return err
+	}
+	if err = types.ValidateCampaignIsNotEnabled(campaign); err != nil {
+		return err
+	}
+	if err = ValidateOwner(campaign, owner); err != nil {
+		return err
+	}
+	if err = k.ValidateMissionWeightsNotGreaterThan1(ctx, campaignId, weight); err != nil {
+		return err
+	}
+
+	if err = ValidateCampaignNotEnded(ctx, campaign); err != nil {
+		return err
+	}
+	if err = ValidateMissionClaimStartDate(campaign, claimStartDate); err != nil {
+		return err
+	}
 	return nil
 }
 
