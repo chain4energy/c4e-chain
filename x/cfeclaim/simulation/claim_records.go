@@ -26,7 +26,7 @@ func SimulateMsgAddClaimRecords(
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Create campaign", "", false, nil), nil, nil
 		}
 
-		campaigns := k.GetCampaigns(ctx)
+		campaigns := k.GetAllCampaigns(ctx)
 		EnableCampaignMsg := &types.MsgEnableCampaign{
 			Owner:      ownerAddress.String(),
 			CampaignId: uint64(len(campaigns) - 1),
@@ -67,7 +67,7 @@ func SimulateMsgDeleteClaimRecord(
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Create campaign", "", false, nil), nil, nil
 		}
 
-		campaigns := k.GetCampaigns(ctx)
+		campaigns := k.GetAllCampaigns(ctx)
 		EnableCampaignMsg := &types.MsgEnableCampaign{
 			Owner:      ownerAddress.String(),
 			CampaignId: uint64(len(campaigns) - 1),

@@ -25,7 +25,6 @@ func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context
 	if err = k.bank.IsSendEnabledCoins(ctx, amount...); err != nil {
 		return 0, err
 	}
-
 	periodicContinousVestingAccount, err := k.getOrCreatePeriodicContinousVestingAccount(ctx, userAccAddress, startTime, endTime)
 	if err != nil {
 		return 0, err

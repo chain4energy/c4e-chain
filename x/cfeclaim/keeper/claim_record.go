@@ -134,7 +134,7 @@ func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignI
 	if err = ValidateOwner(campaign, owner); err != nil {
 		return nil, err
 	}
-	if err = types.ValidateClaimRecords(claimRecords); err != nil {
+	if err = types.ValidateAddClaimRecords(claimRecords); err != nil {
 		return nil, err
 	}
 	if err = ValidateCampaignNotEnded(ctx, campaign); err != nil {

@@ -69,8 +69,8 @@ func (k Keeper) removeCampaign(
 	))
 }
 
-// GetCampaigns returns all campaignO
-func (k Keeper) GetCampaigns(ctx sdk.Context) (list []types.Campaign) {
+// GetAllCampaigns returns all campaignO
+func (k Keeper) GetAllCampaigns(ctx sdk.Context) (list []types.Campaign) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -87,7 +87,7 @@ func (k Keeper) GetCampaigns(ctx sdk.Context) (list []types.Campaign) {
 
 func (k Keeper) GetCampaignCount(ctx sdk.Context) uint64 {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.CampaignCountKey)
+	byteKey := types.KeyPrefix(types.CampaignCountKeyPrefix)
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
@@ -101,7 +101,7 @@ func (k Keeper) GetCampaignCount(ctx sdk.Context) uint64 {
 
 func (k Keeper) SetCampaignCount(ctx sdk.Context, count uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.CampaignCountKey)
+	byteKey := types.KeyPrefix(types.CampaignCountKeyPrefix)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
 	store.Set(byteKey, bz)

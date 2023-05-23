@@ -6,8 +6,8 @@ var _ binary.ByteOrder
 
 const (
 	// CampaignKeyPrefix is the prefix to retrieve all CampaignO
-	CampaignKeyPrefix = "Campaign/value/"
-	CampaignCountKey  = "AidropCampaignCountKey-count-"
+	CampaignKeyPrefix      = "Campaign/value/"
+	CampaignCountKeyPrefix = "Campaign/count/"
 )
 
 // CampaignKey returns the store key to retrieve a CampaignO from the index fields

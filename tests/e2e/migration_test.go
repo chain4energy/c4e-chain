@@ -53,32 +53,24 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 
 	teamdropCampaign := node.QueryCampaign("0")
 	s.NotNil(teamdropCampaign)
-	teamdropCampaignCurrentAmount := node.QueryCampaignCurrentAmount("0")
-	teamdropCampaignTotalAmount := node.QueryCampaignTotalAmount("0")
 
-	s.Equal(teamdropVestingPools[0].Reservations[0].Amount, teamdropCampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
+	s.Equal(teamdropVestingPools[0].Reservations[0].Amount, teamdropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
 	s.Equal(teamdropVestingPools[0].CurrentlyLocked, "8899990000000")
 	s.Equal(teamdropVestingPools[0].InitiallyLocked.Amount, sdk.NewInt(8899990000000))
 	s.Equal(teamdropVestingPools[0].SentAmount, math.ZeroInt().String())
-	s.Equal(teamdropCampaignCurrentAmount, teamdropCampaignTotalAmount)
+	s.Equal(teamdropCampaign.CampaignCurrentAmount, teamdropCampaign.CampaignTotalAmount)
 
 	santadropCampaign := node.QueryCampaign("2")
 	s.NotNil(santadropCampaign)
-	santadropCampaignCurrentAmount := node.QueryCampaignCurrentAmount("2")
-	santadropCampaignTotalAmount := node.QueryCampaignTotalAmount("2")
-	s.Equal(santadropCampaignCurrentAmount, santadropCampaignTotalAmount)
+	s.Equal(santadropCampaign.CampaignCurrentAmount, santadropCampaign.CampaignTotalAmount)
 
 	stakedropCampaign := node.QueryCampaign("1")
 	s.NotNil(stakedropCampaign)
-	stakedropCampaignCurrentAmount := node.QueryCampaignCurrentAmount("1")
-	stakedropCampaignTotalAmount := node.QueryCampaignTotalAmount("1")
-	s.Equal(stakedropCampaignCurrentAmount, stakedropCampaignTotalAmount)
+	s.Equal(stakedropCampaign.CampaignCurrentAmount, stakedropCampaign.CampaignTotalAmount)
 
 	gleamdropCampaign := node.QueryCampaign("3")
 	s.NotNil(gleamdropCampaign)
-	gleamdropCampaignCurrentAmount := node.QueryCampaignCurrentAmount("3")
-	gleamdropCampaignTotalAmount := node.QueryCampaignTotalAmount("3")
-	s.Equal(gleamdropCampaignTotalAmount, gleamdropCampaignCurrentAmount)
+	s.Equal(gleamdropCampaign.CampaignCurrentAmount, gleamdropCampaign.CampaignTotalAmount)
 
 	fairdropVestingPools := node.QueryVestingPoolsInfo(v200.NewAirdropVestingPoolOwner)
 	for _, vestingPoolInfo := range fairdropVestingPools {
@@ -86,9 +78,9 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 			s.Equal(vestingPoolInfo.VestingType, "Fairdrop")
 			s.Equal(vestingPoolInfo.InitiallyLocked.Amount, math.NewInt(20000000000000))
 			s.Equal(vestingPoolInfo.SentAmount, math.ZeroInt().String())
-			s.Equal(vestingPoolInfo.Reservations[0].Amount, stakedropCampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[1].Amount, santadropCampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[2].Amount, gleamdropCampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
+			s.Equal(vestingPoolInfo.Reservations[0].Amount, stakedropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
+			s.Equal(vestingPoolInfo.Reservations[1].Amount, santadropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
+			s.Equal(vestingPoolInfo.Reservations[2].Amount, gleamdropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
 		}
 	}
 

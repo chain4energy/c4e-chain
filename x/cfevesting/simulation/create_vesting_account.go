@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"time"
 
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -22,8 +21,7 @@ func SimulateMsgCreateVestingAccount(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		randInt := helpers.RandomInt(r, 100000)
-		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
+		simAccount2, _ := simtypes.RandomAcc(r, accs)
 
 		randCoinsAmount := math.NewInt(helpers.RandomInt(r, 1000))
 		coin := sdk.NewCoin(sdk.DefaultBondDenom, randCoinsAmount)
@@ -33,7 +31,7 @@ func SimulateMsgCreateVestingAccount(
 
 		msg := &types.MsgCreateVestingAccount{
 			FromAddress: simAccount.Address.String(),
-			ToAddress:   simAccount2Address,
+			ToAddress:   simAccount2.Address.String(),
 			StartTime:   time.Now().Add(randomStartDurationAdd).Unix(),
 			EndTime:     time.Now().Add(randomStartDurationEnd).Unix(),
 			Amount:      coins,

@@ -721,11 +721,10 @@ func New(
 		stakingtypes.ModuleName,
 		vestingtypes.ModuleName,
 		slashingtypes.ModuleName,
+		cfevestingmoduletypes.ModuleName,
 		cfeclaimmoduletypes.ModuleName,
 		govtypes.ModuleName,
 		cfedistributormoduletypes.ModuleName,
-		cfevestingmoduletypes.ModuleName,
-		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
@@ -741,6 +740,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		crisistypes.ModuleName,
 	)
 
 	// Uncomment if you want to set a custom migration order here.

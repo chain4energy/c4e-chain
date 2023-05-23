@@ -13,11 +13,10 @@ func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 		CampaignCurrentAmountSumCheckInvariant(k))
 }
 
-// TODO: add if reservation amount = campaignCurrentAmount
 // CampaignCurrentAmountSumCheckInvariant checks that sum of claim claims left is equal to cfeaidrop module account balance
 func CampaignCurrentAmountSumCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		campaigns := k.GetCampaigns(ctx)
+		campaigns := k.GetAllCampaigns(ctx)
 		if len(campaigns) == 0 {
 			return sdk.FormatInvariant(types.ModuleName, "campaigns current amount sum", "campaigns list is empty"), false
 		}

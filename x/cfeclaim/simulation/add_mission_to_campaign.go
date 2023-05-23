@@ -22,7 +22,7 @@ func SimulateMsgAddMissionToCampaign(
 		if err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Create campaign", "", false, nil), nil, nil
 		}
-		campaigns := k.GetCampaigns(ctx)
+		campaigns := k.GetAllCampaigns(ctx)
 
 		for i := int64(0); i < helpers.RandomInt(r, 3); i++ {
 			randomWeight := helpers.RandomDecAmount(r, sdk.NewDec(1))

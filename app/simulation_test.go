@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfesignaturetypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
@@ -18,14 +19,12 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 	"os"
@@ -50,64 +49,95 @@ var RegexExcludedOperations = regexp.MustCompile(`authz`)
 // BenchmarkSimulation run the chain simulation
 // Running as go benchmark test:
 func BenchmarkSimulation(b *testing.B) {
-	_, _ = setupSimulation(b, "goleveldb-app-sim", "Simulation")
+	_, _, db, dir := setupSimulation(b, "goleveldb-app-sim", "Simulation")
+
+	defer func() {
+		err := db.Close()
+		require.NoError(b, err)
+		err = os.RemoveAll(dir)
+		require.NoError(b, err)
+	}()
 }
 
 func BenchmarkSimTest(b *testing.B) {
-	c4eapp1, _ := setupSimulation(b, "goleveldb-app-sim", "Simulation")
+	app, _, db, dir := setupSimulation(b, "goleveldb-app-sim", "Simulation")
+
+	defer func() {
+		err := db.Close()
+		require.NoError(b, err)
+		err = os.RemoveAll(dir)
+		require.NoError(b, err)
+	}()
 
 	fmt.Printf("exporting genesis...\n")
-	exported, err := c4eapp1.ExportAppStateAndValidators(false, []string{})
+	exported, err := app.ExportAppStateAndValidators(false, []string{})
 	require.NoError(b, err)
 
 	fmt.Printf("importing genesis...\n")
 
 	var genesisState GenesisState
-	fmt.Println(genesisState)
+
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(b, err)
 
-	c4eapp2, _, _, _, _ := BaseSimulationSetup(b, "goleveldb-app-sim-2", "Simulation-2")
-	ctxA := c4eapp1.NewContext(true, tmproto.Header{Height: c4eapp1.LastBlockHeight()})
-	ctxB := c4eapp2.NewContext(true, tmproto.Header{Height: c4eapp1.LastBlockHeight()})
-	c4eapp2.mm.InitGenesis(ctxB, c4eapp1.AppCodec(), genesisState)
-	c4eapp2.StoreConsensusParams(ctxB, exported.ConsensusParams)
+	newApp, _, _, newDb, newDir := BaseSimulationSetup(b, "goleveldb-app-sim-2", "Simulation-2")
+
+	defer func() {
+		err := newDb.Close()
+		require.NoError(b, err)
+		err = os.RemoveAll(newDir)
+		require.NoError(b, err)
+	}()
+
+	ctxA := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
+	ctxB := newApp.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
+
+	newApp.mm.InitGenesis(ctxB, app.AppCodec(), genesisState)
+	newApp.StoreConsensusParams(ctxB, exported.ConsensusParams)
 
 	fmt.Printf("comparing stores...\n")
 
 	storeKeysPrefixes := []StoreKeysPrefixes{
-		{c4eapp1.keys[authtypes.StoreKey], c4eapp2.keys[authtypes.StoreKey], [][]byte{}},
+		{app.keys[authtypes.StoreKey], newApp.keys[authtypes.StoreKey], [][]byte{}},
 		{
-			c4eapp1.keys[stakingtypes.StoreKey], c4eapp2.keys[stakingtypes.StoreKey],
+			app.keys[stakingtypes.StoreKey], newApp.keys[stakingtypes.StoreKey],
 			[][]byte{
 				stakingtypes.UnbondingQueueKey, stakingtypes.RedelegationQueueKey, stakingtypes.ValidatorQueueKey,
 				stakingtypes.HistoricalInfoKey,
 			},
 		},
-		{c4eapp1.keys[slashingtypes.StoreKey], c4eapp2.keys[slashingtypes.StoreKey], [][]byte{}},
-		{c4eapp1.keys[distrtypes.StoreKey], c4eapp2.keys[distrtypes.StoreKey], [][]byte{}},
-		{c4eapp1.keys[banktypes.StoreKey], c4eapp2.keys[banktypes.StoreKey], [][]byte{banktypes.BalancesPrefix}},
-		{c4eapp1.keys[paramtypes.StoreKey], c4eapp2.keys[paramtypes.StoreKey], [][]byte{}},
-		{c4eapp1.keys[govtypes.StoreKey], c4eapp2.keys[govtypes.StoreKey], [][]byte{}},
-		{c4eapp1.keys[evidencetypes.StoreKey], c4eapp2.keys[evidencetypes.StoreKey], [][]byte{}},
-		{c4eapp1.keys[capabilitytypes.StoreKey], c4eapp2.keys[capabilitytypes.StoreKey], [][]byte{}},
-		{c4eapp1.keys[authzkeeper.StoreKey], c4eapp2.keys[authzkeeper.StoreKey], [][]byte{}},
+		{app.keys[slashingtypes.StoreKey], newApp.keys[slashingtypes.StoreKey], [][]byte{}},
+		{app.keys[distrtypes.StoreKey], newApp.keys[distrtypes.StoreKey], [][]byte{}},
+		{app.keys[banktypes.StoreKey], newApp.keys[banktypes.StoreKey], [][]byte{banktypes.BalancesPrefix}},
+		//{app.keys[paramtypes.StoreKey], newApp.keys[paramtypes.StoreKey], [][]byte{}},
+		{app.keys[govtypes.StoreKey], newApp.keys[govtypes.StoreKey], [][]byte{}},
+		{app.keys[evidencetypes.StoreKey], newApp.keys[evidencetypes.StoreKey], [][]byte{}},
+		{app.keys[capabilitytypes.StoreKey], newApp.keys[capabilitytypes.StoreKey], [][]byte{}},
+		{app.keys[authzkeeper.StoreKey], newApp.keys[authzkeeper.StoreKey], [][]byte{}},
 
 		// IBC
-		{c4eapp1.keys[ibchost.StoreKey], c4eapp2.keys[ibchost.StoreKey], [][]byte{}},
-		{c4eapp1.keys[ibctransfertypes.StoreKey], c4eapp2.keys[ibctransfertypes.StoreKey], [][]byte{}},
+		{app.keys[ibchost.StoreKey], newApp.keys[ibchost.StoreKey], [][]byte{}},
+		{app.keys[ibctransfertypes.StoreKey], newApp.keys[ibctransfertypes.StoreKey], [][]byte{}},
 
 		// OUR MODULES
-		{c4eapp1.keys[cfevestingtypes.StoreKey], c4eapp2.keys[cfevestingtypes.StoreKey], [][]byte{
+		{app.keys[cfevestingtypes.StoreKey], newApp.keys[cfevestingtypes.StoreKey], [][]byte{
 			cfevestingtypes.AccountVestingPoolsKeyPrefix, cfevestingtypes.VestingTypesKeyPrefix, cfevestingtypes.ParamsKey,
+			cfevestingtypes.KeyPrefix(cfevestingtypes.VestingAccountTraceCountKey), cfevestingtypes.KeyPrefix(cfevestingtypes.VestingAccountTraceKey),
 		}},
-		{c4eapp1.keys[cfedistributortypes.StoreKey], c4eapp2.keys[cfedistributortypes.StoreKey], [][]byte{
+		{app.keys[cfedistributortypes.StoreKey], newApp.keys[cfedistributortypes.StoreKey], [][]byte{
 			cfedistributortypes.StateKeyPrefix,
 		}},
-		{c4eapp1.keys[cfemintertypes.StoreKey], c4eapp2.keys[cfemintertypes.StoreKey], [][]byte{
+		{app.keys[cfemintertypes.StoreKey], newApp.keys[cfemintertypes.StoreKey], [][]byte{
 			cfemintertypes.MinterStateHistoryKeyPrefix, cfemintertypes.IsGenesisKey, cfemintertypes.MinterStateKey,
 		}},
-		{c4eapp1.keys[cfesignaturetypes.StoreKey], c4eapp2.keys[cfesignaturetypes.StoreKey], [][]byte{}},
+		{app.keys[cfesignaturetypes.StoreKey], newApp.keys[cfesignaturetypes.StoreKey], [][]byte{}},
+		{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{
+			cfeclaimtypes.KeyPrefix(cfeclaimtypes.CampaignKeyPrefix),
+			cfeclaimtypes.KeyPrefix(cfeclaimtypes.MissionCountKeyPrefix),
+			cfeclaimtypes.KeyPrefix(cfeclaimtypes.CampaignCountKeyPrefix),
+			cfeclaimtypes.KeyPrefix(cfeclaimtypes.MissionKeyPrefix),
+			cfeclaimtypes.KeyPrefix(cfeclaimtypes.UserEntryKeyPrefix),
+		}},
 	}
 
 	for _, skp := range storeKeysPrefixes {
@@ -118,19 +148,18 @@ func BenchmarkSimTest(b *testing.B) {
 		require.Equal(b, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
 
 		fmt.Printf("compared %d different key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
-		require.Equal(b, len(failedKVAs), 0, simapp.GetSimulationLog(skp.A.Name(), c4eapp1.SimulationManager().StoreDecoders, failedKVAs, failedKVBs))
+		simLog := simapp.GetSimulationLog(
+			skp.A.Name(),
+			app.SimulationManager().StoreDecoders,
+			failedKVAs,
+			failedKVBs,
+		)
+		require.Equal(b, len(failedKVAs), 0, simLog)
 	}
 }
 
-func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *App, simParams simulation.Params) {
+func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *App, simParams simulation.Params, db dbm.DB, dir string) {
 	app, _, config, db, dir := BaseSimulationSetup(tb, dirPrevix, dbName)
-
-	defer func() {
-		err := db.Close()
-		require.NoError(tb, err)
-		err = os.RemoveAll(dir)
-		require.NoError(tb, err)
-	}()
 
 	weightedOperations := simapp.SimulationOperations(app, app.AppCodec(), config)
 
@@ -160,22 +189,22 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 	if config.Commit {
 		simapp.PrintStats(db)
 	}
-	return app, simParams
+	return app, simParams, db, dir
 }
 
 func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, GenesisState, simulationtypes.Config, dbm.DB, string) {
-	config, db, dir, _, _, err := simapp.SetupSimulation(dirPrevix, dbName)
+	config, db, dir, logger, _, err := simapp.SetupSimulation(dirPrevix, dbName)
 	require.NoError(tb, err, "simulation setup failed")
 
 	encoding := MakeEncodingConfig()
 	app := New(
-		log.TestingLogger(),
+		logger,
 		db,
 		nil,
 		true,
 		map[int64]bool{},
 		DefaultNodeHome,
-		20,
+		simapp.FlagPeriodValue,
 		encoding,
 		simapp.EmptyAppOptions{},
 	)

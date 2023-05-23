@@ -49,7 +49,7 @@ func (msg *MsgAddClaimRecords) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-	return ValidateClaimRecords(msg.ClaimRecords)
+	return ValidateAddClaimRecords(msg.ClaimRecords)
 }
 
 var _ sdk.Msg = &MsgDeleteClaimRecord{}
@@ -90,16 +90,16 @@ func (msg *MsgDeleteClaimRecord) ValidateBasic() error {
 	return nil
 }
 
-func ValidateClaimRecords(claimRecords []*ClaimRecord) error {
+func ValidateAddClaimRecords(claimRecords []*ClaimRecord) error {
 	for i, claimRecord := range claimRecords {
-		if err := ValidateClaimRecord(claimRecord); err != nil {
+		if err := ValidateAddClaimRecord(claimRecord); err != nil {
 			return WrapClaimRecordIndex(err, i)
 		}
 	}
 	return nil
 }
 
-func ValidateClaimRecord(claimRecord *ClaimRecord) error {
+func ValidateAddClaimRecord(claimRecord *ClaimRecord) error {
 	if claimRecord.Address == "" {
 		return errors.Wrapf(c4eerrors.ErrParam, "claim record empty address")
 	}
@@ -114,14 +114,21 @@ func WrapClaimRecordIndex(err error, index int) error {
 }
 
 func ValidateUserEntry(userEntry UserEntry) error {
-	if userEntry.ClaimAddress == "" {
-		return errors.Wrapf(c4eerrors.ErrParam, "user entry empty claim address")
-	}
 	if userEntry.Address == "" {
 		return errors.Wrapf(c4eerrors.ErrParam, "user entry empty address")
 	}
-	if err := ValidateClaimRecords(userEntry.ClaimRecords); err != nil {
+	if err := ValidateUserEntryClaimRecords(userEntry.ClaimRecords); err != nil {
 		return err
+	}
+	return nil
+}
+
+func ValidateUserEntryClaimRecords(claimRecords []*ClaimRecord) error {
+	for i, claimRecord := range claimRecords {
+		if !claimRecord.Amount.IsAllPositive() {
+			return WrapClaimRecordIndex(
+				errors.Wrapf(c4eerrors.ErrParam, "claim record must has at least one coin and all amounts must be positive"), i)
+		}
 	}
 	return nil
 }

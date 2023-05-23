@@ -8,7 +8,6 @@ import (
 
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -54,11 +53,10 @@ func SimulateVestingMultiOperations(
 
 		for i := 0; i < multiOperationsCount; i++ {
 			randMsgSendToVestinAccAmount := math.NewInt(helpers.RandomInt(r, 100))
-			randInt := helpers.RandomInt(r, 10000000)
-			simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
+			acc2, _ := simtypes.RandomAcc(r, accs)
 			msgSendToVestingAccount := &types.MsgSendToVestingAccount{
 				Owner:           simAccount1.Address.String(),
-				ToAddress:       simAccount2Address,
+				ToAddress:       acc2.Address.String(),
 				VestingPoolName: poolsNames[i],
 				Amount:          randMsgSendToVestinAccAmount,
 				RestartVesting:  true,

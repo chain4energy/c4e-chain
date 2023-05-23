@@ -26,8 +26,8 @@ func SimulateMsgClaim(
 		startTime := ctx.BlockTime()
 		endTime := startTime.Add(time.Duration(helpers.RandIntBetween(r, 1000000, 10000000)))
 
-		lockupPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
-		vestingPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
+		lockupPeriod := time.Duration(helpers.RandomInt(r, nanoSecondsInDay))
+		vestingPeriod := time.Duration(helpers.RandomInt(r, nanoSecondsInDay))
 		randomMathInt := helpers.RandomAmount(r, math.NewInt(1000000))
 		msgCreateCampaign := &types.MsgCreateCampaign{
 			Owner:                  simAccount.Address.String(),
@@ -56,7 +56,7 @@ func SimulateMsgClaim(
 			return simtypes.NoOpMsg(types.ModuleName, msgCreateCampaign.Type(), ""), nil, nil
 		}
 
-		campaigns := k.GetCampaigns(ctx)
+		campaigns := k.GetAllCampaigns(ctx)
 		campaignId := uint64(len(campaigns) - 1)
 		randomWeight := helpers.RandomDecAmount(r, sdk.NewDec(1))
 		addMissionToCampaignMsg := &types.MsgAddMissionToCampaign{

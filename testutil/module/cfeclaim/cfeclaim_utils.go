@@ -353,7 +353,7 @@ func (h *C4eClaimUtils) GetAllUsersEntries(
 func (h *C4eClaimUtils) GetCampaigns(
 	ctx sdk.Context,
 ) []cfeclaimtypes.Campaign {
-	return h.helpeCfeclaimkeeper.GetCampaigns(ctx)
+	return h.helpeCfeclaimkeeper.GetAllCampaigns(ctx)
 }
 
 func (h *C4eClaimUtils) SetUsersEntries(

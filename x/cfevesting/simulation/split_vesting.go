@@ -2,7 +2,6 @@ package simulation
 
 import (
 	"cosmossdk.io/math"
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"math/rand"
 	"time"
@@ -22,8 +21,8 @@ func SimulateMsgSplitVesting(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(helpers.RandomInt(r, 100000))
-		simAccount3Address := testcosmos.CreateRandomAccAddressNoBalance(helpers.RandomInt(r, 10000000))
+		simAccount2, _ := simtypes.RandomAcc(r, accs)
+		simAccount3, _ := simtypes.RandomAcc(r, accs)
 
 		randCoinsAmount := math.NewInt(helpers.RandomInt(r, 1000))
 		coin := sdk.NewCoin(sdk.DefaultBondDenom, randCoinsAmount)
@@ -34,7 +33,7 @@ func SimulateMsgSplitVesting(
 		startTime := ctx.BlockTime()
 		msg := &types.MsgCreateVestingAccount{
 			FromAddress: simAccount.Address.String(),
-			ToAddress:   simAccount2Address,
+			ToAddress:   simAccount2.Address.String(),
 			StartTime:   startTime.Add(-randomStartDurationToSub).Unix(),
 			EndTime:     startTime.Add(randomEndDurationToAdd).Unix(),
 			Amount:      coins,
@@ -48,8 +47,8 @@ func SimulateMsgSplitVesting(
 		}
 
 		msgSplitVesting := &types.MsgSplitVesting{
-			FromAddress: simAccount2Address,
-			ToAddress:   simAccount3Address,
+			FromAddress: simAccount2.Address.String(),
+			ToAddress:   simAccount3.Address.String(),
 			Amount:      sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, randCoinsAmount.QuoRaw(2))),
 		}
 

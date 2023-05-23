@@ -139,7 +139,7 @@ func TestSetupCampaignsNoAirdropModuleAccount(t *testing.T) {
 	addTeamdropVestingAccount(testHelper)
 	addAirdropModuleAccount(testHelper)
 
-	campaigns := testHelper.App.CfeclaimKeeper.GetCampaigns(testHelper.Context)
+	campaigns := testHelper.App.CfeclaimKeeper.GetAllCampaigns(testHelper.Context)
 	require.Nil(t, campaigns)
 	err := v200.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
 	require.NoError(t, err)

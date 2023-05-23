@@ -25,8 +25,8 @@ func SimulateMsgCloseCampaign(
 		startTime := ctx.BlockTime().Add(-time.Hour)
 		endTime := startTime.Add(time.Second)
 
-		lockupPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
-		vestingPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
+		lockupPeriod := time.Hour * 10
+		vestingPeriod := time.Hour * 10
 		randomMathInt := helpers.RandomAmount(r, math.NewInt(1000000))
 		campaign := types.Campaign{
 			Owner:                  simAccount.Address.String(),
@@ -53,7 +53,7 @@ func SimulateMsgCloseCampaign(
 
 		k.AppendNewCampaign(ctx, campaign)
 
-		campaigns := k.GetCampaigns(ctx)
+		campaigns := k.GetAllCampaigns(ctx)
 		campaignId := uint64(len(campaigns) - 1)
 
 		closeCampaignMsg := &types.MsgCloseCampaign{

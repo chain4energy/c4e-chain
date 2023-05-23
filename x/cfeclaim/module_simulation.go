@@ -1,10 +1,10 @@
 package cfeclaim
 
 import (
+	cfeclaimsimulation "github.com/chain4energy/c4e-chain/x/cfeclaim/simulation"
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	cfeclaimsimulation "github.com/chain4energy/c4e-chain/x/cfeclaim/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"

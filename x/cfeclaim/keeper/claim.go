@@ -216,7 +216,7 @@ func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddr
 	account := k.accountKeeper.GetAccount(ctx, addititonalAccAddress)
 	_, baseAccountOk := account.(*authtypes.BaseAccount)
 	_, periodicContinuousVestingAccountOk := account.(*cfevestingtypes.PeriodicContinuousVestingAccount)
-	if baseAccountOk && periodicContinuousVestingAccountOk {
+	if !baseAccountOk && !periodicContinuousVestingAccountOk {
 		return errors.Wrapf(c4eerrors.ErrInvalidAccountType, "account already exists and is not of PeriodicContinuousVestingAccount nor BaseAccount type, got: %T", account)
 	}
 

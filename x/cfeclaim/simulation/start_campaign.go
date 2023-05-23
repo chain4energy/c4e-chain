@@ -31,7 +31,7 @@ func SimulateMsgEnableCampaign(
 			EnableCampaignOwner = ownerAddress.String()
 		}
 
-		campaigns := k.GetCampaigns(ctx)
+		campaigns := k.GetAllCampaigns(ctx)
 		EnableCampaignMsg := &types.MsgEnableCampaign{
 			Owner:      EnableCampaignOwner,
 			CampaignId: uint64(len(campaigns) - 1),

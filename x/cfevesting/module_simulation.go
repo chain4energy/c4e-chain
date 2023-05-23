@@ -1,12 +1,12 @@
 package cfevesting
 
 import (
+	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -82,7 +82,7 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-	var weightSimulateSendToVestingAccount = 50
+	var weightSimulateSendToVestingAccount = 100
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateSendToVestingAccount,
 		cfevestingpoolsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),

@@ -11,7 +11,6 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	k.Logger(ctx).Debug("init cfeclaim genesis", "genState", genState)
 	// Set all the campaigns
 	for _, campaign := range genState.Campaigns {
 		if err := k.ValidateCampaignParams(ctx, campaign.Name, campaign.Description, campaign.Free, &campaign.StartTime,
@@ -64,6 +63,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.UsersEntries = k.GetAllUsersEntries(ctx)
 	genesis.Missions = k.GetAllMission(ctx)
+	genesis.Campaigns = k.GetAllCampaigns(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis
