@@ -359,6 +359,20 @@ func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, 
 	return acc, nil
 }
 
+func (k Keeper) GetVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64) (*types.VestingPoolReservation, error) {
+	_, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
+	if !found {
+		return nil, errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+	}
+
+	reservation := vestingPool.GetReservation(reservationId)
+
+	if reservation == nil {
+		return nil, errors.Wrapf(c4eerrors.ErrNotExists, "reservation %d not found vesting pool %s", reservationId, vestingPoolName)
+	}
+	return reservation, nil
+}
+
 func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error {
 	vestingDenom := k.Denom(ctx)
 	accountVestingPools, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)

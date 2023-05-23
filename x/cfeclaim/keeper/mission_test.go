@@ -94,13 +94,13 @@ func TestAddMissionToCampaignWrongWeightError(t *testing.T) {
 	mission := prepareTestMission()
 	mission.Weight = sdk.NewDec(-2)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("add mission to claim campaign - weight (%s) is not between 0 and 1 error: wrong param value", mission.Weight.String()))
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("weight (%s) is not between 0 and 1 error: wrong param value", mission.Weight.String()))
 	mission.Weight = sdk.NewDec(2)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("add mission to claim campaign - weight (%s) is not between 0 and 1 error: wrong param value", mission.Weight.String()))
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("weight (%s) is not between 0 and 1 error: wrong param value", mission.Weight.String()))
 
 	mission.Weight = sdk.MustNewDecFromStr("0.6")
 	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("add mission to claim - all campaign missions weight sum is >= 1 (%s > 1) error: wrong param value", mission.Weight.Mul(sdk.NewDec(2)).String()))
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("all campaign missions weight sum is >= 1 (%s > 1) error: wrong param value", mission.Weight.Mul(sdk.NewDec(2)).String()))
 }
 
 func TestAddMissionToCampaignEmptyName(t *testing.T) {
@@ -111,7 +111,7 @@ func TestAddMissionToCampaignEmptyName(t *testing.T) {
 	mission := prepareTestMission()
 	mission.Name = ""
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "add mission to claim campaign - empty name error: wrong param value")
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "empty name error: wrong param value")
 }
 
 func TestAddMissionToCampaignEmptyDescription(t *testing.T) {
@@ -122,7 +122,7 @@ func TestAddMissionToCampaignEmptyDescription(t *testing.T) {
 	mission := prepareTestMission()
 	mission.Description = ""
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "add mission to claim campaign - mission empty description error: wrong param value")
+	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "mission empty description error: wrong param value")
 }
 
 func TestAddMissionToCampaignWrongOwner(t *testing.T) {

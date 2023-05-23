@@ -27,13 +27,15 @@ func SimulateMsgCloseCampaign(
 
 		lockupPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
 		vestingPeriod := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
+		randomMathInt := helpers.RandomAmount(r, math.NewInt(1000000))
 		campaign := types.Campaign{
 			Owner:                  simAccount.Address.String(),
 			Name:                   helpers.RandStringOfLengthCustomSeed(r, 10),
 			Description:            helpers.RandStringOfLengthCustomSeed(r, 10),
-			CampaignType:           types.CampaignType(helpers.RandIntBetween(r, 1, 4)),
-			FeegrantAmount:         math.ZeroInt(),
-			InitialClaimFreeAmount: math.ZeroInt(),
+			CampaignType:           types.CampaignType(helpers.RandIntBetween(r, 1, 3)),
+			RemovableClaimRecords:  helpers.RandomBool(r),
+			FeegrantAmount:         randomMathInt,
+			InitialClaimFreeAmount: randomMathInt,
 			StartTime:              startTime,
 			EndTime:                endTime,
 			LockupPeriod:           lockupPeriod,

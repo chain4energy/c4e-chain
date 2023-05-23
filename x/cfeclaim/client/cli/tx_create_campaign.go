@@ -20,7 +20,7 @@ var _ = strconv.Itoa(0)
 func CmdCreateCampaign() *cobra.Command { //  TODO opis ja w innych modulach
 	cmd := &cobra.Command{
 		Use:   "create-campaign [name] [description] [campaign-type] [removable-claim-records] [feegrant-amount] [initial_claim_free_amount] [free] [start-time] [end-time] [lockup-period] [vesting-period] [optional-vesting-pool-name]",
-		Short: "Broadcast message CreateCampaign",
+		Short: "Create new campaign",
 		Args:  cobra.ExactArgs(12),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]

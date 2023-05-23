@@ -3,11 +3,10 @@ package cli
 import (
 	"encoding/json"
 	claimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
-	"github.com/cosmos/cosmos-sdk/client"
 	"io/ioutil"
 )
 
-func parseClaimEntries(clientCtx client.Context, campaignId uint64, claimEntriesFile string) ([]*claimtypes.ClaimRecord, error) {
+func parseClaimEntries(campaignId uint64, claimEntriesFile string) ([]*claimtypes.ClaimRecord, error) {
 	var claimEntries []*claimtypes.ClaimRecord
 
 	if claimEntriesFile == "" {

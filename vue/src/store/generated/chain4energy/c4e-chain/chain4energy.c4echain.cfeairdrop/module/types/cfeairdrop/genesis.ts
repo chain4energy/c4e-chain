@@ -2,7 +2,7 @@
 import { Params } from "../cfeclaim/params";
 import {
   Campaign,
-  CampaignAmountLeft,
+  CampaignCurrentAmount,
   CampaignTotalAmount,
 } from "../cfeclaim/campaign";
 import { UserEntry } from "../cfeclaim/claim_record";
@@ -17,7 +17,7 @@ export interface GenesisState {
   campaigns: Campaign[];
   users_entries: UserEntry[];
   missions: Mission[];
-  campaigns_amount_left: CampaignAmountLeft[];
+  campaigns_amount_left: CampaignCurrentAmount[];
   campaigns_total_amount: CampaignTotalAmount[];
 }
 
@@ -38,7 +38,7 @@ export const GenesisState = {
       Mission.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     for (const v of message.campaigns_amount_left) {
-      CampaignAmountLeft.encode(v!, writer.uint32(50).fork()).ldelim();
+      CampaignCurrentAmount.encode(v!, writer.uint32(50).fork()).ldelim();
     }
     for (const v of message.campaigns_total_amount) {
       CampaignTotalAmount.encode(v!, writer.uint32(58).fork()).ldelim();
@@ -72,7 +72,7 @@ export const GenesisState = {
           break;
         case 6:
           message.campaigns_amount_left.push(
-            CampaignAmountLeft.decode(reader, reader.uint32())
+            CampaignCurrentAmount.decode(reader, reader.uint32())
           );
           break;
         case 7:
@@ -120,7 +120,7 @@ export const GenesisState = {
       object.campaigns_amount_left !== null
     ) {
       for (const e of object.campaigns_amount_left) {
-        message.campaigns_amount_left.push(CampaignAmountLeft.fromJSON(e));
+        message.campaigns_amount_left.push(CampaignCurrentAmount.fromJSON(e));
       }
     }
     if (
@@ -161,7 +161,7 @@ export const GenesisState = {
     }
     if (message.campaigns_amount_left) {
       obj.campaigns_amount_left = message.campaigns_amount_left.map((e) =>
-        e ? CampaignAmountLeft.toJSON(e) : undefined
+        e ? CampaignCurrentAmount.toJSON(e) : undefined
       );
     } else {
       obj.campaigns_amount_left = [];
@@ -208,7 +208,7 @@ export const GenesisState = {
       object.campaigns_amount_left !== null
     ) {
       for (const e of object.campaigns_amount_left) {
-        message.campaigns_amount_left.push(CampaignAmountLeft.fromPartial(e));
+        message.campaigns_amount_left.push(CampaignCurrentAmount.fromPartial(e));
       }
     }
     if (

@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 func CmdClaim() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "claim [campaign-id] [mission-id]",
-		Short: "Broadcast message Claim",
+		Short: "Claim from a campaign",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := strconv.ParseUint(args[0], 10, 64)
@@ -51,7 +51,7 @@ func CmdClaim() *cobra.Command {
 func CmdInitialClaim() *cobra.Command { //  TODO opis ja w innych modulach
 	cmd := &cobra.Command{
 		Use:   "initial-claim [campaign-id] [optional-address-to-claim]",
-		Short: "Broadcast message InitialClaim",
+		Short: "Initial claim from a campaign",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := strconv.ParseUint(args[0], 10, 64)

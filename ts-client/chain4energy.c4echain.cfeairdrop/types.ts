@@ -1,6 +1,6 @@
 import { Campaign } from "./types/c4echain/cfeclaim/campaign"
 import { CampaignTotalAmount } from "./types/c4echain/cfeclaim/campaign"
-import { CampaignAmountLeft } from "./types/c4echain/cfeclaim/campaign"
+import { CampaignCurrentAmount } from "./types/c4echain/cfeclaim/campaign"
 import { UserEntry } from "./types/c4echain/cfeclaim/claim_record"
 import { ClaimRecord } from "./types/c4echain/cfeclaim/claim_record"
 import { NewCampaign } from "./types/c4echain/cfeclaim/event"
@@ -21,7 +21,7 @@ import { Params } from "./types/c4echain/cfeclaim/params"
 export {     
     Campaign,
     CampaignTotalAmount,
-    CampaignAmountLeft,
+    CampaignCurrentAmount,
     UserEntry,
     ClaimRecord,
     NewCampaign,

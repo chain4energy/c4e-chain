@@ -42,7 +42,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 				Weight:      &incorrectWeight,
 			},
 			err:    c4eerrors.ErrParam,
-			errMsg: "add mission to claim campaign - weight (1.500000000000000000) is not between 0 and 1 error: wrong param value",
+			errMsg: "weight (1.500000000000000000) is not between 0 and 1 error: wrong param value",
 		},
 		{
 			name: "invalid mission weight (nil)",
@@ -66,7 +66,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 				Weight:      &correctWeight,
 			},
 			err:    c4eerrors.ErrParam,
-			errMsg: "add mission to claim campaign - empty name error: wrong param value",
+			errMsg: "empty name error: wrong param value",
 		},
 		{
 			name: "empty mission description",
@@ -78,7 +78,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 				Weight:      &correctWeight,
 			},
 			err:    c4eerrors.ErrParam,
-			errMsg: "add mission to claim campaign - mission empty description error: wrong param value",
+			errMsg: "mission empty description error: wrong param value",
 		},
 		{
 			name: "invalid mission type",

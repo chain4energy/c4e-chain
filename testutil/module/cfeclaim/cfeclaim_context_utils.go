@@ -74,6 +74,14 @@ func (h *ContextC4eClaimUtils) InitGenesis(genState cfeclaimtypes.GenesisState) 
 	h.C4eClaimKeeperUtils.InitGenesis(h.testContext.GetContext(), genState)
 }
 
+func (h *ContextC4eClaimUtils) InitGenesisError(genState cfeclaimtypes.GenesisState, errorString string) {
+	h.C4eClaimKeeperUtils.InitGenesisError(h.testContext.GetContext(), genState, errorString)
+}
+
+func (h *ContextC4eClaimUtils) ExportGenesis(genState cfeclaimtypes.GenesisState) {
+	h.C4eClaimKeeperUtils.ExportGenesis(h.testContext.GetContext(), genState)
+}
+
 func (h *ContextC4eClaimUtils) AddClaimRecords(srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord) {
 	h.C4eClaimUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, claimEntries)
 }
@@ -96,6 +104,11 @@ func (h *ContextC4eClaimUtils) AddClaimRecordsError(srcAddress sdk.AccAddress, c
 
 func (h *ContextC4eClaimUtils) ClaimInitial(claimer sdk.AccAddress, campaignId uint64, expectedAmount int64) {
 	h.C4eClaimUtils.ClaimInitial(h.testContext.GetContext(), campaignId, claimer, expectedAmount)
+}
+
+func (m *ContextC4eClaimUtils) ValidateGenesisAndInvariants() {
+	m.C4eClaimUtils.ExportGenesisAndValidate(m.testContext.GetContext())
+	m.C4eClaimUtils.ValidateInvariants(m.testContext.GetContext())
 }
 
 func (h *ContextC4eClaimUtils) ClaimInitialError(claimer sdk.AccAddress, campaignId uint64, errorMessage string) {
@@ -156,6 +169,6 @@ func (h *ContextC4eClaimUtils) CompleteVoteMission(campaignId uint64, missionId 
 }
 
 func (h *ContextC4eClaimUtils) CheckNonNegativeCoinStateInvariant(ctx sdk.Context, failed bool, message string) {
-	invariant := cfeclaimmodulekeeper.CampaignAmountLeftSumCheckInvariant(*h.helpeCfeclaimkeeper)
+	invariant := cfeclaimmodulekeeper.CampaignCurrentAmountSumCheckInvariant(*h.helpeCfeclaimkeeper)
 	testcosmos.CheckInvariant(h.t, ctx, invariant, failed, message)
 }

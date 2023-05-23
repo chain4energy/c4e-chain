@@ -105,6 +105,10 @@ func RandomInt(r *rand.Rand, max int) int64 {
 	return int64(r.Intn(max))
 }
 
+func RandomBool(r *rand.Rand) bool {
+	return r.Intn(2) == 0
+}
+
 func RandIntWith0(r *rand.Rand, max int) int {
 	if max == 0 {
 		return 0

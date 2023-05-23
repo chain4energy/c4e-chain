@@ -162,7 +162,7 @@ func (k Keeper) completeMission(mission *types.Mission, userEntry *types.UserEnt
 }
 
 func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission *types.Mission, userEntry *types.UserEntry,
-	claimableAmount sdk.Coins, updatedFee *sdk.Dec) (*types.UserEntry, error) {
+	claimableAmount sdk.Coins, updatedFree *sdk.Dec) (*types.UserEntry, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
 	address := userEntry.ClaimAddress
@@ -180,8 +180,8 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 	}
 
 	free := campaign.Free
-	if updatedFee != nil {
-		free = *updatedFee
+	if updatedFree != nil {
+		free = *updatedFree
 	}
 
 	if campaign.CampaignType == types.VestingPoolCampaign {
@@ -198,14 +198,15 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 		}
 	}
 
-	k.DecrementCampaignAmountLeft(ctx, campaignId, claimableAmount)
+	campaign.CampaignCurrentAmount = campaign.CampaignCurrentAmount.Sub(claimableAmount...)
+	k.SetCampaign(ctx, *campaign)
 	return userEntry, nil
 }
 
 func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddress string) error {
 	addititonalAccAddress, err := sdk.AccAddressFromBech32(additionalAddress)
 	if err != nil {
-		return errors.Wrap(c4eerrors.ErrParsing, errors.Wrapf(err, "add mission to claim campaign - additionalAddress parsing error: %s", additionalAddress).Error())
+		return errors.Wrap(c4eerrors.ErrParsing, errors.Wrapf(err, "additionalAddress parsing error: %s", additionalAddress).Error())
 	}
 
 	if k.bankKeeper.BlockedAddr(addititonalAccAddress) {
@@ -227,8 +228,10 @@ func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId
 	claimRecord := userEntry.GetClaimRecord(campaignId)
 	allMissionsAmountSum := sdk.NewCoins()
 	for _, mission := range allCampaignMissions {
-		for _, amount := range claimRecord.Amount {
-			allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
+		if mission.MissionType != types.MissionInitialClaim {
+			for _, amount := range claimRecord.Amount {
+				allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, mission.Weight.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
+			}
 		}
 	}
 	return claimRecord.Amount.Sub(allMissionsAmountSum...)

@@ -580,7 +580,6 @@ func New(
 		app.StakingKeeper,
 		app.DistrKeeper,
 		app.CfevestingKeeper,
-		appparams.GetAuthority(),
 	)
 	cfeclaimModule := cfeclaimmodule.NewAppModule(appCodec, app.CfeclaimKeeper, app.CfevestingKeeper)
 

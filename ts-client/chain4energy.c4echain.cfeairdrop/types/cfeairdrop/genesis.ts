@@ -1,6 +1,6 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { CampaignAmountLeft, CampaignTotalAmount, Campaign, Mission, UserEntry } from "./claim";
+import { CampaignCurrentAmount, CampaignTotalAmount, Campaign, Mission, UserEntry } from "./claim";
 import { Params } from "./params";
 
 export const protobufPackage = "chain4energy.c4echain.cfeclaim";
@@ -11,7 +11,7 @@ export interface GenesisState {
   campaigns: Campaign[];
   userEntry: UserEntry[];
   missions: Mission[];
-  claimClaimsLeft: CampaignAmountLeft[];
+  claimClaimsLeft: CampaignCurrentAmount[];
   /** this line is used by starport scaffolding # genesis/proto/state */
   claimDistrubitions: CampaignTotalAmount[];
 }
@@ -42,7 +42,7 @@ export const GenesisState = {
       Mission.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     for (const v of message.claimClaimsLeft) {
-      CampaignAmountLeft.encode(v!, writer.uint32(50).fork()).ldelim();
+      CampaignCurrentAmount.encode(v!, writer.uint32(50).fork()).ldelim();
     }
     for (const v of message.claimDistrubitions) {
       CampaignTotalAmount.encode(v!, writer.uint32(58).fork()).ldelim();
@@ -70,7 +70,7 @@ export const GenesisState = {
           message.missions.push(Mission.decode(reader, reader.uint32()));
           break;
         case 6:
-          message.claimClaimsLeft.push(CampaignAmountLeft.decode(reader, reader.uint32()));
+          message.claimClaimsLeft.push(CampaignCurrentAmount.decode(reader, reader.uint32()));
           break;
         case 7:
           message.claimDistrubitions.push(CampaignTotalAmount.decode(reader, reader.uint32()));
@@ -92,7 +92,7 @@ export const GenesisState = {
         : [],
       missions: Array.isArray(object?.missions) ? object.missions.map((e: any) => Mission.fromJSON(e)) : [],
       claimClaimsLeft: Array.isArray(object?.claimClaimsLeft)
-        ? object.claimClaimsLeft.map((e: any) => CampaignAmountLeft.fromJSON(e))
+        ? object.claimClaimsLeft.map((e: any) => CampaignCurrentAmount.fromJSON(e))
         : [],
       claimDistrubitions: Array.isArray(object?.claimDistrubitions)
         ? object.claimDistrubitions.map((e: any) => CampaignTotalAmount.fromJSON(e))
@@ -119,7 +119,7 @@ export const GenesisState = {
       obj.missions = [];
     }
     if (message.claimClaimsLeft) {
-      obj.claimClaimsLeft = message.claimClaimsLeft.map((e) => e ? CampaignAmountLeft.toJSON(e) : undefined);
+      obj.claimClaimsLeft = message.claimClaimsLeft.map((e) => e ? CampaignCurrentAmount.toJSON(e) : undefined);
     } else {
       obj.claimClaimsLeft = [];
     }
@@ -141,7 +141,7 @@ export const GenesisState = {
     message.campaigns = object.campaigns?.map((e) => Campaign.fromPartial(e)) || [];
     message.userEntry = object.userEntry?.map((e) => UserEntry.fromPartial(e)) || [];
     message.missions = object.missions?.map((e) => Mission.fromPartial(e)) || [];
-    message.claimClaimsLeft = object.claimClaimsLeft?.map((e) => CampaignAmountLeft.fromPartial(e)) || [];
+    message.claimClaimsLeft = object.claimClaimsLeft?.map((e) => CampaignCurrentAmount.fromPartial(e)) || [];
     message.claimDistrubitions = object.claimDistrubitions?.map((e) => CampaignTotalAmount.fromPartial(e)) || [];
     return message;
   },

@@ -126,7 +126,7 @@ export interface CampaignTotalAmount {
   amount: Coin[];
 }
 
-export interface CampaignAmountLeft {
+export interface CampaignCurrentAmount {
   campaignId: number;
   amount: Coin[];
 }
@@ -468,12 +468,12 @@ export const CampaignTotalAmount = {
   },
 };
 
-function createBaseCampaignAmountLeft(): CampaignAmountLeft {
+function createBaseCampaignCurrentAmount(): CampaignCurrentAmount {
   return { campaignId: 0, amount: [] };
 }
 
-export const CampaignAmountLeft = {
-  encode(message: CampaignAmountLeft, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const CampaignCurrentAmount = {
+  encode(message: CampaignCurrentAmount, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
     }
@@ -483,10 +483,10 @@ export const CampaignAmountLeft = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CampaignAmountLeft {
+  decode(input: _m0.Reader | Uint8Array, length?: number): CampaignCurrentAmount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCampaignAmountLeft();
+    const message = createBaseCampaignCurrentAmount();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -504,14 +504,14 @@ export const CampaignAmountLeft = {
     return message;
   },
 
-  fromJSON(object: any): CampaignAmountLeft {
+  fromJSON(object: any): CampaignCurrentAmount {
     return {
       campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
       amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [],
     };
   },
 
-  toJSON(message: CampaignAmountLeft): unknown {
+  toJSON(message: CampaignCurrentAmount): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
     if (message.amount) {
@@ -522,8 +522,8 @@ export const CampaignAmountLeft = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<CampaignAmountLeft>, I>>(object: I): CampaignAmountLeft {
-    const message = createBaseCampaignAmountLeft();
+  fromPartial<I extends Exact<DeepPartial<CampaignCurrentAmount>, I>>(object: I): CampaignCurrentAmount {
+    const message = createBaseCampaignCurrentAmount();
     message.campaignId = object.campaignId ?? 0;
     message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;

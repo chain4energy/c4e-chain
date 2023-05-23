@@ -10,13 +10,9 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		Campaigns:            []Campaign{},
-		UsersEntries:         []UserEntry{},
-		Missions:             []Mission{},
-		CampaignsAmountLeft:  []CampaignAmountLeft{},
-		CampaignsTotalAmount: []CampaignTotalAmount{},
-		// this line is used by starport scaffolding # genesis/types/default
-		Params: DefaultParams(),
+		Campaigns:    []Campaign{},
+		UsersEntries: []UserEntry{},
+		Missions:     []Mission{},
 	}
 }
 
@@ -56,5 +52,5 @@ func (gs GenesisState) Validate() error {
 
 	// this line is used by starport scaffolding # genesis/types/validate
 
-	return gs.Params.Validate()
+	return nil
 }

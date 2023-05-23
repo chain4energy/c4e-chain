@@ -2,7 +2,7 @@ import { txClient, queryClient, MissingWalletError , registry} from './module'
 
 import { Campaign } from "./module/types/cfeclaim/campaign"
 import { CampaignTotalAmount } from "./module/types/cfeclaim/campaign"
-import { CampaignAmountLeft } from "./module/types/cfeclaim/campaign"
+import { CampaignCurrentAmount } from "./module/types/cfeclaim/campaign"
 import { UserEntry } from "./module/types/cfeclaim/claim_record"
 import { ClaimRecord } from "./module/types/cfeclaim/claim_record"
 import { NewCampaign } from "./module/types/cfeclaim/event"
@@ -20,7 +20,7 @@ import { Mission } from "./module/types/cfeclaim/mission"
 import { Params } from "./module/types/cfeclaim/params"
 
 
-export { Campaign, CampaignTotalAmount, CampaignAmountLeft, UserEntry, ClaimRecord, NewCampaign, EditCampaign, CloseCampaign, RemoveCampaign, EnableCampaign, AddMissionToCampaign, Claim, InitialClaim, AddClaimRecords, DeleteClaimRecord, CompleteMissionFromHook, Mission, Params };
+export { Campaign, CampaignTotalAmount, CampaignCurrentAmount, UserEntry, ClaimRecord, NewCampaign, EditCampaign, CloseCampaign, RemoveCampaign, EnableCampaign, AddMissionToCampaign, Claim, InitialClaim, AddClaimRecords, DeleteClaimRecord, CompleteMissionFromHook, Mission, Params };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -66,12 +66,12 @@ const getDefaultState = () => {
 				Campaigns: {},
 				Campaign: {},
 				CampaignTotalAmount: {},
-				CampaignAmountLeft: {},
+				CampaignCurrentAmount: {},
 				
 				_Structure: {
 						Campaign: getStructure(Campaign.fromPartial({})),
 						CampaignTotalAmount: getStructure(CampaignTotalAmount.fromPartial({})),
-						CampaignAmountLeft: getStructure(CampaignAmountLeft.fromPartial({})),
+						CampaignCurrentAmount: getStructure(CampaignCurrentAmount.fromPartial({})),
 						UserEntry: getStructure(UserEntry.fromPartial({})),
 						ClaimRecord: getStructure(ClaimRecord.fromPartial({})),
 						NewCampaign: getStructure(NewCampaign.fromPartial({})),
@@ -163,11 +163,11 @@ export default {
 					}
 			return state.CampaignTotalAmount[JSON.stringify(params)] ?? {}
 		},
-				getCampaignAmountLeft: (state) => (params = { params: {}}) => {
+				getCampaignCurrentAmount: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.CampaignAmountLeft[JSON.stringify(params)] ?? {}
+			return state.CampaignCurrentAmount[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -396,18 +396,18 @@ export default {
 		 		
 		
 		
-		async QueryCampaignAmountLeft({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryCampaignCurrentAmount({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryCampaignAmountLeft( key.campaign_id)).data
+				let value= (await queryClient.queryCampaignCurrentAmount( key.campaign_id)).data
 				
 					
-				commit('QUERY', { query: 'CampaignAmountLeft', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryCampaignAmountLeft', payload: { options: { all }, params: {...key},query }})
-				return getters['getCampaignAmountLeft']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'CampaignCurrentAmount', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryCampaignCurrentAmount', payload: { options: { all }, params: {...key},query }})
+				return getters['getCampaignCurrentAmount']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryCampaignAmountLeft API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryCampaignCurrentAmount API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

@@ -16,7 +16,7 @@ var _ = strconv.Itoa(0)
 func CmdRemoveCampaign() *cobra.Command { //  TODO opis ja w innych modulach
 	cmd := &cobra.Command{
 		Use:   "remove-campaign [campaign-id]",
-		Short: "Broadcast message RemoveCampaign",
+		Short: "Remove existing campaign (campaign cannot be enabled)",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := cast.ToUint64E(args[0])

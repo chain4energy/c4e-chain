@@ -11,14 +11,14 @@ import (
 	"testing"
 )
 
-func TestCampaignAmountLeftSumCheckInvariantEmptyClaimsLeft(t *testing.T) {
+func TestCampaignCurrentAmountSumCheckInvariantEmptyClaimsLeft(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	testHelper.C4eClaimUtils.CheckNonNegativeCoinStateInvariant(testHelper.Context, false,
-		"cfeclaim: claim claims left sum check invariant\nclaim claims left sum is empty\n")
+		"cfeclaim: campaigns current amount sum invariant\ncampaigns list is empty\n")
 }
 
-func TestCampaignAmountLeftSumCheckInvariantCorrect(t *testing.T) {
+func TestCampaignCurrentAmountSumCheckInvariantCorrect(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -27,10 +27,10 @@ func TestCampaignAmountLeftSumCheckInvariantCorrect(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.CheckNonNegativeCoinStateInvariant(testHelper.Context, false,
-		"cfeclaim: claim claims left sum check invariant\nclaim claims left sum is equal to cfeclaim module account balance\n")
+		"cfeclaim: campaigns current amount sum invariant\nclaim claims left sum is equal to cfeclaim module account balance\n")
 }
 
-func TestCampaignAmountLeftSumCheckInvariantError(t *testing.T) {
+func TestCampaignCurrentAmountSumCheckInvariantError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
@@ -42,6 +42,6 @@ func TestCampaignAmountLeftSumCheckInvariantError(t *testing.T) {
 	amountSumCoins := sdk.NewCoin(testenv.DefaultTestDenom, amountSum)
 	testHelper.BankUtils.BankUtils.AddCoinsToModule(testHelper.Context, coinsToAddToModule, cfeclaimtypes.ModuleName)
 	testHelper.C4eClaimUtils.CheckNonNegativeCoinStateInvariant(testHelper.Context, true,
-		fmt.Sprintf("cfeclaim: claim claims left sum check invariant\nclaim claims left sum is equal to cfeclaim module account balance (%s != %s)\n",
+		fmt.Sprintf("cfeclaim: campaigns current amount sum invariant\ncampaigns current amount sum is not equal to cfeclaim module account balance (%s != %s)\n",
 			amountSumCoins, amountSumCoins.Add(coinsToAddToModule)))
 }

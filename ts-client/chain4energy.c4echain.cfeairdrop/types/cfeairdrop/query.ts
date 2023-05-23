@@ -34,11 +34,11 @@ export interface QueryCampaignTotalAmountResponse {
   amount: Coin[];
 }
 
-export interface QueryCampaignAmountLeftRequest {
+export interface QueryCampaignCurrentAmountRequest {
   campaignId: number;
 }
 
-export interface QueryCampaignAmountLeftResponse {
+export interface QueryCampaignCurrentAmountResponse {
   amount: Coin[];
 }
 
@@ -384,22 +384,22 @@ export const QueryCampaignTotalAmountResponse = {
   },
 };
 
-function createBaseQueryCampaignAmountLeftRequest(): QueryCampaignAmountLeftRequest {
+function createBaseQueryCampaignCurrentAmountRequest(): QueryCampaignCurrentAmountRequest {
   return { campaignId: 0 };
 }
 
-export const QueryCampaignAmountLeftRequest = {
-  encode(message: QueryCampaignAmountLeftRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryCampaignCurrentAmountRequest = {
+  encode(message: QueryCampaignCurrentAmountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCampaignAmountLeftRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCampaignCurrentAmountRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCampaignAmountLeftRequest();
+    const message = createBaseQueryCampaignCurrentAmountRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -414,41 +414,41 @@ export const QueryCampaignAmountLeftRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryCampaignAmountLeftRequest {
+  fromJSON(object: any): QueryCampaignCurrentAmountRequest {
     return { campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0 };
   },
 
-  toJSON(message: QueryCampaignAmountLeftRequest): unknown {
+  toJSON(message: QueryCampaignCurrentAmountRequest): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryCampaignAmountLeftRequest>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryCampaignCurrentAmountRequest>, I>>(
     object: I,
-  ): QueryCampaignAmountLeftRequest {
-    const message = createBaseQueryCampaignAmountLeftRequest();
+  ): QueryCampaignCurrentAmountRequest {
+    const message = createBaseQueryCampaignCurrentAmountRequest();
     message.campaignId = object.campaignId ?? 0;
     return message;
   },
 };
 
-function createBaseQueryCampaignAmountLeftResponse(): QueryCampaignAmountLeftResponse {
+function createBaseQueryCampaignCurrentAmountResponse(): QueryCampaignCurrentAmountResponse {
   return { amount: [] };
 }
 
-export const QueryCampaignAmountLeftResponse = {
-  encode(message: QueryCampaignAmountLeftResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryCampaignCurrentAmountResponse = {
+  encode(message: QueryCampaignCurrentAmountResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.amount) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCampaignAmountLeftResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCampaignCurrentAmountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCampaignAmountLeftResponse();
+    const message = createBaseQueryCampaignCurrentAmountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -463,13 +463,13 @@ export const QueryCampaignAmountLeftResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryCampaignAmountLeftResponse {
+  fromJSON(object: any): QueryCampaignCurrentAmountResponse {
     return {
       amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [],
     };
   },
 
-  toJSON(message: QueryCampaignAmountLeftResponse): unknown {
+  toJSON(message: QueryCampaignCurrentAmountResponse): unknown {
     const obj: any = {};
     if (message.amount) {
       obj.amount = message.amount.map((e) => e ? Coin.toJSON(e) : undefined);
@@ -479,10 +479,10 @@ export const QueryCampaignAmountLeftResponse = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryCampaignAmountLeftResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryCampaignCurrentAmountResponse>, I>>(
     object: I,
-  ): QueryCampaignAmountLeftResponse {
-    const message = createBaseQueryCampaignAmountLeftResponse();
+  ): QueryCampaignCurrentAmountResponse {
+    const message = createBaseQueryCampaignCurrentAmountResponse();
     message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
@@ -1061,7 +1061,7 @@ export interface Query {
   /** Queries a CampaignTotalAmount by campaignId. */
   CampaignTotalAmount(request: QueryCampaignTotalAmountRequest): Promise<QueryCampaignTotalAmountResponse>;
   /** Queries a CampaignTotalAmount by campaignId. */
-  CampaignAmountLeft(request: QueryCampaignAmountLeftRequest): Promise<QueryCampaignAmountLeftResponse>;
+  CampaignCurrentAmount(request: QueryCampaignCurrentAmountRequest): Promise<QueryCampaignCurrentAmountResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1076,7 +1076,7 @@ export class QueryClientImpl implements Query {
     this.Campaigns = this.Campaigns.bind(this);
     this.Campaign = this.Campaign.bind(this);
     this.CampaignTotalAmount = this.CampaignTotalAmount.bind(this);
-    this.CampaignAmountLeft = this.CampaignAmountLeft.bind(this);
+    this.CampaignCurrentAmount = this.CampaignCurrentAmount.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -1126,10 +1126,10 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryCampaignTotalAmountResponse.decode(new _m0.Reader(data)));
   }
 
-  CampaignAmountLeft(request: QueryCampaignAmountLeftRequest): Promise<QueryCampaignAmountLeftResponse> {
-    const data = QueryCampaignAmountLeftRequest.encode(request).finish();
-    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "CampaignAmountLeft", data);
-    return promise.then((data) => QueryCampaignAmountLeftResponse.decode(new _m0.Reader(data)));
+  CampaignCurrentAmount(request: QueryCampaignCurrentAmountRequest): Promise<QueryCampaignCurrentAmountResponse> {
+    const data = QueryCampaignCurrentAmountRequest.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfeclaim.Query", "CampaignCurrentAmount", data);
+    return promise.then((data) => QueryCampaignCurrentAmountResponse.decode(new _m0.Reader(data)));
   }
 }
 
