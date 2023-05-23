@@ -144,7 +144,7 @@ func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignI
 	return &campaign, nil
 }
 
-func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string,
+func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string, // TODO nazwa na ValidateVestingPoolCampaign
 	lockupPeriod *time.Duration, vestingPeriod *time.Duration, free sdk.Dec) error {
 	_, vestingPool, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
 
@@ -156,7 +156,7 @@ func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner 
 	if err != nil {
 		return err
 	}
-	if lockupPeriod == nil {
+	if lockupPeriod == nil {  // TODO te dwa sprawdeni powinny byc presuniete to types.ValidateCreateCampaignParams bo nie wymagaja Ctx
 		return errors.Wrap(c4eerrors.ErrParam, "lockup period cannot be nil for vesting pool campaign")
 	}
 	if vestingPeriod == nil {

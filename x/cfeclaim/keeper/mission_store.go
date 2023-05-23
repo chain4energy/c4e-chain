@@ -76,7 +76,7 @@ func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list 
 }
 
 // GetAllMissionForCampaign returns all mission
-func (k Keeper) RemoveAllMissionForCampaign(ctx sdk.Context, campaignId uint64) {
+func (k Keeper) RemoveAllMissionForCampaign(ctx sdk.Context, campaignId uint64) { // TODO nazwa ReomveCampaignMissions
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 	defer iterator.Close()

@@ -63,33 +63,34 @@ func (msg *MsgCreateCampaign) ValidateBasic() error {
 }
 
 func ValidateCreateCampaignParams(name string, description string, startTime *time.Time, endTime *time.Time, campaignType CampaignType, vestingPoolName string) error {
-	if err := ValidateCampaignName(name); err != nil {
+	if err := ValidateCampaignName(name); err != nil { // TODO bardzo duze rodrobnienie - jest to potrzebne? 
 		return err
 	}
-	if err := ValidateCampaignDescription(description); err != nil {
+	if err := ValidateCampaignDescription(description); err != nil { // TODO bardzo duze rodrobnienie - jest to potrzebne? 
 		return err
 	}
 	if err := ValidateCampaignEndTimeAfterStartTime(startTime, endTime); err != nil {
 		return err
 	}
 	return ValidateCampaignType(campaignType, vestingPoolName)
+	// TODO dodanie validacji periodow i free gdy kampabni typy vestig pool
 }
 
-func ValidateCampaignName(name string) error {
+func ValidateCampaignName(name string) error { // TODO raczej za duze rozdrobnienie - jest jakis powod?
 	if name == "" {
 		return errors.Wrap(c4eerrors.ErrParam, "campaign name is empty")
 	}
 	return nil
 }
 
-func ValidateCampaignDescription(description string) error {
+func ValidateCampaignDescription(description string) error { // TODO raczej za duze rozdrobnienie - jest jakis powod? czy to wlasciwe jest? description moze byc puste
 	if description == "" {
 		return errors.Wrap(c4eerrors.ErrParam, "description is empty")
 	}
 	return nil
 }
 
-func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.Time) error {
+func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.Time) error { // TODO nazwa ValidateCampaignTimes
 	if endTime == nil {
 		return errors.Wrapf(c4eerrors.ErrParam, "end time is nil error")
 	}
@@ -102,7 +103,7 @@ func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.T
 	return nil
 }
 
-func ValidateCampaignType(campaignType CampaignType, vestingPoolName string) error {
+func ValidateCampaignType(campaignType CampaignType, vestingPoolName string) error { // TODO raczej prywatna funkcja
 	switch campaignType {
 	case VestingPoolCampaign:
 		if vestingPoolName == "" {

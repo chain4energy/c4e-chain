@@ -12,6 +12,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 	defer telemetry.IncrCounter(1, types.ModuleName, "create aidrop campaign message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	// TODO odpinterujmy paramertry tutaj, nie ma sensu przenosic tego do keepera
 	campaign, err := k.Keeper.CreateCampaign(
 		ctx,
 		msg.Owner,
@@ -52,7 +53,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		k.Logger(ctx).Error("create campaign emit event error", "event", event, "error", err.Error())
 	}
 
-	return &types.MsgCreateCampaignResponse{}, nil
+	return &types.MsgCreateCampaignResponse{}, nil // TODO powinnsmy tutaj zworcic campaign ID , bo skad ktos ma dalej wiedziec jakie jest?
 }
 
 func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCampaign) (*types.MsgRemoveCampaignResponse, error) {
@@ -82,6 +83,7 @@ func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCam
 func (k msgServer) EnableCampaign(goCtx context.Context, msg *types.MsgEnableCampaign) (*types.MsgEnableCampaignResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "start claim campaign message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	// TODO odpinterujmy paramertry tutaj, nie ma sensu przenosic tego do keepera
 
 	if err := k.Keeper.EnableCampaign(
 		ctx,

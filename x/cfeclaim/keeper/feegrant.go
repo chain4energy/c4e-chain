@@ -13,8 +13,8 @@ import (
 	"strconv"
 )
 
-func validateFeegrantAmount(feeGrantAmount *math.Int) (math.Int, error) {
-	if feeGrantAmount == nil {
+func validateFeegrantAmount(feeGrantAmount *math.Int) (math.Int, error) { // TODO do types/campaign.go - nazwa na fixAndValidate ale raczej do usuniecia bo ospointerowanie powinno byc w obsludze Msg
+	if feeGrantAmount == nil { // TODO Te 2 nil na 0 jest z tego co mi sie wydaje w wielu miejscach w roznych modulach, wiec jakis common util by sie przydal NilIntToZeroInt
 		return math.ZeroInt(), nil
 	}
 
@@ -22,7 +22,7 @@ func validateFeegrantAmount(feeGrantAmount *math.Int) (math.Int, error) {
 		return math.ZeroInt(), nil
 	}
 
-	if feeGrantAmount.IsNegative() {
+	if feeGrantAmount.IsNegative() { // TODO to trzba jak fukcje validcji w types/campaign.go i tutaj wywolane
 		return math.ZeroInt(), errors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
 	}
 
@@ -82,7 +82,7 @@ func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddres
 	return nil
 }
 
-func (k Keeper) closeCampaignSendFeegrant(ctx sdk.Context, campaign *types.Campaign) error {
+func (k Keeper) closeCampaignSendFeegrant(ctx sdk.Context, campaign *types.Campaign) error { // TODO nazwa returnFeegrantOnClose czy cos w tym stylu 
 	if !campaign.FeegrantAmount.IsPositive() {
 		return nil
 	}
