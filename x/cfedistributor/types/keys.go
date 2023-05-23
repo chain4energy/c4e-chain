@@ -33,7 +33,7 @@ const (
 
 	BurnDestination = "burn_destination"
 
-	DenomToTrace = "uc4e" // TODO should be in module params
+	DenomToTrace = "uc4e" // TODO should be in module params - do omowienia - mozna tez wziac to z jakiegos constanta globalnego albo pobrane z konfiguracji mintingu
 )
 
 func KeyPrefix(p string) []byte {

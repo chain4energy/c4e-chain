@@ -12,10 +12,11 @@ func (k msgServer) AddMissionToCampaign(goCtx context.Context, msg *types.MsgAdd
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
+	// TODO odpointerowac jezeli parametry mandatory
 	if err := keeper.AddMissionToCampaign(ctx, msg.Owner, msg.CampaignId, msg.Name, msg.Description, msg.MissionType, *msg.Weight, msg.ClaimStartDate); err != nil {
 		k.Logger(ctx).Debug("add mission to claim campaign", "err", err.Error())
 		return nil, err
 	}
 
-	return &types.MsgAddMissionToCampaignResponse{}, nil
+	return &types.MsgAddMissionToCampaignResponse{}, nil // TODO mission id jest chyba nadawany, powinien byc zwracany bo jest query na misje
 }

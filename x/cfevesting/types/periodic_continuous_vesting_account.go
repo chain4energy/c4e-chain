@@ -31,7 +31,7 @@ func NewPeriodicContinuousVestingAccountRaw(bva *vestingtypes.BaseVestingAccount
 }
 
 // NewRepeatedContinuousVestingAccount returns a new VestingAccount
-func NewRepeatedContinuousVestingAccount(baseAcc *authtypes.BaseAccount, originalVesting sdk.Coins, startTime int64, endTime int64, periods ContinuousVestingPeriods) *PeriodicContinuousVestingAccount {
+func NewRepeatedContinuousVestingAccount(baseAcc *authtypes.BaseAccount, originalVesting sdk.Coins, startTime int64, endTime int64, periods ContinuousVestingPeriods) *PeriodicContinuousVestingAccount { // TODO Periodic ne Repeated
 	baseVestingAcc := &vestingtypes.BaseVestingAccount{
 		BaseAccount:     baseAcc,
 		OriginalVesting: originalVesting,

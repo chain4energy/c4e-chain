@@ -13,7 +13,7 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdBurn() *cobra.Command {
+func CmdBurn() *cobra.Command { // TODO opis jak winnych modulach
 	cmd := &cobra.Command{
 		Use:   "burn [amount]",
 		Short: "Broadcast message Burn",

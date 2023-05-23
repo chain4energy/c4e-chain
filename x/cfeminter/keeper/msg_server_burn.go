@@ -24,14 +24,14 @@ func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBu
 	return &types.MsgBurnResponse{}, nil
 }
 
-func (k Keeper) Burn(ctx sdk.Context, address string, amount sdk.Coins) error {
+func (k Keeper) Burn(ctx sdk.Context, address string, amount sdk.Coins) error { // TODO ta metoda do pliku burn.go - trzeba tez przegadac czy miec tego burna bo z tego co czytam to moe byc nigatywnie odebran - rozmowa z Gregiem
 	accAddress, err := sdk.AccAddressFromBech32(address)
 	if err != nil {
 		return errors.Wrap(c4eerrors.ErrParsing, err.Error())
 	}
 
 	balances := k.bankKeeper.GetAllBalances(ctx, accAddress)
-	if amount.IsAnyGT(balances) {
+	if amount.IsAnyGT(balances) { // TODO sprawdzenie bo mialem kiedy dziwne zahcowani tych grupowych porownan (chyba przypadek jak rozne coiny w porownywanych)
 		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "balance is too small (%s < %s)", balances, amount)
 	}
 

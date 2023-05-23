@@ -58,7 +58,7 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 	return nil
 }
 
-func (k Keeper) ValidateAddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string,
+func (k Keeper) ValidateAddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, // TODO to moze ez do types z przkazanie paramrwo z KV store - dp zastanowienia i nazwa VlidaetNewMission
 	missionType types.MissionType, weight sdk.Dec, claimStartDate *time.Time) (*types.Campaign, error) {
 	err := types.ValidateAddMissionToCampaign(owner, name, description, missionType, &weight)
 	if err != nil {
@@ -71,20 +71,20 @@ func (k Keeper) ValidateAddMissionToCampaign(ctx sdk.Context, owner string, camp
 	if err = ValidateOwner(campaign, owner); err != nil {
 		return nil, err
 	}
-	if err = k.ValidateMissionWeightsNotGreaterThan1(ctx, campaignId, weight); err != nil {
+	if err = k.ValidateMissionWeightsNotGreaterThan1(ctx, campaignId, weight); err != nil { // TODO do types mission.go z przyjmowanie listy misji 
 		return nil, err
 	}
-	if err = k.ValidateOnlyFirstMissionInitialClaim(ctx, campaignId, missionType); err != nil {
+	if err = k.ValidateOnlyFirstMissionInitialClaim(ctx, campaignId, missionType); err != nil { // TODO do types mission.go z przyjmowanie listy misji - odciazy to tez z podwnego wyciagane lity misji
 		return nil, err
 	}
-	if err = ValidateMissionClaimStartDate(campaign, claimStartDate); err != nil {
+	if err = ValidateMissionClaimStartDate(campaign, claimStartDate); err != nil { 
 		return nil, err
 	}
 	return &campaign, nil
 }
 
 func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, error) { // TODO nazwa niewiele mowi
-	campaign, campaignFound := k.GetCampaign(ctx, campaignId)
+	campaign, campaignFound := k.GetCampaign(ctx, campaignId) // TODO mam tez wracenie ze wycigamy to wiele raz w jednym przebiegu - metoda raczej powinno przyjnmowac obiekt a metoda mozna dodac MustGetCampaign na store i wolona w mtodzi nadrzednej
 	if !campaignFound {
 		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
 	}
@@ -116,14 +116,14 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId u
 	return &campaign, mission, &userEntry, nil
 } // TODO - nowa linia
 func (k Keeper) ValidateMissionExists(ctx sdk.Context, campaignId uint64, missionId uint64) (*types.Mission, error) {
-	mission, missionFound := k.GetMission(ctx, campaignId, missionId)
+	mission, missionFound := k.GetMission(ctx, campaignId, missionId) // TODO nazwa MustGetMission i do mission_store.go
 	if !missionFound {
 		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "mission not found - campaignId %d, missionId %d", campaignId, missionId)
 	}
 	return &mission, nil
 }
 
-func (k Keeper) ValidateMissionWeightsNotGreaterThan1(ctx sdk.Context, campaignId uint64, newMissionWeight sdk.Dec) error {
+func (k Keeper) ValidateMissionWeightsNotGreaterThan1(ctx sdk.Context, campaignId uint64, newMissionWeight sdk.Dec) error {  // TODO do types mission.go z przyjmowanie listy misji 
 	_, weightSum := k.AllMissionForCampaign(ctx, campaignId)
 	weightSum = weightSum.Add(newMissionWeight)
 	if weightSum.GT(sdk.NewDec(1)) {
@@ -132,7 +132,7 @@ func (k Keeper) ValidateMissionWeightsNotGreaterThan1(ctx sdk.Context, campaignI
 	return nil
 }
 
-func (k Keeper) ValidateOnlyFirstMissionInitialClaim(ctx sdk.Context, campaignId uint64, missionType types.MissionType) error {
+func (k Keeper) ValidateOnlyFirstMissionInitialClaim(ctx sdk.Context, campaignId uint64, missionType types.MissionType) error {  // TODO do types mission.go z przyjmowanie listy misji 
 	missions, _ := k.AllMissionForCampaign(ctx, campaignId)
 	if len(missions) > 0 && missionType == types.MissionInitialClaim {
 		return errors.Wrapf(c4eerrors.ErrParam, "there can be only one mission with InitialClaim type and must be first in the campaign")
@@ -142,11 +142,11 @@ func (k Keeper) ValidateOnlyFirstMissionInitialClaim(ctx sdk.Context, campaignId
 	return nil
 }
 
-func ValidateMissionClaimStartDate(campaign types.Campaign, claimStartDate *time.Time) error {
+func ValidateMissionClaimStartDate(campaign types.Campaign, claimStartDate *time.Time) error { // TODO metoda Campaign i pod nazwa MustBetweenStartAndEnd - mozna sobie ustalic zasade ze Must jak nie gada zwraca blad jak bymetod czy funkcja IsBetweenStartAndEnd to wtedy wynik (tym przypdku bool)
 	if claimStartDate == nil {
 		return nil
 	}
-	if claimStartDate.After(campaign.EndTime) {
+	if claimStartDate.After(campaign.EndTime) { // TODO or equal zeby bylo spojnie ze end time to juz moment w ktorym nie dziala
 		return errors.Wrapf(c4eerrors.ErrParam, "mission claim start date after campaign end time (end time - %s < %s)", campaign.EndTime, claimStartDate)
 	}
 	if claimStartDate.Before(campaign.StartTime) {

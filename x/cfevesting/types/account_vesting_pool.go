@@ -67,11 +67,11 @@ func (m *VestingPool) GetCurrentlyLocked() math.Int {
 	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn)
 }
 
-func (m *VestingPool) GetCurrentlyLockedInReservation(reservationId uint64) math.Int {
+func (m *VestingPool) GetCurrentlyLockedInReservation(reservationId uint64) math.Int { // TODO nazwa GetReserved
 	return m.GetReservation(reservationId).Amount
 }
 
-func (pool *VestingPool) GetCurrentlyLockedInReservations() math.Int {
+func (pool *VestingPool) GetCurrentlyLockedInReservations() math.Int { // TODO nazwa GetAllReserved
 	amountSum := math.ZeroInt()
 	for _, reservation := range pool.Reservations {
 		amountSum = amountSum.Add(reservation.Amount)
@@ -153,7 +153,7 @@ func (pool *VestingPool) SubstractFromReservation(reservationId uint64, amount m
 	return errors.Wrapf(c4eerrors.ErrNotExists, "reservation with id %d not found", reservationId)
 }
 
-func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amount math.Int) error {
+func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amount math.Int) error { // TODO nazwa DecrementReservedAndSent
 	if err := vestingPool.SubstractFromReservation(reservationId, amount); err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amo
 	return nil
 }
 
-func (vestingPool *VestingPool) SendFromLockedTokens(amount math.Int) error {
+func (vestingPool *VestingPool) SendFromLockedTokens(amount math.Int) error { // TODO nazw na IncrementSent
 	available := vestingPool.GetCurrentlyLockedWithoutReservations()
 
 	if available.LT(amount) {

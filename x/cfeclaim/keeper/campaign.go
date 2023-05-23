@@ -241,7 +241,7 @@ func (k Keeper) ValidateRemoveCampaignParams(ctx sdk.Context, owner string, camp
 	return &campaign, types.ValidateCampaignIsNotEnabled(campaign)
 }
 
-func (k Keeper) ValidateCampaignExists(ctx sdk.Context, campaignId uint64) (types.Campaign, error) {
+func (k Keeper) ValidateCampaignExists(ctx sdk.Context, campaignId uint64) (types.Campaign, error) { // TODO nazwa MustGetCampaign i do campaign_store.go
 	campaign, found := k.GetCampaign(ctx, campaignId)
 	if !found {
 		return types.Campaign{}, errors.Wrapf(c4eerrors.ErrNotExists, "campaign with id %d not found", campaignId)
