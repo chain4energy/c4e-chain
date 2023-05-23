@@ -14,6 +14,8 @@ const (
 	TeamdropTypeName       = "Teamdrop"
 )
 
+// TODO tak samo metody i typy do migracji modulu
+
 func ModifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	fairdropVestingType := cfevestingtypes.VestingType{
 		Name:          FairdropTypeName,
@@ -21,7 +23,7 @@ func ModifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 		LockupPeriod:  183 * 24 * time.Hour,
 		VestingPeriod: 91 * 24 * time.Hour,
 	}
-	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, fairdropVestingType)
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, fairdropVestingType)  
 
 	teamdropVestingType := cfevestingtypes.VestingType{
 		Name:          TeamdropTypeName,

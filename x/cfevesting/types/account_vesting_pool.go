@@ -59,7 +59,7 @@ func (av AccountVestingPools) ValidateAgainstVestingTypes(vestingTypes []Genesis
 	return nil
 }
 
-func (m *VestingPool) GetCurrentlyLockedWithoutReservations() math.Int {
+func (m *VestingPool) GetCurrentlyLockedWithoutReservations() math.Int { // TODO moze zmiana na GetLockedNotReserved
 	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn).Sub(m.GetCurrentlyLockedInReservations())
 }
 

@@ -23,9 +23,11 @@ message GenesisState {
   repeated Mission missions = 5 [
     (gogoproto.nullable) = false
   ];
-  repeated CampaignAmountLeft campaigns_amount_left = 6 [
+  // TODO wylatuje
+  repeated CampaignAmountLeft campaigns_amount_left = 6 [ 
     (gogoproto.nullable) = false
   ];
+   // TODO wylatuje
   repeated CampaignTotalAmount campaigns_total_amount = 7 [
     (gogoproto.nullable) = false
   ];

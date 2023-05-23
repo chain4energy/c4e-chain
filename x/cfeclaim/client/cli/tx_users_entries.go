@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdAddClaimRecords() *cobra.Command {
+func CmdAddClaimRecords() *cobra.Command { //  TODO opis ja w innych modulach
 	cmd := &cobra.Command{
 		Use:   "add-claim-records [campaignId] [claim-entries-json-file]",
 		Short: "Create a new ClaimRecord",

@@ -13,7 +13,7 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdRemoveCampaign() *cobra.Command {
+func CmdRemoveCampaign() *cobra.Command { //  TODO opis ja w innych modulach
 	cmd := &cobra.Command{
 		Use:   "remove-campaign [campaign-id]",
 		Short: "Broadcast message RemoveCampaign",

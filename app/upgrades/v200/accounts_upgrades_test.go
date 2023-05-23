@@ -65,8 +65,9 @@ var (
 	}
 )
 
+// TODO w testach tez uzywac skopiowanych typow i metod keepera
 func TestMigrateAirdropModuleAccount(t *testing.T) {
-	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000) 
 	addVestingTypes(testHelper)
 	addVestingPools(testHelper)
 	airdropModuleAccAddress := addAirdropModuleAccount(testHelper)
@@ -88,7 +89,7 @@ func TestMigrateAirdropModuleAccount(t *testing.T) {
 	require.Equal(t, airdropModuleBalance, sdk.NewCoins())
 }
 
-func TestMigrateAirdropModuleAccountDoesnTExist(t *testing.T) {
+func TestMigrateAirdropModuleAccountDoesnTExist(t *testing.T) { // TODO literowka DoesnT - zrobic male t
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
 	addVestingPools(testHelper)

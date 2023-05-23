@@ -13,7 +13,7 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdCloseCampaign() *cobra.Command {
+func CmdCloseCampaign() *cobra.Command { //  TODO opis ja w innych modulach
 	cmd := &cobra.Command{
 		Use:   "close-campaign [campaign-id] [campaign-close-action]",
 		Short: "Broadcast message CloseCampaign",

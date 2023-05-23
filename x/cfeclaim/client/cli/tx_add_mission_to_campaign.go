@@ -14,7 +14,7 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdAddMissionToCampaign() *cobra.Command {
+func CmdAddMissionToCampaign() *cobra.Command { //  TODO opis ja w innych modulach
 	cmd := &cobra.Command{
 		Use:   "add-mission-to-campaign [campaign-id] [name] [description] [mission-type] [weight] [optional-claim-start-date]",
 		Short: "Broadcast message AddMissionToAidropCampaign",

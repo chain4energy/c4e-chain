@@ -45,7 +45,7 @@ func ModifyVestingPoolsState(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeep
 	if err != nil {
 		return err
 	}
-	vestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, poolsOwnerAddress.String())
+	vestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, poolsOwnerAddress.String()) //  TODO trzba ta metoda skiopwac w migracji uzwajac zwyklego mrshalingu (nie must) i skopiwac typ Account vesting pools, wynik problemu ponizej
 	if !found {
 		ctx.Logger().Info("vesting pools not found", "owner", poolsOwnerAddress.String())
 		return nil
@@ -65,7 +65,8 @@ func ModifyVestingPoolsState(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeep
 		return nil
 	}
 
-	if validatorsVestingPools.GetCurrentlyLockedWithoutReservations().LT(sum) {
+	if validatorsVestingPools.GetCurrentlyLockedWithoutReservations().LT(sum) { //  TODO to nie moze tak byc, w tej wersji nie ma rezerwacji. Z tego wnisek ze podejscie ze kopiowanie kodu do migracji robimyw miare potrzeb nie jest ok, trzeba to zmienic zarowna do typow jak i keepera
+		// TODO skopiowac typ vesting pool do migracji i uzyc ststarego
 		ctx.Logger().Info("validators vesting pool not enough locked to split", "owner", poolsOwnerAddress.String())
 		return nil
 	}
@@ -77,14 +78,14 @@ func ModifyVestingPoolsState(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeep
 }
 
 func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) bool {
-	vestingType, err := appKeepers.GetC4eVestingKeeper().GetVestingType(ctx, oldValidatorTypeName)
+	vestingType, err := appKeepers.GetC4eVestingKeeper().GetVestingType(ctx, oldValidatorTypeName) // TODO skopiowac metode to migracji z mushalingiem bez must
 	if err != nil {
 		ctx.Logger().Info("vesting type not found", "vestingType", oldValidatorTypeName)
 		return false
 	}
-	appKeepers.GetC4eVestingKeeper().RemoveVestingType(ctx, oldValidatorTypeName)
+	appKeepers.GetC4eVestingKeeper().RemoveVestingType(ctx, oldValidatorTypeName) // TODO skopiowac metode to migracji z mushalingiem bez must
 	vestingType.Name = validatorRoundTypeName
-	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, vestingType)
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, vestingType)  // TODO skopiowac metode to migracji z mushalingiem bez must
 
 	vcRoundType := cfevestingtypes.VestingType{
 		Name:          vcRoundTypeName,
@@ -92,7 +93,7 @@ func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 		LockupPeriod:  548 * 24 * time.Hour,
 		VestingPeriod: 548 * 24 * time.Hour,
 	}
-	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, vcRoundType)
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, vcRoundType)  // TODO skopiowac metode to migracji z mushalingiem bez must
 
 	earlyBirdRoundType := cfevestingtypes.VestingType{
 		Name:          earlyBirdRoundTypeName,
@@ -100,7 +101,7 @@ func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 		LockupPeriod:  (365 + 91) * 24 * time.Hour,
 		VestingPeriod: 365 * 24 * time.Hour,
 	}
-	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, earlyBirdRoundType)
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, earlyBirdRoundType)  // TODO skopiowac metode to migracji z mushalingiem bez must
 
 	publicRoundType := cfevestingtypes.VestingType{
 		Name:          publicRoundTypeName,
@@ -108,7 +109,7 @@ func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 		LockupPeriod:  274 * 24 * time.Hour,
 		VestingPeriod: 274 * 24 * time.Hour,
 	}
-	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, publicRoundType)
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, publicRoundType)  // TODO skopiowac metode to migracji z mushalingiem bez must
 
 	strategicReserveShortTermRoundType := cfevestingtypes.VestingType{
 		Name:          strategicReserveShortTermRoundTypeName,
@@ -116,7 +117,7 @@ func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 		LockupPeriod:  365 * 24 * time.Hour,
 		VestingPeriod: 365 * 24 * time.Hour,
 	}
-	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, strategicReserveShortTermRoundType)
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, strategicReserveShortTermRoundType)  // TODO skopiowac metode to migracji z mushalingiem bez must
 	return true
 }
 
@@ -151,7 +152,7 @@ func modifyAndAddVestingPools(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 }
 
 func splitVestingPool(vestingPools *cfevestingtypes.AccountVestingPools, validatorsVestingPools *cfevestingtypes.VestingPool, poolName string, vestingType string, locked math.Int, addYears int, addMonths int) (*cfevestingtypes.AccountVestingPools, error) {
-	if validatorsVestingPools.GetCurrentlyLockedWithoutReservations().Sub(locked).IsNegative() {
+	if validatorsVestingPools.GetCurrentlyLockedWithoutReservations().Sub(locked).IsNegative() { // TODO skopiowac typ vesting pool do migracji i uzyc ststarego
 		return nil, fmt.Errorf("not enough coins to send, pool name: %s, currently locked: %s, pool amount: %s", poolName, validatorsVestingPools.GetCurrentlyLockedWithoutReservations(), locked)
 	}
 	validatorsVestingPools.InitiallyLocked = validatorsVestingPools.InitiallyLocked.Sub(locked)
@@ -172,7 +173,7 @@ func splitVestingPool(vestingPools *cfevestingtypes.AccountVestingPools, validat
 }
 
 func UpdateVestingAccountTraces(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) {
-	traces := appKeepers.GetC4eVestingKeeper().GetAllVestingAccountTrace(ctx)
+	traces := appKeepers.GetC4eVestingKeeper().GetAllVestingAccountTrace(ctx) // TODO skopiowac metode to migracji modulu z mushalingiem bez must + typ vesting accouont trace
 	genesisAddress := map[string]struct{}{
 		"c4e1z5h0squtynr8rhwl0mzqdcd0wgmfyvpqmx3y2r": {},
 		"c4e1x6umuffxgcrgqqqdncwn2t8qdnc2muvultxmza": {},
@@ -215,6 +216,6 @@ func UpdateVestingAccountTraces(ctx sdk.Context, appKeepers cfeupgradetypes.AppK
 		}
 	}
 	for _, trace := range traces {
-		appKeepers.GetC4eVestingKeeper().SetVestingAccountTrace(ctx, trace)
+		appKeepers.GetC4eVestingKeeper().SetVestingAccountTrace(ctx, trace) // TODO skopiowac metode to migracji z mushalingiem bez must
 	}
 }

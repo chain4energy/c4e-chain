@@ -49,7 +49,7 @@ message Campaign {
   string vestingPoolName = 15;
 }
 
-message CampaignTotalAmount {
+message CampaignTotalAmount { // TODO Total amount jako param Campaign
   uint64 campaign_id = 1;
   repeated cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.nullable) = false,
@@ -57,7 +57,7 @@ message CampaignTotalAmount {
   ];
 }
 
-message CampaignAmountLeft {
+message CampaignAmountLeft { // TODO Total amount jako param Campaign
   uint64 campaign_id = 1;
   repeated cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.nullable) = false,

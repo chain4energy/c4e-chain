@@ -48,7 +48,7 @@ func CmdClaim() *cobra.Command {
 	return cmd
 }
 
-func CmdInitialClaim() *cobra.Command {
+func CmdInitialClaim() *cobra.Command { //  TODO opis ja w innych modulach
 	cmd := &cobra.Command{
 		Use:   "initial-claim [campaign-id] [optional-address-to-claim]",
 		Short: "Broadcast message InitialClaim",

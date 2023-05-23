@@ -14,7 +14,7 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdEnableCampaign() *cobra.Command {
+func CmdEnableCampaign() *cobra.Command { //  TODO opis ja w innych modulach
 	cmd := &cobra.Command{
 		Use:   "enable-campaign [campaign-id] [optional-start-time] [optional-end-time]",
 		Short: "Broadcast message EnableCampaign",

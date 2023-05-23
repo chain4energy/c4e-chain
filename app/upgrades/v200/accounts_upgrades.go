@@ -1,4 +1,4 @@
-package v200
+package v200 // TODO pakiet raczej 130
 
 import (
 	"cosmossdk.io/math"
@@ -19,12 +19,12 @@ const (
 )
 
 func MigrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
-	accountVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, NewAirdropVestingPoolOwner)
+	accountVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, NewAirdropVestingPoolOwner) // TODO duplikacja kodu dla migracji dla tej wersji + zwyklu unmarshal nie must + typy wymagane
 	if !found {
 		ctx.Logger().Info("account vesting pools not found for NewAirdropVestingPoolOwner", "owner", NewAirdropVestingPoolOwner)
 		return nil
 	}
-	vestingDenom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
+	vestingDenom := appKeepers.GetC4eVestingKeeper().Denom(ctx)  // TODO duplikacja kodu dla migracji dla tej wersji + zwyklu unmarshal nie must
 	airdropAccBalance := bankkeeper.Keeper.GetAllBalances(*appKeepers.GetBankKeeper(), ctx, authtypes.NewModuleAddress(AirdropModuleAccount))
 	if len(airdropAccBalance) == 0 {
 		ctx.Logger().Info("no coins found for AirdropModuleAccount", "address", AirdropModuleAccountAddress)
@@ -55,7 +55,7 @@ func MigrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.App
 		Reservations:    nil,
 	}
 	accountVestingPools.VestingPools = append(accountVestingPools.VestingPools, &fairdropPool)
-	appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, accountVestingPools)
+	appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, accountVestingPools)  // TODO duplikacja kodu dla migracji dla tej wersji + zwyklu unmarshal nie must
 	return nil
 }
 
@@ -76,7 +76,7 @@ func MigrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 		return nil
 	}
 
-	vestingDenom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
+	vestingDenom := appKeepers.GetC4eVestingKeeper().Denom(ctx)  // TODO duplikacja kodu dla migracji dla tej wersji + zwyklu unmarshal nie must
 	originalVestingAmount := vestingAccount.OriginalVesting
 	vestingAccount.OriginalVesting = sdk.NewCoins()
 	appKeepers.GetAccountKeeper().SetAccount(ctx, vestingAccount)
@@ -102,6 +102,6 @@ func MigrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 			},
 		},
 	}
-	appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, accountVestingPools)
+	appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, accountVestingPools)  // TODO duplikacja kodu dla migracji dla tej wersji + zwyklu unmarshal nie must
 	return nil
 }

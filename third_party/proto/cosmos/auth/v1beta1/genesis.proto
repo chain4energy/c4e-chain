@@ -1,3 +1,5 @@
+// TODO po co to proto tutaj?
+
 syntax = "proto3";
 package cosmos.auth.v1beta1;
 

@@ -108,7 +108,7 @@ func (h *C4eVestingUtils) MessageCreateGenesisVestingPool(ctx sdk.Context, addre
 
 }
 
-func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context, toAddress sdk.AccAddress,
+func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context, toAddress sdk.AccAddress,  // TODO zmienic Reopeated
 	amount math.Int, free sdk.Dec, startTime int64, endTime int64) {
 	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
 	moduleBalance := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
@@ -173,7 +173,7 @@ func (h *C4eVestingUtils) RemoveVestingPoolReservation(ctx sdk.Context, address 
 	}
 }
 
-func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccountError(ctx sdk.Context, toAddress sdk.AccAddress,
+func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccountError(ctx sdk.Context, toAddress sdk.AccAddress, // TODO zmienic repeated
 	amount math.Int, free sdk.Dec, startTime int64, endTime int64, createAccount bool, errorMessage string) {
 	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
 	moduleBalance := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
@@ -209,7 +209,7 @@ func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccountError(ctx sdk.Co
 
 }
 
-func (h *C4eVestingUtils) VerifyRepeatedContinuousVestingAccount(ctx sdk.Context, address sdk.AccAddress,
+func (h *C4eVestingUtils) VerifyRepeatedContinuousVestingAccount(ctx sdk.Context, address sdk.AccAddress, // TODO zmienic repeated
 	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod) {
 
 	claimAccount, ok := h.helperAccountKeeper.GetAccount(ctx, address).(*cfevestingtypes.PeriodicContinuousVestingAccount)
