@@ -83,7 +83,7 @@ func (k Keeper) ValidateAddMissionToCampaign(ctx sdk.Context, owner string, camp
 	return &campaign, nil
 }
 
-func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, error) {
+func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, error) { // TODO nazwa niewiele mowi
 	campaign, campaignFound := k.GetCampaign(ctx, campaignId)
 	if !campaignFound {
 		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
@@ -114,7 +114,7 @@ func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId u
 	}
 
 	return &campaign, mission, &userEntry, nil
-}
+} // TODO - nowa linia
 func (k Keeper) ValidateMissionExists(ctx sdk.Context, campaignId uint64, missionId uint64) (*types.Mission, error) {
 	mission, missionFound := k.GetMission(ctx, campaignId, missionId)
 	if !missionFound {

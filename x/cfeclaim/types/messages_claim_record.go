@@ -90,7 +90,7 @@ func (msg *MsgDeleteClaimRecord) ValidateBasic() error {
 	return nil
 }
 
-func ValidateClaimRecords(claimRecords []*ClaimRecord) error {
+func ValidateClaimRecords(claimRecords []*ClaimRecord) error { // TODO przesunc do claim_record.go. Mozna tez dla wygody stroyc typ ClaimRecords []*ClaimRecord i to by bylo metoda tego. Ale do sprawdznei czy nie skomplikuje
 	for i, claimRecord := range claimRecords {
 		if err := ValidateClaimRecord(claimRecord); err != nil {
 			return WrapClaimRecordIndex(err, i)
@@ -99,7 +99,7 @@ func ValidateClaimRecords(claimRecords []*ClaimRecord) error {
 	return nil
 }
 
-func ValidateClaimRecord(claimRecord *ClaimRecord) error {
+func ValidateClaimRecord(claimRecord *ClaimRecord) error { // TODO metoda ClaimRecord
 	if claimRecord.Address == "" {
 		return errors.Wrapf(c4eerrors.ErrParam, "claim record empty address")
 	}
@@ -113,7 +113,7 @@ func WrapClaimRecordIndex(err error, index int) error {
 	return errors.Wrap(err, fmt.Sprintf("claim records index %d", index))
 }
 
-func ValidateUserEntry(userEntry UserEntry) error {
+func ValidateUserEntry(userEntry UserEntry) error { // TODO metoda UserEntry
 	if userEntry.ClaimAddress == "" {
 		return errors.Wrapf(c4eerrors.ErrParam, "user entry empty claim address")
 	}

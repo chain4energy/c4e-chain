@@ -21,7 +21,7 @@ var _ govtypes.GovHooks = MissionVoteHooks{}
 func (h MissionVoteHooks) AfterProposalVote(ctx sdk.Context, _ uint64, voterAddr sdk.AccAddress) {
 	missions := h.k.GetAllMission(ctx)
 	for _, mission := range missions {
-		// TODO error handling
+		// TODO error handling - trzeba chyba jaki blad zwracac? lub racej log wypisac tylko misja moze nie istniec lub entry wiec do zastanowienia
 		if mission.MissionType == types.MissionVote {
 			_ = h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, voterAddr.String())
 		}

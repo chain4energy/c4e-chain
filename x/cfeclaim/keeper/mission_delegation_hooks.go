@@ -25,7 +25,7 @@ var _ stakingtypes.StakingHooks = MissionDelegationHooks{}
 func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, _ sdk.ValAddress) error {
 	missions := h.k.GetAllMission(ctx)
 	for _, mission := range missions {
-		// TODO error handling
+		// TODO error handling - trzeba chyba jaki blad zwracac? lub racej log wypisac tylko misja moze nie istniec lub entry wiec do zastanowienia
 		if mission.MissionType == types.MissionDelegate {
 			_ = h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, delAddr.String())
 		}

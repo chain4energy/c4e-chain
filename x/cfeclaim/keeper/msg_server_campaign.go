@@ -13,6 +13,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// TODO odpinterujmy paramertry tutaj, nie ma sensu przenosic tego do keepera
+	// Jak nil to zwracac blad, poza parametrami dal typu vesting pool jezeli nie jest vesting pool type
 	campaign, err := k.Keeper.CreateCampaign(
 		ctx,
 		msg.Owner,

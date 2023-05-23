@@ -144,7 +144,7 @@ func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignI
 	return &campaign, nil
 }
 
-func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string, // TODO nazwa na ValidateVestingPoolCampaign
+func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string, // TODO nazwa na ValidateVestingPoolCampaign. i tez bym zrefaturyzowal to tak ze stwirzyc metoda w types validujaca ktora przyjmuje vestong pool i vesting type i byla uzywana przez ta metode, bo ta z type bedzie mogla byc potem reuzyta i to chyba powinnno byc w campaign.go
 	lockupPeriod *time.Duration, vestingPeriod *time.Duration, free sdk.Dec) error {
 	_, vestingPool, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
 
@@ -172,7 +172,7 @@ func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, 
 	for i, claimRecord := range claimRecords {
 		amountSum = amountSum.Add(claimRecord.Amount...)
 
-		userEntry, err := k.addClaimRecordToUserEntry(ctx, campaign.Id, claimRecord.Address, claimRecord.Amount)
+		userEntry, err := k.addClaimRecordToUserEntry(ctx, campaign.Id, claimRecord.Address, claimRecord.Amount) // TODO troche tuta jets mylaca boniby validacja a jest dodawanie. Wydajemi sie ze powinna byc metoda na user anetry AddCaimRecords i refaktoryzacja
 		if err != nil {
 			return nil, nil, types.WrapClaimRecordIndex(err, i)
 		}
@@ -181,7 +181,7 @@ func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, 
 	return
 }
 
-func (k Keeper) addClaimRecordToUserEntry(ctx sdk.Context, campaignId uint64, address string, allCoins sdk.Coins) (*types.UserEntry, error) {
+func (k Keeper) addClaimRecordToUserEntry(ctx sdk.Context, campaignId uint64, address string, allCoins sdk.Coins) (*types.UserEntry, error) { // TODO metoda user entry - patrz wyzej - AddCaimRecords
 	userEntry, found := k.GetUserEntry(ctx, address)
 	if !found {
 		userEntry = types.UserEntry{Address: address}
@@ -193,7 +193,7 @@ func (k Keeper) addClaimRecordToUserEntry(ctx sdk.Context, campaignId uint64, ad
 	return &userEntry, nil
 }
 
-func (k Keeper) revokeFeeAllowance(ctx sdk.Context, granter sdk.Address, grantee sdk.AccAddress) error {
+func (k Keeper) revokeFeeAllowance(ctx sdk.Context, granter sdk.Address, grantee sdk.AccAddress) error { // to raczej w pliku feegrant.go
 	keeper, _ := (k.feeGrantKeeper).(feegrantkeeper.Keeper)
 	feegrantMsgServer := feegrantkeeper.NewMsgServerImpl(keeper)
 	msg := feegranttypes.MsgRevokeAllowance{
@@ -207,13 +207,13 @@ func (k Keeper) revokeFeeAllowance(ctx sdk.Context, granter sdk.Address, grantee
 	return nil
 }
 
-func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) sdk.AccAddress {
+func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) sdk.AccAddress { // TODO dziwna nazwa. Moze SetupNewFeegrantAccount
 	moduleAddressName, accountAddr := CreateFeegrantAccountAddress(campaignId)
 	account := k.accountKeeper.GetAccount(ctx, accountAddr)
 	if account != nil {
 		return accountAddr
 	}
-	macc := &authtypes.ModuleAccount{
+	macc := &authtypes.ModuleAccount{ // TODO nie ma metody na sdk budujacej Module account?
 		BaseAccount: &authtypes.BaseAccount{
 			Address: accountAddr.String(),
 		},
@@ -223,7 +223,7 @@ func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) sdk.AccA
 	return accountAddr
 }
 
-func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaign types.Campaign, userAddress string) (types.UserEntry, sdk.Coins, error) {
+func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaign types.Campaign, userAddress string) (types.UserEntry, sdk.Coins, error) { // TODO tutaj jest cos wiecej niz walicaja w tej metodzie, nazwe trzba zmienic
 	if campaign.Enabled == true {
 		if !campaign.RemovableClaimRecords {
 			return types.UserEntry{}, nil, errors.Wrap(sdkerrors.ErrInvalidType, "campaign must have RemovableClaimRecords flag set to true to be able to delete its entries")
@@ -266,7 +266,7 @@ func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaig
 	return userEntry, amount, nil
 }
 
-func (k Keeper) ValidateUserEntry(ctx sdk.Context, userAddress string) (types.UserEntry, error) {
+func (k Keeper) ValidateUserEntry(ctx sdk.Context, userAddress string) (types.UserEntry, error) { // TODO nazwa - MustGeUserEntry i do claim_record_store.go
 	userEntry, found := k.GetUserEntry(
 		ctx,
 		userAddress,
@@ -278,7 +278,7 @@ func (k Keeper) ValidateUserEntry(ctx sdk.Context, userAddress string) (types.Us
 	return userEntry, nil
 }
 
-func ValidateClaimRecordExists(userEntry types.UserEntry, campaignId uint64) (claimRecordAmount *types.ClaimRecord, err error) {
+func ValidateClaimRecordExists(userEntry types.UserEntry, campaignId uint64) (claimRecordAmount *types.ClaimRecord, err error) { // TODO nazw MustGetClaimRecord i do user_entry.go
 	claimRecord := userEntry.GetClaimRecord(campaignId)
 	if claimRecord == nil {
 		return nil, errors.Wrapf(c4eerrors.ErrParsing, "campaign id %d claim entry doesn't exist", campaignId)

@@ -8,7 +8,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
 message UserEntry {
   string address = 1;
-  string claim_address = 2;
+  string claim_address = 2;   // TODO troche dziwne ze to nie jest na poziomie ClaimRecord, rozne kampanie beda sobie podmieniac adres
   repeated ClaimRecord claim_records = 3;
 }
 

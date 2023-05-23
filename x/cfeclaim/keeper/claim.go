@@ -11,12 +11,12 @@ import (
 	"strconv"
 )
 
-func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64, additionalAddress string) error {
+func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64, additionalAddress string) error { // TODO additionalAddress na destinationAddress. i raczej destinationAddress powinien byc zawssze ustawiany. Odpowidni obsluga na poziomie msg 
 	k.Logger(ctx).Debug("initial claim", "claimer", claimer, "campaignId", campaignId, "additionalAddress", additionalAddress)
 
 	addressToClaim := claimer
 	if additionalAddress != "" {
-		if err := k.validateAdditionalAddressToClaim(ctx, additionalAddress); err != nil {
+		if err := k.validateAdditionalAddressToClaim(ctx, additionalAddress); err != nil { // TDOD Dlczego claimer nie jest tak validowany?
 			return err
 		}
 		addressToClaim = additionalAddress
@@ -115,7 +115,7 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 	return nil
 }
 
-func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {
+func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {  // TODO czy to from hook w nazwi konieczne?
 	_, mission, userEntry, err := k.missionFirstStep(ctx, campaignId, missionId, address)
 	if err != nil {
 		k.Logger(ctx).Debug("complete mission from hook", "err", err.Error())
@@ -145,7 +145,7 @@ func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, miss
 	return nil
 }
 
-func (k Keeper) completeMission(mission *types.Mission, userEntry *types.UserEntry) (*types.UserEntry, error) {
+func (k Keeper) completeMission(mission *types.Mission, userEntry *types.UserEntry) (*types.UserEntry, error) { // TODO czy IsMissionCompleted nie powninno byc wolane w userEntry.CompleteMission i wtedy ta metode nie jest potzreban?
 	campaignId := mission.CampaignId
 	missionId := mission.Id
 	address := userEntry.Address
@@ -167,11 +167,11 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 	missionId := mission.Id
 	address := userEntry.ClaimAddress
 
-	if !userEntry.IsMissionCompleted(campaignId, missionId) {
+	if !userEntry.IsMissionCompleted(campaignId, missionId) { // TODO czy nie lepiej dodac to do wywloanie wewnatrz userEntry.ClaimMission
 		return nil, errors.Wrapf(types.ErrMissionNotCompleted, "address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
 	}
 
-	if userEntry.IsMissionClaimed(campaignId, missionId) {
+	if userEntry.IsMissionClaimed(campaignId, missionId) {// TODO czy nie lepiej dodac to do wywloanie wewnatrz userEntry.ClaimMission
 		return nil, errors.Wrapf(types.ErrMissionClaimed, "mission already claimed: address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
 	}
 
@@ -203,7 +203,7 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 	return userEntry, nil
 }
 
-func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddress string) error {
+func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddress string) error { // TODO nazwa validate claim destination address
 	addititonalAccAddress, err := sdk.AccAddressFromBech32(additionalAddress)
 	if err != nil {
 		return errors.Wrap(c4eerrors.ErrParsing, errors.Wrapf(err, "additionalAddress parsing error: %s", additionalAddress).Error())
@@ -223,7 +223,7 @@ func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddr
 	return nil
 }
 
-func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId uint64, userEntry *types.UserEntry) sdk.Coins {
+func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId uint64, userEntry *types.UserEntry) sdk.Coins { // TODO ja bym to przycnal jako metoda  user entry - calculateInitialClaimClaimableAmount(list []types.Mission lub weight sum)
 	allCampaignMissions, _ := k.AllMissionForCampaign(ctx, campaignId)
 	claimRecord := userEntry.GetClaimRecord(campaignId)
 	allMissionsAmountSum := sdk.NewCoins()
@@ -237,7 +237,7 @@ func (k Keeper) calculateInitialClaimClaimableAmount(ctx sdk.Context, campaignId
 	return claimRecord.Amount.Sub(allMissionsAmountSum...)
 }
 
-func (k Keeper) calculateInitialClaimFree(claimableAmount sdk.Coins, campaign *types.Campaign) (*sdk.Dec, error) {
+func (k Keeper) calculateInitialClaimFree(claimableAmount sdk.Coins, campaign *types.Campaign) (*sdk.Dec, error) { // TODO to tez raczje metoda user entry moze polczona z ta wyzej
 	minFreeAmount := campaign.Free
 	for _, claimableAmountCoin := range claimableAmount {
 		free := sdk.NewDecFromInt(campaign.InitialClaimFreeAmount).Quo(sdk.NewDecFromInt(claimableAmountCoin.Amount))

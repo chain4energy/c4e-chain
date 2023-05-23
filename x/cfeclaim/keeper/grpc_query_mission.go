@@ -57,7 +57,7 @@ func (k Keeper) Mission(c context.Context, req *types.QueryMissionRequest) (*typ
 	return &types.QueryMissionResponse{Mission: val}, nil
 }
 
-func (k Keeper) MissionsForCampaign(c context.Context, req *types.QueryMissionsRequest) (*types.QueryMissionsResponse, error) {
+func (k Keeper) MissionsForCampaign(c context.Context, req *types.QueryMissionsRequest) (*types.QueryMissionsResponse, error) { // TODO dziwne query? nie mam camapign id i w suie chyab nie jest nigdzie wolane i nawa raczej CamaignMissions
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}

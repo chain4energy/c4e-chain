@@ -93,7 +93,7 @@ func (k Keeper) closeCampaignSendFeegrant(ctx sdk.Context, campaign *types.Campa
 	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, feegrantTotalAmount)
 }
 
-func (k Keeper) deleteClaimRecordSendFeegrant(ctx sdk.Context, campaign *types.Campaign, userEntryAddress string) error {
+func (k Keeper) deleteClaimRecordSendFeegrant(ctx sdk.Context, campaign *types.Campaign, userEntryAddress string) error { // TODO nazwa returnFeegrant
 	if !campaign.FeegrantAmount.IsPositive() {
 		return nil
 	}
@@ -110,7 +110,7 @@ func (k Keeper) deleteClaimRecordSendFeegrant(ctx sdk.Context, campaign *types.C
 	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, campaignOwnerAccAddress, amountLeft)
 }
 
-func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, campaignId uint64, userEntryAddress string) (sdk.AccAddress, sdk.AccAddress, sdk.Coins, error) {
+func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, campaignId uint64, userEntryAddress string) (sdk.AccAddress, sdk.AccAddress, sdk.Coins, error) { // TODO nazwa getFeegrantCurrentAmount
 	_, granterAddress := CreateFeegrantAccountAddress(campaignId)
 	granteeAddress, _ := sdk.AccAddressFromBech32(userEntryAddress)
 

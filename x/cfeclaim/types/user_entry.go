@@ -43,8 +43,8 @@ func (m *UserEntry) Validate() error {
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
 func (m *UserEntry) IsMissionCompleted(campaignId uint64, missionID uint64) bool {
 	for _, claimRecord := range m.ClaimRecords {
-		if claimRecord.CampaignId == campaignId {
-			for _, completed := range claimRecord.CompletedMissions {
+		if claimRecord.CampaignId == campaignId { // TODO IsMissionCompleted na claimRecord
+			for _, completed := range claimRecord.CompletedMissions { 
 				if completed == missionID {
 					return true
 				}
@@ -92,21 +92,22 @@ func (m *UserEntry) HasCampaign(campaignId uint64) bool {
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
 func (m *UserEntry) CompleteMission(campaignId uint64, missionID uint64) error {
-	claimRecord := m.GetClaimRecord(campaignId)
+	// TODO dodac wywylanie is completed
+	claimRecord := m.GetClaimRecord(campaignId) // TODO dodac metode MustGetClaimRecord zwrcajaca blad w UserEntry
 	if claimRecord == nil {
 		return fmt.Errorf("no campaign record with id %d for address %s", campaignId, m.Address)
 	}
-	claimRecord.CompletedMissions = append(claimRecord.CompletedMissions, missionID)
+	claimRecord.CompletedMissions = append(claimRecord.CompletedMissions, missionID) // TODO dodac motode CompleteMission w claimRecord
 	return nil
 }
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
 func (m *UserEntry) ClaimMission(campaignId uint64, missionID uint64) error {
-	claimRecord := m.GetClaimRecord(campaignId)
+	claimRecord := m.GetClaimRecord(campaignId) // TODO dodac metode MustGetClaimRecord zwrcajaca blad w UserEntry
 	if claimRecord == nil {
 		return fmt.Errorf("no campaign record with id %d for address %s", campaignId, m.Address)
 	}
-	claimRecord.ClaimedMissions = append(claimRecord.ClaimedMissions, missionID)
+	claimRecord.ClaimedMissions = append(claimRecord.ClaimedMissions, missionID) // TODO dodac motode ClaimMission w claimRecord
 	return nil
 }
 
