@@ -260,7 +260,7 @@ func createCorrectClaimAccout() *types.PeriodicContinuousVestingAccount {
 }
 
 func createClaimAccout(originalVesting sdk.Coins, startTime int64, endTime int64, periods types.ContinuousVestingPeriods) *types.PeriodicContinuousVestingAccount {
-	return types.NewRepeatedContinuousVestingAccount(&authtypes.BaseAccount{}, originalVesting, startTime, endTime, periods)
+	return types.NewPeriodicContinuousVestingAccount(&authtypes.BaseAccount{}, originalVesting, startTime, endTime, periods)
 }
 
 type ClaimAccountTc struct {

@@ -169,7 +169,7 @@ func TestSplitVestingPools(t *testing.T) {
 	require.True(t, found)
 	sumBefore := math.ZeroInt()
 	for _, vp := range avps.VestingPools {
-		sumBefore = sumBefore.Add(vp.GetCurrentlyLockedWithoutReservations())
+		sumBefore = sumBefore.Add(vp.GetLockedNotReserved())
 	}
 
 	err := v120.ModifyVestingPoolsState(testHelper.Context, testHelper.App)
@@ -184,7 +184,7 @@ func TestSplitVestingPools(t *testing.T) {
 	avps, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v120.ValidatorsVestingPoolOwner)
 	sumAfter := math.ZeroInt()
 	for _, vp := range avps.VestingPools {
-		sumAfter = sumAfter.Add(vp.GetCurrentlyLockedWithoutReservations())
+		sumAfter = sumAfter.Add(vp.GetLockedNotReserved())
 	}
 	require.Equal(t, sumBefore, sumAfter)
 

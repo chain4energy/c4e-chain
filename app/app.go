@@ -564,6 +564,7 @@ func New(
 		keys[cfedistributormoduletypes.MemStoreKey],
 		app.GetSubspace(cfedistributormoduletypes.ModuleName),
 		app.BankKeeper,
+		app.CfeminterKeeper,
 		app.AccountKeeper,
 		appparams.GetAuthority(),
 	)

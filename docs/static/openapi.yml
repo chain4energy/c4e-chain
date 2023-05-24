@@ -548,8 +548,6 @@ paths:
                 properties:
                   address:
                     type: string
-                  claim_address:
-                    type: string
                   claim_records:
                     type: array
                     items:
@@ -629,8 +627,6 @@ paths:
                   type: object
                   properties:
                     address:
-                      type: string
-                    claim_address:
                       type: string
                     claim_records:
                       type: array
@@ -48176,8 +48172,6 @@ definitions:
         properties:
           address:
             type: string
-          claim_address:
-            type: string
           claim_records:
             type: array
             items:
@@ -48224,8 +48218,6 @@ definitions:
           type: object
           properties:
             address:
-              type: string
-            claim_address:
               type: string
             claim_records:
               type: array
@@ -48294,8 +48286,6 @@ definitions:
     type: object
     properties:
       address:
-        type: string
-      claim_address:
         type: string
       claim_records:
         type: array

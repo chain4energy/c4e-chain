@@ -59,19 +59,19 @@ func (av AccountVestingPools) ValidateAgainstVestingTypes(vestingTypes []Genesis
 	return nil
 }
 
-func (m *VestingPool) GetCurrentlyLockedWithoutReservations() math.Int {
-	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn).Sub(m.GetCurrentlyLockedInReservations())
+func (pool *VestingPool) GetLockedNotReserved() math.Int {
+	return pool.InitiallyLocked.Sub(pool.Sent).Sub(pool.Withdrawn).Sub(pool.GetAllReserved())
 }
 
-func (m *VestingPool) GetCurrentlyLocked() math.Int {
-	return m.InitiallyLocked.Sub(m.Sent).Sub(m.Withdrawn)
+func (pool *VestingPool) GetCurrentlyLocked() math.Int {
+	return pool.InitiallyLocked.Sub(pool.Sent).Sub(pool.Withdrawn)
 }
 
-func (m *VestingPool) GetCurrentlyLockedInReservation(reservationId uint64) math.Int {
-	return m.GetReservation(reservationId).Amount
+func (pool *VestingPool) GetReserved(reservationId uint64) math.Int {
+	return pool.GetReservation(reservationId).Amount
 }
 
-func (pool *VestingPool) GetCurrentlyLockedInReservations() math.Int {
+func (pool *VestingPool) GetAllReserved() math.Int {
 	amountSum := math.ZeroInt()
 	for _, reservation := range pool.Reservations {
 		amountSum = amountSum.Add(reservation.Amount)
@@ -79,22 +79,22 @@ func (pool *VestingPool) GetCurrentlyLockedInReservations() math.Int {
 	return amountSum
 }
 
-func (m *VestingPool) Validate(accountAdd string) error {
-	if len(m.Name) == 0 {
+func (pool *VestingPool) Validate(accountAdd string) error {
+	if len(pool.Name) == 0 {
 		return fmt.Errorf("vesting pool defined for account: %s has no name", accountAdd)
 	}
-	if m.InitiallyLocked.IsNegative() {
-		return fmt.Errorf("vesting pool with name: %s defined for account: %s has InitiallyLocked value negative %s", m.Name, accountAdd, m.InitiallyLocked)
+	if pool.InitiallyLocked.IsNegative() {
+		return fmt.Errorf("vesting pool with name: %s defined for account: %s has InitiallyLocked value negative %s", pool.Name, accountAdd, pool.InitiallyLocked)
 	}
-	if m.Withdrawn.IsNegative() {
-		return fmt.Errorf("vesting pool with name: %s defined for account: %s has Withdrawn value negative %s", m.Name, accountAdd, m.Withdrawn)
+	if pool.Withdrawn.IsNegative() {
+		return fmt.Errorf("vesting pool with name: %s defined for account: %s has Withdrawn value negative %s", pool.Name, accountAdd, pool.Withdrawn)
 	}
-	if m.Sent.IsNegative() {
-		return fmt.Errorf("vesting pool with name: %s defined for account: %s has Sent value negative %s", m.Name, accountAdd, m.Sent)
+	if pool.Sent.IsNegative() {
+		return fmt.Errorf("vesting pool with name: %s defined for account: %s has Sent value negative %s", pool.Name, accountAdd, pool.Sent)
 	}
-	if m.GetCurrentlyLocked().IsNegative() {
+	if pool.GetCurrentlyLocked().IsNegative() {
 		return fmt.Errorf("vesting pool with name: %s defined for account: %s has InitiallyLocked (%s) < Withdrawn (%s) + Sent (%s)",
-			m.Name, accountAdd, m.InitiallyLocked, m.Withdrawn, m.Sent)
+			pool.Name, accountAdd, pool.InitiallyLocked, pool.Withdrawn, pool.Sent)
 	}
 	return nil
 }
@@ -153,23 +153,23 @@ func (pool *VestingPool) SubstractFromReservation(reservationId uint64, amount m
 	return errors.Wrapf(c4eerrors.ErrNotExists, "reservation with id %d not found", reservationId)
 }
 
-func (vestingPool *VestingPool) SendFromReservedTokens(reservationId uint64, amount math.Int) error {
-	if err := vestingPool.SubstractFromReservation(reservationId, amount); err != nil {
+func (pool *VestingPool) DecrementReservedAndSent(reservationId uint64, amount math.Int) error {
+	if err := pool.SubstractFromReservation(reservationId, amount); err != nil {
 		return err
 	}
-	vestingPool.Sent = vestingPool.Sent.Add(amount)
+	pool.Sent = pool.Sent.Add(amount)
 
 	return nil
 }
 
-func (vestingPool *VestingPool) SendFromLockedTokens(amount math.Int) error {
-	available := vestingPool.GetCurrentlyLockedWithoutReservations()
+func (pool *VestingPool) IncrementSent(amount math.Int) error {
+	available := pool.GetLockedNotReserved()
 
 	if available.LT(amount) {
 		return errors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"send to new vesting account - vesting available: %s is smaller than requested amount: %s", available, amount)
 	}
-	vestingPool.Sent = vestingPool.Sent.Add(amount)
+	pool.Sent = pool.Sent.Add(amount)
 	return nil
 }
 

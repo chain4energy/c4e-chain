@@ -74,7 +74,7 @@ message DeleteClaimRecord {
     string claim_record_amount = 4;
 }
 
-message CompleteMissionFromHook {
+message CompleteMission {
     string campaign_id = 1;
     string mission_id = 2;
     string user_address = 3;

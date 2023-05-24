@@ -66,10 +66,10 @@ func TestBurnAmountTooBig(t *testing.T) {
 	coins := sample.PrepareDifferentDenomCoins(3, math.NewInt(10000))
 	testHelper.BankUtils.AddCoinsToAccount(coins, accAddr)
 	coins[2].Amount = math.NewInt(100000000)
+	balanceBefore := testHelper.BankUtils.GetAccountAllBalances(accAddr)
 	testHelper.C4eMinterUtils.MessageBurnError(accAddr.String(), coins, "balance is too small (10000uc4e0,10000uc4e1,10000uc4e2 < 10000uc4e0,10000uc4e1,100000000uc4e2): insufficient funds")
 	testHelper.IncrementContextBlockHeight()
-	balanceAfter := testHelper.BankUtils.GetAccountAllBalances(accAddr)
-	_ = balanceAfter // TODO: FIX IT
+	testHelper.BankUtils.VerifyAccountAllBalances(testHelper.Context, accAddr, balanceBefore)
 }
 
 func TestBurnAmountNegative(t *testing.T) {

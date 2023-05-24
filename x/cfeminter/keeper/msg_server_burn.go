@@ -31,7 +31,7 @@ func (k Keeper) Burn(ctx sdk.Context, address string, amount sdk.Coins) error {
 	}
 
 	balances := k.bankKeeper.GetAllBalances(ctx, accAddress)
-	if amount.IsAnyGT(balances) {
+	if amount.IsAnyGT(balances) { // TODO: verify?
 		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "balance is too small (%s < %s)", balances, amount)
 	}
 

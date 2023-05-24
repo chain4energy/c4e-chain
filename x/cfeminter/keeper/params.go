@@ -46,7 +46,7 @@ func (k Keeper) SetMinterConfig(ctx sdk.Context, minterConfig types.MinterConfig
 }
 
 // MintDenom returns the denom param
-func (k Keeper) MintDenom(ctx sdk.Context) (res string) {
+func (k Keeper) MintDenom(ctx sdk.Context) string {
 	return k.GetParams(ctx).MintDenom
 }
 

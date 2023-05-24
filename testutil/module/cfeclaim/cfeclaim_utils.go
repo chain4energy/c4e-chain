@@ -281,7 +281,7 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 
 	if claimerAccountBefore == nil {
 		baseAccount := h.helperAccountKeeper.NewAccountWithAddress(ctx, claimer)
-		claimerAccountBefore = cfevestingtypes.NewRepeatedContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), 100000000, 100000000, nil)
+		claimerAccountBefore = cfevestingtypes.NewPeriodicContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), 100000000, 100000000, nil)
 	}
 
 	vestingAmount := math.NewInt(expectedAmount)
@@ -542,7 +542,7 @@ func (h *C4eClaimUtils) ClaimMissionError(ctx sdk.Context, campaignId uint64, mi
 
 func (h *C4eClaimUtils) CreateRepeatedContinuousVestingAccount(ctx sdk.Context, address sdk.AccAddress, originalVesting sdk.Coins, startTime int64, endTime int64, periods ...cfevestingtypes.ContinuousVestingPeriod) *cfevestingtypes.PeriodicContinuousVestingAccount {
 	baseAccount := h.helperAccountKeeper.NewAccountWithAddress(ctx, address)
-	claimAcc := cfevestingtypes.NewRepeatedContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), originalVesting, startTime, endTime, periods)
+	claimAcc := cfevestingtypes.NewPeriodicContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), originalVesting, startTime, endTime, periods)
 	h.helperAccountKeeper.SetAccount(ctx, claimAcc)
 	require.NoError(h.t, claimAcc.Validate())
 	return claimAcc

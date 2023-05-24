@@ -141,7 +141,7 @@ func getVestingPoolsAmount(accVestingPools []*types.AccountVestingPools) math.In
 	result := math.ZeroInt()
 	for _, accV := range accVestingPools {
 		for _, v := range accV.VestingPools {
-			result = result.Add(v.GetCurrentlyLockedWithoutReservations())
+			result = result.Add(v.GetLockedNotReserved())
 		}
 	}
 	return result

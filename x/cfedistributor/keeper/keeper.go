@@ -18,6 +18,7 @@ type (
 		memKey        storetypes.StoreKey
 		paramstore    paramtypes.Subspace
 		bankKeeper    types.BankKeeper
+		minterKeeper  types.MinterKeeper
 		accountKeeper types.AccountKeeper
 		authority     string
 	}
@@ -29,6 +30,7 @@ func NewKeeper(
 	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 	bankKeeper types.BankKeeper,
+	minterKeeper types.MinterKeeper,
 	accountKeeper types.AccountKeeper,
 	authority string,
 ) *Keeper {
@@ -39,6 +41,7 @@ func NewKeeper(
 		paramstore:    ps,
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,
+		minterKeeper:  minterKeeper,
 		authority:     authority,
 	}
 }

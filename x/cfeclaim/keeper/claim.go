@@ -23,12 +23,8 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 	}
 
 	campaign, mission, userEntry, err := k.missionFirstStep(ctx, campaignId, types.InitialMissionId, addressToClaim)
-	if err != nil {
-		return err
-	}
-	userEntry.ClaimAddress = addressToClaim
 
-	userEntry, err = k.completeMission(mission, userEntry)
+	userEntry, err = k.completeMission(ctx, mission, userEntry)
 	if err != nil {
 		return err
 	}
@@ -85,7 +81,7 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 	}
 
 	if mission.MissionType == types.MissionClaim {
-		userEntry, err = k.completeMission(mission, userEntry)
+		userEntry, err = k.completeMission(ctx, mission, userEntry)
 		if err != nil {
 			return err
 		}
@@ -125,27 +121,17 @@ func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, miss
 		k.Logger(ctx).Debug("complete mission - initial mission not completed", "claimerAddress", address, "campaignId", campaignId, "missionId", missionId)
 		return errors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d, missionId: %d", address, campaignId, 0)
 	}
-	userEntry, err = k.completeMission(mission, userEntry)
+	userEntry, err = k.completeMission(ctx, mission, userEntry)
 	if err != nil {
 		return err
 	}
 
 	k.SetUserEntry(ctx, *userEntry)
 
-	event := &types.CompleteMissionFromHook{
-		CampaignId:  strconv.FormatUint(campaignId, 10),
-		MissionId:   strconv.FormatUint(missionId, 10),
-		UserAddress: address,
-	}
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
-		k.Logger(ctx).Debug("complete mission from hook event error", "event", event, "error", err.Error())
-	}
-
 	return nil
 }
 
-func (k Keeper) completeMission(mission *types.Mission, userEntry *types.UserEntry) (*types.UserEntry, error) {
+func (k Keeper) completeMission(ctx sdk.Context, mission *types.Mission, userEntry *types.UserEntry) (*types.UserEntry, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
 	address := userEntry.Address
@@ -158,6 +144,15 @@ func (k Keeper) completeMission(mission *types.Mission, userEntry *types.UserEnt
 		return nil, errors.Wrapf(types.ErrMissionCompletion, err.Error())
 	}
 
+	event := &types.CompleteMission{
+		CampaignId:  strconv.FormatUint(campaignId, 10),
+		MissionId:   strconv.FormatUint(missionId, 10),
+		UserAddress: address,
+	}
+	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
+		k.Logger(ctx).Debug("complete mission from hook event error", "event", event, "error", err.Error())
+	}
+
 	return userEntry, nil
 }
 
@@ -165,7 +160,7 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 	claimableAmount sdk.Coins, updatedFree *sdk.Dec) (*types.UserEntry, error) {
 	campaignId := mission.CampaignId
 	missionId := mission.Id
-	address := userEntry.ClaimAddress
+	address := userEntry.Address // TODO: use claim record address
 
 	if !userEntry.IsMissionCompleted(campaignId, missionId) {
 		return nil, errors.Wrapf(types.ErrMissionNotCompleted, "address %s, campaignId: %d, missionId: %d", address, campaignId, missionId)
@@ -185,16 +180,16 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 	}
 
 	if campaign.CampaignType == types.VestingPoolCampaign {
-		if err := k.vestingKeeper.SendReservedToNewVestingAccount(ctx, campaign.Owner, userEntry.ClaimAddress, campaign.VestingPoolName,
+		if err := k.vestingKeeper.SendReservedToNewVestingAccount(ctx, campaign.Owner, address, campaign.VestingPoolName,
 			claimableAmount.AmountOf(k.vestingKeeper.Denom(ctx)), campaign.Id, free, campaign.LockupPeriod, campaign.VestingPeriod); err != nil {
 			return nil, err
 		}
 	} else {
 		start := ctx.BlockTime().Add(campaign.LockupPeriod)
 		end := start.Add(campaign.VestingPeriod)
-		if _, _, err := k.vestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, userEntry.ClaimAddress,
+		if _, _, err := k.vestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, address,
 			claimableAmount, free, start.Unix(), end.Unix()); err != nil {
-			return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userEntry.ClaimAddress)
+			return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), address)
 		}
 	}
 

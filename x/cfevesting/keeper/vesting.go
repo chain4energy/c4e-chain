@@ -204,7 +204,7 @@ func (k Keeper) SendReservedToNewVestingAccount(ctx sdk.Context, owner string, t
 		free = vestingType.Free
 	}
 
-	if err = vestingPool.SendFromReservedTokens(reservationId, amount); err != nil {
+	if err = vestingPool.DecrementReservedAndSent(reservationId, amount); err != nil {
 		return err
 	}
 
@@ -228,7 +228,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 		return errors.Wrap(err, "send locked to new vesting account")
 	}
 
-	if err = vestingPool.SendFromLockedTokens(amount); err != nil {
+	if err = vestingPool.IncrementSent(amount); err != nil {
 		return err
 	}
 
@@ -273,7 +273,7 @@ func (k Keeper) SetAccountVestingPoolsAndVestingAccountTrace(ctx sdk.Context, ow
 		k.SetVestingAccountTrace(ctx, vestingAccountTrace)
 	}
 
-	eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{
+	eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{ // TODO: update event
 		Owner:           owner,
 		Address:         toAddr,
 		VestingPoolName: vestingPool.Name,
@@ -333,7 +333,7 @@ func (k Keeper) CreateVestingAccount(ctx sdk.Context, fromAddress string, toAddr
 
 func CalculateWithdrawable(current time.Time, vestingPool types.VestingPool) math.Int {
 	if current.Equal(vestingPool.LockEnd) || current.After(vestingPool.LockEnd) {
-		return vestingPool.GetCurrentlyLockedWithoutReservations()
+		return vestingPool.GetLockedNotReserved()
 	}
 	return math.ZeroInt()
 }
@@ -381,7 +381,7 @@ func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vesting
 		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
 	}
 
-	currentlyLocked := vestingPool.GetCurrentlyLockedWithoutReservations()
+	currentlyLocked := vestingPool.GetLockedNotReserved()
 	if currentlyLocked.LT(amout) {
 		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "%s%s is smaller than %s%s", currentlyLocked, vestingDenom, amout, vestingDenom)
 	}
