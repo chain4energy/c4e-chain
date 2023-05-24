@@ -209,13 +209,13 @@ func (k Keeper) SendReservedToNewVestingAccount(ctx sdk.Context, owner string, t
 	}
 
 	denom := k.Denom(ctx)
-	periodId, err := k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin(denom, amount)), free,
+	periodId, periodExists, err := k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin(denom, amount)), free,
 		ctx.BlockTime().Add(lockupPeriod).Unix(), ctx.BlockTime().Add(lockupPeriod).Add(vestingPeriod).Unix())
 	if err != nil {
 		return err
 	}
 
-	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, false, accVestingPools, vestingPool)
+	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, periodExists, false, accVestingPools, vestingPool)
 	return nil
 }
 
@@ -234,23 +234,24 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 
 	denom := k.Denom(ctx)
 	var periodId uint64
+	var periodExists bool
 	if restartVesting {
-		periodId, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin(denom, amount)), vestingType.Free,
+		periodId, periodExists, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin(denom, amount)), vestingType.Free,
 			ctx.BlockTime().Add(vestingType.LockupPeriod).Unix(), ctx.BlockTime().Add(vestingType.LockupPeriod).Add(vestingType.VestingPeriod).Unix())
 	} else {
-		periodId, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin(denom, amount)), vestingType.Free,
+		periodId, periodExists, err = k.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, toAddr, sdk.NewCoins(sdk.NewCoin(denom, amount)), vestingType.Free,
 			vestingPool.LockEnd.Unix(), vestingPool.LockEnd.Unix())
 	}
 	if err != nil {
 		return err
 	}
 
-	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, restartVesting, accVestingPools, vestingPool)
+	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, periodExists, restartVesting, accVestingPools, vestingPool)
 	k.Logger(ctx).Debug("send to new vesting account ret", "error", err, "accVestingPools", accVestingPools)
 	return nil
 }
 
-func (k Keeper) SetAccountVestingPoolsAndVestingAccountTrace(ctx sdk.Context, owner string, toAddr string, amount math.Int, periodId uint64,
+func (k Keeper) SetAccountVestingPoolsAndVestingAccountTrace(ctx sdk.Context, owner string, toAddr string, amount math.Int, periodId uint64, periodExists bool,
 	restartVesting bool, accVestingPools *types.AccountVestingPools, vestingPool *types.VestingPool) {
 	k.SetAccountVestingPools(ctx, *accVestingPools)
 	vestingAccountTrace, found := k.GetVestingAccountTrace(ctx, toAddr)
@@ -263,11 +264,11 @@ func (k Keeper) SetAccountVestingPoolsAndVestingAccountTrace(ctx sdk.Context, ow
 			FromGenesisAccount: false,
 			PeriodsToTrace:     []uint64{},
 		}
-		if vestingPool.GenesisPool {
+		if vestingPool.GenesisPool && periodExists {
 			vestingAccountTrace.PeriodsToTrace = []uint64{periodId}
 		}
 		k.AppendVestingAccountTrace(ctx, vestingAccountTrace)
-	} else if vestingPool.GenesisPool {
+	} else if vestingPool.GenesisPool && periodExists {
 		vestingAccountTrace.PeriodsToTrace = append(vestingAccountTrace.PeriodsToTrace, periodId)
 		k.SetVestingAccountTrace(ctx, vestingAccountTrace)
 	}

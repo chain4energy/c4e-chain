@@ -11,27 +11,26 @@ import (
 )
 
 func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins,
-	free sdk.Dec, startTime int64, endTime int64) (uint64, error) {
+	free sdk.Dec, startTime int64, endTime int64) (periodId uint64, periodExists bool, err error) {
 
 	userAccAddress, err := sdk.AccAddressFromBech32(userAddress)
 	if err != nil {
-		return 0, errors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: ", userAddress)
+		return 0, false, errors.Wrapf(c4eerrors.ErrParsing, "wrong claiming address %s: ", userAddress)
 	}
 
 	if k.bank.BlockedAddr(userAccAddress) {
-		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "account address: %s is not allowed to receive funds error", userAddress)
+		return 0, false, errors.Wrapf(sdkerrors.ErrUnauthorized, "account address: %s is not allowed to receive funds error", userAddress)
 	}
-
+	moduleBalances := k.bank.GetAllBalances(ctx, k.account.GetModuleAddress(moduleName))
+	if amount.IsAnyGT(moduleBalances) {
+		return 0, false, errors.Wrapf(sdkerrors.ErrInsufficientFunds, "module balance is too small (%s < %s)", moduleBalances, amount)
+	}
 	if err = k.bank.IsSendEnabledCoins(ctx, amount...); err != nil {
-		return 0, err
+		return 0, false, err
 	}
 	periodicContinousVestingAccount, err := k.getOrCreatePeriodicContinousVestingAccount(ctx, userAccAddress, startTime, endTime)
 	if err != nil {
-		return 0, err
-	}
-
-	if err = k.bank.SendCoinsFromModuleToAccount(ctx, moduleName, userAccAddress, amount); err != nil {
-		return 0, err
+		return 0, false, err
 	}
 
 	var vestingPeriodCoins sdk.Coins
@@ -40,13 +39,18 @@ func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context
 		vestingPeriodAmount := decimalAmount.Sub(decimalAmount.Mul(free)).TruncateInt()
 		vestingPeriodCoins = vestingPeriodCoins.Add(sdk.NewCoin(coin.Denom, vestingPeriodAmount))
 	}
-	if vestingPeriodCoins == nil {
-		k.account.SetAccount(ctx, periodicContinousVestingAccount)
-		return 0, nil
+
+	if vestingPeriodCoins != nil {
+		periodId = periodicContinousVestingAccount.AddNewContinousVestingPeriod(startTime, endTime, vestingPeriodCoins)
+		periodExists = true
 	}
-	periodId := periodicContinousVestingAccount.AddNewContinousVestingPeriod(startTime, endTime, vestingPeriodCoins)
+
 	k.account.SetAccount(ctx, periodicContinousVestingAccount)
-	return periodId, nil
+	if err = k.bank.SendCoinsFromModuleToAccount(ctx, moduleName, userAccAddress, amount); err != nil {
+		return 0, false, err
+	}
+
+	return periodId, periodExists, nil
 }
 
 func (k Keeper) getOrCreatePeriodicContinousVestingAccount(ctx sdk.Context, userAddress sdk.AccAddress, startTime,

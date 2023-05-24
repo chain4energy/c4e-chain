@@ -192,7 +192,7 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 	} else {
 		start := ctx.BlockTime().Add(campaign.LockupPeriod)
 		end := start.Add(campaign.VestingPeriod)
-		if _, err := k.vestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, userEntry.ClaimAddress,
+		if _, _, err := k.vestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, types.ModuleName, userEntry.ClaimAddress,
 			claimableAmount, free, start.Unix(), end.Unix()); err != nil {
 			return nil, errors.Wrapf(c4eerrors.ErrSendCoins, "send to claiming address %s error: "+err.Error(), userEntry.ClaimAddress)
 		}
@@ -214,6 +214,10 @@ func (k Keeper) validateAdditionalAddressToClaim(ctx sdk.Context, additionalAddr
 	}
 
 	account := k.accountKeeper.GetAccount(ctx, addititonalAccAddress)
+	if account == nil {
+		return nil
+	}
+
 	_, baseAccountOk := account.(*authtypes.BaseAccount)
 	_, periodicContinuousVestingAccountOk := account.(*cfevestingtypes.PeriodicContinuousVestingAccount)
 	if !baseAccountOk && !periodicContinuousVestingAccountOk {

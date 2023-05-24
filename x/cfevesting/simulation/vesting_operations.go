@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"cosmossdk.io/math"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"math/rand"
 	"strconv"
 	"time"
@@ -43,11 +44,11 @@ func SimulateVestingOperations(
 			k.Logger(ctx).Error("SIMULATION: Create vesting pool error", err.Error())
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations - create vesting pool", "", false, nil), nil, nil
 		}
-		acc2, _ := simtypes.RandomAcc(r, accs)
+		simulationAddress2, _ := testcosmos.CreateRandomAccAddressHexAndBechNoBalance(helpers.RandomInt(r, 1000000))
 		randMsgSendToVestinAccAmount := math.NewInt(helpers.RandomInt(r, 10000000))
 		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
 			Owner:           simAccount1.Address.String(),
-			ToAddress:       acc2.Address.String(),
+			ToAddress:       simulationAddress2,
 			VestingPoolName: randVestingPoolName,
 			Amount:          randMsgSendToVestinAccAmount,
 			RestartVesting:  true,
@@ -58,16 +59,16 @@ func SimulateVestingOperations(
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations - send to vesting account", "", false, nil), nil, nil
 		}
 
-		//msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
-		//	Owner: simAccount1.Address.String(),
-		//}
-		//_, err = msgServer.WithdrawAllAvailable(msgServerCtx, msgWithdrawAllAvailable)
-		//if err != nil {
-		//	k.Logger(ctx).Error("SIMULATION: Withdraw all available error", err.Error())
-		//	return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations - withdraw all available", "", false, nil), nil, nil
-		//}
-		//
-		//k.Logger(ctx).Debug("SIMULATION: Vesting operations - FINISHED")
+		msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
+			Owner: simAccount1.Address.String(),
+		}
+		_, err = msgServer.WithdrawAllAvailable(msgServerCtx, msgWithdrawAllAvailable)
+		if err != nil {
+			k.Logger(ctx).Error("SIMULATION: Withdraw all available error", err.Error())
+			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations - withdraw all available", "", false, nil), nil, nil
+		}
+
+		k.Logger(ctx).Debug("SIMULATION: Vesting operations - FINISHED")
 		return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations simulation completed", "", true, nil), nil, nil
 	}
 }
