@@ -219,7 +219,7 @@ func (k Keeper) SendReservedToNewVestingAccount(ctx sdk.Context, owner string, t
 	return nil
 }
 
-func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, restartVesting bool) error {
+func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr string, vestingPoolName string, amount math.Int, restartVesting bool) error { // TODO nazwa SendToVestingAccount
 	k.Logger(ctx).Debug("send to new vesting account", "owner", owner, "toAddr", toAddr, "vestingPoolName", vestingPoolName, "amount", amount, "restartVesting", restartVesting)
 
 	accVestingPools, vestingPool, vestingType, err := k.getVestingPoolAndType(ctx, owner, vestingPoolName)
