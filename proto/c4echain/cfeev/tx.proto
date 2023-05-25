@@ -1,0 +1,98 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfeev;
+
+// this line is used by starport scaffolding # proto/tx/import
+import "c4echain/cfeev/location.proto";
+import "c4echain/cfeev/energy_transfer_offer.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc PublishEnergyTransferOffer(MsgPublishEnergyTransferOffer) returns (MsgPublishEnergyTransferOfferResponse);
+  rpc StartEnergyTransferRequest(MsgStartEnergyTransferRequest) returns (MsgStartEnergyTransferRequestResponse);
+  rpc EnergyTransferStartedRequest(MsgEnergyTransferStartedRequest) returns (MsgEnergyTransferStartedRequestResponse);
+  rpc EnergyTransferCompletedRequest(MsgEnergyTransferCompletedRequest) returns (MsgEnergyTransferCompletedRequestResponse);
+  rpc CancelEnergyTransferRequest(MsgCancelEnergyTransferRequest) returns (MsgCancelEnergyTransferRequestResponse);
+  rpc RemoveEnergyOffer(MsgRemoveEnergyOffer) returns (MsgRemoveEnergyOfferResponse);
+  rpc RemoveTransfer(MsgRemoveTransfer) returns (MsgRemoveTransferResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgPublishEnergyTransferOffer {
+  string creator = 1;
+  string chargerId = 2;
+  int32 tariff = 3;
+  Location location = 4;
+  string name = 5;
+  PlugType plugType = 6;
+}
+
+message MsgPublishEnergyTransferOfferResponse {
+  uint64 id = 1;
+}
+
+message MsgStartEnergyTransferRequest {
+  string creator = 1;
+  uint64 energyTransferOfferId = 2;
+  string chargerId = 3;
+  string ownerAccountAddress = 4;
+  string offeredTariff = 5;
+  cosmos.base.v1beta1.Coin collateral = 6;
+  int32 energyToTransfer = 7;
+}
+
+message MsgStartEnergyTransferRequestResponse {
+  uint64 id = 1;
+}
+
+message MsgEnergyTransferStartedRequest {
+  string creator = 1;
+  uint64 energyTransferId = 2;
+  string chargerId = 3;
+  string info = 4;
+}
+
+message MsgEnergyTransferStartedRequestResponse {
+}
+
+message MsgEnergyTransferCompletedRequest {
+  string creator = 1;
+  uint64 energyTransferId = 2;
+  string chargerId = 3;
+  int32 usedServiceUnits = 4;
+  string info = 5;
+}
+
+message MsgEnergyTransferCompletedRequestResponse {
+}
+
+message MsgCancelEnergyTransferRequest {
+  string creator = 1;
+  uint64 energyTransferId = 2;
+  string chargerId = 3;
+  string errorInfo = 4;
+  string errorCode = 5;
+}
+
+message MsgCancelEnergyTransferRequestResponse {
+}
+
+message MsgRemoveEnergyOffer {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgRemoveEnergyOfferResponse {
+}
+
+message MsgRemoveTransfer {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgRemoveTransferResponse {
+}
+
+// this line is used by starport scaffolding # proto/tx/message

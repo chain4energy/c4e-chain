@@ -1,0 +1,132 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfeev;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "c4echain/cfeev/params.proto";
+// this line is used by starport scaffolding # 1
+import "c4echain/cfeev/energy_transfer.proto";
+import "c4echain/cfeev/energy_transfer_offer.proto";
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/c4echain/cfeev/params";
+  }
+  // Queries a EnergyTransferOffer by id.
+	rpc EnergyTransferOffer(QueryGetEnergyTransferOfferRequest) returns (QueryGetEnergyTransferOfferResponse) {
+		option (google.api.http).get = "/c4echain/cfeev/energy_transfer_offer/{id}";
+	}
+
+	// Queries a list of EnergyTransferOffer items.
+	rpc EnergyTransferOfferAll(QueryAllEnergyTransferOfferRequest) returns (QueryAllEnergyTransferOfferResponse) {
+		option (google.api.http).get = "/c4echain/cfeev/energy_transfer_offer";
+	}
+
+// Queries a EnergyTransfer by id.
+	rpc EnergyTransfer(QueryGetEnergyTransferRequest) returns (QueryGetEnergyTransferResponse) {
+		option (google.api.http).get = "/c4echain/cfeev/energy_transfer/{id}";
+	}
+
+	// Queries a list of EnergyTransfer items.
+	rpc EnergyTransferAll(QueryAllEnergyTransferRequest) returns (QueryAllEnergyTransferResponse) {
+		option (google.api.http).get = "/c4echain/cfeev/energy_transfer";
+	}
+
+// Queries a list of ListOwnEnergyTransferOffer items.
+	rpc ListOwnEnergyTransferOffer(QueryListOwnEnergyTransferOfferRequest) returns (QueryListOwnEnergyTransferOfferResponse) {
+		option (google.api.http).get = "/c4echain/cfeev/list_own_energy_transfer_offer/{ownerAccAddress}";
+	}
+
+// Queries a list of ListOwnEnergyTransfer items.
+	rpc ListOwnEnergyTransfer(QueryListOwnEnergyTransferRequest) returns (QueryListOwnEnergyTransferResponse) {
+		option (google.api.http).get = "/c4echain/cfeev/list_own_energy_transfer/{driverAccAddress}";
+	}
+
+// Queries a list of ListOwnerEnergyTransfer items.
+	rpc ListOwnerEnergyTransfer(QueryListOwnerEnergyTransferRequest) returns (QueryListOwnerEnergyTransferResponse) {
+		option (google.api.http).get = "/c4echain/cfeev/list_owner_energy_transfer/{ownerAccAddress}";
+	}
+
+// this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetEnergyTransferOfferRequest {
+	uint64 id = 1;
+}
+
+message QueryGetEnergyTransferOfferResponse {
+	EnergyTransferOffer EnergyTransferOffer = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllEnergyTransferOfferRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllEnergyTransferOfferResponse {
+	repeated EnergyTransferOffer EnergyTransferOffer = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetEnergyTransferRequest {
+	uint64 id = 1;
+}
+
+message QueryGetEnergyTransferResponse {
+	EnergyTransfer EnergyTransfer = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllEnergyTransferRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllEnergyTransferResponse {
+	repeated EnergyTransfer EnergyTransfer = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryListOwnEnergyTransferOfferRequest {
+  string ownerAccAddress = 1;
+cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryListOwnEnergyTransferOfferResponse {
+  repeated EnergyTransferOffer energyTransferOffer = 1 [(gogoproto.nullable) = false];
+cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryListOwnEnergyTransferRequest {
+  string driverAccAddress = 1;
+  int32 transferStatus = 2;
+cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryListOwnEnergyTransferResponse {
+  repeated EnergyTransfer energyTransfer = 1 [(gogoproto.nullable) = false];
+cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryListOwnerEnergyTransferRequest {
+  string ownerAccAddress = 1;
+cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryListOwnerEnergyTransferResponse {
+  repeated EnergyTransfer energyTransfer = 1 [(gogoproto.nullable) = false];
+cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// this line is used by starport scaffolding # 3

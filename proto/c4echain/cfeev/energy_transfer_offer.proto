@@ -1,0 +1,29 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfeev;
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
+import "c4echain/cfeev/location.proto";
+
+message EnergyTransferOffer {
+  uint64 id = 1;
+  string owner = 2; 
+  string chargerId = 3; 
+  ChargerStatus chargerStatus = 4; 
+  Location location = 5; 
+  int32 tariff = 6; 
+  string name = 7;
+  PlugType plugType = 8;
+}
+
+enum ChargerStatus {
+    ACTIVE = 0;
+    BUSY = 1;
+    INACTIVE = 2;
+}
+
+enum PlugType {
+    Type1 = 0;
+    Type2 = 1; 
+    CHAdeMO = 2; 
+    CCS = 3;
+}
