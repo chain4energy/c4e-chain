@@ -1,0 +1,10 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfeev;
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
+
+message Location {
+  
+  string latitude = 1; 
+  string longitude = 2; 
+}
