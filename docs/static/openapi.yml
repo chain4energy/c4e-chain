@@ -6,7 +6,7 @@ info:
 paths:
   /c4e/claim/v1beta1/campaign/{campaign_id}:
     get:
-      summary: Queries a list of Campaigns items.
+      summary: Queries a Campaign by id.
       operationId: Chain4EnergyC4EchainCfeclaimCampaign
       responses:
         '200':
@@ -123,7 +123,7 @@ paths:
         - Query
   /c4e/claim/v1beta1/campaigns:
     get:
-      summary: Queries a list of Campaigns items.
+      summary: Queries a list of all Campaigns items.
       operationId: Chain4EnergyC4EchainCfeclaimCampaigns
       responses:
         '200':
@@ -321,10 +321,10 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4e/claim/v1beta1/mission:
+  /c4e/claim/v1beta1/mission/{campaign_id}/{mission_id}:
     get:
-      summary: Queries a list of Mission items.
-      operationId: Chain4EnergyC4EchainCfeclaimMissionAll
+      summary: Queries a Mission by campaign id and mission id.
+      operationId: Chain4EnergyC4EchainCfeclaimMission
       responses:
         '200':
           description: A successful response.
@@ -332,6 +332,74 @@ paths:
             type: object
             properties:
               mission:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  campaign_id:
+                    type: string
+                    format: uint64
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  missionType:
+                    type: string
+                    enum:
+                      - MISSION_TYPE_UNSPECIFIED
+                      - INITIAL_CLAIM
+                      - DELEGATE
+                      - VOTE
+                      - CLAIM
+                    default: MISSION_TYPE_UNSPECIFIED
+                  weight:
+                    type: string
+                  claim_start_date:
+                    type: string
+                    format: date-time
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+        - name: mission_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /c4e/claim/v1beta1/missions:
+    get:
+      summary: Queries a list of all Missions items.
+      operationId: Chain4EnergyC4EchainCfeclaimMissions
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              missions:
                 type: array
                 items:
                   type: object
@@ -465,43 +533,73 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4e/claim/v1beta1/mission/{campaign_id}/{mission_id}:
+  /c4e/claim/v1beta1/missions/{campaign_id}:
     get:
-      summary: Queries a Mission by index.
-      operationId: Chain4EnergyC4EchainCfeclaimMission
+      summary: Queries a list of Mission items for a given campaign.
+      operationId: Chain4EnergyC4EchainCfeclaimCampaignMissions
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              mission:
+              missions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    campaign_id:
+                      type: string
+                      format: uint64
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    missionType:
+                      type: string
+                      enum:
+                        - MISSION_TYPE_UNSPECIFIED
+                        - INITIAL_CLAIM
+                        - DELEGATE
+                        - VOTE
+                        - CLAIM
+                      default: MISSION_TYPE_UNSPECIFIED
+                    weight:
+                      type: string
+                    claim_start_date:
+                      type: string
+                      format: date-time
+              pagination:
                 type: object
                 properties:
-                  id:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
                     type: string
                     format: uint64
-                  campaign_id:
-                    type: string
-                    format: uint64
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  missionType:
-                    type: string
-                    enum:
-                      - MISSION_TYPE_UNSPECIFIED
-                      - INITIAL_CLAIM
-                      - DELEGATE
-                      - VOTE
-                      - CLAIM
-                    default: MISSION_TYPE_UNSPECIFIED
-                  weight:
-                    type: string
-                  claim_start_date:
-                    type: string
-                    format: date-time
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
         default:
           description: An unexpected error response.
           schema:
@@ -526,11 +624,62 @@ paths:
           required: true
           type: string
           format: uint64
-        - name: mission_id
-          in: path
-          required: true
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
           type: string
           format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
       tags:
         - Query
   /c4e/claim/v1beta1/user_entry/{address}:
@@ -613,7 +762,7 @@ paths:
         - Query
   /c4e/claim/v1beta1/users_entries:
     get:
-      summary: Queries a list of UserEntry items.
+      summary: Queries a list of all UserEntry items.
       operationId: Chain4EnergyC4EchainCfeclaimUsersEntries
       responses:
         '200':
@@ -47882,6 +48031,64 @@ definitions:
     type: object
   chain4energy.c4echain.cfeclaim.MsgRemoveCampaignResponse:
     type: object
+  chain4energy.c4echain.cfeclaim.QueryCampaignMissionsResponse:
+    type: object
+    properties:
+      missions:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            campaign_id:
+              type: string
+              format: uint64
+            name:
+              type: string
+            description:
+              type: string
+            missionType:
+              type: string
+              enum:
+                - MISSION_TYPE_UNSPECIFIED
+                - INITIAL_CLAIM
+                - DELEGATE
+                - VOTE
+                - CLAIM
+              default: MISSION_TYPE_UNSPECIFIED
+            weight:
+              type: string
+            claim_start_date:
+              type: string
+              format: date-time
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
   chain4energy.c4echain.cfeclaim.QueryCampaignResponse:
     type: object
     properties:
@@ -48109,7 +48316,7 @@ definitions:
   chain4energy.c4echain.cfeclaim.QueryMissionsResponse:
     type: object
     properties:
-      mission:
+      missions:
         type: array
         items:
           type: object

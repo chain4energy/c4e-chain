@@ -34,7 +34,7 @@ func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClai
 		ctx,
 		msg.Claimer,
 		msg.CampaignId,
-		msg.AddressToClaim,
+		msg.DestinationAddress,
 	); err != nil {
 		k.Logger(ctx).Debug("initial claim", "err", err.Error())
 		return nil, err

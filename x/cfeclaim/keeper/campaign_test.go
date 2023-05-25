@@ -464,13 +464,19 @@ func prepareTestCampaign(ctx sdk.Context) types.Campaign {
 	lockupPeriod := time.Hour * 10000
 	vestingPeriod := 3 * time.Hour * 10000
 	return types.Campaign{
-		Id:            0,
-		Name:          "Name",
-		Description:   "test-campaign",
-		StartTime:     start,
-		EndTime:       end,
-		LockupPeriod:  lockupPeriod,
-		VestingPeriod: vestingPeriod,
-		CampaignType:  types.DefaultCampaign,
+		Id:                     0,
+		Name:                   "Name",
+		Description:            "test-campaign",
+		CampaignType:           types.DefaultCampaign,
+		RemovableClaimRecords:  false,
+		FeegrantAmount:         math.ZeroInt(),
+		InitialClaimFreeAmount: math.ZeroInt(),
+		Free:                   sdk.ZeroDec(),
+		Enabled:                false,
+		StartTime:              start,
+		EndTime:                end,
+		LockupPeriod:           lockupPeriod,
+		VestingPeriod:          vestingPeriod,
+		VestingPoolName:        "",
 	}
 }

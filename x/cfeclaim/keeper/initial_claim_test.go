@@ -73,7 +73,7 @@ func TestInitialClaimAlreadyClaimed(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("address %s, campaignId: 0, missionId: 0: mission already completed", acountsAddresses[1].String()))
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, "campaignId: 0, missionId: 0: mission already completed")
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -86,7 +86,7 @@ func TestInitialClaimRecordDosentExist(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[10], 0, fmt.Sprintf("user claim entries not found for address %s: not found", acountsAddresses[10].String()))
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[10], 0, fmt.Sprintf("userEntry %s doesn't exist: entity does not exist", acountsAddresses[10].String()))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -98,15 +98,15 @@ func TestInitialClaimWrongCampaign(t *testing.T) {
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 1, "camapign not found: campaignId 1: not found")
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 1, "campaign with id 1 not found: entity does not exist")
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 1, nil, nil)
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 1, fmt.Sprintf("campaign record with id 1 not found for address %s: not found", acountsAddresses[1].String()))
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 1, fmt.Sprintf("claim record with campaign id 1 not found for address %s: not found", acountsAddresses[1].String()))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
-func TestInitialClaimCampaignDidntStartYey(t *testing.T) {
+func TestInitialClaimCampaignDidntStartYet(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
@@ -119,7 +119,7 @@ func TestInitialClaimCampaignDidntStartYey(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("campaign 0 not started yet (%s < startTime %s) error: campaign is disabled", testHelper.Context.BlockTime(), campaign.StartTime))
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("campaign 0 not started yet (%s < startTime %s): campaign is disabled", testHelper.Context.BlockTime(), campaign.StartTime))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -137,7 +137,7 @@ func TestInitialClaimCampaignNotEnabled(t *testing.T) {
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0)
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, "campaign 0 error: campaign is disabled")
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, "campaign 0: campaign is disabled")
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -154,7 +154,7 @@ func TestInitialClaimCampaignIsOver(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("campaign 0 has already ended (%s > endTime %s) error: campaign is disabled", testHelper.Context.BlockTime(), campaign.EndTime))
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 0, fmt.Sprintf("campaign 0 has already ended (%s > endTime %s): campaign is disabled", testHelper.Context.BlockTime(), campaign.EndTime))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 

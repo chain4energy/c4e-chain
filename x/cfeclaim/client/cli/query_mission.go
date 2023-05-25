@@ -28,7 +28,7 @@ func CmdMissions() *cobra.Command {
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.MissionAll(context.Background(), params)
+			res, err := queryClient.Missions(context.Background(), params)
 			if err != nil {
 				return err
 			}

@@ -77,14 +77,14 @@ func ModifyVestingPoolsState(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeep
 }
 
 func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) bool {
-	vestingType, err := appKeepers.GetC4eVestingKeeper().GetVestingType(ctx, oldValidatorTypeName)
+	vestingType, err := appKeepers.GetC4eVestingKeeper().MustGetVestingType(ctx, oldValidatorTypeName)
 	if err != nil {
 		ctx.Logger().Info("vesting type not found", "vestingType", oldValidatorTypeName)
 		return false
 	}
 	appKeepers.GetC4eVestingKeeper().RemoveVestingType(ctx, oldValidatorTypeName)
 	vestingType.Name = validatorRoundTypeName
-	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, vestingType)
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, *vestingType)
 
 	vcRoundType := cfevestingtypes.VestingType{
 		Name:          vcRoundTypeName,

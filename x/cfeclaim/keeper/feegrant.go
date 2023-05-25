@@ -3,31 +3,15 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	"strconv"
 )
-
-func validateFeegrantAmount(feeGrantAmount *math.Int) (math.Int, error) {
-	if feeGrantAmount == nil {
-		return math.ZeroInt(), nil
-	}
-
-	if feeGrantAmount.IsNil() {
-		return math.ZeroInt(), nil
-	}
-
-	if feeGrantAmount.IsNegative() {
-		return math.ZeroInt(), errors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
-	}
-
-	return *feeGrantAmount, nil
-}
 
 func CreateFeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
 	moduleAddressName := types.ModuleName + "-fee-grant-" + strconv.FormatUint(campaignId, 10)
@@ -43,7 +27,7 @@ func calculateFeegrantFeesSum(feegrantAmount math.Int, claimRecordsNumber int64,
 
 func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecords []*types.ClaimRecord, feegrantDenom string) error {
 	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
-		acc := k.NewModuleAccountSet(ctx, campaign.Id)
+		acc := k.SetupNewFeegrantAccount(ctx, campaign.Id)
 
 		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc, feegrantFeesSum); err != nil {
 			return err
@@ -129,4 +113,18 @@ func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, campaignId uint64, userEn
 		}
 	}
 	return granterAddress, granteeAddress, nil, errors.Wrap(sdkerrors.ErrInvalidType, "cannot get feegrant left amount")
+}
+
+func (k Keeper) revokeFeeAllowance(ctx sdk.Context, granter sdk.Address, grantee sdk.AccAddress) error {
+	keeper, _ := (k.feeGrantKeeper).(feegrantkeeper.Keeper)
+	feegrantMsgServer := feegrantkeeper.NewMsgServerImpl(keeper)
+	msg := feegranttypes.MsgRevokeAllowance{
+		Granter: granter.String(),
+		Grantee: grantee.String(),
+	}
+	_, err := feegrantMsgServer.RevokeAllowance(sdk.WrapSDKContext(ctx), &msg)
+	if err != nil {
+		return err
+	}
+	return nil
 }

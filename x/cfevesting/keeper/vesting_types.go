@@ -1,7 +1,9 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -25,16 +27,25 @@ func (k Keeper) GetAllVestingTypes(ctx sdk.Context) (vestingTypes types.VestingT
 }
 
 // get the vesting type by name
-func (k Keeper) GetVestingType(ctx sdk.Context, name string) (vestingType types.VestingType, err error) {
+func (k Keeper) MustGetVestingType(ctx sdk.Context, name string) (vestingType *types.VestingType, err error) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.VestingTypesKeyPrefix)
-
+	var vestType types.VestingType
 	b := store.Get([]byte(name))
 	if b == nil {
-		err = fmt.Errorf("vesting type not found: " + name)
-		return
+		return nil, fmt.Errorf("vesting type not found: " + name)
 	}
-	k.cdc.MustUnmarshal(b, &vestingType)
-	return
+	k.cdc.MustUnmarshal(b, &vestType)
+	return &vestType, nil
+}
+
+// get the vesting type by name
+func (k Keeper) MustGetVestingTypeForVestingPool(ctx sdk.Context, address string,
+	vestingPoolName string) (*types.VestingType, error) {
+	_, vestingPool, found := k.GetAccountVestingPool(ctx, address, vestingPoolName)
+	if !found {
+		return nil, errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, address)
+	}
+	return k.MustGetVestingType(ctx, vestingPool.VestingType)
 }
 
 // set the vesting types

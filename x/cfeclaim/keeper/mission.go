@@ -5,7 +5,6 @@ import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 	"time"
 )
@@ -19,10 +18,10 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 	if err != nil {
 		return err
 	}
-	if err = types.ValidateCampaignIsNotEnabled(*campaign); err != nil {
+	if err = campaign.ValidateNotEnabled(); err != nil {
 		return err
 	}
-	if err = ValidateCampaignNotEnded(ctx, *campaign); err != nil {
+	if err = campaign.ValidateNotEnded(ctx.BlockTime()); err != nil {
 		return err
 	}
 
@@ -51,7 +50,7 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 		ClaimStartDate: eventClaimStartDate,
 	}
 
-	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Error("add mission to campaign emit event error", "event", event, "error", err.Error())
 	}
 
@@ -60,97 +59,70 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 
 func (k Keeper) ValidateAddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string,
 	missionType types.MissionType, weight sdk.Dec, claimStartDate *time.Time) (*types.Campaign, error) {
-	err := types.ValidateAddMissionToCampaign(owner, name, description, missionType, &weight)
+	err := types.ValidateAddMissionToCampaign(owner, name, description, missionType, weight)
 	if err != nil {
 		return nil, err
 	}
-	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
+	campaign, err := k.MustGetCampaign(ctx, campaignId)
 	if err != nil {
 		return nil, err
 	}
-	if err = ValidateOwner(campaign, owner); err != nil {
+	if err = campaign.ValidateOwner(owner); err != nil {
 		return nil, err
 	}
-	if err = k.ValidateMissionWeightsNotGreaterThan1(ctx, campaignId, weight); err != nil {
+	if err = k.ValidateMissionsWeightAndType(ctx, campaignId, weight, missionType); err != nil {
 		return nil, err
 	}
-	if err = k.ValidateOnlyFirstMissionInitialClaim(ctx, campaignId, missionType); err != nil {
+	if err = campaign.ValidateMissionClaimStartDate(claimStartDate); err != nil {
 		return nil, err
 	}
-	if err = ValidateMissionClaimStartDate(campaign, claimStartDate); err != nil {
-		return nil, err
-	}
-	return &campaign, nil
+	return campaign, nil
 }
 
-func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, error) {
-	campaign, campaignFound := k.GetCampaign(ctx, campaignId)
-	if !campaignFound {
-		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "camapign not found: campaignId %d", campaignId)
-	}
-	k.Logger(ctx).Debug("campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaigh start", campaign.StartTime, "campaigh end", campaign.EndTime)
-
-	userEntry, found := k.GetUserEntry(ctx, claimerAddress)
-	if !found {
-		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "user claim entries not found for address %s", claimerAddress)
-	}
-
-	if err := campaign.IsActive(ctx.BlockTime()); err != nil {
-		return nil, nil, nil, err
-	}
-
-	mission, err := k.ValidateMissionExists(ctx, campaignId, missionId)
+func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, *types.ClaimRecord, error) {
+	campaign, err := k.MustGetCampaign(ctx, campaignId)
 	if err != nil {
-		return nil, nil, nil, err
+		return missionFirstStepReturnError(err)
 	}
+	k.Logger(ctx).Debug("campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaign start", campaign.StartTime, "campaign end", campaign.EndTime)
 
+	if err = campaign.IsActive(ctx.BlockTime()); err != nil {
+		return missionFirstStepReturnError(err)
+	}
+	userEntry, err := k.MustGeUserEntry(ctx, claimerAddress)
+	if err != nil {
+		return missionFirstStepReturnError(err)
+	}
+	mission, err := k.MustGetMission(ctx, campaignId, missionId)
+	if err != nil {
+		return missionFirstStepReturnError(err)
+	}
 	k.Logger(ctx).Debug("mission", mission)
-	if err := mission.IsEnabled(ctx.BlockTime()); err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "mission disabled - campaignId %d, missionId %d", campaignId, missionId)
+	if err = mission.IsEnabled(ctx.BlockTime()); err != nil {
+		return missionFirstStepReturnError(err)
+	}
+	claimRecord, err := userEntry.MustGetClaimRecord(campaignId)
+	if err != nil {
+		return missionFirstStepReturnError(err)
 	}
 
-	if !userEntry.HasCampaign(campaignId) {
-		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "campaign record with id %d not found for address %s", campaignId, claimerAddress)
-	}
-
-	return &campaign, mission, &userEntry, nil
-}
-func (k Keeper) ValidateMissionExists(ctx sdk.Context, campaignId uint64, missionId uint64) (*types.Mission, error) {
-	mission, missionFound := k.GetMission(ctx, campaignId, missionId)
-	if !missionFound {
-		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "mission not found - campaignId %d, missionId %d", campaignId, missionId)
-	}
-	return &mission, nil
+	return campaign, mission, &userEntry, claimRecord, nil
 }
 
-func (k Keeper) ValidateMissionWeightsNotGreaterThan1(ctx sdk.Context, campaignId uint64, newMissionWeight sdk.Dec) error {
-	_, weightSum := k.AllMissionForCampaign(ctx, campaignId)
+func missionFirstStepReturnError(err error) (*types.Campaign, *types.Mission, *types.UserEntry, *types.ClaimRecord, error) {
+	return nil, nil, nil, nil, err
+}
+
+func (k Keeper) ValidateMissionsWeightAndType(ctx sdk.Context, campaignId uint64, newMissionWeight sdk.Dec, missionType types.MissionType) error {
+	missions, weightSum := k.AllMissionForCampaign(ctx, campaignId)
 	weightSum = weightSum.Add(newMissionWeight)
 	if weightSum.GT(sdk.NewDec(1)) {
 		return errors.Wrapf(c4eerrors.ErrParam, "all campaign missions weight sum is >= 1 (%s > 1) error", weightSum.String())
 	}
-	return nil
-}
 
-func (k Keeper) ValidateOnlyFirstMissionInitialClaim(ctx sdk.Context, campaignId uint64, missionType types.MissionType) error {
-	missions, _ := k.AllMissionForCampaign(ctx, campaignId)
 	if len(missions) > 0 && missionType == types.MissionInitialClaim {
 		return errors.Wrapf(c4eerrors.ErrParam, "there can be only one mission with InitialClaim type and must be first in the campaign")
-	} else if len(missions) == 0 && missionType != types.MissionInitialClaim {
-		return errors.Wrapf(c4eerrors.ErrParam, "there can be only one mission with InitialClaim type and must be first in the campaign")
 	}
-	return nil
-}
 
-func ValidateMissionClaimStartDate(campaign types.Campaign, claimStartDate *time.Time) error {
-	if claimStartDate == nil {
-		return nil
-	}
-	if claimStartDate.After(campaign.EndTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "mission claim start date after campaign end time (end time - %s < %s)", campaign.EndTime, claimStartDate)
-	}
-	if claimStartDate.Before(campaign.StartTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "mission claim start date before campaign start time (start time - %s > %s)", campaign.StartTime, claimStartDate)
-	}
 	return nil
 }

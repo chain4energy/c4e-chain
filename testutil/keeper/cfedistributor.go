@@ -73,7 +73,6 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, Additional
 		paramsStore,
 		nil,
 		nil,
-		nil,
 		appparams.GetAuthority(),
 	)
 

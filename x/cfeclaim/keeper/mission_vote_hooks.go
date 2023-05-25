@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -21,9 +22,10 @@ var _ govtypes.GovHooks = MissionVoteHooks{}
 func (h MissionVoteHooks) AfterProposalVote(ctx sdk.Context, _ uint64, voterAddr sdk.AccAddress) {
 	missions := h.k.GetAllMission(ctx)
 	for _, mission := range missions {
-		// TODO error handling
 		if mission.MissionType == types.MissionVote {
-			_ = h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, voterAddr.String())
+			if err := h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, voterAddr.String()); err != nil {
+				ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName)).Debug("mission vote hook error", "error", err)
+			}
 		}
 	}
 }

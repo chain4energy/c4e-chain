@@ -67,25 +67,25 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 	}
 
 	_, err := appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, TeamdropVestingPoolOwner, "teamdrop", "teamdrop",
-		types.VestingPoolCampaign, true, &zeroInt, &inititalClaimOneC4E, &zeroDec, &startTime, &endTime, &teamdropLockupPeriod, &teamdropVestingPeriod, TeamdropVestingPoolName)
+		types.VestingPoolCampaign, true, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, teamdropLockupPeriod, teamdropVestingPeriod, TeamdropVestingPoolName)
 	if err != nil {
 		return err
 	}
 
 	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "stakedrop", "stakedrop",
-		types.VestingPoolCampaign, false, &zeroInt, &inititalClaimOneC4E, &zeroDec, &startTime, &endTime, &airdropLockupPeriod, &airdropVestingPeriod, FairdropVestingPoolName)
+		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
 	if err != nil {
 		return err
 	}
 
 	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "santadrop", "santadrop",
-		types.VestingPoolCampaign, false, &zeroInt, &inititalClaimOneC4E, &zeroDec, &startTime, &endTime, &airdropLockupPeriod, &airdropVestingPeriod, FairdropVestingPoolName)
+		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
 	if err != nil {
 		return err
 	}
 
 	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "gleamdrop", "gleamdrop",
-		types.VestingPoolCampaign, false, &zeroInt, &inititalClaimOneC4E, &zeroDec, &startTime, &endTime, &airdropLockupPeriod, &airdropVestingPeriod, FairdropVestingPoolName)
+		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
 	if err != nil {
 		return err
 	}

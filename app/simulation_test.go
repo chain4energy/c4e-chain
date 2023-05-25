@@ -133,11 +133,11 @@ func BenchmarkSimTest(b *testing.B) {
 		}},
 		{app.keys[cfesignaturetypes.StoreKey], newApp.keys[cfesignaturetypes.StoreKey], [][]byte{}},
 		{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{
-			cfeclaimtypes.KeyPrefix(cfeclaimtypes.CampaignKeyPrefix),
-			cfeclaimtypes.KeyPrefix(cfeclaimtypes.MissionCountKeyPrefix),
-			cfeclaimtypes.KeyPrefix(cfeclaimtypes.CampaignCountKeyPrefix),
-			cfeclaimtypes.KeyPrefix(cfeclaimtypes.MissionKeyPrefix),
-			cfeclaimtypes.KeyPrefix(cfeclaimtypes.UserEntryKeyPrefix),
+			cfeclaimtypes.CampaignKeyPrefix,
+			cfeclaimtypes.MissionCountKeyPrefix,
+			cfeclaimtypes.CampaignCountKeyPrefix,
+			cfeclaimtypes.MissionKeyPrefix,
+			cfeclaimtypes.UserEntryKeyPrefix,
 		}},
 	}
 

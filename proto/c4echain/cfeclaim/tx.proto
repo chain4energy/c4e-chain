@@ -36,7 +36,7 @@ message MsgClaimResponse {}
 message MsgInitialClaim {
   string claimer = 1;
   uint64 campaign_id = 2;
-  string addressToClaim = 3;
+  string destinationAddress = 3;
 }
 
 message MsgInitialClaimResponse {}

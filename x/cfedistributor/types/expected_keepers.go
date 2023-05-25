@@ -22,8 +22,3 @@ type BankKeeper interface {
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
 }
-
-// MinterKeeper defines the expected interface needed to retrieve minting denom.
-type MinterKeeper interface {
-	MintDenom(ctx sdk.Context) string
-}

@@ -20,7 +20,7 @@ func (k Keeper) UsersEntries(c context.Context, req *types.QueryUsersEntriesRequ
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	claimRecordStore := prefix.NewStore(store, types.KeyPrefix(types.UserEntryKeyPrefix))
+	claimRecordStore := prefix.NewStore(store, types.UserEntryKeyPrefix)
 
 	pageRes, err := query.Paginate(claimRecordStore, req.Pagination, func(key []byte, value []byte) error {
 		var userclaimRecord types.UserEntry

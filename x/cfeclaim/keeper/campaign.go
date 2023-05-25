@@ -10,28 +10,16 @@ import (
 )
 
 func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, description string, campaignType types.CampaignType, removableClaimRecords bool,
-	feeGrantAmount *math.Int, initialClaimFreeAmount *math.Int, free *sdk.Dec, startTime *time.Time,
-	endTime *time.Time, lockupPeriod *time.Duration, vestingPeriod *time.Duration, vestingPoolName string) (*types.Campaign, error) {
+	feegrantAmount math.Int, initialClaimFreeAmount math.Int, free sdk.Dec, startTime time.Time,
+	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string) (*types.Campaign, error) {
 	k.Logger(ctx).Debug("create campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
 
-	validFree, err := validateFreeAmount(free)
-	if err != nil {
+	if err := k.ValidateCampaignParams(ctx, name, description, feegrantAmount, initialClaimFreeAmount, free, startTime, endTime, campaignType, owner, vestingPoolName, lockupPeriod, vestingPeriod); err != nil {
 		return nil, err
 	}
 
-	if err = k.ValidateCampaignParams(ctx, name, description, validFree, startTime, endTime, campaignType, owner, vestingPoolName, lockupPeriod, vestingPeriod); err != nil {
-		return nil, err
-	}
-	if err = ValidateCampaignEndTimeInTheFuture(ctx, endTime); err != nil {
-		return nil, err
-	}
-	validdFeegrantAmount, err := validateFeegrantAmount(feeGrantAmount)
-	if err != nil {
-		return nil, err
-	}
-	validInitialClaimFreeAmount, err := validateInitialClaimFreeAmount(initialClaimFreeAmount)
-	if err != nil {
+	if err := validateEndTimeInTheFuture(ctx, endTime); err != nil {
 		return nil, err
 	}
 
@@ -41,79 +29,96 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 		Description:            description,
 		CampaignType:           campaignType,
 		RemovableClaimRecords:  removableClaimRecords,
-		FeegrantAmount:         validdFeegrantAmount,
-		InitialClaimFreeAmount: validInitialClaimFreeAmount,
-		Free:                   validFree,
+		FeegrantAmount:         feegrantAmount,
+		InitialClaimFreeAmount: initialClaimFreeAmount,
+		Free:                   free,
 		Enabled:                false,
-		StartTime:              *startTime,
-		EndTime:                *endTime,
-		LockupPeriod:           *lockupPeriod,
-		VestingPeriod:          *vestingPeriod,
+		StartTime:              startTime,
+		EndTime:                endTime,
+		LockupPeriod:           lockupPeriod,
+		VestingPeriod:          vestingPeriod,
 		VestingPoolName:        vestingPoolName,
 	}
 
 	campaignId := k.AppendNewCampaign(ctx, campaign)
-
-	missionInitial := types.NewInitialMission(campaignId)
-	err = k.AddMissionToCampaign(ctx, owner, campaignId, missionInitial.Name, missionInitial.Description,
-		missionInitial.MissionType, missionInitial.Weight, missionInitial.ClaimStartDate)
-	if err != nil {
-		return nil, err
-	}
+	// Adding the inititalClaim mission to a campaign is done automatically as this mission is required for every campaign
+	k.AppendNewMission(ctx, campaignId, *types.NewInitialMission(campaignId))
 
 	return &campaign, nil
 }
 
-func validateInitialClaimFreeAmount(initialClaimFreeAmount *math.Int) (math.Int, error) {
-	if initialClaimFreeAmount == nil {
-		return math.ZeroInt(), nil
-	}
-	if initialClaimFreeAmount.IsNil() {
-		return math.ZeroInt(), nil
-	}
-
-	if initialClaimFreeAmount.IsNegative() {
-		return math.ZeroInt(), errors.Wrapf(c4eerrors.ErrParam, "initial claim free amount (%s) cannot be negative", initialClaimFreeAmount.String())
-	}
-
-	return *initialClaimFreeAmount, nil
-}
-
-func validateFreeAmount(free *sdk.Dec) (sdk.Dec, error) {
-	if free == nil {
-		return sdk.ZeroDec(), nil
-	}
-	if free.IsNil() {
-		return sdk.ZeroDec(), nil
-	}
-
-	if free.IsNegative() {
-		return sdk.ZeroDec(), errors.Wrapf(c4eerrors.ErrParam, "free amount (%s) cannot be negative", free.String())
-	}
-
-	return *free, nil
-}
-
 func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
 	k.Logger(ctx).Debug("close campaign", "owner", owner, "campaignId", campaignId)
-	campaign, err := k.ValidateCloseCampaignParams(ctx, campaignId, owner)
+	campaign, err := k.MustGetCampaign(ctx, campaignId)
 	if err != nil {
 		return err
 	}
+	if err = k.validateCloseCampaignParams(ctx, campaign, owner); err != nil {
+		return err
+	}
+	if err = k.returnAllToOwner(ctx, campaign); err != nil {
+		return err
+	}
+	campaign.DecrementCampaignCurrentAmount(campaign.CampaignCurrentAmount)
 	campaign.Enabled = false
-	k.SetCampaign(ctx, campaign)
-	if err = k.sendCampaignCurrentAmountToOwner(ctx, &campaign, campaign.CampaignCurrentAmount); err != nil {
-		return err
-	}
-	if err = k.closeCampaignSendFeegrant(ctx, &campaign); err != nil {
-		return err
-	}
-
+	k.SetCampaign(ctx, *campaign)
 	return nil
 }
 
+func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
+	k.Logger(ctx).Debug("remove campaign", "owner", owner, "campaignId", campaignId)
+
+	campaign, err := k.MustGetCampaign(ctx, campaignId)
+	if err != nil {
+		return err
+	}
+	if err = campaign.ValidateRemoveCampaignParams(owner); err != nil {
+		return err
+	}
+
+	if err = k.returnAllToOwner(ctx, campaign); err != nil {
+		return err
+	}
+
+	k.removeCampaign(ctx, campaignId)
+	k.RemoveAllMissionForCampaign(ctx, campaignId)
+	return nil
+}
+
+func (k Keeper) EnableCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) error {
+	k.Logger(ctx).Debug("start campaign", "owner", owner, "campaignId", campaignId)
+
+	campaign, err := k.MustGetCampaign(ctx, campaignId)
+	if err != nil {
+		return err
+	}
+
+	if startTime != nil {
+		campaign.StartTime = *startTime
+	}
+	if endTime != nil {
+		campaign.EndTime = *endTime
+	}
+
+	err = k.validateEnableCampaignParams(ctx, campaign, owner)
+	if err != nil {
+		return err
+	}
+
+	campaign.Enabled = true
+	k.SetCampaign(ctx, *campaign)
+	return nil
+}
+
+func (k Keeper) returnAllToOwner(ctx sdk.Context, campaign *types.Campaign) error {
+	if err := k.sendCampaignCurrentAmountToOwner(ctx, campaign, campaign.CampaignCurrentAmount); err != nil {
+		return err
+	}
+	return k.closeCampaignSendFeegrant(ctx, campaign)
+}
+
 func (k Keeper) sendCampaignCurrentAmountToOwner(ctx sdk.Context, campaign *types.Campaign, amount sdk.Coins) error {
-	if amount.IsAnyGT(campaign.CampaignCurrentAmount) {
+	if !amount.IsAllLTE(campaign.CampaignCurrentAmount) {
 		return errors.Wrapf(c4eerrors.ErrAmount,
 			"cannot send campaign current amount to owner, campaign current amount is lower than amount (%s < %s)", campaign.CampaignCurrentAmount, amount)
 	}
@@ -128,145 +133,53 @@ func (k Keeper) sendCampaignCurrentAmountToOwner(ctx sdk.Context, campaign *type
 			return err
 		}
 	}
-
-	campaign.CampaignCurrentAmount = campaign.CampaignCurrentAmount.Sub(amount...)
-	k.SetCampaign(ctx, *campaign)
 	return nil
 }
 
-func (k Keeper) EnableCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) error {
-	k.Logger(ctx).Debug("start campaign", "owner", owner, "campaignId", campaignId)
+func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description string, feegrantAmount math.Int,
+	inititalClaimFreeAmount math.Int, free sdk.Dec, startTime time.Time, endTime time.Time,
+	campaignType types.CampaignType, owner string, vestingPoolName string, lockupPeriod time.Duration, vestingPeriod time.Duration) error {
 
-	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
-	if err != nil {
+	if err := types.ValidateCreateCampaignParams(name, description, feegrantAmount, inititalClaimFreeAmount,
+		free, startTime, endTime, campaignType, lockupPeriod, vestingPeriod, vestingPoolName); err != nil {
 		return err
 	}
-
-	if startTime != nil {
-		campaign.StartTime = *startTime
-	}
-	if endTime != nil {
-		campaign.EndTime = *endTime
-	}
-
-	err = k.ValidateEnableCampaignParams(ctx, campaign, owner)
-	if err != nil {
-		return err
-	}
-
-	campaign.Enabled = true
-	k.SetCampaign(ctx, campaign)
-	return nil
-}
-
-func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64) error {
-	k.Logger(ctx).Debug("remove campaign", "owner", owner, "campaignId", campaignId)
-
-	campaign, err := k.ValidateRemoveCampaignParams(ctx, owner, campaignId)
-	if err != nil {
-		k.Logger(ctx).Debug("remove campaign", "err", err.Error())
-		return err
-	}
-
-	if err = k.sendCampaignCurrentAmountToOwner(ctx, campaign, campaign.CampaignCurrentAmount); err != nil {
-		return err
-	}
-	if err = k.closeCampaignSendFeegrant(ctx, campaign); err != nil {
-		return err
-	}
-
-	k.removeCampaign(ctx, campaignId)
-	k.RemoveAllMissionForCampaign(ctx, campaignId)
-	return nil
-}
-func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description string, free sdk.Dec, startTime *time.Time, endTime *time.Time,
-	campaignType types.CampaignType, owner string, vestingPoolName string, lockupPeriod *time.Duration, vestingPeriod *time.Duration) error {
-	if err := types.ValidateCreateCampaignParams(name, description, startTime, endTime, campaignType, vestingPoolName); err != nil {
-		return err
-	}
-
 	if campaignType == types.VestingPoolCampaign {
-		return k.ValidateCampaignWhenAddedFromVestingPool(ctx, owner, vestingPoolName, lockupPeriod, vestingPeriod, free)
-	}
-	return nil
-}
-func (k Keeper) ValidateCloseCampaignParams(ctx sdk.Context, campaignId uint64, owner string) (types.Campaign, error) {
-	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
-	if err != nil {
-		return types.Campaign{}, err
-	}
-	if err = ValidateOwner(campaign, owner); err != nil {
-		return types.Campaign{}, err
-	}
-	if err = ValidateCampaignEnded(ctx, campaign); err != nil {
-		return types.Campaign{}, err
+		return k.ValidateVestingPoolCampaign(ctx, owner, vestingPoolName, lockupPeriod, vestingPeriod, free)
 	}
 
-	return campaign, nil
-}
-
-func (k Keeper) ValidateEnableCampaignParams(ctx sdk.Context, campaign types.Campaign, owner string) error {
-	if err := ValidateOwner(campaign, owner); err != nil {
-		return err
-	}
-
-	if err := types.ValidateCampaignIsNotEnabled(campaign); err != nil {
-		return err
-	}
-	if err := types.ValidateCampaignEndTimeAfterStartTime(&campaign.StartTime, &campaign.EndTime); err != nil {
-		return err
-	}
-	return ValidateCampaignEndTimeInTheFuture(ctx, &campaign.EndTime)
-}
-
-func (k Keeper) ValidateRemoveCampaignParams(ctx sdk.Context, owner string, campaignId uint64) (*types.Campaign, error) {
-	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = ValidateOwner(campaign, owner); err != nil {
-		return nil, err
-	}
-
-	return &campaign, types.ValidateCampaignIsNotEnabled(campaign)
-}
-
-func (k Keeper) ValidateCampaignExists(ctx sdk.Context, campaignId uint64) (types.Campaign, error) {
-	campaign, found := k.GetCampaign(ctx, campaignId)
-	if !found {
-		return types.Campaign{}, errors.Wrapf(c4eerrors.ErrNotExists, "campaign with id %d not found", campaignId)
-	}
-	return campaign, nil
-}
-
-func ValidateOwner(campaign types.Campaign, owner string) error {
-	if campaign.Owner != owner {
-		return errors.Wrap(c4eerrors.ErrWrongSigner, "you are not the campaign owner")
-	}
 	return nil
 }
 
-func ValidateCampaignEndTimeInTheFuture(ctx sdk.Context, endTime *time.Time) error {
-	if endTime == nil {
-		return errors.Wrapf(c4eerrors.ErrParam, "create claim campaign - start time is nil error")
+func (k Keeper) ValidateVestingPoolCampaign(ctx sdk.Context, owner string, vestingPoolName string,
+	lockupPeriod time.Duration, vestingPeriod time.Duration, free sdk.Dec) error {
+	vestingType, err := k.vestingKeeper.MustGetVestingTypeForVestingPool(ctx, owner, vestingPoolName)
+	if err != nil {
+		return err
 	}
+	if err = vestingType.ValidateVestingPeriods(lockupPeriod, vestingPeriod); err != nil {
+		return err
+	}
+	return vestingType.ValidateVestingFree(free)
+}
+
+func validateEndTimeInTheFuture(ctx sdk.Context, endTime time.Time) error {
 	if endTime.Before(ctx.BlockTime()) {
 		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", endTime, ctx.BlockTime())
 	}
 	return nil
 }
 
-func ValidateCampaignNotEnded(ctx sdk.Context, campaign types.Campaign) error {
-	if ctx.BlockTime().After(campaign.EndTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "campaign with id %d campaign is over (end time - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
+func (k Keeper) validateEnableCampaignParams(ctx sdk.Context, campaign *types.Campaign, owner string) error {
+	if err := campaign.ValidateEnableCampaignParams(owner); err != nil {
+		return err
 	}
-	return nil
+	return campaign.ValidateEndTimeInTheFuture(ctx)
 }
 
-func ValidateCampaignEnded(ctx sdk.Context, campaign types.Campaign) error {
-	if ctx.BlockTime().Before(campaign.EndTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "campaign with id %d campaign is not over yet (endtime - %s < %s)", campaign.Id, campaign.EndTime, ctx.BlockTime())
+func (k Keeper) validateCloseCampaignParams(ctx sdk.Context, campaign *types.Campaign, owner string) error {
+	if err := campaign.ValidateCloseCampaignParams(owner); err != nil {
+		return err
 	}
-	return nil
+	return campaign.ValidateEnded(ctx.BlockTime())
 }

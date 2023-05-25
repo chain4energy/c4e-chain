@@ -54,7 +54,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 				Weight:      nil,
 			},
 			err:    c4eerrors.ErrParam,
-			errMsg: "add mission to claim campaign weight is nil error: wrong param value",
+			errMsg: "weight cannot be nil: wrong param value",
 		},
 		{
 			name: "empty mission name",

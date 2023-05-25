@@ -22,7 +22,7 @@ func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context
 		return 0, false, errors.Wrapf(sdkerrors.ErrUnauthorized, "account address: %s is not allowed to receive funds error", userAddress)
 	}
 	moduleBalances := k.bank.GetAllBalances(ctx, k.account.GetModuleAddress(moduleName))
-	if amount.IsAnyGT(moduleBalances) {
+	if !amount.IsAllLTE(moduleBalances) {
 		return 0, false, errors.Wrapf(sdkerrors.ErrInsufficientFunds, "module balance is too small (%s < %s)", moduleBalances, amount)
 	}
 	if err = k.bank.IsSendEnabledCoins(ctx, amount...); err != nil {

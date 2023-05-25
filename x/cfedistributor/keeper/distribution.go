@@ -132,51 +132,52 @@ func prepareLeftCoinToDistribute(coinsToDistribute sdk.DecCoins, source types.Ac
 
 func (k Keeper) burnCoins(ctx sdk.Context, state *types.State) {
 	toSend, change := state.Remains.TruncateDecimal()
-	denom := k.minterKeeper.MintDenom(ctx)
 	if err := k.BurnCoinsForSpecifiedModuleAccount(ctx, toSend, types.DistributorMainAccount); err != nil {
 		ctx.Logger().Error("burn coins error", "state", state, "error", err.Error())
 	} else {
 		k.Logger(ctx).Debug("Coins burned", "coins", toSend)
-		defer telemetry.SetGaugeWithLabels(
-			[]string{types.ModuleName, "coin_send", types.BurnDestination},
-			float32(toSend.AmountOf(denom).Int64()),
-			[]metrics.Label{telemetry.NewLabel("denom", denom)},
-		)
+		defer func() {
+			sendCoinsSetGuage(types.BurnDestination, toSend)
+		}()
 		state.Remains = change
 	}
 }
 
 func (k Keeper) sendCoinsToModuleAccount(ctx sdk.Context, state *types.State) {
 	toSend, change := state.Remains.TruncateDecimal()
-	denom := k.minterKeeper.MintDenom(ctx)
 	if err := k.SendCoinsFromModuleToModule(ctx, toSend, types.DistributorMainAccount, state.Account.Id); err != nil {
 		ctx.Logger().Error("send coins to module account dst error", "accountId", state.Account.Id, "error", err.Error())
 	} else {
 		k.Logger(ctx).Debug("coins sent to module account dst", "accountId", state.Account.Id, "toSend", toSend.String())
-		defer telemetry.SetGaugeWithLabels(
-			[]string{types.ModuleName, "coin_send", state.Account.Id},
-			float32(toSend.AmountOf(denom).Int64()),
-			[]metrics.Label{telemetry.NewLabel("denom", denom)},
-		)
+		defer func() {
+			sendCoinsSetGuage(state.Account.Id, toSend)
+		}()
 		state.Remains = change
 	}
 }
 
 func (k Keeper) sendCoinsToBaseAccount(ctx sdk.Context, state *types.State) {
 	toSend, change := state.Remains.TruncateDecimal()
-	denom := k.minterKeeper.MintDenom(ctx)
 	if dstAccount, err := sdk.AccAddressFromBech32(state.Account.Id); err != nil {
 		k.Logger(ctx).Error("destination base account address parsing error", "accountId", state.Account.Id, "error", err.Error())
 	} else if err := k.SendCoinsFromModuleAccount(ctx, toSend, types.DistributorMainAccount, dstAccount); err != nil {
 		k.Logger(ctx).Error("send coins to base account dst error", "accountId", state.Account.Id, "toSend", toSend, "error", err.Error())
 	} else {
 		k.Logger(ctx).Debug("coins sent to base account dst", "accountId", state.Account.Id, "toSend", toSend)
-		defer telemetry.SetGaugeWithLabels(
-			[]string{types.ModuleName, "coin_send", state.Account.Id},
-			float32(toSend.AmountOf(denom).Int64()),
-			[]metrics.Label{telemetry.NewLabel("denom", denom)},
-		)
+		defer func() {
+			sendCoinsSetGuage(state.Account.Id, toSend)
+		}()
 		state.Remains = change
+	}
+}
+
+func sendCoinsSetGuage(accountName string, coins sdk.Coins) {
+	for _, coin := range coins {
+		telemetry.SetGaugeWithLabels(
+			[]string{types.ModuleName, "coin_send", coin.Denom, accountName},
+			float32(coin.Amount.Int64()),
+			[]metrics.Label{telemetry.NewLabel("denom", coin.Denom)},
+		)
 	}
 }
 

@@ -597,17 +597,14 @@ func createNUsersEntries(keeper *keeper.Keeper, ctx sdk.Context, numberOfUsersEn
 	userEntry := make([]types.UserEntry, numberOfUsersEntries)
 	for i := range userEntry {
 		userEntry[i].Address = strconv.Itoa(i)
-		if addClaimAddress {
-			userEntry[i].ClaimAddress = strconv.Itoa(1000000 + i)
-		}
-		claimRecordStates := make([]types.ClaimRecord, numberOfClaimEntreis)
-		for j := range claimRecordStates {
-			claimRecordStates[j].CampaignId = uint64(2000000 + i)
-			claimRecordStates[j].Amount = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(int64(3000000+i))))
+		claimRecords := make([]types.ClaimRecord, numberOfClaimEntreis)
+		for j := range claimRecords {
+			claimRecords[i].Address = strconv.Itoa(1000000 + i)
+			claimRecords[j].CampaignId = uint64(2000000 + i)
+			claimRecords[j].Amount = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(int64(3000000+i))))
 			if addCompletedMissions {
-				claimRecordStates[j].CompletedMissions = []uint64{uint64(4000000 + i), uint64(5000000 + i), uint64(6000000 + i)}
+				claimRecords[j].CompletedMissions = []uint64{uint64(4000000 + i), uint64(5000000 + i), uint64(6000000 + i)}
 			}
-
 		}
 		keeper.SetUserEntry(ctx, userEntry[i])
 	}

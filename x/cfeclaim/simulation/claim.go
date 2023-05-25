@@ -97,11 +97,11 @@ func SimulateMsgClaim(
 			k.Logger(ctx).Error("SIMULATION: Add claim records campaign error", err.Error())
 			return simtypes.NoOpMsg(types.ModuleName, addClaimRecordsMsg.Type(), ""), nil, nil
 		}
-
+		claimerAddress := addClaimRecordsMsg.ClaimRecords[helpers.RandomInt(r, len(addClaimRecordsMsg.ClaimRecords))].Address
 		initialClaimMsg := &types.MsgInitialClaim{
-			Claimer:        addClaimRecordsMsg.ClaimRecords[helpers.RandomInt(r, len(addClaimRecordsMsg.ClaimRecords))].Address,
-			CampaignId:     campaignId,
-			AddressToClaim: "",
+			Claimer:            claimerAddress,
+			CampaignId:         campaignId,
+			DestinationAddress: "",
 		}
 
 		_, err = msgServer.InitialClaim(msgServerCtx, initialClaimMsg)

@@ -56,32 +56,30 @@ func (msg *MsgAddMissionToCampaign) GetSignBytes() []byte {
 }
 
 func (msg *MsgAddMissionToCampaign) ValidateBasic() error {
-	return ValidateAddMissionToCampaign(msg.Owner, msg.Name, msg.Description, msg.MissionType, msg.Weight)
+	if msg.Weight == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "weight cannot be nil")
+	}
+	return ValidateAddMissionToCampaign(msg.Owner, msg.Name, msg.Description, msg.MissionType, *msg.Weight)
 }
 
-func ValidateAddMissionToCampaign(owner string, name string, description string, missionType MissionType,
-	weight *sdk.Dec) error {
+func ValidateAddMissionToCampaign(owner string, name string, description string, missionType MissionType, weight sdk.Dec) error {
 	_, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-
+	if name == "" {
+		return errors.Wrap(c4eerrors.ErrParam, "empty name error")
+	}
+	if description == "" {
+		return errors.Wrap(c4eerrors.ErrParam, "mission empty description error")
+	}
 	if err = ValidateMissionWeight(weight, missionType); err != nil {
 		return err
 	}
-	if err = ValidateMissionName(name); err != nil {
-		return err
-	}
-	if err = ValidateMissionType(missionType); err != nil {
-		return err
-	}
-	return ValidateMissionDescription(description)
+	return ValidateMissionType(missionType)
 }
 
-func ValidateMissionWeight(weight *sdk.Dec, missionType MissionType) error {
-	if weight == nil {
-		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
-	}
+func ValidateMissionWeight(weight sdk.Dec, missionType MissionType) error {
 	if weight.IsNil() {
 		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
 	}
@@ -90,23 +88,10 @@ func ValidateMissionWeight(weight *sdk.Dec, missionType MissionType) error {
 	}
 	if missionType != MissionInitialClaim {
 		if weight.Equal(sdk.ZeroDec()) {
-			return errors.Wrap(c4eerrors.ErrParam, "mission weight can be set to zero only for InitialClaim missions")
+			return errors.Wrapf(c4eerrors.ErrParam, "weight (%s) cannot be 0 for non-initial mission", weight.String())
 		}
 	}
-	return nil
-}
 
-func ValidateMissionName(name string) error {
-	if name == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "empty name error")
-	}
-	return nil
-}
-
-func ValidateMissionDescription(description string) error {
-	if description == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "mission empty description error")
-	}
 	return nil
 }
 

@@ -22,7 +22,7 @@ const VestingAddress = "vestingAddr: "
 
 func (k Keeper) CreateVestingPool(ctx sdk.Context, addr string, name string, amount math.Int, duration time.Duration, vestingType string) error {
 	k.Logger(ctx).Debug("create vesting pool", "addr", addr, "amount: ", amount, "vestingType", vestingType)
-	_, err := k.GetVestingType(ctx, vestingType)
+	_, err := k.MustGetVestingType(ctx, vestingType)
 	if err != nil {
 		k.Logger(ctx).Debug("create vesting pool get vesting type error", "error", err.Error())
 		return errors.Wrap(sdkerrors.ErrNotFound, errors.Wrap(err, "create vesting pool - get vesting type error").Error())
@@ -175,11 +175,11 @@ func (k Keeper) getVestingPoolAndType(ctx sdk.Context, owner string, vestingPool
 		return nil, nil, nil, errors.Wrapf(sdkerrors.ErrNotFound, "no vesting pool %s found for address %s", vestingPoolName, owner)
 	}
 
-	vestingType, err := k.GetVestingType(ctx, vestingPool.VestingType)
+	vestingType, err := k.MustGetVestingType(ctx, vestingPool.VestingType)
 	if err != nil {
 		return nil, nil, nil, errors.Wrap(types.ErrGetVestingType, errors.Wrapf(err, "from addr: %s, vestingType %s", owner, vestingPool.VestingType).Error())
 	}
-	return &accVestingPools, vestingPool, &vestingType, nil
+	return &accVestingPools, vestingPool, vestingType, nil
 }
 
 // The SendReservedToNewVestingAccount function sends reserved tokens from the vesting pool to a new vesting account.

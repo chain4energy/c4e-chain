@@ -1,17 +1,17 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"encoding/binary"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
-
-// TODO tests when campaigns in params are nil
 
 // SetMission set a specific mission in the store from its index
 func (k Keeper) SetMission(ctx sdk.Context, mission types.Mission) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
 
 	b := k.cdc.MustMarshal(&mission)
 	store.Set(types.MissionKey(
@@ -26,7 +26,7 @@ func (k Keeper) GetMission(
 	campaignId uint64,
 	missionId uint64,
 ) (val types.Mission, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
 
 	b := store.Get(types.MissionKey(
 		campaignId,
@@ -40,9 +40,29 @@ func (k Keeper) GetMission(
 	return val, true
 }
 
+// GetMission returns a mission from its index
+func (k Keeper) MustGetMission(
+	ctx sdk.Context,
+	campaignId uint64,
+	missionId uint64,
+) (*types.Mission, error) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
+
+	b := store.Get(types.MissionKey(
+		campaignId,
+		missionId,
+	))
+	if b == nil {
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "mission not found - campaignId %d, missionId %d", campaignId, missionId)
+	}
+	var mission types.Mission
+	k.cdc.MustUnmarshal(b, &mission)
+	return &mission, nil
+}
+
 // GetAllMission returns all mission
 func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
@@ -58,7 +78,7 @@ func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 
 // GetAllMissionForCampaign returns all mission
 func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list []types.Mission, weightSum sdk.Dec) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 	weightSum = sdk.ZeroDec()
 	defer iterator.Close()
@@ -77,7 +97,7 @@ func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list 
 
 // GetAllMissionForCampaign returns all mission
 func (k Keeper) RemoveAllMissionForCampaign(ctx sdk.Context, campaignId uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 	defer iterator.Close()
 
@@ -106,7 +126,7 @@ func (k Keeper) AppendNewMission(
 	// Set the ID of the appended value
 	mission.Id = count
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
 	appendedValue := k.cdc.MustMarshal(&mission)
 	store.Set(types.MissionKey(
 		campaignId,
@@ -120,7 +140,7 @@ func (k Keeper) AppendNewMission(
 }
 
 func (k Keeper) GetMissionCount(ctx sdk.Context, campaignId uint64) uint64 {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionCountKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
 	bz := store.Get(types.MissionCountKey(campaignId))
 
 	// Count doesn't exist: no element
@@ -133,7 +153,7 @@ func (k Keeper) GetMissionCount(ctx sdk.Context, campaignId uint64) uint64 {
 }
 
 func (k Keeper) SetMissionCount(ctx sdk.Context, campaignId uint64, count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.MissionCountKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
 	store.Set(types.MissionCountKey(campaignId), bz)

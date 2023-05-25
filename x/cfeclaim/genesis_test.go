@@ -96,8 +96,7 @@ var validGenesisState = types.GenesisState{
 	},
 	UsersEntries: []types.UserEntry{
 		{
-			Address:      "cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj",
-			ClaimAddress: "cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj",
+			Address: "cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj",
 			ClaimRecords: []*types.ClaimRecord{
 				{
 					CampaignId:        0,
@@ -116,8 +115,7 @@ var validGenesisState = types.GenesisState{
 			},
 		},
 		{
-			Address:      "c4e1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8fdd9gs",
-			ClaimAddress: "cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj",
+			Address: "c4e1yyjfd5cj5nd0jrlvrhc5p3mnkcn8v9q8fdd9gs",
 			ClaimRecords: []*types.ClaimRecord{
 				{
 					CampaignId:        0,
@@ -185,7 +183,7 @@ func TestInvalidMissionCampaignDoestExistInGenesis(t *testing.T) {
 	testHelper.C4eVestingUtils.AddTestVestingPool(accAddress, "Vesting1", math.NewInt(10000), 100, 100)
 	invalidGenesis := proto.Clone(&validGenesisState).(*types.GenesisState)
 	invalidGenesis.Missions[3].CampaignId = 100
-	testHelper.C4eClaimUtils.InitGenesisError(*invalidGenesis, "campaign with id 100 not found for mission Mission 2: not found")
+	testHelper.C4eClaimUtils.InitGenesisError(*invalidGenesis, "mission Mission 2: campaign with id 100 not found: entity does not exist")
 }
 
 func TestInvalidUserEntryInGenesis(t *testing.T) {

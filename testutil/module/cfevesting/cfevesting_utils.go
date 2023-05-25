@@ -522,8 +522,8 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	require.NotNilf(h.t, foundVPool, "vesting pool no found. Name: %d", vestingPoolName)
 	require.Equal(h.t, sentBefore.Add(amount), foundVPool.Sent)
 
-	vestingType, err := h.helperCfevestingKeeper.GetVestingType(ctx, foundVPool.VestingType)
-	require.NoError(h.t, err, "GetVestingType error")
+	vestingType, err := h.helperCfevestingKeeper.MustGetVestingType(ctx, foundVPool.VestingType)
+	require.NoError(h.t, err, "MustGetVestingType error")
 
 	denom := h.helperCfevestingKeeper.Denom(ctx)
 
@@ -592,8 +592,8 @@ func (h *C4eVestingUtils) SendReservedToVestingAccount(ctx sdk.Context, fromAddr
 	require.NotNilf(h.t, vestingPoolAfter, "vesting pool no found. Name: %d", vestingPoolAfter.Name)
 	require.Equal(h.t, sentBefore.Add(amount), vestingPoolAfter.Sent)
 
-	vestingType, err := h.helperCfevestingKeeper.GetVestingType(ctx, vestingPoolAfter.VestingType)
-	require.NoError(h.t, err, "GetVestingType error")
+	vestingType, err := h.helperCfevestingKeeper.MustGetVestingType(ctx, vestingPoolAfter.VestingType)
+	require.NoError(h.t, err, "MustGetVestingType error")
 
 	denom := h.helperCfevestingKeeper.Denom(ctx)
 

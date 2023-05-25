@@ -59,62 +59,27 @@ func (msg *MsgCreateCampaign) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-	return ValidateCreateCampaignParams(msg.Name, msg.Description, msg.StartTime, msg.EndTime, msg.CampaignType, msg.VestingPoolName)
-}
-
-func ValidateCreateCampaignParams(name string, description string, startTime *time.Time, endTime *time.Time, campaignType CampaignType, vestingPoolName string) error {
-	if err := ValidateCampaignName(name); err != nil {
-		return err
+	if msg.StartTime == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "start time cannot be nil")
 	}
-	if err := ValidateCampaignDescription(description); err != nil {
-		return err
+	if msg.EndTime == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "end time cannot be nil")
 	}
-	if err := ValidateCampaignEndTimeAfterStartTime(startTime, endTime); err != nil {
-		return err
+	if msg.FeegrantAmount == nil {
+		return errors.Wrap(c4eerrors.ErrParam, "feegrant amount cannot be nil")
 	}
-	return ValidateCampaignType(campaignType, vestingPoolName)
-}
-
-func ValidateCampaignName(name string) error {
-	if name == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "campaign name is empty")
+	if msg.InitialClaimFreeAmount == nil {
+		return errors.Wrap(c4eerrors.ErrParam, "initital claim free amount cannot be nil")
 	}
-	return nil
-}
-
-func ValidateCampaignDescription(description string) error {
-	if description == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "description is empty")
+	if msg.Free == nil {
+		return errors.Wrap(c4eerrors.ErrParam, "free decimal cannot be nil")
 	}
-	return nil
-}
-
-func ValidateCampaignEndTimeAfterStartTime(startTime *time.Time, endTime *time.Time) error {
-	if endTime == nil {
-		return errors.Wrapf(c4eerrors.ErrParam, "end time is nil error")
+	if msg.LockupPeriod == nil {
+		return errors.Wrap(c4eerrors.ErrParam, "lockup period cannot be nil")
 	}
-	if startTime.After(*endTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "start time is after end time (%s > %s)", startTime, endTime)
+	if msg.VestingPeriod == nil {
+		return errors.Wrap(c4eerrors.ErrParam, "vesting period cannot be nil")
 	}
-	if startTime.Equal(*endTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "start time is equal to end time (%s = %s)", startTime, endTime)
-	}
-	return nil
-}
-
-func ValidateCampaignType(campaignType CampaignType, vestingPoolName string) error {
-	switch campaignType {
-	case VestingPoolCampaign:
-		if vestingPoolName == "" {
-			return errors.Wrap(c4eerrors.ErrParam, "for VESTING_POOL type campaigns, the vesting pool name must be provided")
-		}
-		return nil
-	case DefaultCampaign:
-		if vestingPoolName != "" {
-			return errors.Wrap(c4eerrors.ErrParam, "vesting pool name can be set only for VESTING_POOL type campaigns")
-		}
-		return nil
-	}
-
-	return errors.Wrap(sdkerrors.ErrInvalidType, "wrong campaign type")
+	return ValidateCreateCampaignParams(msg.Name, msg.Description, *msg.FeegrantAmount,
+		*msg.InitialClaimFreeAmount, *msg.Free, *msg.StartTime, *msg.EndTime, msg.CampaignType, *msg.LockupPeriod, *msg.VestingPeriod, msg.VestingPoolName)
 }

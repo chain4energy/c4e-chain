@@ -31,13 +31,13 @@ func ModifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 	}
 	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, teamdropVestingType)
 
-	_, err := appKeepers.GetC4eVestingKeeper().GetVestingType(ctx, EarlyBirdRoundTypeName)
+	_, err := appKeepers.GetC4eVestingKeeper().MustGetVestingType(ctx, EarlyBirdRoundTypeName)
 	if err != nil {
 		ctx.Logger().Info("vesting type not found", "vestingType", EarlyBirdRoundTypeName)
 		return nil
 	}
 
-	_, err = appKeepers.GetC4eVestingKeeper().GetVestingType(ctx, PublicRoundTypeName)
+	_, err = appKeepers.GetC4eVestingKeeper().MustGetVestingType(ctx, PublicRoundTypeName)
 	if err != nil {
 		ctx.Logger().Info("vesting type not found", "vestingType", PublicRoundTypeName)
 		return nil
