@@ -6,6 +6,7 @@ import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strconv"
 	"time"
 )
 
@@ -40,9 +41,28 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 		VestingPoolName:        vestingPoolName,
 	}
 
-	campaignId := k.AppendNewCampaign(ctx, campaign)
+	campaign.Id = k.AppendNewCampaign(ctx, campaign)
 	// Adding the inititalClaim mission to a campaign is done automatically as this mission is required for every campaign
-	k.AppendNewMission(ctx, campaignId, *types.NewInitialMission(campaignId))
+	k.AppendNewMission(ctx, campaign.Id, *types.NewInitialMission(campaign.Id))
+
+	event := &types.NewCampaign{
+		Id:                     strconv.FormatUint(campaign.Id, 10),
+		Owner:                  campaign.Owner,
+		Name:                   campaign.Name,
+		Description:            campaign.Description,
+		CampaignType:           campaign.CampaignType.String(),
+		FeegrantAmount:         campaign.FeegrantAmount.String(),
+		InitialClaimFreeAmount: campaign.InitialClaimFreeAmount.String(),
+		Enabled:                "false",
+		StartTime:              campaign.StartTime.String(),
+		EndTime:                campaign.EndTime.String(),
+		LockupPeriod:           campaign.LockupPeriod.String(),
+		VestingPeriod:          campaign.VestingPeriod.String(),
+		VestingPoolName:        campaign.VestingPoolName,
+	}
+	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
+		k.Logger(ctx).Error("create campaign emit event error", "event", event, "error", err.Error())
+	}
 
 	return &campaign, nil
 }

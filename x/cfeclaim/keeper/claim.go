@@ -11,38 +11,38 @@ import (
 	"strconv"
 )
 
-func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64, destinationAddress string) error {
+func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64, destinationAddress string) (sdk.Coins, error) {
 	k.Logger(ctx).Debug("initial claim", "claimer", claimer, "campaignId", campaignId, "destinationAddress", destinationAddress)
 
 	campaign, mission, userEntry, claimRecord, err := k.missionFirstStep(ctx, campaignId, types.InitialMissionId, claimer)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if err = k.validateDestinationAddress(ctx, destinationAddress); err != nil {
-		return err
+		return nil, err
 	}
 	claimRecord.Address = destinationAddress
 
 	if err = claimRecord.CompleteMission(campaignId, mission.Id); err != nil {
-		return err
+		return nil, err
 	}
 
 	claimableAmount, updatedFree := k.calculateInitialClaimClaimableAmount(ctx, campaign, claimRecord)
 
 	err = k.claimMission(ctx, campaign, mission, claimRecord, claimableAmount, updatedFree)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
 		granteeAddr, err := sdk.AccAddressFromBech32(userEntry.Address)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		_, accountAddr := CreateFeegrantAccountAddress(campaignId)
 		if err = k.revokeFeeAllowance(ctx, accountAddr, granteeAddr); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -59,34 +59,34 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		k.Logger(ctx).Debug("initial claim emit event error", "event", event, "error", err.Error())
 	}
 
-	return nil
+	return claimableAmount, nil
 }
 
-func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, claimer string) error {
+func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, claimer string) (sdk.Coins, error) {
 	k.Logger(ctx).Debug("claim", "claimer", claimer, "campaignId", campaignId, "missionId", missionId)
 
 	campaign, mission, userEntry, claimRecord, err := k.missionFirstStep(ctx, campaignId, missionId, claimer)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !claimRecord.IsInitialMissionClaimed() {
-		return errors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d", userEntry.Address, campaignId)
+		return nil, errors.Wrapf(types.ErrMissionNotCompleted, "initial mission not completed: address %s, campaignId: %d", userEntry.Address, campaignId)
 	}
 
 	if mission.MissionType == types.MissionClaim {
 		if err = claimRecord.CompleteMission(campaignId, mission.Id); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	claimableAmount, err := claimRecord.ClaimableFromMission(mission)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = k.claimMission(ctx, campaign, mission, claimRecord, claimableAmount, campaign.Free)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	k.SetUserEntry(ctx, *userEntry)
@@ -101,7 +101,7 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 	if err != nil {
 		k.Logger(ctx).Debug("claim emit event error", "event", event, "error", err.Error())
 	}
-	return nil
+	return claimableAmount, nil
 }
 
 func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {

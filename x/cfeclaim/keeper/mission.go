@@ -10,19 +10,19 @@ import (
 )
 
 func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType types.MissionType,
-	weight sdk.Dec, claimStartDate *time.Time) error {
+	weight sdk.Dec, claimStartDate *time.Time) (*types.Mission, error) {
 	k.Logger(ctx).Debug("add mission to claim campaign", "owner", owner, "campaignId", campaignId, "name", name,
 		"description", description, "missionType", missionType, "weight", weight)
 
 	campaign, err := k.ValidateAddMissionToCampaign(ctx, owner, campaignId, name, description, missionType, weight, claimStartDate)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if err = campaign.ValidateNotEnabled(); err != nil {
-		return err
+		return nil, err
 	}
 	if err = campaign.ValidateNotEnded(ctx.BlockTime()); err != nil {
-		return err
+		return nil, err
 	}
 
 	mission := types.Mission{
@@ -33,7 +33,7 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 		Weight:         weight,
 		ClaimStartDate: claimStartDate,
 	}
-	k.AppendNewMission(ctx, campaignId, mission)
+	mission.Id = k.AppendNewMission(ctx, campaignId, mission)
 
 	eventClaimStartDate := ""
 	if claimStartDate != nil {
@@ -41,6 +41,7 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 	}
 
 	event := &types.AddMissionToCampaign{
+		Id:             strconv.FormatUint(mission.Id, 10),
 		Owner:          owner,
 		CampaignId:     strconv.FormatUint(campaignId, 10),
 		Name:           name,
@@ -54,7 +55,7 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 		k.Logger(ctx).Error("add mission to campaign emit event error", "event", event, "error", err.Error())
 	}
 
-	return nil
+	return &mission, nil
 }
 
 func (k Keeper) ValidateAddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string,

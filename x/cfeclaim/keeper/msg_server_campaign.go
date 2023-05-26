@@ -33,26 +33,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		return nil, err
 	}
 
-	event := &types.NewCampaign{
-		Owner:                  campaign.Owner,
-		Name:                   campaign.Name,
-		Description:            campaign.Description,
-		CampaignType:           campaign.CampaignType.String(),
-		FeegrantAmount:         campaign.FeegrantAmount.String(),
-		InitialClaimFreeAmount: campaign.InitialClaimFreeAmount.String(),
-		Enabled:                "false",
-		StartTime:              campaign.StartTime.String(),
-		EndTime:                campaign.EndTime.String(),
-		LockupPeriod:           campaign.LockupPeriod.String(),
-		VestingPeriod:          campaign.VestingPeriod.String(),
-		VestingPoolName:        campaign.VestingPoolName,
-	}
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
-		k.Logger(ctx).Error("create campaign emit event error", "event", event, "error", err.Error())
-	}
-
-	return &types.MsgCreateCampaignResponse{}, nil
+	return &types.MsgCreateCampaignResponse{CampaignId: campaign.Id}, nil
 }
 
 func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCampaign) (*types.MsgRemoveCampaignResponse, error) {

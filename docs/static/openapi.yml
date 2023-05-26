@@ -48017,18 +48017,56 @@ definitions:
     type: object
   chain4energy.c4echain.cfeclaim.MsgAddMissionToCampaignResponse:
     type: object
+    properties:
+      mission_id:
+        type: string
+        format: uint64
   chain4energy.c4echain.cfeclaim.MsgClaimResponse:
     type: object
+    properties:
+      amount:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cfeclaim.MsgCloseCampaignResponse:
     type: object
   chain4energy.c4echain.cfeclaim.MsgCreateCampaignResponse:
     type: object
+    properties:
+      campaign_id:
+        type: string
+        format: uint64
   chain4energy.c4echain.cfeclaim.MsgDeleteClaimRecordResponse:
     type: object
   chain4energy.c4echain.cfeclaim.MsgEnableCampaignResponse:
     type: object
   chain4energy.c4echain.cfeclaim.MsgInitialClaimResponse:
     type: object
+    properties:
+      amount:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cfeclaim.MsgRemoveCampaignResponse:
     type: object
   chain4energy.c4echain.cfeclaim.QueryCampaignMissionsResponse:

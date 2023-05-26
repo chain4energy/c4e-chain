@@ -7,6 +7,7 @@ import "google/protobuf/timestamp.proto";
 import "c4echain/cfeclaim/campaign.proto";
 import "c4echain/cfeclaim/mission.proto";
 import "c4echain/cfeclaim/claim_record.proto";
+import "cosmos/base/v1beta1/coin.proto";
 // this line is used by starport scaffolding # proto/tx/import
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
@@ -31,7 +32,12 @@ message MsgClaim {
   uint64 mission_id = 3;
 }
 
-message MsgClaimResponse {}
+message MsgClaimResponse {
+  repeated cosmos.base.v1beta1.Coin amount = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
 
 message MsgInitialClaim {
   string claimer = 1;
@@ -39,7 +45,12 @@ message MsgInitialClaim {
   string destinationAddress = 3;
 }
 
-message MsgInitialClaimResponse {}
+message MsgInitialClaimResponse {
+  repeated cosmos.base.v1beta1.Coin amount = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
 
 message MsgCreateCampaign {
   string owner = 1;
@@ -78,7 +89,9 @@ message MsgCreateCampaign {
   string vestingPoolName = 13;
 }
 
-message MsgCreateCampaignResponse {}
+message MsgCreateCampaignResponse {
+  uint64 campaign_id = 1;
+}
 
 message MsgAddMissionToCampaign {
   string owner = 1;
@@ -96,7 +109,9 @@ message MsgAddMissionToCampaign {
   ];
 }
 
-message MsgAddMissionToCampaignResponse {}
+message MsgAddMissionToCampaignResponse {
+  uint64 mission_id = 1;
+}
 
 message MsgAddClaimRecords {
   string owner = 1;
