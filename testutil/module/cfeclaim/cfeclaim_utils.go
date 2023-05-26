@@ -262,7 +262,7 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 		require.NoError(h.t, err)
 		require.NotNil(h.t, allowance)
 	}
-	err := h.helpeCfeclaimkeeper.InitialClaim(ctx, claimer.String(), campaignId, claimer.String())
+	_, err := h.helpeCfeclaimkeeper.InitialClaim(ctx, claimer.String(), campaignId, claimer.String())
 	require.NoError(h.t, err)
 	campaignAfter, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	allowance, err := h.FeegrantUtils.FeegrantKeeper.GetAllowance(ctx, granterAddr, claimer)
@@ -316,8 +316,8 @@ func (h *C4eClaimUtils) ClaimInitialError(ctx sdk.Context, campaignId uint64, cl
 	userEntryBefore, foundBefore := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 
 	moduleBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
-
-	require.EqualError(h.t, h.helpeCfeclaimkeeper.InitialClaim(ctx, claimer.String(), campaignId, claimer.String()), errorMessage)
+	_, err := h.helpeCfeclaimkeeper.InitialClaim(ctx, claimer.String(), campaignId, claimer.String())
+	require.EqualError(h.t, err, errorMessage)
 
 	h.BankUtils.VerifyAccountAllBalances(ctx, claimer, balanceBefore)
 
@@ -467,7 +467,8 @@ func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64
 	userEntryBefore, foundCr := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	require.True(h.t, foundCr)
 	mission, _ := h.helpeCfeclaimkeeper.GetMission(ctx, campaignId, missionId)
-	require.NoError(h.t, h.helpeCfeclaimkeeper.Claim(ctx, campaignId, missionId, claimer.String()))
+	_, err := h.helpeCfeclaimkeeper.Claim(ctx, campaignId, missionId, claimer.String())
+	require.NoError(h.t, err)
 
 	userEntryBefore.GetClaimRecord(campaignId).ClaimedMissions = append(userEntryBefore.GetClaimRecord(campaignId).ClaimedMissions, missionId)
 	if mission.MissionType == cfeclaimtypes.MissionClaim {
@@ -529,8 +530,8 @@ func (h *C4eClaimUtils) ClaimMissionError(ctx sdk.Context, campaignId uint64, mi
 	moduleBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 	claimerBefore := h.BankUtils.GetAccountAllBalances(ctx, claimer)
 	claimRecordBefore, foundCrBefore := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
-
-	require.EqualError(h.t, h.helpeCfeclaimkeeper.Claim(ctx, campaignId, missionId, claimer.String()), errorMessage)
+	_, err := h.helpeCfeclaimkeeper.Claim(ctx, campaignId, missionId, claimer.String())
+	require.EqualError(h.t, err, errorMessage)
 
 	require.EqualValues(h.t, claimerAccountBefore, h.helperAccountKeeper.GetAccount(ctx, claimer))
 	h.BankUtils.VerifyAccountAllBalances(ctx, claimer, claimerBefore)
@@ -708,7 +709,7 @@ func (h *C4eClaimUtils) RemoveCampaignError(ctx sdk.Context, owner string, campa
 func (h *C4eClaimUtils) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeclaimtypes.MissionType,
 	weight sdk.Dec, missionClaimDate *time.Time) {
 	missionCountBefore := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
-	err := h.helpeCfeclaimkeeper.AddMissionToCampaign(ctx, owner, campaignId, name, description, missionType, weight, nil)
+	_, err := h.helpeCfeclaimkeeper.AddMissionToCampaign(ctx, owner, campaignId, name, description, missionType, weight, nil)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
 	require.NoError(h.t, err)
 	require.Equal(h.t, missionCountBefore+1, missionCountAfter)
@@ -718,7 +719,7 @@ func (h *C4eClaimUtils) AddMissionToCampaign(ctx sdk.Context, owner string, camp
 func (h *C4eClaimUtils) AddMissionToCampaignError(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeclaimtypes.MissionType,
 	weight sdk.Dec, missionClaimDate *time.Time, errorString string) {
 	missionCountBefore := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
-	err := h.helpeCfeclaimkeeper.AddMissionToCampaign(ctx, owner, campaignId, name, description, missionType, weight, missionClaimDate)
+	_, err := h.helpeCfeclaimkeeper.AddMissionToCampaign(ctx, owner, campaignId, name, description, missionType, weight, missionClaimDate)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
 	require.EqualError(h.t, err, errorString)
 	require.Equal(h.t, missionCountBefore, missionCountAfter)

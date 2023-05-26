@@ -578,7 +578,6 @@ func New(
 		app.BankKeeper,
 		app.FeeGrantKeeper,
 		app.StakingKeeper,
-		app.DistrKeeper,
 		app.CfevestingKeeper,
 	)
 	cfeclaimModule := cfeclaimmodule.NewAppModule(appCodec, app.CfeclaimKeeper, app.CfevestingKeeper)
