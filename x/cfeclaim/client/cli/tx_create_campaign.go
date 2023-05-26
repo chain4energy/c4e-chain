@@ -3,9 +3,12 @@ package cli
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/version"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
@@ -21,7 +24,26 @@ func CmdCreateCampaign() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-campaign [name] [description] [campaign-type] [removable-claim-records] [feegrant-amount] [initial_claim_free_amount] [free] [start-time] [end-time] [lockup-period] [vesting-period] [optional-vesting-pool-name]",
 		Short: "Create new campaign",
-		Args:  cobra.ExactArgs(12),
+		Long: strings.TrimSpace(fmt.Sprintf(`Create a new campaign.
+
+Arguments:
+  [name]                       Name of the campaign
+  [description]                Description of the campaign
+  [campaign-type]              Type of the campaign (default/vesting_pool)
+  [removable-claim-records]    Indicates if claim records can be removed after campaign is enabled
+  [feegrant-amount]            Amount of feegrant allocated for the campaign
+  [initial_claim_free_amount]  Initial claim free amount for the campaign
+  [free]                       Free ratio for the campaign
+  [start-time]                 Start time of the campaign
+  [end-time]                   End time of the campaign
+  [lockup-period]              Lockup period for the campaign
+  [vesting-period]             Vesting period for the campaign
+  [optional-vesting-pool-name] Optional name of the vesting pool
+
+Example:
+$ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "1000000"" "5000000"" "0.5" "2006-01-02 15:04:05 -0700 MST" "2006-01-02 15:04:05 -0700 MST" 720h 30h "Vesting Pool" --from mykey
+`, version.AppName, types.ModuleName)),
+		Args: cobra.ExactArgs(12),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argDescription := args[1]

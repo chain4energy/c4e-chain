@@ -1,7 +1,10 @@
 package cli
 
 import (
+	"fmt"
+	"github.com/cosmos/cosmos-sdk/version"
 	"strconv"
+	"strings"
 
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -15,9 +18,21 @@ var _ = strconv.Itoa(0)
 
 func CmdCloseCampaign() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "close-campaign [campaign-id] [campaign-close-action]",
+		Use:   "close-campaign [campaign-id]",
 		Short: "Close a campaign",
-		Args:  cobra.ExactArgs(2),
+		Long: strings.TrimSpace(fmt.Sprintf(`Close an existing campaign.
+Requirements:
+- The campaign must be in an active state
+- The campaign must be owned by the sender
+- The campaign must be over the end time
+
+Arguments:
+  [campaign-id]          ID of the campaign to close
+
+Example:
+$ %s tx %s close-campaign 1 --from mykey
+`, version.AppName, types.ModuleName)),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argCampaignId, err := cast.ToUint64E(args[0])
 			if err != nil {
