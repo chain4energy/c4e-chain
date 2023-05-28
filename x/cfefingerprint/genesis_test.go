@@ -1,4 +1,4 @@
-package energychain_test
+package cfefingerprint_test
 
 import (
 	"testing"

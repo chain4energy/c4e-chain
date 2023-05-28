@@ -9,6 +9,29 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+// helper struct to gently store payload links in genesis struct
+type PayloadLink struct {
+	ReferenceKey   string
+	ReferenceValue string
+}
+
+// GetAllPayloadLinks returns all payload links
+func (k Keeper) GetAllPayloadLinks(ctx sdk.Context) (list []PayloadLink) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.PayloadLinkKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		val := PayloadLink{
+			ReferenceKey:   string(iterator.Key()),
+			ReferenceValue: string(iterator.Value()),
+		}
+		list = append(list, val)
+	}
+	return
+}
+
 func (k Keeper) AppendPayloadLink(ctx sdk.Context, key string, value string) error {
 	// get the store
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.PayloadLinkKey))

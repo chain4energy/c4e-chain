@@ -5,10 +5,16 @@ import "gogoproto/gogo.proto";
 import "c4echain/cfefingerprint/params.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
-option go_package = "github.com/chain4energy/c4echain/x/cfefingerprint/types";
+option go_package = "github.com/chain4energy/c4e-chain/x/cfefingerprint/types";
 
-// GenesisState defines the energychain module's genesis state.
+// GenesisState defines the cfefingerprint module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
+  repeated GenesisPayloadLink payloadLinks = 2;
+}
+
+message GenesisPayloadLink {
+  string referenceKey = 1;
+  string referenceValue = 2;
 }

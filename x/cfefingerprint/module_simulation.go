@@ -1,4 +1,4 @@
-package energychain
+package cfefingerprint
 
 import (
 	"math/rand"
