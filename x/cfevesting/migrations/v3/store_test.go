@@ -84,7 +84,7 @@ func TestMigrationVestingAccountTraces(t *testing.T) {
 
 func SetupOldAccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context, address string, numberOfVestingPools int) v2.AccountVestingPools {
 	accountVestingPools := generateOneOldAccountVestingPoolsWithAddressWithRandomVestingPools(numberOfVestingPools, 1, 1)
-	accountVestingPools.Address = address
+	accountVestingPools.Owner = address
 	setOldAccountVestingPools(ctx, testUtil.StoreKey, testUtil.Cdc, accountVestingPools)
 	return accountVestingPools
 }
@@ -92,7 +92,7 @@ func SetupOldAccountVestingPools(testUtil *testkeeper.ExtendedC4eVestingKeeperUt
 func setOldAccountVestingPools(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, accountVestingPools v2.AccountVestingPools) {
 	store := prefix.NewStore(ctx.KVStore(storeKey), v2.AccountVestingPoolsKeyPrefix)
 	av := cdc.MustMarshal(&accountVestingPools)
-	store.Set([]byte(accountVestingPools.Address), av)
+	store.Set([]byte(accountVestingPools.Owner), av)
 }
 
 func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeeperUtils, ctx sdk.Context) {
@@ -106,7 +106,7 @@ func MigrateV110ToV120(t *testing.T, testUtil *testkeeper.ExtendedC4eVestingKeep
 
 	require.EqualValues(t, len(oldAccPools), len(newAccPools))
 	for i := 0; i < len(oldAccPools); i++ {
-		require.EqualValues(t, oldAccPools[i].Address, newAccPools[i].Owner)
+		require.EqualValues(t, oldAccPools[i].Owner, newAccPools[i].Owner)
 		require.EqualValues(t, len(oldAccPools[i].VestingPools), len(newAccPools[i].VestingPools))
 		for j := 0; j < len(oldAccPools[i].VestingPools); j++ {
 			oldVestingPool := oldAccPools[i].VestingPools[j]
@@ -174,7 +174,7 @@ func generateOldAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPe
 
 	for i := 0; i < numberOfAccounts; i++ {
 		accountVestingPools := v2.AccountVestingPools{}
-		accountVestingPools.Address = accountsAddresses[i].String()
+		accountVestingPools.Owner = accountsAddresses[i].String()
 
 		var vestingPools []*v2.VestingPool
 		for j := 0; j < numberOfVestingPoolsPerAccount; j++ {
@@ -207,7 +207,7 @@ func generateRandomOldVestingPool(accuntId int, vestingId int) v2.VestingPool {
 }
 
 func generateOldVestingAccountTraces(amount int) []v2.VestingAccount {
-	traces := []v2.VestingAccount{}
+	var traces []v2.VestingAccount
 	for i := 0; i < amount; i++ {
 		traces = append(traces, v2.VestingAccount{Id: uint64(i), Address: fmt.Sprintf("Address-%d", i)})
 	}

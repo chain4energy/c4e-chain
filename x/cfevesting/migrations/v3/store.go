@@ -33,9 +33,9 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 	prefixStore := prefix.NewStore(store, types.AccountVestingPoolsKeyPrefix)
 	for _, oldAccPool := range oldAccPools {
 		oldPools := oldAccPool.VestingPools
-		var newPools []*types.VestingPool
+		var newPools []*VestingPool
 		for _, oldPool := range oldPools {
-			newPool := types.VestingPool{
+			newPool := VestingPool{
 				Name:            oldPool.Name,
 				VestingType:     oldPool.VestingType,
 				LockStart:       oldPool.LockStart,
@@ -48,8 +48,8 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 			newPools = append(newPools, &newPool)
 		}
 
-		newAccPool := types.AccountVestingPools{
-			Owner:        oldAccPool.Address,
+		newAccPool := AccountVestingPools{
+			Owner:        oldAccPool.Owner,
 			VestingPools: newPools,
 		}
 		av, err := cdc.Marshal(&newAccPool)
@@ -69,7 +69,7 @@ func migrateVestingPools(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return setNewAccountVestingPools(store, cdc, oldAccountVestingPools)
 }
 
-func getOldVestingAccountTracesCountAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) uint64 {
+func getOldVestingAccountTracesCountAndDelete(store sdk.KVStore) uint64 {
 	prefixStore := prefix.NewStore(store, []byte{})
 	byteKey := types.KeyPrefix(v2.VestingAccountCountKey)
 	bz := prefixStore.Get(byteKey)
@@ -101,7 +101,7 @@ func getAllOldVestingAccountTracesAndDelete(store sdk.KVStore, cdc codec.BinaryC
 	return
 }
 
-func setNewVestingAccountTracesCount(store sdk.KVStore, cdc codec.BinaryCodec, count uint64) {
+func setNewVestingAccountTracesCount(store sdk.KVStore, count uint64) {
 	prefixStore := prefix.NewStore(store, []byte{})
 	byteKey := types.KeyPrefix(types.VestingAccountTraceCountKey)
 	bz := make([]byte, 8)
@@ -112,7 +112,7 @@ func setNewVestingAccountTracesCount(store sdk.KVStore, cdc codec.BinaryCodec, c
 func setNewVestingAccountAccountTraces(store sdk.KVStore, cdc codec.BinaryCodec, oldVestingAccounntTraces []v2.VestingAccount) error {
 	prefixStore := prefix.NewStore(store, types.KeyPrefix(types.VestingAccountTraceKey))
 	for _, oldVestingAccounntTrace := range oldVestingAccounntTraces {
-		vestingAccountTrace := types.VestingAccountTrace{
+		vestingAccountTrace := VestingAccountTrace{
 			Id:                 oldVestingAccounntTrace.Id,
 			Address:            oldVestingAccounntTrace.Address,
 			Genesis:            false,
@@ -129,8 +129,8 @@ func setNewVestingAccountAccountTraces(store sdk.KVStore, cdc codec.BinaryCodec,
 }
 
 func migrateVestingAccountTrace(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	count := getOldVestingAccountTracesCountAndDelete(store, cdc)
-	setNewVestingAccountTracesCount(store, cdc, count)
+	count := getOldVestingAccountTracesCountAndDelete(store)
+	setNewVestingAccountTracesCount(store, count)
 
 	oldAccountVestingTraces, err := getAllOldVestingAccountTracesAndDelete(store, cdc)
 	if err != nil {

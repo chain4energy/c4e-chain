@@ -31,11 +31,11 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 	prefixStore := prefix.NewStore(store, types.AccountVestingPoolsKeyPrefix)
 	for _, oldAccPool := range oldAccPools {
 		oldPools := oldAccPool.VestingPools
-		var newPools []*types.VestingPool
+		var newPools []*VestingPool
 		for _, oldPool := range oldPools {
 			sent := oldPool.LastModificationWithdrawn.Add(oldPool.Vested).Sub(oldPool.Withdrawn).Sub(oldPool.LastModificationVested)
 
-			newPool := types.VestingPool{
+			newPool := VestingPool{
 				Name:            oldPool.Name,
 				VestingType:     oldPool.VestingType,
 				LockStart:       oldPool.LockStart,
@@ -47,7 +47,7 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 			newPools = append(newPools, &newPool)
 		}
 
-		newAccPool := types.AccountVestingPools{
+		newAccPool := AccountVestingPools{
 			Owner:        oldAccPool.Address,
 			VestingPools: newPools,
 		}
@@ -76,7 +76,7 @@ func getOldVestingTypesAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (vest
 
 func setNewVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes v1.VestingTypes) error {
 	for _, vt := range vestingTypes.VestingTypes {
-		newVestingType := types.VestingType{
+		newVestingType := VestingType{
 			Name:          vt.Name,
 			VestingPeriod: vt.VestingPeriod,
 			LockupPeriod:  vt.LockupPeriod,
@@ -94,7 +94,7 @@ func setNewVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes v
 }
 
 // set the vesting type
-func setNewVestingType(store sdk.KVStore, cdc codec.BinaryCodec, newVestingType types.VestingType) error {
+func setNewVestingType(store sdk.KVStore, cdc codec.BinaryCodec, newVestingType VestingType) error {
 	pStore := prefix.NewStore(store, types.VestingTypesKeyPrefix)
 	av, err := cdc.Marshal(&newVestingType)
 	if err != nil {
