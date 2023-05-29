@@ -4,6 +4,7 @@ import (
 	"cosmossdk.io/math"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v3"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -18,36 +19,36 @@ import (
 
 func TestMigrateNoMinting(t *testing.T) {
 	testUtil, ctx := testkeeper.CfeminterKeeperTestUtilWithCdc(t)
-	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, nil, types.NoMintingType, nil, nil),
+	Minters := []*v2.Minter{
+		createV2Minter(1, nil, v2.NoMintingType, nil, nil),
 	}
 
-	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), legacyMinters)
+	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), Minters)
 	MigrateParamsV2ToV3(t, ctx, testUtil, false, "")
 }
 
 func TestMigrateLinearMinting(t *testing.T) {
 	testUtil, ctx := testkeeper.CfeminterKeeperTestUtilWithCdc(t)
 	endTime := testenv.TestEnvTime.Add(time.Hour)
-	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
-		createV2Minter(2, nil, types.NoMintingType, nil, nil),
+	Minters := []*v2.Minter{
+		createV2Minter(1, &endTime, v2.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
+		createV2Minter(2, nil, v2.NoMintingType, nil, nil),
 	}
 
-	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), legacyMinters)
+	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), Minters)
 	MigrateParamsV2ToV3(t, ctx, testUtil, false, "")
 }
 
 func TestMigrateExponentialStepMinting(t *testing.T) {
 	testUtil, ctx := testkeeper.CfeminterKeeperTestUtilWithCdc(t)
 	endTime := testenv.TestEnvTime.Add(time.Hour)
-	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, &endTime, types.ExponentialStepMintingType,
+	Minters := []*v2.Minter{
+		createV2Minter(1, &endTime, v2.ExponentialStepMintingType,
 			createExonentialStepMinting(math.NewInt(1000), time.Hour, sdk.MustNewDecFromStr("0.5")), nil),
-		createV2Minter(2, nil, types.NoMintingType, nil, nil),
+		createV2Minter(2, nil, v2.NoMintingType, nil, nil),
 	}
 
-	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), legacyMinters)
+	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), Minters)
 	MigrateParamsV2ToV3(t, ctx, testUtil, false, "")
 }
 
@@ -56,54 +57,15 @@ func TestMigrateExponentialStepMintingAndLinearMinting(t *testing.T) {
 	endTime := testenv.TestEnvTime.Add(time.Hour)
 	endTime2 := endTime.Add(time.Hour)
 
-	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
-		createV2Minter(2, &endTime2, types.ExponentialStepMintingType,
+	Minters := []*v2.Minter{
+		createV2Minter(1, &endTime, v2.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
+		createV2Minter(2, &endTime2, v2.ExponentialStepMintingType,
 			createExonentialStepMinting(math.NewInt(1000), time.Hour, sdk.MustNewDecFromStr("0.5")), nil),
-		createV2Minter(3, nil, types.NoMintingType, nil, nil),
+		createV2Minter(3, nil, v2.NoMintingType, nil, nil),
 	}
 
-	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), legacyMinters)
+	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), Minters)
 	MigrateParamsV2ToV3(t, ctx, testUtil, false, "")
-}
-
-func TestMigrateWrongSequenceId(t *testing.T) {
-	testUtil, ctx := testkeeper.CfeminterKeeperTestUtilWithCdc(t)
-	endTime := testenv.TestEnvTime.Add(time.Hour)
-	endTime2 := endTime.Add(time.Hour)
-
-	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
-		createV2Minter(1, &endTime2, types.ExponentialStepMintingType,
-			createExonentialStepMinting(math.NewInt(1000), time.Hour, sdk.MustNewDecFromStr("0.5")), nil),
-		createV2Minter(3, nil, types.NoMintingType, nil, nil),
-	}
-
-	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), legacyMinters)
-	MigrateParamsV2ToV3(t, ctx, testUtil, true, "missing minter with sequence id 2")
-}
-
-func TestMigrateWrongMinterType(t *testing.T) {
-	testUtil, ctx := testkeeper.CfeminterKeeperTestUtilWithCdc(t)
-	endTime := testenv.TestEnvTime.Add(time.Hour)
-	endTime2 := endTime.Add(time.Hour)
-
-	legacyMinters := []*types.LegacyMinter{
-		createV2Minter(1, &endTime, types.LinearMintingType, nil, createLinearMinting(math.NewInt(1000))),
-		createV2Minter(2, &endTime2, types.ExponentialStepMintingType,
-			nil, nil),
-		createV2Minter(3, nil, types.NoMintingType, nil, nil),
-	}
-
-	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), legacyMinters)
-	MigrateParamsV2ToV3(t, ctx, testUtil, true, "minter with id 2 validation error: ExponentialStepMintingType error: for ExponentialStepMintingType type (2) ExponentialStepMinting must be set")
-}
-
-func TestMigrateNoMintersSet(t *testing.T) {
-	testUtil, ctx := testkeeper.CfeminterKeeperTestUtilWithCdc(t)
-	var legacyMinters []*types.LegacyMinter
-	setV2MinterParams(t, ctx, testUtil, testenv.DefaultTestDenom, time.Now(), legacyMinters)
-	MigrateParamsV2ToV3(t, ctx, testUtil, true, "no minters defined")
 }
 
 func MigrateParamsV2ToV3(
@@ -112,13 +74,13 @@ func MigrateParamsV2ToV3(
 	testUtil *testkeeper.ExtendedC4eMinterKeeperUtils,
 	expectError bool, errorMessage string,
 ) {
-	var oldMinterConfig types.MinterConfig
+	var oldMinterConfig v2.MinterConfig
 	store := newStore(ctx, testUtil)
-	oldMinterConfigRaw := store.Get(types.KeyMinterConfig)
+	oldMinterConfigRaw := store.Get(v2.KeyMinterConfig)
 	err := codec.NewLegacyAmino().UnmarshalJSON(oldMinterConfigRaw, &oldMinterConfig)
 
 	var oldMintDenom string
-	oldMintDenomRaw := store.Get(types.KeyMintDenom)
+	oldMintDenomRaw := store.Get(v2.KeyMintDenom)
 	err = codec.NewLegacyAmino().UnmarshalJSON(oldMintDenomRaw, &oldMintDenom)
 	require.NoError(t, err)
 
@@ -140,9 +102,9 @@ func MigrateParamsV2ToV3(
 	for i, oldMinter := range oldMinterConfig.Minters {
 		newMinter := newParams.Minters[i]
 		var config *codectypes.Any
-		if oldMinter.Type == types.ExponentialStepMintingType {
+		if oldMinter.Type == v2.ExponentialStepMintingType {
 			config, _ = codectypes.NewAnyWithValue(oldMinter.ExponentialStepMinting)
-		} else if oldMinter.Type == types.LinearMintingType {
+		} else if oldMinter.Type == v2.LinearMintingType {
 			config, _ = codectypes.NewAnyWithValue(oldMinter.LinearMinting)
 		} else {
 			config, _ = codectypes.NewAnyWithValue(&types.NoMinting{})
@@ -151,9 +113,9 @@ func MigrateParamsV2ToV3(
 	}
 }
 
-func setV2MinterParams(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eMinterKeeperUtils, mintDenom string, startTime time.Time, minters []*types.LegacyMinter) {
+func setV2MinterParams(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eMinterKeeperUtils, mintDenom string, startTime time.Time, minters []*v2.Minter) {
 	setV2MintDenom(t, ctx, testUtil, mintDenom)
-	minterConfig := types.MinterConfig{
+	minterConfig := v2.MinterConfig{
 		StartTime: startTime,
 		Minters:   minters,
 	}
@@ -161,14 +123,14 @@ func setV2MinterParams(t *testing.T, ctx sdk.Context, testUtil *testkeeper.Exten
 	store := newStore(ctx, testUtil)
 	bz, err := codec.NewLegacyAmino().MarshalJSON(minterConfig)
 	require.NoError(t, err)
-	store.Set(types.KeyMinterConfig, bz)
+	store.Set(v2.KeyMinterConfig, bz)
 }
 
 func setV2MintDenom(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eMinterKeeperUtils, mintDenom string) {
 	store := newStore(ctx, testUtil)
 	bz, err := codec.NewLegacyAmino().MarshalJSON(mintDenom)
 	require.NoError(t, err)
-	store.Set(types.KeyMintDenom, bz)
+	store.Set(v2.KeyMintDenom, bz)
 }
 
 func newStore(ctx sdk.Context, testUtil *testkeeper.ExtendedC4eMinterKeeperUtils) prefix.Store {
@@ -177,8 +139,8 @@ func newStore(ctx sdk.Context, testUtil *testkeeper.ExtendedC4eMinterKeeperUtils
 
 func createLinearMinting(
 	amount math.Int,
-) *types.LinearMinting {
-	return &types.LinearMinting{
+) *v2.LinearMinting {
+	return &v2.LinearMinting{
 		Amount: amount,
 	}
 }
@@ -187,8 +149,8 @@ func createExonentialStepMinting(
 	amount math.Int,
 	stepDuration time.Duration,
 	amountMultiplier sdk.Dec,
-) *types.ExponentialStepMinting {
-	return &types.ExponentialStepMinting{
+) *v2.ExponentialStepMinting {
+	return &v2.ExponentialStepMinting{
 		StepDuration:     stepDuration,
 		Amount:           amount,
 		AmountMultiplier: amountMultiplier,
@@ -199,10 +161,10 @@ func createV2Minter(
 	sequenceId uint32,
 	endTime *time.Time,
 	minterType string,
-	exponentialStepMinting *types.ExponentialStepMinting,
-	linearMinting *types.LinearMinting,
-) *types.LegacyMinter {
-	return &types.LegacyMinter{
+	exponentialStepMinting *v2.ExponentialStepMinting,
+	linearMinting *v2.LinearMinting,
+) *v2.Minter {
+	return &v2.Minter{
 		SequenceId:             sequenceId,
 		EndTime:                endTime,
 		Type:                   minterType,

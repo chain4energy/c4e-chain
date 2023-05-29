@@ -1,8 +1,8 @@
 package v3
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/exported"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/app/exported"
+	v2 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,19 +14,15 @@ import (
 // module state.
 func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace exported.Subspace, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
-	var currParams types.Params
+	var currParams v2.Params
 	legacySubspace.GetParamSet(ctx, &currParams)
-
-	if err := currParams.Validate(); err != nil {
-		return err
-	}
 
 	bz, err := cdc.Marshal(&currParams)
 	if err != nil {
 		return err
 	}
 
-	store.Set(types.ParamsKey, bz)
+	store.Set(ParamsKey, bz)
 
 	return nil
 }

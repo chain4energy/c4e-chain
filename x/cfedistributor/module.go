@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/exported"
+	"github.com/chain4energy/c4e-chain/app/exported"
 
 	// this line is used by starport scaffolding # 1
 

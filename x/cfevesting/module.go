@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
+	"github.com/chain4energy/c4e-chain/app/exported"
 
 	// this line is used by starport scaffolding # 1
 
@@ -115,7 +115,6 @@ func NewAppModule(
 	bankKeeper types.BankKeeper,
 	stakingKeeper types.StakingKeeper,
 	ls exported.Subspace,
-
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),

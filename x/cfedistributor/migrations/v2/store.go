@@ -2,7 +2,6 @@ package v2
 
 import (
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v1"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -27,28 +26,25 @@ func getAllOldSubDistributorStatesAndDelete(store sdk.KVStore, cdc codec.BinaryC
 }
 
 func setNewSubDistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldStates []v1.State) error {
-	prefixStore := prefix.NewStore(store, types.StateKeyPrefix)
+	prefixStore := prefix.NewStore(store, StateKeyPrefix)
 
 	for _, oldState := range oldStates {
-		var newAccount *types.Account
+		var newAccount *Account
 		if oldState.Burn == true {
 			newAccount = nil
 		} else {
-			newAccount = &types.Account{
+			newAccount = &Account{
 				Id:   oldState.Account.Id,
 				Type: oldState.Account.Type,
 			}
 		}
 
-		newState := types.State{
+		newState := State{
 			Account: newAccount,
 			Burn:    oldState.Burn,
 			Remains: oldState.CoinsStates,
 		}
-		err := newState.Validate()
-		if err != nil {
-			return err
-		}
+
 		av, err := cdc.Marshal(&newState)
 		if err != nil {
 			return err

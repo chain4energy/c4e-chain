@@ -1,7 +1,9 @@
 package upgrades
 
 import (
+	cfedistributorv2migration "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfeminterv2migration "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfesignaturetypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	cfevestingv3migration "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
@@ -16,10 +18,10 @@ func RegisterLegacyParamsKeyTables(appKeepers AppKeepers) {
 		var keyTable paramstypes.KeyTable
 		switch subspace.Name() {
 		case cfedistributormoduletypes.ModuleName:
-			keyTable = cfedistributormoduletypes.ParamKeyTable() //nolint:staticcheck
+			keyTable = cfedistributorv2migration.ParamKeyTable() //nolint:staticcheck
 
 		case cfemintermoduletypes.ModuleName:
-			keyTable = cfemintermoduletypes.ParamKeyTable() //nolint:staticcheck
+			keyTable = cfeminterv2migration.ParamKeyTable() //nolint:staticcheck
 
 		case cfevestingmoduletypes.ModuleName:
 			keyTable = cfevestingv3migration.ParamKeyTable() //nolint:staticcheck

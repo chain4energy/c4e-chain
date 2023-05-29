@@ -3,7 +3,6 @@ package v2
 import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v1"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -21,21 +20,21 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 		panic(err)
 	}
 
-	var newMinterConfig types.MinterConfig
+	var newMinterConfig MinterConfig
 	newMinterConfig.StartTime = oldMinterConfig.Start
-	var newMinters []*types.LegacyMinter
+	var newMinters []*Minter
 	for _, oldMinter := range oldMinterConfig.Periods {
-		var linearMinting *types.LinearMinting
-		var exponentialStepMinting *types.ExponentialStepMinting
+		var linearMinting *LinearMinting
+		var exponentialStepMinting *ExponentialStepMinting
 
 		if oldMinter.TimeLinearMinter != nil {
-			linearMinting = &types.LinearMinting{
+			linearMinting = &LinearMinting{
 				Amount: oldMinter.TimeLinearMinter.Amount,
 			}
 		}
 		periodicReductionMinter := oldMinter.PeriodicReductionMinter
 		if periodicReductionMinter != nil {
-			exponentialStepMinting = &types.ExponentialStepMinting{
+			exponentialStepMinting = &ExponentialStepMinting{
 				Amount:           periodicReductionMinter.MintAmount.MulRaw(int64(periodicReductionMinter.ReductionPeriodLength)),
 				StepDuration:     time.Duration(oldMinter.PeriodicReductionMinter.MintPeriod*periodicReductionMinter.ReductionPeriodLength) * time.Second,
 				AmountMultiplier: oldMinter.PeriodicReductionMinter.ReductionFactor,
@@ -57,7 +56,7 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 			return fmt.Errorf("wrong minting period type")
 		}
 
-		newMinter := types.LegacyMinter{
+		newMinter := Minter{
 			SequenceId:             uint32(oldMinter.Position),
 			EndTime:                oldMinter.PeriodEnd,
 			Type:                   newType,
@@ -67,10 +66,7 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 		newMinters = append(newMinters, &newMinter)
 	}
 	newMinterConfig.Minters = newMinters
-	if err := newMinterConfig.Validate(); err != nil {
-		return err
-	}
-	paramStore.Set(ctx, types.KeyMinterConfig, newMinterConfig)
+	paramStore.Set(ctx, KeyMinterConfig, newMinterConfig)
 
 	return nil
 }

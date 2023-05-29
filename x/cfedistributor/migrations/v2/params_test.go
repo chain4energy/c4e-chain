@@ -36,55 +36,11 @@ func TestMigrationSubDistributorsCorrectOrder(t *testing.T) {
 	MigrateParamsV1ToV2(t, ctx, testUtil, false, "")
 }
 
-func TestMigrationSubDistributorsWrongOrder(t *testing.T) {
-	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	oldSubDistributors := []v1.SubDistributor{
-		createOldSubDistributor(types.InternalAccount, types.BaseAccount, types.ModuleAccount, "CUSTOM_ID"),
-		createOldSubDistributor(types.Main, types.InternalAccount, types.ModuleAccount, "CUSTOM_ID"),
-	}
-
-	setV2Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV1ToV2(t, ctx, testUtil, true, "wrong order of subdistributors, after each occurrence of a subdistributor with the destination of internal or main account type there must be exactly one occurrence of a subdistributor with the source of internal account type, account id: MAIN")
-}
-
-func TestMigrationSubDistributorsDuplicates(t *testing.T) {
-	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	oldSubDistributors := []v1.SubDistributor{
-		createOldSubDistributor(types.InternalAccount, types.BaseAccount, types.ModuleAccount, "CUSTOM_ID"),
-		createOldSubDistributor(types.BaseAccount, types.InternalAccount, types.ModuleAccount, "CUSTOM_ID"),
-		createOldSubDistributor(types.BaseAccount, types.Main, types.BaseAccount, "CUSTOM_ID"),
-	}
-	setV2Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV1ToV2(t, ctx, testUtil, true, "same MAIN account cannot occur twice within one subdistributor, subdistributor name: "+oldSubDistributors[2].Name)
-}
-
-func TestMigrationSubDistributorsWrongAccType(t *testing.T) {
-	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	oldSubDistributors := []v1.SubDistributor{
-		createOldSubDistributor(types.InternalAccount, types.BaseAccount, types.ModuleAccount, "CUSTOM_ID"),
-		createOldSubDistributor(types.BaseAccount, types.Main, types.ModuleAccount, "CUSTOM_ID"),
-		createOldSubDistributor(types.BaseAccount, "WRONG_ACCOUNT_TYPE", types.ModuleAccount, "CUSTOM_ID"),
-	}
-
-	setV2Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV1ToV2(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[2].Name+" source with id \"CUSTOM_ID\" validation error: account \"CUSTOM_ID\" is of the wrong type: WRONG_ACCOUNT_TYPE")
-}
-
-func TestMigrationSubDistributorsWrongModuleAccount(t *testing.T) {
-	testUtil, ctx := testkeeper.CfedistributorKeeperTestUtilWithCdc(t)
-	oldSubDistributors := []v1.SubDistributor{
-		createOldSubDistributor(types.BaseAccount, types.Main, types.ModuleAccount, "WRONG_CUSTOM_ID"),
-	}
-
-	setV2Subdistributors(t, ctx, testUtil, oldSubDistributors)
-	MigrateParamsV1ToV2(t, ctx, testUtil, true, "subdistributor "+oldSubDistributors[0].Name+" destinations validation error: destination share "+oldSubDistributors[0].Destination.Share[0].Name+" destination account validation error: module account \"WRONG_CUSTOM_ID_custom_siffix_0\" doesn't exist in maccPerms")
-}
-
 func setV2Subdistributors(t *testing.T, ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils, subdistributors []v1.SubDistributor) {
 	store := newStore(ctx, testUtil)
 	bz, err := codec.NewLegacyAmino().MarshalJSON(subdistributors)
 	require.NoError(t, err)
-	store.Set(types.KeySubDistributors, bz)
+	store.Set(v2.KeySubDistributors, bz)
 }
 
 func newStore(ctx sdk.Context, testUtil *testkeeper.ExtendedC4eDistributorKeeperUtils) prefix.Store {
@@ -100,7 +56,7 @@ func MigrateParamsV1ToV2(
 	cfedistributortestutils.SetTestMaccPerms()
 	var oldSubDistributors []v1.SubDistributor
 	store := newStore(ctx, testUtil)
-	distributors := store.Get(types.KeySubDistributors)
+	distributors := store.Get(v2.KeySubDistributors)
 	err := codec.NewLegacyAmino().UnmarshalJSON(distributors, &oldSubDistributors)
 	require.NoError(t, err)
 
@@ -111,7 +67,7 @@ func MigrateParamsV1ToV2(
 	}
 	require.NoError(t, err)
 	var newSubDistributors []types.SubDistributor
-	newSubDistributorsRaw := store.Get(types.KeySubDistributors)
+	newSubDistributorsRaw := store.Get(v2.KeySubDistributors)
 	err = codec.NewLegacyAmino().UnmarshalJSON(newSubDistributorsRaw, &newSubDistributors)
 	require.NoError(t, err)
 

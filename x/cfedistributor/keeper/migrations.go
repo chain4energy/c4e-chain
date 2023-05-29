@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/exported"
+	"github.com/chain4energy/c4e-chain/app/exported"
 	v110cfedistributor "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
 	v3 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v3"
 	sdk "github.com/cosmos/cosmos-sdk/types"

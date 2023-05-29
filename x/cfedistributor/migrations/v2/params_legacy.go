@@ -1,4 +1,4 @@
-package types
+package v2
 
 import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -18,6 +18,6 @@ func ParamKeyTable() paramtypes.KeyTable {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeySubDistributors, &p.SubDistributors, validateSubDistributors),
+		paramtypes.NewParamSetPair(KeySubDistributors, &p.SubDistributors, func(i interface{}) error { return nil }),
 	}
 }

@@ -2,7 +2,7 @@ package v3_test
 
 import (
 	"github.com/chain4energy/c4e-chain/app"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
+	"github.com/chain4energy/c4e-chain/app/exported"
 	v3 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
