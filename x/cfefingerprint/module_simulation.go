@@ -45,11 +45,11 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	for i, acc := range simState.Accounts {
 		accs[i] = acc.Address.String()
 	}
-	energychainGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
+	cfefingerprintGenesis := types.GenesisState{
+		// Params: types.DefaultParams(),
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&energychainGenesis)
+	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfefingerprintGenesis)
 }
 
 // ProposalContents doesn't return any content functions for governance proposals

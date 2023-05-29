@@ -10,7 +10,7 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
 	// this line is used by starport scaffolding # genesis/module/init
 	k.Logger(ctx).Debug("init genesis", "genState", genState)
-	k.SetParams(ctx, genState.Params)
+	// k.SetParams(ctx, genState.Params)
 
 	links := genState.PayloadLinks
 	for _, av := range links {
@@ -21,7 +21,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 // ExportGenesis returns the module's exported genesis
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
-	genesis.Params = k.GetParams(ctx)
+	// genesis.Params = k.GetParams(ctx)
 
 	// this line is used by starport scaffolding # genesis/module/export
 
