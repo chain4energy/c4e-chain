@@ -16,7 +16,7 @@ export interface NewVestingPool {
   vestingType: string;
 }
 
-export interface NewVestingAccountFromVestingPool {
+export interface NewVestingPeriodFromVestingPool {
   /** TODO: rename to owner */
   owner_address: string;
   address: string;
@@ -217,7 +217,7 @@ export const NewVestingPool = {
   },
 };
 
-const baseNewVestingAccountFromVestingPool: object = {
+const baseNewVestingPeriodFromVestingPool: object = {
   owner_address: "",
   address: "",
   vesting_pool_name: "",
@@ -225,9 +225,9 @@ const baseNewVestingAccountFromVestingPool: object = {
   restart_vesting: "",
 };
 
-export const NewVestingAccountFromVestingPool = {
+export const NewVestingPeriodFromVestingPool = {
   encode(
-    message: NewVestingAccountFromVestingPool,
+    message: NewVestingPeriodFromVestingPool,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.owner_address !== "") {
@@ -251,12 +251,12 @@ export const NewVestingAccountFromVestingPool = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): NewVestingAccountFromVestingPool {
+  ): NewVestingPeriodFromVestingPool {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseNewVestingAccountFromVestingPool,
-    } as NewVestingAccountFromVestingPool;
+      ...baseNewVestingPeriodFromVestingPool,
+    } as NewVestingPeriodFromVestingPool;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -283,10 +283,10 @@ export const NewVestingAccountFromVestingPool = {
     return message;
   },
 
-  fromJSON(object: any): NewVestingAccountFromVestingPool {
+  fromJSON(object: any): NewVestingPeriodFromVestingPool {
     const message = {
-      ...baseNewVestingAccountFromVestingPool,
-    } as NewVestingAccountFromVestingPool;
+      ...baseNewVestingPeriodFromVestingPool,
+    } as NewVestingPeriodFromVestingPool;
     if (object.owner_address !== undefined && object.owner_address !== null) {
       message.owner_address = String(object.owner_address);
     } else {
@@ -321,7 +321,7 @@ export const NewVestingAccountFromVestingPool = {
     return message;
   },
 
-  toJSON(message: NewVestingAccountFromVestingPool): unknown {
+  toJSON(message: NewVestingPeriodFromVestingPool): unknown {
     const obj: any = {};
     message.owner_address !== undefined &&
       (obj.owner_address = message.owner_address);
@@ -335,11 +335,11 @@ export const NewVestingAccountFromVestingPool = {
   },
 
   fromPartial(
-    object: DeepPartial<NewVestingAccountFromVestingPool>
-  ): NewVestingAccountFromVestingPool {
+    object: DeepPartial<NewVestingPeriodFromVestingPool>
+  ): NewVestingPeriodFromVestingPool {
     const message = {
-      ...baseNewVestingAccountFromVestingPool,
-    } as NewVestingAccountFromVestingPool;
+      ...baseNewVestingPeriodFromVestingPool,
+    } as NewVestingPeriodFromVestingPool;
     if (object.owner_address !== undefined && object.owner_address !== null) {
       message.owner_address = object.owner_address;
     } else {

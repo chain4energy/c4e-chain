@@ -2,7 +2,6 @@ package v2
 
 import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v1"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -28,7 +27,7 @@ func getAllOldAccountVestingPoolsAndDelete(store sdk.KVStore, cdc codec.BinaryCo
 }
 
 func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccPools []v1.AccountVestingPools) error {
-	prefixStore := prefix.NewStore(store, types.AccountVestingPoolsKeyPrefix)
+	prefixStore := prefix.NewStore(store, AccountVestingPoolsKeyPrefix)
 	for _, oldAccPool := range oldAccPools {
 		oldPools := oldAccPool.VestingPools
 		var newPools []*VestingPool
@@ -48,14 +47,14 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 		}
 
 		newAccPool := AccountVestingPools{
-			Owner:        oldAccPool.Address,
+			Address:      oldAccPool.Address,
 			VestingPools: newPools,
 		}
 		av, err := cdc.Marshal(&newAccPool)
 		if err != nil {
 			return err
 		}
-		prefixStore.Set([]byte(newAccPool.Owner), av)
+		prefixStore.Set([]byte(newAccPool.Address), av)
 	}
 	return nil
 }
@@ -95,7 +94,7 @@ func setNewVestingTypes(store sdk.KVStore, cdc codec.BinaryCodec, vestingTypes v
 
 // set the vesting type
 func setNewVestingType(store sdk.KVStore, cdc codec.BinaryCodec, newVestingType VestingType) error {
-	pStore := prefix.NewStore(store, types.VestingTypesKeyPrefix)
+	pStore := prefix.NewStore(store, VestingTypesKey)
 	av, err := cdc.Marshal(&newVestingType)
 	if err != nil {
 		return err

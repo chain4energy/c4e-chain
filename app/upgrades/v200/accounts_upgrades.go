@@ -19,6 +19,8 @@ const (
 )
 
 func MigrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	ctx.Logger().Info("migrating airdrop module account")
+
 	accountVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, NewAirdropVestingPoolOwner)
 	if !found {
 		ctx.Logger().Info("account vesting pools not found for NewAirdropVestingPoolOwner", "owner", NewAirdropVestingPoolOwner)
@@ -60,6 +62,8 @@ func MigrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.App
 }
 
 func MigrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	ctx.Logger().Info("migrating teamdrop module account")
+
 	teamdropAccAddress, err := sdk.AccAddressFromBech32(TeamdropVestingAccount)
 	if err != nil {
 		return err

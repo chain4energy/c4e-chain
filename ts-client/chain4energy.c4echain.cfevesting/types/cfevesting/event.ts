@@ -15,7 +15,7 @@ export interface NewVestingPool {
   vestingType: string;
 }
 
-export interface NewVestingAccountFromVestingPool {
+export interface NewVestingPeriodFromVestingPool {
   ownerAddress: string;
   address: string;
   vestingPoolName: string;
@@ -161,12 +161,12 @@ export const NewVestingPool = {
   },
 };
 
-function createBaseNewVestingAccountFromVestingPool(): NewVestingAccountFromVestingPool {
+function createBaseNewVestingPeriodFromVestingPool(): NewVestingPeriodFromVestingPool {
   return { ownerAddress: "", address: "", vestingPoolName: "", amount: "", restartVesting: "" };
 }
 
-export const NewVestingAccountFromVestingPool = {
-  encode(message: NewVestingAccountFromVestingPool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const NewVestingPeriodFromVestingPool = {
+  encode(message: NewVestingPeriodFromVestingPool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.ownerAddress !== "") {
       writer.uint32(10).string(message.ownerAddress);
     }
@@ -185,10 +185,10 @@ export const NewVestingAccountFromVestingPool = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): NewVestingAccountFromVestingPool {
+  decode(input: _m0.Reader | Uint8Array, length?: number): NewVestingPeriodFromVestingPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseNewVestingAccountFromVestingPool();
+    const message = createBaseNewVestingPeriodFromVestingPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -215,7 +215,7 @@ export const NewVestingAccountFromVestingPool = {
     return message;
   },
 
-  fromJSON(object: any): NewVestingAccountFromVestingPool {
+  fromJSON(object: any): NewVestingPeriodFromVestingPool {
     return {
       ownerAddress: isSet(object.ownerAddress) ? String(object.ownerAddress) : "",
       address: isSet(object.address) ? String(object.address) : "",
@@ -225,7 +225,7 @@ export const NewVestingAccountFromVestingPool = {
     };
   },
 
-  toJSON(message: NewVestingAccountFromVestingPool): unknown {
+  toJSON(message: NewVestingPeriodFromVestingPool): unknown {
     const obj: any = {};
     message.ownerAddress !== undefined && (obj.ownerAddress = message.ownerAddress);
     message.address !== undefined && (obj.address = message.address);
@@ -235,10 +235,10 @@ export const NewVestingAccountFromVestingPool = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<NewVestingAccountFromVestingPool>, I>>(
+  fromPartial<I extends Exact<DeepPartial<NewVestingPeriodFromVestingPool>, I>>(
     object: I,
-  ): NewVestingAccountFromVestingPool {
-    const message = createBaseNewVestingAccountFromVestingPool();
+  ): NewVestingPeriodFromVestingPool {
+    const message = createBaseNewVestingPeriodFromVestingPool();
     message.ownerAddress = object.ownerAddress ?? "";
     message.address = object.address ?? "";
     message.vestingPoolName = object.vestingPoolName ?? "";

@@ -4,7 +4,7 @@ import { AccountVestingPools } from "chain4energy-c4e-chain-client-ts/chain4ener
 import { VestingPool } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { NewVestingAccount } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { NewVestingPool } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
-import { NewVestingAccountFromVestingPool } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
+import { NewVestingPeriodFromVestingPool } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { WithdrawAvailable } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { VestingSplit } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 import { GenesisVestingType } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
@@ -19,7 +19,7 @@ import { VestingTypes } from "chain4energy-c4e-chain-client-ts/chain4energy.c4ec
 import { VestingType } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfevesting/types"
 
 
-export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, VestingSplit, GenesisVestingType, Params, VestingPoolInfo, VestingAccountTrace, ContinuousVestingPeriod, PeriodicContinuousVestingAccount, BaseVestingAccount, AuthBaseAccount, VestingTypes, VestingType };
+export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingPeriodFromVestingPool, WithdrawAvailable, VestingSplit, GenesisVestingType, Params, VestingPoolInfo, VestingAccountTrace, ContinuousVestingPeriod, PeriodicContinuousVestingAccount, BaseVestingAccount, AuthBaseAccount, VestingTypes, VestingType };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -61,7 +61,7 @@ const getDefaultState = () => {
 						VestingPool: getStructure(VestingPool.fromPartial({})),
 						NewVestingAccount: getStructure(NewVestingAccount.fromPartial({})),
 						NewVestingPool: getStructure(NewVestingPool.fromPartial({})),
-						NewVestingAccountFromVestingPool: getStructure(NewVestingAccountFromVestingPool.fromPartial({})),
+						NewVestingPeriodFromVestingPool: getStructure(NewVestingPeriodFromVestingPool.fromPartial({})),
 						WithdrawAvailable: getStructure(WithdrawAvailable.fromPartial({})),
 						VestingSplit: getStructure(VestingSplit.fromPartial({})),
 						GenesisVestingType: getStructure(GenesisVestingType.fromPartial({})),

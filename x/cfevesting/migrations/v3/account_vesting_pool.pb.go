@@ -160,8 +160,8 @@ func (m *VestingPool) GetGenesisPool() bool {
 }
 
 func init() {
-	proto.RegisterType((*AccountVestingPools)(nil), "chain4energy.c4echain.cfevesting.AccountVestingPools")
-	proto.RegisterType((*VestingPool)(nil), "chain4energy.c4echain.cfevesting.VestingPool")
+	proto.RegisterType((*AccountVestingPools)(nil), "chain4energy.c4echain.cfevesting.v3.AccountVestingPools")
+	proto.RegisterType((*VestingPool)(nil), "chain4energy.c4echain.cfevesting.v3.VestingPool")
 }
 
 func init() {

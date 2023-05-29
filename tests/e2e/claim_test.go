@@ -25,7 +25,7 @@ func TestClaimSuite(t *testing.T) {
 }
 
 func (s *ClaimSetupSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(false, false)
+	s.BaseSetupSuite.SetupSuite(false, false, false)
 }
 
 func (s *ClaimSetupSuite) TestDefaultCampaign() {

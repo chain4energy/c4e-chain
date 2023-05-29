@@ -4,7 +4,7 @@ import { AccountVestingPools } from "./module/types/cfevesting/account_vesting_p
 import { VestingPool } from "./module/types/cfevesting/account_vesting_pool"
 import { NewVestingAccount } from "./module/types/cfevesting/event"
 import { NewVestingPool } from "./module/types/cfevesting/event"
-import { NewVestingAccountFromVestingPool } from "./module/types/cfevesting/event"
+import { NewVestingPeriodFromVestingPool } from "./module/types/cfevesting/event"
 import { WithdrawAvailable } from "./module/types/cfevesting/event"
 import { GenesisVestingType } from "./module/types/cfevesting/genesis"
 import { Params } from "./module/types/cfevesting/params"
@@ -16,7 +16,7 @@ import { VestingTypes } from "./module/types/cfevesting/vesting_types"
 import { VestingType } from "./module/types/cfevesting/vesting_types"
 
 
-export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingAccountFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, ContinuousVestingPeriod, PeriodicContinuousVestingAccount, VestingTypes, VestingType };
+export { AccountVestingPools, VestingPool, NewVestingAccount, NewVestingPool, NewVestingPeriodFromVestingPool, WithdrawAvailable, GenesisVestingType, Params, VestingPoolInfo, VestingAccount, ContinuousVestingPeriod, PeriodicContinuousVestingAccount, VestingTypes, VestingType };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -64,7 +64,7 @@ const getDefaultState = () => {
 						VestingPool: getStructure(VestingPool.fromPartial({})),
 						NewVestingAccount: getStructure(NewVestingAccount.fromPartial({})),
 						NewVestingPool: getStructure(NewVestingPool.fromPartial({})),
-						NewVestingAccountFromVestingPool: getStructure(NewVestingAccountFromVestingPool.fromPartial({})),
+						NewVestingPeriodFromVestingPool: getStructure(NewVestingPeriodFromVestingPool.fromPartial({})),
 						WithdrawAvailable: getStructure(WithdrawAvailable.fromPartial({})),
 						GenesisVestingType: getStructure(GenesisVestingType.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),

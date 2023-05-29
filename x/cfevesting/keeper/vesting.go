@@ -215,7 +215,10 @@ func (k Keeper) SendReservedToNewVestingAccount(ctx sdk.Context, owner string, t
 		return err
 	}
 
-	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, periodExists, false, accVestingPools, vestingPool)
+	k.SetAccountVestingPools(ctx, *accVestingPools)
+	k.EmitNewVestingPeriodFromVestingPool(ctx, owner, toAddr, vestingPoolName, amount, periodId, true)
+	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, toAddr, periodId, periodExists, vestingPool)
+
 	return nil
 }
 
@@ -246,14 +249,29 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 		return err
 	}
 
-	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, owner, toAddr, amount, periodId, periodExists, restartVesting, accVestingPools, vestingPool)
+	k.SetAccountVestingPools(ctx, *accVestingPools)
+	k.EmitNewVestingPeriodFromVestingPool(ctx, owner, toAddr, vestingPoolName, amount, periodId, restartVesting)
+	k.SetAccountVestingPoolsAndVestingAccountTrace(ctx, toAddr, periodId, periodExists, vestingPool)
+
 	k.Logger(ctx).Debug("send to new vesting account ret", "error", err, "accVestingPools", accVestingPools)
 	return nil
 }
 
-func (k Keeper) SetAccountVestingPoolsAndVestingAccountTrace(ctx sdk.Context, owner string, toAddr string, amount math.Int, periodId uint64, periodExists bool,
-	restartVesting bool, accVestingPools *types.AccountVestingPools, vestingPool *types.VestingPool) {
-	k.SetAccountVestingPools(ctx, *accVestingPools)
+func (k Keeper) EmitNewVestingPeriodFromVestingPool(ctx sdk.Context, owner string, toAddress string, vestingPoolName string, amount math.Int, periodId uint64, restartVesting bool) {
+	if err := ctx.EventManager().EmitTypedEvent(&types.NewVestingPeriodFromVestingPool{
+		Owner:           owner,
+		Address:         toAddress,
+		VestingPoolName: vestingPoolName,
+		Amount:          amount.String() + k.Denom(ctx),
+		RestartVesting:  strconv.FormatBool(restartVesting),
+		PeriodId:        periodId,
+	}); err != nil {
+		k.Logger(ctx).Error("new vesting period from vesting pool emit event error", "error", err.Error())
+	}
+}
+
+func (k Keeper) SetAccountVestingPoolsAndVestingAccountTrace(ctx sdk.Context, toAddr string, periodId uint64, periodExists bool, vestingPool *types.VestingPool) {
+
 	vestingAccountTrace, found := k.GetVestingAccountTrace(ctx, toAddr)
 
 	if !found {
@@ -271,17 +289,6 @@ func (k Keeper) SetAccountVestingPoolsAndVestingAccountTrace(ctx sdk.Context, ow
 	} else if vestingPool.GenesisPool && periodExists {
 		vestingAccountTrace.PeriodsToTrace = append(vestingAccountTrace.PeriodsToTrace, periodId)
 		k.SetVestingAccountTrace(ctx, vestingAccountTrace)
-	}
-
-	eventErr := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccountFromVestingPool{ // TODO: update event
-		Owner:           owner,
-		Address:         toAddr,
-		VestingPoolName: vestingPool.Name,
-		Amount:          amount.String() + k.Denom(ctx),
-		RestartVesting:  strconv.FormatBool(restartVesting),
-	})
-	if eventErr != nil {
-		k.Logger(ctx).Error("new vesting account from vesting pool emit event error", "error", eventErr.Error())
 	}
 }
 

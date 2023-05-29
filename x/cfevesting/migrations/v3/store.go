@@ -43,13 +43,12 @@ func setNewAccountVestingPools(store sdk.KVStore, cdc codec.BinaryCodec, oldAccP
 				InitiallyLocked: oldPool.InitiallyLocked,
 				Withdrawn:       oldPool.Withdrawn,
 				Sent:            oldPool.Sent,
-				GenesisPool:     false,
 			}
 			newPools = append(newPools, &newPool)
 		}
 
 		newAccPool := AccountVestingPools{
-			Owner:        oldAccPool.Owner,
+			Owner:        oldAccPool.Address,
 			VestingPools: newPools,
 		}
 		av, err := cdc.Marshal(&newAccPool)

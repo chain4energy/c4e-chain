@@ -37,9 +37,9 @@ type Manager struct {
 
 // NewManager creates a new Manager instance and initializes
 // all Docker specific utilies. Returns an error if initialiation fails.
-func NewManager(isUpgrade bool, isDebugLogEnabled bool, signMode string) (docker *Manager, err error) {
+func NewManager(startUpgrade, migrationChainging bool, isDebugLogEnabled bool, signMode string) (docker *Manager, err error) {
 	docker = &Manager{
-		ImageConfig:       NewImageConfig(isUpgrade),
+		ImageConfig:       NewImageConfig(startUpgrade, migrationChainging),
 		resources:         make(map[string]*dockertest.Resource),
 		isDebugLogEnabled: isDebugLogEnabled,
 		signMode:          signMode,

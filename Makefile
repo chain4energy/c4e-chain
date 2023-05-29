@@ -154,7 +154,7 @@ E2E_UPGRADE_VERSION="v2.0.0"
 E2E_SCRIPT_NAME=chain
 C4E_E2E_SIGN_MODE = "direct"
 
-test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim test-e2e-migration
+test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim test-e2e-migration test-e2e-migration-chaining
 
 run-e2e-chain: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions -count=1
@@ -173,6 +173,9 @@ test-e2e-params-change: e2e-setup
 
 test-e2e-migration: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
+
+test-e2e-migration-chaining: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationChainingSuite"
 
 SPECIFIC_TEST_NAME=TestMinterAndDistributorCustom
 SPECIFIC_TESTING_SUITE_NAME=TestParamsChangeSuite
@@ -202,8 +205,8 @@ docker-build-v1.2.0-chain:
 	@docker build -t chain4energy-old-dev:v1.2.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.2.0_Dockerfile .
 
 docker-build-v1.1.0-chain:
-	@docker build -t chain4energy-old-chain-init:v1.2.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.1.0_init_Dockerfile .
-	@docker build -t chain4energy-old-dev:v1.2.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.1.0_Dockerfile .
+	@docker build -t chain4energy-old-chain-init:v1.1.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.1.0_init_Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.1.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.1.0_Dockerfile .
 
 docker-build-all: docker-build-old-chain docker-build-debug
 

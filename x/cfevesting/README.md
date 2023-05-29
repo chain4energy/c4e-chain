@@ -357,11 +357,11 @@ Chain4Energy distributor module emits the following events:
 | WithdrawAvailable                | vesting\_pool\_name | {source\_vesting_pool_name}                                                    |
 | WithdrawAvailable                | amount              | {withdrawn_amount}                                                             |
 | NewVestingAccount                | address             | {new\_vesting\_account\_address}                                               |
-| NewVestingAccountFromVestingPool | owner               | {owner_address}                                                                |
-| NewVestingAccountFromVestingPool | address             | {new\_vesting\_account\_address}                                               |
-| NewVestingAccountFromVestingPool | vesting\_pool\_name | {source\_vesting_pool_name}                                                    |
-| NewVestingAccountFromVestingPool | amount              | {amount_to_send_to_new\_vesting\_account}                                      |
-| NewVestingAccountFromVestingPool | restart_vesting     | {restart_vesting} see  **[Send To Vesting Account](#send-to-vesting-account)** |
+| NewVestingPeriodFromVestingPool | owner               | {owner_address}                                                                |
+| NewVestingPeriodFromVestingPool | address             | {new\_vesting\_account\_address}                                               |
+| NewVestingPeriodFromVestingPool | vesting\_pool\_name | {source\_vesting_pool_name}                                                    |
+| NewVestingPeriodFromVestingPool | amount              | {amount_to_send_to_new\_vesting\_account}                                      |
+| NewVestingPeriodFromVestingPool | restart_vesting     | {restart_vesting} see  **[Send To Vesting Account](#send-to-vesting-account)** |
 | message                          | action              | /chain4energy.c4echain.cfevesting.MsgSendToVestingAccount                      |
 | message                          | sender              | {sender_address}                                                               |
 | transfer                         | recipient           | {module_account}                                                               |

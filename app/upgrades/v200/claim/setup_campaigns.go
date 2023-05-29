@@ -22,6 +22,8 @@ const (
 )
 
 func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	ctx.Logger().Info("setup campaigns")
+
 	airdropLockupPeriod := 183 * 24 * time.Hour
 	airdropVestingPeriod := 91 * 24 * time.Hour
 	teamdropLockupPeriod := 730 * 24 * time.Hour
@@ -121,6 +123,11 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 3, gleamdropEntries); err != nil {
 		return err
 	}
+
+	ctx.Logger().Info("setup campaigns finished",
+		"campaignsLen", len(appKeepers.GetC4eClaimKeeper().GetAllCampaigns(ctx)),
+		"userEntriesLen", len(appKeepers.GetC4eClaimKeeper().GetAllUsersEntries(ctx)),
+	)
 
 	return nil
 }

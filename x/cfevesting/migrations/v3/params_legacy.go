@@ -1,4 +1,4 @@
-package types
+package v3
 
 import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -18,6 +18,24 @@ func ParamKeyTable() paramtypes.KeyTable {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyDenom, &p.Denom, validateDenom),
+		paramtypes.NewParamSetPair(KeyDenom, &p.Denom, func(v interface{}) error {
+			return nil
+		}),
 	}
+}
+
+var (
+	DefaultDenom string = "uc4e"
+) //
+
+// NewParams creates a new Params instance
+func NewParams(denom string) Params {
+	return Params{Denom: denom}
+}
+
+// DefaultParams returns a default set of parameters
+func DefaultParams() Params {
+	return NewParams(
+		DefaultDenom,
+	)
 }

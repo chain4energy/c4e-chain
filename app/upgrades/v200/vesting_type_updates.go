@@ -15,6 +15,8 @@ const (
 )
 
 func ModifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	ctx.Logger().Info("modifying and adding new vesting types")
+
 	fairdropVestingType := cfevestingtypes.VestingType{
 		Name:          FairdropTypeName,
 		Free:          sdk.MustNewDecFromStr("0.10"),

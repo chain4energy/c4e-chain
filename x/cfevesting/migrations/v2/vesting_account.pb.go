@@ -75,7 +75,7 @@ func (m *VestingAccount) GetAddress() string {
 }
 
 func init() {
-	proto.RegisterType((*VestingAccount)(nil), "chain4energy.c4echain.cfevesting.VestingAccount")
+	proto.RegisterType((*VestingAccount)(nil), "chain4energy.c4echain.cfevesting.v2.VestingAccount")
 }
 
 func init() { proto.RegisterFile("cfevesting/vesting_account.proto", fileDescriptor_6594fb30616f103f) }

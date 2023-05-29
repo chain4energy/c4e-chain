@@ -99,7 +99,7 @@ func (m *VestingAccountTrace) GetFromGenesisAccount() bool {
 }
 
 func init() {
-	proto.RegisterType((*VestingAccountTrace)(nil), "chain4energy.c4echain.cfevesting.VestingAccountTrace")
+	proto.RegisterType((*VestingAccountTrace)(nil), "chain4energy.c4echain.cfevesting.v3.VestingAccountTrace")
 }
 
 func init() {

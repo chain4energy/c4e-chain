@@ -13,15 +13,15 @@ import (
 )
 
 type mockSubspace struct {
-	ps types.Params
+	ps v3.Params
 }
 
-func newMockSubspace(ps types.Params) mockSubspace {
+func newMockSubspace(ps v3.Params) mockSubspace {
 	return mockSubspace{ps: ps}
 }
 
 func (ms mockSubspace) GetParamSet(ctx sdk.Context, ps exported.ParamSet) {
-	*ps.(*types.Params) = ms.ps
+	*ps.(*v3.Params) = ms.ps
 }
 
 func TestMigrate(t *testing.T) {
@@ -33,10 +33,10 @@ func TestMigrate(t *testing.T) {
 	ctx := testutil.DefaultContext(storeKey, tKey)
 	store := ctx.KVStore(storeKey)
 
-	legacySubspace := newMockSubspace(types.DefaultParams())
+	legacySubspace := newMockSubspace(v3.DefaultParams())
 	require.NoError(t, v3.MigrateParams(ctx, storeKey, legacySubspace, cdc))
 
-	var res types.Params
+	var res v3.Params
 	bz := store.Get(types.ParamsKey)
 	require.NoError(t, cdc.Unmarshal(bz, &res))
 	require.Equal(t, legacySubspace.ps, res)
