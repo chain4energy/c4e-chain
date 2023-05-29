@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetParams(t *testing.T) {
-	k, ctx := testkeeper.EnergychainKeeper(t)
+	k, ctx := testkeeper.CfefingerprintKeeper(t)
 	params := types.DefaultParams()
 
 	k.SetParams(ctx, params)

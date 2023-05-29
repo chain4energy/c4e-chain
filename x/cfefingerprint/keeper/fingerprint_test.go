@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetPayloadLink(t *testing.T) {
-	k, ctx := testkeeper.EnergychainKeeper(t)
+	k, ctx := testkeeper.CfefingerprintKeeper(t)
 
 	referenceID := "4e0f41db62899e37307c959e7cc2de62def852609428667d3682609c7dd10582"
 
@@ -19,7 +19,7 @@ func TestGetPayloadLink(t *testing.T) {
 }
 
 func TestAddPayloadLink(t *testing.T) {
-	k, ctx := testkeeper.EnergychainKeeper(t)
+	k, ctx := testkeeper.CfefingerprintKeeper(t)
 
 	referenceID := "4e0f41db62899e37307c959e7cc2de62def852609428667d3682609c7dd10582"
 	payloadHash := "YWFhYWZmZjQ0cnJmZmZkc2RlZGVmZXRldAo="
@@ -40,7 +40,7 @@ func TestAddPayloadLink(t *testing.T) {
 }
 
 func TestVerifyPayloadLink(t *testing.T) {
-	k, ctx := testkeeper.EnergychainKeeper(t)
+	k, ctx := testkeeper.CfefingerprintKeeper(t)
 
 	referenceID := "4e0f41db62899e37307c959e7cc2de62def852609428667d3682609c7dd10582"
 	payloadHash := "YWFhYWZmZjQ0cnJmZmZkc2RlZGVmZXRldAo="
