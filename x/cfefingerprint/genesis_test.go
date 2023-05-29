@@ -17,7 +17,7 @@ func TestGenesis(t *testing.T) {
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	k, ctx := keepertest.EnergychainKeeper(t)
+	k, ctx := keepertest.CfefingerprintKeeper(t)
 	energychain.InitGenesis(ctx, *k, genesisState)
 	got := energychain.ExportGenesis(ctx, *k)
 	require.NotNil(t, got)

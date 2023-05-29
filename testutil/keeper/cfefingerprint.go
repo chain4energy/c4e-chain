@@ -26,7 +26,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 )
 
-func EnergychainKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+func CfefingerprintKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
