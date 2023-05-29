@@ -201,12 +201,12 @@ docker-build-debug:
 	@docker build -t chain4energy:debug --build-arg BASE_IMG_TAG=debug -f dockerfiles/Dockerfile .
 
 docker-build-v1.2.0-chain:
-	@docker build -t chain4energy-old-chain-init:v1.2.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.2.0_init_Dockerfile .
-	@docker build -t chain4energy-old-dev:v1.2.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.2.0_Dockerfile .
+	@docker build -t chain4energy-old-chain-init:v1.2.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.2.0.init.Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.2.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.2.0.Dockerfile .
 
 docker-build-v1.1.0-chain:
-	@docker build -t chain4energy-old-chain-init:v1.1.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.1.0_init_Dockerfile .
-	@docker build -t chain4energy-old-dev:v1.1.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.1.0_Dockerfile .
+	@docker build -t chain4energy-old-chain-init:v1.1.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.1.0.init_Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.1.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.1.0.Dockerfile .
 
 docker-build-all: docker-build-old-chain docker-build-debug
 

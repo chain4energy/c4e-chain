@@ -69,7 +69,7 @@ func (m *Params) GetDenom() string {
 }
 
 func init() {
-	proto.RegisterType((*Params)(nil), "chain4energy.c4echain.cfevesting.Params")
+	proto.RegisterType((*Params)(nil), "chain4energy.c4echain.cfevesting.v3.Params")
 }
 
 // String implements the Stringer interface.

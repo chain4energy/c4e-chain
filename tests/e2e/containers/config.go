@@ -1,5 +1,7 @@
 package containers
 
+import "fmt"
+
 // ImageConfig contains all images and their respective tags
 // needed for running e2e tests.
 type ImageConfig struct {
@@ -58,6 +60,7 @@ func NewImageConfig(startUpgrade bool, migrationChaining bool) ImageConfig {
 	// If migration chain is used, we need to set the repo/tag for migration chain initialization to the penultimate version.
 	// This is because the migration chain is initialized with the penultimate version and then upgraded to the current version
 	if migrationChaining {
+		fmt.Println("MIGRATION CHAINING ON!")
 		config.C4eRepository = penultimateVersionC4eRepository
 		config.C4eTag = penultimateVersionC4eTag
 		config.InitRepository = penultimateVersionInitRepository
