@@ -50,14 +50,11 @@ func (k msgServer) CreateReferencePayloadLink(goCtx context.Context, msg *types.
 
 	// Check if a Payload Link was already stored at the given key
 	if !(k.CheckIfPayloadLinkExists(ctx, referenceKey)) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "data was found at the given key, cannot overwrite present payloadlinks")
+		return nil, sdkerrors.Wrap(types.ErrAlreadyExists, "data was found at the given key, cannot overwrite present payloadlinks")
 	}
 
 	// store payload link
-	err = k.AppendPayloadLink(ctx, referenceKey, referenceValue)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to store payload link")
-	}
+	k.AppendPayloadLink(ctx, referenceKey, referenceValue)
 
 	return &types.MsgCreateReferencePayloadLinkResponse{ReferenceId: referenceID}, nil
 }

@@ -28,10 +28,7 @@ func TestAddPayloadLink(t *testing.T) {
 	referenceValue := util.CalculateHash(util.HashConcat(referenceID, payloadHash))
 
 	// store payload link
-	err := k.AppendPayloadLink(ctx, referenceKey, referenceValue)
-	if err != nil {
-		require.Fail(t, "failed to store payload link")
-	}
+	k.AppendPayloadLink(ctx, referenceKey, referenceValue)
 
 	// Check if a Payload Link was stored at the given key
 	result := k.CheckIfPayloadLinkExists(ctx, referenceKey)
@@ -49,10 +46,7 @@ func TestVerifyPayloadLink(t *testing.T) {
 	referenceValue := util.CalculateHash(util.HashConcat(referenceID, payloadHash))
 
 	// store payload link
-	err := k.AppendPayloadLink(ctx, referenceKey, referenceValue)
-	if err != nil {
-		require.Fail(t, "failed to store payload link")
-	}
+	k.AppendPayloadLink(ctx, referenceKey, referenceValue)
 
 	// Check if a Payload Link was stored at the given key
 	result := k.CheckIfPayloadLinkExists(ctx, referenceKey)

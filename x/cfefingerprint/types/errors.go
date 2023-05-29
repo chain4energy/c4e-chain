@@ -3,10 +3,10 @@ package types
 // DONTCOVER
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"cosmossdk.io/errors"
 )
 
-// x/energychain module sentinel errors
+// x/cfefingerprint module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrAlreadyExists = errors.Register(ModuleName, 3, "entity already exists")
 )

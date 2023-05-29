@@ -32,13 +32,12 @@ func (k Keeper) GetAllPayloadLinks(ctx sdk.Context) (list []PayloadLink) {
 	return
 }
 
-func (k Keeper) AppendPayloadLink(ctx sdk.Context, referenceKey string, referenceValue string) error {
+func (k Keeper) AppendPayloadLink(ctx sdk.Context, referenceKey string, referenceValue string) {
 	// get the store
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.PayloadLinkKey))
 
 	store.Set(getStoreKeyBytes(referenceKey), []byte(referenceValue))
-
-	return nil
+	return
 }
 
 func (k Keeper) GetPayloadLink(ctx sdk.Context, referenceID string) (string, error) {
