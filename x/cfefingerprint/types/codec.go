@@ -8,16 +8,12 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateAccount{}, "energychain/CreateAccount", nil)
 	cdc.RegisterConcrete(&MsgCreateReferencePayloadLink{}, "energychain/CreateReferencePayloadLink", nil)
 	cdc.RegisterConcrete(&MsgCreateNewAccount{}, "energychain/CreateNewAccount", nil)
 	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCreateAccount{},
-	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateReferencePayloadLink{},
 	)

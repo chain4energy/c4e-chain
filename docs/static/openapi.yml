@@ -193,82 +193,6 @@ paths:
           format: uint64
       tags:
         - Query
-  /c4e/claim/v1beta1/campaigns:
-  /chain4energy/c4echain/cfefingerprint/get_account_info/{accAddressString}:
-    get:
-      summary: Queries a list of GetAccountInfo items.
-      operationId: Chain4EnergyC4EchainCfefingerprintGetAccountInfo
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              accAddress:
-                type: string
-              pubKey:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: accAddressString
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /chain4energy/c4echain/cfefingerprint/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCfefingerprintParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
   /chain4energy/c4echain/cfefingerprint/verify_reference_payload_link/{referenceId}/{payloadHash}:
     get:
       summary: Queries a list of VerifyReferencePayloadLink items.
@@ -48884,6 +48808,7 @@ definitions:
                   "value": "1.212s"
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
   chain4energy.c4echain.cfedistributor.Account:
     type: object
     properties:
@@ -48996,6 +48921,8 @@ definitions:
     properties:
       accountNumber:
         type: string
+=======
+>>>>>>> Unnecessary end-point and types removed.
   chain4energy.c4echain.cfefingerprint.MsgCreateNewAccountResponse:
     type: object
     properties:
@@ -49007,6 +48934,7 @@ definitions:
     properties:
       referenceId:
         type: string
+<<<<<<< HEAD
   chain4energy.c4echain.cfefingerprint.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -49202,6 +49130,8 @@ definitions:
       signatures required by gogoproto.
 =======
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+=======
+>>>>>>> Unnecessary end-point and types removed.
   chain4energy.c4echain.cfefingerprint.QueryVerifyReferencePayloadLinkResponse:
     type: object
     properties:

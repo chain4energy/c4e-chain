@@ -11,39 +11,13 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfefingerprint/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/chain4energy/c4echain/cfefingerprint/params";
-  }
-  // Queries a list of GetAccountInfo items.
-	rpc GetAccountInfo(QueryGetAccountInfoRequest) returns (QueryGetAccountInfoResponse) {
-		option (google.api.http).get = "/chain4energy/c4echain/cfefingerprint/get_account_info/{accAddressString}";
-	}
-
+  
 // Queries a list of VerifyReferencePayloadLink items.
 	rpc VerifyReferencePayloadLink(QueryVerifyReferencePayloadLinkRequest) returns (QueryVerifyReferencePayloadLinkResponse) {
 		option (google.api.http).get = "/chain4energy/c4echain/cfefingerprint/verify_reference_payload_link/{referenceId}/{payloadHash}";
 	}
 
 // this line is used by starport scaffolding # 2
-}
-
-// QueryParamsRequest is request type for the Query/Params RPC method.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is response type for the Query/Params RPC method.
-message QueryParamsResponse {
-  // params holds all the parameters of this module.
-  Params params = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryGetAccountInfoRequest {
-  string accAddressString = 1;
-}
-
-message QueryGetAccountInfoResponse {
-  string accAddress = 1;
-  string pubKey = 2;
 }
 
 message QueryVerifyReferencePayloadLinkRequest {

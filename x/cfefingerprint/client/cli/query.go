@@ -24,8 +24,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(CmdQueryParams())
-	cmd.AddCommand(CmdGetAccountInfo())
+	// cmd.AddCommand(CmdQueryParams())
+	// cmd.AddCommand(CmdGetAccountInfo())
 
 	cmd.AddCommand(CmdVerifyReferencePayloadLink())
 
