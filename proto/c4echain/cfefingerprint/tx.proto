@@ -7,20 +7,9 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfefingerprint/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc CreateAccount(MsgCreateAccount) returns (MsgCreateAccountResponse);
   rpc CreateReferencePayloadLink(MsgCreateReferencePayloadLink) returns (MsgCreateReferencePayloadLinkResponse);
   rpc CreateNewAccount(MsgCreateNewAccount) returns (MsgCreateNewAccountResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
-}
-
-message MsgCreateAccount {
-  string creator = 1;
-  string accAddressString = 2;
-  string pubKeyString = 3;
-}
-
-message MsgCreateAccountResponse {
-  string accountNumber = 1;
 }
 
 message MsgCreateReferencePayloadLink {

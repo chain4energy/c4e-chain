@@ -70,17 +70,6 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgCreateAccount int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateAccount, &weightMsgCreateAccount, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateAccount = defaultWeightMsgCreateAccount
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateAccount,
-		energychainsimulation.SimulateMsgCreateAccount(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
 	var weightMsgCreateReferencePayloadLink int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateReferencePayloadLink, &weightMsgCreateReferencePayloadLink, nil,
 		func(_ *rand.Rand) {

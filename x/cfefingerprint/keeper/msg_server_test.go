@@ -2,17 +2,12 @@ package keeper_test
 
 import (
 	"context"
-	"encoding/hex"
 	"strconv"
 	"testing"
 
 	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -29,48 +24,28 @@ func TestCreateAccount(t *testing.T) {
 	logger := log.TestingLogger()
 	creatorAccAddressString := "cosmos1lcx66v2yqna3tk2urfpjmyq6rdj9c8uey3pzel"
 
-	_, publicKeyFromTestUtil, accAddressFromUtil := testdata.KeyTestPubAddr()
-	_, publicKeyFromTestUtil2, accAddressFromUtil2 := testdata.KeyTestPubAddr()
+	_, _, accAddressFromUtil := testdata.KeyTestPubAddr()
+	_, _, accAddressFromUtil2 := testdata.KeyTestPubAddr()
 
 	// create two accounts with two different account addresses
-	msg := types.NewMsgCreateAccount(creatorAccAddressString, accAddressFromUtil.String(), getPubKeyJSON(publicKeyFromTestUtil.String()))
-	msgCreateAccountResponse, err := msgServer.CreateAccount(ctx, msg)
+	msg := types.NewMsgCreateNewAccount(creatorAccAddressString, accAddressFromUtil.String())
+	msgCreateNewAccountResponse, err := msgServer.CreateNewAccount(ctx, msg)
 	if err != nil {
 		require.Fail(t, "test failed")
 	}
-	logger.Debug(msgCreateAccountResponse.GetAccountNumber())
+	logger.Debug(strconv.FormatUint(msgCreateNewAccountResponse.GetAccountNumber(), 10))
 
-	msg2 := types.NewMsgCreateAccount(creatorAccAddressString, accAddressFromUtil2.String(), getPubKeyJSON(publicKeyFromTestUtil2.String()))
-	msgCreateAccountResponse2, err := msgServer.CreateAccount(ctx, msg2)
+	msg2 := types.NewMsgCreateNewAccount(creatorAccAddressString, accAddressFromUtil2.String())
+	msgCreateAccountResponse2, err := msgServer.CreateNewAccount(ctx, msg2)
 	if err != nil {
 		require.Fail(t, "test failed")
 	}
-	logger.Debug(msgCreateAccountResponse2.GetAccountNumber())
+	logger.Debug(strconv.FormatUint(msgCreateAccountResponse2.GetAccountNumber(), 10))
 
 	// check if we get different and sequential account numbers
-	accountNumber1, err := strconv.Atoi(msgCreateAccountResponse.GetAccountNumber())
-	if err != nil {
-		require.Fail(t, "test failed")
-	}
-	accountNumber2, err := strconv.Atoi(msgCreateAccountResponse2.GetAccountNumber())
-	if err != nil {
-		require.Fail(t, "test failed")
-	}
+	accountNumber1 := msgCreateNewAccountResponse.GetAccountNumber()
+	accountNumber2 := msgCreateAccountResponse2.GetAccountNumber()
 
 	result := (accountNumber1 + 1) == accountNumber2
 	require.EqualValues(t, result, true)
-}
-
-// getPubKeyJSON formats public key using Protobufs JSON
-func getPubKeyJSON(pk string) string {
-
-	pubKey := getPublicKeyObjectFromString(pk)
-	apk, _ := codectypes.NewAnyWithValue(pubKey)
-	bz, _ := codec.ProtoMarshalJSON(apk, nil)
-	return string(bz)
-}
-
-func getPublicKeyObjectFromString(pk string) cryptotypes.PubKey {
-	pubKeyBytes, _ := hex.DecodeString(pk)
-	return &secp256k1.PubKey{Key: pubKeyBytes}
 }
