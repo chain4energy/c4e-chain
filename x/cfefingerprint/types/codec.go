@@ -8,8 +8,8 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateReferencePayloadLink{}, "energychain/CreateReferencePayloadLink", nil)
-	cdc.RegisterConcrete(&MsgCreateNewAccount{}, "energychain/CreateNewAccount", nil)
+	cdc.RegisterConcrete(&MsgCreateReferencePayloadLink{}, "cfefingerprint/CreateReferencePayloadLink", nil)
+	cdc.RegisterConcrete(&MsgCreateNewAccount{}, "cfefingerprint/CreateNewAccount", nil)
 	// this line is used by starport scaffolding # 2
 }
 
