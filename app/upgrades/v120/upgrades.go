@@ -3,7 +3,6 @@ package v120
 import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/app/upgrades"
-	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
 	cfedistributorv2migration "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfeminterv2migration "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
@@ -25,7 +24,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	bpm upgrades.BaseAppParamManager,
-	appKeepers cfeupgradetypes.AppKeepers,
+	appKeepers upgrades.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		mod, found := mm.Modules[icatypes.ModuleName]

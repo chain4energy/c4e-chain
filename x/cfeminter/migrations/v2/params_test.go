@@ -124,13 +124,10 @@ func MigrateParamsV100ToV1(
 		switch oldMinterPeriod.Type {
 		case "TIME_LINEAR_MINTER":
 			require.EqualValues(t, newMinters[i].Type, v2.LinearMintingType)
-			break
 		case "PERIODIC_REDUCTION_MINTER":
 			require.EqualValues(t, newMinters[i].Type, v2.ExponentialStepMintingType)
-			break
 		case "NO_MINTING":
 			require.EqualValues(t, newMinters[i].Type, v2.NoMintingType)
-			break
 		}
 
 		if oldMinterPeriod.TimeLinearMinter == nil {

@@ -3,7 +3,7 @@ package cli
 import (
 	"encoding/json"
 	claimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
-	"io/ioutil"
+	"os"
 )
 
 func parseClaimEntries(campaignId uint64, claimEntriesFile string) ([]*claimtypes.ClaimRecord, error) {
@@ -13,7 +13,7 @@ func parseClaimEntries(campaignId uint64, claimEntriesFile string) ([]*claimtype
 		return claimEntries, nil
 	}
 
-	contents, err := ioutil.ReadFile(claimEntriesFile)
+	contents, err := os.ReadFile(claimEntriesFile)
 	if err != nil {
 		return nil, err
 	}

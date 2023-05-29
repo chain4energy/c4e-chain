@@ -244,7 +244,7 @@ func (c *Campaign) ValidateMissionClaimStartDate(claimStartDate *time.Time) erro
 }
 
 func (c *Campaign) ValidateRemovableClaimRecords() error {
-	if c.Enabled == true {
+	if c.Enabled {
 		if !c.RemovableClaimRecords {
 			return errors.Wrap(sdkerrors.ErrInvalidType, "campaign must have RemovableClaimRecords flag set to true to be able to delete its entries")
 		}

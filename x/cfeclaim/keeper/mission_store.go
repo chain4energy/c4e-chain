@@ -111,8 +111,6 @@ func (k Keeper) RemoveAllMissionForCampaign(ctx sdk.Context, campaignId uint64) 
 			))
 		}
 	}
-
-	return
 }
 
 func (k Keeper) AppendNewMission(

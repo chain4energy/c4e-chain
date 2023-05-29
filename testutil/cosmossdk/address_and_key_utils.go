@@ -2,9 +2,12 @@ package cosmossdk
 
 import (
 	"bytes"
+	"cosmossdk.io/errors"
 	"encoding/hex"
 	"fmt"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"math/rand"
 	"strconv"
 	"strings"
@@ -13,7 +16,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // CreateTestPubKeys returns a total of numPubKeys public keys in ascending order.
@@ -40,7 +42,7 @@ func NewPubKeyFromHex(pk string) (res cryptotypes.PubKey) {
 		panic(err)
 	}
 	if len(pkBytes) != ed25519.PubKeySize {
-		panic(errors.Wrap(errors.ErrInvalidPubKey, "invalid pubkey size"))
+		panic(errors.Wrap(sdkerrors.ErrInvalidPubKey, "invalid pubkey size"))
 	}
 	return &ed25519.PubKey{Key: pkBytes}
 }

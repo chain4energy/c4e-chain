@@ -145,6 +145,7 @@ func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context
 
 func (h *C4eVestingUtils) AddReservationToVestingPool(ctx sdk.Context, address sdk.AccAddress, vestingPoolName string, reservationId uint64, amount math.Int) {
 	_, vestingPoolBefore, found := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, address.String(), vestingPoolName)
+	require.True(h.t, found)
 	reservationBefore := vestingPoolBefore.GetReservation(reservationId)
 	err := h.helperCfevestingKeeper.AddVestingPoolReservation(ctx, address.String(), vestingPoolName, reservationId, amount)
 	require.NoError(h.t, err)
@@ -160,6 +161,7 @@ func (h *C4eVestingUtils) AddReservationToVestingPool(ctx sdk.Context, address s
 
 func (h *C4eVestingUtils) RemoveVestingPoolReservation(ctx sdk.Context, address sdk.AccAddress, vestingPoolName string, reservationId uint64, amount math.Int) {
 	_, vestingPoolBefore, found := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, address.String(), vestingPoolName)
+	require.True(h.t, found)
 	reservationBefore := vestingPoolBefore.GetReservation(reservationId)
 	err := h.helperCfevestingKeeper.RemoveVestingPoolReservation(ctx, address.String(), vestingPoolName, reservationId, amount)
 	require.NoError(h.t, err)

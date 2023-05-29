@@ -25,7 +25,7 @@ func findBurnState(states *[]types.State) int {
 
 func findAccountState(states *[]types.State, account *types.Account) int {
 	for pos, state := range *states {
-		if state.Account.Id == account.Id && state.Account.Id != "" && &state.Account.Id != nil {
+		if state.Account.Id == account.Id && state.Account.Id != "" {
 			return pos
 		} else if state.Account.Id == account.Id && state.Account.Id == "" {
 			return pos

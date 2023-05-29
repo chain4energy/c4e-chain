@@ -30,7 +30,7 @@ func setNewSubDistributorStates(store sdk.KVStore, cdc codec.BinaryCodec, oldSta
 
 	for _, oldState := range oldStates {
 		var newAccount *Account
-		if oldState.Burn == true {
+		if oldState.Burn {
 			newAccount = nil
 		} else {
 			newAccount = &Account{

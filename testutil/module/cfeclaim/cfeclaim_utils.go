@@ -246,7 +246,7 @@ func (m *C4eClaimUtils) ValidateInvariants(ctx sdk.Context) {
 
 func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, expectedAmount int64) {
 	acc := h.helperAccountKeeper.GetAccount(ctx, claimer)
-	claimerAccountBefore, ok := acc.(*cfevestingtypes.PeriodicContinuousVestingAccount)
+	claimerAccountBefore, _ := acc.(*cfevestingtypes.PeriodicContinuousVestingAccount)
 	accExisted := acc != nil
 	if !accExisted {
 		claimerAccountBefore = nil
@@ -669,10 +669,8 @@ func (h *C4eClaimUtils) RemoveCampaign(ctx sdk.Context, owner string, campaignId
 	ownerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, ownerAccAddress)
 
 	require.NoError(h.t, h.helpeCfeclaimkeeper.RemoveCampaign(ctx, owner, campaignId))
-	campaignAfter, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	_, found := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.False(h.t, found)
-	require.True(h.t, campaignAfter.CampaignCurrentAmount.IsEqual(sdk.NewCoins()))
 
 	if campaignBefore.FeegrantAmount.IsPositive() {
 		feegrantAmountLef := h.BankUtils.GetAccountAllBalances(ctx, feegrantAccountAddress)

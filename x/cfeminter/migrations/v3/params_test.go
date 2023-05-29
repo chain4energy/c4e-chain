@@ -78,6 +78,7 @@ func MigrateParamsV2ToV3(
 	store := newStore(ctx, testUtil)
 	oldMinterConfigRaw := store.Get(v2.KeyMinterConfig)
 	err := codec.NewLegacyAmino().UnmarshalJSON(oldMinterConfigRaw, &oldMinterConfig)
+	require.NoError(t, err)
 
 	var oldMintDenom string
 	oldMintDenomRaw := store.Get(v2.KeyMintDenom)

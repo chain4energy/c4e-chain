@@ -45,13 +45,10 @@ func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 		switch oldMinter.Type {
 		case "TIME_LINEAR_MINTER":
 			newType = "LINEAR_MINTING"
-			break
 		case "PERIODIC_REDUCTION_MINTER":
 			newType = "EXPONENTIAL_STEP_MINTING"
-			break
 		case "NO_MINTING":
 			newType = "NO_MINTING"
-			break
 		default:
 			return fmt.Errorf("wrong minting period type")
 		}
