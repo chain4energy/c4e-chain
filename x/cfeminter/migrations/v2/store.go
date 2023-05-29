@@ -10,6 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+var MinterStateHistoryKeyPrefix = []byte{0x03}
+
 func getOldMinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMinterState v1.MinterState, err error) {
 	b := store.Get(v1.MinterStateKey)
 	if b == nil {

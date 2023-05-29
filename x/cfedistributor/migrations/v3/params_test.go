@@ -2,7 +2,7 @@ package v3_test
 
 import (
 	"github.com/chain4energy/c4e-chain/app"
-	"github.com/chain4energy/c4e-chain/app/exported"
+	"github.com/chain4energy/c4e-chain/types/subspace"
 	v2 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
 	v3 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v3"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
@@ -21,7 +21,7 @@ func newMockSubspace(ps v2.Params) mockSubspace {
 	return mockSubspace{ps: ps}
 }
 
-func (ms mockSubspace) GetParamSet(ctx sdk.Context, ps exported.ParamSet) {
+func (ms mockSubspace) GetParamSet(ctx sdk.Context, ps subspace.ParamSet) {
 	*ps.(*v2.Params) = ms.ps
 }
 
