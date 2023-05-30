@@ -11,6 +11,7 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/util"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
@@ -18,6 +19,8 @@ import (
 )
 
 func (k msgServer) CreateReferencePayloadLink(goCtx context.Context, msg *types.MsgCreateReferencePayloadLink) (*types.MsgCreateReferencePayloadLinkResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "create reference payloadLink")
+
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// TODO: Handling the message
