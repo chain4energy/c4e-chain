@@ -17,7 +17,7 @@ service Msg {
   rpc Claim(MsgClaim) returns (MsgClaimResponse);
   rpc InitialClaim(MsgInitialClaim) returns (MsgInitialClaimResponse);
   rpc CreateCampaign(MsgCreateCampaign) returns (MsgCreateCampaignResponse);
-  rpc AddMissionToCampaign(MsgAddMissionToCampaign) returns (MsgAddMissionToCampaignResponse);
+  rpc AddMission(MsgAddMission) returns (MsgAddMissionResponse);
   rpc AddClaimRecords(MsgAddClaimRecords) returns (MsgAddClaimRecordsResponse);
   rpc DeleteClaimRecord(MsgDeleteClaimRecord) returns (MsgDeleteClaimRecordResponse);
   rpc CloseCampaign(MsgCloseCampaign) returns (MsgCloseCampaignResponse);
@@ -93,7 +93,7 @@ message MsgCreateCampaignResponse {
   uint64 campaign_id = 1;
 }
 
-message MsgAddMissionToCampaign {
+message MsgAddMission {
   string owner = 1;
   uint64 campaignId = 2;
   string name = 3;
@@ -109,7 +109,7 @@ message MsgAddMissionToCampaign {
   ];
 }
 
-message MsgAddMissionToCampaignResponse {
+message MsgAddMissionResponse {
   uint64 mission_id = 1;
 }
 

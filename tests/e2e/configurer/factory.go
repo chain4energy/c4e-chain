@@ -112,7 +112,7 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, signMode string, up
 
 	if isIBCEnabled && upgradeSettings.IsEnabled {
 		// skip none - configure two chains via Docker
-		// to utilize the older version of osmosis to upgrade from
+		// to utilize the older version of chain4energy to upgrade from
 		return NewUpgradeConfigurer(t,
 			[]*chain.Config{
 				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA, nil),

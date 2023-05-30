@@ -5,15 +5,35 @@ import (
 	"github.com/chain4energy/c4e-chain/types/subspace"
 	v3 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	"testing"
-
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 type mockSubspace struct {
 	ps v3.Params
+}
+
+func (ms mockSubspace) HasKeyTable() bool {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (ms mockSubspace) WithKeyTable(table paramtypes.KeyTable) paramtypes.Subspace {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (ms mockSubspace) GetRaw(ctx sdk.Context, key []byte) []byte {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (ms mockSubspace) Set(ctx sdk.Context, key []byte, value interface{}) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func newMockSubspace(ps v3.Params) mockSubspace {

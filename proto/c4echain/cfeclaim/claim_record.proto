@@ -21,3 +21,12 @@ message ClaimRecord {
   repeated uint64 completedMissions = 4;
   repeated uint64 claimedMissions = 5;
 }
+
+message ClaimRecordEntry {
+  uint64 campaign_id = 1;
+  string user_entry_address = 2;
+  repeated cosmos.base.v1beta1.Coin amount = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}

@@ -23,6 +23,9 @@ var ParamsKey = []byte{0x00}
 func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace subspace.Subspace, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	var oldParams v2.Params
+	if !legacySubspace.HasKeyTable() {
+		legacySubspace.WithKeyTable(v2.ParamKeyTable())
+	}
 	legacySubspace.GetParamSet(ctx, &oldParams)
 
 	var newParams Params

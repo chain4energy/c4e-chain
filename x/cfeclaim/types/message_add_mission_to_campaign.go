@@ -10,10 +10,10 @@ import (
 
 const TypeMsgAddMissionToAidropCampaign = "add_mission_to_aidrop_campaign"
 
-var _ sdk.Msg = &MsgAddMissionToCampaign{}
+var _ sdk.Msg = &MsgAddMission{}
 
-func NewMsgAddMissionToCampaign(owner string, campaignId uint64, name string, description string, missionType MissionType, weight *sdk.Dec, claimStartDate *time.Time) *MsgAddMissionToCampaign {
-	return &MsgAddMissionToCampaign{
+func NewMsgAddMission(owner string, campaignId uint64, name string, description string, missionType MissionType, weight *sdk.Dec, claimStartDate *time.Time) *MsgAddMission {
+	return &MsgAddMission{
 		Owner:          owner,
 		Name:           name,
 		Description:    description,
@@ -34,15 +34,15 @@ func NewInitialMission(campaignId uint64) *Mission {
 	}
 }
 
-func (msg *MsgAddMissionToCampaign) Route() string {
+func (msg *MsgAddMission) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgAddMissionToCampaign) Type() string {
+func (msg *MsgAddMission) Type() string {
 	return TypeMsgAddMissionToAidropCampaign
 }
 
-func (msg *MsgAddMissionToCampaign) GetSigners() []sdk.AccAddress {
+func (msg *MsgAddMission) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
@@ -50,19 +50,19 @@ func (msg *MsgAddMissionToCampaign) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgAddMissionToCampaign) GetSignBytes() []byte {
+func (msg *MsgAddMission) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgAddMissionToCampaign) ValidateBasic() error {
+func (msg *MsgAddMission) ValidateBasic() error {
 	if msg.Weight == nil {
 		return errors.Wrapf(c4eerrors.ErrParam, "weight cannot be nil")
 	}
-	return ValidateAddMissionToCampaign(msg.Owner, msg.Name, msg.Description, msg.MissionType, *msg.Weight)
+	return ValidateAddMission(msg.Owner, msg.Name, msg.Description, msg.MissionType, *msg.Weight)
 }
 
-func ValidateAddMissionToCampaign(owner string, name string, description string, missionType MissionType, weight sdk.Dec) error {
+func ValidateAddMission(owner string, name string, description string, missionType MissionType, weight sdk.Dec) error {
 	_, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)

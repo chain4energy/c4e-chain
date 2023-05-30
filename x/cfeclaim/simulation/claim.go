@@ -59,7 +59,7 @@ func SimulateMsgClaim(
 		campaigns := k.GetAllCampaigns(ctx)
 		campaignId := uint64(len(campaigns) - 1)
 		randomWeight := helpers.RandomDecAmount(r, sdk.NewDec(1))
-		addMissionToCampaignMsg := &types.MsgAddMissionToCampaign{
+		AddMissionMsg := &types.MsgAddMission{
 			Owner:          simAccount.Address.String(),
 			CampaignId:     campaignId,
 			Name:           helpers.RandStringOfLengthCustomSeed(r, 10),
@@ -69,10 +69,10 @@ func SimulateMsgClaim(
 			ClaimStartDate: nil,
 		}
 
-		_, err = msgServer.AddMissionToCampaign(msgServerCtx, addMissionToCampaignMsg)
+		_, err = msgServer.AddMission(msgServerCtx, AddMissionMsg)
 		if err != nil {
 			k.Logger(ctx).Error("SIMULATION: Add mission to campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, addMissionToCampaignMsg.Type(), ""), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, AddMissionMsg.Type(), ""), nil, nil
 		}
 
 		EnableCampaignMsg := &types.MsgEnableCampaign{

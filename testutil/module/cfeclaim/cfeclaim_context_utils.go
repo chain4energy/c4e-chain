@@ -38,12 +38,12 @@ func (h *ContextC4eClaimUtils) CreateCampaignError(owner string, campaign cfecla
 		campaign.VestingPeriod, campaign.VestingPoolName, errorMessage)
 }
 
-func (h *ContextC4eClaimUtils) AddMissionToCampaign(owner string, campaignId uint64, mission cfeclaimtypes.Mission) {
-	h.C4eClaimUtils.AddMissionToCampaign(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate)
+func (h *ContextC4eClaimUtils) AddMission(owner string, campaignId uint64, mission cfeclaimtypes.Mission) {
+	h.C4eClaimUtils.AddMission(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate)
 }
 
-func (h *ContextC4eClaimUtils) AddMissionToCampaignError(owner string, campaignId uint64, mission cfeclaimtypes.Mission, errorString string) {
-	h.C4eClaimUtils.AddMissionToCampaignError(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate, errorString)
+func (h *ContextC4eClaimUtils) AddMissionError(owner string, campaignId uint64, mission cfeclaimtypes.Mission, errorString string) {
+	h.C4eClaimUtils.AddMissionError(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate, errorString)
 }
 
 func (h *ContextC4eClaimUtils) EnableCampaign(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) {

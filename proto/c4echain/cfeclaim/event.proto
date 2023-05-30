@@ -37,7 +37,7 @@ message EnableCampaign {
     string campaignId = 2;
 }
 
-message AddMissionToCampaign {
+message AddMission {
     string id = 1;
     string owner = 2;
     string campaignId = 3;

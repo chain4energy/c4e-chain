@@ -25,7 +25,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		if err != nil {
 			panic(errors.Wrapf(err, "mission %s", mission.Name))
 		}
-		if _, err = k.ValidateAddMissionToCampaign(ctx, campaign.Owner, mission.CampaignId, mission.Name,
+		if _, err = k.ValidateAddMission(ctx, campaign.Owner, mission.CampaignId, mission.Name,
 			mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate); err != nil {
 			panic(err)
 		}

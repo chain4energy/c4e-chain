@@ -2,10 +2,10 @@ package v2
 
 import (
 	"fmt"
+	"github.com/chain4energy/c4e-chain/types/subspace"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"time"
 )
 
@@ -13,8 +13,13 @@ import (
 // The migration includes:
 // - Cfeminter params structure changed
 // - Remove ReductionPeriodLength from PeriodicReducstionMinter
-func MigrateParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
+func MigrateParams(ctx sdk.Context, paramStore subspace.Subspace) error {
 	var oldMinterConfig v1.Minter
+
+	if !paramStore.HasKeyTable() {
+		paramStore.WithKeyTable(v1.ParamKeyTable())
+	}
+
 	oldMinterConfigRaw := paramStore.GetRaw(ctx, v1.KeyMinter)
 	if err := codec.NewLegacyAmino().UnmarshalJSON(oldMinterConfigRaw, &oldMinterConfig); err != nil {
 		panic(err)

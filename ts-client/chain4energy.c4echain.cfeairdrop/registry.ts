@@ -7,7 +7,7 @@ import { MsgEditCampaign } from "./types/c4echain/cfeclaim/tx";
 import { MsgRemoveCampaign } from "./types/c4echain/cfeclaim/tx";
 import { MsgCloseCampaign } from "./types/c4echain/cfeclaim/tx";
 import { MsgAddClaimRecords } from "./types/c4echain/cfeclaim/tx";
-import { MsgAddMissionToCampaign } from "./types/c4echain/cfeclaim/tx";
+import { MsgAddMission } from "./types/c4echain/cfeclaim/tx";
 import { MsgEnableCampaign } from "./types/c4echain/cfeclaim/tx";
 
 const msgTypes: Array<[string, GeneratedType]>  = [
@@ -19,7 +19,7 @@ const msgTypes: Array<[string, GeneratedType]>  = [
     ["/chain4energy.c4echain.cfeclaim.MsgRemoveCampaign", MsgRemoveCampaign],
     ["/chain4energy.c4echain.cfeclaim.MsgCloseCampaign", MsgCloseCampaign],
     ["/chain4energy.c4echain.cfeclaim.MsgAddClaimRecords", MsgAddClaimRecords],
-    ["/chain4energy.c4echain.cfeclaim.MsgAddMissionToCampaign", MsgAddMissionToCampaign],
+    ["/chain4energy.c4echain.cfeclaim.MsgAddMission", MsgAddMission],
     ["/chain4energy.c4echain.cfeclaim.MsgEnableCampaign", MsgEnableCampaign],
     
 ];

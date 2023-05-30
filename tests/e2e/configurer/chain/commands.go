@@ -337,7 +337,7 @@ func (n *NodeConfig) AddUserEntriesToCampaign(campaignId, claimRecordsJsonFile, 
 	n.LogActionF("successfully added user entries to campaign %s", campaignId)
 }
 
-func (n *NodeConfig) AddMissionToCampaign(campaignId, name, description, missionType, weight, claimStartDate, from string) {
+func (n *NodeConfig) AddMission(campaignId, name, description, missionType, weight, claimStartDate, from string) {
 	n.LogActionF("add mission to campaign")
 	cmd := []string{"c4ed", "tx", "cfeclaim", "add-mission-to-campaign", campaignId, name, description, missionType, weight, claimStartDate, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)

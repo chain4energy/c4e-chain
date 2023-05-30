@@ -63,7 +63,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 
 	randMissionName := helpers.RandStringOfLength(10)
 	randMissionDescription := helpers.RandStringOfLength(10)
-	node.AddMissionToCampaign(strconv.Itoa(campaignId), randMissionName, randMissionDescription, types.MissionClaim.String(), "0.5", "", creatorWalletName)
+	node.AddMission(strconv.Itoa(campaignId), randMissionName, randMissionDescription, types.MissionClaim.String(), "0.5", "", creatorWalletName)
 
 	node.EnableCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
 
@@ -118,7 +118,7 @@ func (s *ClaimSetupSuite) TestDynamicCampaign() {
 
 	randMissionName := helpers.RandStringOfLength(10)
 	randMissionDescription := helpers.RandStringOfLength(10)
-	node.AddMissionToCampaign(strconv.Itoa(campaignId), randMissionName, randMissionDescription, types.MissionClaim.String(), "0.5", "", creatorWalletName)
+	node.AddMission(strconv.Itoa(campaignId), randMissionName, randMissionDescription, types.MissionClaim.String(), "0.5", "", creatorWalletName)
 
 	node.EnableCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
 
@@ -183,7 +183,7 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 
 	randMissionName := helpers.RandStringOfLength(10)
 	randMissionDescription := helpers.RandStringOfLength(10)
-	node.AddMissionToCampaign(strconv.Itoa(campaignId), randMissionName, randMissionDescription, types.MissionClaim.String(), "0.5", "", creatorWalletName)
+	node.AddMission(strconv.Itoa(campaignId), randMissionName, randMissionDescription, types.MissionClaim.String(), "0.5", "", creatorWalletName)
 
 	node.EnableCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
 

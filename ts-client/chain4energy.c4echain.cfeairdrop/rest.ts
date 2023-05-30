@@ -84,7 +84,7 @@ export enum CfeclaimMissionType {
 
 export type CfeclaimMsgAddClaimRecordsResponse = object;
 
-export type CfeclaimMsgAddMissionToCampaignResponse = object;
+export type CfeclaimMsgAddMissionResponse = object;
 
 export type CfeclaimMsgClaimResponse = object;
 

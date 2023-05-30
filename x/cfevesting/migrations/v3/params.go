@@ -2,6 +2,7 @@ package v3
 
 import (
 	"github.com/chain4energy/c4e-chain/types/subspace"
+	v2 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -15,6 +16,9 @@ import (
 func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace subspace.Subspace, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	var currParams Params
+	if !legacySubspace.HasKeyTable() {
+		legacySubspace.WithKeyTable(v2.ParamKeyTable())
+	}
 	legacySubspace.GetParamSet(ctx, &currParams)
 
 	bz, err := cdc.Marshal(&currParams)

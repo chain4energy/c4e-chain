@@ -48015,7 +48015,7 @@ definitions:
     default: MISSION_TYPE_UNSPECIFIED
   chain4energy.c4echain.cfeclaim.MsgAddClaimRecordsResponse:
     type: object
-  chain4energy.c4echain.cfeclaim.MsgAddMissionToCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgAddMissionResponse:
     type: object
     properties:
       mission_id:

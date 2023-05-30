@@ -548,8 +548,6 @@ func New(
 		appCodec,
 		keys[cfemintermoduletypes.StoreKey],
 		keys[cfemintermoduletypes.MemStoreKey],
-		app.GetSubspace(cfemintermoduletypes.ModuleName),
-
 		app.BankKeeper,
 		app.StakingKeeper,
 		cfedistributormoduletypes.DistributorMainAccount,

@@ -11,7 +11,7 @@ import (
 	"math/rand"
 )
 
-func SimulateMsgAddMissionToCampaign(
+func SimulateMsgAddMission(
 	k keeper.Keeper,
 	cfevestingKeeper cfevestingkeeper.Keeper,
 ) simtypes.Operation {
@@ -26,7 +26,7 @@ func SimulateMsgAddMissionToCampaign(
 
 		for i := int64(0); i < helpers.RandomInt(r, 3); i++ {
 			randomWeight := helpers.RandomDecAmount(r, sdk.NewDec(1))
-			addMissionToCampaignMsg := &types.MsgAddMissionToCampaign{
+			AddMissionMsg := &types.MsgAddMission{
 				Owner:          ownerAddress.String(),
 				CampaignId:     uint64(len(campaigns) - 1),
 				Name:           helpers.RandStringOfLengthCustomSeed(r, 10),
@@ -36,14 +36,14 @@ func SimulateMsgAddMissionToCampaign(
 				ClaimStartDate: nil,
 			}
 
-			_, err = msgServer.AddMissionToCampaign(msgServerCtx, addMissionToCampaignMsg)
+			_, err = msgServer.AddMission(msgServerCtx, AddMissionMsg)
 			if err != nil {
 				k.Logger(ctx).Error("SIMULATION: Add mission to campaign error", err.Error())
-				return simtypes.NoOpMsg(types.ModuleName, addMissionToCampaignMsg.Type(), ""), nil, nil
+				return simtypes.NoOpMsg(types.ModuleName, AddMissionMsg.Type(), ""), nil, nil
 			}
 		}
 
 		k.Logger(ctx).Debug("SIMULATION: Add mission to campaign campaign - added")
-		return simtypes.NewOperationMsg(&types.MsgAddMissionToCampaign{}, true, "Add mission to campaign completed", nil), nil, nil
+		return simtypes.NewOperationMsg(&types.MsgAddMission{}, true, "Add mission to campaign completed", nil), nil, nil
 	}
 }

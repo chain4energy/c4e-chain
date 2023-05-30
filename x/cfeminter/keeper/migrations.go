@@ -20,7 +20,7 @@ func NewMigrator(keeper Keeper, legacySubspace subspace.Subspace) Migrator {
 
 // Migrate1to2 migrates from version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	if err := v110cfeminter.MigrateParams(ctx, &m.keeper.paramstore); err != nil {
+	if err := v110cfeminter.MigrateParams(ctx, m.legacySubspace); err != nil {
 		return err
 	}
 

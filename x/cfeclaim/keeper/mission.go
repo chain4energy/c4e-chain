@@ -9,12 +9,12 @@ import (
 	"time"
 )
 
-func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType types.MissionType,
+func (k Keeper) AddMission(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType types.MissionType,
 	weight sdk.Dec, claimStartDate *time.Time) (*types.Mission, error) {
-	k.Logger(ctx).Debug("add mission to claim campaign", "owner", owner, "campaignId", campaignId, "name", name,
+	k.Logger(ctx).Debug("add mission to a campaign", "owner", owner, "campaignId", campaignId, "name", name,
 		"description", description, "missionType", missionType, "weight", weight)
 
-	campaign, err := k.ValidateAddMissionToCampaign(ctx, owner, campaignId, name, description, missionType, weight, claimStartDate)
+	campaign, err := k.ValidateAddMission(ctx, owner, campaignId, name, description, missionType, weight, claimStartDate)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 		eventClaimStartDate = claimStartDate.String()
 	}
 
-	event := &types.AddMissionToCampaign{
+	event := &types.AddMission{
 		Id:             strconv.FormatUint(mission.Id, 10),
 		Owner:          owner,
 		CampaignId:     strconv.FormatUint(campaignId, 10),
@@ -58,9 +58,9 @@ func (k Keeper) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId u
 	return &mission, nil
 }
 
-func (k Keeper) ValidateAddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string,
+func (k Keeper) ValidateAddMission(ctx sdk.Context, owner string, campaignId uint64, name string, description string,
 	missionType types.MissionType, weight sdk.Dec, claimStartDate *time.Time) (*types.Campaign, error) {
-	err := types.ValidateAddMissionToCampaign(owner, name, description, missionType, weight)
+	err := types.ValidateAddMission(owner, name, description, missionType, weight)
 	if err != nil {
 		return nil, err
 	}

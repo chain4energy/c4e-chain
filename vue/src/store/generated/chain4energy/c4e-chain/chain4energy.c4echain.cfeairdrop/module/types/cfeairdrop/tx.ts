@@ -51,7 +51,7 @@ export interface MsgCreateCampaign {
 
 export interface MsgCreateCampaignResponse {}
 
-export interface MsgAddMissionToCampaign {
+export interface MsgAddMission {
   owner: string;
   campaignId: number;
   name: string;
@@ -61,7 +61,7 @@ export interface MsgAddMissionToCampaign {
   claim_start_date: Date | undefined;
 }
 
-export interface MsgAddMissionToCampaignResponse {}
+export interface MsgAddMissionResponse {}
 
 export interface MsgAddClaimRecords {
   owner: string;
@@ -695,7 +695,7 @@ export const MsgCreateCampaignResponse = {
   },
 };
 
-const baseMsgAddMissionToCampaign: object = {
+const baseMsgAddMission: object = {
   owner: "",
   campaignId: 0,
   name: "",
@@ -704,9 +704,9 @@ const baseMsgAddMissionToCampaign: object = {
   weight: "",
 };
 
-export const MsgAddMissionToCampaign = {
+export const MsgAddMission = {
   encode(
-    message: MsgAddMissionToCampaign,
+    message: MsgAddMission,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.owner !== "") {
@@ -736,12 +736,12 @@ export const MsgAddMissionToCampaign = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgAddMissionToCampaign {
+  decode(input: Reader | Uint8Array, length?: number): MsgAddMission {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseMsgAddMissionToCampaign,
-    } as MsgAddMissionToCampaign;
+      ...baseMsgAddMission,
+    } as MsgAddMission;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -776,10 +776,10 @@ export const MsgAddMissionToCampaign = {
     return message;
   },
 
-  fromJSON(object: any): MsgAddMissionToCampaign {
+  fromJSON(object: any): MsgAddMission {
     const message = {
-      ...baseMsgAddMissionToCampaign,
-    } as MsgAddMissionToCampaign;
+      ...baseMsgAddMission,
+    } as MsgAddMission;
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = String(object.owner);
     } else {
@@ -821,7 +821,7 @@ export const MsgAddMissionToCampaign = {
     return message;
   },
 
-  toJSON(message: MsgAddMissionToCampaign): unknown {
+  toJSON(message: MsgAddMission): unknown {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.campaignId !== undefined && (obj.campaignId = message.campaignId);
@@ -840,11 +840,11 @@ export const MsgAddMissionToCampaign = {
   },
 
   fromPartial(
-    object: DeepPartial<MsgAddMissionToCampaign>
-  ): MsgAddMissionToCampaign {
+    object: DeepPartial<MsgAddMission>
+  ): MsgAddMission {
     const message = {
-      ...baseMsgAddMissionToCampaign,
-    } as MsgAddMissionToCampaign;
+      ...baseMsgAddMission,
+    } as MsgAddMission;
     if (object.owner !== undefined && object.owner !== null) {
       message.owner = object.owner;
     } else {
@@ -887,11 +887,11 @@ export const MsgAddMissionToCampaign = {
   },
 };
 
-const baseMsgAddMissionToCampaignResponse: object = {};
+const baseMsgAddMissionResponse: object = {};
 
-export const MsgAddMissionToCampaignResponse = {
+export const MsgAddMissionResponse = {
   encode(
-    _: MsgAddMissionToCampaignResponse,
+    _: MsgAddMissionResponse,
     writer: Writer = Writer.create()
   ): Writer {
     return writer;
@@ -900,12 +900,12 @@ export const MsgAddMissionToCampaignResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): MsgAddMissionToCampaignResponse {
+  ): MsgAddMissionResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseMsgAddMissionToCampaignResponse,
-    } as MsgAddMissionToCampaignResponse;
+      ...baseMsgAddMissionResponse,
+    } as MsgAddMissionResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -917,24 +917,24 @@ export const MsgAddMissionToCampaignResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgAddMissionToCampaignResponse {
+  fromJSON(_: any): MsgAddMissionResponse {
     const message = {
-      ...baseMsgAddMissionToCampaignResponse,
-    } as MsgAddMissionToCampaignResponse;
+      ...baseMsgAddMissionResponse,
+    } as MsgAddMissionResponse;
     return message;
   },
 
-  toJSON(_: MsgAddMissionToCampaignResponse): unknown {
+  toJSON(_: MsgAddMissionResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
   fromPartial(
-    _: DeepPartial<MsgAddMissionToCampaignResponse>
-  ): MsgAddMissionToCampaignResponse {
+    _: DeepPartial<MsgAddMissionResponse>
+  ): MsgAddMissionResponse {
     const message = {
-      ...baseMsgAddMissionToCampaignResponse,
-    } as MsgAddMissionToCampaignResponse;
+      ...baseMsgAddMissionResponse,
+    } as MsgAddMissionResponse;
     return message;
   },
 };
@@ -1960,9 +1960,9 @@ export interface Msg {
     request: MsgCreateCampaign
   ): Promise<MsgCreateCampaignResponse>;
   EditCampaign(request: MsgEditCampaign): Promise<MsgEditCampaignResponse>;
-  AddMissionToCampaign(
-    request: MsgAddMissionToCampaign
-  ): Promise<MsgAddMissionToCampaignResponse>;
+  AddMission(
+    request: MsgAddMission
+  ): Promise<MsgAddMissionResponse>;
   AddClaimRecords(
     request: MsgAddClaimRecords
   ): Promise<MsgAddClaimRecordsResponse>;
@@ -2030,17 +2030,17 @@ export class MsgClientImpl implements Msg {
     );
   }
 
-  AddMissionToCampaign(
-    request: MsgAddMissionToCampaign
-  ): Promise<MsgAddMissionToCampaignResponse> {
-    const data = MsgAddMissionToCampaign.encode(request).finish();
+  AddMission(
+    request: MsgAddMission
+  ): Promise<MsgAddMissionResponse> {
+    const data = MsgAddMission.encode(request).finish();
     const promise = this.rpc.request(
       "chain4energy.c4echain.cfeclaim.Msg",
-      "AddMissionToCampaign",
+      "AddMission",
       data
     );
     return promise.then((data) =>
-      MsgAddMissionToCampaignResponse.decode(new Reader(data))
+      MsgAddMissionResponse.decode(new Reader(data))
     );
   }
 

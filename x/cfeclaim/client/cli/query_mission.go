@@ -80,3 +80,35 @@ func CmdMission() *cobra.Command {
 
 	return cmd
 }
+
+func CmdCampaignMissions() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "missions [campaign-id]",
+		Short: "Query all existing missions of a campaign",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			argCampaignId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			params := &types.QueryCampaignMissionsRequest{
+				CampaignId: argCampaignId,
+			}
+
+			res, err := queryClient.CampaignMissions(context.Background(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}

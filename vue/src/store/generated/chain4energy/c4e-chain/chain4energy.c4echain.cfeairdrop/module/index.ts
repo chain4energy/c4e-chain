@@ -5,7 +5,7 @@ import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry, OfflineSigner, EncodeObject, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
 import { MsgInitialClaim } from "./types/cfeclaim/tx";
-import { MsgAddMissionToCampaign } from "./types/cfeclaim/tx";
+import { MsgAddMission } from "./types/cfeclaim/tx";
 import { MsgEnableCampaign } from "./types/cfeclaim/tx";
 import { MsgCloseCampaign } from "./types/cfeclaim/tx";
 import { MsgEditCampaign } from "./types/cfeclaim/tx";
@@ -18,7 +18,7 @@ import { MsgDeleteClaimRecord } from "./types/cfeclaim/tx";
 
 const types = [
   ["/chain4energy.c4echain.cfeclaim.MsgInitialClaim", MsgInitialClaim],
-  ["/chain4energy.c4echain.cfeclaim.MsgAddMissionToCampaign", MsgAddMissionToCampaign],
+  ["/chain4energy.c4echain.cfeclaim.MsgAddMission", MsgAddMission],
   ["/chain4energy.c4echain.cfeclaim.MsgEnableCampaign", MsgEnableCampaign],
   ["/chain4energy.c4echain.cfeclaim.MsgCloseCampaign", MsgCloseCampaign],
   ["/chain4energy.c4echain.cfeclaim.MsgEditCampaign", MsgEditCampaign],
@@ -60,7 +60,7 @@ const txClient = async (wallet: OfflineSigner, { addr: addr }: TxClientOptions =
   return {
     signAndBroadcast: (msgs: EncodeObject[], { fee, memo }: SignAndBroadcastOptions = {fee: defaultFee, memo: ""}) => client.signAndBroadcast(address, msgs, fee,memo),
     msgInitialClaim: (data: MsgInitialClaim): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeclaim.MsgInitialClaim", value: MsgInitialClaim.fromPartial( data ) }),
-    msgAddMissionToCampaign: (data: MsgAddMissionToCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeclaim.MsgAddMissionToCampaign", value: MsgAddMissionToCampaign.fromPartial( data ) }),
+    msgAddMission: (data: MsgAddMission): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeclaim.MsgAddMission", value: MsgAddMission.fromPartial( data ) }),
     MsgEnableCampaign: (data: MsgEnableCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeclaim.MsgEnableCampaign", value: MsgEnableCampaign.fromPartial( data ) }),
     msgCloseCampaign: (data: MsgCloseCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeclaim.MsgCloseCampaign", value: MsgCloseCampaign.fromPartial( data ) }),
     msgEditCampaign: (data: MsgEditCampaign): EncodeObject => ({ typeUrl: "/chain4energy.c4echain.cfeclaim.MsgEditCampaign", value: MsgEditCampaign.fromPartial( data ) }),

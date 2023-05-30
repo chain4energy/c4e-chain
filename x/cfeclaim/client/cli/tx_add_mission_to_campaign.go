@@ -17,7 +17,7 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdAddMissionToCampaign() *cobra.Command {
+func CmdAddMission() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-mission-to-campaign [campaign-id] [name] [description] [mission-type] [weight] [optional-claim-start-date]",
 		Short: "Add new mission to a campaign",
@@ -71,7 +71,7 @@ $ %s tx %s add-mission-to-campaign 1 "Mission Name" "Mission Description" "deleg
 				return err
 			}
 
-			msg := types.NewMsgAddMissionToCampaign(
+			msg := types.NewMsgAddMission(
 				clientCtx.GetFromAddress().String(),
 				argCampaignId,
 				argName,

@@ -97,7 +97,6 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 			require.EqualValues(h.t, len(userEntryBefore.ClaimRecords)+1, len(userEntry.ClaimRecords))
 		}
 		require.EqualValues(h.t, claimRecord.Address, userEntry.Address)
-		//require.EqualValues(h.t, "", userEntry.Address) // TODO: fix after changes
 		if userEntryBefore == nil {
 			require.EqualValues(h.t, campaignId, userEntry.ClaimRecords[0].CampaignId)
 			require.True(h.t, claimRecord.Amount.IsEqual(userEntry.ClaimRecords[0].Amount))
@@ -704,20 +703,20 @@ func (h *C4eClaimUtils) RemoveCampaignError(ctx sdk.Context, owner string, campa
 	h.VerifyCampaign(ctx, campaignBefore.Id, true, campaignBefore.Owner, campaignBefore.Name, campaignBefore.Description, enabled, &campaignBefore.FeegrantAmount, &campaignBefore.InitialClaimFreeAmount, campaignBefore.StartTime, campaignBefore.EndTime, campaignBefore.LockupPeriod, campaignBefore.VestingPeriod, campaignBefore.VestingPoolName)
 }
 
-func (h *C4eClaimUtils) AddMissionToCampaign(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeclaimtypes.MissionType,
+func (h *C4eClaimUtils) AddMission(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeclaimtypes.MissionType,
 	weight sdk.Dec, missionClaimDate *time.Time) {
 	missionCountBefore := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
-	_, err := h.helpeCfeclaimkeeper.AddMissionToCampaign(ctx, owner, campaignId, name, description, missionType, weight, nil)
+	_, err := h.helpeCfeclaimkeeper.AddMission(ctx, owner, campaignId, name, description, missionType, weight, nil)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
 	require.NoError(h.t, err)
 	require.Equal(h.t, missionCountBefore+1, missionCountAfter)
 	h.VerifyMission(ctx, true, campaignId, missionCountBefore, name, description, missionType, weight, missionClaimDate)
 }
 
-func (h *C4eClaimUtils) AddMissionToCampaignError(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeclaimtypes.MissionType,
+func (h *C4eClaimUtils) AddMissionError(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeclaimtypes.MissionType,
 	weight sdk.Dec, missionClaimDate *time.Time, errorString string) {
 	missionCountBefore := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
-	_, err := h.helpeCfeclaimkeeper.AddMissionToCampaign(ctx, owner, campaignId, name, description, missionType, weight, missionClaimDate)
+	_, err := h.helpeCfeclaimkeeper.AddMission(ctx, owner, campaignId, name, description, missionType, weight, missionClaimDate)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
 	require.EqualError(h.t, err, errorString)
 	require.Equal(h.t, missionCountBefore, missionCountAfter)

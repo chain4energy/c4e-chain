@@ -11,18 +11,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
+func TestMsgAddMission_ValidateBasic(t *testing.T) {
 	correctWeight := sdk.MustNewDecFromStr("0.5")
 	incorrectWeight := sdk.MustNewDecFromStr("1.5")
 	tests := []struct {
 		name   string
-		msg    types.MsgAddMissionToCampaign
+		msg    types.MsgAddMission
 		err    error
 		errMsg string
 	}{
 		{
 			name: "invalid owner address",
-			msg: types.MsgAddMissionToCampaign{
+			msg: types.MsgAddMission{
 				Owner:       "invalid_address",
 				Name:        "Test Mission",
 				Description: "Test Mission Description",
@@ -34,7 +34,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 		},
 		{
 			name: "invalid mission weight",
-			msg: types.MsgAddMissionToCampaign{
+			msg: types.MsgAddMission{
 				Owner:       sample.AccAddress(),
 				Name:        "Test Mission",
 				Description: "Test Mission Description",
@@ -46,7 +46,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 		},
 		{
 			name: "invalid mission weight (nil)",
-			msg: types.MsgAddMissionToCampaign{
+			msg: types.MsgAddMission{
 				Owner:       sample.AccAddress(),
 				Name:        "Test Mission",
 				Description: "Test Mission Description",
@@ -58,7 +58,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 		},
 		{
 			name: "empty mission name",
-			msg: types.MsgAddMissionToCampaign{
+			msg: types.MsgAddMission{
 				Owner:       sample.AccAddress(),
 				Name:        "",
 				Description: "Test Mission Description",
@@ -70,7 +70,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 		},
 		{
 			name: "empty mission description",
-			msg: types.MsgAddMissionToCampaign{
+			msg: types.MsgAddMission{
 				Owner:       sample.AccAddress(),
 				Name:        "Test Mission",
 				Description: "",
@@ -82,7 +82,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 		},
 		{
 			name: "invalid mission type",
-			msg: types.MsgAddMissionToCampaign{
+			msg: types.MsgAddMission{
 				Owner:       sample.AccAddress(),
 				Name:        "Test Mission",
 				Description: "Test Mission Description",
@@ -94,7 +94,7 @@ func TestMsgAddMissionToCampaign_ValidateBasic(t *testing.T) {
 		},
 		{
 			name: "valid mission",
-			msg: types.MsgAddMissionToCampaign{
+			msg: types.MsgAddMission{
 				Owner:       sample.AccAddress(),
 				Name:        "Test Mission",
 				Description: "Test Mission Description",
