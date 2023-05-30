@@ -184,7 +184,7 @@ func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight in
 
 	config.SetRoot(chain.nodes[0].configDir())
 	config.Moniker = chain.nodes[0].moniker
-	config.Storage.DiscardABCIResponses = false
+
 	genFilePath := config.GenesisFile()
 	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
 	if err != nil {
