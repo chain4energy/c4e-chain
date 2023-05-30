@@ -316,7 +316,6 @@ func (n *internalNode) initNodeConfigs(persistentPeers []string) error {
 	valConfig.StateSync.Enable = false
 	valConfig.LogLevel = "info"
 	valConfig.P2P.PersistentPeers = strings.Join(persistentPeers, ",")
-	valConfig.Storage.DiscardABCIResponses = true
 
 	tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 	return nil

@@ -71,7 +71,6 @@ func addAccount(path, moniker, amountStr string, accAddr sdk.AccAddress, forkHei
 
 	config.SetRoot(path)
 	config.Moniker = moniker
-	config.Storage.DiscardABCIResponses = false
 	coins, err := sdk.ParseCoinsNormalized(amountStr)
 	if err != nil {
 		return fmt.Errorf("failed to parse coins: %w", err)
