@@ -18,17 +18,17 @@ func (k Keeper) VerifyReferencePayloadLink(goCtx context.Context, req *types.Que
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// fetch data published on ledger
-	ledgerPayloadLink, err := k.GetPayloadLink(ctx, req.ReferenceId)
+	ledgerPayloadLinkValue, err := k.GetPayloadLink(ctx, req.ReferenceId)
 	if err != nil {
 		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "false"}, err
 	}
 
 	// calculate expeced data based on payload hash
 	// so called reference value
-	expectedPayloadLink := util.CalculateHash(util.HashConcat(req.ReferenceId, req.PayloadHash))
+	expectedPayloadLinkValue := util.CalculateHash(util.HashConcat(req.ReferenceId, req.PayloadHash))
 
 	// verify ledger matches the payloadhash
-	if expectedPayloadLink == ledgerPayloadLink {
+	if expectedPayloadLinkValue == ledgerPayloadLinkValue {
 		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "true"}, nil
 	}
 

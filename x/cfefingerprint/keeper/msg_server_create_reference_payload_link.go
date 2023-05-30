@@ -34,15 +34,15 @@ func (k msgServer) CreateReferencePayloadLink(goCtx context.Context, msg *types.
 	hash := sha256.Sum256(inputBytes)
 	txHash := hex.EncodeToString(hash[:])
 
-	// create referenceID
-	referenceID, err := createReferenceID(64, txHash)
+	// create referenceId
+	referenceId, err := createReferenceID(64, txHash)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "failed to generate referenceID")
 	}
 
 	// create reference payload link
-	referenceKey := util.CalculateHash(referenceID)
-	referenceValue := util.CalculateHash(util.HashConcat(referenceID, msg.PayloadHash))
+	referenceKey := util.CalculateHash(referenceId)
+	referenceValue := util.CalculateHash(util.HashConcat(referenceId, msg.PayloadHash))
 
 	ctx.Logger().Debug("referenceKey   = %s", referenceKey)
 
@@ -56,7 +56,19 @@ func (k msgServer) CreateReferencePayloadLink(goCtx context.Context, msg *types.
 	// store payload link
 	k.AppendPayloadLink(ctx, referenceKey, referenceValue)
 
-	return &types.MsgCreateReferencePayloadLinkResponse{ReferenceId: referenceID}, nil
+	/*
+		As long as referenceId cannot be correlated with a specific account address it can be included in the emitted event.
+	*/
+
+	// emit related newPayloadLinkEvent
+	newPayloadLinkEvent := &types.NewPayloadLink{
+		ReferenceId:    referenceId,
+		ReferenceKey:   referenceKey,
+		ReferenceValue: referenceKey,
+	}
+	err = ctx.EventManager().EmitTypedEvent(newPayloadLinkEvent)
+
+	return &types.MsgCreateReferencePayloadLinkResponse{ReferenceId: referenceId}, nil
 }
 
 func createReferenceID(length int, txHash string) (string, error) {

@@ -43,12 +43,12 @@ func (k Keeper) AppendPayloadLink(ctx sdk.Context, referenceKey string, referenc
 func (k Keeper) GetPayloadLink(ctx sdk.Context, referenceID string) (string, error) {
 
 	// fetch reference payload link
-	referencePayloadLink := util.CalculateHash(referenceID)
+	referencePayloadLinkKey := util.CalculateHash(referenceID)
 
 	// get the store
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(types.PayloadLinkKey))
 	// get reference payload link value
-	referencePayloadLinkValue := store.Get(getStoreKeyBytes(referencePayloadLink))
+	referencePayloadLinkValue := store.Get(getStoreKeyBytes(referencePayloadLinkKey))
 
 	// check if there is no document
 	if referencePayloadLinkValue == nil {
