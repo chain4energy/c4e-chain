@@ -20,11 +20,9 @@ import (
 
 func (k msgServer) CreateReferencePayloadLink(goCtx context.Context, msg *types.MsgCreateReferencePayloadLink) (*types.MsgCreateReferencePayloadLinkResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "create reference payloadLink")
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
+	ctx.Logger().Debug("create payload link for a given payload: ", msg.PayloadHash)
 
 	if msg == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -42,12 +40,13 @@ func (k msgServer) CreateReferencePayloadLink(goCtx context.Context, msg *types.
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "failed to generate referenceID")
 	}
+	ctx.Logger().Debug("calculated referenceID = %s", referenceId)
 
 	// create reference payload link
 	referenceKey := util.CalculateHash(referenceId)
 	referenceValue := util.CalculateHash(util.HashConcat(referenceId, msg.PayloadHash))
 
-	ctx.Logger().Debug("referenceKey   = %s", referenceKey)
+	ctx.Logger().Debug("calculated referenceKey = %s / referenceValue = %s", referenceKey, referenceValue)
 
 	// publish reference payload link
 
