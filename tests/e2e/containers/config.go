@@ -30,10 +30,10 @@ const (
 	previousVersionInitTag        = "v1.2.0"
 	// If migration chain is used, we need to set the repo/tag for migration chain initialization to the penultimate version
 	penultimateVersionC4eRepository = "chain4energy-old-dev"
-	penultimateVersionC4eTag        = "v1.1.0"
+	penultimateVersionC4eTag        = "v1.0.0"
 	// Pre-upgrade repo/tag for c4e-chain initialization (this should be one version below upgradeVersion)
 	penultimateVersionInitRepository = "chain4energy-old-chain-init"
-	penultimateVersionInitTag        = "v1.1.0"
+	penultimateVersionInitTag        = "v1.0.0"
 	// Hermes repo/version for relayer
 	relayerRepository = "osmolabs/hermes"
 	relayerTag        = "0.13.0"
