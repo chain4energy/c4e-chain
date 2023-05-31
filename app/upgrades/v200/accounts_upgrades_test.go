@@ -88,7 +88,7 @@ func TestMigrateAirdropModuleAccount(t *testing.T) {
 	require.Equal(t, airdropModuleBalance, sdk.NewCoins())
 }
 
-func TestMigrateAirdropModuleAccountDoesnTExist(t *testing.T) {
+func TestMigrateAirdropModuleAccountDoesntExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
 	addVestingPools(testHelper)

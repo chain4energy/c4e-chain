@@ -40,30 +40,13 @@ func UserEntryKey(
 }
 
 func MissionKey(campaignId uint64, missionId uint64) []byte {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, campaignId)
-
-	bz = append(bz, []byte("/")...)
-	bz2 := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz2, missionId)
-	bz = append(bz, bz2...)
-	return bz
+	bz := GetUint64Key(campaignId)
+	return append(bz, GetUint64Key(missionId)...)
 }
 
-func MissionCountKey(campaignId uint64) []byte {
+func GetUint64Key(campaignId uint64) []byte {
 	key := make([]byte, 8)
 	binary.BigEndian.PutUint64(key, campaignId)
-
-	key = append(key, []byte("/")...)
-
-	return key
-}
-
-func CampaignKey(
-	id uint64,
-) []byte {
-	key := make([]byte, 8)
-	binary.BigEndian.PutUint64(key, id)
 
 	key = append(key, []byte("/")...)
 

@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 ## Build Image
 FROM golang:1.19-alpine as build
 

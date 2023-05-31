@@ -46,17 +46,14 @@ func (k Keeper) MustGetMission(
 	campaignId uint64,
 	missionId uint64,
 ) (*types.Mission, error) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
-
-	b := store.Get(types.MissionKey(
+	mission, found := k.GetMission(
+		ctx,
 		campaignId,
 		missionId,
-	))
-	if b == nil {
+	)
+	if !found {
 		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "mission not found - campaignId %d, missionId %d", campaignId, missionId)
 	}
-	var mission types.Mission
-	k.cdc.MustUnmarshal(b, &mission)
 	return &mission, nil
 }
 
@@ -139,7 +136,7 @@ func (k Keeper) AppendNewMission(
 
 func (k Keeper) GetMissionCount(ctx sdk.Context, campaignId uint64) uint64 {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
-	bz := store.Get(types.MissionCountKey(campaignId))
+	bz := store.Get(types.GetUint64Key(campaignId))
 
 	// Count doesn't exist: no element
 	if bz == nil {
@@ -154,5 +151,5 @@ func (k Keeper) SetMissionCount(ctx sdk.Context, campaignId uint64, count uint64
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
-	store.Set(types.MissionCountKey(campaignId), bz)
+	store.Set(types.GetUint64Key(campaignId), bz)
 }

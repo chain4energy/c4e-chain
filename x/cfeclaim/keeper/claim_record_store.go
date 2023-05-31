@@ -51,7 +51,7 @@ func (k Keeper) GetAllUsersEntries(ctx sdk.Context) (list []types.UserEntry) {
 	return
 }
 
-func (k Keeper) MustGeUserEntry(ctx sdk.Context, userAddress string) (types.UserEntry, error) {
+func (k Keeper) MustGetUserEntry(ctx sdk.Context, userAddress string) (types.UserEntry, error) {
 	userEntry, found := k.GetUserEntry(
 		ctx,
 		userAddress,

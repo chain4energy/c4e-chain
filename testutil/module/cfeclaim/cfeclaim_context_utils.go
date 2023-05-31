@@ -153,9 +153,9 @@ func (h *ContextC4eClaimUtils) ClaimMissionError(campaignId uint64, missionId ui
 	h.C4eClaimUtils.ClaimMissionError(h.testContext.GetContext(), campaignId, missionId, claimer, errorMessage)
 }
 
-func (h *ContextC4eClaimUtils) CreateRepeatedContinuousVestingAccount(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64,
+func (h *ContextC4eClaimUtils) CreatePeriodicContinuousVestingAccount(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64,
 	endTime int64, periods ...cfevestingtypes.ContinuousVestingPeriod) *cfevestingtypes.PeriodicContinuousVestingAccount {
-	return h.C4eClaimUtils.CreateRepeatedContinuousVestingAccount(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
+	return h.C4eClaimUtils.CreatePeriodicContinuousVestingAccount(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
 }
 
 func (h *ContextC4eClaimUtils) CompleteDelegationMission(campaignId uint64, missionId uint64,

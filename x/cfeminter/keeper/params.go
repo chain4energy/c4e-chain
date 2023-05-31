@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"encoding/binary"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -28,21 +27,6 @@ func (k Keeper) GetParams(ctx sdk.Context) (p types.Params) {
 
 	k.cdc.MustUnmarshal(bz, &p)
 	return p
-}
-
-// SetParams sets the x/mint module parameters.
-func (k Keeper) SetMinterConfig(ctx sdk.Context, minterConfig types.MinterConfigI, id uint64) error {
-	bz, err := k.MarshalConfig(minterConfig)
-	if err != nil {
-		return err
-	}
-
-	key := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, id)
-	store := ctx.KVStore(k.storeKey)
-	store.Set(key, bz)
-
-	return nil
 }
 
 // MintDenom returns the denom param

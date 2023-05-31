@@ -22,7 +22,7 @@ func (k Keeper) AppendNewCampaign(
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 	appendedValue := k.cdc.MustMarshal(&campaign)
-	store.Set(types.CampaignKey(
+	store.Set(types.GetUint64Key(
 		campaign.Id,
 	), appendedValue)
 
@@ -37,7 +37,7 @@ func (k Keeper) SetCampaign(ctx sdk.Context, campaign types.Campaign) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 
 	b := k.cdc.MustMarshal(&campaign)
-	store.Set(types.CampaignKey(
+	store.Set(types.GetUint64Key(
 		campaign.Id,
 	), b)
 }
@@ -49,7 +49,7 @@ func (k Keeper) GetCampaign(
 ) (val types.Campaign, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 
-	b := store.Get(types.CampaignKey(
+	b := store.Get(types.GetUint64Key(
 		campaignId,
 	))
 	if b == nil {
@@ -66,7 +66,7 @@ func (k Keeper) removeCampaign(
 	campaignId uint64,
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
-	store.Delete(types.CampaignKey(
+	store.Delete(types.GetUint64Key(
 		campaignId,
 	))
 }

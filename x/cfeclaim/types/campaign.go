@@ -39,7 +39,7 @@ func NormalizeCampaignType(option string) string {
 	}
 }
 
-func (c *Campaign) IsActive(blockTime time.Time) error {
+func (c *Campaign) ValidateIsActive(blockTime time.Time) error {
 	if !c.Enabled {
 		return errors.Wrapf(ErrCampaignDisabled, "campaign %d", c.Id)
 	}
@@ -161,7 +161,7 @@ func validateInitialClaimFreeAmount(initialClaimFreeAmount math.Int) error {
 
 func (c *Campaign) ValidateOwner(owner string) error {
 	if c.Owner != owner {
-		return errors.Wrap(c4eerrors.ErrWrongSigner, "you are not the campaign owner")
+		return errors.Wrapf(c4eerrors.ErrWrongSigner, "address %s is not owner of campaign with id %d", owner, c.Id)
 	}
 	return nil
 }

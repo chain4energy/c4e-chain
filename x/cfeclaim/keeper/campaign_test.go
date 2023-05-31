@@ -127,7 +127,7 @@ func TestCreateCampaignAndStartOwnerNotValidError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[1].String(), 0, nil, nil, "you are not the campaign owner: wrong transaction signer")
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[1].String(), 0, nil, nil, fmt.Sprintf("address %s is not owner of campaign with id %d: wrong transaction signer", acountsAddresses[1], 0))
 }
 
 func TestCreateCampaignCampaignDoesntExistError(t *testing.T) {
@@ -321,7 +321,7 @@ func TestCloseCampaignYouAreNotTheOwnerError(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[1].String(), 0, "you are not the campaign owner: wrong transaction signer")
+	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[1].String(), 0, fmt.Sprintf("address %s is not owner of campaign with id %d: wrong transaction signer", acountsAddresses[1], 0))
 }
 
 func TestRemoveCampaignCampaignEnabled(t *testing.T) {

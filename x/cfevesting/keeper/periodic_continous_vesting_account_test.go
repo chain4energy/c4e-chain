@@ -31,7 +31,7 @@ func TestCreateAccount(t *testing.T) {
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
 
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
@@ -45,7 +45,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], math.ZeroInt())
 
 	testHelper.SetContextBlockTime(startTime)
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
@@ -59,7 +59,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], math.ZeroInt())
 
 	testHelper.SetContextBlockTime(startTime)
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
@@ -87,7 +87,7 @@ func TestCreateAccountSendDisabled(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
 	testHelper.BankUtils.DisableSend()
 
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
@@ -124,7 +124,7 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
@@ -150,7 +150,7 @@ func TestCreateAccountWrongAccountType(t *testing.T) {
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
@@ -170,7 +170,7 @@ func TestCreateAccountSendError(t *testing.T) {
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(amount, cfevestingtypes.ModuleName)
 
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount.AddRaw(1),
 		sdk.ZeroDec(),
 		startTimeUnix,

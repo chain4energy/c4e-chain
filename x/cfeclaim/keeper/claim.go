@@ -14,7 +14,7 @@ import (
 func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64, destinationAddress string) (sdk.Coins, error) {
 	k.Logger(ctx).Debug("initial claim", "claimer", claimer, "campaignId", campaignId, "destinationAddress", destinationAddress)
 
-	campaign, mission, userEntry, claimRecord, err := k.missionFirstStep(ctx, campaignId, types.InitialMissionId, claimer)
+	campaign, mission, userEntry, claimRecord, err := k.prepareClaimData(ctx, campaignId, types.InitialMissionId, claimer)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, claimer string) (sdk.Coins, error) {
 	k.Logger(ctx).Debug("claim", "claimer", claimer, "campaignId", campaignId, "missionId", missionId)
 
-	campaign, mission, userEntry, claimRecord, err := k.missionFirstStep(ctx, campaignId, missionId, claimer)
+	campaign, mission, userEntry, claimRecord, err := k.prepareClaimData(ctx, campaignId, missionId, claimer)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 }
 
 func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, missionId uint64, address string) error {
-	_, mission, userEntry, claimRecord, err := k.missionFirstStep(ctx, campaignId, missionId, address)
+	_, mission, userEntry, claimRecord, err := k.prepareClaimData(ctx, campaignId, missionId, address)
 	if err != nil {
 		k.Logger(ctx).Debug("complete mission from hook", "err", err.Error())
 		return err

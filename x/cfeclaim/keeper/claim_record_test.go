@@ -178,7 +178,7 @@ func TestAddClaimRecordsWrongOwner(t *testing.T) {
 	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[1], 0, claimEntries, "you are not the campaign owner: wrong transaction signer")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[1], 0, claimEntries, fmt.Sprintf("address %s is not owner of campaign with id %d: wrong transaction signer", acountsAddresses[1], 0))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -567,7 +567,7 @@ func TestDeleteClaimRecordWrongOwner(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
-	testHelper.C4eClaimUtils.DeleteClaimRecordError(acountsAddresses[1], 0, claimEntries[2].Address, "you are not the campaign owner: wrong transaction signer")
+	testHelper.C4eClaimUtils.DeleteClaimRecordError(acountsAddresses[1], 0, claimEntries[2].Address, fmt.Sprintf("address %s is not owner of campaign with id %d: wrong transaction signer", acountsAddresses[1], 0))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 

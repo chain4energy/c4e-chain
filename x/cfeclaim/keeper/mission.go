@@ -80,17 +80,17 @@ func (k Keeper) ValidateAddMission(ctx sdk.Context, owner string, campaignId uin
 	return campaign, nil
 }
 
-func (k Keeper) missionFirstStep(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, *types.ClaimRecord, error) {
+func (k Keeper) prepareClaimData(ctx sdk.Context, campaignId uint64, missionId uint64, claimerAddress string) (*types.Campaign, *types.Mission, *types.UserEntry, *types.ClaimRecord, error) {
 	campaign, err := k.MustGetCampaign(ctx, campaignId)
 	if err != nil {
 		return missionFirstStepReturnError(err)
 	}
 	k.Logger(ctx).Debug("campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaign start", campaign.StartTime, "campaign end", campaign.EndTime)
 
-	if err = campaign.IsActive(ctx.BlockTime()); err != nil {
+	if err = campaign.ValidateIsActive(ctx.BlockTime()); err != nil {
 		return missionFirstStepReturnError(err)
 	}
-	userEntry, err := k.MustGeUserEntry(ctx, claimerAddress)
+	userEntry, err := k.MustGetUserEntry(ctx, claimerAddress)
 	if err != nil {
 		return missionFirstStepReturnError(err)
 	}

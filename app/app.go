@@ -351,6 +351,7 @@ func New(
 	app.ScopedICAControllerKeeper = app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
+	// this line is used by starport scaffolding # stargate/app/scopedKeeper
 	app.CapabilityKeeper.Seal()
 
 	// add keepers

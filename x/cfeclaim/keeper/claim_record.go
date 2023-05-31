@@ -193,7 +193,7 @@ func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaig
 		return nil, nil, err
 	}
 
-	userEntry, err := k.MustGeUserEntry(ctx, userAddress)
+	userEntry, err := k.MustGetUserEntry(ctx, userAddress)
 	if err != nil {
 		return nil, nil, err
 	}

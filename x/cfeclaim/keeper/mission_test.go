@@ -132,7 +132,7 @@ func TestAddMissionWrongOwner(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[1].String(), 0, mission, "you are not the campaign owner: wrong transaction signer")
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[1].String(), 0, mission, fmt.Sprintf("address %s is not owner of campaign with id %d: wrong transaction signer", acountsAddresses[1], 0))
 }
 
 func TestAddMissionAlreadyEnabled(t *testing.T) {

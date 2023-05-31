@@ -540,7 +540,7 @@ func (h *C4eClaimUtils) ClaimMissionError(ctx sdk.Context, campaignId uint64, mi
 	require.EqualValues(h.t, claimRecordBefore, userEntry)
 }
 
-func (h *C4eClaimUtils) CreateRepeatedContinuousVestingAccount(ctx sdk.Context, address sdk.AccAddress, originalVesting sdk.Coins, startTime int64, endTime int64, periods ...cfevestingtypes.ContinuousVestingPeriod) *cfevestingtypes.PeriodicContinuousVestingAccount {
+func (h *C4eClaimUtils) CreatePeriodicContinuousVestingAccount(ctx sdk.Context, address sdk.AccAddress, originalVesting sdk.Coins, startTime int64, endTime int64, periods ...cfevestingtypes.ContinuousVestingPeriod) *cfevestingtypes.PeriodicContinuousVestingAccount {
 	baseAccount := h.helperAccountKeeper.NewAccountWithAddress(ctx, address)
 	claimAcc := cfevestingtypes.NewPeriodicContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), originalVesting, startTime, endTime, periods)
 	h.helperAccountKeeper.SetAccount(ctx, claimAcc)

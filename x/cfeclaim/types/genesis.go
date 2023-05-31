@@ -33,7 +33,7 @@ func (gs GenesisState) Validate() error {
 	campaignIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.Campaigns {
-		index := string(CampaignKey(elem.Id))
+		index := string(GetUint64Key(elem.Id))
 		if _, ok := campaignIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for initialClaim")
 		}

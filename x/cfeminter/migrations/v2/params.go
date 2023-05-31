@@ -15,11 +15,9 @@ import (
 // - Remove ReductionPeriodLength from PeriodicReducstionMinter
 func MigrateParams(ctx sdk.Context, paramStore subspace.Subspace) error {
 	var oldMinterConfig v1.Minter
-
 	if !paramStore.HasKeyTable() {
-		paramStore.WithKeyTable(v1.ParamKeyTable())
+		paramStore.WithKeyTable(ParamKeyTable())
 	}
-
 	oldMinterConfigRaw := paramStore.GetRaw(ctx, v1.KeyMinter)
 	if err := codec.NewLegacyAmino().UnmarshalJSON(oldMinterConfigRaw, &oldMinterConfig); err != nil {
 		panic(err)

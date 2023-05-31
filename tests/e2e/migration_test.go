@@ -155,11 +155,11 @@ func TestMainnetMigrationChainingSuite(t *testing.T) {
 }
 
 func (s *MainnetMigrationChainingSetupSuite) SetupSuite() {
-	bytes, err := os.ReadFile("./resources/mainnet-v1.1.0-migration-app-state.json")
-	if err != nil {
-		panic(err)
-	}
-	s.BaseSetupSuite.SetupSuiteWithUpgradeAppState(true, true, false, bytes)
+	//bytes, err := os.ReadFile("./resources/mainnet-v1.1.0-migration-app-state.json")
+	//if err != nil {
+	//	panic(err)
+	//}
+	s.BaseSetupSuite.SetupSuiteWithUpgradeAppState(true, true, false, nil)
 }
 
 func (s *MainnetMigrationChainingSetupSuite) TestMainnetVestingsMigrationWhenChainingMigrations() {

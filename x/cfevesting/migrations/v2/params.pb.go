@@ -68,7 +68,7 @@ func (m *Params) GetDenom() string {
 }
 
 func init() {
-	proto.RegisterType((*Params)(nil), "chain4energy.c4echain.cfevesting.Params")
+	proto.RegisterType((*Params)(nil), "chain4energy.c4echain.cfevesting.v2.Params")
 }
 
 func init() { proto.RegisterFile("cfevesting/params.proto", fileDescriptor_cf02cbea6d1599f7) }

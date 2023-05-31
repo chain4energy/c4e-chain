@@ -24,19 +24,33 @@ import (
 
 type ExtendedC4eVestingKeeperUtils struct {
 	cfevestingtestutils.C4eVestingKeeperUtils
-	Cdc      *codec.ProtoCodec
-	StoreKey *storetypes.KVStoreKey
+	Cdc         *codec.ProtoCodec
+	StoreKey    *storetypes.KVStoreKey
+	ParamsStore typesparams.Subspace
 }
 
-func NewExtendedC4eVestingKeeperUtils(t *testing.T, helperCfevestingKeeper *keeper.Keeper,
+func NewExtendedC4eVestingKeeperUtils(
+	t *testing.T,
+	helperCfevestingKeeper *keeper.Keeper,
 	cdc *codec.ProtoCodec,
-	storeKey *storetypes.KVStoreKey) ExtendedC4eVestingKeeperUtils {
-	return ExtendedC4eVestingKeeperUtils{C4eVestingKeeperUtils: cfevestingtestutils.NewC4eVestingKeeperUtils(t, helperCfevestingKeeper),
-		Cdc:      cdc,
-		StoreKey: storeKey}
+	storeKey *storetypes.KVStoreKey,
+	paramsStore typesparams.Subspace) ExtendedC4eVestingKeeperUtils {
+	return ExtendedC4eVestingKeeperUtils{
+		C4eVestingKeeperUtils: cfevestingtestutils.NewC4eVestingKeeperUtils(t, helperCfevestingKeeper),
+		Cdc:                   cdc,
+		StoreKey:              storeKey,
+		ParamsStore:           paramsStore,
+	}
 }
 
-func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight int64, blockTime time.Time, db *tmdb.MemDB, stateStore storetypes.CommitMultiStore) (*keeper.Keeper, sdk.Context, *codec.ProtoCodec, *storetypes.KVStoreKey) {
+type AdditionalVestingKeeperData struct {
+	*codec.ProtoCodec
+	*storetypes.KVStoreKey
+	typesparams.Subspace
+}
+
+func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight int64, blockTime time.Time, db *tmdb.MemDB,
+	stateStore storetypes.CommitMultiStore) (*keeper.Keeper, sdk.Context, AdditionalVestingKeeperData) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -52,7 +66,7 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight in
 		types.Amino,
 		storeKey,
 		memStoreKey,
-		"CfevestingParams",
+		"Cfevesting",
 	)
 	k := keeper.NewKeeper(
 		cdc,
@@ -75,27 +89,31 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight in
 	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())
 
-	return k, ctx, cdc, storeKey
+	return k, ctx, AdditionalVestingKeeperData{
+		ProtoCodec: cdc,
+		KVStoreKey: storeKey,
+		Subspace:   paramsSubspace,
+	}
 }
 
 func CfevestingKeeperWithBlockHeightAndTime(t *testing.T, blockHeight int64, blockTime time.Time) (*keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	k, ctx, _, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, blockTime, db, stateStore)
+	k, ctx, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, blockTime, db, stateStore)
 	return k, ctx
 }
 
 func CfevestingKeeperWithBlockHeight(t *testing.T, blockHeight int64) (*keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	k, ctx, _, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, testenv.TestEnvTime, db, stateStore)
+	k, ctx, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, blockHeight, testenv.TestEnvTime, db, stateStore)
 	return k, ctx
 }
 
 func CfevestingKeeper(t *testing.T) (*keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	k, ctx, _, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, testenv.TestEnvTime, db, stateStore)
+	k, ctx, _ := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, testenv.TestEnvTime, db, stateStore)
 	return k, ctx
 }
 
@@ -108,7 +126,7 @@ func CfevestingKeeperTestUtil(t *testing.T) (*cfevestingtestutils.C4eVestingKeep
 func CfevestingKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eVestingKeeperUtils, *keeper.Keeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	k, ctx, cdc, key := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, testenv.TestEnvTime, db, stateStore)
-	utils := NewExtendedC4eVestingKeeperUtils(t, k, cdc, key)
+	k, ctx, additionalData := CfevestingKeeperWithBlockHeightAndTimeAndStore(t, 0, testenv.TestEnvTime, db, stateStore)
+	utils := NewExtendedC4eVestingKeeperUtils(t, k, additionalData.ProtoCodec, additionalData.KVStoreKey, additionalData.Subspace)
 	return &utils, k, ctx
 }

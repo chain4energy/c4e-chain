@@ -157,7 +157,7 @@ export const ContinuousVestingPeriod = {
   },
 };
 
-function createBaseRepeatedContinuousVestingAccount(): PeriodicContinuousVestingAccount {
+function createBasePeriodicContinuousVestingAccount(): PeriodicContinuousVestingAccount {
   return { baseVestingAccount: undefined, startTime: 0, vestingPeriods: [] };
 }
 
@@ -178,7 +178,7 @@ export const PeriodicContinuousVestingAccount = {
   decode(input: _m0.Reader | Uint8Array, length?: number): PeriodicContinuousVestingAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRepeatedContinuousVestingAccount();
+    const message = createBasePeriodicContinuousVestingAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -228,7 +228,7 @@ export const PeriodicContinuousVestingAccount = {
   fromPartial<I extends Exact<DeepPartial<PeriodicContinuousVestingAccount>, I>>(
     object: I,
   ): PeriodicContinuousVestingAccount {
-    const message = createBaseRepeatedContinuousVestingAccount();
+    const message = createBasePeriodicContinuousVestingAccount();
     message.baseVestingAccount = (object.baseVestingAccount !== undefined && object.baseVestingAccount !== null)
       ? BaseVestingAccount.fromPartial(object.baseVestingAccount)
       : undefined;

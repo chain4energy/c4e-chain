@@ -108,7 +108,7 @@ func (h *C4eVestingUtils) MessageCreateGenesisVestingPool(ctx sdk.Context, addre
 
 }
 
-func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context, toAddress sdk.AccAddress,
+func (h *C4eVestingUtils) SendToPeriodicContinuousVestingAccount(ctx sdk.Context, toAddress sdk.AccAddress,
 	amount math.Int, free sdk.Dec, startTime int64, endTime int64) {
 	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
 	moduleBalance := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
@@ -139,7 +139,7 @@ func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccount(ctx sdk.Context
 	claimAccount, ok := h.helperAccountKeeper.GetAccount(ctx, toAddress).(*cfevestingtypes.PeriodicContinuousVestingAccount)
 	require.True(h.t, ok)
 	newPeriods := append(previousPeriods, cfevestingtypes.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: coins})
-	h.VerifyRepeatedContinuousVestingAccount(ctx, toAddress, previousOriginalVesting.Add(coins...), startTime, endTime, newPeriods)
+	h.VerifyPeriodicContinuousVestingAccount(ctx, toAddress, previousOriginalVesting.Add(coins...), startTime, endTime, newPeriods)
 	require.NoError(h.t, claimAccount.Validate())
 }
 
@@ -175,7 +175,7 @@ func (h *C4eVestingUtils) RemoveVestingPoolReservation(ctx sdk.Context, address 
 	}
 }
 
-func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccountError(ctx sdk.Context, toAddress sdk.AccAddress,
+func (h *C4eVestingUtils) SendToPeriodicContinuousVestingAccountError(ctx sdk.Context, toAddress sdk.AccAddress,
 	amount math.Int, free sdk.Dec, startTime int64, endTime int64, errorMessage string) {
 	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
 	moduleBalance := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
@@ -198,7 +198,7 @@ func (h *C4eVestingUtils) SendToRepeatedContinuousVestingAccountError(ctx sdk.Co
 	require.EqualValues(h.t, accountBefore, accountAfter)
 }
 
-func (h *C4eVestingUtils) VerifyRepeatedContinuousVestingAccount(ctx sdk.Context, address sdk.AccAddress,
+func (h *C4eVestingUtils) VerifyPeriodicContinuousVestingAccount(ctx sdk.Context, address sdk.AccAddress,
 	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod) {
 
 	claimAccount, ok := h.helperAccountKeeper.GetAccount(ctx, address).(*cfevestingtypes.PeriodicContinuousVestingAccount)

@@ -207,7 +207,7 @@ export const ContinuousVestingPeriod = {
   },
 };
 
-const baseRepeatedContinuousVestingAccount: object = { start_time: 0 };
+const basePeriodicContinuousVestingAccount: object = { start_time: 0 };
 
 export const PeriodicContinuousVestingAccount = {
   encode(
@@ -236,7 +236,7 @@ export const PeriodicContinuousVestingAccount = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseRepeatedContinuousVestingAccount,
+      ...basePeriodicContinuousVestingAccount,
     } as PeriodicContinuousVestingAccount;
     message.vesting_periods = [];
     while (reader.pos < end) {
@@ -266,7 +266,7 @@ export const PeriodicContinuousVestingAccount = {
 
   fromJSON(object: any): PeriodicContinuousVestingAccount {
     const message = {
-      ...baseRepeatedContinuousVestingAccount,
+      ...basePeriodicContinuousVestingAccount,
     } as PeriodicContinuousVestingAccount;
     message.vesting_periods = [];
     if (
@@ -316,7 +316,7 @@ export const PeriodicContinuousVestingAccount = {
     object: DeepPartial<PeriodicContinuousVestingAccount>
   ): PeriodicContinuousVestingAccount {
     const message = {
-      ...baseRepeatedContinuousVestingAccount,
+      ...basePeriodicContinuousVestingAccount,
     } as PeriodicContinuousVestingAccount;
     message.vesting_periods = [];
     if (
