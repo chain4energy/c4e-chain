@@ -1,4 +1,5 @@
 /* eslint-disable */
+import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Timestamp } from "../../google/protobuf/timestamp";
 
@@ -18,6 +19,12 @@ export interface VestingPool {
   withdrawn: string;
   sent: string;
   genesisPool: boolean;
+  reservations: VestingPoolReservation[];
+}
+
+export interface VestingPoolReservation {
+  id: number;
+  amount: string;
 }
 
 function createBaseAccountVestingPools(): AccountVestingPools {
@@ -94,6 +101,7 @@ function createBaseVestingPool(): VestingPool {
     withdrawn: "",
     sent: "",
     genesisPool: false,
+    reservations: [],
   };
 }
 
@@ -122,6 +130,9 @@ export const VestingPool = {
     }
     if (message.genesisPool === true) {
       writer.uint32(64).bool(message.genesisPool);
+    }
+    for (const v of message.reservations) {
+      VestingPoolReservation.encode(v!, writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -157,6 +168,9 @@ export const VestingPool = {
         case 8:
           message.genesisPool = reader.bool();
           break;
+        case 9:
+          message.reservations.push(VestingPoolReservation.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -175,6 +189,9 @@ export const VestingPool = {
       withdrawn: isSet(object.withdrawn) ? String(object.withdrawn) : "",
       sent: isSet(object.sent) ? String(object.sent) : "",
       genesisPool: isSet(object.genesisPool) ? Boolean(object.genesisPool) : false,
+      reservations: Array.isArray(object?.reservations)
+        ? object.reservations.map((e: any) => VestingPoolReservation.fromJSON(e))
+        : [],
     };
   },
 
@@ -188,6 +205,11 @@ export const VestingPool = {
     message.withdrawn !== undefined && (obj.withdrawn = message.withdrawn);
     message.sent !== undefined && (obj.sent = message.sent);
     message.genesisPool !== undefined && (obj.genesisPool = message.genesisPool);
+    if (message.reservations) {
+      obj.reservations = message.reservations.map((e) => e ? VestingPoolReservation.toJSON(e) : undefined);
+    } else {
+      obj.reservations = [];
+    }
     return obj;
   },
 
@@ -201,9 +223,84 @@ export const VestingPool = {
     message.withdrawn = object.withdrawn ?? "";
     message.sent = object.sent ?? "";
     message.genesisPool = object.genesisPool ?? false;
+    message.reservations = object.reservations?.map((e) => VestingPoolReservation.fromPartial(e)) || [];
     return message;
   },
 };
+
+function createBaseVestingPoolReservation(): VestingPoolReservation {
+  return { id: 0, amount: "" };
+}
+
+export const VestingPoolReservation = {
+  encode(message: VestingPoolReservation, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id);
+    }
+    if (message.amount !== "") {
+      writer.uint32(18).string(message.amount);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): VestingPoolReservation {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseVestingPoolReservation();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long);
+          break;
+        case 2:
+          message.amount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): VestingPoolReservation {
+    return { id: isSet(object.id) ? Number(object.id) : 0, amount: isSet(object.amount) ? String(object.amount) : "" };
+  },
+
+  toJSON(message: VestingPoolReservation): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = Math.round(message.id));
+    message.amount !== undefined && (obj.amount = message.amount);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<VestingPoolReservation>, I>>(object: I): VestingPoolReservation {
+    const message = createBaseVestingPoolReservation();
+    message.id = object.id ?? 0;
+    message.amount = object.amount ?? "";
+    return message;
+  },
+};
+
+declare var self: any | undefined;
+declare var window: any | undefined;
+declare var global: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
+  throw "Unable to locate global object";
+})();
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
@@ -236,6 +333,18 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
+}
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
 }
 
 function isSet(value: any): boolean {

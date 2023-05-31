@@ -4,6 +4,7 @@ import (
 	"cosmossdk.io/math"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	cfeclaimcli "github.com/chain4energy/c4e-chain/x/cfeclaim/client/cli"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
@@ -44,7 +45,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 
 	src := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(src)
-
+	free := sdk.ZeroDec()
 	startTime := time.Now().Add(time.Second * 30)
 	endTime := startTime.Add(helpers.RandDurationBetween(r, 40, 45))
 	lockupPeriod := helpers.RandDurationBetween(r, 10000, 10000000)
@@ -55,7 +56,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	inititalClaimFreeAmount := math.ZeroInt().String()
 	campaignType := types.DefaultCampaign
 	vestingPoolName := ""
-	node.CreateCampaign(randName, randDescription, campaignType.String(), feegrantAmount, inititalClaimFreeAmount,
+	node.CreateCampaign(randName, randDescription, campaignType.String(), "false", feegrantAmount, inititalClaimFreeAmount, free.String(),
 		startTime.Format(cfeclaimcli.TimeLayout), endTime.Format(cfeclaimcli.TimeLayout), lockupPeriod.String(), vestingPeriod.String(), vestingPoolName, creatorWalletName)
 
 	campaigns := node.QueryCampaigns()
@@ -67,23 +68,23 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 
 	node.EnableCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
 
-	userEntires := []types.ClaimRecord{
+	claimRecordEntries := []types.ClaimRecordEntry{
 		{
-			Address: receiverAddress,
-			Amount:  sdk.NewCoins(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance/4))),
+			UserEntryAddress: receiverAddress,
+			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance/4))),
 		},
 	}
-	proposalJSON, err := util.NewClaimRecordsListJson(userEntires)
+	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
 	s.NoError(err)
-	node.AddClaimRecords(strconv.Itoa(campaignId), proposalJSON, creatorWalletName)
-
-	node.ClaimInitialMission(strconv.Itoa(campaignId), "", receiverWalletName)
+	node.AddClaimRecords(strconv.Itoa(campaignId), userEntriesJSONString, creatorWalletName)
+	destinationAddress := testcosmos.CreateRandomAccAddress()
+	node.ClaimInitialMission(strconv.Itoa(campaignId), destinationAddress, receiverWalletName)
 	node.ClaimMission(strconv.Itoa(campaignId), "1", receiverWalletName)
 
 	node.CloseCampaign(strconv.Itoa(campaignId), creatorWalletName)
 }
 
-func (s *ClaimSetupSuite) TestDynamicCampaign() {
+func (s *ClaimSetupSuite) TestCampaignRemovableClaimRecords() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
@@ -99,7 +100,7 @@ func (s *ClaimSetupSuite) TestDynamicCampaign() {
 
 	src := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(src)
-
+	free := sdk.ZeroDec()
 	startTime := time.Now().Add(time.Second * 30)
 	endTime := startTime.Add(helpers.RandDurationBetween(r, 40, 45))
 	lockupPeriod := helpers.RandDurationBetween(r, 10000, 10000000)
@@ -110,7 +111,7 @@ func (s *ClaimSetupSuite) TestDynamicCampaign() {
 	inititalClaimFreeAmount := math.ZeroInt().String()
 	campaignType := types.DefaultCampaign
 	vestingPoolName := ""
-	node.CreateCampaign(randName, randDescription, campaignType.String(), feegrantAmount, inititalClaimFreeAmount,
+	node.CreateCampaign(randName, randDescription, campaignType.String(), "true", feegrantAmount, inititalClaimFreeAmount, free.String(),
 		startTime.Format(cfeclaimcli.TimeLayout), endTime.Format(cfeclaimcli.TimeLayout), lockupPeriod.String(), vestingPeriod.String(), vestingPoolName, creatorWalletName)
 
 	campaigns := node.QueryCampaigns()
@@ -122,17 +123,17 @@ func (s *ClaimSetupSuite) TestDynamicCampaign() {
 
 	node.EnableCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
 
-	userEntires := []types.ClaimRecord{
+	claimRecordEntries := []types.ClaimRecordEntry{
 		{
-			Address: receiverAddress,
-			Amount:  sdk.NewCoins(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance/4))),
+			UserEntryAddress: receiverAddress,
+			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance/4))),
 		},
 	}
-	proposalJSON, err := util.NewClaimRecordsListJson(userEntires)
+	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
 	s.NoError(err)
-	node.AddClaimRecords(strconv.Itoa(campaignId), proposalJSON, creatorWalletName)
+	node.AddClaimRecords(strconv.Itoa(campaignId), userEntriesJSONString, creatorWalletName)
 
-	node.ClaimInitialMission(strconv.Itoa(campaignId), "", receiverWalletName)
+	node.ClaimInitialMission(strconv.Itoa(campaignId), receiverAddress, receiverWalletName)
 	node.ClaimMission(strconv.Itoa(campaignId), "1", receiverWalletName)
 
 	node.CloseCampaign(strconv.Itoa(campaignId), creatorWalletName)
@@ -158,14 +159,14 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
 	randVestingPoolName := helpers.RandStringOfLength(5)
-	vestingPoolDuration := 10 * time.Second
+	vestingPoolDuration := helpers.RandDurationBetween(r, 10000, 10000000)
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
 	vestingType := vestingTypes[0]
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), vestingPoolDuration.String(), vestingType.Name, creatorWalletName)
-
+	free := sdk.ZeroDec()
 	startTime := time.Now().Add(time.Second * 30)
-	endTime := startTime.Add(helpers.RandDurationBetween(r, 40, 45))
+	endTime := startTime.Add(helpers.RandDurationBetween(r, 20, 30))
 	randName := helpers.RandStringOfLength(10)
 	randDescription := helpers.RandStringOfLength(10)
 	feegrantAmount := math.NewInt(2500000).String()
@@ -175,7 +176,7 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	s.NoError(err)
 	vestingDuration, err := cfevestingmoduletypes.DurationFromUnits(cfevestingmoduletypes.PeriodUnit(vestingType.VestingPeriodUnit), vestingType.VestingPeriod)
 	s.NoError(err)
-	node.CreateCampaign(randName, randDescription, campaignType.String(), feegrantAmount, inititalClaimFreeAmount,
+	node.CreateCampaign(randName, randDescription, campaignType.String(), "false", feegrantAmount, inititalClaimFreeAmount, free.String(),
 		startTime.Format(cfeclaimcli.TimeLayout), endTime.Format(cfeclaimcli.TimeLayout), lockupDuration.String(), vestingDuration.String(), randVestingPoolName, creatorWalletName)
 
 	campaigns := node.QueryCampaigns()
@@ -187,17 +188,17 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 
 	node.EnableCampaign(strconv.Itoa(campaignId), "", "", creatorWalletName)
 
-	userEntires := []types.ClaimRecord{
+	userEntires := []types.ClaimRecordEntry{
 		{
-			Address: receiverAddress,
-			Amount:  sdk.NewCoins(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance/4))),
+			UserEntryAddress: receiverAddress,
+			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance/4))),
 		},
 	}
-	proposalJSON, err := util.NewClaimRecordsListJson(userEntires)
+	userEntriesJSONString, err := util.NewClaimRecordsListJson(userEntires)
 	s.NoError(err)
-	node.AddClaimRecords(strconv.Itoa(campaignId), proposalJSON, creatorWalletName)
+	node.AddClaimRecords(strconv.Itoa(campaignId), userEntriesJSONString, creatorWalletName)
 
-	node.ClaimInitialMission(strconv.Itoa(campaignId), "", receiverWalletName)
+	node.ClaimInitialMission(strconv.Itoa(campaignId), receiverAddress, receiverWalletName)
 	node.ClaimMission(strconv.Itoa(campaignId), "1", receiverWalletName)
 
 	node.CloseCampaign(strconv.Itoa(campaignId), creatorWalletName)

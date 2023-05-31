@@ -319,16 +319,16 @@ func (n *NodeConfig) MoveAvailableVestingByDenomsError(toAddress string, denoms 
 	n.LogActionF("successfully moved all available vesting by denoms to account %s", toAddress)
 }
 
-func (n *NodeConfig) CreateCampaign(name, description, campaignType, feegrantAmount, initialClaimFreeAmount, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, from string) {
+func (n *NodeConfig) CreateCampaign(name, description, campaignType, removableClaimRecords, feegrantAmount, initialClaimFreeAmount, free, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, from string) {
 	n.LogActionF("creating campaign")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "create-campaign", name, description, campaignType, feegrantAmount, initialClaimFreeAmount, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "create-campaign", name, description, campaignType, removableClaimRecords, feegrantAmount, initialClaimFreeAmount, free, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
 	n.LogActionF("successfully created campaign %s", name)
 }
 
-func (n *NodeConfig) AddUserEntriesToCampaign(campaignId, claimRecordsJsonFile, from string) {
+func (n *NodeConfig) AddClaimRecordsToCampaign(campaignId, claimRecordsJsonFile, from string) {
 	n.LogActionF("add claim records")
 	cmd := []string{"c4ed", "tx", "cfeclaim", "add-claim-records", campaignId, claimRecordsJsonFile, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
@@ -348,7 +348,7 @@ func (n *NodeConfig) AddMission(campaignId, name, description, missionType, weig
 
 func (n *NodeConfig) EnableCampaign(campaignId, optionalStartTime, optionalEndTime, from string) {
 	n.LogActionF("start campaign")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "start-campaign", campaignId, optionalStartTime, optionalEndTime, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "enable-campaign", campaignId, optionalStartTime, optionalEndTime, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
@@ -373,13 +373,13 @@ func (n *NodeConfig) ClaimMission(campaignId, missionId, from string) {
 	n.LogActionF("successfully claimed mission %s from campaign %s", missionId, campaignId)
 }
 
-func (n *NodeConfig) ClaimInitialMission(campaignId, optionalAddressToClaim, from string) {
+func (n *NodeConfig) ClaimInitialMission(campaignId, destinationAddress, from string) {
 	n.LogActionF("claim initial mission")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "initial-claim", campaignId, optionalAddressToClaim, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "initial-claim", campaignId, destinationAddress, fmt.Sprintf("--from=%s", from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
-	n.LogActionF("successfully claimed initial mission from campaign %s with optional address %s", campaignId, optionalAddressToClaim)
+	n.LogActionF("successfully claimed initial mission from campaign %s with optional address %s", campaignId, destinationAddress)
 }
 
 func (n *NodeConfig) DelegateToValidator(validatorAddress, amount, from string) {

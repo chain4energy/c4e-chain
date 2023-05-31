@@ -1,4 +1,5 @@
 /* eslint-disable */
+import Long from "long";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
@@ -21,6 +22,7 @@ export interface NewVestingPeriodFromVestingPool {
   vestingPoolName: string;
   amount: string;
   restartVesting: string;
+  periodId: number;
 }
 
 export interface WithdrawAvailable {
@@ -167,7 +169,7 @@ export const NewVestingPool = {
 };
 
 function createBaseNewVestingPeriodFromVestingPool(): NewVestingPeriodFromVestingPool {
-  return { owner: "", address: "", vestingPoolName: "", amount: "", restartVesting: "" };
+  return { owner: "", address: "", vestingPoolName: "", amount: "", restartVesting: "", periodId: 0 };
 }
 
 export const NewVestingPeriodFromVestingPool = {
@@ -186,6 +188,9 @@ export const NewVestingPeriodFromVestingPool = {
     }
     if (message.restartVesting !== "") {
       writer.uint32(42).string(message.restartVesting);
+    }
+    if (message.periodId !== 0) {
+      writer.uint32(48).uint64(message.periodId);
     }
     return writer;
   },
@@ -212,6 +217,9 @@ export const NewVestingPeriodFromVestingPool = {
         case 5:
           message.restartVesting = reader.string();
           break;
+        case 6:
+          message.periodId = longToNumber(reader.uint64() as Long);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -227,6 +235,7 @@ export const NewVestingPeriodFromVestingPool = {
       vestingPoolName: isSet(object.vestingPoolName) ? String(object.vestingPoolName) : "",
       amount: isSet(object.amount) ? String(object.amount) : "",
       restartVesting: isSet(object.restartVesting) ? String(object.restartVesting) : "",
+      periodId: isSet(object.periodId) ? Number(object.periodId) : 0,
     };
   },
 
@@ -237,6 +246,7 @@ export const NewVestingPeriodFromVestingPool = {
     message.vestingPoolName !== undefined && (obj.vestingPoolName = message.vestingPoolName);
     message.amount !== undefined && (obj.amount = message.amount);
     message.restartVesting !== undefined && (obj.restartVesting = message.restartVesting);
+    message.periodId !== undefined && (obj.periodId = Math.round(message.periodId));
     return obj;
   },
 
@@ -249,6 +259,7 @@ export const NewVestingPeriodFromVestingPool = {
     message.vestingPoolName = object.vestingPoolName ?? "";
     message.amount = object.amount ?? "";
     message.restartVesting = object.restartVesting ?? "";
+    message.periodId = object.periodId ?? 0;
     return message;
   },
 };
@@ -378,6 +389,25 @@ export const VestingSplit = {
   },
 };
 
+declare var self: any | undefined;
+declare var window: any | undefined;
+declare var global: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
+  throw "Unable to locate global object";
+})();
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -388,6 +418,18 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
