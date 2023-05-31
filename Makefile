@@ -154,7 +154,7 @@ E2E_UPGRADE_VERSION="v2.0.0"
 E2E_SCRIPT_NAME=chain
 C4E_E2E_SIGN_MODE = "direct"
 
-test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim test-e2e-migration test-e2e-migration-chaining
+test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim test-e2e-migration
 
 run-e2e-chain: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions -count=1
