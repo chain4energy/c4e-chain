@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
-	"github.com/chain4energy/c4e-chain/x/cfefingerprint/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -17,21 +17,18 @@ func (k Keeper) VerifyReferencePayloadLink(goCtx context.Context, req *types.Que
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// fetch data published on ledger
-	ledgerPayloadLinkValue, err := k.GetPayloadLink(ctx, req.ReferenceId)
+	result, err := k.VerifyPayloadLink(ctx, req.ReferenceId, req.PayloadHash)
 	if err != nil {
-		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "false"}, err
+		_ = result
+		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "false"}, sdkerrors.Wrap(sdkerrors.ErrLogic, "failed to verify payload hash")
 	}
 
-	// calculate expeced data based on payload hash
-	// so called reference value
-	expectedPayloadLinkValue := util.CalculateHash(util.HashConcat(req.ReferenceId, req.PayloadHash))
-
-	// verify ledger matches the payloadhash
-	if expectedPayloadLinkValue == ledgerPayloadLinkValue {
+	if result {
 		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "true"}, nil
 	}
 
-	// something failed
+	// verification failed
+	ctx.Logger().Debug("PayloadLink verification failed: payloadHash:", req.PayloadHash)
+
 	return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "false"}, nil
 }

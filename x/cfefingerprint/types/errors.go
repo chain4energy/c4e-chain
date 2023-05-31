@@ -8,5 +8,6 @@ import (
 
 // x/cfefingerprint module sentinel errors
 var (
-	ErrAlreadyExists = errors.Register(ModuleName, 3, "entity already exists")
+	ErrAlreadyExists = errors.Register(ModuleName, 1, "entity already exists")
+	ErrParam         = errors.Register(ModuleName, 10, "wrong param value")
 )

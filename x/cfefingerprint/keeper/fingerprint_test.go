@@ -11,9 +11,9 @@ import (
 func TestGetPayloadLink(t *testing.T) {
 	k, ctx := testkeeper.CfefingerprintKeeper(t)
 
-	referenceID := "4e0f41db62899e37307c959e7cc2de62def852609428667d3682609c7dd10582"
+	referenceKey := "4e0f41db62899e37307c959e7cc2de62def852609428667d3682609c7dd10582"
 
-	result := k.CheckIfPayloadLinkExists(ctx, referenceID)
+	result := k.CheckIfPayloadLinkExists(ctx, referenceKey)
 
 	require.EqualValues(t, false, !result)
 }
@@ -21,16 +21,16 @@ func TestGetPayloadLink(t *testing.T) {
 func TestAddPayloadLink(t *testing.T) {
 	k, ctx := testkeeper.CfefingerprintKeeper(t)
 
-	referenceID := "4e0f41db62899e37307c959e7cc2de62def852609428667d3682609c7dd10582"
 	payloadHash := "YWFhYWZmZjQ0cnJmZmZkc2RlZGVmZXRldAo="
-	// create reference payload link
-	referenceKey := util.CalculateHash(referenceID)
-	referenceValue := util.CalculateHash(util.HashConcat(referenceID, payloadHash))
 
-	// store payload link
-	k.AppendPayloadLink(ctx, referenceKey, referenceValue)
+	// create reference payload link
+	referenceID, err := k.CreatePayloadLink(ctx, payloadHash)
+	if err != nil {
+		panic(err)
+	}
 
 	// Check if a Payload Link was stored at the given key
+	referenceKey := util.CalculateHash(referenceID)
 	result := k.CheckIfPayloadLinkExists(ctx, referenceKey)
 
 	require.EqualValues(t, false, result)
@@ -39,32 +39,24 @@ func TestAddPayloadLink(t *testing.T) {
 func TestVerifyPayloadLink(t *testing.T) {
 	k, ctx := testkeeper.CfefingerprintKeeper(t)
 
-	referenceID := "4e0f41db62899e37307c959e7cc2de62def852609428667d3682609c7dd10582"
 	payloadHash := "YWFhYWZmZjQ0cnJmZmZkc2RlZGVmZXRldAo="
+
 	// create reference payload link
-	referenceKey := util.CalculateHash(referenceID)
-	referenceValue := util.CalculateHash(util.HashConcat(referenceID, payloadHash))
-
-	// store payload link
-	k.AppendPayloadLink(ctx, referenceKey, referenceValue)
-
-	// Check if a Payload Link was stored at the given key
-	result := k.CheckIfPayloadLinkExists(ctx, referenceKey)
-	if result {
-		require.Fail(t, "PayloadLink not found")
+	referenceID, err := k.CreatePayloadLink(ctx, payloadHash)
+	if err != nil {
+		panic(err)
 	}
 
-	// fetch data published on ledger
-	ledgerPayloadLink, err := k.GetPayloadLink(ctx, referenceID)
+	// Check if a Payload Link was stored at the given key
+	referenceKey := util.CalculateHash(referenceID)
+	result := k.CheckIfPayloadLinkExists(ctx, referenceKey)
+	require.EqualValues(t, false, result)
+
+	// verify payloadHash
+	result, err = k.VerifyPayloadLink(ctx, referenceID, payloadHash)
 	if err != nil {
 		require.Fail(t, err.Error())
 	}
-
-	// calculate expeced data based on payload hash
-	// so called reference value
-	expectedPayloadLink := util.CalculateHash(util.HashConcat(referenceID, payloadHash))
-
-	// verify ledger matches the payloadhash
-	require.Equal(t, expectedPayloadLink, ledgerPayloadLink)
+	require.Equal(t, true, result)
 
 }

@@ -59,11 +59,6 @@ func CfefingerprintKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 
 	var accountKeeper types.AccountKeeper
 
-	// Provided: application is created
-	// accountKeeper = authkeeper.NewAccountKeeper(
-	// 	app.AppCodec(), app.GetKey(authtypes.StoreKey), app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
-	// )
-
 	// module account permissions
 	maccPerms := map[string][]string{
 		authtypes.FeeCollectorName:     nil,
