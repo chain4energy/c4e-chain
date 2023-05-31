@@ -116,7 +116,7 @@ message MsgAddMissionResponse {
 message MsgAddClaimRecords {
   string owner = 1;
   uint64 campaign_id = 2;
-  repeated ClaimRecord claim_records = 3;
+  repeated ClaimRecordEntry claim_record_entries = 3;
 }
 
 message MsgAddClaimRecordsResponse {}

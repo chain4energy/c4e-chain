@@ -72,7 +72,6 @@ func CfevestingKeeperWithBlockHeightAndTimeAndStore(t *testing.T, blockHeight in
 		cdc,
 		storeKey,
 		memStoreKey,
-		paramsSubspace,
 		nil,
 		nil,
 		nil,

@@ -110,7 +110,6 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 		testHelper.App.AppCodec(),
 		testHelper.App.GetKey(cfevestingtypes.StoreKey),
 		testHelper.App.GetKey(cfevestingtypes.MemStoreKey),
-		testHelper.App.GetSubspace(cfevestingtypes.ModuleName),
 		testHelper.App.BankKeeper,
 		testHelper.App.StakingKeeper,
 		testHelper.App.AccountKeeper,

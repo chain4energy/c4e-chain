@@ -82,8 +82,8 @@ func (h *ContextC4eClaimUtils) ExportGenesis(genState cfeclaimtypes.GenesisState
 	h.C4eClaimKeeperUtils.ExportGenesis(h.testContext.GetContext(), genState)
 }
 
-func (h *ContextC4eClaimUtils) AddClaimRecords(srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord) {
-	h.C4eClaimUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, claimEntries)
+func (h *ContextC4eClaimUtils) AddClaimRecords(srcAddress sdk.AccAddress, campaignId uint64, claimRecordEntries []*cfeclaimtypes.ClaimRecordEntry) {
+	h.C4eClaimUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, claimRecordEntries)
 }
 
 func (h *ContextC4eClaimUtils) DeleteClaimRecord(ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, amoutDiff sdk.Coins) {
@@ -98,8 +98,8 @@ func (h *ContextC4eClaimUtils) AddCoinsToCampaignOwnerAcc(srcAddress sdk.AccAddr
 	h.BankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), amountOfCoins, srcAddress)
 }
 
-func (h *ContextC4eClaimUtils) AddClaimRecordsError(srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord, errorMessage string) {
-	h.C4eClaimUtils.AddClaimRecordsError(h.testContext.GetContext(), srcAddress, campaignId, claimEntries, errorMessage)
+func (h *ContextC4eClaimUtils) AddClaimRecordsError(srcAddress sdk.AccAddress, campaignId uint64, claimRecordEntries []*cfeclaimtypes.ClaimRecordEntry, errorMessage string) {
+	h.C4eClaimUtils.AddClaimRecordsError(h.testContext.GetContext(), srcAddress, campaignId, claimRecordEntries, errorMessage)
 }
 
 func (h *ContextC4eClaimUtils) ClaimInitial(claimer sdk.AccAddress, campaignId uint64, expectedAmount int64) {

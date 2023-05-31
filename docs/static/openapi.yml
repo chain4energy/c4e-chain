@@ -47977,6 +47977,28 @@ definitions:
         items:
           type: string
           format: uint64
+  chain4energy.c4echain.cfeclaim.ClaimRecordEntry:
+    type: object
+    properties:
+      campaign_id:
+        type: string
+        format: uint64
+      user_entry_address:
+        type: string
+      amount:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cfeclaim.Mission:
     type: object
     properties:

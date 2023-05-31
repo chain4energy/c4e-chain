@@ -39,9 +39,9 @@ func NewC4eClaimUtils(t require.TestingT, helpeCfeclaimmodulekeeper *cfeclaimmod
 		FeegrantUtils: feegrantUtils, DistributionUtils: distributionUtils, helperCfevestingKeeper: helperCfevestingKeeper}
 }
 
-func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, claimRecords []*cfeclaimtypes.ClaimRecord) {
+func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, claimRecordEntries []*cfeclaimtypes.ClaimRecordEntry) {
 	amountSum := sdk.NewCoins()
-	for _, claimRecord := range claimRecords {
+	for _, claimRecord := range claimRecordEntries {
 		amountSum = amountSum.Add(claimRecord.Amount...)
 	}
 	usersEntriesBefore := h.helpeCfeclaimkeeper.GetAllUsersEntries(ctx)
@@ -64,7 +64,7 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 	if campaignBefore.CampaignType == cfeclaimtypes.VestingPoolCampaign {
 		_, vestingPoolBefore, _ = h.helperCfevestingKeeper.GetAccountVestingPool(ctx, srcAddress.String(), campaignBefore.VestingPoolName)
 	}
-	require.NoError(h.t, h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimRecords))
+	require.NoError(h.t, h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimRecordEntries))
 	campaignAfter, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	campaignBefore.CampaignCurrentAmount = campaignBefore.CampaignCurrentAmount.Add(amountSum...)
 	campaignBefore.CampaignTotalAmount = campaignBefore.CampaignTotalAmount.Add(amountSum...)
@@ -79,14 +79,14 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 			}
 		}
 	}
-	require.EqualValues(h.t, claimRecordBeforeCount+len(claimRecords), userEntryAfterCount)
+	require.EqualValues(h.t, claimRecordBeforeCount+len(claimRecordEntries), userEntryAfterCount)
 
-	for _, claimRecord := range claimRecords {
-		userEntry, found := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimRecord.Address)
+	for _, claimRecord := range claimRecordEntries {
+		userEntry, found := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimRecord.UserEntryAddress)
 		require.True(h.t, found)
 		var userEntryBefore *cfeclaimtypes.UserEntry = nil
 		for _, before := range usersEntriesBefore {
-			if before.Address == claimRecord.Address {
+			if before.Address == claimRecord.UserEntryAddress {
 				userEntryBefore = &before
 				break
 			}
@@ -96,7 +96,7 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 		} else {
 			require.EqualValues(h.t, len(userEntryBefore.ClaimRecords)+1, len(userEntry.ClaimRecords))
 		}
-		require.EqualValues(h.t, claimRecord.Address, userEntry.Address)
+		require.EqualValues(h.t, claimRecord.UserEntryAddress, userEntry.Address)
 		if userEntryBefore == nil {
 			require.EqualValues(h.t, campaignId, userEntry.ClaimRecords[0].CampaignId)
 			require.True(h.t, claimRecord.Amount.IsEqual(userEntry.ClaimRecords[0].Amount))
@@ -111,7 +111,7 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 	var feegrantCoins sdk.Coins
 	if campaignBefore.FeegrantAmount.GT(math.ZeroInt()) {
 		_, feegrandModuleAddress := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaignId)
-		feegrantSum := campaignBefore.FeegrantAmount.MulRaw(int64(len(claimRecords)))
+		feegrantSum := campaignBefore.FeegrantAmount.MulRaw(int64(len(claimRecordEntries)))
 		feegrantCoins = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, feegrantSum))
 		h.BankUtils.VerifyAccountAllBalances(ctx, feegrandModuleAddress, feegrantCoins)
 	}
@@ -196,20 +196,20 @@ func (h *C4eClaimUtils) DeleteClaimRecordError(ctx sdk.Context, ownerAddress sdk
 	h.BankUtils.VerifyAccountAllBalances(ctx, ownerAddress, srcBalance)
 }
 
-func (h *C4eClaimUtils) AddClaimRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord, errorMessage string) {
+func (h *C4eClaimUtils) AddClaimRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, claimRecordEntries []*cfeclaimtypes.ClaimRecordEntry, errorMessage string) {
 	ownerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, srcAddress)
 	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
-	err := h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimEntries)
+	err := h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimRecordEntries)
 	require.EqualError(h.t, err, errorMessage)
 
 	h.BankUtils.VerifyModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName, moduleBalanceBefore)
 	h.BankUtils.VerifyAccountAllBalances(ctx, srcAddress, ownerBalanceBefore)
 }
 
-func (h *C4eClaimUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord, errorMessage string, addRequiredCoinsToSrc bool) {
+func (h *C4eClaimUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sdk.AccAddress, campaignId uint64, claimRecordEntries []*cfeclaimtypes.ClaimRecordEntry, errorMessage string, addRequiredCoinsToSrc bool) {
 	if addRequiredCoinsToSrc {
 		sum := sdk.NewCoins()
-		for _, claimRecord := range claimEntries {
+		for _, claimRecord := range claimRecordEntries {
 			sum = sum.Add(claimRecord.Amount...)
 		}
 		h.BankUtils.AddCoinsToAccount(ctx, sum, srcAddress)
@@ -220,7 +220,7 @@ func (h *C4eClaimUtils) AddCampaignRecordsError(ctx sdk.Context, srcAddress sdk.
 
 	moduleBalance := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
 
-	require.EqualError(h.t, h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimEntries), errorMessage)
+	require.EqualError(h.t, h.helpeCfeclaimkeeper.AddClaimRecords(ctx, srcAddress.String(), campaignId, claimRecordEntries), errorMessage)
 
 	usersEntriesAfter := h.helpeCfeclaimkeeper.GetAllUsersEntries(ctx)
 	require.ElementsMatch(h.t, usersEntriesBefore, usersEntriesAfter)

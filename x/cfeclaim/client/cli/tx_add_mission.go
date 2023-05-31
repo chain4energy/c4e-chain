@@ -19,7 +19,7 @@ var _ = strconv.Itoa(0)
 
 func CmdAddMission() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-mission-to-campaign [campaign-id] [name] [description] [mission-type] [weight] [optional-claim-start-date]",
+		Use:   "add-mission [campaign-id] [name] [description] [mission-type] [weight] [optional-claim-start-date]",
 		Short: "Add new mission to a campaign",
 		Long: strings.TrimSpace(fmt.Sprintf(`Add a new mission to a campaign.
 Requirements:
@@ -36,7 +36,7 @@ Arguments:
   [optional-claim-start-date]  Optional claim start date for the mission
 
 Example:
-$ %s tx %s add-mission-to-campaign 1 "Mission Name" "Mission Description" "delegate" "0.5"" "2006-01-02 15:04:05 -0700 MST" --from mykey
+$ %s tx %s add-mission 1 "Mission Name" "Mission Description" "delegate" "0.5"" "2006-01-02 15:04:05 -0700 MST" --from mykey
 `, version.AppName, types.ModuleName)),
 		Args: cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {

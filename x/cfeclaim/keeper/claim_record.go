@@ -10,21 +10,21 @@ import (
 	"strconv"
 )
 
-func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) error {
-	k.Logger(ctx).Debug("add user entries", "owner", owner, "campaignId", campaignId, "claimRecordsLength", len(claimRecords))
+func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecordEntries []*types.ClaimRecordEntry) error {
+	k.Logger(ctx).Debug("add user entries", "owner", owner, "campaignId", campaignId, "claimRecordsLength", len(claimRecordEntries))
 	feegrantDenom := k.stakingKeeper.BondDenom(ctx)
 
-	campaign, err := k.ValidateAddClaimRecords(ctx, owner, campaignId, claimRecords)
+	campaign, err := k.ValidateAddClaimRecords(ctx, owner, campaignId, claimRecordEntries)
 	if err != nil {
 		return err
 	}
 
-	usersEntries, amountSum, err := k.validateClaimRecords(ctx, campaign, claimRecords)
+	usersEntries, amountSum, err := k.validateClaimRecordEntries(ctx, campaign, claimRecordEntries)
 	if err != nil {
 		return err
 	}
 
-	feegrantSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecords)), feegrantDenom)
+	feegrantSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecordEntries)), feegrantDenom)
 	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
 
 	if campaign.CampaignType == types.VestingPoolCampaign {
@@ -40,7 +40,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	campaign.IncrementCampaignTotalAmount(amountSum)
 	k.SetCampaign(ctx, *campaign)
 
-	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantSum, claimRecords, feegrantDenom)
+	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantSum, claimRecordEntries, feegrantDenom)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 		Owner:                   owner,
 		CampaignId:              strconv.FormatUint(campaignId, 10),
 		ClaimRecordsTotalAmount: amountSum.String(),
-		ClaimRecordsNumber:      strconv.FormatInt(int64(len(claimRecords)), 10),
+		ClaimRecordsNumber:      strconv.FormatInt(int64(len(claimRecordEntries)), 10),
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(event)
@@ -130,7 +130,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	return nil
 }
 
-func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) (*types.Campaign, error) {
+func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecordEntries []*types.ClaimRecordEntry) (*types.Campaign, error) {
 	campaign, err := k.MustGetCampaign(ctx, campaignId)
 	if err != nil {
 		return nil, err
@@ -141,19 +141,19 @@ func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignI
 	if err = campaign.ValidateNotEnded(ctx.BlockTime()); err != nil {
 		return nil, err
 	}
-	if err = types.ValidateAddClaimRecords(claimRecords); err != nil {
+	if err = types.ValidateClaimRecordEntries(claimRecordEntries); err != nil {
 		return nil, err
 	}
 	return campaign, nil
 }
 
-func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, claimRecords []*types.ClaimRecord) (usersEntries []*types.UserEntry, amountSum sdk.Coins, err error) {
-	for i, claimRecord := range claimRecords {
+func (k Keeper) validateClaimRecordEntries(ctx sdk.Context, campaign *types.Campaign, claimRecordEntries []*types.ClaimRecordEntry) (usersEntries []*types.UserEntry, amountSum sdk.Coins, err error) {
+	for i, claimRecord := range claimRecordEntries {
 		amountSum = amountSum.Add(claimRecord.Amount...)
 
-		userEntry, err := k.addClaimRecordToUserEntry(ctx, campaign.Id, claimRecord.Address, claimRecord.Amount)
+		userEntry, err := k.addClaimRecordToUserEntry(ctx, campaign.Id, claimRecord.UserEntryAddress, claimRecord.Amount)
 		if err != nil {
-			return nil, nil, types.WrapClaimRecordIndex(err, i)
+			return nil, nil, errors.Wrapf(err, "claim record entry index %d", i)
 		}
 		usersEntries = append(usersEntries, userEntry)
 	}

@@ -2,7 +2,6 @@ package types
 
 import (
 	"cosmossdk.io/errors"
-	"fmt"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -15,11 +14,11 @@ const (
 
 var _ sdk.Msg = &MsgAddClaimRecords{}
 
-func NewMsgAddClaimRecords(onwer string, campaignId uint64, claimEntries []*ClaimRecord) *MsgAddClaimRecords {
+func NewMsgAddClaimRecords(onwer string, campaignId uint64, claimRecordEntries []*ClaimRecordEntry) *MsgAddClaimRecords {
 	return &MsgAddClaimRecords{
-		Owner:        onwer,
-		CampaignId:   campaignId,
-		ClaimRecords: claimEntries,
+		Owner:              onwer,
+		CampaignId:         campaignId,
+		ClaimRecordEntries: claimRecordEntries,
 	}
 }
 
@@ -49,7 +48,7 @@ func (msg *MsgAddClaimRecords) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-	return ValidateAddClaimRecords(msg.ClaimRecords)
+	return ValidateClaimRecordEntries(msg.ClaimRecordEntries)
 }
 
 var _ sdk.Msg = &MsgDeleteClaimRecord{}
@@ -90,27 +89,23 @@ func (msg *MsgDeleteClaimRecord) ValidateBasic() error {
 	return nil
 }
 
-func ValidateAddClaimRecords(claimRecords []*ClaimRecord) error {
+func ValidateClaimRecordEntries(claimRecords []*ClaimRecordEntry) error {
 	for i, claimRecord := range claimRecords {
-		if err := ValidateAddClaimRecord(claimRecord); err != nil {
-			return WrapClaimRecordIndex(err, i)
+		if err := ValidateClaimRecordEntry(claimRecord); err != nil {
+			return errors.Wrapf(err, "claim record entry index %d", i)
 		}
 	}
 	return nil
 }
 
-func ValidateAddClaimRecord(claimRecord *ClaimRecord) error {
-	if claimRecord.Address == "" {
-		return errors.Wrapf(c4eerrors.ErrParam, "claim record empty address")
+func ValidateClaimRecordEntry(claimRecordEntry *ClaimRecordEntry) error {
+	if claimRecordEntry.UserEntryAddress == "" {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry empty user entry address")
 	}
-	if !claimRecord.Amount.IsAllPositive() {
-		return errors.Wrapf(c4eerrors.ErrParam, "claim record must has at least one coin and all amounts must be positive")
+	if !claimRecordEntry.Amount.IsAllPositive() {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry must has at least one coin and all amounts must be positive")
 	}
 	return nil
-}
-
-func WrapClaimRecordIndex(err error, index int) error {
-	return errors.Wrap(err, fmt.Sprintf("claim records index %d", index))
 }
 
 func ValidateUserEntry(userEntry UserEntry) error {
@@ -126,8 +121,7 @@ func ValidateUserEntry(userEntry UserEntry) error {
 func ValidateUserEntryClaimRecords(claimRecords []*ClaimRecord) error {
 	for i, claimRecord := range claimRecords {
 		if !claimRecord.Amount.IsAllPositive() {
-			return WrapClaimRecordIndex(
-				errors.Wrapf(c4eerrors.ErrParam, "claim record must has at least one coin and all amounts must be positive"), i)
+			return errors.Wrapf(c4eerrors.ErrParam, "claim record at index %d must has at least one coin and all amounts must be positive", i)
 		}
 	}
 	return nil

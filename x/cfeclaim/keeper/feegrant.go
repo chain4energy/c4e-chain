@@ -18,21 +18,21 @@ func CreateFeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
 	return moduleAddressName, authtypes.NewModuleAddress(moduleAddressName)
 }
 
-func calculateFeegrantFeesSum(feegrantAmount math.Int, claimRecordsNumber int64, feegrantDenom string) sdk.Coins {
+func calculateFeegrantFeesSum(feegrantAmount math.Int, claimRecordEntriesNumber int64, feegrantDenom string) sdk.Coins {
 	if feegrantAmount.GT(math.ZeroInt()) {
-		return sdk.NewCoins(sdk.NewCoin(feegrantDenom, feegrantAmount.MulRaw(claimRecordsNumber)))
+		return sdk.NewCoins(sdk.NewCoin(feegrantDenom, feegrantAmount.MulRaw(claimRecordEntriesNumber)))
 	}
 	return nil
 }
 
-func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecords []*types.ClaimRecord, feegrantDenom string) error {
+func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecordEntries []*types.ClaimRecordEntry, feegrantDenom string) error {
 	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
 		acc := k.SetupNewFeegrantAccount(ctx, campaign.Id)
 
 		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc, feegrantFeesSum); err != nil {
 			return err
 		}
-		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc, claimRecords, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {
+		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc, claimRecordEntries, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {
 			return err
 		}
 	}
@@ -40,7 +40,7 @@ func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, c
 	return nil
 }
 
-func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddress sdk.AccAddress, claimEntries []*types.ClaimRecord, grantAmount sdk.Coins) error {
+func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddress sdk.AccAddress, claimRecordEntries []*types.ClaimRecordEntry, grantAmount sdk.Coins) error {
 	basicAllowance, err := codectypes.NewAnyWithValue(&feegranttypes.BasicAllowance{
 		SpendLimit: grantAmount,
 	})
@@ -53,8 +53,8 @@ func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddres
 		AllowedMessages: []string{sdk.MsgTypeURL(&types.MsgInitialClaim{})},
 	}
 
-	for _, claimRecord := range claimEntries {
-		granteeAddress, _ := sdk.AccAddressFromBech32(claimRecord.Address)
+	for _, claimRecord := range claimRecordEntries {
+		granteeAddress, _ := sdk.AccAddressFromBech32(claimRecord.UserEntryAddress)
 		existingFeeAllowance, _ := k.feeGrantKeeper.GetAllowance(ctx, moduleAddress, granteeAddress)
 		if existingFeeAllowance == nil {
 			if err = k.feeGrantKeeper.GrantAllowance(ctx, moduleAddress, granteeAddress, &allowedMsgAllowance); err != nil {

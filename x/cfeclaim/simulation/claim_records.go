@@ -39,9 +39,9 @@ func SimulateMsgAddClaimRecords(
 		}
 
 		addClaimRecordsMsg := &types.MsgAddClaimRecords{
-			Owner:        ownerAddress.String(),
-			CampaignId:   uint64(len(campaigns) - 1),
-			ClaimRecords: createNClaimRecords(100, accs),
+			Owner:              ownerAddress.String(),
+			CampaignId:         uint64(len(campaigns) - 1),
+			ClaimRecordEntries: createNClaimRecordEntries(100, accs),
 		}
 
 		_, err = msgServer.AddClaimRecords(msgServerCtx, addClaimRecordsMsg)
@@ -78,11 +78,11 @@ func SimulateMsgDeleteClaimRecord(
 			k.Logger(ctx).Error("SIMULATION: Start campaign error", err.Error())
 			return simtypes.NoOpMsg(types.ModuleName, EnableCampaignMsg.Type(), ""), nil, nil
 		}
-		claimRecords := createNClaimRecords(100, accs)
+		claimRecordEntries := createNClaimRecordEntries(100, accs)
 		addClaimRecordsMsg := &types.MsgAddClaimRecords{
-			Owner:        ownerAddress.String(),
-			CampaignId:   uint64(len(campaigns) - 1),
-			ClaimRecords: claimRecords,
+			Owner:              ownerAddress.String(),
+			CampaignId:         uint64(len(campaigns) - 1),
+			ClaimRecordEntries: claimRecordEntries,
 		}
 
 		_, err = msgServer.AddClaimRecords(msgServerCtx, addClaimRecordsMsg)
@@ -94,7 +94,7 @@ func SimulateMsgDeleteClaimRecord(
 		deleteClaimRecordMsg := &types.MsgDeleteClaimRecord{
 			Owner:       ownerAddress.String(),
 			CampaignId:  uint64(len(campaigns) - 1),
-			UserAddress: claimRecords[helpers.RandomInt(r, len(claimRecords))].Address,
+			UserAddress: claimRecordEntries[helpers.RandomInt(r, len(claimRecordEntries))].UserEntryAddress,
 		}
 
 		_, err = msgServer.DeleteClaimRecord(msgServerCtx, deleteClaimRecordMsg)
@@ -108,15 +108,15 @@ func SimulateMsgDeleteClaimRecord(
 	}
 }
 
-func createNClaimRecords(n int, accs []simtypes.Account) []*types.ClaimRecord {
-	var claimRecords []*types.ClaimRecord
+func createNClaimRecordEntries(n int, accs []simtypes.Account) []*types.ClaimRecordEntry {
+	var claimRecords []*types.ClaimRecordEntry
 	for i := 0; i < n; i++ {
 		src := rand.NewSource(time.Now().UnixNano())
 		r := rand.New(src)
 		claimRecordAccount, _ := simtypes.RandomAcc(r, accs)
-		claimRecords = append(claimRecords, &types.ClaimRecord{
-			Address: claimRecordAccount.Address.String(),
-			Amount:  sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(helpers.RandomInt(r, 1000)))),
+		claimRecords = append(claimRecords, &types.ClaimRecordEntry{
+			UserEntryAddress: claimRecordAccount.Address.String(),
+			Amount:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(helpers.RandomInt(r, 1000)))),
 		})
 	}
 	return claimRecords

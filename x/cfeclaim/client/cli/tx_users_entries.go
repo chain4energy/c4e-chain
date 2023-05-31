@@ -25,7 +25,7 @@ The command takes a campaign ID and a JSON file containing the claim entries to 
 Example claim-entries-json-file:
 [
 	{
-		"address": "c4e128dcl5738ffy08kxxgcxyj6sp7zpyu32n4u32k",
+		"user_entry_address": "c4e128dcl5738ffy08kxxgcxyj6sp7zpyu32n4u32k",
 		"amount": [
 			{
 				"denom": "uc4e",

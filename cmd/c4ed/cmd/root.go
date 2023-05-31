@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/chain4energy/c4e-chain/app"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
+	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	"io"
 	"os"
 	"path/filepath"
@@ -45,6 +46,7 @@ func NewRootCmd() (*cobra.Command, appparams.EncodingConfig) {
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
+		WithAccountRetriever(types.AccountRetriever{}).
 		WithInput(os.Stdin).
 		WithHomeDir(app.DefaultNodeHome).
 		WithViper("")

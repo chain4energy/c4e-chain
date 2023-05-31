@@ -22,7 +22,7 @@ func TestCampaignCurrentAmountSumCheckInvariantCorrect(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -34,7 +34,7 @@ func TestCampaignCurrentAmountSumCheckInvariantError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)

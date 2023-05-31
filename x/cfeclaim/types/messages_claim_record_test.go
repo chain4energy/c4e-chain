@@ -21,15 +21,15 @@ func TestMsgAddClaimRecords_ValidateBasic(t *testing.T) {
 		{
 			name: "Valid MsgAddClaimRecords",
 			msg: types.MsgAddClaimRecords{
-				Owner:        sample.AccAddress(),
-				ClaimRecords: []*types.ClaimRecord{{Address: sample.AccAddress(), Amount: sample.Coins()}},
+				Owner:              sample.AccAddress(),
+				ClaimRecordEntries: []*types.ClaimRecordEntry{{UserEntryAddress: sample.AccAddress(), Amount: sample.Coins()}},
 			},
 		},
 		{
 			name: "Invalid Owner",
 			msg: types.MsgAddClaimRecords{
-				Owner:        "invalid_address",
-				ClaimRecords: []*types.ClaimRecord{{Address: sample.AccAddress(), Amount: sample.Coins()}},
+				Owner:              "invalid_address",
+				ClaimRecordEntries: []*types.ClaimRecordEntry{{UserEntryAddress: sample.AccAddress(), Amount: sample.Coins()}},
 			},
 			err:    sdkerrors.ErrInvalidAddress,
 			errMsg: "invalid owner address (decoding bech32 failed: invalid separator index -1): invalid address",
@@ -37,20 +37,20 @@ func TestMsgAddClaimRecords_ValidateBasic(t *testing.T) {
 		{
 			name: "Invalid ClaimRecord Address",
 			msg: types.MsgAddClaimRecords{
-				Owner:        sample.AccAddress(),
-				ClaimRecords: []*types.ClaimRecord{{Address: "", Amount: sample.Coins()}},
+				Owner:              sample.AccAddress(),
+				ClaimRecordEntries: []*types.ClaimRecordEntry{{UserEntryAddress: "", Amount: sample.Coins()}},
 			},
 			err:    c4eerrors.ErrParam,
-			errMsg: "claim records index 0: claim record empty address: wrong param value",
+			errMsg: "claim record entry index 0: claim record entry empty user entry address: wrong param value",
 		},
 		{
 			name: "Invalid ClaimRecord Amount",
 			msg: types.MsgAddClaimRecords{
-				Owner:        sample.AccAddress(),
-				ClaimRecords: []*types.ClaimRecord{{Address: sample.AccAddress(), Amount: sdk.Coins{}}},
+				Owner:              sample.AccAddress(),
+				ClaimRecordEntries: []*types.ClaimRecordEntry{{UserEntryAddress: sample.AccAddress(), Amount: sdk.Coins{}}},
 			},
 			err:    c4eerrors.ErrParam,
-			errMsg: "claim records index 0: claim record must has at least one coin and all amounts must be positive: wrong param value",
+			errMsg: "claim record entry index 0: claim record entry must has at least one coin and all amounts must be positive: wrong param value",
 		},
 	}
 	for _, tt := range tests {

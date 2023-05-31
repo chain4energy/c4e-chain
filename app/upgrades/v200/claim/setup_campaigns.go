@@ -92,7 +92,7 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 		return err
 	}
 
-	teamdropEntries, err := readEntriesFromJson("teamdrop.json")
+	teamdropEntries, err := readClaimRecordEntriesFromJson("teamdrop.json")
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 		return err
 	}
 
-	stakedropEntries, err := readEntriesFromJson("stakedrop.json")
+	stakedropEntries, err := readClaimRecordEntriesFromJson("stakedrop.json")
 	if err != nil {
 		return err
 	}
@@ -108,7 +108,7 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 		return err
 	}
 
-	santadropEntries, err := readEntriesFromJson("santadrop.json")
+	santadropEntries, err := readClaimRecordEntriesFromJson("santadrop.json")
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 		return err
 	}
 
-	gleamdropEntries, err := readEntriesFromJson("gleamdrop.json")
+	gleamdropEntries, err := readClaimRecordEntriesFromJson("gleamdrop.json")
 	if err != nil {
 		return err
 	}
@@ -132,15 +132,15 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 	return nil
 }
 
-func readEntriesFromJson(fileName string) ([]*types.ClaimRecord, error) {
+func readClaimRecordEntriesFromJson(fileName string) ([]*types.ClaimRecordEntry, error) {
 	data, err := f.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
-	var claimEntires []*types.ClaimRecord
-	err = json.Unmarshal(data, &claimEntires)
+	var claimRecordEntries []*types.ClaimRecordEntry
+	err = json.Unmarshal(data, &claimRecordEntries)
 	if err != nil {
 		return nil, err
 	}
-	return claimEntires, nil
+	return claimRecordEntries, nil
 }

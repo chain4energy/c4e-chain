@@ -13,7 +13,7 @@ func TestCorrectInitialClaim(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -25,7 +25,7 @@ func TestCorrectmanyInitialClaims(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
@@ -53,7 +53,7 @@ func TestCorrectmanyInitialClaimsForDifferentCampaigns(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -68,7 +68,7 @@ func TestInitialClaimAlreadyClaimed(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -81,7 +81,7 @@ func TestInitialClaimRecordDosentExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
 
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses[:9], 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses[:9], 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -94,7 +94,7 @@ func TestInitialClaimWrongCampaign(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
 
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses[:9], 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses[:9], 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
@@ -109,7 +109,7 @@ func TestInitialClaimWrongCampaign(t *testing.T) {
 func TestInitialClaimCampaignDidntStartYet(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.StartTime = testHelper.Context.BlockTime().Add(time.Second * 5)
 	mission := prepareTestMission()
@@ -126,7 +126,7 @@ func TestInitialClaimCampaignDidntStartYet(t *testing.T) {
 func TestInitialClaimCampaignNotEnabled(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
@@ -144,7 +144,7 @@ func TestInitialClaimCampaignNotEnabled(t *testing.T) {
 func TestInitialClaimCampaignIsOver(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
@@ -161,7 +161,7 @@ func TestInitialClaimCampaignIsOver(t *testing.T) {
 func TestInitialClaimFreeInitialAmount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	campaign.InitialClaimFreeAmount = math.NewInt(100000)
@@ -177,7 +177,7 @@ func TestInitialClaimFreeInitialAmount(t *testing.T) {
 func TestInitialClaim2Campaigns(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
@@ -201,7 +201,7 @@ func TestInitialClaim2Campaigns(t *testing.T) {
 func TestInitialClaimFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	campaign.FeegrantAmount = math.NewInt(100000)

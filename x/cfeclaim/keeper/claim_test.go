@@ -15,7 +15,7 @@ import (
 func TestCompleteDelegationMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 
@@ -38,7 +38,7 @@ func TestCompleteDelegationMission(t *testing.T) {
 func TestCompleteVoteMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	mission.MissionType = cfeclaimtypes.MissionVote
@@ -59,7 +59,7 @@ func TestCompleteVoteMission(t *testing.T) {
 func TestClaimMissionDoesntExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
@@ -78,7 +78,7 @@ func TestClaimMissionDoesntExist(t *testing.T) {
 func TestClaimCampaignDoesntExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
@@ -97,7 +97,7 @@ func TestClaimCampaignDoesntExist(t *testing.T) {
 func TestClaimNoInitialClaimError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
@@ -115,7 +115,7 @@ func TestClaimNoInitialClaimError(t *testing.T) {
 func TestClaimMissionCampaignHasEnded(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 
@@ -140,7 +140,7 @@ func TestClaimMissionCampaignHasEnded(t *testing.T) {
 func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAMount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.InitialClaimFreeAmount = math.NewInt(100)
 	mission := prepareTestMission()
@@ -163,7 +163,7 @@ func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAMount(t *
 func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAmountAndFree(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.InitialClaimFreeAmount = math.NewInt(100)
 	campaign.Free = sdk.MustNewDecFromStr("0.2")
@@ -187,7 +187,7 @@ func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAmountAndF
 func TestClaimMissionWithTypeClaim(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	mission.MissionType = cfeclaimtypes.MissionClaim
@@ -209,7 +209,7 @@ func TestClaimMissionWithTypeClaim(t *testing.T) {
 func TestClaimMissionAlreadyClaimed(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	mission.MissionType = cfeclaimtypes.MissionClaim
@@ -232,7 +232,7 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 func TestFullCampaign(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 
@@ -263,7 +263,7 @@ func TestFullCampaign(t *testing.T) {
 func TestClaimMissionWithTypeClaimRecordNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses[:10], 100000000)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses[:10], 100000000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
@@ -281,7 +281,7 @@ func TestClaimMissionWithTypeClaimRecordNotFound(t *testing.T) {
 func TestVestingPoolCampaignClaimMissionClaim(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, _ := createTestClaimRecords(acountsAddresses, 30)
+	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 
@@ -304,7 +304,7 @@ func TestVestingPoolCampaignClaimMissionClaim(t *testing.T) {
 func TestVestingPoolCampaignClaimMissionVote(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, _ := createTestClaimRecords(acountsAddresses, 30)
+	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 
@@ -328,7 +328,7 @@ func TestVestingPoolCampaignClaimMissionVote(t *testing.T) {
 func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)
-	claimEntries, _ := createTestClaimRecords(acountsAddresses, 30)
+	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 
@@ -355,7 +355,7 @@ func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 func TestVestingPoolCampaignClaimWrongAccountType(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, _ := createTestClaimRecords(acountsAddresses, 30)
+	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 

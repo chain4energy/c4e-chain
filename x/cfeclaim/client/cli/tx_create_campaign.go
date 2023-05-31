@@ -41,7 +41,7 @@ Arguments:
   [optional-vesting-pool-name] Optional name of the vesting pool
 
 Example:
-$ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "1000000"" "5000000"" "0.5" "2006-01-02 15:04:05 -0700 MST" "2006-01-02 15:04:05 -0700 MST" 720h 30h "Vesting Pool" --from mykey
+$ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "1000000"" "5000000"" "0.5" "2006-01-02 15:04:05 -0700 MST" "2006-01-02 15:04:05 -0700 MST" 720h 30h "" --from mykey
 `, version.AppName, types.ModuleName)),
 		Args: cobra.ExactArgs(12),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
