@@ -22,7 +22,7 @@ func (k msgServer) CreateReferencePayloadLink(goCtx context.Context, msg *types.
 
 	referenceId, err := k.CreatePayloadLink(ctx, msg.PayloadHash)
 	if err != nil {
-		k.Logger(ctx).Error("move available vesting by denoms - validation error", "error", err)
+		k.Logger(ctx).Error("create reference payload link - creation error", "error", err)
 		return nil, err
 	}
 

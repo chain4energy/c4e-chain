@@ -5,7 +5,6 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -19,8 +18,8 @@ func (k Keeper) VerifyReferencePayloadLink(goCtx context.Context, req *types.Que
 
 	result, err := k.VerifyPayloadLink(ctx, req.ReferenceId, req.PayloadHash)
 	if err != nil {
-		_ = result
-		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "false"}, sdkerrors.Wrap(sdkerrors.ErrLogic, "failed to verify payload hash")
+		k.Logger(ctx).Error("verify reference payload link - validation error", "error", err)
+		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "false"}, err
 	}
 
 	if result {

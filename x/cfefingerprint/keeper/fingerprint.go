@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/errors"
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/util"
 
@@ -96,8 +97,7 @@ func (k Keeper) VerifyPayloadLink(ctx sdk.Context, referenceId, payloadHash stri
 	// fetch data published on ledger
 	ledgerPayloadLinkValue, err := k.GetPayloadLink(ctx, referenceId)
 	if err != nil {
-		k.Logger(ctx).Error("VerifyPayloadLink - failed to get payloadLink from KV store", "error", err)
-		return false, err
+		return false, errors.Wrapf(sdkerrors.ErrNotFound, "ledger payload link not found - referenceID %d, payloadHash %d", referenceId, payloadHash)
 	}
 
 	// calculate expeced data based on payload hash
