@@ -6,7 +6,7 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
-
+// Temporary message - to remove in the future
 func (k msgServer) CreateNewAccount(goCtx context.Context, msg *types.MsgCreateNewAccount) (*types.MsgCreateNewAccountResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

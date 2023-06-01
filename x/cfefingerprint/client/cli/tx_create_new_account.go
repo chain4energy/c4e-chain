@@ -12,6 +12,7 @@ import (
 
 var _ = strconv.Itoa(0)
 
+// Temporary message - to remove in the future
 func CmdCreateNewAccount() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-new-account [acc-address-string]",

@@ -10,6 +10,7 @@ const TypeMsgCreateNewAccount = "create_new_account"
 // This message type is temporary and mainly used for testing purposes. It will be removed in the future.
 var _ sdk.Msg = &MsgCreateNewAccount{}
 
+// Temporary message - to remove in the future
 func NewMsgCreateNewAccount(creator string, accAddressString string) *MsgCreateNewAccount {
 	return &MsgCreateNewAccount{
 		Creator:          creator,
