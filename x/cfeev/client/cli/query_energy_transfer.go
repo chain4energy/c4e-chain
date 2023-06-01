@@ -13,7 +13,7 @@ import (
 func CmdListEnergyTransfer() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list-energy-transfer",
-		Short: "list all energyTransfer",
+		Short: "list all energy transfer objects with all their properties",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 

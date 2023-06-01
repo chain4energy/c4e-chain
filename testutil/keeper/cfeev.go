@@ -58,7 +58,7 @@ func CfeevKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	cdc := codec.NewProtoCodec(registry)
 
 	encodingConfig := app.MakeEncodingConfig()
-	appCodec := encodingConfig.Marshaler
+	appCodec := encodingConfig.Codec
 
 	paramsSubspace := typesparams.NewSubspace(cdc,
 		types.Amino,

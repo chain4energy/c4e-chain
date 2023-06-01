@@ -1,7 +1,9 @@
 package cli
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"encoding/json"
 
@@ -10,6 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 )
@@ -17,10 +20,27 @@ import (
 var _ = strconv.Itoa(0)
 
 func CmdPublishEnergyTransferOffer() *cobra.Command {
+
 	cmd := &cobra.Command{
-		Use:   "publish-energy-transfer-offer [charger-id] [tariff] [location]",
-		Short: "Broadcast message publish-energy-transfer-offer",
-		Args:  cobra.ExactArgs(5),
+		Use:   "publish-energy-transfer-offer [charger-id] [tariff] [location] [name] [plug-type]",
+		Short: "Publish a new energy transfer offer that can be found by EV drivers",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Publish a new energy transfer offer that can be found by EV drivers.
+
+Arguments:
+  [charger-id] charger id specified on the charger
+  [tariff] tariff at which energy transfer will be billed
+  [location] charger location
+  [name] charger name
+  [plug-type] charger plug type
+
+Example:
+$ %s tx %s publish-energy-transfer-offer EVGC011221122GK0122 56 '{"latitude": "34.4", "longitude": "5.2"}' MySuperCharger 2
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argChargerId := args[0]
 			argTariff, err := cast.ToInt32E(args[1])
