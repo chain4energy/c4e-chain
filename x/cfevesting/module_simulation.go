@@ -34,6 +34,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				VestingPeriodUnit: "second",
 				LockupPeriod:      utils.RandInt64(simState.Rand, 10000),
 				LockupPeriodUnit:  "second",
+				Free:              sdk.MustNewDecFromStr("0.6"),
 			},
 			{
 				Name:              "New vesting1",
@@ -41,6 +42,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				VestingPeriodUnit: "second",
 				LockupPeriod:      utils.RandInt64(simState.Rand, 1000),
 				LockupPeriodUnit:  "second",
+				Free:              sdk.MustNewDecFromStr("0.5"),
 			},
 			{
 				Name:              "New vesting2",
@@ -48,6 +50,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				VestingPeriodUnit: "second",
 				LockupPeriod:      utils.RandInt64(simState.Rand, 100),
 				LockupPeriodUnit:  "second",
+				Free:              sdk.MustNewDecFromStr("0.4"),
 			},
 			{
 				Name:              "New vesting3",
@@ -55,6 +58,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				VestingPeriodUnit: "second",
 				LockupPeriod:      utils.RandInt64(simState.Rand, 10),
 				LockupPeriodUnit:  "second",
+				Free:              sdk.MustNewDecFromStr("0.3"),
 			},
 		},
 		AccountVestingPools: []*types.AccountVestingPools{},

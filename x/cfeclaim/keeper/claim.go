@@ -54,8 +54,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		AddressToClaim: destinationAddress,
 		Amount:         claimableAmount.String(),
 	}
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Debug("initial claim emit event error", "event", event, "error", err.Error())
 	}
 
@@ -97,8 +96,7 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 		MissionId:  strconv.FormatUint(missionId, 10),
 		Amount:     claimableAmount.String(),
 	}
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Debug("claim emit event error", "event", event, "error", err.Error())
 	}
 	return claimableAmount, nil

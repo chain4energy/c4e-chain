@@ -20,6 +20,7 @@ func (k msgServer) Claim(goCtx context.Context, msg *types.MsgClaim) (*types.Msg
 		msg.Claimer,
 	)
 	if err != nil {
+		k.Logger(ctx).Debug("claim", "err", err.Error())
 		return nil, err
 	}
 

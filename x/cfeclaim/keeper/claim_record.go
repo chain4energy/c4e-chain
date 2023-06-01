@@ -56,8 +56,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 		ClaimRecordsNumber:      strconv.FormatInt(int64(len(claimRecordEntries)), 10),
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Debug("add claim records emit event error", "event", event, "error", err.Error())
 	}
 

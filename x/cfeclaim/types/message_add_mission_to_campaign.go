@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const TypeMsgAddMissionToAidropCampaign = "add_mission_to_aidrop_campaign"
+const TypeMsgAddMission = "add_mission"
 
 var _ sdk.Msg = &MsgAddMission{}
 
@@ -39,7 +39,7 @@ func (msg *MsgAddMission) Route() string {
 }
 
 func (msg *MsgAddMission) Type() string {
-	return TypeMsgAddMissionToAidropCampaign
+	return TypeMsgAddMission
 }
 
 func (msg *MsgAddMission) GetSigners() []sdk.AccAddress {

@@ -100,17 +100,23 @@ type AppModule struct {
 
 	keeper           keeper.Keeper
 	cfevestingKeeper cfevestingkeeper.Keeper
+	accountKeeper    types.AccountKeeper
+	bankKeeper       types.BankKeeper
 }
 
 func NewAppModule(
 	cdc codec.Codec,
 	keeper keeper.Keeper,
 	cfevestingKeeper cfevestingkeeper.Keeper,
+	accountKeeper types.AccountKeeper,
+	bankKeeper types.BankKeeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic:   NewAppModuleBasic(cdc),
 		keeper:           keeper,
 		cfevestingKeeper: cfevestingKeeper,
+		accountKeeper:    accountKeeper,
+		bankKeeper:       bankKeeper,
 	}
 }
 

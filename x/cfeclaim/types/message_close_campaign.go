@@ -6,7 +6,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgCloseCampaign = "close_claim_campaign"
+const TypeMsgCloseCampaign = "close_campaign"
 
 var _ sdk.Msg = &MsgCloseCampaign{}
 

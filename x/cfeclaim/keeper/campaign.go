@@ -106,7 +106,7 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 }
 
 func (k Keeper) EnableCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) error {
-	k.Logger(ctx).Debug("start campaign", "owner", owner, "campaignId", campaignId)
+	k.Logger(ctx).Debug("enable campaign", "owner", owner, "campaignId", campaignId)
 
 	campaign, err := k.MustGetCampaign(ctx, campaignId)
 	if err != nil {

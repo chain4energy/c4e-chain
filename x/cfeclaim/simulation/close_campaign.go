@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/testutil/simulation"
 	"github.com/chain4energy/c4e-chain/testutil/utils"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"math/rand"
@@ -17,6 +18,8 @@ import (
 
 func SimulateMsgCloseCampaign(
 	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
 	cfevestingKeeper cfevestingkeeper.Keeper,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -35,6 +38,8 @@ func SimulateMsgCloseCampaign(
 			CampaignType:           types.CampaignType(utils.RandIntBetween(r, 1, 3)),
 			RemovableClaimRecords:  utils.RandomBool(r),
 			FeegrantAmount:         randomMathInt,
+			Enabled:                true,
+			Free:                   sdk.ZeroDec(),
 			InitialClaimFreeAmount: randomMathInt,
 			StartTime:              startTime,
 			EndTime:                endTime,
@@ -50,7 +55,6 @@ func SimulateMsgCloseCampaign(
 			_ = cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, math.NewInt(10000), time.Hour, randomVestingType)
 			campaign.VestingPoolName = randomVestingPoolName
 		}
-
 		k.AppendNewCampaign(ctx, campaign)
 
 		campaigns := k.GetAllCampaigns(ctx)
@@ -61,14 +65,10 @@ func SimulateMsgCloseCampaign(
 			CampaignId: campaignId,
 		}
 
-		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		_, err := msgServer.CloseCampaign(msgServerCtx, closeCampaignMsg)
-		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Close campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, closeCampaignMsg.Type(), ""), nil, nil
+		if err := simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, simAccount, closeCampaignMsg, chainID); err != nil {
+			return simtypes.NewOperationMsg(closeCampaignMsg, false, "", nil), nil, nil
 		}
 
-		k.Logger(ctx).Debug("SIMULATION: Close campaign - closed")
-		return simtypes.NewOperationMsg(closeCampaignMsg, true, "Close campaign simulation completed", nil), nil, nil
+		return simtypes.NewOperationMsg(closeCampaignMsg, true, "", nil), nil, nil
 	}
 }
