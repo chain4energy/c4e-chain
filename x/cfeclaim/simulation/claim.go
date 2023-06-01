@@ -3,7 +3,7 @@ package simulation
 import (
 	"cosmossdk.io/math"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"math/rand"
 	"strconv"
@@ -24,16 +24,16 @@ func SimulateMsgClaim(
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		startTime := ctx.BlockTime()
-		endTime := startTime.Add(time.Duration(helpers.RandIntBetween(r, 1000000, 10000000)))
+		endTime := startTime.Add(time.Duration(utils.RandIntBetween(r, 1000000, 10000000)))
 
-		lockupPeriod := time.Duration(helpers.RandomInt(r, nanoSecondsInDay))
-		vestingPeriod := time.Duration(helpers.RandomInt(r, nanoSecondsInDay))
-		randomMathInt := helpers.RandomAmount(r, math.NewInt(1000000))
+		lockupPeriod := time.Duration(utils.RandInt64(r, nanoSecondsInDay))
+		vestingPeriod := time.Duration(utils.RandInt64(r, nanoSecondsInDay))
+		randomMathInt := utils.RandomAmount(r, math.NewInt(1000000))
 		msgCreateCampaign := &types.MsgCreateCampaign{
 			Owner:                  simAccount.Address.String(),
-			Name:                   helpers.RandStringOfLengthCustomSeed(r, 10),
-			Description:            helpers.RandStringOfLengthCustomSeed(r, 10),
-			CampaignType:           types.CampaignType(helpers.RandomInt(r, 3)),
+			Name:                   simtypes.RandStringOfLength(r, 10),
+			Description:            simtypes.RandStringOfLength(r, 10),
+			CampaignType:           types.CampaignType(utils.RandInt64(r, 3)),
 			FeegrantAmount:         &randomMathInt,
 			InitialClaimFreeAmount: &randomMathInt,
 			StartTime:              &startTime,
@@ -43,8 +43,8 @@ func SimulateMsgClaim(
 			VestingPoolName:        "",
 		}
 		if msgCreateCampaign.CampaignType == types.VestingPoolCampaign {
-			randomVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
-			randVesingTypeId := helpers.RandomInt(r, 3)
+			randomVestingPoolName := simtypes.RandStringOfLength(r, 10)
+			randVesingTypeId := utils.RandInt64(r, 3)
 			randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))
 			_ = cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, math.NewInt(10000000), time.Hour, randomVestingType)
 			msgCreateCampaign.VestingPoolName = randomVestingPoolName
@@ -58,13 +58,13 @@ func SimulateMsgClaim(
 
 		campaigns := k.GetAllCampaigns(ctx)
 		campaignId := uint64(len(campaigns) - 1)
-		randomWeight := helpers.RandomDecAmount(r, sdk.NewDec(1))
+		randomWeight := utils.RandomDecAmount(r, sdk.NewDec(1))
 		AddMissionMsg := &types.MsgAddMission{
 			Owner:          simAccount.Address.String(),
 			CampaignId:     campaignId,
-			Name:           helpers.RandStringOfLengthCustomSeed(r, 10),
-			Description:    helpers.RandStringOfLengthCustomSeed(r, 10),
-			MissionType:    types.MissionType(helpers.RandIntBetween(r, 2, 5)),
+			Name:           simtypes.RandStringOfLength(r, 10),
+			Description:    simtypes.RandStringOfLength(r, 10),
+			MissionType:    types.MissionType(utils.RandIntBetween(r, 2, 5)),
 			Weight:         &randomWeight,
 			ClaimStartDate: nil,
 		}
@@ -97,7 +97,7 @@ func SimulateMsgClaim(
 			k.Logger(ctx).Error("SIMULATION: Add claim records campaign error", err.Error())
 			return simtypes.NoOpMsg(types.ModuleName, addClaimRecordsMsg.Type(), ""), nil, nil
 		}
-		claimerAddress := addClaimRecordsMsg.ClaimRecordEntries[helpers.RandomInt(r, len(addClaimRecordsMsg.ClaimRecordEntries))].UserEntryAddress
+		claimerAddress := addClaimRecordsMsg.ClaimRecordEntries[utils.RandInt64(r, len(addClaimRecordsMsg.ClaimRecordEntries))].UserEntryAddress
 		initialClaimMsg := &types.MsgInitialClaim{
 			Claimer:            claimerAddress,
 			CampaignId:         campaignId,

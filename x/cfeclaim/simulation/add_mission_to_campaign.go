@@ -1,7 +1,7 @@
 package simulation
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
@@ -24,14 +24,14 @@ func SimulateMsgAddMission(
 		}
 		campaigns := k.GetAllCampaigns(ctx)
 
-		for i := int64(0); i < helpers.RandomInt(r, 3); i++ {
-			randomWeight := helpers.RandomDecAmount(r, sdk.NewDec(1))
+		for i := int64(0); i < utils.RandInt64(r, 3); i++ {
+			randomWeight := utils.RandomDecAmount(r, sdk.NewDec(1))
 			AddMissionMsg := &types.MsgAddMission{
 				Owner:          ownerAddress.String(),
 				CampaignId:     uint64(len(campaigns) - 1),
-				Name:           helpers.RandStringOfLengthCustomSeed(r, 10),
-				Description:    helpers.RandStringOfLengthCustomSeed(r, 10),
-				MissionType:    types.MissionType(helpers.RandomInt(r, 4)),
+				Name:           simtypes.RandStringOfLength(r, 10),
+				Description:    simtypes.RandStringOfLength(r, 10),
+				MissionType:    types.MissionType(utils.RandInt64(r, 4)),
 				Weight:         &randomWeight,
 				ClaimStartDate: nil,
 			}

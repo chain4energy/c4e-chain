@@ -1,10 +1,9 @@
 package cfevesting
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
 	"math/rand"
-
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -31,30 +30,30 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		VestingTypes: []types.GenesisVestingType{
 			{
 				Name:              "New vesting0",
-				VestingPeriod:     helpers.RandomInt(simState.Rand, 10000),
+				VestingPeriod:     utils.RandInt64(simState.Rand, 10000),
 				VestingPeriodUnit: "second",
-				LockupPeriod:      helpers.RandomInt(simState.Rand, 10000),
+				LockupPeriod:      utils.RandInt64(simState.Rand, 10000),
 				LockupPeriodUnit:  "second",
 			},
 			{
 				Name:              "New vesting1",
-				VestingPeriod:     helpers.RandomInt(simState.Rand, 1000),
+				VestingPeriod:     utils.RandInt64(simState.Rand, 1000),
 				VestingPeriodUnit: "second",
-				LockupPeriod:      helpers.RandomInt(simState.Rand, 1000),
+				LockupPeriod:      utils.RandInt64(simState.Rand, 1000),
 				LockupPeriodUnit:  "second",
 			},
 			{
 				Name:              "New vesting2",
-				VestingPeriod:     helpers.RandomInt(simState.Rand, 100),
+				VestingPeriod:     utils.RandInt64(simState.Rand, 100),
 				VestingPeriodUnit: "second",
-				LockupPeriod:      helpers.RandomInt(simState.Rand, 100),
+				LockupPeriod:      utils.RandInt64(simState.Rand, 100),
 				LockupPeriodUnit:  "second",
 			},
 			{
 				Name:              "New vesting3",
-				VestingPeriod:     helpers.RandomInt(simState.Rand, 10),
+				VestingPeriod:     utils.RandInt64(simState.Rand, 10),
 				VestingPeriodUnit: "second",
-				LockupPeriod:      helpers.RandomInt(simState.Rand, 10),
+				LockupPeriod:      utils.RandInt64(simState.Rand, 10),
 				LockupPeriodUnit:  "second",
 			},
 		},
@@ -86,6 +85,11 @@ func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.Weig
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateSendToVestingAccount,
 		cfevestingpoolsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+	var weightSimulateCreateVestingPool = 30
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightSimulateCreateVestingPool,
+		cfevestingpoolsimulation.SimulateCreateVestingPool(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 	var weightSimulateVestingOperations = 30
 	operations = append(operations, simulation.NewWeightedOperation(

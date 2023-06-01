@@ -5,7 +5,7 @@ import (
 	"fmt"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/stretchr/testify/suite"
@@ -35,8 +35,8 @@ func (s *VestingSetupSuite) TestSendToVestingAccount() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	receiverWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	receiverWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	receiverAddress := node.CreateWallet(receiverWalletName)
 
@@ -49,7 +49,7 @@ func (s *VestingSetupSuite) TestSendToVestingAccount() {
 
 	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
-	randVestingPoolName := helpers.RandStringOfLength(5)
+	randVestingPoolName := utils.RandStringOfLength(5)
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
@@ -70,7 +70,7 @@ func (s *VestingSetupSuite) TestWithdrawAllAvailable() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
@@ -81,7 +81,7 @@ func (s *VestingSetupSuite) TestWithdrawAllAvailable() {
 
 	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
-	randVestingPoolName := helpers.RandStringOfLength(5)
+	randVestingPoolName := utils.RandStringOfLength(5)
 	vestingPoolDuration := 10 * time.Second
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), vestingPoolDuration.String(), vestingTypes[0].Name, creatorWalletName)
 
@@ -114,7 +114,7 @@ func (s *VestingSetupSuite) TestCreateVestingPool() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
@@ -125,7 +125,7 @@ func (s *VestingSetupSuite) TestCreateVestingPool() {
 
 	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
-	randVestingPoolName := helpers.RandStringOfLength(5)
+	randVestingPoolName := utils.RandStringOfLength(5)
 	vestingPoolDuration := 10 * time.Second
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), vestingPoolDuration.String(), vestingTypes[0].Name, creatorWalletName)
 
@@ -158,8 +158,8 @@ func (s *VestingSetupSuite) TestCreateVestingAccount() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	newVestingWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	newVestingWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 
@@ -193,9 +193,9 @@ func (s *VestingSetupSuite) TestSplitVesting() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	newVestingWalletName := helpers.RandStringOfLength(10)
-	splitVestingWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	newVestingWalletName := utils.RandStringOfLength(10)
+	splitVestingWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
@@ -226,9 +226,9 @@ func (s *VestingSetupSuite) TestMoveAvailableVesting() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	newVestingWalletName := helpers.RandStringOfLength(10)
-	splitVestingWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	newVestingWalletName := utils.RandStringOfLength(10)
+	splitVestingWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
@@ -258,9 +258,9 @@ func (s *VestingSetupSuite) TestMoveAvailableVestingByDenoms() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	newVestingWalletName := helpers.RandStringOfLength(10)
-	splitVestingWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	newVestingWalletName := utils.RandStringOfLength(10)
+	splitVestingWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
@@ -290,9 +290,9 @@ func (s *VestingSetupSuite) TestMoveAvailableVestingNoCoinsToMove() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	newVestingWalletName := helpers.RandStringOfLength(10)
-	splitVestingWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	newVestingWalletName := utils.RandStringOfLength(10)
+	splitVestingWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
@@ -322,9 +322,9 @@ func (s *VestingSetupSuite) TestMoveAvailableVestingByDenomNoCoinsToMove() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	newVestingWalletName := helpers.RandStringOfLength(10)
-	splitVestingWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	newVestingWalletName := utils.RandStringOfLength(10)
+	splitVestingWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
@@ -354,9 +354,9 @@ func (s *VestingSetupSuite) TestSplitVestingWrongAmount() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	newVestingWalletName := helpers.RandStringOfLength(10)
-	splitVestingWalletName := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	newVestingWalletName := utils.RandStringOfLength(10)
+	splitVestingWalletName := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
@@ -388,10 +388,10 @@ func (s *VestingSetupSuite) TestDoubleSplitVesting() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	newVestingWalletName := helpers.RandStringOfLength(10)
-	splitVestingWalletName1 := helpers.RandStringOfLength(10)
-	splitVestingWalletName2 := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	newVestingWalletName := utils.RandStringOfLength(10)
+	splitVestingWalletName1 := utils.RandStringOfLength(10)
+	splitVestingWalletName2 := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress1 := node.CreateWallet(splitVestingWalletName1)
@@ -425,10 +425,10 @@ func (s *VestingSetupSuite) TestDoubleMoveAvailableVesting() {
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	creatorWalletName := helpers.RandStringOfLength(10)
-	newVestingWalletName := helpers.RandStringOfLength(10)
-	splitVestingWalletName1 := helpers.RandStringOfLength(10)
-	splitVestingWalletName2 := helpers.RandStringOfLength(10)
+	creatorWalletName := utils.RandStringOfLength(10)
+	newVestingWalletName := utils.RandStringOfLength(10)
+	splitVestingWalletName1 := utils.RandStringOfLength(10)
+	splitVestingWalletName2 := utils.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress1 := node.CreateWallet(splitVestingWalletName1)

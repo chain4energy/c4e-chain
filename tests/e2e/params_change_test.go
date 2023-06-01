@@ -9,7 +9,7 @@ import (
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	testhelpers "github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	testhelpers "github.com/chain4energy/c4e-chain/testutil/utils"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"

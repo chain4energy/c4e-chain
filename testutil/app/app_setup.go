@@ -3,10 +3,9 @@ package app
 import (
 	"cosmossdk.io/math"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
-	"time"
-
 	"github.com/cosmos/cosmos-sdk/simapp"
 	dbm "github.com/tendermint/tm-db"
+	"time"
 
 	"encoding/json"
 

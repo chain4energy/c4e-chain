@@ -1,7 +1,7 @@
 package simulation
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
@@ -24,7 +24,7 @@ func SimulateMsgEnableCampaign(
 		}
 
 		var EnableCampaignOwner string
-		if helpers.RandomInt(r, 2) == 1 {
+		if utils.RandInt64(r, 2) == 1 {
 			simAccount2, _ := simtypes.RandomAcc(r, accs)
 			EnableCampaignOwner = simAccount2.Address.String()
 		} else {

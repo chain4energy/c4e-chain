@@ -1,7 +1,7 @@
 package cfedistributor
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"math/rand"
 
 	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
@@ -76,7 +76,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 }
 
 func RandomCollectorName(r *rand.Rand) subdistributortestutils.DestinationType {
-	randVal := helpers.RandIntBetween(r, 0, 3)
+	randVal := utils.RandIntBetween(r, 0, 3)
 	switch randVal {
 	case 0:
 		return subdistributortestutils.MainCollector

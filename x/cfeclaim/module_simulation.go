@@ -1,7 +1,6 @@
 package cfeclaim
 
 import (
-	cfeclaimsimulation "github.com/chain4energy/c4e-chain/x/cfeclaim/simulation"
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
@@ -51,50 +50,50 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-
-	var weightMsgClaim = 100
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgClaim,
-		cfeclaimsimulation.SimulateMsgClaim(am.keeper, am.cfevestingKeeper),
-	))
-
-	var weightMsgCreateCampaign = 10
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateCampaign,
-		cfeclaimsimulation.SimulateMsgCreateCampaign(am.keeper, am.cfevestingKeeper),
-	))
-
-	var weightMsgAddMission = 20
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgAddMission,
-		cfeclaimsimulation.SimulateMsgAddMission(am.keeper, am.cfevestingKeeper),
-	))
-
-	var weightMsgAddClaimRecords = 100
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgAddClaimRecords,
-		cfeclaimsimulation.SimulateMsgAddClaimRecords(am.keeper, am.cfevestingKeeper),
-	))
-
-	var weightMsgDeleteClaimRecord = 20
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteClaimRecord,
-		cfeclaimsimulation.SimulateMsgDeleteClaimRecord(am.keeper, am.cfevestingKeeper),
-	))
-
-	var weightMsgCloseCampaign = 20
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCloseCampaign,
-		cfeclaimsimulation.SimulateMsgCloseCampaign(am.keeper, am.cfevestingKeeper),
-	))
-
-	var weightMsgEnableCampaign = 20
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgEnableCampaign,
-		cfeclaimsimulation.SimulateMsgEnableCampaign(am.keeper, am.cfevestingKeeper),
-	))
-
-	// this line is used by starport scaffolding # simapp/module/operation
+	//
+	//var weightMsgClaim = 100
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgClaim,
+	//	cfeclaimsimulation.SimulateMsgClaim(am.keeper, am.cfevestingKeeper),
+	//))
+	//
+	//var weightMsgCreateCampaign = 10
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgCreateCampaign,
+	//	cfeclaimsimulation.SimulateMsgCreateCampaign(am.keeper, am.cfevestingKeeper),
+	//))
+	//
+	//var weightMsgAddMission = 20
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgAddMission,
+	//	cfeclaimsimulation.SimulateMsgAddMission(am.keeper, am.cfevestingKeeper),
+	//))
+	//
+	//var weightMsgAddClaimRecords = 100
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgAddClaimRecords,
+	//	cfeclaimsimulation.SimulateMsgAddClaimRecords(am.keeper, am.cfevestingKeeper),
+	//))
+	//
+	//var weightMsgDeleteClaimRecord = 20
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgDeleteClaimRecord,
+	//	cfeclaimsimulation.SimulateMsgDeleteClaimRecord(am.keeper, am.cfevestingKeeper),
+	//))
+	//
+	//var weightMsgCloseCampaign = 20
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgCloseCampaign,
+	//	cfeclaimsimulation.SimulateMsgCloseCampaign(am.keeper, am.cfevestingKeeper),
+	//))
+	//
+	//var weightMsgEnableCampaign = 20
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgEnableCampaign,
+	//	cfeclaimsimulation.SimulateMsgEnableCampaign(am.keeper, am.cfevestingKeeper),
+	//))
+	//
+	//// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
 }

@@ -1,21 +1,18 @@
 package simulation
 
 import (
-	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/simulation"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	simhelpers "github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"math/rand"
 )
 
 func SimulateSendToVestingAccount(
-	_ types.AccountKeeper,
+	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
 ) simtypes.Operation {
@@ -25,78 +22,32 @@ func SimulateSendToVestingAccount(
 		if len(allVestingPools) == 0 {
 			return simtypes.NewOperationMsg(&types.MsgSendToVestingAccount{}, false, "", nil), nil, nil
 		}
-		randVestingPoolId := helpers.RandomInt(r, len(allVestingPools))
+		randVestingPoolId := utils.RandInt64(r, len(allVestingPools))
+
 		accAddress := allVestingPools[randVestingPoolId].Owner
-		randMsgSendToVestinAccAmount := math.NewInt(helpers.RandomInt(r, 10))
-		claimRecordAccount, _ := simtypes.RandomAcc(r, accs)
+		simAccount, _ := simtypes.FindAccount(accs, sdk.MustAccAddressFromBech32(accAddress))
 		numOfPools := len(allVestingPools[randVestingPoolId].VestingPools)
 		var randVestingId int64 = 0
 		if numOfPools > 1 {
-			randVestingId = helpers.RandomInt(r, numOfPools-1)
-		}
-		msgSendToVestingAccount := &types.MsgSendToVestingAccount{
-			Owner:           accAddress,
-			ToAddress:       claimRecordAccount.Address.String(),
-			VestingPoolName: allVestingPools[randVestingPoolId].VestingPools[randVestingId].Name,
-			Amount:          randMsgSendToVestinAccAmount,
-			RestartVesting:  false,
+			randVestingId = utils.RandInt64(r, numOfPools-1)
 		}
 
-		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		_, err := msgServer.SendToVestingAccount(msgServerCtx, msgSendToVestingAccount)
+		spendable := bk.SpendableCoins(ctx, simAccount.Address)
+		if !spendable.IsAllPositive() {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSendToVestingAccount, "balance is negative"), nil, nil
+		}
+		amount, err := simtypes.RandPositiveInt(r, spendable.AmountOf(sdk.DefaultBondDenom))
 		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Send to vesting account error", err.Error())
-			return simtypes.NewOperationMsg(msgSendToVestingAccount, false, "", nil), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSendToVestingAccount, "unable to generate positive amount"), nil, err
 		}
 
-		k.Logger(ctx).Debug("SIMULATION: Send to vesting account - FINISHED")
-		return simtypes.NewOperationMsg(msgSendToVestingAccount, true, "", nil), nil, nil
+		simAccount2 := simtypes.RandomAccounts(r, 1)[0]
+		msg := types.NewMsgSendToVestingAccount(accAddress, simAccount2.Address.String(),
+			allVestingPools[randVestingPoolId].VestingPools[randVestingId].Name, amount, false)
+
+		if err = simulation.SendMessageWithFees(ctx, r, ak, app, simAccount, msg, spendable.Sub(sdk.NewCoin(sdk.DefaultBondDenom, amount)), chainID); err != nil {
+			return simtypes.NewOperationMsg(msg, false, "", nil), nil, nil
+		}
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
-}
-
-// sendMsgSend sends a transaction with a MsgSend from a provided random account.
-func sendMsgSend(
-	r *rand.Rand, app *baseapp.BaseApp, k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper,
-	msg *types.MsgSendToVestingAccount, ctx sdk.Context, chainID string, privkeys []cryptotypes.PrivKey,
-) error {
-	var (
-		fees sdk.Coins
-		err  error
-	)
-
-	from, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		return err
-	}
-
-	account := ak.GetAccount(ctx, from)
-	spendable := bk.SpendableCoins(ctx, account.GetAddress())
-
-	fees, err = simtypes.RandomFees(r, ctx, spendable)
-	if err != nil {
-		return err
-	}
-
-	txGen := simappparams.MakeTestEncodingConfig().TxConfig
-	tx, err := simhelpers.GenSignedMockTx(
-		r,
-		txGen,
-		[]sdk.Msg{msg},
-		fees,
-		helpers.DefaultGenTxGas,
-		chainID,
-		[]uint64{account.GetAccountNumber()},
-		[]uint64{account.GetSequence()},
-		privkeys...,
-	)
-	if err != nil {
-		return err
-	}
-
-	_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

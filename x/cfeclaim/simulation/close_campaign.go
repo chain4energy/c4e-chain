@@ -2,7 +2,7 @@ package simulation
 
 import (
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"math/rand"
 	"strconv"
@@ -27,13 +27,13 @@ func SimulateMsgCloseCampaign(
 
 		lockupPeriod := time.Hour * 10
 		vestingPeriod := time.Hour * 10
-		randomMathInt := helpers.RandomAmount(r, math.NewInt(1000000))
+		randomMathInt := utils.RandomAmount(r, math.NewInt(1000000))
 		campaign := types.Campaign{
 			Owner:                  simAccount.Address.String(),
-			Name:                   helpers.RandStringOfLengthCustomSeed(r, 10),
-			Description:            helpers.RandStringOfLengthCustomSeed(r, 10),
-			CampaignType:           types.CampaignType(helpers.RandIntBetween(r, 1, 3)),
-			RemovableClaimRecords:  helpers.RandomBool(r),
+			Name:                   simtypes.RandStringOfLength(r, 10),
+			Description:            simtypes.RandStringOfLength(r, 10),
+			CampaignType:           types.CampaignType(utils.RandIntBetween(r, 1, 3)),
+			RemovableClaimRecords:  utils.RandomBool(r),
 			FeegrantAmount:         randomMathInt,
 			InitialClaimFreeAmount: randomMathInt,
 			StartTime:              startTime,
@@ -44,8 +44,8 @@ func SimulateMsgCloseCampaign(
 		}
 
 		if campaign.CampaignType == types.VestingPoolCampaign {
-			randomVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
-			randVesingTypeId := helpers.RandomInt(r, 3)
+			randomVestingPoolName := simtypes.RandStringOfLength(r, 10)
+			randVesingTypeId := utils.RandInt64(r, 3)
 			randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))
 			_ = cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, math.NewInt(10000), time.Hour, randomVestingType)
 			campaign.VestingPoolName = randomVestingPoolName

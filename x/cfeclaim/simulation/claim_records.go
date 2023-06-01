@@ -2,7 +2,7 @@ package simulation
 
 import (
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"math/rand"
 	"time"
@@ -94,7 +94,7 @@ func SimulateMsgDeleteClaimRecord(
 		deleteClaimRecordMsg := &types.MsgDeleteClaimRecord{
 			Owner:       ownerAddress.String(),
 			CampaignId:  uint64(len(campaigns) - 1),
-			UserAddress: claimRecordEntries[helpers.RandomInt(r, len(claimRecordEntries))].UserEntryAddress,
+			UserAddress: claimRecordEntries[utils.RandInt64(r, len(claimRecordEntries))].UserEntryAddress,
 		}
 
 		_, err = msgServer.DeleteClaimRecord(msgServerCtx, deleteClaimRecordMsg)
@@ -116,7 +116,7 @@ func createNClaimRecordEntries(n int, accs []simtypes.Account) []*types.ClaimRec
 		claimRecordAccount, _ := simtypes.RandomAcc(r, accs)
 		claimRecords = append(claimRecords, &types.ClaimRecordEntry{
 			UserEntryAddress: claimRecordAccount.Address.String(),
-			Amount:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(helpers.RandomInt(r, 1000)))),
+			Amount:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(utils.RandInt64(r, 1000)))),
 		})
 	}
 	return claimRecords

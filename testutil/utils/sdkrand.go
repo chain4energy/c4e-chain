@@ -1,4 +1,4 @@
-package helpers
+package utils
 
 import (
 	"cosmossdk.io/math"
@@ -81,7 +81,7 @@ func RandomDecAmount(r *rand.Rand, max sdk.Dec) sdk.Dec {
 }
 
 func RandTimestamp(r *rand.Rand) time.Time {
-	unixTime := r.Int63n(253373529600)
+	unixTime := r.Int63n(time.Now().Unix())
 	return time.Unix(unixTime, 0)
 }
 
@@ -101,7 +101,7 @@ func RandIntBetweenWith0(r *rand.Rand, min, max int64) int64 {
 	return int64(r.Intn(diff)) + min
 }
 
-func RandomInt(r *rand.Rand, max int) int64 {
+func RandInt64(r *rand.Rand, max int) int64 {
 	return int64(r.Intn(max))
 }
 

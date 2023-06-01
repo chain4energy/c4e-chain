@@ -1,4 +1,4 @@
-package helpers
+package simulation
 
 // SimAppChainID hardcoded chainID for simulation
 const (
