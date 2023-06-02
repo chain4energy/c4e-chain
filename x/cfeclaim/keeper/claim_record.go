@@ -67,18 +67,18 @@ func (k Keeper) addClaimRecordsToVestingPoolCampaign(ctx sdk.Context, campaign *
 	feegrantFeesSum sdk.Coins, amount sdk.Coins) error {
 
 	vestingDenom := k.vestingKeeper.Denom(ctx)
-	balances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-	if !feegrantFeesSum.IsAllLTE(balances) {
-		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", balances, feegrantFeesSum)
+	spendableCoins := k.bankKeeper.SpendableCoins(ctx, ownerAddress)
+	if !feegrantFeesSum.IsAllLTE(spendableCoins) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", spendableCoins, feegrantFeesSum)
 	}
 	return k.vestingKeeper.AddVestingPoolReservation(ctx, ownerAddress.String(), campaign.VestingPoolName, campaign.Id, amount.AmountOf(vestingDenom))
 }
 
 func (k Keeper) addClaimRecordsToDefaultCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, feegrantFeesSum sdk.Coins, amount sdk.Coins) error {
 	feesAndClaimRecordsAmountSum := amount.Add(feegrantFeesSum...)
-	balances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-	if !feesAndClaimRecordsAmountSum.IsAllLTE(balances) {
-		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", balances, feesAndClaimRecordsAmountSum)
+	spendableCoins := k.bankKeeper.SpendableCoins(ctx, ownerAddress)
+	if !feesAndClaimRecordsAmountSum.IsAllLTE(spendableCoins) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", spendableCoins, feesAndClaimRecordsAmountSum)
 	}
 	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, amount)
 }

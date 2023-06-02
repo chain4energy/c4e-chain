@@ -44,7 +44,7 @@ func (k Keeper) validateBurn(ctx sdk.Context, address string, amount sdk.Coins) 
 	if err = types.ValidateMsgBurn(amount); err != nil {
 		return nil, err
 	}
-	balances := k.bankKeeper.GetAllBalances(ctx, accAddress)
+	balances := k.bankKeeper.SpendableCoins(ctx, accAddress)
 	if !amount.IsAllLTE(balances) {
 		return nil, errors.Wrapf(sdkerrors.ErrInsufficientFunds, "balance is too small (%s < %s)", balances, amount)
 	}
