@@ -89,5 +89,5 @@ func TestBurnAmountNegative(t *testing.T) {
 	coins := sample.PrepareDifferentDenomCoins(2, math.NewInt(10000))
 	testHelper.BankUtils.AddCoinsToAccount(coins, accAddr)
 	coins[1].Amount = math.NewInt(-10000)
-	testHelper.C4eMinterUtils.MessageBurnError(accAddr.String(), coins, "10000uc4e0,-10000uc4e1: invalid coins")
+	testHelper.C4eMinterUtils.MessageBurnError(accAddr.String(), coins, "amount is not positive: wrong param value")
 }

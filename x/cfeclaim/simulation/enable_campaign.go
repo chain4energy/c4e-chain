@@ -9,6 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 )
 
@@ -39,7 +41,7 @@ func SimulateMsgEnableCampaign(
 			CampaignId: uint64(len(campaigns) - 1),
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, *simAccount, msgEnableCampaign, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, msgEnableCampaign, chainID); err != nil {
 			return simtypes.NewOperationMsg(msgEnableCampaign, false, "", nil), nil, nil
 		}
 

@@ -4,6 +4,8 @@ import (
 	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/simulation"
 	"github.com/chain4energy/c4e-chain/testutil/utils"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 	"strconv"
 	"time"
@@ -48,7 +50,7 @@ func SimulateVestingMultiOperations(
 				VestingType: randomVestingType,
 				Duration:    randVestingDuration,
 			}
-			if err = simulation.SendMessageWithFees(ctx, r, ak, app, simAccount, msgCreateVestingPool, spendable.Sub(sdk.NewCoin(sdk.DefaultBondDenom, amount)), chainID); err != nil {
+			if err = simulation.SendMessageWithFees(ctx, r, ak.(authkeeper.AccountKeeper), app, simAccount, msgCreateVestingPool, spendable.Sub(sdk.NewCoin(sdk.DefaultBondDenom, amount)), chainID); err != nil {
 				return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations - create vesting pool", "", false, nil), nil, nil
 			}
 		}
@@ -64,7 +66,7 @@ func SimulateVestingMultiOperations(
 				Amount:          randMsgSendToVestinAccAmount,
 				RestartVesting:  true,
 			}
-			if err := simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, simAccount, msgSendToVestingAccount, chainID); err != nil {
+			if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgSendToVestingAccount, chainID); err != nil {
 				return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations - send to vesting account", "", false, nil), nil, nil
 			}
 		}
@@ -72,7 +74,7 @@ func SimulateVestingMultiOperations(
 		msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
 			Owner: simAccount.Address.String(),
 		}
-		if err := simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, simAccount, msgWithdrawAllAvailable, chainID); err != nil {
+		if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgWithdrawAllAvailable, chainID); err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations - withdraw all available", "", false, nil), nil, nil
 		}
 

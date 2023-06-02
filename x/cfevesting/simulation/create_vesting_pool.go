@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"math/rand"
 	"strconv"
 	"time"
@@ -38,7 +39,7 @@ func SimulateCreateVestingPool(
 		msg := types.NewMsgCreateVestingPool(simAccount.Address.String(), randVestingPoolName, vestingPoolAmount.Amount, time.Hour,
 			randomVestingType)
 
-		if err = simulation.SendMessageWithFees(ctx, r, ak, app, simAccount, msg, spendable.Sub(vestingPoolAmount), chainID); err != nil {
+		if err = simulation.SendMessageWithFees(ctx, r, ak.(authkeeper.AccountKeeper), app, simAccount, msg, spendable.Sub(vestingPoolAmount), chainID); err != nil {
 			return simtypes.NewOperationMsg(msg, false, "", nil), nil, nil
 		}
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil

@@ -9,6 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 	"time"
 )
@@ -39,7 +41,7 @@ func SimulateMsgClaim(
 			ClaimStartDate: nil,
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, *simAccount, msgAddMission, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, msgAddMission, chainID); err != nil {
 			return simtypes.NewOperationMsg(msgAddMission, false, "", nil), nil, nil
 		}
 		startTime := ctx.BlockTime().Add(-time.Minute)
@@ -49,7 +51,7 @@ func SimulateMsgClaim(
 			StartTime:  &startTime,
 			EndTime:    nil,
 		}
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, *simAccount, msgEnableCampaign, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, msgEnableCampaign, chainID); err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Claim - enable campaign failure", "", false, nil), nil, nil
 		}
 
@@ -60,7 +62,7 @@ func SimulateMsgClaim(
 			ClaimRecordEntries: claimRecordEntries,
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, *simAccount, addClaimRecordsMsg, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, addClaimRecordsMsg, chainID); err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Claim - add claim records failure", "", false, nil), nil, nil
 		}
 
@@ -75,7 +77,7 @@ func SimulateMsgClaim(
 		if !found {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Claim - initial claim failure", "", false, nil), nil, nil
 		}
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, simAccount2, initialClaimMsg, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount2, initialClaimMsg, chainID); err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Claim - initial claim failure", "", false, nil), nil, nil
 		}
 
@@ -85,7 +87,7 @@ func SimulateMsgClaim(
 			MissionId:  1,
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, simAccount2, claimMsg, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount2, claimMsg, chainID); err != nil {
 			return simtypes.NewOperationMsg(claimMsg, false, "", nil), nil, nil
 		}
 

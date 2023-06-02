@@ -10,6 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 )
 
@@ -32,7 +34,7 @@ func SimulateMsgAddClaimRecords(
 			CampaignId: uint64(len(campaigns) - 1),
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, *simAccount, msgEnableCampaign, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, msgEnableCampaign, chainID); err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Add claim records - enable campaign failure", "", false, nil), nil, nil
 		}
 
@@ -42,7 +44,7 @@ func SimulateMsgAddClaimRecords(
 			ClaimRecordEntries: createNClaimRecordEntries(r, accs, utils.RandIntBetween(r, 10, 100)),
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, *simAccount, addClaimRecordsMsg, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, addClaimRecordsMsg, chainID); err != nil {
 			return simtypes.NewOperationMsg(addClaimRecordsMsg, false, "", nil), nil, nil
 		}
 
@@ -69,7 +71,7 @@ func SimulateMsgDeleteClaimRecord(
 			CampaignId: uint64(len(campaigns) - 1),
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, *simAccount, msgEnableCampaign, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, msgEnableCampaign, chainID); err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Delete claim record - enable campaign failure", "", false, nil), nil, nil
 		}
 
@@ -80,7 +82,7 @@ func SimulateMsgDeleteClaimRecord(
 			ClaimRecordEntries: claimRecordEntries,
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, *simAccount, addClaimRecordsMsg, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, addClaimRecordsMsg, chainID); err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Delete claim record - add claim record entries failure", "", false, nil), nil, nil
 		}
 
@@ -90,7 +92,7 @@ func SimulateMsgDeleteClaimRecord(
 			UserAddress: claimRecordEntries[utils.RandInt64(r, len(claimRecordEntries))].UserEntryAddress,
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, *simAccount, deleteClaimRecordMsg, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, deleteClaimRecordMsg, chainID); err != nil {
 			return simtypes.NewOperationMsg(deleteClaimRecordMsg, false, "", nil), nil, nil
 		}
 

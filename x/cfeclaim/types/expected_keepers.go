@@ -15,9 +15,6 @@ type AccountKeeper interface {
 	GetModuleAccount(ctx sdk.Context, moduleName string) authtypes.ModuleAccountI
 	SetModuleAccount(ctx sdk.Context, macc authtypes.ModuleAccountI)
 	NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
-	GetModuleAddress(name string) sdk.AccAddress
-	NewAccount(ctx sdk.Context, acc authtypes.AccountI) authtypes.AccountI
-	SetAccount(ctx sdk.Context, acc authtypes.AccountI)
 }
 
 // BankKeeper defines the expected interface needed to retrieve account balances.
@@ -27,11 +24,6 @@ type BankKeeper interface {
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
-	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
-	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins) error
-	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
-	LockedCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
-	IsSendEnabledCoins(ctx sdk.Context, coins ...sdk.Coin) error
 }
 
 // FeeGrantKeeper defines the expected feegrant keeper interface

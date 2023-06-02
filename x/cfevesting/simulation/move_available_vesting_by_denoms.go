@@ -8,6 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 )
 
@@ -42,7 +44,7 @@ func SimulateMsgMoveAvailableVestingByDenoms(
 			EndTime:     endTime.Unix(),
 			Amount:      createVestingAccountCoins,
 		}
-		err = simulation.SendMessageWithFees(ctx, r, ak, app, simAccount, msgCreateVestingAccount, spendable.Sub(sdk.NewCoin(sdk.DefaultBondDenom, amount)), chainID)
+		err = simulation.SendMessageWithFees(ctx, r, ak.(authkeeper.AccountKeeper), app, simAccount, msgCreateVestingAccount, spendable.Sub(sdk.NewCoin(sdk.DefaultBondDenom, amount)), chainID)
 		if err != nil {
 			return simtypes.NewOperationMsg(msgCreateVestingAccount, false, "", nil), nil, nil
 		}
@@ -56,7 +58,7 @@ func SimulateMsgMoveAvailableVestingByDenoms(
 			},
 		}
 
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, simAccount2, msgMoveAvailableVestingByDenoms, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount2, msgMoveAvailableVestingByDenoms, chainID); err != nil {
 			return simtypes.NewOperationMsg(msgMoveAvailableVestingByDenoms, false, "", nil), nil, nil
 		}
 		return simtypes.NewOperationMsg(msgMoveAvailableVestingByDenoms, true, "", nil), nil, nil

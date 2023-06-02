@@ -5,6 +5,8 @@ import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation"
 	"github.com/chain4energy/c4e-chain/testutil/utils"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 	"strconv"
 	"time"
@@ -75,7 +77,7 @@ func createCampaign(ak types.AccountKeeper, bk types.BankKeeper, cfevestingKeepe
 		msgCreateCampaign.VestingPoolName = randomVestingPoolName
 	}
 
-	if err := simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, simAccount, msgCreateCampaign, chainID); err != nil {
+	if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgCreateCampaign, chainID); err != nil {
 		return &simAccount, err
 	}
 	return &simAccount, nil

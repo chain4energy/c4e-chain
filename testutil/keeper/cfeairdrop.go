@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
@@ -74,7 +75,8 @@ func cfeclaimKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, block
 	)
 
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authStoreKey, accParamsSubspace, authtypes.ProtoBaseAccount, commontestutils.AddHelperModuleAccountPermissions(map[string][]string{types.ModuleName: nil}), testenv.DefaultBechPrefix,
+		cdc, authStoreKey, accParamsSubspace, authtypes.ProtoBaseAccount,
+		commontestutils.AddHelperModuleAccountPermissions(map[string][]string{types.ModuleName: nil}), appparams.Bech32PrefixAccAddr,
 	)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(

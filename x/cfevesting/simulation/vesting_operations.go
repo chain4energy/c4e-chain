@@ -3,6 +3,8 @@ package simulation
 import (
 	"github.com/chain4energy/c4e-chain/testutil/simulation"
 	"github.com/chain4energy/c4e-chain/testutil/utils"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 	"strconv"
 	"time"
@@ -39,7 +41,7 @@ func SimulateVestingOperations(
 		msgCreateVestingPool := types.NewMsgCreateVestingPool(simAccount.Address.String(), randVestingPoolName, amount, time.Hour,
 			randomVestingType)
 
-		err = simulation.SendMessageWithFees(ctx, r, ak, app, simAccount, msgCreateVestingPool, spendable.Sub(vestingPoolAmount), chainID)
+		err = simulation.SendMessageWithFees(ctx, r, ak.(authkeeper.AccountKeeper), app, simAccount, msgCreateVestingPool, spendable.Sub(vestingPoolAmount), chainID)
 		if err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations - create vesting pool", "", false, nil), nil, nil
 		}
@@ -58,7 +60,7 @@ func SimulateVestingOperations(
 			Amount:          amount,
 			RestartVesting:  true,
 		}
-		err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, simAccount, msgSendToVestingAccount, chainID)
+		err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgSendToVestingAccount, chainID)
 		if err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations - send to vesting account", "", false, nil), nil, nil
 		}
@@ -66,7 +68,7 @@ func SimulateVestingOperations(
 		msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
 			Owner: simAccount.Address.String(),
 		}
-		if err = simulation.SendMessageWithRandomFees(ctx, r, ak, bk, app, simAccount, msgWithdrawAllAvailable, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgWithdrawAllAvailable, chainID); err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting operations - withdraw all available", "", false, nil), nil, nil
 		}
 
