@@ -39,7 +39,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	receiverAddress := node.CreateWallet(receiverWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 
 	s.NoError(err)
 
@@ -71,7 +71,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	claimRecordEntries := []types.ClaimRecordEntry{
 		{
 			UserEntryAddress: receiverAddress,
-			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance/4))),
+			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance/4))),
 		},
 	}
 	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
@@ -94,7 +94,7 @@ func (s *ClaimSetupSuite) TestCampaignRemovableClaimRecords() {
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	receiverAddress := node.CreateWallet(receiverWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 
 	s.NoError(err)
 
@@ -126,7 +126,7 @@ func (s *ClaimSetupSuite) TestCampaignRemovableClaimRecords() {
 	claimRecordEntries := []types.ClaimRecordEntry{
 		{
 			UserEntryAddress: receiverAddress,
-			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance/4))),
+			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance/4))),
 		},
 	}
 	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
@@ -149,14 +149,14 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	receiverAddress := node.CreateWallet(receiverWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
 	src := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(src)
 
-	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
+	balanceBeforeAmount := balanceBefore.AmountOf(appparams.MicroC4eUnit)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
 	randVestingPoolName := utils.RandStringOfLength(5)
 	vestingPoolDuration := utils.RandDurationBetween(r, 10000, 10000000)
@@ -191,7 +191,7 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	userEntires := []types.ClaimRecordEntry{
 		{
 			UserEntryAddress: receiverAddress,
-			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance/4))),
+			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance/4))),
 		},
 	}
 	userEntriesJSONString, err := util.NewClaimRecordsListJson(userEntires)

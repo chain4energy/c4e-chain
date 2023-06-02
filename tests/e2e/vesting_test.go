@@ -43,18 +43,18 @@ func (s *VestingSetupSuite) TestSendToVestingAccount() {
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
+	balanceBeforeAmount := balanceBefore.AmountOf(appparams.MicroC4eUnit)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
 	randVestingPoolName := utils.RandStringOfLength(5)
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBeforeAmount.Sub(vestingAmount), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBeforeAmount.Sub(vestingAmount), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 
 	vestingPools := node.QueryVestingPoolsInfo(creatorAddress)
 	s.Equal(1, len(vestingPools))
@@ -75,11 +75,11 @@ func (s *VestingSetupSuite) TestWithdrawAllAvailable() {
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
+	balanceBeforeAmount := balanceBefore.AmountOf(appparams.MicroC4eUnit)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
 	randVestingPoolName := utils.RandStringOfLength(5)
 	vestingPoolDuration := 10 * time.Second
@@ -106,7 +106,7 @@ func (s *VestingSetupSuite) TestWithdrawAllAvailable() {
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBeforeAmount, balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBeforeAmount, balanceAfter.AmountOf(appparams.MicroC4eUnit))
 }
 
 func (s *VestingSetupSuite) TestCreateVestingPool() {
@@ -119,11 +119,11 @@ func (s *VestingSetupSuite) TestCreateVestingPool() {
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
+	balanceBeforeAmount := balanceBefore.AmountOf(appparams.MicroC4eUnit)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
 	randVestingPoolName := utils.RandStringOfLength(5)
 	vestingPoolDuration := 10 * time.Second
@@ -150,7 +150,7 @@ func (s *VestingSetupSuite) TestCreateVestingPool() {
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBeforeAmount, balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBeforeAmount, balanceAfter.AmountOf(appparams.MicroC4eUnit))
 }
 
 func (s *VestingSetupSuite) TestCreateVestingAccount() {
@@ -163,21 +163,21 @@ func (s *VestingSetupSuite) TestCreateVestingAccount() {
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	amountToSend := balanceBefore.AmountOf(appparams.CoinDenom).Quo(math.NewInt(4))
+	amountToSend := balanceBefore.AmountOf(appparams.MicroC4eUnit).Quo(math.NewInt(4))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Hour)
 
-	coinToSend := sdk.NewCoin(appparams.CoinDenom, amountToSend)
+	coinToSend := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend)
 	node.CreateVestingAccount(newVestingAccountAddress, coinToSend.String(),
 		strconv.FormatInt(startTime.Unix(), 10), strconv.FormatInt(endTime.Unix(), 10), creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBefore.AmountOf(appparams.CoinDenom).Sub(amountToSend), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBefore.AmountOf(appparams.MicroC4eUnit).Sub(amountToSend), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 	s.ValidateVestingAccount(node, newVestingAccountAddress, coinToSend)
 }
 
@@ -200,23 +200,23 @@ func (s *VestingSetupSuite) TestSplitVesting() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	amountToSend := balanceBefore.AmountOf(appparams.CoinDenom).Quo(math.NewInt(4))
+	amountToSend := balanceBefore.AmountOf(appparams.MicroC4eUnit).Quo(math.NewInt(4))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Hour)
-	coinToSend := sdk.NewCoin(appparams.CoinDenom, amountToSend)
+	coinToSend := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend)
 	node.CreateVestingAccount(newVestingAccountAddress, coinToSend.String(),
 		strconv.FormatInt(startTime.Unix(), 10), strconv.FormatInt(endTime.Unix(), 10), creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBefore.AmountOf(appparams.CoinDenom).Sub(amountToSend), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBefore.AmountOf(appparams.MicroC4eUnit).Sub(amountToSend), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 	s.ValidateVestingAccount(node, newVestingAccountAddress, coinToSend)
 
-	coinToSplit := sdk.NewCoin(appparams.CoinDenom, amountToSend.QuoRaw(2))
+	coinToSplit := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend.QuoRaw(2))
 	node.SplitVesting(splitVestingAccountAddress, coinToSplit.String(), newVestingAccountAddress)
 	s.ValidateVestingAccount(node, splitVestingAccountAddress, coinToSplit)
 }
@@ -233,20 +233,20 @@ func (s *VestingSetupSuite) TestMoveAvailableVesting() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	amountToSend := balanceBefore.AmountOf(appparams.CoinDenom).Quo(math.NewInt(4))
+	amountToSend := balanceBefore.AmountOf(appparams.MicroC4eUnit).Quo(math.NewInt(4))
 	startTime := time.Now().Add(time.Minute)
 	endTime := startTime.Add(time.Hour)
-	coinToSend := sdk.NewCoin(appparams.CoinDenom, amountToSend)
+	coinToSend := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend)
 	node.CreateVestingAccount(newVestingAccountAddress, coinToSend.String(),
 		strconv.FormatInt(startTime.Unix(), 10), strconv.FormatInt(endTime.Unix(), 10), creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBefore.AmountOf(appparams.CoinDenom).Sub(amountToSend), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBefore.AmountOf(appparams.MicroC4eUnit).Sub(amountToSend), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 	s.ValidateVestingAccount(node, newVestingAccountAddress, coinToSend)
 
 	node.MoveAvailableVesting(splitVestingAccountAddress, newVestingAccountAddress)
@@ -265,23 +265,23 @@ func (s *VestingSetupSuite) TestMoveAvailableVestingByDenoms() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	amountToSend := balanceBefore.AmountOf(appparams.CoinDenom).Quo(math.NewInt(4))
+	amountToSend := balanceBefore.AmountOf(appparams.MicroC4eUnit).Quo(math.NewInt(4))
 	startTime := time.Now().Add(time.Minute)
 	endTime := startTime.Add(time.Hour)
-	coinToSend := sdk.NewCoin(appparams.CoinDenom, amountToSend)
+	coinToSend := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend)
 	node.CreateVestingAccount(newVestingAccountAddress, coinToSend.String(),
 		strconv.FormatInt(startTime.Unix(), 10), strconv.FormatInt(endTime.Unix(), 10), creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBefore.AmountOf(appparams.CoinDenom).Sub(amountToSend), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBefore.AmountOf(appparams.MicroC4eUnit).Sub(amountToSend), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 	s.ValidateVestingAccount(node, newVestingAccountAddress, coinToSend)
 
-	node.MoveAvailableVestingByDenoms(splitVestingAccountAddress, appparams.CoinDenom, newVestingAccountAddress)
+	node.MoveAvailableVestingByDenoms(splitVestingAccountAddress, appparams.MicroC4eUnit, newVestingAccountAddress)
 	s.ValidateVestingAccount(node, splitVestingAccountAddress, coinToSend)
 }
 
@@ -297,20 +297,20 @@ func (s *VestingSetupSuite) TestMoveAvailableVestingNoCoinsToMove() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	amountToSend := balanceBefore.AmountOf(appparams.CoinDenom).Quo(math.NewInt(4))
+	amountToSend := balanceBefore.AmountOf(appparams.MicroC4eUnit).Quo(math.NewInt(4))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Second)
-	coinToSend := sdk.NewCoin(appparams.CoinDenom, amountToSend)
+	coinToSend := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend)
 	node.CreateVestingAccount(newVestingAccountAddress, coinToSend.String(),
 		strconv.FormatInt(startTime.Unix(), 10), strconv.FormatInt(endTime.Unix(), 10), creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBefore.AmountOf(appparams.CoinDenom).Sub(amountToSend), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBefore.AmountOf(appparams.MicroC4eUnit).Sub(amountToSend), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 	s.ValidateVestingAccount(node, newVestingAccountAddress, coinToSend)
 
 	node.MoveAvailableVestingError(splitVestingAccountAddress, newVestingAccountAddress, "move available vesting: split vesting coins - no coins to split : wrong param value")
@@ -329,23 +329,23 @@ func (s *VestingSetupSuite) TestMoveAvailableVestingByDenomNoCoinsToMove() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	amountToSend := balanceBefore.AmountOf(appparams.CoinDenom).Quo(math.NewInt(4))
+	amountToSend := balanceBefore.AmountOf(appparams.MicroC4eUnit).Quo(math.NewInt(4))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Second)
-	coinToSend := sdk.NewCoin(appparams.CoinDenom, amountToSend)
+	coinToSend := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend)
 	node.CreateVestingAccount(newVestingAccountAddress, coinToSend.String(),
 		strconv.FormatInt(startTime.Unix(), 10), strconv.FormatInt(endTime.Unix(), 10), creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBefore.AmountOf(appparams.CoinDenom).Sub(amountToSend), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBefore.AmountOf(appparams.MicroC4eUnit).Sub(amountToSend), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 	s.ValidateVestingAccount(node, newVestingAccountAddress, coinToSend)
 
-	node.MoveAvailableVestingByDenomsError(splitVestingAccountAddress, appparams.CoinDenom, newVestingAccountAddress, "move available vesting by denoms: split vesting coins - no coins to split : wrong param value")
+	node.MoveAvailableVestingByDenomsError(splitVestingAccountAddress, appparams.MicroC4eUnit, newVestingAccountAddress, "move available vesting by denoms: split vesting coins - no coins to split : wrong param value")
 	node.QueryAccountNotFound(splitVestingAccountAddress)
 }
 
@@ -361,23 +361,23 @@ func (s *VestingSetupSuite) TestSplitVestingWrongAmount() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	amountToSend := balanceBefore.AmountOf(appparams.CoinDenom).Quo(math.NewInt(4))
+	amountToSend := balanceBefore.AmountOf(appparams.MicroC4eUnit).Quo(math.NewInt(4))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Hour)
-	coinToSend := sdk.NewCoin(appparams.CoinDenom, amountToSend)
+	coinToSend := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend)
 	node.CreateVestingAccount(newVestingAccountAddress, coinToSend.String(),
 		strconv.FormatInt(startTime.Unix(), 10), strconv.FormatInt(endTime.Unix(), 10), creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBefore.AmountOf(appparams.CoinDenom).Sub(amountToSend), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBefore.AmountOf(appparams.MicroC4eUnit).Sub(amountToSend), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 	s.ValidateVestingAccount(node, newVestingAccountAddress, coinToSend)
 
-	coinToSplit := sdk.NewCoin(appparams.CoinDenom, amountToSend.AddRaw(1000000))
+	coinToSplit := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend.AddRaw(1000000))
 	node.SplitVestingError(splitVestingAccountAddress, coinToSplit.String(), newVestingAccountAddress,
 		fmt.Sprintf("split vesting: split vesting coins: account %s: not enough to unlock.", newVestingAccountAddress))
 	node.QueryAccountNotFound(splitVestingAccountAddress)
@@ -397,23 +397,23 @@ func (s *VestingSetupSuite) TestDoubleSplitVesting() {
 	splitVestingAccountAddress1 := node.CreateWallet(splitVestingWalletName1)
 	splitVestingAccountAddress2 := node.CreateWallet(splitVestingWalletName2)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	amountToSend := balanceBefore.AmountOf(appparams.CoinDenom).Quo(math.NewInt(4))
+	amountToSend := balanceBefore.AmountOf(appparams.MicroC4eUnit).Quo(math.NewInt(4))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Hour)
-	coinToSend := sdk.NewCoin(appparams.CoinDenom, amountToSend)
+	coinToSend := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend)
 	node.CreateVestingAccount(newVestingAccountAddress, coinToSend.String(),
 		strconv.FormatInt(startTime.Unix(), 10), strconv.FormatInt(endTime.Unix(), 10), creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBefore.AmountOf(appparams.CoinDenom).Sub(amountToSend), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBefore.AmountOf(appparams.MicroC4eUnit).Sub(amountToSend), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 	s.ValidateVestingAccount(node, newVestingAccountAddress, coinToSend)
 
-	coinToSplit := sdk.NewCoin(appparams.CoinDenom, amountToSend.QuoRaw(5))
+	coinToSplit := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend.QuoRaw(5))
 	node.SplitVesting(splitVestingAccountAddress1, coinToSplit.String(), newVestingAccountAddress)
 	s.ValidateVestingAccount(node, splitVestingAccountAddress1, coinToSplit)
 	node.SplitVesting(splitVestingAccountAddress2, coinToSplit.String(), newVestingAccountAddress)
@@ -434,20 +434,20 @@ func (s *VestingSetupSuite) TestDoubleMoveAvailableVesting() {
 	splitVestingAccountAddress1 := node.CreateWallet(splitVestingWalletName1)
 	splitVestingAccountAddress2 := node.CreateWallet(splitVestingWalletName2)
 
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
-	amountToSend := balanceBefore.AmountOf(appparams.CoinDenom).Quo(math.NewInt(4))
+	amountToSend := balanceBefore.AmountOf(appparams.MicroC4eUnit).Quo(math.NewInt(4))
 	startTime := time.Now()
 	endTime := startTime.Add(time.Hour)
-	coinToSend := sdk.NewCoin(appparams.CoinDenom, amountToSend)
+	coinToSend := sdk.NewCoin(appparams.MicroC4eUnit, amountToSend)
 	node.CreateVestingAccount(newVestingAccountAddress, coinToSend.String(),
 		strconv.FormatInt(startTime.Unix(), 10), strconv.FormatInt(endTime.Unix(), 10), creatorWalletName)
 
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBefore.AmountOf(appparams.CoinDenom).Sub(amountToSend), balanceAfter.AmountOf(appparams.CoinDenom))
+	s.Equal(balanceBefore.AmountOf(appparams.MicroC4eUnit).Sub(amountToSend), balanceAfter.AmountOf(appparams.MicroC4eUnit))
 	s.ValidateVestingAccount(node, newVestingAccountAddress, coinToSend)
 
 	node.MoveAvailableVesting(splitVestingAccountAddress1, newVestingAccountAddress)
