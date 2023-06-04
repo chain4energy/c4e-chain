@@ -1,32 +1,34 @@
 package types_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/sample"
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/testutil/sample"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgClaim_ValidateBasic(t *testing.T) {
+func TestMsgRemoveCampaign_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name   string
-		msg    types.MsgClaim
+		msg    types.MsgRemoveCampaign
 		err    error
 		errMsg string
 	}{
 		{
 			name: "invalid address",
-			msg: types.MsgClaim{
-				Claimer: "invalid_address",
+			msg: types.MsgRemoveCampaign{
+				Owner:      "abcd",
+				CampaignId: 0,
 			},
 			err:    sdkerrors.ErrInvalidAddress,
-			errMsg: "invalid claimer address (decoding bech32 failed: invalid separator index -1): invalid address",
+			errMsg: "invalid creator address (decoding bech32 failed: invalid bech32 string length 4): invalid address",
 		}, {
-			name: "valid address",
-			msg: types.MsgClaim{
-				Claimer: sample.AccAddress(),
+			name: "valid message",
+			msg: types.MsgRemoveCampaign{
+				Owner:      sample.AccAddress(),
+				CampaignId: 0,
 			},
 		},
 	}
