@@ -35,6 +35,8 @@ func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, c
 		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc, claimRecordEntries, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {
 			return err
 		}
+		k.Logger(ctx).Debug("setup and send feegrant", "feegrantFeesSum", feegrantFeesSum, "feegrantDenom",
+			feegrantDenom, "feegrantAmount", campaign.FeegrantAmount, "claimRecordEntriesNumber", len(claimRecordEntries))
 	}
 
 	return nil
@@ -66,7 +68,7 @@ func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddres
 	return nil
 }
 
-func (k Keeper) closeCampaignSendFeegrant(ctx sdk.Context, campaign *types.Campaign) error {
+func (k Keeper) sendCampaignFeegrantToOwner(ctx sdk.Context, campaign *types.Campaign) error {
 	if !campaign.FeegrantAmount.IsPositive() {
 		return nil
 	}
@@ -74,6 +76,7 @@ func (k Keeper) closeCampaignSendFeegrant(ctx sdk.Context, campaign *types.Campa
 	feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
 	ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
 
+	k.Logger(ctx).Debug("send campaign feegrant amount to owner", "campaignId", campaign.Id, "owner", campaign.Owner, "amount", feegrantTotalAmount)
 	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, feegrantTotalAmount)
 }
 
@@ -91,6 +94,8 @@ func (k Keeper) deleteClaimRecordSendFeegrant(ctx sdk.Context, campaign *types.C
 	if err != nil {
 		return err
 	}
+	k.Logger(ctx).Debug("delete claim record send feegrant", "campaignId", campaign.Id, "userEntryAddress", userEntryAddress,
+		"amountLeft", amountLeft, "feegrantAccountAddress", feegrantAccountAddress, "campaignOwnerAccAddress", campaignOwnerAccAddress)
 	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, campaignOwnerAccAddress, amountLeft)
 }
 
@@ -126,5 +131,6 @@ func (k Keeper) revokeFeeAllowance(ctx sdk.Context, granter sdk.Address, grantee
 	if err != nil {
 		return err
 	}
+	k.Logger(ctx).Debug("revoked fee alowance", "granter", granter, "grantee", grantee)
 	return nil
 }
