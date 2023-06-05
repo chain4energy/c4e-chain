@@ -1,13 +1,16 @@
 package cli
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 )
@@ -17,8 +20,23 @@ var _ = strconv.Itoa(0)
 func CmdEnergyTransferCompletedRequest() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "energy-transfer-completed-request [energy-transfer-id] [charger-id] [used-service-units] [info]",
-		Short: "Broadcast message energy-transfer-completed-request",
-		Args:  cobra.ExactArgs(4),
+		Short: "Indicate that energy transfer has been completed",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Indicate that energy transfer has been completed.
+
+Arguments:
+  [energy-transfer-id] energy transfer identifier
+  [charger-id] charger id specified on the charger
+  [used-service-units] the number of service units (kWh) that were transferred
+  [info] additional info - optional
+
+Example:
+$ %s tx %s energy-transfer-completed-request 0 EVGC011221122GK0122 22 completed
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argEnergyTransferId, err := cast.ToUint64E(args[0])
 			if err != nil {
