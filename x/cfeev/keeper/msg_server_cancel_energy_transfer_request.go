@@ -5,44 +5,22 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k msgServer) CancelEnergyTransferRequest(goCtx context.Context, msg *types.MsgCancelEnergyTransferRequest) (*types.MsgCancelEnergyTransferRequestResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "cancel energy transfer")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	energyTransferObj, found := k.GetEnergyTransfer(ctx, msg.EnergyTransferId)
-	if !found {
-		return nil, sdkerrors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
-	}
+	k.Logger(ctx).Debug("CancelEnergyTransferRequest - reason=%s, code=%s", msg.GetErrorInfo(), msg.GetErrorCode())
+	keeper := k.Keeper
 
-	// if energyTransferObj.GetStatus() != types.TransferStatus_REQUESTED {
-	// 	return nil, sdkerrors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransferObj.GetStatus().String())
-	// }
-
-	energyTransferObj.Status = types.TransferStatus_CANCELLED
-
-	// get energy transfer offer object by offer id
-	offer, found := k.GetEnergyTransferOffer(ctx, energyTransferObj.EnergyTransferOfferId)
-	if !found {
-		return nil, sdkerrors.Wrap(types.ErrEnergyTransferOfferNotFound, "energy transfer offer not found")
-	}
-	offer.ChargerStatus = types.ChargerStatus_ACTIVE
-
-	// send the collateral back to the EV driver's account
-	denom := k.Denom(ctx)
-	amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
-	coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, amount))
-	err := k.sendTokensToTargetAccount(ctx, energyTransferObj.GetDriverAccountAddress(), coinsToTransfer)
-
+	err := keeper.CancelEnergyTransferRequest(ctx, msg.GetEnergyTransferId())
 	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrCoinTransferFailed, "coin transfer failed")
+		k.Logger(ctx).Error("cancel energy transfer failed", "error", err)
+		return nil, err
 	}
-
-	// update both entities
-	k.SetEnergyTransferOffer(ctx, offer)
-	k.SetEnergyTransfer(ctx, energyTransferObj)
 
 	return &types.MsgCancelEnergyTransferRequestResponse{}, nil
 }

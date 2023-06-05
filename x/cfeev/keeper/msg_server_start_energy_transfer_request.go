@@ -6,6 +6,7 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -14,6 +15,8 @@ import (
 func (k msgServer) StartEnergyTransferRequest(goCtx context.Context, msg *types.MsgStartEnergyTransferRequest) (*types.MsgStartEnergyTransferRequestResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
+
+	defer telemetry.IncrCounter(1, types.ModuleName, "start energy transfer")
 
 	// handling tariffFromMsg string from message
 	tariffFromMsg, err := strconv.ParseInt(msg.GetOfferedTariff(), 10, 32)

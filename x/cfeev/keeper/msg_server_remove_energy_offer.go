@@ -5,11 +5,14 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k msgServer) RemoveEnergyOffer(goCtx context.Context, msg *types.MsgRemoveEnergyOffer) (*types.MsgRemoveEnergyOfferResponse, error) {
+	defer telemetry.IncrCounter(1, types.ModuleName, "remove energy transfer offer")
+
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	offer, found := k.GetEnergyTransferOffer(ctx, msg.GetId())

@@ -205,3 +205,40 @@ func (k Keeper) sendTokensToTargetAccount(ctx sdk.Context, targetAccountAddress 
 
 	return nil
 }
+
+func (k Keeper) CancelEnergyTransferRequest(ctx sdk.Context, energyTransferId uint64) error {
+	k.Logger(ctx).Debug("CancelEnergyTransferRequest - ID=%d", energyTransferId)
+	energyTransferObj, found := k.GetEnergyTransfer(ctx, energyTransferId)
+	if !found {
+		return sdkerrors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
+	}
+
+	// if energyTransferObj.GetStatus() != types.TransferStatus_REQUESTED {
+	// 	return nil, sdkerrors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransferObj.GetStatus().String())
+	// }
+
+	energyTransferObj.Status = types.TransferStatus_CANCELLED
+
+	// get energy transfer offer object by offer id
+	offer, found := k.GetEnergyTransferOffer(ctx, energyTransferObj.EnergyTransferOfferId)
+	if !found {
+		return sdkerrors.Wrap(types.ErrEnergyTransferOfferNotFound, "energy transfer offer not found")
+	}
+	offer.ChargerStatus = types.ChargerStatus_ACTIVE
+
+	// send the collateral back to the EV driver's account
+	denom := k.Denom(ctx)
+	amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
+	coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, amount))
+	err := k.sendTokensToTargetAccount(ctx, energyTransferObj.GetDriverAccountAddress(), coinsToTransfer)
+
+	if err != nil {
+		return sdkerrors.Wrap(types.ErrCoinTransferFailed, "coin transfer failed")
+	}
+
+	// update both entities
+	k.SetEnergyTransferOffer(ctx, offer)
+	k.SetEnergyTransfer(ctx, energyTransferObj)
+
+	return nil
+}
