@@ -1,5 +1,11 @@
 package types
 
+var (
+	ParamsKey                    = []byte{0x00}
+	VestingTypesKeyPrefix        = []byte{0x01}
+	AccountVestingPoolsKeyPrefix = []byte{0x02}
+)
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "cfeev"

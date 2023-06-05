@@ -133,12 +133,13 @@ func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId
 		energyTransferObj.PaidDate = string(date)
 	}
 
+	denom := k.Denom(ctx)
 	energyTransferObj.EnergyTransferred = usedServiceUnits
 
 	if energyTransferObj.EnergyToTransfer == usedServiceUnits {
 		// send entire callateral to CP owner's account
 		amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
-		coinsToTransfer := sdk.NewCoins(sdk.NewCoin("uc4e", amount))
+		coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, amount))
 		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
 		energyTransferObj.Status = types.TransferStatus_PAID
 
@@ -146,13 +147,13 @@ func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId
 		// calculate used tokens
 		usedTokens := energyTransferObj.OfferedTariff * usedServiceUnits
 		amount := sdk.NewInt(int64(usedTokens))
-		coinsToTransfer := sdk.NewCoins(sdk.NewCoin("uc4e", amount))
+		coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, amount))
 		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
 
 		// calculate unused tokens
 		unusedTokens := energyTransferObj.Collateral - uint64(usedTokens)
 		amount = sdk.NewInt(int64(unusedTokens))
-		coinsToTransfer = sdk.NewCoins(sdk.NewCoin("uc4e", amount))
+		coinsToTransfer = sdk.NewCoins(sdk.NewCoin(denom, amount))
 		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.DriverAccountAddress, coinsToTransfer)
 
 		// set status
@@ -166,7 +167,7 @@ func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId
 		if (usedServiceUnits - energyTransferObj.EnergyToTransfer) < 4 {
 			// send entire callateral to CP owner's account
 			amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
-			coinsToTransfer := sdk.NewCoins(sdk.NewCoin("uc4e", amount))
+			coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, amount))
 			err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
 			energyTransferObj.Status = types.TransferStatus_PAID
 		}

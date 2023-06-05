@@ -1,34 +1,32 @@
 package types
 
 import (
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	fmt "fmt"
+
 	"gopkg.in/yaml.v2"
 )
 
-var _ paramtypes.ParamSet = (*Params)(nil)
-
-// ParamKeyTable the param key table for launch module
-func ParamKeyTable() paramtypes.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
-}
+var (
+	DefaultDenom string = "uc4e"
+) //
 
 // NewParams creates a new Params instance
-func NewParams() Params {
-	return Params{}
+func NewParams(denom string) Params {
+	return Params{Denom: denom}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	return NewParams()
-}
-
-// ParamSetPairs get the params.ParamSet
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{}
+	return NewParams(
+		DefaultDenom,
+	)
 }
 
 // Validate validates the set of params
 func (p Params) Validate() error {
+	if err := validateDenom(p.Denom); err != nil {
+		return err
+	} //
 	return nil
 }
 
@@ -36,4 +34,18 @@ func (p Params) Validate() error {
 func (p Params) String() string {
 	out, _ := yaml.Marshal(p)
 	return string(out)
+}
+
+// validateDenom validates the Denom param
+func validateDenom(v interface{}) error {
+	denom, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", v)
+	}
+
+	if len(denom) == 0 {
+		return fmt.Errorf("denom cannot be empty")
+	}
+
+	return nil
 }
