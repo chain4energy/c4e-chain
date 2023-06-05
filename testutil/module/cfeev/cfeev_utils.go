@@ -1,8 +1,12 @@
 package cfeevutils
 
 import (
+	"strconv"
+
+	"cosmossdk.io/math"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	"github.com/chain4energy/c4e-chain/x/cfeev/keeper"
 	cfeevmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeev/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -91,4 +95,56 @@ func (h *C4eEvUtils) CreateExampleTestEVObjects() (types.EnergyTransferOffer, ty
 	}
 
 	return energyTransferOffer, energyTransfer
+}
+
+func (h *C4eEvUtils) PublishAndVerifyEnergyTransferOffer(ctx sdk.Context, offer types.EnergyTransferOffer) uint64 {
+
+	msgPublishEnergyTransferOffer := &types.MsgPublishEnergyTransferOffer{
+		Creator:   offer.Owner,
+		ChargerId: offer.ChargerId,
+		Tariff:    offer.Tariff,
+		Location:  offer.Location,
+		Name:      offer.Name,
+		PlugType:  offer.PlugType,
+	}
+
+	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)
+
+	newOfferId, err := msgServer.PublishEnergyTransferOffer(ctx, msgPublishEnergyTransferOffer)
+	require.NoError(h.t, err)
+
+	h.VerifyGetEnergyTransferOffer(ctx, newOfferId.GetId())
+
+	return newOfferId.GetId()
+}
+
+func (h *C4eEvUtils) StartEnergyTransferRequest(ctx sdk.Context, transfer types.EnergyTransfer, newOfferId uint64) uint64 {
+
+	collateral := sdk.Coin{Denom: "uc4e", Amount: math.NewInt(int64(transfer.Collateral))}
+	msgStartTransfer := &types.MsgStartEnergyTransferRequest{
+		Creator:               transfer.DriverAccountAddress,
+		EnergyTransferOfferId: newOfferId,
+		ChargerId:             transfer.ChargerId,
+		OwnerAccountAddress:   transfer.OwnerAccountAddress,
+		OfferedTariff:         strconv.Itoa(int(transfer.OfferedTariff)),
+		EnergyToTransfer:      transfer.EnergyToTransfer,
+		Collateral:            &collateral,
+	}
+
+	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)
+
+	startTransferResponse, err := msgServer.StartEnergyTransferRequest(ctx, msgStartTransfer)
+	require.NoError(h.t, err)
+
+	return startTransferResponse.GetId()
+}
+
+func (h *C4eEvUtils) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) {
+
+	msg := &types.MsgEnergyTransferCompletedRequest{EnergyTransferId: energyTransferId, UsedServiceUnits: usedServiceUnits}
+
+	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)
+	_, err := msgServer.EnergyTransferCompletedRequest(ctx, msg)
+	require.NoError(h.t, err)
+
 }

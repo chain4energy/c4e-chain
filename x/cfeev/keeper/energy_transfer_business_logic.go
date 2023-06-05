@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -91,6 +92,113 @@ func (k Keeper) sendCollateralToEscrowAccount(ctx sdk.Context, driverAccountAddr
 		panic(err)
 	}
 	sdkError := k.bankKeeper.SendCoinsFromAccountToModule(ctx, driver, types.ModuleName, collateralCoins)
+	if sdkError != nil {
+		return sdkError
+	}
+
+	return nil
+}
+
+func (k Keeper) EnergyTransferStartedRequest(ctx sdk.Context, energyTransferId uint64) error {
+
+	energyTransfer, found := k.GetEnergyTransfer(ctx, energyTransferId)
+	if !found {
+		return sdkerrors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
+	}
+
+	if energyTransfer.Status != types.TransferStatus_REQUESTED {
+		return sdkerrors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransfer.Status.String())
+	}
+
+	// REQUESTED ==> ONGOING
+	energyTransfer.Status = types.TransferStatus_ONGOING
+
+	// update energyTransfer instance in the KVStore
+	k.SetEnergyTransfer(ctx, energyTransfer)
+
+	return nil
+}
+
+func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) error {
+	energyTransferObj, found := k.GetEnergyTransfer(ctx, energyTransferId)
+	if !found {
+		return sdkerrors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
+	}
+
+	var err error
+
+	date, err := ctx.BlockTime().UTC().MarshalText()
+	if err != nil {
+		energyTransferObj.PaidDate = "Error"
+	} else {
+		energyTransferObj.PaidDate = string(date)
+	}
+
+	energyTransferObj.EnergyTransferred = usedServiceUnits
+
+	if energyTransferObj.EnergyToTransfer == usedServiceUnits {
+		// send entire callateral to CP owner's account
+		coinsToTransfer := strconv.FormatInt(int64(energyTransferObj.GetCollateral()), 10) + "uc4e"
+		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
+		energyTransferObj.Status = types.TransferStatus_PAID
+
+	} else if energyTransferObj.EnergyToTransfer > usedServiceUnits {
+		// calculate used tokens
+		usedTokens := energyTransferObj.OfferedTariff * usedServiceUnits
+		coinsToTransfer := strconv.FormatInt(int64(usedTokens), 10) + "uc4e"
+		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
+
+		// calculate unused tokens
+		unusedTokens := energyTransferObj.Collateral - uint64(usedTokens)
+		coinsToTransfer = strconv.FormatInt(int64(unusedTokens), 10) + "uc4e"
+		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.DriverAccountAddress, coinsToTransfer)
+
+		// set status
+		energyTransferObj.Status = types.TransferStatus_PAID
+		if err != nil {
+			// TODO:
+		}
+		// TODO: handle exceeded limit value
+
+	} else if usedServiceUnits > energyTransferObj.EnergyToTransfer {
+		if (usedServiceUnits - energyTransferObj.EnergyToTransfer) < 4 {
+			// send entire callateral to CP owner's account
+			coinsToTransfer := strconv.FormatInt(int64(energyTransferObj.GetCollateral()), 10) + "uc4e"
+			err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
+			energyTransferObj.Status = types.TransferStatus_PAID
+		}
+		// TODO:
+	}
+
+	if err != nil {
+		return sdkerrors.Wrap(types.ErrCoinTransferFailed, "coin transfer failed")
+	}
+
+	// get energy transfer offer object by offer id
+	offer, found := k.GetEnergyTransferOffer(ctx, energyTransferObj.EnergyTransferOfferId)
+	if !found {
+		return sdkerrors.Wrap(types.ErrEnergyTransferOfferNotFound, "energy transfer offer not found")
+	}
+	offer.ChargerStatus = types.ChargerStatus_ACTIVE
+
+	// update both entities
+	k.SetEnergyTransferOffer(ctx, offer)
+	k.SetEnergyTransfer(ctx, energyTransferObj)
+
+	return nil
+}
+
+func (k Keeper) sendTokensToTargetAccount(ctx sdk.Context, targetAccountAddress string, collateral string) error {
+	target, err := sdk.AccAddressFromBech32(targetAccountAddress)
+	if err != nil {
+		panic(err)
+	}
+	collateralCoins, err := sdk.ParseCoinsNormalized(collateral)
+	if err != nil {
+		panic(err)
+	}
+	sdkError := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, target, collateralCoins)
+
 	if sdkError != nil {
 		return sdkError
 	}

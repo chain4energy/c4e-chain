@@ -3,10 +3,8 @@ package keeper_test
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"testing"
 
-	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeev/keeper"
@@ -31,51 +29,15 @@ func TestEnergyTransferCancel(t *testing.T) {
 	// bankutils.AddCoinsToModule(coin, types.ModuleName)
 	// fmt.Println(bankutils.GetModuleAccountBalanceByDenom(testHelper.GetContext(), types.ModuleName, "uc4e"))
 
-	coins := sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(5000)))
-	bankutils.AddCoinsToAccount(coins, sdk.AccAddress(transfer.GetDriverAccountAddress()))
-	bankutils.VerifyAccountBalanceByDenom(sdk.AccAddress(transfer.GetDriverAccountAddress()), "uc4e", sdk.NewInt(5000))
+	bankutils.AddDefaultDenomCoinsToAccount(sdk.NewInt(5000), sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()))
+	bankutils.VerifyAccountBalanceByDenom(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), "uc4e", sdk.NewInt(5000))
 
 	fmt.Println("Driver: " + transfer.GetDriverAccountAddress())
 
-	msgPublishEnergyTransferOffer := &types.MsgPublishEnergyTransferOffer{
-		Creator:   offer.Owner,
-		ChargerId: offer.ChargerId,
-		Tariff:    offer.Tariff,
-		Location:  offer.Location,
-		Name:      offer.Name,
-		PlugType:  offer.PlugType,
-	}
+	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(testHelper.GetContext(), offer)
+	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransferRequest(testHelper.GetContext(), transfer, newOfferId)
 
-	msgServer := keeper.NewMsgServerImpl(testHelper.App.CfeevKeeper)
-
-	newOfferId, err := msgServer.PublishEnergyTransferOffer(testHelper.WrappedContext, msgPublishEnergyTransferOffer)
-	require.NoError(t, err)
-
-	testHelper.C4eEvUtils.VerifyGetEnergyTransferOffer(testHelper.GetContext(), newOfferId.GetId())
-
-	collateral := sdk.Coin{Denom: "uc4e", Amount: math.NewInt(int64(transfer.Collateral))}
-
-	msgStartTransfer := &types.MsgStartEnergyTransferRequest{
-		Creator:               transfer.DriverAccountAddress,
-		EnergyTransferOfferId: newOfferId.GetId(),
-		ChargerId:             transfer.ChargerId,
-		OwnerAccountAddress:   transfer.OwnerAccountAddress,
-		OfferedTariff:         strconv.Itoa(int(transfer.OfferedTariff)),
-		EnergyToTransfer:      transfer.EnergyToTransfer,
-		Collateral:            &collateral,
-	}
-
-	startTransferResponse, err := msgServer.StartEnergyTransferRequest(testHelper.WrappedContext, msgStartTransfer)
-
-	if err != nil {
-		panic(err)
-	}
-	if startTransferResponse == nil {
-		panic(fmt.Errorf("unexpected nil result"))
-	}
-
-	energyTransferId := startTransferResponse.GetId()
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId.GetId(), types.ChargerStatus_BUSY)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
 	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_REQUESTED)
 
 	// Energy transfer can be canceled when it has REQUESTED status so before the actual transfer begins
@@ -88,10 +50,43 @@ func TestEnergyTransferCancel(t *testing.T) {
 		ErrorInfo:        "Test_cancel",
 	}
 
-	_, err = msgServer.CancelEnergyTransferRequest(testHelper.WrappedContext, msgCancelTransfer)
+	msgServer := keeper.NewMsgServerImpl(testHelper.App.CfeevKeeper)
+	_, err := msgServer.CancelEnergyTransferRequest(testHelper.WrappedContext, msgCancelTransfer)
 	if err != nil {
 		panic(err)
 	}
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId.GetId(), types.ChargerStatus_ACTIVE)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_ACTIVE)
 	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_CANCELLED)
+}
+
+func TestEnergyTransferStarted(t *testing.T) {
+	testHelper := app.SetupTestApp(t)
+
+	offer, transfer := testHelper.C4eEvUtils.CreateExampleTestEVObjects()
+	bankutils := testHelper.BankUtils
+
+	bankutils.AddDefaultDenomCoinsToAccount(sdk.NewInt(5000), sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()))
+	bankutils.VerifyAccountBalanceByDenom(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), "uc4e", sdk.NewInt(5000))
+
+	fmt.Println("Driver: " + transfer.GetDriverAccountAddress())
+
+	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(testHelper.GetContext(), offer)
+	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransferRequest(testHelper.GetContext(), transfer, newOfferId)
+
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_REQUESTED)
+
+	// confirm that energy transfer has been started
+	msgServer := keeper.NewMsgServerImpl(testHelper.App.CfeevKeeper)
+	msgCancelTransferRequest := &types.MsgEnergyTransferStartedRequest{EnergyTransferId: energyTransferId}
+	_, err := msgServer.EnergyTransferStartedRequest(testHelper.WrappedContext, msgCancelTransferRequest)
+	require.NoError(t, err)
+
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_ONGOING)
+
+	testHelper.C4eEvUtils.EnergyTransferCompletedRequest(testHelper.GetContext(), energyTransferId, 22)
+
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_ACTIVE)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_PAID)
 }
