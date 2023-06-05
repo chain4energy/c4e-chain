@@ -1,10 +1,10 @@
 package keeper
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/app"
+	cfeevtestutils "github.com/chain4energy/c4e-chain/testutil/module/cfeev"
 	"github.com/chain4energy/c4e-chain/x/cfeev/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -32,7 +32,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 )
 
-func CfeevKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+func CfeevKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, AdditionalDistributorKeeperData) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount("c4e", "c4e"+"pub")
 	config.Seal()
@@ -60,7 +60,7 @@ func CfeevKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	encodingConfig := app.MakeEncodingConfig()
 	appCodec := encodingConfig.Codec
 
-	paramsSubspace := typesparams.NewSubspace(cdc,
+	paramsStore := typesparams.NewSubspace(cdc,
 		types.Amino,
 		storeKey,
 		memStoreKey,
@@ -81,7 +81,7 @@ func CfeevKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		cdc,
 		storeKey,
 		memStoreKey,
-		paramsSubspace,
+		paramsStore,
 		bankKeeper,
 	)
 
@@ -90,16 +90,11 @@ func CfeevKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	// Initialize params
 	k.SetParams(ctx, types.DefaultParams())
 
-	// Populate the cfeev account with some coins
-	coins := sdk.NewCoins(sdk.NewCoin("uc4e", sdk.NewInt(100000)))
-	err := bankKeeper.MintCoins(ctx, minttypes.ModuleName, coins)
-	err = bankKeeper.SendCoinsFromModuleToModule(ctx, minttypes.ModuleName, types.ModuleName, coins)
-
-	if err != nil {
-		panic(fmt.Errorf("Minting initial coins failed %e", err))
+	return k, ctx, AdditionalDistributorKeeperData{
+		cdc,
+		storeKey,
+		paramsStore,
 	}
-
-	return k, ctx
 }
 
 func createBankKeeper(codec codec.Codec, bankStoreKey storetypes.StoreKey, accountKeeper banktypes.AccountKeeper, memStoreKey *storetypes.MemoryStoreKey, storeKey *storetypes.KVStoreKey) (types.BankKeeper, error) {
@@ -160,4 +155,10 @@ func createAccountKeeper(codec codec.Codec, authStoreKey storetypes.StoreKey, me
 	)
 
 	return accountKeeper, nil
+}
+
+func CfeevKeeperTestUtil(t *testing.T) (*cfeevtestutils.C4eEvKeeperUtils, *keeper.Keeper, sdk.Context) {
+	k, ctx, _ := CfeevKeeper(t)
+	utils := cfeevtestutils.NewC4eEvKeeperUtils(t, k)
+	return &utils, k, ctx
 }

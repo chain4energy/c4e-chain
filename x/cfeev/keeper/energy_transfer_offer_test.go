@@ -20,7 +20,7 @@ func createNEnergyTransferOffer(keeper *keeper.Keeper, ctx sdk.Context, n int) [
 }
 
 func TestEnergyTransferOfferGet(t *testing.T) {
-	keeper, ctx := keepertest.CfeevKeeper(t)
+	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	items := createNEnergyTransferOffer(keeper, ctx, 10)
 	for _, item := range items {
 		got, found := keeper.GetEnergyTransferOffer(ctx, item.Id)
@@ -33,7 +33,7 @@ func TestEnergyTransferOfferGet(t *testing.T) {
 }
 
 func TestEnergyTransferOfferRemove(t *testing.T) {
-	keeper, ctx := keepertest.CfeevKeeper(t)
+	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	items := createNEnergyTransferOffer(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveEnergyTransferOffer(ctx, item.Id)
@@ -43,7 +43,7 @@ func TestEnergyTransferOfferRemove(t *testing.T) {
 }
 
 func TestEnergyTransferOfferGetAll(t *testing.T) {
-	keeper, ctx := keepertest.CfeevKeeper(t)
+	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	items := createNEnergyTransferOffer(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
@@ -52,7 +52,7 @@ func TestEnergyTransferOfferGetAll(t *testing.T) {
 }
 
 func TestEnergyTransferOfferCount(t *testing.T) {
-	keeper, ctx := keepertest.CfeevKeeper(t)
+	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	items := createNEnergyTransferOffer(keeper, ctx, 10)
 	count := uint64(len(items))
 	require.Equal(t, count, keeper.GetEnergyTransferOfferCount(ctx))

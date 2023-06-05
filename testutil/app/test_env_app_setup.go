@@ -11,6 +11,7 @@ import (
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	testcfeclaim "github.com/chain4energy/c4e-chain/testutil/module/cfeclaim"
 	testcfedistributor "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
+	testcfeev "github.com/chain4energy/c4e-chain/testutil/module/cfeev"
 	testcfeminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	testcfevesting "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 
@@ -76,6 +77,7 @@ type TestHelper struct {
 	C4eMinterUtils        *testcfeminter.ContextC4eMinterUtils
 	C4eDistributorUtils   *testcfedistributor.ContextC4eDistributorUtils
 	C4eClaimUtils         *testcfeclaim.ContextC4eClaimUtils
+	C4eEvUtils            *testcfeev.ContextC4eEvUtils
 }
 
 func newTestHelper(t require.TestingT, ctx sdk.Context, app *c4eapp.App, initTime time.Time, initialValidatorsCoin sdk.Coin) *TestHelper {
@@ -114,6 +116,7 @@ func newTestHelper(t require.TestingT, ctx sdk.Context, app *c4eapp.App, initTim
 	testHelper.C4eMinterUtils = testcfeminter.NewContextC4eMinterUtils(t, testHelperP, &app.CfeminterKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
 	testHelper.C4eDistributorUtils = testcfedistributor.NewContextC4eDistributorUtils(t, testHelperP, &app.CfedistributorKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
 	testHelper.C4eClaimUtils = testcfeclaim.NewContextC4eClaimUtils(t, &testHelper, &app.CfeclaimKeeper, &app.CfevestingKeeper, &app.AccountKeeper, &bankUtils.BankUtils, &testHelper.StakingUtils.StakingUtils, &testHelper.GovUtils.GovUtils, &testHelper.FeegrantUtils.FeegrantUtils, &testHelper.DistributionUtils.DistributionUtils)
+	testHelper.C4eEvUtils = testcfeev.NewContextC4eClaimUtils(t, &testHelper, &app.CfeevKeeper, &bankUtils.BankUtils)
 
 	return &testHelper
 }

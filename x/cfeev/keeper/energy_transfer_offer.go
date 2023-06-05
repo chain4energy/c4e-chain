@@ -3,11 +3,45 @@ package keeper
 import (
 	"encoding/binary"
 
+	"cosmossdk.io/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+func (k Keeper) PostEnergyTransferOffer(
+	ctx sdk.Context,
+	creator string,
+	chargerId string,
+	chargerStatus types.ChargerStatus,
+	location types.Location,
+	tariff int32,
+	name string,
+	plugType types.PlugType) (uint64, error) {
+
+	// there is a 1-1 relation between the offer and the charger
+	// check if another offer for this chargerId has been added
+	_, found := k.GetTransferOfferByChargerId(ctx, chargerId)
+	if found {
+		// Rule: either log the error or throw it but never do both
+		// Rule: pass all relevant information to errors to make them informative as much as possible
+		return 0, errors.Wrapf(types.ErrOfferForChargerAlreadyExists, "energy transfer offer for this charger %s/%s already exists", name, chargerId)
+	}
+
+	var energyTransferOffer = types.EnergyTransferOffer{
+		Owner:         creator,
+		ChargerId:     chargerId,
+		ChargerStatus: types.ChargerStatus_ACTIVE,
+		Location:      &location,
+		Tariff:        tariff,
+		Name:          name,
+		PlugType:      plugType,
+	}
+
+	id := k.AppendEnergyTransferOffer(ctx, energyTransferOffer)
+	return id, nil
+}
 
 // GetEnergyTransferOfferCount get the total number of energyTransferOffer
 func (k Keeper) GetEnergyTransferOfferCount(ctx sdk.Context) uint64 {

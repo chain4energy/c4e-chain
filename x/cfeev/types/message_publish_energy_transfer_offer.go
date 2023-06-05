@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -45,6 +46,15 @@ func (msg *MsgPublishEnergyTransferOffer) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+	if msg.GetChargerId() == "" {
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Charger ID is empty")
+	}
+	if msg.GetName() == "" {
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Charger name is empty")
+	}
+	if msg.GetLocation() == nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Charger location is not specified")
 	}
 	return nil
 }

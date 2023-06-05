@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -47,5 +48,18 @@ func (msg *MsgStartEnergyTransferRequest) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
+	if msg.GetChargerId() == "" {
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Charger ID is empty")
+	}
+	if msg.GetOwnerAccountAddress() == "" {
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "CP owner account address cannot be empty")
+	}
+	if msg.GetOfferedTariff() == "" {
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Offered tariff cannot be empty")
+	}
+	if msg.GetEnergyToTransfer() == 0 {
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Cannot transfer zero [kWh] energy")
+	}
+
 	return nil
 }

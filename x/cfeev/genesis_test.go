@@ -35,7 +35,7 @@ func TestGenesis(t *testing.T) {
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	k, ctx := keepertest.CfeevKeeper(t)
+	k, ctx, _ := keepertest.CfeevKeeper(t)
 	cfeev.InitGenesis(ctx, *k, genesisState)
 	got := cfeev.ExportGenesis(ctx, *k)
 	require.NotNil(t, got)

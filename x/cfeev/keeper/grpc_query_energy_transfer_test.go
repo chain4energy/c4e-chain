@@ -16,7 +16,7 @@ import (
 )
 
 func TestEnergyTransferQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.CfeevKeeper(t)
+	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNEnergyTransfer(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -61,7 +61,7 @@ func TestEnergyTransferQuerySingle(t *testing.T) {
 }
 
 func TestEnergyTransferQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.CfeevKeeper(t)
+	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNEnergyTransfer(keeper, ctx, 5)
 
