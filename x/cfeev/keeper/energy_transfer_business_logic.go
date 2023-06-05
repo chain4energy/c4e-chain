@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -138,19 +137,22 @@ func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId
 
 	if energyTransferObj.EnergyToTransfer == usedServiceUnits {
 		// send entire callateral to CP owner's account
-		coinsToTransfer := strconv.FormatInt(int64(energyTransferObj.GetCollateral()), 10) + "uc4e"
+		amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
+		coinsToTransfer := sdk.NewCoins(sdk.NewCoin("uc4e", amount))
 		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
 		energyTransferObj.Status = types.TransferStatus_PAID
 
 	} else if energyTransferObj.EnergyToTransfer > usedServiceUnits {
 		// calculate used tokens
 		usedTokens := energyTransferObj.OfferedTariff * usedServiceUnits
-		coinsToTransfer := strconv.FormatInt(int64(usedTokens), 10) + "uc4e"
+		amount := sdk.NewInt(int64(usedTokens))
+		coinsToTransfer := sdk.NewCoins(sdk.NewCoin("uc4e", amount))
 		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
 
 		// calculate unused tokens
 		unusedTokens := energyTransferObj.Collateral - uint64(usedTokens)
-		coinsToTransfer = strconv.FormatInt(int64(unusedTokens), 10) + "uc4e"
+		amount = sdk.NewInt(int64(unusedTokens))
+		coinsToTransfer = sdk.NewCoins(sdk.NewCoin("uc4e", amount))
 		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.DriverAccountAddress, coinsToTransfer)
 
 		// set status
@@ -163,7 +165,8 @@ func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId
 	} else if usedServiceUnits > energyTransferObj.EnergyToTransfer {
 		if (usedServiceUnits - energyTransferObj.EnergyToTransfer) < 4 {
 			// send entire callateral to CP owner's account
-			coinsToTransfer := strconv.FormatInt(int64(energyTransferObj.GetCollateral()), 10) + "uc4e"
+			amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
+			coinsToTransfer := sdk.NewCoins(sdk.NewCoin("uc4e", amount))
 			err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
 			energyTransferObj.Status = types.TransferStatus_PAID
 		}
@@ -188,12 +191,8 @@ func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId
 	return nil
 }
 
-func (k Keeper) sendTokensToTargetAccount(ctx sdk.Context, targetAccountAddress string, collateral string) error {
+func (k Keeper) sendTokensToTargetAccount(ctx sdk.Context, targetAccountAddress string, collateralCoins sdk.Coins) error {
 	target, err := sdk.AccAddressFromBech32(targetAccountAddress)
-	if err != nil {
-		panic(err)
-	}
-	collateralCoins, err := sdk.ParseCoinsNormalized(collateral)
 	if err != nil {
 		panic(err)
 	}

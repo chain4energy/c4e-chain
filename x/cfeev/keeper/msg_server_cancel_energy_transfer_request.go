@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 
@@ -32,7 +31,13 @@ func (k msgServer) CancelEnergyTransferRequest(goCtx context.Context, msg *types
 	offer.ChargerStatus = types.ChargerStatus_ACTIVE
 
 	// send the collateral back to the EV driver's account
-	coinsToTransfer := strconv.FormatInt(int64(energyTransferObj.GetCollateral()), 10) + "uc4e"
+	// coinsToTransfer := strconv.FormatInt(int64(energyTransferObj.GetCollateral()), 10) + "uc4e"
+
+	// //
+	amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
+	coinsToTransfer := sdk.NewCoins(sdk.NewCoin("uc4e", amount))
+	////
+
 	err := k.sendTokensToTargetAccount(ctx, energyTransferObj.GetDriverAccountAddress(), coinsToTransfer)
 
 	if err != nil {
