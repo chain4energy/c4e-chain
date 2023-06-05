@@ -194,7 +194,7 @@ var (
 		ibctransfertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		cfevestingmoduletypes.ModuleName: nil,
 		cfemintermoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
-		cfeclaimmoduletypes.ModuleName:   {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		cfeclaimmoduletypes.ModuleName:   nil,
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 		cfedistributormoduletypes.DistributorMainAccount:      {authtypes.Burner},
 		cfedistributormoduletypes.ValidatorsRewardsCollector:  nil,

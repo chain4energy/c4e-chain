@@ -200,7 +200,7 @@ func (k Keeper) validateEnableCampaignParams(ctx sdk.Context, campaign *types.Ca
 	if err := campaign.ValidateEnableCampaignParams(owner); err != nil {
 		return err
 	}
-	return campaign.ValidateEndTimeInTheFuture(ctx)
+	return campaign.ValidateEndTimeInTheFuture(ctx.BlockTime())
 }
 
 func (k Keeper) validateCloseCampaignParams(ctx sdk.Context, campaign *types.Campaign, owner string) error {

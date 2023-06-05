@@ -193,9 +193,9 @@ func (c *Campaign) ValidateEnableCampaignParams(owner string) error {
 	return nil
 }
 
-func (c *Campaign) ValidateEndTimeInTheFuture(ctx sdk.Context) error {
-	if c.EndTime.Before(ctx.BlockTime()) {
-		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", c.EndTime, ctx.BlockTime())
+func (c *Campaign) ValidateEndTimeInTheFuture(blockTime time.Time) error {
+	if c.EndTime.Before(blockTime) {
+		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", c.EndTime, blockTime)
 	}
 	return nil
 }

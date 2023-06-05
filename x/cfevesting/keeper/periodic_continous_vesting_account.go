@@ -12,6 +12,8 @@ import (
 
 func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context, moduleName string, userAddress string, amount sdk.Coins,
 	free sdk.Dec, startTime int64, endTime int64) (periodId uint64, periodExists bool, err error) {
+	k.Logger(ctx).Debug("send to periodic continous vesting account from module", "moduleName", moduleName,
+		"userAddress", userAddress, "amount", amount, "free", free, "startTime", startTime, "endTime", endTime)
 
 	userAccAddress, err := sdk.AccAddressFromBech32(userAddress)
 	if err != nil {
@@ -50,6 +52,7 @@ func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context
 		return 0, false, err
 	}
 
+	k.Logger(ctx).Debug("send to periodic continous vesting account from module ret", "periodId", periodId, "periodExists", periodExists)
 	return periodId, periodExists, nil
 }
 
