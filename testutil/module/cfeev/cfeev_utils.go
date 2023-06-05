@@ -140,11 +140,16 @@ func (h *C4eEvUtils) StartEnergyTransferRequest(ctx sdk.Context, transfer types.
 }
 
 func (h *C4eEvUtils) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) {
-
 	msg := &types.MsgEnergyTransferCompletedRequest{EnergyTransferId: energyTransferId, UsedServiceUnits: usedServiceUnits}
 
 	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)
 	_, err := msgServer.EnergyTransferCompletedRequest(ctx, msg)
 	require.NoError(h.t, err)
+}
 
+func (h *C4eEvUtils) EnergyTransferStartedRequest(ctx sdk.Context, energyTransferId uint64) {
+	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)
+	msgConfirmTransferRequestStarted := &types.MsgEnergyTransferStartedRequest{EnergyTransferId: energyTransferId}
+	_, err := msgServer.EnergyTransferStartedRequest(ctx, msgConfirmTransferRequestStarted)
+	require.NoError(h.t, err)
 }
