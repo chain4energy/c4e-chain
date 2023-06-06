@@ -101,6 +101,12 @@ func RandIntBetweenWith0(r *rand.Rand, min, max int64) int64 {
 	return int64(r.Intn(diff)) + min
 }
 
+func RandInt(n int) int64 {
+	src := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(src)
+	return int64(r.Intn(n))
+}
+
 func RandInt64(r *rand.Rand, max int) int64 {
 	return int64(r.Intn(max))
 }

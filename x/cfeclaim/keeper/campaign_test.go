@@ -90,7 +90,7 @@ func TestCreateCampaignNegativeFeegrantAmount(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("feegrant amount (%s) cannot be negative: wrong param value", campaign.FeegrantAmount))
 }
 
-func TestCreateCampaignAndStart(t *testing.T) {
+func TestCreateCampaignAndEnable(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -99,7 +99,39 @@ func TestCreateCampaignAndStart(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
 }
 
-func TestCreateManyCampaignsAndStart(t *testing.T) {
+func TestCreateCampaignAndEnableUpdatedTimes(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	startTime := campaign.StartTime.Add(time.Hour)
+	endTime := startTime.Add(time.Hour)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, &startTime, &endTime)
+}
+
+func TestCreateCampaignAndEnableStartTimeAfterEndTime(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	startTime := campaign.StartTime.Add(time.Hour)
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 0, &startTime, nil, fmt.Sprintf("start time is after end time (%s > %s): wrong param value", startTime, campaign.EndTime))
+}
+
+func TestCreateCampaignAndEnableEndTimeBeforeBlockTime(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	startTime := testHelper.Context.BlockTime().Add(-time.Hour * 10)
+	endTime := startTime.Add(time.Hour)
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 0, &startTime, &endTime, fmt.Sprintf("end time in the past error (%s < %s): wrong param value", endTime, testHelper.Context.BlockTime()))
+}
+
+func TestCreateManyCampaignsAndEnable(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -110,7 +142,7 @@ func TestCreateManyCampaignsAndStart(t *testing.T) {
 	}
 }
 
-func TestCreateCampaignAndStartTimeAfterTimeNowError(t *testing.T) {
+func TestCreateCampaignAndEnableTimeAfterTimeNowError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -121,7 +153,7 @@ func TestCreateCampaignAndStartTimeAfterTimeNowError(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 0, nil, nil, fmt.Sprintf("end time in the past error (%s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 
-func TestCreateCampaignAndStartOwnerNotValidError(t *testing.T) {
+func TestCreateCampaignAndEnableOwnerNotValidError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)

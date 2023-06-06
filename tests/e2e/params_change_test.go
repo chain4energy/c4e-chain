@@ -195,7 +195,7 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
 	// transfer funds and create vesting pool
 	creatorWalletName := testhelpers.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 
 	vestingTypes := node.QueryVestingTypes()

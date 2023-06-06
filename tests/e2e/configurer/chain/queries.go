@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"io"
 	"net/http"
 	"time"
@@ -254,6 +256,18 @@ func (n *NodeConfig) QueryCampaigns() []cfeclaimmoduletypes.Campaign {
 	return response.Campaigns
 }
 
+func (n *NodeConfig) QueryLastCampaignsId() uint64 {
+	path := "/c4e/claim/v1beta1/campaigns"
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryCampaignsResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Campaigns[len(response.Campaigns)-1].Id
+}
+
 func (n *NodeConfig) QueryCampaignMission(campaignId, missionId string) cfeclaimmoduletypes.Mission {
 	path := "/c4e/claim/v1beta1/mission/" + campaignId + "/" + missionId
 
@@ -288,4 +302,60 @@ func (n *NodeConfig) QueryUserEntries() []cfeclaimmoduletypes.UserEntry {
 	err = util.Cdc.UnmarshalJSON(bz, &response)
 	require.NoError(n.t, err)
 	return response.UsersEntries
+}
+
+func (n *NodeConfig) QueryCfevestingParams(moduleParams *cfevestingmoduletypes.QueryParamsResponse) {
+	cmd := []string{"c4ed", "query", "cfevesting", "params", "--output=json"}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryCfeminterParams(moduleParams *cfemintermoduletypes.QueryParamsResponse) {
+	cmd := []string{"c4ed", "query", "cfeminter", "params", "--output=json"}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = util.Cdc.UnmarshalJSON(out.Bytes(), moduleParams)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryCfedistributorParams(moduleParams *cfedistributormoduletypes.QueryParamsResponse) {
+	cmd := []string{"c4ed", "query", "cfedistributor", "params", "--output=json"}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryFeegrant(moduleParams *cfedistributormoduletypes.QueryParamsResponse) {
+	cmd := []string{"c4ed", "query", "cfedistributor", "params", "--output=json"}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus string, totalTime chan time.Duration) {
+	start := time.Now()
+	require.Eventually(
+		n.t,
+		func() bool {
+			status, err := n.QueryPropStatus(proposalNumber)
+			if err != nil {
+				return false
+			}
+
+			return status == desiredStatus
+		},
+		1*time.Minute,
+		10*time.Millisecond,
+		"C4e node failed to retrieve prop tally",
+	)
+	elapsed := time.Since(start)
+	totalTime <- elapsed
 }

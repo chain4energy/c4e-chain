@@ -14,10 +14,6 @@ import (
 	"time"
 )
 
-const (
-	baseBalance = 10000000
-)
-
 type VestingSetupSuite struct {
 	BaseSetupSuite
 }
@@ -43,7 +39,7 @@ func (s *VestingSetupSuite) TestSendToVestingAccount() {
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -75,7 +71,7 @@ func (s *VestingSetupSuite) TestWithdrawAllAvailable() {
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -119,7 +115,7 @@ func (s *VestingSetupSuite) TestCreateVestingPool() {
 	vestingTypes := node.QueryVestingTypes()
 	s.Greater(len(vestingTypes), 0)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -163,7 +159,7 @@ func (s *VestingSetupSuite) TestCreateVestingAccount() {
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -200,7 +196,7 @@ func (s *VestingSetupSuite) TestSplitVesting() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -233,7 +229,7 @@ func (s *VestingSetupSuite) TestMoveAvailableVesting() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -265,7 +261,7 @@ func (s *VestingSetupSuite) TestMoveAvailableVestingByDenoms() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -297,7 +293,7 @@ func (s *VestingSetupSuite) TestMoveAvailableVestingNoCoinsToMove() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -329,7 +325,7 @@ func (s *VestingSetupSuite) TestMoveAvailableVestingByDenomNoCoinsToMove() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -361,7 +357,7 @@ func (s *VestingSetupSuite) TestSplitVestingWrongAmount() {
 	newVestingAccountAddress := node.CreateWallet(newVestingWalletName)
 	splitVestingAccountAddress := node.CreateWallet(splitVestingWalletName)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -397,7 +393,7 @@ func (s *VestingSetupSuite) TestDoubleSplitVesting() {
 	splitVestingAccountAddress1 := node.CreateWallet(splitVestingWalletName1)
 	splitVestingAccountAddress2 := node.CreateWallet(splitVestingWalletName2)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 
@@ -434,7 +430,7 @@ func (s *VestingSetupSuite) TestDoubleMoveAvailableVesting() {
 	splitVestingAccountAddress1 := node.CreateWallet(splitVestingWalletName1)
 	splitVestingAccountAddress2 := node.CreateWallet(splitVestingWalletName2)
 
-	node.BankSend(sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
 

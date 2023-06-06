@@ -160,6 +160,32 @@ func TestAddMissionAlreadyOver(t *testing.T) {
 	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("campaign with id 0 campaign is over (end time - %s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 
+func TestAddMissionClaimStartDateAfterEndTime(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+	claimStartDate := campaign.StartTime.Add(time.Minute)
+	mission.ClaimStartDate = &claimStartDate
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission,
+		fmt.Sprintf("mission claim start date after campaign end time (end time - %s < %s): wrong param value", campaign.EndTime, claimStartDate))
+}
+
+func TestAddMissionClaimStartDate(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	claimStartDate := campaign.StartTime.Add(time.Second)
+	mission.ClaimStartDate = &claimStartDate
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+}
+
 func createAndSaveNTestMissions(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Mission {
 	items := make([]types.Mission, n)
 	for i := range items {

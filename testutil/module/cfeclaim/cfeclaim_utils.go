@@ -579,11 +579,20 @@ func (h *C4eClaimUtils) CreateCampaignError(ctx sdk.Context, owner string, name 
 }
 
 func (h *C4eClaimUtils) EnableCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) {
+	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	err := h.helpeCfeclaimkeeper.EnableCampaign(ctx, owner, campaignId, startTime, endTime)
 	require.NoError(h.t, err)
-	campaign, ok := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
+
 	require.True(h.t, ok)
-	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, true, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, campaign.StartTime, campaign.EndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
+	validStartTime := campaign.StartTime
+	validEndTime := campaign.EndTime
+	if startTime != nil {
+		validStartTime = *startTime
+	}
+	if endTime != nil {
+		validEndTime = *endTime
+	}
+	h.VerifyCampaign(ctx, campaign.Id, true, owner, campaign.Name, campaign.Description, true, &campaign.FeegrantAmount, &campaign.InitialClaimFreeAmount, validStartTime, validEndTime, campaign.LockupPeriod, campaign.VestingPeriod, campaign.VestingPoolName)
 }
 
 func (h *C4eClaimUtils) EnableCampaignError(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time, errorString string) {
@@ -706,7 +715,7 @@ func (h *C4eClaimUtils) RemoveCampaignError(ctx sdk.Context, owner string, campa
 func (h *C4eClaimUtils) AddMission(ctx sdk.Context, owner string, campaignId uint64, name string, description string, missionType cfeclaimtypes.MissionType,
 	weight sdk.Dec, missionClaimDate *time.Time) {
 	missionCountBefore := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
-	_, err := h.helpeCfeclaimkeeper.AddMission(ctx, owner, campaignId, name, description, missionType, weight, nil)
+	_, err := h.helpeCfeclaimkeeper.AddMission(ctx, owner, campaignId, name, description, missionType, weight, missionClaimDate)
 	missionCountAfter := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
 	require.NoError(h.t, err)
 	require.Equal(h.t, missionCountBefore+1, missionCountAfter)

@@ -301,6 +301,35 @@ func TestVestingPoolCampaignClaimMissionClaim(t *testing.T) {
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
+func TestVestingPoolCampaignClaimMissionClaimOptionalClaimStartDate(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
+	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
+	campaign := prepareTestCampaign(testHelper.Context)
+	ownerAddress := acountsAddresses[0]
+
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+
+	campaign.CampaignType = cfeclaimtypes.VestingPoolCampaign
+	campaign.VestingPoolName = vPool1
+	mission := prepareTestMission()
+	mission.MissionType = cfeclaimtypes.MissionClaim
+	claimStartDate := campaign.StartTime.Add(time.Minute)
+	mission.ClaimStartDate = &claimStartDate
+	campaign.EndTime = claimStartDate.Add(time.Minute)
+	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(ownerAddress.String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
+
+	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
+	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1],
+		fmt.Sprintf("mission 1 not started yet (blocktime %s < mission start time %s): mission is disabled", testHelper.Context.BlockTime(), claimStartDate))
+	testHelper.SetContextBlockTime(claimStartDate)
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
 func TestVestingPoolCampaignClaimMissionVote(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
