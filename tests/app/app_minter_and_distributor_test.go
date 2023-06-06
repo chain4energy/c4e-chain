@@ -68,10 +68,10 @@ func runDistributionAndMinting(t *testing.T, timeInYear int, expectedResults tes
 		testHelper.EndBlocker(abci.RequestEndBlock{})
 	}
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(testgenesis.DevelopmentFundAddr, expectedResults.developmentFundCoinsInt)
+	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testgenesis.DevelopmentFundAddr, expectedResults.developmentFundCoinsInt)
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(distributortypes.GovernanceBoosterCollector, expectedResults.governanceBoosterCoinInt)
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(distributortypes.GreenEnergyBoosterCollector, expectedResults.greenEnergyBoosterCoinInt)
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(testgenesis.LpAccountAddr, expectedResults.lpProviders)
+	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testgenesis.LpAccountAddr, expectedResults.lpProviders)
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(expectedResults.totalSupply.Add(testHelper.InitialValidatorsCoin.Amount))
 }

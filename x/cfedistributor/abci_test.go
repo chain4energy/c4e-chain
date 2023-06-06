@@ -58,7 +58,7 @@ func BurningDistributorTest(t *testing.T, destinationType subdistributortestutil
 
 	if destinationType == subdistributortestutils.MainCollector {
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, math.NewInt(1))
-		testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.HelperDestinationAccountAddress, math.NewInt(498))
+		testHelper.BankUtils.VerifyAccountDefaultDenomBalance(subdistributortestutils.HelperDestinationAccountAddress, math.NewInt(498))
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(2)
 		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributors[1].Destinations.PrimaryShare, sdk.MustNewDecFromStr("0.33"))
 	} else if destinationType == subdistributortestutils.ModuleAccount {
@@ -68,13 +68,13 @@ func BurningDistributorTest(t *testing.T, destinationType subdistributortestutil
 		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributors[1].Destinations.PrimaryShare, sdk.MustNewDecFromStr("0.33"))
 	} else if destinationType == subdistributortestutils.InternalAccount {
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, math.NewInt(1))
-		testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.HelperDestinationAccountAddress, math.NewInt(498))
+		testHelper.BankUtils.VerifyAccountDefaultDenomBalance(subdistributortestutils.HelperDestinationAccountAddress, math.NewInt(498))
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(3)
 		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributors[2].Destinations.PrimaryShare, sdk.MustNewDecFromStr("0.33"))
 		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributors[1].Destinations.PrimaryShare, sdk.ZeroDec())
 	} else {
 		testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(types.DistributorMainAccount, math.NewInt(1))
-		testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.BaseAccountAddress, math.NewInt(498))
+		testHelper.BankUtils.VerifyAccountDefaultDenomBalance(subdistributortestutils.BaseAccountAddress, math.NewInt(498))
 		testHelper.C4eDistributorUtils.VerifyNumberOfStates(2)
 		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributors[1].Destinations.PrimaryShare, sdk.MustNewDecFromStr("0.33"))
 	}
@@ -165,14 +165,14 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType sub
 	} else if passThroughAccoutType == subdistributortestutils.BaseAccount {
 		// 5542.33 moved to cosmos13zg4u07ymq83uq73t2cq3dj54jj37zzgr3hlck account
 		// and all is distributed further, and 0 in remains
-		testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.BaseAccountAddress, math.NewInt(0))
+		testHelper.BankUtils.VerifyAccountDefaultDenomBalance(subdistributortestutils.BaseAccountAddress, math.NewInt(0))
 		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subDistributors[0].Destinations.PrimaryShare, sdk.ZeroDec())
 	}
 
 	// 5542.33*10.345% = 573.3540385 to cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag, so
 	// 573 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.3540385 on its distributor state
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.ShareDevelopmentFundAccountAddress, math.NewInt(573))
+	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(subdistributortestutils.ShareDevelopmentFundAccountAddress, math.NewInt(573))
 	testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subDistributors[lastDistributorIndex].Destinations.Shares[0].Destination, sdk.MustNewDecFromStr("0.3540385"))
 
 	// 5542.33 - 573.3540385 = 4968.9759615 to validators_rewards_collector, so
@@ -185,7 +185,7 @@ func BurningWithInflationDistributorTest(t *testing.T, passThroughAccoutType sub
 		// still 0.9759615 on its distributor state remains
 		testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(lastSubDistributorPrimaryShare, sdk.MustNewDecFromStr("0.9759615"))
 		// and 4968 to validators rewards
-		testHelper.BankUtils.VerifyAccountDefultDenomBalance(testHelper.App.DistrKeeper.GetDistributionAccount(testHelper.Context).GetAddress(), math.NewInt(4968))
+		testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testHelper.App.DistrKeeper.GetDistributionAccount(testHelper.Context).GetAddress(), math.NewInt(4968))
 	} else {
 		// no_validators module account coins amount is 4968,
 		// and remains 0.9759615 on its distributor state
@@ -248,7 +248,7 @@ func TestBurningWithInflationDistributorAfter3001Blocks(t *testing.T) {
 	// 16632532.33*10.345% = 1720635.4695385 to cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag, so
 	// 1720635 on cosmos1p20lmfzp4g9vywl2jxwexwh6akvkxzpa6hdrag and 0.4695385 on its distributor state
 
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(subdistributortestutils.ShareDevelopmentFundAccountAddress, math.NewInt(1720635))
+	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(subdistributortestutils.ShareDevelopmentFundAccountAddress, math.NewInt(1720635))
 	testHelper.C4eDistributorUtils.VerifyDefaultDenomStateAmount(subdistributors[1].Destinations.Shares[0].Destination, sdk.MustNewDecFromStr("0.4695385"))
 
 	// 16632532.33- 1720635.4695385 = 14911896.8604615 to validators_rewards_collector, so

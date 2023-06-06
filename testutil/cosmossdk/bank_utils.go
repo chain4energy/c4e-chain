@@ -236,7 +236,7 @@ func (bu *ContextBankUtils) VerifyAccountBalanceByDenom(addr sdk.AccAddress, den
 	bu.BankUtils.VerifyAccountBalanceByDenom(bu.testContext.GetContext(), addr, denom, expectedAmount)
 }
 
-func (bu *ContextBankUtils) VerifyAccountDefultDenomBalance(addr sdk.AccAddress, expectedAmount math.Int) {
+func (bu *ContextBankUtils) VerifyAccountDefaultDenomBalance(addr sdk.AccAddress, expectedAmount math.Int) {
 	bu.BankUtils.VerifyAccountDefaultDenomBalance(bu.testContext.GetContext(), addr, expectedAmount)
 }
 
