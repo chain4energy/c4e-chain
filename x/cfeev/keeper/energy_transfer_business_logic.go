@@ -276,7 +276,7 @@ func (k Keeper) CancelEnergyTransferRequest(ctx sdk.Context, energyTransferId ui
 
 	cancelEvent, err := k.EmitCancelEnergyTransferEvent(ctx, energyTransferId, energyTransferObj.ChargerId, "")
 	if err != nil {
-		k.Logger(ctx).Error("new EmitChangeOfferStatusEvent error", "event", cancelEvent, "error", err.Error())
+		k.Logger(ctx).Error("new cancel energy transfer error", "event", cancelEvent, "error", err.Error())
 	}
 
 	return nil
