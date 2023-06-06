@@ -11,10 +11,10 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
 // Msg defines the Msg service.
 service Msg {
       rpc PublishEnergyTransferOffer(MsgPublishEnergyTransferOffer) returns (MsgPublishEnergyTransferOfferResponse);
-  rpc StartEnergyTransferRequest(MsgStartEnergyTransferRequest) returns (MsgStartEnergyTransferRequestResponse);
-  rpc EnergyTransferStartedRequest(MsgEnergyTransferStartedRequest) returns (MsgEnergyTransferStartedRequestResponse);
-  rpc EnergyTransferCompletedRequest(MsgEnergyTransferCompletedRequest) returns (MsgEnergyTransferCompletedRequestResponse);
-  rpc CancelEnergyTransferRequest(MsgCancelEnergyTransferRequest) returns (MsgCancelEnergyTransferRequestResponse);
+  rpc StartEnergyTransfer(MsgStartEnergyTransfer) returns (MsgStartEnergyTransferResponse);
+  rpc EnergyTransferStarted(MsgEnergyTransferStarted) returns (MsgEnergyTransferStartedResponse);
+  rpc EnergyTransferCompleted(MsgEnergyTransferCompleted) returns (MsgEnergyTransferCompletedResponse);
+  rpc CancelEnergyTransfer(MsgCancelEnergyTransfer) returns (MsgCancelEnergyTransferResponse);
   rpc RemoveEnergyOffer(MsgRemoveEnergyOffer) returns (MsgRemoveEnergyOfferResponse);
   rpc RemoveTransfer(MsgRemoveTransfer) returns (MsgRemoveTransferResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
@@ -33,7 +33,7 @@ message MsgPublishEnergyTransferOfferResponse {
   uint64 id = 1;
 }
 
-message MsgStartEnergyTransferRequest {
+message MsgStartEnergyTransfer {
   string creator = 1;
   uint64 energyTransferOfferId = 2;
   string chargerId = 3;
@@ -43,21 +43,21 @@ message MsgStartEnergyTransferRequest {
   int32 energyToTransfer = 7;
 }
 
-message MsgStartEnergyTransferRequestResponse {
+message MsgStartEnergyTransferResponse {
   uint64 id = 1;
 }
 
-message MsgEnergyTransferStartedRequest {
+message MsgEnergyTransferStarted {
   string creator = 1;
   uint64 energyTransferId = 2;
   string chargerId = 3;
   string info = 4;
 }
 
-message MsgEnergyTransferStartedRequestResponse {
+message MsgEnergyTransferStartedResponse {
 }
 
-message MsgEnergyTransferCompletedRequest {
+message MsgEnergyTransferCompleted {
   string creator = 1;
   uint64 energyTransferId = 2;
   string chargerId = 3;
@@ -65,10 +65,10 @@ message MsgEnergyTransferCompletedRequest {
   string info = 5;
 }
 
-message MsgEnergyTransferCompletedRequestResponse {
+message MsgEnergyTransferCompletedResponse {
 }
 
-message MsgCancelEnergyTransferRequest {
+message MsgCancelEnergyTransfer {
   string creator = 1;
   uint64 energyTransferId = 2;
   string chargerId = 3;
@@ -76,7 +76,7 @@ message MsgCancelEnergyTransferRequest {
   string errorCode = 5;
 }
 
-message MsgCancelEnergyTransferRequestResponse {
+message MsgCancelEnergyTransferResponse {
 }
 
 message MsgRemoveEnergyOffer {

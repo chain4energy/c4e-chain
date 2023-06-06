@@ -9,16 +9,16 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) EnergyTransferStartedRequest(goCtx context.Context, msg *types.MsgEnergyTransferStartedRequest) (*types.MsgEnergyTransferStartedRequestResponse, error) {
+func (k msgServer) EnergyTransferStarted(goCtx context.Context, msg *types.MsgEnergyTransferStarted) (*types.MsgEnergyTransferStartedResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "energy transfer started")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	keeper := k.Keeper
-	err := keeper.EnergyTransferStartedRequest(ctx, msg.GetEnergyTransferId())
+	err := keeper.EnergyTransferStarted(ctx, msg.GetEnergyTransferId())
 	if err != nil {
 		k.Logger(ctx).Error("energy transfer started failed", "error", err)
 		return nil, err
 	}
 
-	return &types.MsgEnergyTransferStartedRequestResponse{}, nil
+	return &types.MsgEnergyTransferStartedResponse{}, nil
 }

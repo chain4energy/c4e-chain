@@ -17,9 +17,9 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdEnergyTransferCompletedRequest() *cobra.Command {
+func CmdEnergyTransferCompleted() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "energy-transfer-completed-request [energy-transfer-id] [charger-id] [used-service-units] [info]",
+		Use:   "energy-transfer-completed [energy-transfer-id] [charger-id] [used-service-units] [info]",
 		Short: "Indicate that energy transfer has been completed",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Indicate that energy transfer has been completed.
@@ -31,7 +31,7 @@ Arguments:
   [info] additional info - optional
 
 Example:
-$ %s tx %s energy-transfer-completed-request 0 EVGC011221122GK0122 22 completed
+$ %s tx %s energy-transfer-completed 0 EVGC011221122GK0122 22 completed
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -54,7 +54,7 @@ $ %s tx %s energy-transfer-completed-request 0 EVGC011221122GK0122 22 completed
 				return err
 			}
 
-			msg := types.NewMsgEnergyTransferCompletedRequest(
+			msg := types.NewMsgEnergyTransferCompleted(
 				clientCtx.GetFromAddress().String(),
 				argEnergyTransferId,
 				argChargerId,

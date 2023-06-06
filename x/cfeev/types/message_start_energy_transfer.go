@@ -6,12 +6,12 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgStartEnergyTransferRequest = "start_energy_transfer_request"
+const TypeMsgStartEnergyTransferRequest = "start_energy_transfer"
 
-var _ sdk.Msg = &MsgStartEnergyTransferRequest{}
+var _ sdk.Msg = &MsgStartEnergyTransfer{}
 
-func NewMsgStartEnergyTransferRequest(creator string, energyTransferOfferId uint64, chargerId string, ownerAccountAddress string, offeredTariff string, collateral *sdk.Coin, energyToTransfer int32) *MsgStartEnergyTransferRequest {
-	return &MsgStartEnergyTransferRequest{
+func NewMsgStartEnergyTransfer(creator string, energyTransferOfferId uint64, chargerId string, ownerAccountAddress string, offeredTariff string, collateral *sdk.Coin, energyToTransfer int32) *MsgStartEnergyTransfer {
+	return &MsgStartEnergyTransfer{
 		Creator:               creator,
 		EnergyTransferOfferId: energyTransferOfferId,
 		ChargerId:             chargerId,
@@ -22,15 +22,15 @@ func NewMsgStartEnergyTransferRequest(creator string, energyTransferOfferId uint
 	}
 }
 
-func (msg *MsgStartEnergyTransferRequest) Route() string {
+func (msg *MsgStartEnergyTransfer) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgStartEnergyTransferRequest) Type() string {
+func (msg *MsgStartEnergyTransfer) Type() string {
 	return TypeMsgStartEnergyTransferRequest
 }
 
-func (msg *MsgStartEnergyTransferRequest) GetSigners() []sdk.AccAddress {
+func (msg *MsgStartEnergyTransfer) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -38,12 +38,12 @@ func (msg *MsgStartEnergyTransferRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgStartEnergyTransferRequest) GetSignBytes() []byte {
+func (msg *MsgStartEnergyTransfer) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgStartEnergyTransferRequest) ValidateBasic() error {
+func (msg *MsgStartEnergyTransfer) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

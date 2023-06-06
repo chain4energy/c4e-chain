@@ -10,7 +10,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
-func SimulateMsgCancelEnergyTransferRequest(
+func SimulateMsgCancelEnergyTransfer(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
@@ -18,12 +18,12 @@ func SimulateMsgCancelEnergyTransferRequest(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgCancelEnergyTransferRequest{
+		msg := &types.MsgCancelEnergyTransfer{
 			Creator: simAccount.Address.String(),
 		}
 
-		// TODO: Handling the CancelEnergyTransferRequest simulation
+		// TODO: Handling the CancelEnergyTransfer simulation
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "CancelEnergyTransferRequest simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "CancelEnergyTransfer simulation not implemented"), nil, nil
 	}
 }

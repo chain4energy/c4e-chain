@@ -16,10 +16,10 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdStartEnergyTransferRequest() *cobra.Command {
+func CmdStartEnergyTransfer() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "start-energy-transfer-request [energy-transfer-offer-id] [charger-id] [owner-account-address] [offered-tariff]",
-		Short: "Broadcast message start-energy-transfer-request",
+		Use:   "start-energy-transfer [energy-transfer-offer-id] [charger-id] [owner-account-address] [offered-tariff]",
+		Short: "Broadcast message start-energy-transfer",
 		Args:  cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argEnergyTransferOfferId, err := cast.ToUint64E(args[0])
@@ -45,7 +45,7 @@ func CmdStartEnergyTransferRequest() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgStartEnergyTransferRequest(
+			msg := types.NewMsgStartEnergyTransfer(
 				clientCtx.GetFromAddress().String(),
 				argEnergyTransferOfferId,
 				argChargerId,

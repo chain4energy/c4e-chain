@@ -9,10 +9,10 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgPublishEnergyTransferOffer{}, "cfeev/PublishEnergyTransferOffer", nil)
-	cdc.RegisterConcrete(&MsgStartEnergyTransferRequest{}, "cfeev/StartEnergyTransferRequest", nil)
-	cdc.RegisterConcrete(&MsgEnergyTransferStartedRequest{}, "cfeev/EnergyTransferStartedRequest", nil)
-	cdc.RegisterConcrete(&MsgEnergyTransferCompletedRequest{}, "cfeev/EnergyTransferCompletedRequest", nil)
-	cdc.RegisterConcrete(&MsgCancelEnergyTransferRequest{}, "cfeev/CancelEnergyTransferRequest", nil)
+	cdc.RegisterConcrete(&MsgStartEnergyTransfer{}, "cfeev/StartEnergyTransfer", nil)
+	cdc.RegisterConcrete(&MsgEnergyTransferStarted{}, "cfeev/EnergyTransferStarted", nil)
+	cdc.RegisterConcrete(&MsgEnergyTransferCompleted{}, "cfeev/EnergyTransferCompleted", nil)
+	cdc.RegisterConcrete(&MsgCancelEnergyTransfer{}, "cfeev/CancelEnergyTransfer", nil)
 	cdc.RegisterConcrete(&MsgRemoveEnergyOffer{}, "cfeev/RemoveEnergyOffer", nil)
 	cdc.RegisterConcrete(&MsgRemoveTransfer{}, "cfeev/RemoveTransfer", nil)
 	// this line is used by starport scaffolding # 2
@@ -23,16 +23,16 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgPublishEnergyTransferOffer{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgStartEnergyTransferRequest{},
+		&MsgStartEnergyTransfer{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgEnergyTransferStartedRequest{},
+		&MsgEnergyTransferStarted{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgEnergyTransferCompletedRequest{},
+		&MsgEnergyTransferCompleted{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCancelEnergyTransferRequest{},
+		&MsgCancelEnergyTransfer{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgRemoveEnergyOffer{},

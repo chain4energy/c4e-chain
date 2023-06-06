@@ -28,21 +28,21 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgPublishEnergyTransferOffer int = 100
 
-	opWeightMsgStartEnergyTransferRequest = "op_weight_msg_start_energy_transfer_request"
+	opWeightMsgStartEnergyTransfer = "op_weight_msg_start_energy_transfer"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgStartEnergyTransferRequest int = 100
+	defaultWeightMsgStartEnergyTransfer int = 100
 
-	opWeightMsgEnergyTransferStartedRequest = "op_weight_msg_energy_transfer_started_request"
+	opWeightMsgEnergyTransferStarted = "op_weight_msg_energy_transfer_started"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgEnergyTransferStartedRequest int = 100
+	defaultWeightMsgEnergyTransferStarted int = 100
 
-	opWeightMsgEnergyTransferCompletedRequest = "op_weight_msg_energy_transfer_completed_request"
+	opWeightMsgEnergyTransferCompleted = "op_weight_msg_energy_transfer_completed"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgEnergyTransferCompletedRequest int = 100
+	defaultWeightMsgEnergyTransferCompleted int = 100
 
-	opWeightMsgCancelEnergyTransferRequest = "op_weight_msg_cancel_energy_transfer_request"
+	opWeightMsgCancelEnergyTransfer = "op_weight_msg_cancel_energy_transfer"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgCancelEnergyTransferRequest int = 100
+	defaultWeightMsgCancelEnergyTransfer int = 100
 
 	opWeightMsgRemoveEnergyOffer = "op_weight_msg_remove_energy_offer"
 	// TODO: Determine the simulation weight value
@@ -97,48 +97,48 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		cfeevsimulation.SimulateMsgPublishEnergyTransferOffer(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgStartEnergyTransferRequest int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgStartEnergyTransferRequest, &weightMsgStartEnergyTransferRequest, nil,
+	var weightMsgStartEnergyTransfer int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgStartEnergyTransfer, &weightMsgStartEnergyTransfer, nil,
 		func(_ *rand.Rand) {
-			weightMsgStartEnergyTransferRequest = defaultWeightMsgStartEnergyTransferRequest
+			weightMsgStartEnergyTransfer = defaultWeightMsgStartEnergyTransfer
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgStartEnergyTransferRequest,
-		cfeevsimulation.SimulateMsgStartEnergyTransferRequest(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgStartEnergyTransfer,
+		cfeevsimulation.SimulateMsgStartEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgEnergyTransferStartedRequest int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgEnergyTransferStartedRequest, &weightMsgEnergyTransferStartedRequest, nil,
+	var weightMsgEnergyTransferStarted int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgEnergyTransferStarted, &weightMsgEnergyTransferStarted, nil,
 		func(_ *rand.Rand) {
-			weightMsgEnergyTransferStartedRequest = defaultWeightMsgEnergyTransferStartedRequest
+			weightMsgEnergyTransferStarted = defaultWeightMsgEnergyTransferStarted
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgEnergyTransferStartedRequest,
-		cfeevsimulation.SimulateMsgEnergyTransferStartedRequest(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgEnergyTransferStarted,
+		cfeevsimulation.SimulateMsgEnergyTransferStarted(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgEnergyTransferCompletedRequest int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgEnergyTransferCompletedRequest, &weightMsgEnergyTransferCompletedRequest, nil,
+	var weightMsgEnergyTransferCompleted int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgEnergyTransferCompleted, &weightMsgEnergyTransferCompleted, nil,
 		func(_ *rand.Rand) {
-			weightMsgEnergyTransferCompletedRequest = defaultWeightMsgEnergyTransferCompletedRequest
+			weightMsgEnergyTransferCompleted = defaultWeightMsgEnergyTransferCompleted
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgEnergyTransferCompletedRequest,
-		cfeevsimulation.SimulateMsgEnergyTransferCompletedRequest(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgEnergyTransferCompleted,
+		cfeevsimulation.SimulateMsgEnergyTransferCompleted(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgCancelEnergyTransferRequest int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCancelEnergyTransferRequest, &weightMsgCancelEnergyTransferRequest, nil,
+	var weightMsgCancelEnergyTransfer int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCancelEnergyTransfer, &weightMsgCancelEnergyTransfer, nil,
 		func(_ *rand.Rand) {
-			weightMsgCancelEnergyTransferRequest = defaultWeightMsgCancelEnergyTransferRequest
+			weightMsgCancelEnergyTransfer = defaultWeightMsgCancelEnergyTransfer
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCancelEnergyTransferRequest,
-		cfeevsimulation.SimulateMsgCancelEnergyTransferRequest(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgCancelEnergyTransfer,
+		cfeevsimulation.SimulateMsgCancelEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgRemoveEnergyOffer int

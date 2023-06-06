@@ -5,12 +5,12 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgEnergyTransferCompletedRequest = "energy_transfer_completed_request"
+const TypeMsgEnergyTransferCompletedRequest = "energy_transfer_completed"
 
-var _ sdk.Msg = &MsgEnergyTransferCompletedRequest{}
+var _ sdk.Msg = &MsgEnergyTransferCompleted{}
 
-func NewMsgEnergyTransferCompletedRequest(creator string, energyTransferId uint64, chargerId string, usedServiceUnits int32, info string) *MsgEnergyTransferCompletedRequest {
-	return &MsgEnergyTransferCompletedRequest{
+func NewMsgEnergyTransferCompleted(creator string, energyTransferId uint64, chargerId string, usedServiceUnits int32, info string) *MsgEnergyTransferCompleted {
+	return &MsgEnergyTransferCompleted{
 		Creator:          creator,
 		EnergyTransferId: energyTransferId,
 		ChargerId:        chargerId,
@@ -19,15 +19,15 @@ func NewMsgEnergyTransferCompletedRequest(creator string, energyTransferId uint6
 	}
 }
 
-func (msg *MsgEnergyTransferCompletedRequest) Route() string {
+func (msg *MsgEnergyTransferCompleted) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgEnergyTransferCompletedRequest) Type() string {
+func (msg *MsgEnergyTransferCompleted) Type() string {
 	return TypeMsgEnergyTransferCompletedRequest
 }
 
-func (msg *MsgEnergyTransferCompletedRequest) GetSigners() []sdk.AccAddress {
+func (msg *MsgEnergyTransferCompleted) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -35,12 +35,12 @@ func (msg *MsgEnergyTransferCompletedRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgEnergyTransferCompletedRequest) GetSignBytes() []byte {
+func (msg *MsgEnergyTransferCompleted) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgEnergyTransferCompletedRequest) ValidateBasic() error {
+func (msg *MsgEnergyTransferCompleted) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

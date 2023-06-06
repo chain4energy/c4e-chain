@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) StartEnergyTransferRequest(
+func (k Keeper) StartEnergyTransfer(
 	ctx sdk.Context,
 	owner string,
 	driver string,
@@ -103,7 +103,7 @@ func (k Keeper) sendCollateralToEscrowAccount(ctx sdk.Context, driverAccountAddr
 	return nil
 }
 
-func (k Keeper) EnergyTransferStartedRequest(ctx sdk.Context, energyTransferId uint64) error {
+func (k Keeper) EnergyTransferStarted(ctx sdk.Context, energyTransferId uint64) error {
 
 	energyTransfer, found := k.GetEnergyTransfer(ctx, energyTransferId)
 	if !found {
@@ -132,7 +132,7 @@ func (k Keeper) EnergyTransferStartedRequest(ctx sdk.Context, energyTransferId u
 	return nil
 }
 
-func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) error {
+func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) error {
 	energyTransferObj, found := k.GetEnergyTransfer(ctx, energyTransferId)
 	if !found {
 		return sdkerrors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
@@ -235,8 +235,8 @@ func (k Keeper) sendTokensToTargetAccount(ctx sdk.Context, targetAccountAddress 
 	return nil
 }
 
-func (k Keeper) CancelEnergyTransferRequest(ctx sdk.Context, energyTransferId uint64) error {
-	k.Logger(ctx).Debug("CancelEnergyTransferRequest - ID=%d", energyTransferId)
+func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) error {
+	k.Logger(ctx).Debug("CancelEnergyTransfer - ID=%d", energyTransferId)
 	energyTransferObj, found := k.GetEnergyTransfer(ctx, energyTransferId)
 	if !found {
 		return sdkerrors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")

@@ -16,9 +16,9 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdCancelEnergyTransferRequest() *cobra.Command {
+func CmdCancelEnergyTransfer() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "cancel-energy-transfer-request [energy-transfer-id] [charger-id] [error-info] [error-code]",
+		Use:   "cancel-energy-transfer [energy-transfer-id] [charger-id] [error-info] [error-code]",
 		Short: "Cancel energy transfer",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Cancel energy transfer and optionally specify the reason.
@@ -30,7 +30,7 @@ Arguments:
   [error-code] error code - optional 
 
 Example:
-$ %s tx %s cancel-energy-transfer-request 0 EVGC011221122GK0122 charger_not_responding 4
+$ %s tx %s cancel-energy-transfer 0 EVGC011221122GK0122 charger_not_responding 4
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -50,7 +50,7 @@ $ %s tx %s cancel-energy-transfer-request 0 EVGC011221122GK0122 charger_not_resp
 				return err
 			}
 
-			msg := types.NewMsgCancelEnergyTransferRequest(
+			msg := types.NewMsgCancelEnergyTransfer(
 				clientCtx.GetFromAddress().String(),
 				argEnergyTransferId,
 				argChargerId,

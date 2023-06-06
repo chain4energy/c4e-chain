@@ -16,9 +16,9 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdEnergyTransferStartedRequest() *cobra.Command {
+func CmdEnergyTransferStarted() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "energy-transfer-started-request [energy-transfer-id] [charger-id] [info]",
+		Use:   "energy-transfer-started [energy-transfer-id] [charger-id] [info]",
 		Short: "Confirm that energy transfer has finally started",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Confirm that energy transfer has finally started.
@@ -29,7 +29,7 @@ Arguments:
   [info] additional info - optional
 
 Example:
-$ %s tx %s energy-transfer-started-request 0 EVGC011221122GK0122 started
+$ %s tx %s energy-transfer-started 0 EVGC011221122GK0122 started
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -48,7 +48,7 @@ $ %s tx %s energy-transfer-started-request 0 EVGC011221122GK0122 started
 				return err
 			}
 
-			msg := types.NewMsgEnergyTransferStartedRequest(
+			msg := types.NewMsgEnergyTransferStarted(
 				clientCtx.GetFromAddress().String(),
 				argEnergyTransferId,
 				argChargerId,

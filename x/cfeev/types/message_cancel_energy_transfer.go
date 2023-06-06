@@ -5,12 +5,12 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgCancelEnergyTransferRequest = "cancel_energy_transfer_request"
+const TypeMsgCancelEnergyTransferRequest = "cancel_energy_transfer"
 
-var _ sdk.Msg = &MsgCancelEnergyTransferRequest{}
+var _ sdk.Msg = &MsgCancelEnergyTransfer{}
 
-func NewMsgCancelEnergyTransferRequest(creator string, energyTransferId uint64, chargerId string, errorInfo string, errorCode string) *MsgCancelEnergyTransferRequest {
-	return &MsgCancelEnergyTransferRequest{
+func NewMsgCancelEnergyTransfer(creator string, energyTransferId uint64, chargerId string, errorInfo string, errorCode string) *MsgCancelEnergyTransfer {
+	return &MsgCancelEnergyTransfer{
 		Creator:          creator,
 		EnergyTransferId: energyTransferId,
 		ChargerId:        chargerId,
@@ -19,15 +19,15 @@ func NewMsgCancelEnergyTransferRequest(creator string, energyTransferId uint64, 
 	}
 }
 
-func (msg *MsgCancelEnergyTransferRequest) Route() string {
+func (msg *MsgCancelEnergyTransfer) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgCancelEnergyTransferRequest) Type() string {
+func (msg *MsgCancelEnergyTransfer) Type() string {
 	return TypeMsgCancelEnergyTransferRequest
 }
 
-func (msg *MsgCancelEnergyTransferRequest) GetSigners() []sdk.AccAddress {
+func (msg *MsgCancelEnergyTransfer) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -35,12 +35,12 @@ func (msg *MsgCancelEnergyTransferRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgCancelEnergyTransferRequest) GetSignBytes() []byte {
+func (msg *MsgCancelEnergyTransfer) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgCancelEnergyTransferRequest) ValidateBasic() error {
+func (msg *MsgCancelEnergyTransfer) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

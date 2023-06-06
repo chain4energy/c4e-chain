@@ -118,10 +118,10 @@ func (h *C4eEvUtils) PublishAndVerifyEnergyTransferOffer(ctx sdk.Context, offer 
 	return newOfferId.GetId()
 }
 
-func (h *C4eEvUtils) StartEnergyTransferRequest(ctx sdk.Context, transfer types.EnergyTransfer, newOfferId uint64) uint64 {
+func (h *C4eEvUtils) StartEnergyTransfer(ctx sdk.Context, transfer types.EnergyTransfer, newOfferId uint64) uint64 {
 
 	collateral := sdk.Coin{Denom: "uc4e", Amount: math.NewInt(int64(transfer.Collateral))}
-	msgStartTransfer := &types.MsgStartEnergyTransferRequest{
+	msgStartTransfer := &types.MsgStartEnergyTransfer{
 		Creator:               transfer.DriverAccountAddress,
 		EnergyTransferOfferId: newOfferId,
 		ChargerId:             transfer.ChargerId,
@@ -133,23 +133,23 @@ func (h *C4eEvUtils) StartEnergyTransferRequest(ctx sdk.Context, transfer types.
 
 	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)
 
-	startTransferResponse, err := msgServer.StartEnergyTransferRequest(ctx, msgStartTransfer)
+	startTransferResponse, err := msgServer.StartEnergyTransfer(ctx, msgStartTransfer)
 	require.NoError(h.t, err)
 
 	return startTransferResponse.GetId()
 }
 
-func (h *C4eEvUtils) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) {
-	msg := &types.MsgEnergyTransferCompletedRequest{EnergyTransferId: energyTransferId, UsedServiceUnits: usedServiceUnits}
+func (h *C4eEvUtils) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) {
+	msg := &types.MsgEnergyTransferCompleted{EnergyTransferId: energyTransferId, UsedServiceUnits: usedServiceUnits}
 
 	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)
-	_, err := msgServer.EnergyTransferCompletedRequest(ctx, msg)
+	_, err := msgServer.EnergyTransferCompleted(ctx, msg)
 	require.NoError(h.t, err)
 }
 
-func (h *C4eEvUtils) EnergyTransferStartedRequest(ctx sdk.Context, energyTransferId uint64) {
+func (h *C4eEvUtils) EnergyTransferStarted(ctx sdk.Context, energyTransferId uint64) {
 	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)
-	msgConfirmTransferRequestStarted := &types.MsgEnergyTransferStartedRequest{EnergyTransferId: energyTransferId}
-	_, err := msgServer.EnergyTransferStartedRequest(ctx, msgConfirmTransferRequestStarted)
+	msgConfirmTransferRequestStarted := &types.MsgEnergyTransferStarted{EnergyTransferId: energyTransferId}
+	_, err := msgServer.EnergyTransferStarted(ctx, msgConfirmTransferRequestStarted)
 	require.NoError(h.t, err)
 }
