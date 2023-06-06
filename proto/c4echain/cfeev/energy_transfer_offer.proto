@@ -8,11 +8,11 @@ message EnergyTransferOffer {
   uint64 id = 1;
   string owner = 2; 
   string chargerId = 3; 
-  ChargerStatus chargerStatus = 4; 
+  ChargerStatus charger_status = 4; 
   Location location = 5; 
   int32 tariff = 6; 
   string name = 7;
-  PlugType plugType = 8;
+  PlugType plug_type = 8;
 }
 
 enum ChargerStatus {
