@@ -77,6 +77,11 @@ func (k Keeper) StartEnergyTransferRequest(
 		k.Logger(ctx).Error("new EnergyTransferCreated emit event error", "event", event, "error", err.Error())
 	}
 
+	offerEvent, err := k.EmitChangeOfferStatusEvent(ctx, energyTransferObj.GetEnergyTransferOfferId(), types.ChargerStatus_ACTIVE.String(), types.ChargerStatus_BUSY.String())
+	if err != nil {
+		k.Logger(ctx).Error("new EmitChangeOfferStatusEvent error", "event", offerEvent, "error", err.Error())
+	}
+
 	return energyTransferId, nil
 }
 
@@ -114,6 +119,15 @@ func (k Keeper) EnergyTransferStartedRequest(ctx sdk.Context, energyTransferId u
 
 	// update energyTransfer instance in the KVStore
 	k.SetEnergyTransfer(ctx, energyTransfer)
+
+	event := &types.BeginEnergyTransfer{
+		EnergyTransferId:      energyTransferId,
+		EnergyTransferOfferId: energyTransfer.GetEnergyTransferOfferId(),
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("new begin energy transfer emit event error", "event", event, "error", err.Error())
+	}
 
 	return nil
 }
@@ -189,6 +203,21 @@ func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId
 	k.SetEnergyTransferOffer(ctx, offer)
 	k.SetEnergyTransfer(ctx, energyTransferObj)
 
+	event, err := k.EmitChangeOfferStatusEvent(ctx, energyTransferObj.GetEnergyTransferOfferId(), types.ChargerStatus_BUSY.String(), types.ChargerStatus_ACTIVE.String())
+	if err != nil {
+		k.Logger(ctx).Error("new EmitChangeOfferStatusEvent error", "event", event, "error", err.Error())
+	}
+
+	completeEvent := &types.CompleteEnergyTransfer{
+		EnergyTransferId:      energyTransferObj.Id,
+		EnergyTransferOfferId: energyTransferObj.GetEnergyTransferOfferId(),
+		EnergyTransferred:     usedServiceUnits,
+	}
+	err = ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		k.Logger(ctx).Error("new begin energy transfer emit event error", "event", completeEvent, "error", err.Error())
+	}
+
 	return nil
 }
 
@@ -240,5 +269,42 @@ func (k Keeper) CancelEnergyTransferRequest(ctx sdk.Context, energyTransferId ui
 	k.SetEnergyTransferOffer(ctx, offer)
 	k.SetEnergyTransfer(ctx, energyTransferObj)
 
+	event, err := k.EmitChangeOfferStatusEvent(ctx, energyTransferObj.GetEnergyTransferOfferId(), types.ChargerStatus_BUSY.String(), types.ChargerStatus_ACTIVE.String())
+	if err != nil {
+		k.Logger(ctx).Error("new EmitChangeOfferStatusEvent error", "event", event, "error", err.Error())
+	}
+
+	cancelEvent, err := k.EmitCancelEnergyTransferEvent(ctx, energyTransferId, energyTransferObj.ChargerId, "")
+	if err != nil {
+		k.Logger(ctx).Error("new EmitChangeOfferStatusEvent error", "event", cancelEvent, "error", err.Error())
+	}
+
 	return nil
+}
+
+func (k Keeper) EmitChangeOfferStatusEvent(ctx sdk.Context, energyTransferOfferId uint64, oldStatus, newStatus string) (*types.ChangeOfferStatus, error) {
+	event := &types.ChangeOfferStatus{
+		EnergyTransferOfferId: energyTransferOfferId,
+		OldStatus:             oldStatus,
+		NewStatus:             newStatus,
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		return event, err
+	}
+	return event, nil
+}
+
+func (k Keeper) EmitCancelEnergyTransferEvent(ctx sdk.Context, energyTransferId uint64, chargerId string, cancelReason string) (*types.CancelEnergyTransfer, error) {
+	event := &types.CancelEnergyTransfer{
+		EnergyTransferId: energyTransferId,
+		ChargerId:        chargerId,
+		CancelReason:     cancelReason,
+	}
+	err := ctx.EventManager().EmitTypedEvent(event)
+	if err != nil {
+		return event, err
+	}
+	return event, nil
+
 }

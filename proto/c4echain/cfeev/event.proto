@@ -9,3 +9,35 @@ message EnergyTransferCreatedEvent {
   int32 energyAmountToTransfer = 3; 
   string action = 4;
 }
+
+message ChangeOfferStatus {
+  uint64 energyTransferOfferId = 1;
+  string oldStatus = 2;
+  string newStatus = 3;
+}
+
+message PublishOffer {
+  uint64 energyTransferOfferId = 1;
+  string owner = 2; 
+  string chargerId = 3;
+  int32 tariff = 4; 
+  string name = 5;
+  string plugType = 6;
+}
+
+message CancelEnergyTransfer {
+  uint64 energyTransferId = 1; 
+  string chargerId = 2; 
+  string cancelReason = 3;
+}
+
+message BeginEnergyTransfer {
+  uint64 energyTransferId = 1;
+  uint64 energyTransferOfferId = 2;
+}
+
+message CompleteEnergyTransfer {
+  uint64 energyTransferId = 1;
+  uint64 energyTransferOfferId = 2;
+  int32 energyTransferred = 3;
+}
