@@ -215,7 +215,7 @@ func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId
 	}
 	err = ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
-		k.Logger(ctx).Error("new begin energy transfer emit event error", "event", completeEvent, "error", err.Error())
+		k.Logger(ctx).Error("new complete energy transfer emit event error", "event", completeEvent, "error", err.Error())
 	}
 
 	return nil
