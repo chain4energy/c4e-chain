@@ -20,7 +20,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 		return nil, err
 	}
 
-	if err := validateEndTimeInTheFuture(ctx, endTime); err != nil {
+	if err := validateEndTimeAfterBlockTime(endTime, ctx.BlockTime()); err != nil {
 		return nil, err
 	}
 
@@ -192,9 +192,9 @@ func (k Keeper) ValidateVestingPoolCampaign(ctx sdk.Context, owner string, vesti
 	return vestingType.ValidateVestingFree(free)
 }
 
-func validateEndTimeInTheFuture(ctx sdk.Context, endTime time.Time) error {
-	if endTime.Before(ctx.BlockTime()) {
-		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", endTime, ctx.BlockTime())
+func validateEndTimeAfterBlockTime(endTime time.Time, blockTime time.Time) error {
+	if endTime.Before(blockTime) {
+		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", endTime, blockTime)
 	}
 	return nil
 }
@@ -203,7 +203,7 @@ func (k Keeper) validateEnableCampaignParams(ctx sdk.Context, campaign *types.Ca
 	if err := campaign.ValidateEnableCampaignParams(owner); err != nil {
 		return err
 	}
-	return campaign.ValidateEndTimeInTheFuture(ctx.BlockTime())
+	return campaign.ValidateEndTimeAfterBlockTime(ctx.BlockTime())
 }
 
 func (k Keeper) validateCloseCampaignParams(ctx sdk.Context, campaign *types.Campaign, owner string) error {

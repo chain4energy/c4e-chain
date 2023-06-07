@@ -193,7 +193,7 @@ func (c *Campaign) ValidateEnableCampaignParams(owner string) error {
 	return nil
 }
 
-func (c *Campaign) ValidateEndTimeInTheFuture(blockTime time.Time) error {
+func (c *Campaign) ValidateEndTimeAfterBlockTime(blockTime time.Time) error {
 	if c.EndTime.Before(blockTime) {
 		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", c.EndTime, blockTime)
 	}
